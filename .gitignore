@@ -16,3 +16,4 @@ pids
 # Logs
 logs
 *.log
+bower_components
