@@ -1,0 +1,24 @@
+{
+  "name": "client_side",
+  "version": "0.0.0",
+  "authors": [
+    "RPL <r@rpl.im>"
+  ],
+  "description": "client side scripts and files",
+  "keywords": [
+    "theme, client side"
+  ],
+  "license": "MIT",
+  "homepage": "http://ridho.net",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "admin-lte": "~2.0.5"
+  }
+}
