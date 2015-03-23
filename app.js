@@ -14,7 +14,6 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// uncomment after placing your favicon in /public
 app.use(favicon(__dirname + '/public/favicon.png'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -41,7 +40,7 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
+    res.render('admin-lte/error', {
       message: err.message,
       error: err
     });
