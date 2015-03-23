@@ -6,7 +6,9 @@
   ],
   "description": "client side scripts and files",
   "keywords": [
-    "theme, client side"
+    "theme",
+    "client",
+    "side"
   ],
   "license": "MIT",
   "homepage": "http://ridho.net",
@@ -19,6 +21,8 @@
     "tests"
   ],
   "dependencies": {
+    "components-font-awesome": "~4.3.0",
+    "ionicons": "~2.0.1",
     "admin-lte": "~2.0.5"
   }
 }

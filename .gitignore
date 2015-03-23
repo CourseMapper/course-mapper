@@ -17,3 +17,5 @@ pids
 logs
 *.log
 bower_components
+
+.idea
