@@ -12,7 +12,7 @@ multiRouter.prototype.populateRoutes = function(){
         var routeFN = routeFiles[i];
 
         var route = require(this.directory + "/" + routeFN);
-        route.doRoute(this.app);
+        this.app.use('/', route);
     }
 };
 
