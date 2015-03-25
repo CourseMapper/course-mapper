@@ -13,11 +13,15 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser(config.get('session.secret')));
 
 // static css/js/images
 app.use(express.static(path.join(__dirname, 'public')));
+
+// setup database and session after static files have been served
+var db = require('./libs/core/database.js');
+var session = require('./libs/core/session.js')(app, db);
 
 // auto create and use routes
 var multiRouter = require('./libs/core/multiRouter.js');
@@ -30,7 +34,9 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+/////
 // error handlers
+/////
 
 // development error handler
 // will print stack trace
