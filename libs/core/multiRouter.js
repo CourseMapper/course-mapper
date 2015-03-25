@@ -1,3 +1,7 @@
+/**
+ *
+ */
+
 var fs = require('fs');
 
 function multiRouter( app, directory ) {
@@ -11,7 +15,7 @@ multiRouter.prototype.populateRoutes = function(){
     for(var i in routeFiles){
         var routeFN = routeFiles[i];
 
-        var route = require(this.directory + "/" + routeFN);
+        var route = require(this.directory + '/' + routeFN);
         this.app.use('/', route);
     }
 };

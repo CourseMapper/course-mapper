@@ -18,7 +18,7 @@ app.use(cookieParser());
 
 // static css/js/images
 app.use(express.static(path.join(__dirname, 'public')));
-  
+
 // auto create and use routes
 var multiRouter = require('./libs/core/multiRouter.js');
 new multiRouter(app, __dirname + '/routes').populateRoutes();
