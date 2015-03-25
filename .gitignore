@@ -19,3 +19,5 @@ logs
 bower_components
 
 .idea
+
+data/*
