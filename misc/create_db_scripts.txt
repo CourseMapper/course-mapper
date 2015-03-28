@@ -22,6 +22,16 @@ db.createUser(
   }
 )
 
+use course_mapper_test
+
+db.createUser(
+  {
+    user: "rpl",
+    pwd: "1",
+    roles: [ { role: "readWrite", db: "course_mapper_test" } ]
+  }
+)
+
 // start with auth on
 mongod --dbpath data
 
