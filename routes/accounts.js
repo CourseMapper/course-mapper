@@ -6,23 +6,38 @@ var Account = require(appRoot + '/modules/accounts');
 var router = express.Router();
 
 router.get('/accounts', function(req, res, next) {
-    res.send('{}');
+    if(req.user)
+        res.redirect('/accounts/' + req.user.username);
+    else
+        res.redirect('/accounts/login');
 });
 
-router.post('/accounts/login', passport.authenticate('local'),
-    function(req, res) {
-        // If this function gets called, authentication was successful.
-        // 'req.user' contains the authenticated user.
-        res.redirect('/accounts/' + req.user.username);
-    }
+router.get('/accounts/login', function(req, res, next) {
+    res.send("hahaha");
+});
+
+router.post('/accounts/login', function(req, res, next){
+    var account = new Account();
+    account.handleLoginPost(req, res, next);
+});
+
+/*
+router.post('/accounts/login',
+    passport.authenticate('local', {
+        successRedirect: '/accounts',
+        failureRedirect: '/accounts/login',
+        failureFlash: true
+    })
 );
+ */
 
 router.post('/api/accounts/login', passport.authenticate('local'),
     function(req, res) {
         // If this function gets called, authentication was successful.
-        // `req.user` contains the authenticated user.
-        res.json({
-            result: true
+        // 'req.user' contains the authenticated user.
+        res.status(200).json({
+            result: true,
+            username: req.user.username
         });
     }
 );

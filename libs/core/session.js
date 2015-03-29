@@ -7,7 +7,7 @@ var mongoStore = require('connect-mongo')(expressSession);
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 var appRoot = require('app-root-path');
-var accounts = require(appRoot + '/modules/accounts');
+var User = require(appRoot + '/modules/accounts/users.js');
 
 function session(app, db){
     var params = {
@@ -30,7 +30,7 @@ function session(app, db){
 
     // use local strategy, this matching the sent data to our db
     passport.use(new localStrategy(function(username, password, done) {
-        accounts.Users.findOne({ username : username},function(err,user){
+        User.findOne({ username : username},function(err,user){
             // mongo error
             if(err) { return done(err); }
 
@@ -39,8 +39,14 @@ function session(app, db){
                 return done(null, false, { message: 'Incorrect username.' });
             }
 
-            if (user.isValidPassword(password))
+            if(config.get('signUp.needActivation') && !user.isActivated){
+                return done(null, false, { message: 'Your username is not activated yet.' });
+            }
+
+            // username found, password matched
+            if (user.isValidPassword(password)) {
                 return done(null, user);
+            }
 
             return done(null, false, { message: 'Incorrect password.' });
         });

@@ -1,5 +1,6 @@
 var User = require('./users.js');
 var config = require('config');
+var passport = require('passport');
 
 function account(){
 }
@@ -47,7 +48,6 @@ account.prototype.addUser = function(error_callback, params, done){
     user.save(function (err) {
         if (err) {
             console.log('registration error');
-            console.log(err);
             // call error callback
             error_callback(err);
         } else {
@@ -79,6 +79,36 @@ account.prototype.userExist = function(username, exist , notExist) {
             exist();
         }
     });
+};
+
+account.prototype.handleLoginPost = function(req, res, next) {
+    // ask passport to authenticate
+    passport.authenticate('local', function(err, user, info) {
+        if (err) {
+            // if error happens
+            return next(err);
+        }
+
+        if (!user) {
+            // if authentication fail, get the error message that we set
+            // from previous (info.message) step, assign it into to
+            // req.session and redirect to the login page again to display
+            req.session.messages = info.message;
+            return res.redirect('/login');
+        }
+
+        // if everything is OK
+        req.logIn(user, function(err) {
+            if (err) {
+                req.session.messages = "Error";
+                return next(err);
+            }
+
+            // set the message
+            req.session.messages = "Login successfully";
+            return res.redirect('/accounts/' + user.username);
+        });
+    })(req, res, next);
 };
 
 module.exports = account;
