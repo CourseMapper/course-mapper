@@ -12,7 +12,7 @@ var expect = require('expect.js');
 describe('user_model', function(){
     // connect to db
     var db = require(appRoot + '/libs/core/database.js');
-    var User = require(appRoot + '/modules/accounts/Users.js');
+    var User = require(appRoot + '/modules/accounts/users.js');
     var Account = require(appRoot + '/modules/accounts');
 
     var pwd = "1";
@@ -43,7 +43,6 @@ describe('user_model', function(){
             var account = new Account();
             account.signUp(
                 function failedSignUp(err) {
-                    console.log("kudune koplo");
                     assert.equal(2,1);
                     done();
                 },
@@ -67,7 +66,6 @@ describe('user_model', function(){
                 },
                 params,
                 function successSignUp(user) {
-                    console.log("kudune fafa")
                     assert.equal(1,2);
                     done();
                 }
@@ -86,7 +84,6 @@ describe('user_model', function(){
                 },
                 params,
                 function successSignUp(user) {
-                    console.log("kudune araw")
                     assert.equal(1,2);
                     done();
                 }
@@ -101,7 +98,6 @@ describe('user_model', function(){
             var account = new Account();
             account.signUp(
                 function failedSignUp(err) {
-                    console.log("kudune koplo")
                     assert.equal(1, 2);
                     done();
                 },
@@ -115,7 +111,6 @@ describe('user_model', function(){
                         },
                         params,
                         function successSignUp(user) {
-                            console.log("kudune koplo")
                             assert.equal(2,1);
                             done();
                         }

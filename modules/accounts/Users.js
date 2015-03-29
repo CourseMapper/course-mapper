@@ -7,6 +7,10 @@ function hash(passwd, salt) {
     return crypto.createHmac('sha256', salt).update(passwd).digest('hex');
 }
 
+function generateActivationCode(salt){
+    return crypto.createHmac('sha256', salt).update(uuid.v1()).digest('hex');
+}
+
 var userSchema = new mongoose.Schema({
     username: {
         type: String,
@@ -21,17 +25,38 @@ var userSchema = new mongoose.Schema({
         trim: true,
         validate: [validator.isEmail, 'invalid email']
     },
-    roles: { type: String, required: true, default: "user"}
+    roles: { type: String, required: true, default: "user"},
+
+    isActivated: {type: Boolean, required: true, default: true},
+    activationCode: {type: String, required: true, default: "-"},
+    updatedAt: { type: Date }
+});
+
+userSchema.pre('save', function(next){
+    this.updatedAt = new Date();
+    next();
 });
 
 userSchema.methods.setPassword = function(passwordString) {
     this.password = hash(passwordString, this.salt);
 };
 
+userSchema.methods.setActivationCode = function() {
+    this.activationCode = generateActivationCode(this.salt);
+};
+
+userSchema.methods.activate = function() {
+    this.isActivated = true;
+};
+
+userSchema.methods.deactivate = function() {
+    this.isActivated = false;
+};
+
 userSchema.methods.isValidPassword = function(passwordString) {
     return this.password === hash(passwordString, this.salt);
 };
 
-var User = mongoose.model('Users', userSchema);
+var User = mongoose.model('users', userSchema);
 
 module.exports = User;

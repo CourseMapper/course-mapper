@@ -27,6 +27,10 @@ router.post('/api/accounts/login', passport.authenticate('local'),
     }
 );
 
+router.get('/accounts/signUp', function(req, res, next){
+    res.status(501).send("not implemented");
+});
+
 router.post('/api/accounts/signUp', function(req, res, next){
     var account = new Account();
     account.signUp(
@@ -41,16 +45,11 @@ router.post('/api/accounts/signUp', function(req, res, next){
 });
 
 router.get('/api/accounts/:username', function(req, res, next) {
-    var user = {
-        "user" : req.user,
-        "bro" : "sis"
-    };
-
-    res.json(user);
+    res.status(501).json({error:"not implemented"});
 });
 
 router.get('/accounts/:username', function(req, res, next) {
-    res.send('hahaha' + req.params.username);
+    res.status(501).json({error:"not implemented"});
 });
 
 module.exports = router;

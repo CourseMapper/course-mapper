@@ -1,4 +1,5 @@
-var User = require('./Users.js');
+var User = require('./users.js');
+var config = require('config');
 
 function account(){
 }
@@ -25,6 +26,8 @@ account.prototype.signUp = function(err, params, done){
  * @param done
  */
 account.prototype.addUser = function(error_callback, params, done){
+    var self = this;
+
     var user = new User({
         username: params.username,
         email: params.email,
@@ -33,6 +36,12 @@ account.prototype.addUser = function(error_callback, params, done){
 
     // hash the password first
     user.setPassword(params.password);
+
+    // check whether need activation, if yes, generate new code, and default to deactivated
+    if(config.get('signUp.needActivation')){
+        user.setActivationCode();
+        user.deactivate();
+    }
 
     // save it to db
     user.save(function (err) {
@@ -44,8 +53,20 @@ account.prototype.addUser = function(error_callback, params, done){
         } else {
             // call success callback
             done(user);
+
+            // send email to the new user
+            self.sendEmail(params.email);
         }
     });
+};
+
+account.prototype.sendEmail = function(email){
+    // todo: send email properly
+    return;
+    //var message = view.get(email.ejs)
+    if(config.get('signUp.needActivation')){
+
+    }
 };
 
 account.prototype.userExist = function(username, exist , notExist) {
