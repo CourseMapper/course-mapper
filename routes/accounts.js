@@ -59,12 +59,30 @@ router.post('/api/accounts/signUp', function(req, res, next){
     );
 });
 
+router.get('/api/accounts/logout', function(req, res, next) {
+    req.logout();
+    res.status(200).json({result:true, message: 'Logged out'});
+});
+
+router.get('/accounts/logout', function(req, res, next) {
+    req.logout();
+    req.flash('info', 'Logged Out');
+    res.redirect('/');
+});
+
 router.get('/api/accounts/:username', function(req, res, next) {
-    res.status(501).json({error:"not implemented"});
+    if(req.session.passport.user)
+        res.status(200).json(req.session.passport.user);
+    else
+        res.status(401).json({message: 'Not authorized'});
 });
 
 router.get('/accounts/:username', function(req, res, next) {
-    res.status(501).json({error:"not implemented"});
+    if(req.session.passport.user)
+        res.send("hi, " + req.session.passport.user.username);
+    else
+        res.redirect('/accounts/login');
 });
+
 
 module.exports = router;

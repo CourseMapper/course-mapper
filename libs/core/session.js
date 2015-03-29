@@ -8,6 +8,7 @@ var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 var appRoot = require('app-root-path');
 var User = require(appRoot + '/modules/accounts/users.js');
+var flash = require('flash');
 
 function session(app, db){
     var params = {
@@ -27,6 +28,7 @@ function session(app, db){
     //use passport as session authenticator
     app.use(passport.initialize());
     app.use(passport.session());
+    app.use(flash());
 
     // use local strategy, this matching the sent data to our db
     passport.use(new localStrategy(function(username, password, done) {
@@ -55,7 +57,7 @@ function session(app, db){
     passport.serializeUser(function(user, done) {
         var sessionUser = {
             _id: user._id,
-            name: user.name,
+            username: user.username,
             email: user.email,
             roles: user.roles
         };
