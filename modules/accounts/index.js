@@ -104,6 +104,14 @@ account.prototype.handleLoginPost = function(req, res, next) {
                 return next(err);
             }
 
+            if (req.body.rememberMe) {
+                req.session.cookie.maxAge = config.get('session.maxAge')
+                req.session._garbage = Date();
+                req.session.touch();
+            } else {
+                req.session.cookie.expires = false;
+            }
+
             // set the message
             req.session.messages = "Login successfully";
             return res.redirect('/accounts/' + user.username);
