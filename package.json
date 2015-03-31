@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prestart": "mongod --dbpath data &",
-    "start": "gulp | grunt watch | nodemon ./bin/www"
+    "prestart": "gulp && mongod --dbpath data &",
+    "start": "grunt watch | nodemon ./bin/www"
   },
   "dependencies": {
     "app-root-path": "^1.0.0",

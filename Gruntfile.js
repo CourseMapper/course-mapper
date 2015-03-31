@@ -27,7 +27,9 @@ module.exports = function (grunt) {
           'angular/angular-route.min.js.map': 'angular-route/angular-route.min.js.map',
 
           'angular/angular-cookies.min.js': 'angular-cookies/angular-cookies.min.js',
-          'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map'
+          'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map',
+
+          'd3/d3.min.js': 'd3/d3.min.js'
         }
       }
     },
