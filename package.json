@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prestart": "mongod --dbpath data &",
-    "start": "grunt watch | nodemon ./bin/www"
+    "start": "gulp | grunt watch | nodemon ./bin/www"
   },
   "dependencies": {
     "app-root-path": "^1.0.0",
@@ -26,6 +26,7 @@
     "validator": "^3.35.0"
   },
   "devDependencies": {
+    "connect-livereload": "^0.5.3",
     "expect.js": "^0.3.1",
     "grunt": "^0.4.5",
     "grunt-bowercopy": "^1.2.0",
@@ -34,6 +35,7 @@
     "grunt-contrib-uglify": "^0.8.0",
     "grunt-contrib-watch": "^0.6.1",
     "mocha": "^2.2.1",
-    "superagent": "^1.1.0"
+    "superagent": "^1.1.0",
+    "tiny-lr": "^0.1.5"
   }
 }

@@ -16,6 +16,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser(config.get('session.secret')));
 
+// live reload
+if (app.get('env') === 'development') {
+  app.use(require('connect-livereload')({port: 4002}));
+}
+
 // static css/js/images
 app.use(express.static(path.join(__dirname, 'public')));
 
