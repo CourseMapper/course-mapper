@@ -1,0 +1,60 @@
+
+<nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController as mainMenu">
+    <!-- Navbar Right Menu -->
+    <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+            <!-- Messages: style can be found in dropdown.less-->
+            <li class="dropdown tasks-menu" ng-hide="user">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <b>Login</b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+
+                        <form class="form-signin" action="/accounts/login" method="post">
+                            <h3 class="form-signin-heading">Please log in</h3>
+                            <label for="inputUsername" class="sr-only">Username</label>
+                            <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+                            <label for="inputPassword" class="sr-only">Password</label>
+                            <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="yes" name="rememberMe"> Remember me
+                                </label>
+                            </div>
+                            <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+                        </form>
+
+                    </li>
+                </ul>
+            </li>
+            <li class="" ng-hide="user">
+                <a href="/accounts/signUp">
+                    <b>Sign Up</b>
+                </a>
+            </li>
+
+            <li class="dropdown user user-menu notifications-menu" ng-show="user">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="admin-lte/images/user2-160x160.png" class="user-image" alt="User Image"/>
+                    <span class="hidden-xs">{{user.username | capitalize:true}}</span>
+                </a>
+                <ul class="dropdown-menu">
+
+                    <li>
+                        <!-- inner menu: contains the actual data -->
+                        <ul class="menu">
+                            <li><!--
+                                <a href="#">
+                                    <i class="ion-power"></i> Log Out
+                                </a>
+                                -->
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="footer"> <a href="/accounts/logout"><i class="ion-power"></i> Log Out  </a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,55 @@
+<% include header %>
+<div class="wrapper">
+
+    <!-- Main Header -->
+    <header class="main-header">
+
+        <!-- Logo -->
+        <a href="/" class="logo"><b>Course</b>Mapper</a>
+
+        <!-- Header Navbar -->
+        <% include mainMenu %>
+    </header>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+
+        <!-- Main content -->
+        <section class="content">
+
+            <form class="form-signin" action="/accounts/login" method="post">
+                <h3 class="form-signin-heading">Please log in</h3>
+                <label for="inputUsername" class="sr-only">Username</label>
+                <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="yes" name="rememberMe"> Remember me
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </form>
+
+            <form class="form-signUp" action="/accounts/signUp" method="post">
+                <h3 class="form-signUp-heading">Please Sign Up</h3>
+                sign up to be able to:
+            </form>
+
+
+        </section><!-- /.content -->
+    </div><!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- To the right -->
+        <div class="pull-right hidden-xs">
+            &nbsp;
+        </div>
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2015 <a href="#">i9</a>.</strong> All rights reserved.
+    </footer>
+
+</div><!-- ./wrapper -->
+<% include footer %>

@@ -1,5 +1,6 @@
 var express = require('express');
 var passport = require('passport');
+var config = require('config');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
@@ -12,24 +13,21 @@ router.get('/accounts', function(req, res, next) {
         res.redirect('/accounts/login');
 });
 
+router.get('/api/accounts', function(req, res, next) {
+    if(req.user)
+        res.redirect('/api/accounts/' + req.user.username);
+    else
+        res.status(401).json({message: 'Not authorized'});
+});
+
 router.get('/accounts/login', function(req, res, next) {
-    res.send("hahaha");
+    res.render(config.get('theme') + '/signUp', { title: 'Log In Page' });
 });
 
 router.post('/accounts/login', function(req, res, next){
     var account = new Account();
     account.handleLoginPost(req, res, next);
 });
-
-/*
-router.post('/accounts/login',
-    passport.authenticate('local', {
-        successRedirect: '/accounts',
-        failureRedirect: '/accounts/login',
-        failureFlash: true
-    })
-);
- */
 
 router.post('/api/accounts/login', passport.authenticate('local'),
     function(req, res) {
@@ -43,7 +41,7 @@ router.post('/api/accounts/login', passport.authenticate('local'),
 );
 
 router.get('/accounts/signUp', function(req, res, next){
-    res.status(501).send("not implemented");
+    res.render(config.get('theme') + '/signUp', { title: 'Sign Up Page' });
 });
 
 router.post('/api/accounts/signUp', function(req, res, next){
