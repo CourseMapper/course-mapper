@@ -1,0 +1,59 @@
+categories
+db.categories.insert([{
+    "category" : "I.T"
+},
+{
+    "category" : "Music"
+},
+{
+    "category" : "Cooking"
+},
+{
+    "category" : "Maths"
+}]
+);
+
+db.categories.insert([
+{
+    "category" : "Networking"
+},
+{
+    "category" : "Web Development"
+},
+{
+    "category" : "Cooking"
+},
+{
+    "category" : "Maths"
+}]
+);
+
+db.courses.insert([
+{
+    "course" : "Web Tech",
+    "category": "I.T"
+},
+{
+     "course" : "Distributed Computing",
+     "category": "I.T"
+},
+{
+    "course" : "Introducing to Computer Graphic",
+    "category": "I.T"
+},
+{
+    "course" : "Music Genre",
+    "category": "Music"
+},
+{
+    "course" : "Pasta",
+    "category": "Cooking"
+},
+{
+    "course" : "Pizza",
+    "category": "Cooking"
+},
+{
+    "course" : "Statistics and Probability",
+    "category": "Maths"
+}])

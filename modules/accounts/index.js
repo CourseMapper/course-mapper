@@ -5,6 +5,13 @@ var passport = require('passport');
 function account(){
 }
 
+/**
+ * wrap up add user and check user process
+ *
+ * @param err
+ * @param params
+ * @param done
+ */
 account.prototype.signUp = function(err, params, done){
     var self = this;
 
@@ -21,12 +28,14 @@ account.prototype.signUp = function(err, params, done){
 };
 
 /**
+ * addUser into the system.
+ * use the signUp() instead of this for existing user check
  *
  * @param error
  * @param params
  * @param done
  */
-account.prototype.addUser = function(error_callback, params, done){
+account.prototype.addUser = function(errorCallback, params, done){
     var self = this;
 
     var user = new User({
@@ -49,7 +58,7 @@ account.prototype.addUser = function(error_callback, params, done){
         if (err) {
             console.log('registration error');
             // call error callback
-            error_callback(err);
+            errorCallback(err);
         } else {
             // call success callback
             done(user);
@@ -69,6 +78,13 @@ account.prototype.sendEmail = function(email){
     }
 };
 
+/**
+ * check whether user exist or not
+ *
+ * @param username
+ * @param exist
+ * @param notExist
+ */
 account.prototype.userExist = function(username, exist , notExist) {
     User.count({
         username: username
@@ -81,6 +97,13 @@ account.prototype.userExist = function(username, exist , notExist) {
     });
 };
 
+/**
+ * Handle login post request from browser/client
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 account.prototype.handleLoginPost = function(req, res, next) {
     // ask passport to authenticate
     passport.authenticate('local', function(err, user, info) {
@@ -94,7 +117,7 @@ account.prototype.handleLoginPost = function(req, res, next) {
             // from previous (info.message) step, assign it into to
             // req.session and redirect to the login page again to display
             req.session.messages = info.message;
-            return res.redirect('/login');
+            return res.redirect('/accounts/login');
         }
 
         // if everything is OK
@@ -104,15 +127,17 @@ account.prototype.handleLoginPost = function(req, res, next) {
                 return next(err);
             }
 
+            // remember me box is checked
             if (req.body.rememberMe) {
-                req.session.cookie.maxAge = config.get('session.maxAge')
+                req.session.cookie.maxAge = config.get('session.maxAge');
                 req.session._garbage = Date();
                 req.session.touch();
             } else {
+                // it means when the browser is closed, the cookie will expire
                 req.session.cookie.expires = false;
             }
 
-            // set the message
+            // set the message and redirect
             req.session.messages = "Login successfully";
             return res.redirect('/accounts/' + user.username);
         });

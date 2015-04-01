@@ -1,0 +1,64 @@
+<% include ../header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
+    <aside class="main-sidebar" ng-controller="CategoryListController as categoryList">
+        <section class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="header">CATEGORIES</li>
+                <li ng-repeat="category in categories.categories" class="treeview">
+                    <a href="#">
+                        <span>{{category.category}}</span>
+                        <i ng-show="(category.subCategories.length)" class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" ng-show="(category.subCategories.length)" >
+                        <li ng-repeat="subCategory in category.subCategories" on-finish-render="sidebarInit"><a href="#">{{subCategory}}</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="/catalogs/courses"> </i> Courses</a></li>
+                <li><a href="/catalogs/courses/I.T"> </i> I.T</a></li>
+                <li class="active">Web Tech</li>
+            </ol>
+
+            <h1>
+                Web Tech
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content" id="tree">
+        </section><!-- /.content -->
+    </div><!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+<% include ../jsfooter %>
+<script>
+    $(document).ready(function(){
+        $('body').removeClass('sidebar-collapse');
+    });
+    app.directive('onFinishRender', function ($timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, element, attr) {
+                if (scope.$last === true) {
+                    $timeout(function () {
+                        scope.$emit(attr.onFinishRender);
+                    });
+                }
+            }
+        }
+    });
+</script>
+<% include ../footer %>

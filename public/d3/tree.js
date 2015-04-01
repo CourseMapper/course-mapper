@@ -25,7 +25,7 @@ var vis = d3.select("#tree").append("svg:svg")
     .append("svg:g")
     .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-d3.json("flare.json", function(json) {
+d3.json("/flare.json", function(json) {
     root = json;
     root.x0 = h / 2;
     root.y0 = 0;
