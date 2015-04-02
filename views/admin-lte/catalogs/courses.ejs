@@ -44,11 +44,13 @@
   </div><!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
+
 <% include ../jsfooter %>
 <script>
   $(document).ready(function(){
     $('body').removeClass('sidebar-collapse');
   });
+
   app.directive('onFinishRender', function ($timeout) {
     return {
       restrict: 'A',

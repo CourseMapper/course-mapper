@@ -14,3 +14,24 @@ path.link {
     stroke: #ccc;
     stroke-width: 1.5px;
 }
+
+#rightClick .hide{
+    position:absolute;
+    top: -9999px;
+    left: -9999px;
+    display: none;
+}
+#rightClick .show{
+    display: block;
+}
+#rightClick{
+    position:absolute;
+    width: 200px;
+}
+#rightClick > .modal-dialog{
+    width: 100% !important;
+    margin: 0px;
+}
+#rightClick .modal-body{
+    padding: 0px !important;
+}
