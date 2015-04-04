@@ -42,6 +42,14 @@ router.get('/api/catalogs/courses', function(req, res, next) {
   );
 });
 
+router.get('/catalogs/web-tech', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
+});
+
+router.get('/catalogs/web-tech2', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/course2', { title: req.params.courseSlug });
+});
+
 router.get('/catalogs/:courseSlug', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
 });

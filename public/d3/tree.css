@@ -15,23 +15,80 @@ path.link {
     stroke-width: 1.5px;
 }
 
-#rightClick .hide{
-    position:absolute;
+#rightClick .hide {
+    position: absolute;
     top: -9999px;
     left: -9999px;
     display: none;
 }
-#rightClick .show{
+
+#rightClick .show {
     display: block;
 }
-#rightClick{
-    position:absolute;
+
+#rightClick {
+    position: absolute;
     width: 200px;
 }
-#rightClick > .modal-dialog{
+
+#rightClick > .modal-dialog {
     width: 100% !important;
     margin: 0px;
 }
-#rightClick .modal-body{
+
+#rightClick .modal-body {
     padding: 0px !important;
+}
+
+.linkingVideo, .linkingPdf {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border: 1px solid;
+}
+
+.video1 {
+    left: 585px;
+    top: 350px;
+    display: block;
+}
+
+.back1 {
+    left: 185px;
+    top: 300px;
+    display: block;
+}
+
+.back2 {
+    left: 55px;
+    top: 140px;
+    display: block;
+}
+
+.pdf1, .pdf2, .pdf3, .pdf4 {
+    display: block;
+    position: relative;
+    width: 180px;
+    height: 50px;
+    border: 1px solid;
+}
+
+.pdf1 {
+    left: 355px;
+    top: 140px;
+}
+
+.pdf2 {
+    left: 522px;
+    top: 320px;
+}
+
+.pdf3 {
+    left: 522px;
+    top: 328px;
+}
+
+.pdf4 {
+    left: 330px;
+    top: 300px;
 }

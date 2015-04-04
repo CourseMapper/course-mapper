@@ -8,7 +8,6 @@ app.filter('capitalize', function() {
 
 app.controller('TreeController', function($scope, $http, $rootScope) {
     $scope.treeData = {
-        course: {
             name: 'Web Tech',
             subTopics:[
                 {
@@ -82,8 +81,7 @@ app.controller('TreeController', function($scope, $http, $rootScope) {
                 }
 
             ]
-        }
-    };
+        };
 
     var m = [20, 120, 20, 120],
         w = 1280 - m[1] - m[3],
@@ -96,10 +94,16 @@ app.controller('TreeController', function($scope, $http, $rootScope) {
         .append('svg:g')
         .attr('transform', 'translate(' + m[3] + ',' + m[0] + ')');
 
-    var node = vis.selectAll('g.node')
+    var node = vis.selectAll('circle')
         .data($scope.treeData)
         .enter()
-        .append('g.node');
+        .append('circle');
+
+    var nodeAttr = node
+        .attr('cx', function(d){return d.x_axis;})
+        .attr('cy', function(d){return d.y_axis;})
+        .attr('r', function(d){return 5;})
+
 });;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
   $http.get('/api/catalogs/categories').success(function(data) {
