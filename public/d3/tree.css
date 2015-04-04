@@ -60,9 +60,11 @@ path.link {
 }
 
 .back2 {
-    left: 55px;
-    top: 140px;
+    left: 85px;
+    top: 149px;
+    width: 89px;
     display: block;
+    height: 89px;
 }
 
 .pdf1, .pdf2, .pdf3, .pdf4 {
@@ -91,4 +93,13 @@ path.link {
 .pdf4 {
     left: 330px;
     top: 300px;
+}
+
+.videoPopUp{
+    left: 370px;
+    top: -35px;
+    width: 800px;
+    height: 500px;
+    z-index: 10;
+    display: block;
 }

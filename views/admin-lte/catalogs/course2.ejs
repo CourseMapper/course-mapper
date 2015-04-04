@@ -55,12 +55,19 @@
 
             <a href="/catalogs/web-tech" class="linkingVideo back1"></a>
             <a href="/catalogs/web-tech" class="linkingVideo back2"></a>
+            <a data-toggle="modal" data-target="#modalVideo" class="linkingVideo videoPopUp"></a>
         </section><!-- /.content -->
     </div><!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
 
-
+<div id="modalVideo" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="modalVideoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <img src="/img/video.jpg" style=" width: 100%;" onclick="$('#modalVideo').modal('hide');" />
+        </div>
+    </div>
+</div>
 
 <% include ../jsfooter %>
 <!--
