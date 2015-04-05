@@ -7,4 +7,8 @@ router.get('/', function(req, res, next) {
   res.render(config.get('theme') + '/index', { title: 'Express' });
 });
 
+router.get('/about', function(req, res, next) {
+  res.render(config.get('theme') + '/about', { title: 'Express' });
+});
+
 module.exports = router;

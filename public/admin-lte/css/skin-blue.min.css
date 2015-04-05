@@ -40,6 +40,8 @@
     height: 120px;
     float: left;
     background: white;
-    border: solid 1px #f5f5ff;
+    border: solid 1px #3C8DBC;
+    text-align: center;
     margin: 5px;
+    padding-top: 10px;
 }
