@@ -104,7 +104,9 @@ app.controller('TreeController', function($scope, $http, $rootScope) {
         .attr('cy', function(d){return d.y_axis;})
         .attr('r', function(d){return 5;})
 
-});;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+});
+
+;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
   $http.get('/api/catalogs/categories').success(function(data) {
     $scope.categories = data;
@@ -154,4 +156,18 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         */
         console.log("creating sub topic");
     }
+});;app.config(['$routeProvider',
+    function($routeProvider) {
+        $routeProvider.
+            when('/about', {
+                templateUrl: '/static/about',
+                controller: 'staticController'
+            }).
+            otherwise({
+                redirectTo: '/'
+            });
+    }]);
+
+app.controller('staticController', function($scope, $http, $rootScope) {
+
 });

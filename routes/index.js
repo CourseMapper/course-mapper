@@ -4,11 +4,12 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render(config.get('theme') + '/index', { title: 'Express' });
+  res.render(config.get('theme') + '/index');
 });
 
-router.get('/about', function(req, res, next) {
-  res.render(config.get('theme') + '/about', { title: 'Express' });
+/* GET static page. */
+router.get('/static', function(req, res, next) {
+  res.render(config.get('theme') + '/static');
 });
 
 module.exports = router;

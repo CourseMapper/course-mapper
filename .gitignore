@@ -21,3 +21,5 @@ bower_components
 .idea
 
 data/*
+
+public/pdf_js
