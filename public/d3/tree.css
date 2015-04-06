@@ -44,7 +44,8 @@ path.link {
     position: relative;
     width: 120px;
     height: 120px;
-    border: 1px solid;
+    cursor: pointer;
+    cursor: hand;
 }
 
 .video1 {
@@ -72,7 +73,6 @@ path.link {
     position: relative;
     width: 180px;
     height: 50px;
-    border: 1px solid;
 }
 
 .pdf1 {
