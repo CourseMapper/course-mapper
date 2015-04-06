@@ -144,4 +144,17 @@ account.prototype.handleLoginPost = function(req, res, next) {
     })(req, res, next);
 };
 
+account.prototype.handleRegisterPost = function(req, res, next) {
+    this.signUp(
+        function error(err){
+            return next(err);
+        },
+        req.body,
+        function done(user) {
+            // todo: implement flash
+            return res.redirect('/accounts/login/#' + user.username);
+        }
+    );
+};
+
 module.exports = account;

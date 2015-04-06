@@ -45,3 +45,8 @@
     margin: 5px;
     padding-top: 10px;
 }
+.form-horizontal{
+    width: 100%;
+    max-width: 400px;
+    margin: 0px auto;
+}

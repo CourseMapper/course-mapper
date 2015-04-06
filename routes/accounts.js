@@ -21,7 +21,7 @@ router.get('/api/accounts', function(req, res, next) {
 });
 
 router.get('/accounts/login', function(req, res, next) {
-    res.render(config.get('theme') + '/signUp', { title: 'Log In Page' });
+    res.render(config.get('theme') + '/login', { title: 'Log In Page' });
 });
 
 router.post('/accounts/login', function(req, res, next){
@@ -42,6 +42,11 @@ router.post('/api/accounts/login', passport.authenticate('local'),
 
 router.get('/accounts/signUp', function(req, res, next){
     res.render(config.get('theme') + '/signUp', { title: 'Sign Up Page' });
+});
+
+router.post('/accounts/signUp', function(req, res, next){
+    var account = new Account();
+    account.handleRegisterPost(req, res, next);
 });
 
 router.post('/api/accounts/signUp', function(req, res, next){
