@@ -37,9 +37,11 @@
 
     <!-- Main content -->
     <section class="content" ng-controller="CourseListController as courseList" id="courseList">
+      <div class="col-md-12">
       <ul>
         <li class="course_repeat" ng-repeat="c in courses.courses"><a href="/catalogs/web-tech">{{c.course}}</a></li>
       </ul>
+      </div>
     </section><!-- /.content -->
   </div><!-- /.content-wrapper -->
 

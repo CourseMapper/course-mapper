@@ -81,8 +81,9 @@ router.get('/api/accounts/:username', function(req, res, next) {
 });
 
 router.get('/accounts/:username', function(req, res, next) {
-    if(req.session.passport.user)
-        res.send("hi, " + req.session.passport.user.username);
+    if(req.session.passport.user){
+        res.render(config.get('theme') + '/profile', { title: 'My Profile', user: req.session.passport.user });
+    }
     else
         res.redirect('/accounts/login');
 });

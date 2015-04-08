@@ -10,6 +10,4 @@ app.config(['$routeProvider',
             });
     }]);
 
-app.controller('staticController', function($scope, $http, $rootScope) {
 
-});

@@ -50,3 +50,33 @@
     max-width: 400px;
     margin: 0px auto;
 }
+a.profile-picture{
+    width: 100%px;
+    height: 128px;
+    display: block;
+}
+
+a.profile-picture:hover{
+
+}
+
+i.ionicons{
+    margin-left:10px;
+    margin-right: 10px;
+}
+
+.content-header{
+    margin-left: 35px;
+}
+
+.widgetEmpty{
+    height: 80px;
+    margin-bottom: 20px;
+}
+.widgetEmpty i{
+    font-size: 30px;
+}
+
+#dashboard .box-header{
+    cursor: move;
+}

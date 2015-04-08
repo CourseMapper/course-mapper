@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
   res.render(config.get('theme') + '/index');
 });
 
-/* GET static page. */
+/* GET static page., there is ngview inside that will be handled by static.js route file */
 router.get('/static', function(req, res, next) {
   res.render(config.get('theme') + '/static');
 });
