@@ -144,6 +144,13 @@ account.prototype.handleLoginPost = function(req, res, next) {
     })(req, res, next);
 };
 
+/**
+ * Handle register post request from browser/client
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 account.prototype.handleRegisterPost = function(req, res, next) {
     this.signUp(
         function error(err){
