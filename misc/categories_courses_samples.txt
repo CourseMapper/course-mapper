@@ -1,32 +1,13 @@
 categories
-db.categories.insert([{
-    "category" : "I.T"
-},
-{
-    "category" : "Music"
-},
-{
-    "category" : "Cooking"
-},
-{
-    "category" : "Maths"
-}]
-);
 
-db.categories.insert([
-{
-    "category" : "Networking"
-},
-{
-    "category" : "Web Development"
-},
-{
-    "category" : "Cooking"
-},
-{
-    "category" : "Maths"
-}]
-);
+db.categories.remove();
+db.categories.insert([{ "category" : "Music" },
+                      { "category" : "Cooking" },
+                      { "category" : "Maths" },
+                      { "category" : "I.T", "subCategories" : [
+                      "Web Development", "Networking" ]
+                      }]);
+
 
 db.courses.insert([
 {
