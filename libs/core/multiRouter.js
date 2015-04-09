@@ -31,14 +31,11 @@ multiRouter.prototype.populateRoutes = function(prefix){
             // this is a directory, so we have to call this method again
             this.populateRoutes(p.normalize(prefix + p.sep + routeFN));
         } else {
-            var requiring = this.directory + p.sep + prefix + p.sep + routeFN;
-            // it is a route file, so initiate it
-            debug('it is a file. requiring: ' + requiring);
-
+            var requiring = p.normalize(this.directory + p.sep + prefix + p.sep + routeFN);
             var route = require(requiring);
             this.app.use(prefix, route);
 
-            debug('initiate route:' + prefix);
+            debug('initiate route:' + prefix + ' on ' + requiring);
         }
     }
 };
