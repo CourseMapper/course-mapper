@@ -1,14 +1,28 @@
 var mongoose = require('mongoose');
 
-var categorySchema = new mongoose.Schema({
+var categorySchema = new mongoose.Schema();
+
+categorySchema.add({
     category: {
         type: String,
         unique: true,
         required: true
     },
-    subCategories: [String],// type of this categorySchema
-    updatedAt: { type: Date }
+    slug: {
+        type: String,
+        required: true
+    },
+    parentCategory: mongoose.Schema.Types.ObjectId,
+    subCategories: [categorySchema],// type of this categorySchema
+    tags: [mongoose.Schema.Types.ObjectId],
+    updatedAt: {
+        type: Date
+    }
 });
+
+categorySchema.methods.setSlug = function(tagString) {
+    this.slug = slug(tagString);
+};
 
 categorySchema.pre('save', function(next){
     this.updatedAt = new Date();

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prestart": "gulp && mongod --dbpath data &",
-    "start": "grunt watch | nodemon ./bin/www"
+    "start": "grunt watch | DEBUG=cm:* nodemon ./bin/www"
   },
   "dependencies": {
     "app-root-path": "^1.0.0",
@@ -23,6 +23,8 @@
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "serve-favicon": "~2.2.0",
+    "shortid": "^2.2.2",
+    "slug": "^0.8.0",
     "validator": "^3.35.0"
   },
   "devDependencies": {

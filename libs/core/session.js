@@ -1,6 +1,7 @@
 /**
- *  creates session, and deals with it
+ *  creates session, and deal with it
  */
+
 var config = require('config');
 var expressSession = require('express-session');
 var mongoStore = require('connect-mongo')(expressSession);
