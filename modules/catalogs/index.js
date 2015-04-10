@@ -18,11 +18,22 @@ catalog.prototype.getCategories = function(error, params, success){
     });
 };
 
+/**
+ *
+ * @param error
+ * @param parentId pass in string or number of object id
+ * @param success
+ */
 catalog.prototype.getCategoriesRecursive = function(error, parentId, success){
-    Category.find(
-        // get the parent cat first.
-        {_id: mongoose.Types.ObjectId(parentId)},
-        function(err, docs) {
+    // param for the parent cats
+    var param = {parentCategory: null};
+    if(parentId)
+        param = {_id: mongoose.Types.ObjectId(parentId)};
+
+    // get the parent cats
+    Category.find(param)
+        // and populate sub cats
+        .populate('subCategories').exec(function(err, docs){
         if (!err){
             success(docs);
         } else {

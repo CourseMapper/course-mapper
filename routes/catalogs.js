@@ -15,13 +15,13 @@ router.get('/catalogs/courses', listCategories);
 
 router.get('/api/catalogs/categories', function(req, res, next) {
   var cat = new Catalog();
-  cat.getCategories(
+  cat.getCategoriesRecursive(
       function(err){
-        res.status(500);
+        res.status(500).json({});
       },
-      {
-          // parameters
-      },
+      // pass 0 to get root categories(who dont have parents), and all of its subcats
+      0
+      ,
       function(categories){
         res.status(200).json({categories: categories});
       }
@@ -29,7 +29,6 @@ router.get('/api/catalogs/categories', function(req, res, next) {
 });
 
 router.post('/api/catalogs/categories', function(req, res, next){
-    debug(req.user);
     if (req.user && req.user.roles != 'admin') {
         res.status(401).send('Unauthorized');
     }

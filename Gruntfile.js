@@ -53,7 +53,7 @@ module.exports = function (grunt) {
     watch: {
       scripts: {
         files: ['modules/angular/*.js','modules/angular-admin/*.js'],
-        tasks: ['concat', 'concatAdmin'],
+        tasks: ['concat'],
         options: {
           spawn: false
         }

@@ -15,7 +15,7 @@
             <i ng-show="(category.subCategories.length)" class="fa fa-angle-left pull-right"></i>
           </a>
           <ul class="treeview-menu" ng-show="(category.subCategories.length)" >
-            <li ng-repeat="subCategory in category.subCategories" on-finish-render="sidebarInit"><a href="#">{{subCategory}}</a></li>
+            <li ng-repeat="subCategory in category.subCategories" on-finish-render="sidebarInit"><a href="#">{{subCategory.category}}</a></li>
           </ul>
         </li>
       </ul>

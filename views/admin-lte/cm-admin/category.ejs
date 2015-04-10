@@ -39,11 +39,12 @@
                                     <span class="help-block" ng-show="errorName">{{ errorName }}</span>
                                 </div>
                             </form>
-                            <ul class="treeview-menu" ng-show="(category.subCategories.length)">
+                            <ul class="nav nav-pills nav-stacked" ng-show="(category.subCategories.length)">
+                                <h4>Child sub categories: </h4>
                                 <li ng-repeat="subCategory in category.subCategories">
-                                    <a href="#">{{subCategory}}</a>
+                                    <a href="#">{{subCategory.category}}</a>
                                 </li>
-                            </ul> 
+                            </ul>
                         </td>
                     </tr>
                     </tbody>
