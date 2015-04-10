@@ -18,6 +18,7 @@ function notifyLiveReload(event) {
 
 gulp.task('watch', function() {
     gulp.watch('public/angular/*', notifyLiveReload);
+    gulp.watch('public/angular-admin/*', notifyLiveReload);
     gulp.watch('views/**/*', notifyLiveReload);
     gulp.watch('views/*', notifyLiveReload);
 });

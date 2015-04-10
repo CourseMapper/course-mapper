@@ -2,6 +2,7 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var Catalog = require(appRoot + '/modules/catalogs');
+var debug = require('debug')('cm:route');
 
 var router = express.Router();
 
@@ -19,12 +20,34 @@ router.get('/api/catalogs/categories', function(req, res, next) {
         res.status(500);
       },
       {
-
+          // parameters
       },
       function(categories){
         res.status(200).json({categories: categories});
       }
   );
+});
+
+router.post('/api/catalogs/categories', function(req, res, next){
+    debug(req.user);
+    if (req.user && req.user.roles != 'admin') {
+        res.status(401).send('Unauthorized');
+    }
+    else {
+        var cat = new Catalog();
+        cat.addCategory(
+            function (err) {
+                res.status(500).json({result:false, errors: err});
+            },
+
+            // parameters
+            req.body,
+
+            function (cat) {
+                res.status(200).json({result:true, category: cat});
+            }
+        );
+    }
 });
 
 router.get('/api/catalogs/courses', function(req, res, next) {
@@ -34,7 +57,7 @@ router.get('/api/catalogs/courses', function(req, res, next) {
         res.status(500);
       },
       {
-
+          // parameters
       },
       function(courses){
         res.status(200).json({courses: courses});

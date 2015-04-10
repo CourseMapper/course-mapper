@@ -80,3 +80,7 @@ i.ionicons{
 #dashboard .box-header{
     cursor: move;
 }
+[ng\:cloak],[ng-cloak],.ng-cloak{display:none !important}
+.layout-top-nav .content-wrapper-admin,.admin .main-footer{
+    margin-left:230px;
+}

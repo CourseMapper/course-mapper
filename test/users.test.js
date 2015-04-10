@@ -29,6 +29,10 @@ describe('user_model', function(){
         done();
     });
 
+    after(function(){
+        User.collection.remove({}, function(){console.log("cleared users db at the end")});
+    });
+
     beforeEach(function(done){
         params = {
             username: "rpl",

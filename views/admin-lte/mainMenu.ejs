@@ -19,7 +19,7 @@
     <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
             <!-- Messages: style can be found in dropdown.less-->
-            <li class="dropdown tasks-menu ng-hide" ng-hide="user">
+            <li class="dropdown tasks-menu" ngCloak ng-hide="user">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <b>Login</b>
                 </a>
@@ -42,7 +42,7 @@
                     </li>
                 </ul>
             </li>
-            <li ng-hide="user">
+            <li ngCloak ng-hide="user">
                 <a href="/accounts/signup">
                     <b>Sign Up</b>
                 </a>
@@ -52,7 +52,7 @@
                 <a href="" class="dropdown-toggle" data-toggle="dropdown">
                     <img src="/admin-lte/images/user2-160x160.png" class="user-image" alt="User Image"/>
                     <i ng-hide="user" class="fa fa-refresh fa-spin"></i>
-                    <span class="ng-hide" ng-show="user" class="hidden-xs">{{user.username | capitalize:true}}</span>
+                    <span ng-show="user" class="hidden-xs ng-hide">{{user.username | capitalize:true}}</span>
                 </a>
                 <ul class="dropdown-menu">
 

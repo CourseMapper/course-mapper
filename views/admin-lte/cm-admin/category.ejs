@@ -1,0 +1,62 @@
+<!-- Main content -->
+<div class="col-lg-12">
+    <div class="box">
+        <div class="box-body with-border">
+            <div ng-controller="CategoryListController as categoryList">
+                <table id="categoryList" class="table table-bordered table-hover" >
+                    <thead>
+                    <tr>
+                        <th>Category</th>
+                    </tr>
+                    </thead>
+                    <tbody ng-controller="categoryFormController as frm" >
+                    <tr>
+                        <td>
+                            <form role="form" ng-submit="processForm('root')" id="rootCategory">
+                                <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
+                                    <input type="text" name="category" class="form-control input-sm col-xs-3"
+                                           placeholder="Add New Category ..." ng-model="formData['root'].category"/>
+                                    <input type="hidden" name="parent" ng-value="0" value="0" ng-model="formData['root'].parentCategory" />
+
+                              <span class="input-group-btn">
+                              <button class="btn btn-info btn-flat" type="submit"><i class="fa fa-plus"></i> Add New Category
+                              </button>
+                              </span>
+                                </div><span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr ng-repeat="category in categories.categories">
+                        <td >
+                            <p><span>{{category.category}}</span></p>
+                            <form role="form" ng-submit="processForm(category._id)">
+                                <div class="col-xs-6 input-group input-group-sm">
+                                    <input name="category" type="text" ng-model="formData[category._id].category" class="form-control input-sm col-xs-3" placeholder="Add Child ..."/>
+                                    <input type="hidden" name="parent" ng-value="category._id" value="category._id" ng-model="formData[category._id].parentCategory" ng-init="formData[category._id].parentCategory=category._id"/>
+                              <span class="input-group-btn">
+                              <button class="btn btn-info btn-flat" type="submit"><i class="fa fa-plus"></i> Add Child</button>
+                              </span>
+                                    <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                                </div>
+                            </form>
+                            <ul class="treeview-menu" ng-show="(category.subCategories.length)">
+                                <li ng-repeat="subCategory in category.subCategories">
+                                    <a href="#">{{subCategory}}</a>
+                                </li>
+                            </ul> 
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+        <!-- /.box-body -->
+    </div>
+</div>
+<script>
+$('document').ready(function(){
+    //$("#categoryList").dataTable();
+});
+
+</script>

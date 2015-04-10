@@ -1,8 +1,10 @@
-<% include ../header %>
+<% include ../headerWithSidebar %>
 <div class="wrapper">
 
   <!-- Header Navbar -->
   <% include ../mainMenu %>
+
+  <!-- .sidebar -->
   <aside class="main-sidebar" ng-controller="CategoryListController as categoryList">
     <section class="sidebar">
       <ul class="sidebar-menu">
@@ -18,8 +20,8 @@
         </li>
       </ul>
     </section>
-    <!-- /.sidebar -->
   </aside>
+  <!-- /.sidebar -->
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -50,7 +52,6 @@
 <% include ../jsfooter %>
 <script>
   $(document).ready(function(){
-    $('body').removeClass('sidebar-collapse');
   });
 
   app.directive('onFinishRender', function ($timeout) {

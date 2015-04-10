@@ -43,13 +43,17 @@ module.exports = function (grunt) {
           'modules/angular/*.js'
         ],
         dest: 'public/angular/courseMapper.js'
+      },
+      js: {
+        src: 'modules/angular-admin/*.js',
+        dest: 'public/angular/courseMapperAdmin.js'
       }
     },
 
     watch: {
       scripts: {
-        files: ['modules/angular/*.js'],
-        tasks: ['concat'],
+        files: ['modules/angular/*.js','modules/angular-admin/*.js'],
+        tasks: ['concat', 'concatAdmin'],
         options: {
           spawn: false
         }
