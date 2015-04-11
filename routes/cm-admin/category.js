@@ -1,6 +1,6 @@
 var express = require('express');
 var config  = require('config');
-var appRoot = require('app-root-path'); 
+var appRoot = require('app-root-path');
 
 var router = express.Router();
 

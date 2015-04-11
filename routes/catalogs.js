@@ -28,6 +28,22 @@ router.get('/api/catalogs/categories', function(req, res, next) {
   );
 });
 
+router.get('/api/catalogs/category/:category', function(req, res, next) {
+    var cat = new Catalog();
+    cat.getCategories(
+        function(err){
+            res.status(500).json({});
+        },
+        {
+            slug: req.params.category
+        }
+        ,
+        function(categories){
+            res.status(200).json({categories: categories});
+        }
+    );
+});
+
 router.post('/api/catalogs/categories', function(req, res, next){
     if (req.user && req.user.roles != 'admin') {
         res.status(401).send('Unauthorized');
