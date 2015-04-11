@@ -18,6 +18,23 @@ catalog.prototype.getCategories = function(error, params, success){
     });
 };
 
+catalog.prototype.getCategory = function(error, params, success){
+    Category.findOne(params)
+        .populate('subCategories tags').exec(function(err, docs) {
+            if (!err){
+                success(docs);
+            } else {
+                error(err);
+            }
+        });
+};
+
+catalog.prototype.getCategoryTags = function(error, params, success){
+    this.getCategory(error, params, function(docs){
+        success(docs.tags);
+    });
+};
+
 /**
  *
  * @param error
@@ -87,6 +104,55 @@ catalog.prototype.addCategory = function(error, params, success){
             else {
                 // success saved the cat
                 success(cat);
+            }
+        }
+    });
+};
+
+catalog.prototype.addTag = function(error, params, success){
+    if(!params.category)
+        params.category = null;
+
+    var tag = new Tag({
+        tag: params.tag
+    });
+
+    tag.setSlug(params.tag);
+
+    tag.save(function (err) {
+        if (err) {
+            debug('save tag error');
+            error(err);
+        } else {
+            if(params.category) {
+                console.log("finding Category");
+                // if it has parent category, lets add it as its child
+                Category.findOne({slug: params.category},
+                    function (err, cat) {
+                        if (err) {
+                            debug('cant find linked cat');
+                            error(err);
+                        }
+                        else
+                            cat.update({
+                                $addToSet: {
+                                    tags: mongoose.Types.ObjectId(tag.id)
+                                }
+                            }, function(err, res){
+                                if (err) {
+                                    debug('failed updated linked cat');
+                                    error(err);
+                                }
+                                else {
+                                    // success saved the tag
+                                    success(tag);
+                                }
+                            });
+                    });
+            }
+            else {
+                // success saved the cat
+                success(tag);
             }
         }
     });

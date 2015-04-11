@@ -21,7 +21,7 @@ admin.config(['$routeProvider',
                 resolve: {
                     pd: function( $q ) {
                         return( {
-                            title: 'Manage Category: ',
+                            title: 'Manage Category',
                             breads: [
                                 {a: '#/categories', active:false, title: 'Categories'},
                                 {a: '', active:true, title: 'Category: '}

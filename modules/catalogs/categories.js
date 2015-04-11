@@ -15,8 +15,8 @@ categorySchema.add({
         required: true
     },
     parentCategory: mongoose.Schema.Types.ObjectId,
-    subCategories: [mongoose.Schema.Types.ObjectId],// type of this categorySchema
-    tags: [mongoose.Schema.Types.ObjectId],
+    subCategories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'categories'}],// type of this categorySchema
+    tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags'}],
     updatedAt: {
         type: Date
     }
