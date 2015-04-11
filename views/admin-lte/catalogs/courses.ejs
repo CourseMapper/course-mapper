@@ -9,13 +9,13 @@
     <section class="sidebar">
       <ul class="sidebar-menu">
         <li class="header">CATEGORIES</li>
-        <li ng-repeat="category in categories.categories" class="treeview">
-          <a href="#">
+        <li ng-repeat="category in categories.categories" class="treeview" on-finish-render="sidebarInit">
+          <a href="">
             <span>{{category.category}}</span>
             <i ng-show="(category.subCategories.length)" class="fa fa-angle-left pull-right"></i>
           </a>
           <ul class="treeview-menu" ng-show="(category.subCategories.length)" >
-            <li ng-repeat="subCategory in category.subCategories" on-finish-render="sidebarInit"><a href="#">{{subCategory.category}}</a></li>
+            <li ng-repeat="subCategory in category.subCategories"><a href="">{{subCategory.category}}</a></li>
           </ul>
         </li>
       </ul>

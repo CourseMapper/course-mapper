@@ -14,9 +14,9 @@ var courseSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    category: mongoose.Schema.Types.ObjectId, // type of this categorySchema
+    category: { type: mongoose.Schema.Types.ObjectId, ref: 'categories'},
     updatedAt: { type: Date },
-    tags:[mongoose.Schema.Types.ObjectId]
+    tags:[{ type: mongoose.Schema.Types.ObjectId, ref: 'tags'}]
 });
 
 courseSchema.pre('save', function(next){
