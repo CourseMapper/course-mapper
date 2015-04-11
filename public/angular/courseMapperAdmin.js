@@ -68,6 +68,42 @@ admin.controller('CourseListController', function($scope, $http, $rootScope) {
   $http.get('/api/catalogs/courses').success(function(data) {
     $scope.courses = data;
   });
+});
+
+admin.controller('categoryDetailController', function($scope, $http, $routeParams){
+    $scope.category = '';
+
+    $http.get('/api/catalogs/category/' + $routeParams.category).success(function(data) {
+        if(!data.result){
+            $scope.errors = data.errors;
+        } else {
+            $scope.category = data.category.category;
+        }
+    });
+
+    $scope.getCourses = function(){
+        $http.get('/api/catalogs/category/' + $scope.category +'/courses').success(function(data) {
+            $scope.courses = data;
+        });
+    };
+
+    $scope.getTags = function(){
+        $http.get('/api/catalogs/category/' + $scope.category +'/tags').success(function(data) {
+            $scope.tags = data;
+        });
+    };
+
+    $scope.$watch('category', function(newValue, oldValue) {
+        if ($scope.category.length > 0) {
+            $scope.getCourses();
+            $scope.getTags();
+        }
+    });
+
+});;admin.controller('adminController', function($scope, $route, $routeParams, $location) {
+    $scope.$route = $route;
+    $scope.$location = $location;
+    $scope.$routeParams = $routeParams;
 });;admin.controller('MainMenuController', function($scope, $http, $rootScope) {
     $http.get('/api/accounts').success(function(data) {
         $scope.user = data;
@@ -78,7 +114,32 @@ admin.controller('CourseListController', function($scope, $http, $rootScope) {
         $routeProvider.
             when('/categories', {
                 templateUrl: '/cm-admin/categories',
-                controller: 'adminController'
+                controller: 'adminController',
+                resolve: {
+                    pd: function( $q ) {
+                        return( {
+                            title: 'Manage Categories',
+                            breads: [
+                                {a: '', active:true, title: 'Categories'}
+                            ]
+                        } );
+                    }
+                }
+            }).
+            when('/categories/:category', {
+                templateUrl: '/cm-admin/category',
+                controller: 'adminController',
+                resolve: {
+                    pd: function( $q ) {
+                        return( {
+                            title: 'Manage Category: ',
+                            breads: [
+                                {a: '#/categories', active:false, title: 'Categories'},
+                                {a: '', active:true, title: 'Category: '}
+                            ]
+                        });
+                    }
+                }
             }).
             otherwise({
                 redirectTo: '/cm-admin'
@@ -86,6 +147,3 @@ admin.controller('CourseListController', function($scope, $http, $rootScope) {
     }]);
 
 
-;admin.controller('adminController', function($scope, $http, $rootScope) {
-
-});

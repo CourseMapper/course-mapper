@@ -53,7 +53,7 @@ module.exports = function (grunt) {
     watch: {
       scripts: {
         files: ['modules/angular/*.js','modules/angular-admin/*.js'],
-        tasks: ['concat'],
+        tasks: ['concat:dist', 'concat:js'],
         options: {
           spawn: false
         }
@@ -63,5 +63,5 @@ module.exports = function (grunt) {
   });
 
   // the default task (running "grunt" in console)
-  grunt.registerTask('default', ['bowercopy', 'concat']);
+  grunt.registerTask('default', ['bowercopy', 'concat:dist', 'concat:js']);
 };

@@ -10,10 +10,12 @@
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/cm-admin/"><i class="fa fa-home"></i> Admin Home</a></li>
-                <li class="active">{{title}}</li>
+                <li ng-repeat="bread in $route.current.locals.pd.breads">
+                    <a ng-href="{{bread.a}}" ng-class="{'active':bread.active}">{{bread.title}}</a>
+                </li>
             </ol>
             <h1>
-                {{title}}
+                {{$route.current.locals.pd.title}}
             </h1>
         </section>
         <section class="content" ng-view>
