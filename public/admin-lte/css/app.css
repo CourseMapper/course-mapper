@@ -1,0 +1,142 @@
+
+.form-signin {
+    max-width: 330px;
+    padding: 10px;
+    margin: 0 auto;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+    font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+#courseList ul li{
+    display: block;
+    width: 120px;
+    height: 120px;
+    float: left;
+    background: white;
+    border: solid 1px #3C8DBC;
+    text-align: center;
+    margin: 5px;
+    padding-top: 10px;
+}
+.form-horizontal{
+    width: 100%;
+    max-width: 400px;
+    margin: 0px auto;
+}
+a.profile-picture{
+    width: 100%px;
+    height: 128px;
+    display: block;
+}
+
+a.profile-picture:hover{
+
+}
+
+i.ionicons{
+    margin-left:10px;
+    margin-right: 10px;
+}
+
+.content-header{
+    margin-left: 35px;
+}
+
+.widgetEmpty{
+    height: 80px;
+    margin-bottom: 20px;
+}
+.widgetEmpty i{
+    font-size: 30px;
+}
+
+#dashboard .box-header{
+    cursor: move;
+}
+[ng\:cloak],[ng-cloak],.ng-cloak{display:none !important}
+.layout-top-nav .content-wrapper-admin,.admin .main-footer{
+    margin-left:230px;
+}
+
+.form_hover {
+    padding: 0px;
+    position: relative;
+    overflow: hidden;
+    height: 240px;
+    margin-bottom: 30px;
+}
+
+.form_hover:hover .header {
+    opacity:0.8;
+    -webkit-animation:fadeIn ease-in 1;
+    -moz-animation:fadeIn ease-in 1;
+    animation:fadeIn ease-in 1;
+
+    -webkit-animation-fill-mode:forwards;
+    -moz-animation-fill-mode:forwards;
+    animation-fill-mode:forwards;
+
+    -webkit-animation-duration:1s;
+    -moz-animation-duration:1s;
+    animation-duration:1s;
+}
+
+.form_hover img {
+    z-index: 4;
+}
+
+.form_hover .header {
+    opacity:0;
+    position: absolute;
+    top: 0px;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.form_hover .blur {
+    height: 240px;
+    z-index: 5;
+    position: absolute;
+    width: 100%;
+}
+
+.form_hover .caption-text {
+    z-index: 10;
+    height: 240px;
+    width: 100%;
+}
+
+.form_hover .peekCourse{
+    display: block;
+    height:240px;
+}

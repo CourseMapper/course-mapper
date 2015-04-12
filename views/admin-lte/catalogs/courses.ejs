@@ -1,70 +1,99 @@
 <% include ../headerWithSidebar %>
 <div class="wrapper">
 
-  <!-- Header Navbar -->
-  <% include ../mainMenu %>
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
 
-  <!-- .sidebar -->
-  <aside class="main-sidebar" ng-controller="CategoryListController as categoryList">
-    <section class="sidebar">
-      <ul class="sidebar-menu">
-        <li class="header">CATEGORIES</li>
-        <li ng-repeat="category in categories.categories" class="treeview" on-finish-render="sidebarInit">
-          <a href="">
-            <span>{{category.category}}</span>
-            <i ng-show="(category.subCategories.length)" class="fa fa-angle-left pull-right"></i>
-          </a>
-          <ul class="treeview-menu" ng-show="(category.subCategories.length)" >
-            <li ng-repeat="subCategory in category.subCategories"><a href="">{{subCategory.category}}</a></li>
-          </ul>
-        </li>
-      </ul>
-    </section>
-  </aside>
-  <!-- /.sidebar -->
+    <!-- .sidebar -->
+    <aside class="main-sidebar" ng-controller="CategoryListController as categoryList">
+        <section class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="header">CATEGORIES</li>
+                <li ng-repeat="category in categories.categories" class="treeview" on-finish-render="sidebarInit">
+                    <a href="">
+                        <span>{{category.category}}</span>
+                        <i ng-show="(category.subCategories.length)" class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu" ng-show="(category.subCategories.length)">
+                        <li ng-repeat="subCategory in category.subCategories"><a href="">{{subCategory.category}}</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+    </aside>
+    <!-- /.sidebar -->
 
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
 
-    <section class="content-header">
-      <ol class="breadcrumb">
-        <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-        <li class="active">Browse Courses</li>
-      </ol>
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">Browse Courses</li>
+            </ol>
 
-      <h1>
-        Browse Courses
-      </h1>
-    </section>
+            <h4>Filter Choices:</h4>
+            <img src="/img/tag_cloud_in.png">
 
-    <!-- Main content -->
-    <section class="content" ng-controller="CourseListController as courseList" id="courseList">
-      <div class="col-md-12">
-      <ul>
-        <li class="course_repeat" ng-repeat="c in courses.courses"><a href="/catalogs/web-tech">{{c.course}}</a></li>
-      </ul>
-      </div>
-    </section><!-- /.content -->
-  </div><!-- /.content-wrapper -->
+            <h1>
+                Browse Courses
+            </h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content" ng-controller="CourseListController as courseList" id="courseList">
+            <div class="col-md-12">
+                <div class="col-lg-3" ng-repeat="c in courses.courses">
+                    <div class="form_hover">
+                        <div class="box box-primary peekCourse">
+                            <div class="box-header with-border">
+                                <a href="/catalogs/web-tech" class="box-title">{{c.course}}</a>
+                            </div>
+                            <div class="box-body"  style="text-align: center" >
+                            <img src="/img/default-tree.png">
+                            </div>
+                        </div>
+
+                        <div class="header">
+                            <div class="blur"></div>
+                            <div class="box box-primary caption-text">
+                                <div class="box-header with-border">
+                                    <a href="/catalogs/web-tech" class="box-title">{{c.course}}</a>
+                                </div>
+                                <div class="box-body">
+                                    <div class="form-group">
+                                        Started Date:<b>02/09/2014</b>
+                                    </div>
+                                    <div class="form-group">
+                                        Last activity:<b>2 days ago</b>
+                                    </div>
+                                    <div class="form-group">
+                                        User Rating:<br/>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star-o"></i>
+                                    </div>
+                                    <a class="btn btn-primary" href="/catalogs/web-tech"><i class=""></i> Go to course</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
 
 <% include ../jsfooter %>
 <script>
-  $(document).ready(function(){
-  });
-
-  app.directive('onFinishRender', function ($timeout) {
-    return {
-      restrict: 'A',
-      link: function (scope, element, attr) {
-        if (scope.$last === true) {
-          $timeout(function () {
-            scope.$emit(attr.onFinishRender);
-          });
-        }
-      }
-    }
-  });
+    $(document).ready(function () {
+    });
 </script>
 <% include ../footer %>
