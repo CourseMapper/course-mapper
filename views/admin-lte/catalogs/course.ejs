@@ -29,10 +29,9 @@
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li><a href="/catalogs/courses"> </i> Courses</a></li>
                 <li><a href="/catalogs/courses"> </i> I.T</a></li>
-                <li class="active">Web Tech</li>
+                <li>Web Tech</li>
+                <li class="active">Map</li>
             </ol>
-
-
         </section>
 
         <!-- /.modal-content -->
@@ -51,8 +50,23 @@
         <!-- Main content -->
         <script src="/d3/d3.min.js"></script>
         <section class="content" id="tree" ng-controller="TreeController as treeCtrl">
-<h1 style="color: red;">Screen A</h1>
-            <img style="float: left;" src="/img/_test_1.png" />
+            <div class="box no-border" style="min-height:640px;">
+                <div class="box-header no-border">
+                    <a class="btn btn-block btn-primary btn-flat follow">Follow</a>
+                    <h1>Web Tech</h1>
+                </div>
+                <div class="box-body no-border">
+                    <div class="col-xs-3">
+                        <img style=" " src="/img/zoom.png" />
+                        <br style="clear: both">
+                        <img style=" width: 250px" src="/img/minimap.png" />
+                    </div>
+                    <div class="col-xs-9">
+                    <img style="float: left;" src="/img/_test_1.png" />
+                    </div>
+                </div>
+            </div>
+
 
             <a href="/catalogs/web-tech2" class="linkingVideo video1"></a>
 
@@ -75,7 +89,7 @@
 </div>
 
 
-<% include ../jsfooter %> 
+<% include ../jsfooter %>
 <script>
 </script>
 <% include ../footer %>

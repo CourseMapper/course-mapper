@@ -17,7 +17,7 @@
     "express": "~4.12.2",
     "express-session": "^1.10.4",
     "flash": "^1.1.0",
-    "mongoose": "^3.8.25",
+    "mongoose": "^4.0.1",
     "morgan": "~1.5.1",
     "node-uuid": "^1.4.3",
     "passport": "^0.2.1",

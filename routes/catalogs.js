@@ -135,6 +135,14 @@ router.get('/api/catalogs/courses', function(req, res, next) {
   );
 });
 
+router.get('/catalogs/course/web-tech', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/course0', { title: req.params.courseSlug });
+});
+
+router.get('/catalogs/course/web-tech/tree', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
+});
+
 router.get('/catalogs/web-tech', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
 });
