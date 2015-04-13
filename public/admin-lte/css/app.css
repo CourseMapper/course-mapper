@@ -1,3 +1,17 @@
+.row-centered {
+    text-align:center;
+}
+.col-centered {
+    display:inline-block;
+    float:none;
+    text-align:left;
+}
+.col-min {
+    min-width:90%;
+}
+.col-centered .content{
+    text-align: center;
+}
 
 .form-signin {
     max-width: 330px;
@@ -206,4 +220,25 @@ i.ionicons{
     float: left;
     width: 120px;
     margin: 22px 20px 10px 20px;
+}
+
+.carousel-inner img{
+    width:100%;
+}
+
+.carousel{
+    height: 500px;
+    overflow: hidden;
+}
+
+.carousel .btn-slide{
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    height:50px;
+    z-index: 15;
+    width: 10%;
+    margin-left: -5%;
+    text-align: center;line-height: 35px;
+    font-weight: bold;
 }

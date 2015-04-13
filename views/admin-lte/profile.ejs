@@ -21,36 +21,34 @@
         <section class="content" ng-controller="widgetController">
             <div class="row" id="dashboard">
                 <div class="col-lg-12">
-                    <div class="col-md-4">
-                        <div class="col-md-6">
-                            <div class="box box-solid">
-                                <div class="box-header with-border text-center">
-                                    <a href="" class="profile-picture" title="Change profile picture"><img
-                                            src="/img/default-profile-picture.png" class="img-circle"
-                                            title="Change profile picture" alt="Change profile picture"></a>
-                                </div>
-                                <div class="box-body no-padding">
-                                    <ul class="nav nav-pills nav-stacked">
-                                        <li><a href="#" title="Change email or password settings"><i
-                                                class="ionicons ion-ios-gear"></i> Account Settings</a></li>
-                                        <li><a href="#" title="Turn on or off some features"><i
-                                                class="ionicons ion-toggle"></i> Plugins</a></li>
-                                        <li><a href="#" title="Add or remove dashboard widgets"><i
-                                                class="ionicons ion-android-apps"></i> Widgets Store</a></li>
-                                        <li><a href="#" title="Log out from course mapper"><i
-                                                class="ionicons ion-log-out"></i> Logout</a></li>
-                                    </ul>
-                                </div>
-                                <!-- /.box-body -->
+                    <div class="col-md-2">
+                        <div class="box box-solid">
+                            <div class="box-header with-border text-center">
+                                <a href="" class="profile-picture" title="Change profile picture"><img
+                                        src="/img/default-profile-picture.png" class="img-circle"
+                                        title="Change profile picture" alt="Change profile picture"></a>
                             </div>
+                            <div class="box-body no-padding">
+                                <ul class="nav nav-pills nav-stacked">
+                                    <li><a href="#" title="Change email or password settings"><i
+                                            class="ionicons ion-ios-gear"></i> Account Settings</a></li>
+                                    <li><a href="#" title="Turn on or off some features"><i
+                                            class="ionicons ion-toggle"></i> Plugins</a></li>
+                                    <li><a href="#" title="Add or remove dashboard widgets"><i
+                                            class="ionicons ion-android-apps"></i> Widgets Store</a></li>
+                                    <li><a href="#" title="Log out from course mapper"><i
+                                            class="ionicons ion-log-out"></i> Logout</a></li>
+                                </ul>
+                            </div>
+                            <!-- /.box-body -->
                         </div>
+                    </div>
 
-                        <div class="col-md-6">
-                            <div ng-include src="'/widgets/blankBox'" onload="initWidgetButton()"></div>
-                            <button class="btn btn-block btn-default btn-flat col-md-12 widgetEmpty">
-                                <i class="ionicons ion-ios-plus-outline"></i>
-                            </button>
-                        </div>
+                    <div class="col-md-2">
+                        <div ng-include src="'/widgets/blankBox'" onload="initWidgetButton()"></div>
+                        <button class="btn btn-block btn-default btn-flat col-md-12 widgetEmpty">
+                            <i class="ionicons ion-ios-plus-outline"></i>
+                        </button>
                     </div>
 
 

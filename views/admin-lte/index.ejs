@@ -1,16 +1,117 @@
 <% include header %>
 <div class="wrapper">
 
-  <!-- Header Navbar -->
-  <% include mainMenu %>
+    <!-- Header Navbar -->
+    <% include mainMenu %>
 
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Main content -->
-    <section class="content">
-      <img style="width: 100%;" src="/img/homepage.jpg" />
-    </section><!-- /.content -->
-  </div><!-- /.content-wrapper -->
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        <div class="row row-centered">
+            <div class="col-lg-12 col-centered">
+
+                <div id="carousel-generic" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                        <li data-target="#carousel-generic" data-slide-to="0" class="active"></li>
+                        <li data-target="#carousel-generic" data-slide-to="1" class=""></li>
+                    </ol>
+                    <a class="btn btn-block btn-primary btn-flat btn-slide">Start a course map!</a>
+                    <div class="carousel-inner">
+                        <div class="item active">
+                            <img src="/img/sliders/slider_3.png" alt="">
+
+                            <div class="carousel-caption">
+
+                            </div>
+                        </div>
+                        <div class="item">
+                            <img src="/img/sliders/slider_3.png" alt="">
+
+                            <div class="carousel-caption">
+
+                            </div>
+                        </div>
+                    </div>
+                    <a class="left carousel-control" href="#carousel-generic" data-slide="prev">
+                        <span class="fa fa-angle-left"></span>
+                    </a>
+                    <a class="right carousel-control" href="#carousel-generic" data-slide="next">
+                        <span class="fa fa-angle-right"></span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <section class="content" ng-controller="CategoryListController as categoryList">
+
+            <div class="container_">
+                <div class="row row-centered">
+                    <div class="col-xs-4 col-centered">
+                        <div class="text-center">
+                            <h1>Welcome to CourseMapper,
+                                let's start by going through our categories
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-centered">
+                    <div class="col-xs-9 col-centered">
+                        <div class="content">
+                            <div class="col-xs-4" ng-repeat="category in categories.categories">
+                                <div class="box box-solid">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title"><a href="/catalogs/courses/category/{{category.slug}}">{{category.category}}</a></h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body clearfix">
+                                        <img src="/img/category_placeholder.png" style="width: 100%">
+                                        <br>
+                                        20 courses available
+                                    </div>
+                                    <!-- /.box-body -->
+                                </div>
+                            </div>
+                            <div class="col-xs-4" ng-repeat="category in categories.categories">
+                                <div class="box box-solid">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">{{category.category}}</h3>
+                                    </div>
+                                    <!-- /.box-header -->
+                                    <div class="box-body clearfix">
+                                        <img src="/img/category_placeholder.png" style="width: 100%">
+                                        <br>
+                                        20 courses available
+                                    </div>
+                                    <!-- /.box-body -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-centered">
+                    <div class="col-xs-4 col-centered">
+                        <div class="text-center">
+                            <h1>Or browse through our tag cloud:
+                            </h1>
+
+                            <p>&nbsp;</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-centered">
+                    <img src="/img/tag_cloud.png">
+                </div>
+            </div>
+
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
 <% include jsfooter %>
