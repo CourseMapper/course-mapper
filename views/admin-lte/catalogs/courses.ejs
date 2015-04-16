@@ -4,7 +4,6 @@
     <!-- Header Navbar -->
     <% include ../mainMenu %>
     <% include ../sidebar %>
-
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
 
@@ -13,6 +12,7 @@
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li class="active">Browse Courses</li>
             </ol>
+            <!-- Sidebar toggle button-->
 
             <h4>Filter Choices:</h4>
             <img src="/img/tag_cloud_in.png">
@@ -26,7 +26,7 @@
         <!-- Main content -->
         <section class="content" ng-controller="CourseListController as courseList" id="courseList">
             <div class="col-md-12">
-                <div class="col-lg-3" ng-repeat="c in courses.courses">
+                <div class="col-sm-6 col-lg-3" ng-repeat="c in courses.courses">
                     <div class="form_hover">
                         <div class="box box-primary peekCourse">
                             <div class="box-header with-border">
@@ -58,7 +58,7 @@
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star-o"></i>
                                     </div>
-                                    <a class="btn btn-primary" href="/course/catalogs/web-tech"><i class=""></i> Go to course</a>
+                                    <a class="btn btn-primary" href="/catalogs/course/web-tech"><i class=""></i> Go to course</a>
                                 </div>
                             </div>
                         </div>

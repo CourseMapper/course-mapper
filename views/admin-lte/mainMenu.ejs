@@ -3,74 +3,93 @@
     <!-- Logo -->
     <a href="/" class="logo"><b>Course</b>Mapper</a>
 
-<nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController as mainMenu">
-    <div class="navbar-left">
-        <ul class="nav navbar-nav">
-            <!-- Messages: style can be found in dropdown.less-->
-            <li class="dropdown tasks-menu">
-                <a href="/catalogs/courses"><i class="ion-navicon-round">&nbsp;&nbsp;&nbsp;</i><b>Browse Courses</b></a>
-            </li>
-            <li class="dropdown tasks-menu">
-            <a href="/static/#/about"><i class="ion-information-circled"></i>&nbsp;&nbsp;&nbsp;<b>We are still in development</b></a>
-        </li>
-        </ul>
-    </div>
-    <!-- Navbar Right Menu -->
-    <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-            <!-- Messages: style can be found in dropdown.less-->
-            <li class="dropdown tasks-menu" ngCloak ng-hide="user">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    <b>Login</b>
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <form class="form-signin" action="/accounts/login" method="post">
-                            <h3 class="form-signin-heading">Please log in</h3>
-                            <label for="inputUsername" class="sr-only">Username</label>
-                            <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
-                            <label for="inputPassword" class="sr-only">Password</label>
-                            <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" value="yes" name="rememberMe"> Remember me
-                                </label>
-                            </div>
-                            <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
-                        </form>
+    <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController as mainMenu">
+        <div class="navbar-left">
+            <a class="top-menu-left visible-xs" data-toggle="offcanvas" role="button"><i class="ionicons ion-more"> </i>
+            </a>
+            <a href="/catalogs/courses" class="top-menu-left"><i class="ion-navicon-round">&nbsp;&nbsp;&nbsp;</i><b>Browse</b>
+                <b class="hidden-xs">Courses</b></a>
 
-                    </li>
-                </ul>
-            </li>
-            <li ngCloak ng-hide="user">
-                <a href="/accounts/signup">
-                    <b>Sign Up</b>
+                <a ngCloak ng-show="user" href="/catalogs/course/create" class="top-menu-left">
+                    <i class="ionicons ion-android-create"></i>   <b>Create Course</b>
                 </a>
-            </li>
 
-            <li class="dropdown user user-menu notifications-menu ng-hide" ng-show="user">
-                <a href="" class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="/admin-lte/images/user2-160x160.png" class="user-image" alt="User Image"/>
-                    <i ng-hide="user" class="fa fa-refresh fa-spin"></i>
-                    <span ng-show="user" class="hidden-xs ng-hide">{{user.username | capitalize:true}}</span>
-                </a>
-                <ul class="dropdown-menu">
 
-                    <li>
-                        <!-- inner menu: contains the actual data -->
-                        <ul class="menu">
-                            <li>
-                                <a href="/accounts/{{user.username}}">
-                                    <i class="ionicons ion-gear-a"></i> My Account
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="footer"> <a href="/accounts/logout"><i class="ionicons ion-log-out"></i> Log Out  </a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-</nav>
+        </div>
+        <!-- Navbar Right Menu -->
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!-- Messages: style can be found in dropdown.less-->
+                <li class="dropdown tasks-menu" ngCloak ng-hide="user">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <b>Login</b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <form class="form-signin" action="/accounts/login" method="post">
+                                <h3 class="form-signin-heading">Please log in</h3>
+                                <label for="inputUsername" class="sr-only">Username</label>
+                                <input name="username" type="text" id="inputUsername" class="form-control"
+                                       placeholder="Username" required autofocus>
+                                <label for="inputPassword" class="sr-only">Password</label>
+                                <input name="password" type="password" id="inputPassword" class="form-control"
+                                       placeholder="Password" required>
+
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" value="yes" name="rememberMe"> Remember me
+                                    </label>
+                                </div>
+                                <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+                            </form>
+
+                        </li>
+                    </ul>
+                </li>
+                <li ngCloak ng-hide="user">
+                    <a href="/accounts/signup">
+                        <b>Sign Up</b>
+                    </a>
+                </li>
+
+                <li class="dropdown user user-menu notifications-menu ng-hide" ng-show="user">
+                    <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                        <img src="/admin-lte/images/user2-160x160.png" class="user-image" alt="User Image"/>
+                        <i ng-hide="user" class="fa fa-refresh fa-spin"></i>
+                        <span ng-show="user" class="hidden-xs ng-hide">{{user.username | capitalize:true}}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+
+                        <li>
+                            <!-- inner menu: contains the actual data -->
+                            <ul class="menu">
+                                <li>
+                                    <a href="/accounts/{{user.username}}">
+                                        <i class="ionicons ion-gear-a"></i> My Account
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="footer"><a href="/accounts/logout"><i class="ionicons ion-log-out"></i> Log Out </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 hidden-xs">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q">
+
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </nav>
 
 </header>

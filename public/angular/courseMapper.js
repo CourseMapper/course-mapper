@@ -6,7 +6,18 @@ app.filter('capitalize', function() {
     }
 });
 
-;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+app.directive('onFinishRender', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            if (scope.$last === true) {
+                $timeout(function () {
+                    scope.$emit(attr.onFinishRender);
+                });
+            }
+        }
+    }
+});;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
   $http.get('/api/catalogs/categories').success(function(data) {
     $scope.categories = data;
