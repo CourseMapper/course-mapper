@@ -132,6 +132,8 @@ admin.controller('CourseListController', function($scope, $http, $rootScope) {
 
 admin.controller('categoryDetailController', function($scope, $http, $routeParams){
     $scope.category = '';
+    $scope.courses = {};
+    $scope.tags = {};
 
     $http.get('/api/catalogs/category/' + $routeParams.category).success(function(data) {
         if(data.category){
@@ -141,19 +143,19 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
     });
 
     $scope.getCourses = function(){
-        $http.get('/api/catalogs/category/' + $routeParams.category +'/courses').success(function(data) {
-            $scope.courses = data;
+        $http.get('/api/catalogs/category/' + $scope.category.slug +'/courses').success(function(data) {
+            $scope.courses = data.courses;
         });
     };
 
     $scope.getTags = function(){
-        $http.get('/api/catalogs/category/' + $routeParams.category +'/tags').success(function(data) {
+        $http.get('/api/catalogs/category/' + $scope.category.slug +'/tags').success(function(data) {
             $scope.tags = data.tags;
         });
     };
 
     $scope.$watch('category', function(newValue, oldValue) {
-        if ($scope.category.length) {
+        if ($scope.category) {
             $scope.getCourses();
             $scope.getTags();
         }

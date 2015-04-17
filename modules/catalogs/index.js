@@ -188,13 +188,36 @@ catalog.prototype.addCourse = function(error, params, success){
 };
 
 catalog.prototype.getCourses = function(error, params, success){
-    Course.find({}, function(err, docs) {
+    Course.find(params, function(err, docs) {
         if (!err){
             success(docs);
         } else {
             error(err);
         }
     });
+};
+
+/**
+ *
+ * @param error
+ * @param params
+ * @param success
+ */
+catalog.prototype.getCategoryCourses = function(error, params, success){
+    var self = this;
+    //get cat from slug
+    var catPromise = Category.findOne({slug: params.slug}).exec();
+    catPromise.then(function(cat){
+        if(cat) {
+            self.getCourses(error, {
+                category: cat._id
+            }, success);
+        } else {
+            throw new Error('cant find category');
+        }
+    }).then(null, function(err){
+            error(err);
+        });
 };
 
 catalog.prototype.getTags = function(error, params, success){

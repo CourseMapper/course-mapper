@@ -55,12 +55,10 @@ router.get('/api/catalogs/category/:category/tags', function(req, res, next) {
 });
 
 router.get('/api/catalogs/category/:category/courses', function(req, res, next) {
-    res.status(500).json({errors: ['not implemented']});
-    return;
     var cat = new Catalog();
-    cat.getCategoryTags(
+    cat.getCategoryCourses(
         function(err){
-            res.status(500).json({});
+            res.status(500).json({errors:err});
         },
         {
             slug: req.params.category
