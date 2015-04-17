@@ -3,7 +3,8 @@
     <div class="box">
         <div class="box-body with-border">
             <div ng-controller="categoryDetailController as cat">
-                <h3>Category : {{$routeParams.category}}</h3>
+                <h3>Category : {{category.category}}</h3>
+
                 <div class="panel box box-primary">
                     <div class="box-header with-border">
                         <h4 class="box-title">
@@ -13,27 +14,31 @@
                         </h4>
                     </div>
                     <div id="collapseOne" class="panel-collapse collapse in" ng-controller="tagFormController">
-                        <form role="form" ng-submit="processForm()" id="rootCategory">
-                            <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
-                                <input type="text" name="category" class="form-control input-sm col-xs-3"
-                                       placeholder="Add New Tags ..." ng-model="formData.tag"/>
-                                <input type="hidden" name="parent" ng-value="category" value="{{category}}"
-                                       ng-model="formData.category" ng-init="formData.category=category" />
+                        <div class="box-body">
+                            <form role="form" ng-submit="processForm()" id="rootCategory">
+                                <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
+                                    <input type="text" name="category" class="form-control input-sm col-xs-3"
+                                           placeholder="Add New Tags ..." ng-model="formData.tag"/>
+                                    <input type="hidden" name="parent" ng-value="category.slug"
+                                           value="{{category.slug}}"
+                                           ng-model="formData.category" ng-init="formData.category=category.slug"/>
                               <span class="input-group-btn">
-                              <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category)"><i class="fa fa-plus"></i> Add New
+                              <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category.slug)">
+                                  <i class="fa fa-plus"></i> Add New
                                   Tag
                               </button>
                               </span>
-                            </div>
-                            <span class="help-block" ng-show="errorName">{{ errorName }}</span>
-                        </form>
+                                </div>
+                                <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                            </form>
 
-                        <div class="box-body">
-                            <ul class="nav nav-pills nav-stacked" ng-show="(tags.length)">
-                                <li ng-repeat="tag in tags">
-                                    <a href="">{{tag.tag}}</a>
-                                </li>
-                            </ul>
+                            <div class="box-body">
+                                <ul class="nav nav-pills nav-stacked" ng-show="(tags.length)">
+                                    <li ng-repeat="tag in tags">
+                                        <a href="">{{tag.tag}}</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -45,13 +50,34 @@
                             </a>
                         </h4>
                     </div>
-                    <div id="collapseTwo" class="panel-collapse collapse in">
+                    <div id="collapseTwo" class="panel-collapse collapse in" ng-controller="courseFormController">
                         <div class="box-body">
-                            <ul class="nav nav-pills nav-stacked" ng-show="(courses.length)">
-                                <li ng-repeat="course in courses">
-                                    <a href="#/courses/{{course._id}}">{{course.course}}</a>
-                                </li>
-                            </ul>
+
+                            <form role="form" ng-submit="processForm()" id="addCourse">
+                                <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
+                                    <input type="text" name="category" class="form-control input-sm col-xs-3"
+                                           placeholder="Add New Course ..." ng-model="formData.course"/>
+                                    <input type="hidden" name="parent" ng-value="category.slug"
+                                           value="{{category.slug}}"
+                                           ng-model="formData.category" ng-init="formData.category=category.slug"/>
+                              <span class="input-group-btn">
+                              <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category.slug)">
+                                  <i class="fa fa-plus"></i> Add New
+                                  Course
+                              </button>
+                              </span>
+                                </div>
+                                <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                            </form>
+
+                            <div class="box-body">
+                                <ul class="nav nav-pills nav-stacked" ng-show="(courses.length)">
+                                    <li ng-repeat="c in courses">
+                                        <a href="">{{c.course}}</a>
+                                    </li>
+                                </ul>
+                            </div>
+
                         </div>
                     </div>
                 </div>

@@ -6,6 +6,12 @@ var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
 var router = express.Router();
 
+router.get('/accounts/createAdmin', function(req, res, next) {
+    var account = new Account();
+    account.createAdmin();
+    res.status(200).json({status:true});
+});
+
 router.get('/accounts', function(req, res, next) {
     if(req.user)
         res.redirect('/accounts/' + req.user.username);

@@ -98,6 +98,40 @@ admin.controller('tagFormController', function($scope, $http){
     };
 });
 
+admin.controller('courseFormController', function($scope, $http){
+    $scope.formData = {};
+
+    $scope.setCategory = function(cat){
+        $scope.formData.category = cat;
+    };
+
+    $scope.processForm = function() {
+        var d = transformRequest($scope.formData);
+        $http({
+            method: 'POST',
+            url: '/api/catalogs/courses',
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    // if successful, bind success message to message
+                    $scope.newCourse = data.course;
+                    $scope.$emit('init');
+                }
+            })
+            .error(function(data){
+                if(!data.result){
+                    $scope.errorName = data.errors.name;
+                    console.log(data.errors);
+                }
+            });
+    };
+});
+
 admin.controller('CourseListController', function($scope, $http, $rootScope) {
   $http.get('/api/catalogs/courses').success(function(data) {
     $scope.courses = data;
@@ -109,7 +143,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
 
     $http.get('/api/catalogs/category/' + $routeParams.category).success(function(data) {
         if(data.category){
-            $scope.category = data.category.category;
+            $scope.category = data.category;
             $scope.tags = data.category.tags;
         }
     });

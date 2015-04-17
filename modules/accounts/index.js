@@ -9,6 +9,23 @@ function account(){
 }
 
 /**
+ * just a demo code to create an admin user
+ */
+account.prototype.createAdmin = function(){
+    var param = {
+        username: "rpl",
+        roles: "admin",
+        email: "r@rpl.im",
+        password: "1"
+    };
+    this.signUp(
+        function(e){console.log(e)},
+        param,
+        function(u){console.log(u)}
+    );
+};
+
+/**
  * wrap up add user and check user process
  *
  * @param err
@@ -44,7 +61,7 @@ account.prototype.addUser = function(errorCallback, params, done){
     var user = new User({
         username: params.username,
         email: params.email,
-        role: params.role
+        roles: params.roles
     });
 
     // hash the password first
@@ -196,9 +213,30 @@ account.prototype.follow = function(err, userParam, courseParam, done){
                             done(f);
                     });
                 } else {
-                    throw new Error('This user has followed this course already');
+                    err(new Error('This user has followed this course already'));
                 }
             });
+};
+
+account.prototype.getUserCourses = function(err, params, done){
+    var course = null;
+
+    /* find course see if it exist */
+    var coursePromise = Course.findOne({_id:params.courseId}).exec();
+    coursePromise.then(function(c){
+        course = c;
+
+        /* has this user followed? */
+        return UserCourse.findOne({userId: mongoose.Types.ObjectId(params.userId), courseId: course.id}).exec();
+
+    }).then(function(uc){
+        console.log(uc);
+        /* user has followed this course */
+        if(uc){
+            done(course, uc);
+        } else
+            done(course, null);
+    });
 };
 
 module.exports = account;

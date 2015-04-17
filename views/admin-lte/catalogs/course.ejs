@@ -22,7 +22,11 @@
             <div class="box no-border" style="min-height:640px;">
                 <div class="box-header no-border">
                     <h1>Web Tech</h1>
-                    <a class="btn btn-primary btn-flat">Follow</a>
+                    <% if(!follow || !user){ %>
+                    <a class="btn btn-primary btn-flat" href="/api/catalogs/course/<%= course._id%>/follow">Follow</a>
+                    <% } else { %>
+                    You are following this course. <a class="" href="/api/catalogs/course/<%= course._id%>/unfollow">click here to Unfollow</a>
+                    <% } %>
                 </div>
                 <div class="box-body no-border">
 

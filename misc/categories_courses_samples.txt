@@ -8,6 +8,14 @@ db.categories.insert([{ "category" : "Music" },
                       "Web Development", "Networking" ]
                       }]);
 
+db.users.insert(
+{
+        username: "rpl",
+        role: "admin",
+        email: "r@rpl.im",
+        password: "1"
+    }
+);
 
 db.courses.insert([
 {

@@ -158,6 +158,35 @@ catalog.prototype.addTag = function(error, params, success){
     });
 };
 
+catalog.prototype.addCourse = function(error, params, success){
+    if(params.category) {
+        //("finding Category");
+        Category.findOne({slug: params.category},
+            function (err, cat) {
+                if (err) {
+                    debug('cant find cat when adding course');
+                    error(err);
+                }
+                else {
+                    var course = new Course({
+                        course: params.course,
+                        category: cat._id
+                    });
+                    course.save(function(err, res) {
+                        if (err) {
+                            debug('failed saving new course');
+                            error(err);
+                        }
+                        else {
+                            // success saved the course
+                            success(course);
+                        }
+                    });
+                }
+            });
+    }
+};
+
 catalog.prototype.getCourses = function(error, params, success){
     Course.find({}, function(err, docs) {
         if (!err){
