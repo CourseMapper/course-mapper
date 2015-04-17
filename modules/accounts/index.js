@@ -1,6 +1,9 @@
 var User = require('./users.js');
+var UserCourse = require('./userCourses.js');
+var Course = require('../catalogs/courses.js');
 var config = require('config');
 var passport = require('passport');
+var mongoose = require('mongoose');
 
 function account(){
 }
@@ -162,6 +165,40 @@ account.prototype.handleRegisterPost = function(req, res, next) {
             return res.redirect('/accounts/login/#' + user.username);
         }
     );
+};
+
+account.prototype.follow = function(err, userParam, courseParam, done){
+    var user = null;
+    var course = null;
+
+    /* find user first see if it exist */
+    var userPromise = User.findById(mongoose.Types.ObjectId(userParam.id)).exec();
+    userPromise.then(function(u){
+        user = u;
+        return Course.findOne({_id:courseParam.id}).exec();
+
+        }).then(function(c){
+            /* find course see if it exist */
+            course = c;
+            return UserCourse.find({userId: user._id, courseId: course._id}).exec();
+
+            }).then(function(uc){
+                /* user has not follow this course */
+                if(!uc.length){
+                    var follow = new UserCourse({
+                        userId: user._id,
+                        courseId: course._id
+                    });
+
+                    follow.save(function(error, f){
+                        if (error) err(error);
+                        else
+                            done(f);
+                    });
+                } else {
+                    throw new Error('This user has followed this course already');
+                }
+            });
 };
 
 module.exports = account;

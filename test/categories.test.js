@@ -25,7 +25,7 @@ var user = {
     password: "1"
 };
 
-describe('catalog_model', function(){
+describe('categories.test', function(){
 
     var params = {
         category: "rpl",
@@ -92,37 +92,6 @@ describe('catalog_model', function(){
             );
         });
 
-        /*
-        it('should be able to save with subCat', function(done){
-            params.category += uuid.v1({msecs: new Date().getTime()});
-            // create the user first
-            var cat = new catalog();
-            cat.addCategory(
-                function failed(err) {console.log(err)},
-                params,
-                function success(cat) {
-                    var subCat = {
-                        category: uuid.v1({msecs: new Date().getTime()}),
-                        parentCategory: cat.id
-                    };
-
-                    var sc = new catalog();
-                    sc.addCategory(
-                        function(err){
-                            console.log(err);
-                            done();
-                        },
-                        subCat,
-                        function(newCat){
-                            assert.equal(newCat.category, subCat.category);
-                            assert.notEqual(newCat.id, null);
-
-                            done();
-                        });
-                }
-            );
-        });
-        */
 
     });
 
