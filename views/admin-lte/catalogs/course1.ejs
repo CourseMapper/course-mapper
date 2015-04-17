@@ -1,0 +1,78 @@
+<% include ../header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="/catalogs/courses"> </i> Courses</a></li>
+                <li><a href="/catalogs/courses"> </i> I.T</a></li>
+                <li>Web Tech</li>
+                <li class="active">Map</li>
+            </ol>
+        </section>
+
+        <!-- /.modal-content -->
+        <div id="rightClick" class="hide" ng-controller="RightClickMenuController as rc">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <ul class="nav nav-pills nav-stacked">
+                            <li><a href="javascript:;" ng-click="createTopic('Web Tech')"> Create Topic </a></li>
+                        </ul>
+                    </div>\
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+
+        <!-- Main content -->
+        <script src="/d3/d3.min.js"></script>
+        <section class="content" id="tree" ng-controller="TreeController as treeCtrl">
+            <div class="box no-border" style="min-height:640px;">
+                <div class="box-header no-border">
+                    <a class="btn btn-block btn-primary btn-flat follow">Follow</a>
+                    <h1>Web Tech</h1>
+                </div>
+                <div class="box-body no-border">
+                    <div class="col-xs-3">
+                        <img style=" " src="/img/zoom.png" />
+                        <br style="clear: both">
+                        <img style=" width: 250px" src="/img/minimap.png" />
+                    </div>
+                    <div class="col-xs-9">
+                    <img style="float: left;" src="/img/_test_1.png" />
+                    </div>
+                </div>
+            </div>
+
+
+            <a href="/catalogs/web-tech2" class="linkingVideo video1"></a>
+
+            <a data-toggle="modal" data-target="#modalPdf" class="linkingPdf pdf1"></a>
+            <a data-toggle="modal" data-target="#modalPdf" class="linkingPdf pdf2"></a>
+            <a data-toggle="modal" data-target="#modalPdf" class="linkingPdf pdf3"></a>
+            <a data-toggle="modal" data-target="#modalPdf" class="linkingPdf pdf4"></a>
+
+        </section><!-- /.content -->
+    </div><!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+<div id="modalPdf" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="modalPdfLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+<img src="/img/pdf.jpg" style=" width: 100%;" onclick="$('#modalPdf').modal('hide');" />
+        </div>
+    </div>
+</div>
+
+
+<% include ../jsfooter %>
+<script>
+</script>
+<% include ../footer %>
