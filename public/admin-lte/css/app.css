@@ -1,15 +1,18 @@
 .row-centered {
-    text-align:center;
+    text-align: center;
 }
+
 .col-centered {
-    display:inline-block;
-    float:none;
-    text-align:left;
+    display: inline-block;
+    float: none;
+    text-align: left;
 }
+
 .col-min {
-    min-width:90%;
+    min-width: 90%;
 }
-.col-centered .content{
+
+.col-centered .content {
     text-align: center;
 }
 
@@ -18,13 +21,16 @@
     padding: 10px;
     margin: 0 auto;
 }
+
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
     margin-bottom: 10px;
 }
+
 .form-signin .checkbox {
     font-weight: normal;
 }
+
 .form-signin .form-control {
     position: relative;
     height: auto;
@@ -34,20 +40,24 @@
     padding: 10px;
     font-size: 16px;
 }
+
 .form-signin .form-control:focus {
     z-index: 2;
 }
+
 .form-signin input[type="email"] {
     margin-bottom: -1px;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
 }
+
 .form-signin input[type="password"] {
     margin-bottom: 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
 }
-#courseList ul li{
+
+#courseList ul li {
     display: block;
     width: 120px;
     height: 120px;
@@ -58,43 +68,50 @@
     margin: 5px;
     padding-top: 10px;
 }
-.form-horizontal{
+
+.form-horizontal {
     width: 100%;
     max-width: 400px;
     margin: 0px auto;
 }
-a.profile-picture{
-    width: 100%px;
+
+a.profile-picture {
+    width: 100% px;
     height: 128px;
     display: block;
 }
 
-a.profile-picture:hover{
+a.profile-picture:hover {
 
 }
 
-i.ionicons{
+i.ionicons {
     margin-right: 10px;
 }
 
-.content-header{
+.content-header {
     margin-left: 35px;
 }
 
-.widgetEmpty{
+.widgetEmpty {
     height: 80px;
     margin-bottom: 20px;
 }
-.widgetEmpty i{
+
+.widgetEmpty i {
     font-size: 30px;
 }
 
-#dashboard .box-header{
+#dashboard .box-header {
     cursor: move;
 }
-[ng\:cloak],[ng-cloak],.ng-cloak{display:none !important}
-.layout-top-nav .content-wrapper-admin,.admin .main-footer{
-    margin-left:230px;
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none !important
+}
+
+.layout-top-nav .content-wrapper-admin, .admin .main-footer {
+    margin-left: 230px;
 }
 
 .form_hover {
@@ -106,18 +123,18 @@ i.ionicons{
 }
 
 .form_hover:hover .header {
-    opacity:0.8;
-    -webkit-animation:fadeIn ease-in 1;
-    -moz-animation:fadeIn ease-in 1;
-    animation:fadeIn ease-in 1;
+    opacity: 0.8;
+    -webkit-animation: fadeIn ease-in 1;
+    -moz-animation: fadeIn ease-in 1;
+    animation: fadeIn ease-in 1;
 
-    -webkit-animation-fill-mode:forwards;
-    -moz-animation-fill-mode:forwards;
-    animation-fill-mode:forwards;
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
 
-    -webkit-animation-duration:1s;
-    -moz-animation-duration:1s;
-    animation-duration:1s;
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    animation-duration: 1s;
 }
 
 .form_hover img {
@@ -125,7 +142,7 @@ i.ionicons{
 }
 
 .form_hover .header {
-    opacity:0;
+    opacity: 0;
     position: absolute;
     top: 0px;
     -webkit-transition: all 0.3s ease;
@@ -149,15 +166,34 @@ i.ionicons{
     width: 100%;
 }
 
-.form_hover .peekCourse{
+.form_hover .peekCourse {
     display: block;
-    height:240px;
+    height: 240px;
 }
+
 /* custom inclusion of right, left and below tabs */
 
 .tabs-left > .nav-tabs {
     border-bottom: 0;
-    width: 128px;
+    width: 100px;
+    text-align: center;
+}
+
+.tabs-left > .nav-tabs.tabs-hide {
+    width: 64px;
+    margin-right: 0px;
+}
+
+.tabs-left > .nav-tabs.tabs-hide a span {
+    display: none;
+}
+
+.tabs-left > .nav-tabs.tabs-hide a {
+    line-height: 80px;
+}
+
+.tabs-left > .nav-tabs.tabs-hide > li > a {
+    min-width: 0px;
 }
 
 .tab-content > .tab-pane,
@@ -165,29 +201,36 @@ i.ionicons{
     display: none;
 }
 
-.tab-content{
-    margin-left: 156px;
+.tab-content {
+    margin-left: 0px;
     min-height: 100%;
 }
+
 .tab-content > .active,
 .pill-content > .active {
     display: block;
 }
- 
-.nav-tabs .ionicons{
-    font-size: 50px;
+
+.nav-tabs .ionicons {
+    font-size: 40px;
+    margin-right: 0px;
 }
+
+.nav-tabs.tabs-hide .ionicons {
+    font-size: 20px;
+}
+
 .tabs-left > .nav-tabs > li {
     float: none;
-    height:100px;
+    height: 100px;
     text-align: center;
 }
 
-.tabs-left > .nav-tabs > li > a  {
+.tabs-left > .nav-tabs > li > a {
     min-width: 74px;
     margin-right: 0;
     margin-bottom: 3px;
-    height:100px;
+    height: 100px;
 }
 
 .tabs-left > .nav-tabs {
@@ -215,44 +258,48 @@ i.ionicons{
     *border-right-color: #ffffff;
 }
 
-.follow{
+.follow {
     float: left;
     width: 120px;
     margin: 22px 20px 10px 20px;
 }
 
-.carousel-inner img{
-    width:100%;
+.carousel-inner img {
+    width: 100%;
 }
 
-.carousel{
+.carousel {
     max-height: 500px;
     overflow: hidden;
 }
 
-.carousel .btn-slide{
+.carousel .btn-slide {
     position: absolute;
     bottom: 100px;
     left: 50%;
-    height:50px;
+    height: 50px;
     z-index: 15;
     max-width: 10%;
     margin-left: -5%;
-    text-align: center;line-height: 35px;
+    text-align: center;
+    line-height: 35px;
     font-weight: bold;
-    min-width:190px;
+    min-width: 190px;
 }
-.top-menu-left{
+
+.top-menu-left {
     float: left;
     background: transparent none;
     padding: 15px 15px;
-    color:white;
+    color: white;
 }
-.top-menu-left:hover{
+
+.top-menu-left:hover {
     background: #357CA5;
-    color:white;
+    color: white;
 }
-.toggle-button{
+
+.toggle-button {
     width: 40px;
     height: 37px;
     position: absolute;
@@ -263,13 +310,16 @@ i.ionicons{
     text-align: center;
     color: #ffffff;
 }
-.toggle-button:hover{
+
+.toggle-button:hover {
     background: #357CA5;
-    color:white;
+    color: white;
 }
-.toggle-button > i{
-    position:inherit;
+
+.toggle-button > i {
+    position: inherit;
 }
-.toggle-button .k{
-    height:100%;
+
+.toggle-button .k {
+    height: 100%;
 }

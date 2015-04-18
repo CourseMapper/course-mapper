@@ -8,7 +8,7 @@ var debug = require('debug')('cm:route');
 var router = express.Router();
 
 function listCategories(req, res, next){
-    res.render(config.get('theme') + '/catalogs/courses', { title: 'Browse for Courses' });
+    res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', showSidebar:true });
 }
 
 router.get('/catalogs', listCategories);
@@ -90,8 +90,8 @@ router.get('/catalogs/course/:courseId', function(req, res, next) {
     );
 });
 
-router.get('/catalogs/course/web-tech/tree', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/course1', { title: req.params.courseSlug });
+router.get('/catalogs/course/:courseId/tree', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/course1', { title: req.params.courseId });
 });
 
 router.get('/catalogs/web-tech', function(req, res, next) {

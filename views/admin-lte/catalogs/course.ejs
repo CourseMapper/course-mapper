@@ -32,19 +32,26 @@
 
                     <!-- tabs left -->
                     <div class="tabbable tabs-left">
-                        <ul class="nav nav-tabs">
+                        <ul class="nav nav-tabs tabs-hide hidden-xs">
                             <li class="active"><a href="#preview" data-toggle="tab">
-                                <i class="ionicons ion-social-buffer-outline"></i>
-                                Preview</a></li>
+                                <i class="ionicons ion-ios-home-outline"></i><br>
+                                <span>Preview</span></a></li>
+
+                            <% if(follow){ %>
+                            <li><a href="#map" data-toggle="tab">
+                                <i class="ionicons ion-map"></i>
+                                <br>
+                                <span>CourseMap</span></a></li>
+                            <% }%>
                             <li><a href="#updates" ng-show="user" data-toggle="tab">
-                                <i class="ionicons ion-ios-time-outline"></i>
-                                Updates</a></li>
+                                <i class="ionicons ion-ios-time-outline"></i><br>
+                                <span>Updates</span></a></li>
                             <li><a href="#discussion" ng-show="user" data-toggle="tab">
-                                <i class="ionicons ionicons ion-ios-chatboxes-outline"></i>
-                                Discussion</a></li>
+                                <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
+                                <span>Discussion</span></a></li>
                             <li><a href="#analytics" ng-show="user" data-toggle="tab">
-                                <i class="ionicons ion-stats-bars"></i>
-                                Analytics</a></li>
+                                <i class="ionicons ion-stats-bars"></i><br>
+                                <span>Analytics</span></a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="preview">
@@ -60,7 +67,7 @@
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star-o"></i>
                                     </div>
-                                    <a href="/catalogs/web-tech"><img src="/img/minitree.png"></a>
+                                    <a href="#map"><img src="/img/minitree.png"></a>
                                     <div class="form-group">
                                     The things that are related to Web Tech
                                 </div>
@@ -69,8 +76,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane" id="dashboard">
-
+                            <div class="tab-pane" id="map" style="min-height:800px">
+                                <div class="box-body no-border">
+                                    <div class="col-xs-3">
+                                        <img style=" " src="/img/zoom.png" />
+                                        <br style="clear: both">
+                                        <img style=" width: 250px" src="/img/minimap.png" />
+                                    </div>
+                                    <div class="col-xs-8">
+                                        <img style="float: left;" src="/img/_test_1.png" />
+                                    </div>
+                                </div>
                             </div>
                             <div class="tab-pane" id="discussion"></div>
                             <div class="tab-pane" id="updates"></div>
@@ -93,7 +109,26 @@
 
 <% include ../jsfooter %>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
+        if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
+
+        // add a hash to the URL when the user clicks on a tab
+        $('a[data-toggle="tab"]').on('click', function(e) {
+            history.pushState(null, null, $(this).attr('href'));
+        });
+        // navigate to a tab when the history changes
+        window.addEventListener("popstate", function(e) {
+            var activeTab = $('[href=#preview]');
+            if(location.hash)
+                activeTab = $('[href=' + location.hash + ']');
+
+            if (activeTab.length) {
+                activeTab.tab('show');
+            } else {
+                $('.nav-tabs a:first').tab('show');
+            }
+        });
+
     });
 </script>
 <% include ../footer %>
