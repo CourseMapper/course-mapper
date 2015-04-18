@@ -11,13 +11,16 @@ function account(){
 /**
  * just a demo code to create an admin user
  */
-account.prototype.createAdmin = function(){
+account.prototype.createAdmin = function(username){
     var param = {
         username: "rpl",
         roles: "admin",
         email: "r@rpl.im",
         password: "1"
     };
+    if(username)
+        param.username = username;
+
     this.signUp(
         function(e){console.log(e)},
         param,

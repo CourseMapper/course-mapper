@@ -5,8 +5,10 @@
 
     <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController as mainMenu">
         <div class="navbar-left">
+            <% if(locals.showSidebar && showSidebar){ %>
             <a class="top-menu-left visible-xs" data-toggle="offcanvas" role="button"><i class="ionicons ion-more"> </i>
             </a>
+            <% } %>
             <a href="/catalogs/courses" class="top-menu-left"><i class="ion-navicon-round">&nbsp;&nbsp;&nbsp;</i><b>Browse</b>
                 <b class="hidden-xs">Courses</b></a>
 
