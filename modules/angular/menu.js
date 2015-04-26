@@ -6,16 +6,17 @@ app.controller('MainMenuController', function($scope, $http, $rootScope) {
 });
 
 app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
-    $scope.createTopic = function(name){
-        /*
+    $scope.createTopic = function(name, event){
+
         if(!$rootScope.tree)
             $rootScope.tree = {};
 
-        $rootScope.tree.course = {
+        $rootScope.tree.topic = {
             name: name,
             subTopics: [],
-            resources:[]
-        };*/
+            resources:[],
+            position: {x:position.x, y:position.y}
+        };
 
         console.log("creating topic");
     };

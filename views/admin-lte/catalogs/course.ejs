@@ -19,7 +19,7 @@
 
         <!-- Main content -->
         <section class="content">
-            <div class="box no-border" style="min-height:640px;">
+            <div class="box no-border" id="courseTabs">
                 <div class="box-header no-border">
                     <h1>Web Tech</h1>
                     <% if(!follow || !user){ %>
@@ -76,16 +76,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane" id="map" style="min-height:800px">
-                                <div class="box-body no-border">
-                                    <div class="col-xs-3">
-                                        <img style=" " src="/img/zoom.png" />
-                                        <br style="clear: both">
-                                        <img style=" width: 250px" src="/img/minimap.png" />
-                                    </div>
-                                    <div class="col-xs-8">
-                                        <img style="float: left;" src="/img/_test_1.png" />
-                                    </div>
+                            <div class="tab-pane" id="map" >
+                                <div class="box-body no-border" id="tree">
+
                                 </div>
                             </div>
                             <div class="tab-pane" id="discussion"></div>
@@ -106,10 +99,42 @@
 
 </div><!-- ./wrapper -->
 
+<% include rightMenu %>
 
 <% include ../jsfooter %>
+
+<script src="/d3/d3.min.js"></script>
+<script src="/d3/tree.js"></script>
+<script src="/d3/rightclick.js"></script>
+<script src="/jQuery/jquery-ui.min.js"></script>
+
 <script>
     $(document).ready(function() {
+        handleTab($);
+
+        var t = $("#tree");
+        var wrapperOffset = t.offset();
+
+        $('#treeSVG').
+                handleRightClick().
+                handleLeftClick().
+                draggable({
+                    containment: [
+                        t.width() - 4000 + wrapperOffset.left,
+                        $('#map').height() - 4000 + wrapperOffset.top,
+                        wrapperOffset.left + 5,
+                        wrapperOffset.top
+                    ],
+                    drag: function(event) {
+                        console.log($(this).css('top'));
+                    }
+                });
+
+        if (location.hash !== '')
+            $(document).scrollTop(0);
+    });
+
+    function handleTab($){
         if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
 
         // add a hash to the URL when the user clicks on a tab
@@ -127,8 +152,10 @@
             } else {
                 $('.nav-tabs a:first').tab('show');
             }
+
         });
 
-    });
+        $(document).scrollTop(0);
+    }
 </script>
 <% include ../footer %>

@@ -1,3 +1,6 @@
+.tab-content{
+    overflow: hidden;
+}
 .node circle {
     cursor: pointer;
     fill: #fff;
@@ -13,6 +16,13 @@ path.link {
     fill: none;
     stroke: #ccc;
     stroke-width: 1.5px;
+}
+
+#rightClick li.header{
+    margin-bottom:0px;
+    background: #3C8DBC;
+    height:5px!important;
+    padding: 0px;
 }
 
 #rightClick .hide {
@@ -103,3 +113,5 @@ path.link {
     z-index: 10;
     display: block;
 }
+div#tree{padding:0px;}
+svg{border: 1px solid black; }
