@@ -77,8 +77,8 @@
                                 </div>
                             </div>
                             <div class="tab-pane" id="map" >
-                                <div class="box-body no-border" id="tree">
-
+                                <div class="box-body no-border" id="tree" ng-controller="TreeController">
+                                    <cm-tree el="treeSVG" width="4000" height="4000"></cm-tree>
                                 </div>
                             </div>
                             <div class="tab-pane" id="discussion"></div>
@@ -101,61 +101,14 @@
 
 <% include rightMenu %>
 
-<% include ../jsfooter %>
-
 <script src="/d3/d3.min.js"></script>
-<script src="/d3/tree.js"></script>
-<script src="/d3/rightclick.js"></script>
-<script src="/jQuery/jquery-ui.min.js"></script>
-
+<% include ../jsfooter %>
+<script src="/jquery/jquery-ui.min.js"></script>
 <script>
-    $(document).ready(function() {
-        handleTab($);
 
-        var t = $("#tree");
-        var wrapperOffset = t.offset();
 
-        $('#treeSVG').
-                handleRightClick().
-                handleLeftClick().
-                draggable({
-                    containment: [
-                        t.width() - 4000 + wrapperOffset.left,
-                        $('#map').height() - 4000 + wrapperOffset.top,
-                        wrapperOffset.left + 5,
-                        wrapperOffset.top
-                    ],
-                    drag: function(event) {
-                        console.log($(this).css('top'));
-                    }
-                });
-
-        if (location.hash !== '')
-            $(document).scrollTop(0);
-    });
-
-    function handleTab($){
-        if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
-
-        // add a hash to the URL when the user clicks on a tab
-        $('a[data-toggle="tab"]').on('click', function(e) {
-            history.pushState(null, null, $(this).attr('href'));
-        });
-        // navigate to a tab when the history changes
-        window.addEventListener("popstate", function(e) {
-            var activeTab = $('[href=#preview]');
-            if(location.hash)
-                activeTab = $('[href=' + location.hash + ']');
-
-            if (activeTab.length) {
-                activeTab.tab('show');
-            } else {
-                $('.nav-tabs a:first').tab('show');
-            }
-
-        });
-
-        $(document).scrollTop(0);
-    }
 </script>
+<script src="/d3/rightclick.js"></script>
+<script src="/d3/tree.js"></script>
+
 <% include ../footer %>

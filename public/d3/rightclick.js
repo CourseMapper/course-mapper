@@ -1,3 +1,37 @@
+
+var Menu = {
+    showMenu : function(event, show, shown){
+        var el = $('#rightClick');
+
+        // execute before show callback
+        if(show) show(event, el);
+
+        // show the right click menu
+        el.removeClass('hide')
+            .addClass('show')
+            .css("left", event.pageX).css("top", event.pageY)
+            .on("contextmenu", function(event) {
+                //return false;
+            });
+
+        // execute after shown callback
+        if(shown) shown(event, el);
+    },
+
+    closeMenu: function(event, close, closed){
+        var el = $('#rightClick');
+
+        // execute before show callback
+        if(close) close(event, el);
+
+        // hide the rightclick menu
+        el.removeClass('show').addClass('hide');
+
+        // execute after shown callback
+        if(closed) closed(event, el);
+    }
+};
+
 /**
  * handle right click
  * this will open a menu with right click
@@ -8,41 +42,7 @@
  *
  * @returns {jQuery}
  */
-
 (function ( $ ) {
-
-    var Menu = {
-        showMenu : function(event, show, shown){
-            var el = $('#rightClick');
-
-            // execute before show callback
-            if(show) show(event, el);
-
-            // show the right click menu
-              el.removeClass('hide')
-                .addClass('show')
-                .css("left", event.pageX).css("top", event.pageY)
-                .on("contextmenu", function(event) {
-                    //return false;
-                });
-
-            // execute after shown callback
-            if(shown) shown(event, el);
-        },
-
-        closeMenu: function(event, close, closed){
-            var el = $('#rightClick');
-
-            // execute before show callback
-            if(close) close(event, el);
-
-            // hide the rightclick menu
-            el.removeClass('show').addClass('hide');
-
-            // execute after shown callback
-            if(closed) closed(event, el);
-        }
-    };
 
     $.fn.handleRightClick = function(show, shown) {
         this.on("contextmenu", function(event) {

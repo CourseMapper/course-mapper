@@ -41,16 +41,17 @@ app.controller('CourseListController', function($scope, $http, $rootScope) {
 });
 
 app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
-    $scope.createTopic = function(name){
-        /*
+    $scope.createTopic = function(name, event){
+
         if(!$rootScope.tree)
             $rootScope.tree = {};
 
-        $rootScope.tree.course = {
+        $rootScope.tree.topic = {
             name: name,
             subTopics: [],
-            resources:[]
-        };*/
+            resources:[],
+            position: {x:event.x, y:event.y}
+        };
 
         console.log("creating topic");
     };
@@ -82,107 +83,103 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
-});;
-app.controller('TreeController', function($scope, $http, $rootScope) {
-    $scope.treeData = {
-        name: 'Web Tech',
-        subTopics:[
-            {
-                name: 'Server Side Technology',
-                resources:[
-                    {
-                        type: 'pdf'
-                    },{
-                        type: 'pdf'
-                    },{
-                        type: 'video'
-                    }
-                ],
-                lessons: [
-                    {
-                        name: 'Introduction to server Side Technology',
-                        resources: [
-                            {
-                                type: 'pdf'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Distributed Server',
-                        resources: [
-                            {
-                                type: 'video'
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                name: 'Client Side Technology',
-                resources:[
-                    {
-                        type: 'pdf'
-                    },{
-                        type: 'pdf'
-                    },{
-                        type: 'pdf'
-                    }
-                ],
-                lessons:[
-                    {
-                        name: 'Introduction to Client Side Technology',
-                        resources: [
-                            {
-                                type: 'pdf'
-                            }
-                        ]
-                    },
-                    {
-                        name: 'Web Standards',
-                        resources: [
-                            {
-                                type: 'pdf'
-                            }
-                        ]
-                    }
-                ]
-            }
-        ],
+});;/**
+ * to use this, create an element <cm-tree></cm-tree>
+ */
+app.directive('cmTree', function($timeout){
+    /**
+     * option parameter
+     * @type {{width: number, height: number}}
 
-        resources:[
-            {
-                type: 'pdf'
-            },
-            {
-                type: 'video'
-            }
+    this.options = {
+        width : 0,
+        height : 0
+    };*/
 
-        ]
-    };
 
-    var m = [20, 120, 20, 120],
-        w = 1280 - m[1] - m[3],
-        h = 800 - m[0] - m[2],
-        i = 0;
+    /**
+     * d3 tree main object
+     */
+    this.vis = {};
 
-    var vis = d3.select('#tree').append('svg:svg')
-        .attr('width', w + m[1] + m[3])
-        .attr('height', h + m[0] + m[2])
-        .append('svg:g')
-        .attr('transform', 'translate(' + m[3] + ',' + m[0] + ')');
+    /**
+     * constructor of cm-tree
+     */
+    function link($scope, $el, $attr){
 
-    var node = vis.selectAll('circle')
-        .data($scope.treeData)
-        .enter()
-        .append('circle');
+        $scope.vis = d3.select($el[0]).append("svg:svg")
+            .attr("width", $attr.width)
+            .attr("height", $attr.height)
+            .attr("on-finish-render", "initDraggableUI")
+            .attr("id", $attr.el);
 
-    var nodeAttr = node
-        .attr('cx', function(d){return d.x_axis;})
-        .attr('cy', function(d){return d.y_axis;})
-        .attr('r', function(d){return 5;})
+        createMainTopic($scope, $el, $attr);
 
+        $scope.options = $attr;
+    }
+
+    /**
+     * a tree need a main topic
+     */
+    function createMainTopic($scope, $el, $attr){
+        var pos = {x:300, y:300};
+        $scope.vis.append("circle")
+            .attr("transform", "translate(" + pos.x + "," + pos.y + ")")
+            .attr("r", "45")
+            .attr("class", "mainTopic");
+    }
+
+    var drag = d3.behavior.drag()
+        .on("drag", dragmove);
+
+    function dragmove(d) {
+        var x = d3.event.x;
+        var y = d3.event.y;
+        d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
+    }
+
+    $timeout(function () {
+        //DOM has finished rendering
+        initDraggableUI();
+    });
+
+    return {
+        link: link,
+        restrict: 'E'
+    }
 });
-;app.controller('widgetController', function($scope, $http, $rootScope) {
+
+function initDraggableUI(){
+    var treeSVG = $('#treeSVG');
+    // enable rightclick open and close
+    treeSVG.handleRightClick().handleLeftClick();
+
+    // calculate containment
+    var t = $("#tree");
+    var wrapperOffset = t.offset();
+
+    var containment = [
+        t.width() - treeSVG.width() + wrapperOffset.left,
+        $('#map').height() - treeSVG.height() + wrapperOffset.top,
+        wrapperOffset.left + 5,
+        wrapperOffset.top
+    ];
+
+    // enable canvas to be dragged along container
+    treeSVG.draggable({
+        containment: containment,
+        drag: function(event) {
+            //console.log($(this).css('top'));
+        }
+    });
+
+    console.log(containment);
+}
+
+app.controller('TreeController', function($scope, $http, $rootScope) {
+
+
+});;app.controller('widgetController', function($scope, $http, $rootScope) {
     $scope.initWidgetButton = function(){
         $.AdminLTE.boxWidget.activate();
     }

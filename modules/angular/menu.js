@@ -15,7 +15,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             name: name,
             subTopics: [],
             resources:[],
-            position: {x:position.x, y:position.y}
+            position: {x:event.x, y:event.y}
         };
 
         console.log("creating topic");

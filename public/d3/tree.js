@@ -1,39 +1,45 @@
-var m = [20, 120, 20, 120];
-var i = 0;
-var root;
 
-function createTree(elName, width, height) {
+$(document).ready(function() {
+    handleTab();
 
-    var vis = d3.select(elName).append("svg:svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("id", "treeSVG");
-        //.append("svg:g")
-        //.attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+    courseTabResize();
+    $(window, '#courseTabs').resize(function () {
+        courseTabResize();
+    });
 
-    jQuery('#treeSVG');
-}
+    if (location.hash !== '')
+        $(document).scrollTop(0);
+});
 
 function courseTabResize(){
-    jQuery('#courseTabs').css('min-height', parseInt(jQuery('.content-wrapper').css('min-height')) - jQuery('.content-header').outerHeight() - jQuery('.main-footer').outerHeight());
-    jQuery('#map').css('max-height', parseInt(jQuery('#courseTabs').css('min-height'))
-    - jQuery('.box-header').outerHeight()
-    - jQuery('.main-footer').outerHeight() );
+    var ftr = $('.main-footer');
+    var ctabs = $('#courseTabs');
+    ctabs.css('min-height', parseInt($('.content-wrapper').css('min-height')) - $('.content-header').outerHeight() - ftr.outerHeight());
+    $('#map').css('max-height', parseInt(ctabs.css('min-height'))
+    - $('.box-header').outerHeight()
+    - ftr.outerHeight() );
 }
 
-jQuery(window, '#courseTabs').resize(function () {
-    courseTabResize();
-});
+function handleTab(){
+    if (location.hash !== '') $('a[href="' + location.hash + '"]').tab('show');
 
-jQuery(document).ready(function(){
-    courseTabResize();
+    // add a hash to the URL when the user clicks on a tab
+    $('a[data-toggle="tab"]').on('click', function(e) {
+        history.pushState(null, null, $(this).attr('href'));
+    });
+    // navigate to a tab when the history changes
+    window.addEventListener("popstate", function(e) {
+        var activeTab = $('[href=#preview]');
+        if(location.hash)
+            activeTab = $('[href=' + location.hash + ']');
 
-    var elName = '#tree';
-    var w = jQuery('.tab-content').width() - jQuery('.nav-tabs').outerWidth();
-    var h = jQuery('#courseTabs').height();
+        if (activeTab.length) {
+            activeTab.tab('show');
+        } else {
+            $('.nav-tabs a:first').tab('show');
+        }
+    });
 
-    w = 4000;
-    h = 4000;
+    $(document).scrollTop(0);
+}
 
-    createTree(elName, w, h);
-});

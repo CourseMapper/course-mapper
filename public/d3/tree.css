@@ -114,4 +114,10 @@ path.link {
     display: block;
 }
 div#tree{padding:0px;}
-svg{border: 1px solid black; }
+svg{
+    border: 1px solid black; background: lightgrey;
+}
+
+.mainTopic{
+    border:1px solid black;
+}
