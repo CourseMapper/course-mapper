@@ -1,6 +1,13 @@
 <% include header %>
 <div class="wrapper">
 
+    <style type="text/css">
+        .grid-stack-item-content {
+            color: #2c3e50;
+            text-align: center;
+            background-color: #18bc9c;
+        }
+    </style>
     <!-- Header Navbar -->
     <% include mainMenu %>
 
@@ -20,11 +27,12 @@
         <!-- Main content -->
         <section class="content" ng-controller="widgetController">
             <div class="row" id="dashboard">
+                <!-- main user menu -->
                 <div class="col-sm-12 col-md-12">
                     <div class="col-sm-6 col-md-2">
                         <div class="box box-solid">
                             <div class="box-header with-border text-center">
-                                <a href="" class="profile-picture" title="Change profile picture"><img 
+                                <a href="" class="profile-picture" title="Change profile picture"><img
                                         src="/img/default-profile-picture.png" class="img-circle"
                                         title="Change profile picture" alt="Change profile picture"></a>
                             </div>
@@ -41,37 +49,84 @@
                                     <% }%>
                                 </ul>
                             </div>
-                            <!-- /.box-body -->
+
                         </div>
                     </div>
+                    <!-- main user menu end -->
 
-                    <div class="col-sm-6 col-md-2">
-                        <div ng-include src="'/widgets/blankBox'" onload="initWidgetButton()"></div>
-                        <button class="btn btn-block btn-default btn-flat col-md-12 widgetEmpty">
-                            <i class="ionicons ion-ios-plus-outline"></i>
-                        </button>
-                    </div>
+                    <!--
+                                        <div class="  col-sm-6 col-md-3">
 
+                                                    <div ng-include src="'/widgets/blankBox'" onload="initWidgetButton()"></div>
+                                                    <button class="btn btn-block btn-default btn-flat col-md-12 widgetEmpty">
+                                                        <i class="ionicons ion-ios-plus-outline"></i>
+                                                    </button>
 
-                    <div class="col-sm-6 col-md-4">
-                        <div ng-include src="'/widgets/chart'" onload="initWidgetButton()"></div>
-                        <button class="btn btn-block btn-default btn-flat col-md-12 widgetEmpty">
-                            <i class="ionicons ion-ios-plus-outline"></i>
-                        </button>
-                    </div>
-                    <div class="col-sm-6 col-md-4">
-                        <div ng-include src="'/widgets/pie'" onload="initWidgetButton()"></div>
-                        <button class="btn btn-block btn-default btn-flat col-md-12 widgetEmpty">
-                            <i class="ionicons ion-ios-plus-outline"></i>
-                        </button>
+                                        </div>
+                    -->
+                    <div class="grid-stack col-sm-6 col-md-10">
+                        <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
+                            <div class="grid-stack-item-content">
+                                <div ng-include src="'/widgets/blankBox'" onload="initWidgetButton()"></div>
+                            </div>
+                        </div>
+                        <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
+                            <div class="grid-stack-item-content">
+                                <div ng-include src="'/widgets/chart'" onload="initWidgetButton()"></div>
+                            </div>
+                        </div>
+                        <div class="grid-stack-item" data-gs-x="8" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
+                            <div class="grid-stack-item-content">
+                                <div ng-include src="'/widgets/pie'" onload="initWidgetButton()"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
         <!-- /.content -->
+
     </div>
     <!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
+
 <% include jsfooter %>
+
+<script src="/jquery/jquery-ui.min.js"></script>
+<script src="/gridstack/lodash.min.js"></script>
+<script src="/gridstack/gridstack.js"></script>
+
+<script>
+    $(function () {
+        var options = {
+            cell_height: 400,
+            vertical_margin: 10,
+            resizable: false,
+            allowed_grids: [0, 4, 8]
+        };
+
+        var curNode = {x:0, y:0};
+        var $gs = $('.grid-stack');
+        $gs.gridstack(options);
+
+        $gs.on('onStartMove', function (e, node) {
+            curNode.x = node.x;
+            curNode.y = node.y;
+        });
+
+        $gs.on('onFinishDrop', function (e, node) {
+            var o = $(node.el);
+            if(options.allowed_grids.indexOf(node.x) < 0){
+                o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+            }
+            console.log("onFinishDrop");
+        });
+
+        $gs.on('onMove', function (e, node) {
+            console.log(node.x + " ++ " + node.y);
+        });
+    });
+</script>
+
 <% include footer %>
