@@ -78,7 +78,9 @@
                             </div>
                             <div class="tab-pane" id="map" >
                                 <div class="box-body no-border" id="tree" ng-controller="TreeController">
-                                    <cm-tree el="treeSVG" width="4000" height="4000"></cm-tree>
+                                    <cm-tree el="treeSVG" width="4000" height="4000">
+                                        <% include rightMenu %>
+                                    </cm-tree>
                                 </div>
                             </div>
                             <div class="tab-pane" id="discussion"></div>
@@ -99,13 +101,13 @@
 
 </div><!-- ./wrapper -->
 
-<% include rightMenu %>
 
 <script src="/d3/d3.min.js"></script>
 <% include ../jsfooter %>
 <script src="/jquery/jquery-ui.min.js"></script>
 <script>
-
+$(document).ready(function(){
+});
 
 </script>
 <script src="/d3/rightclick.js"></script>

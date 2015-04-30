@@ -10,9 +10,12 @@ var Menu = {
         el.removeClass('hide')
             .addClass('show')
             .css("left", event.pageX).css("top", event.pageY)
+            .click(function(){Menu.closeMenu();})
             .on("contextmenu", function(event) {
                 //return false;
             });
+
+        console.log(event.pageX + " - y:" + event.pageY);
 
         // execute after shown callback
         if(shown) shown(event, el);
@@ -54,8 +57,6 @@ var Menu = {
             if(event.which != 3){
                 return;
             }
-
-            console.log(event.clientX + " - y:" + event.clientY);
 
             // show the right click menu
             Menu.showMenu(event, show, shown);

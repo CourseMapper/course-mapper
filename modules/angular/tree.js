@@ -2,46 +2,38 @@
  * to use this, create an element <cm-tree></cm-tree>
  */
 app.directive('cmTree', function($timeout){
-    /**
-     * option parameter
-     * @type {{width: number, height: number}}
-
-    this.options = {
-        width : 0,
-        height : 0
-    };*/
-
-
-    /**
-     * d3 tree main object
-     */
-    this.vis = {};
 
     /**
      * constructor of cm-tree
      */
-    function link($scope, $el, $attr){
+    function link($scope, $element, $attrs, $ctrl){
+        /**
+         * d3 tree main object
+         */
+        $scope.vis = d3.select($element[0]).append("svg:svg")
+            .attr("width", $attrs.width)
+            .attr("height", $attrs.height)
+            .attr("id", $attrs.el)
+            .on("mousemove", function(){
+                // Extract the click location
+                var point = d3.mouse(this);
+                $scope.mousePosition = {x: point[0], y: point[1] };
+                console.log(point[0] + " -- " + point[1]);
+            });
+            /*.on("contextmenu", function(data, index) {
+                //handle right click
+                Menu.showMenu({pageX: $scope.mousePosition.x, pageY:$scope.mousePosition.y});
 
-        $scope.vis = d3.select($el[0]).append("svg:svg")
-            .attr("width", $attr.width)
-            .attr("height", $attr.height)
-            .attr("on-finish-render", "initDraggableUI")
-            .attr("id", $attr.el);
+                //stop showing browser menu
+                d3.event.preventDefault();
+            })
+            .on("click", function(){
+                Menu.closeMenu();
+            });*/
 
-        createMainTopic($scope, $el, $attr);
+        $scope.options = $attrs;
 
-        $scope.options = $attr;
-    }
-
-    /**
-     * a tree need a main topic
-     */
-    function createMainTopic($scope, $el, $attr){
-        var pos = {x:300, y:300};
-        $scope.vis.append("circle")
-            .attr("transform", "translate(" + pos.x + "," + pos.y + ")")
-            .attr("r", "45")
-            .attr("class", "mainTopic");
+        $ctrl.init($element, $scope);
     }
 
     var drag = d3.behavior.drag()
@@ -53,21 +45,57 @@ app.directive('cmTree', function($timeout){
         d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
     }
 
+    /**
+     * when the svg has finished loading
+     */
     $timeout(function () {
-        //DOM has finished rendering
         initDraggableUI();
     });
 
     return {
         link: link,
+        controller: 'TreeController',
         restrict: 'E'
     }
 });
 
+app.service('TreeService', function($document){
+    var self = this;
+
+    /**
+     * a tree need a main topic
+     */
+    this.createMainTopic = function($scope, $params){
+        var pos = $scope.mousePosition;
+        $scope.vis.append("circle")
+            .attr("transform", "translate(" + pos.x + "," + pos.y + ")")
+            .attr("r", "45")
+            .attr("class", "mainTopic");
+
+        console.log("created main topic on " + pos.x + "," + pos.y );
+    }
+
+});
+
+app.controller('TreeController', function($scope, $attrs, TreeService, $animate) {
+    var self = this;
+
+    this.init = function(element, directiveScope){
+        self.$element = element;
+        $scope = directiveScope;
+        console.log("init treecrontoller called");
+    };
+
+    $scope.call = function($methodName, $params){
+        TreeService[$methodName]($scope, $params);
+    };
+});
+
+/**
+ * create rightclick menu, init dragging for svg container
+ */
 function initDraggableUI(){
     var treeSVG = $('#treeSVG');
-    // enable rightclick open and close
-    treeSVG.handleRightClick().handleLeftClick();
 
     // calculate containment
     var t = $("#tree");
@@ -88,10 +116,8 @@ function initDraggableUI(){
         }
     });
 
+    // enable rightclick open and close
+    treeSVG.handleRightClick().handleLeftClick();
+
     console.log(containment);
 }
-
-app.controller('TreeController', function($scope, $http, $rootScope) {
-
-
-});

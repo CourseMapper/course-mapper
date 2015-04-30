@@ -39,6 +39,9 @@ path.link {
 #rightClick {
     position: absolute;
     width: 200px;
+    z-index:988;
+    margin-top: -140px;
+    margin-left: -10px;
 }
 
 #rightClick > .modal-dialog {
