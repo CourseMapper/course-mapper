@@ -1,0 +1,27 @@
+{
+  "name": "My Courses",
+  "description": "",
+  "isActive": "true",
+  "widgets":[
+    {
+      "widgetName": "My Courses List",
+      "location": "user-profile",
+      "description": "Will list all your following courses",
+      "entryPoint": "/my-course/my-following-courses",
+      "width": 2,
+      "height":4,
+      "isActive": "true",
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "widgetName": "My Progress",
+      "location": "course",
+      "description": "show your overal progress on this particular course",
+      "entryPoint": "/my-course/journey",
+      "width": 2,
+      "height":2,
+      "isActive": "true",
+      "icon":"/img/appPlaceholder.png"
+    }
+  ]
+}

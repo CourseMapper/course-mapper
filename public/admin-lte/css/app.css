@@ -93,9 +93,13 @@ i.ionicons {
     margin-left: 35px;
 }
 
-.widgetEmpty {
-    height: 80px;
+.btn.widgetEmpty {
+    height: 60px;
+    width:250px;
     margin-bottom: 20px;
+    margin-top:20px;
+    margin-left:auto;
+    margin-right: auto;
 }
 
 .widgetEmpty i {
@@ -321,4 +325,12 @@ i.ionicons {
 
 .toggle-button .k {
     height: 100%;
+}
+
+.clear{
+    clear:both;
+}
+
+.widgetSlot{
+    min-width:400px!important;
 }

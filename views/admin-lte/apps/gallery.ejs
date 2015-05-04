@@ -1,0 +1,33 @@
+<section class="content" ng-controller="WidgetListController">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
+            <div class="box no-border no-round">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Applications Gallery</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="widget in widgets">
+                        <div class="thumbnail center">
+                            <img src="{{widget.icon}}">
+                            <div class="caption">
+                                <h4>{{widget.widgetName}}</h4>
+                                <p>{{widget.description}}</p>
+                                <a href="#" class="btn btn-primary btn-sm" role="button"><i class="glyphicon glyphicon-cart"></i> Install </a>
+                                <span class="label label-info pull-right">W:{{widget.width}} by H:{{widget.height}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <br class="clear" />
+                </div>
+                <div class="box-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
