@@ -334,3 +334,32 @@ i.ionicons {
 .widgetSlot{
     min-width:400px!important;
 }
+
+div#courseTitle {
+    display: flex;
+    display: -webkit-flex;
+}
+#courseTitle input[type=text]{
+    font-size: 26px;
+    height: 40px;
+    padding: 5px;
+    min-width:400px;
+    margin-top:20px;
+    margin-bottom:10px;
+}
+#courseTitle .editable-buttons{
+    margin-top:20px;
+    margin-bottom:10px;
+}
+
+li.active i{
+    color:#3c8dbc;
+}
+li.active .ionicons{
+    font-weight: bold;
+    font-size: 30px!important;
+}
+
+li.disabled i{
+    opacity: 0.2;
+}

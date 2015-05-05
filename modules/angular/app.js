@@ -1,4 +1,4 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'xeditable']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -17,4 +17,11 @@ app.directive('onFinishRender', function ($timeout) {
             }
         }
     }
+});
+
+/**
+ * xeditable
+ */
+app.run(function(editableOptions) {
+    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
 });

@@ -9,9 +9,3 @@ app.controller('CategoryListController', function($scope, $http, $rootScope) {
   });
 
 });
-
-app.controller('CourseListController', function($scope, $http, $rootScope) {
-  $http.get('/api/catalogs/courses').success(function(data) {
-    $scope.courses = data;
-  });
-});

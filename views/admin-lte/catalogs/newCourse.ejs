@@ -1,0 +1,126 @@
+<% include ../header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" ng-controller="NewCourseController">
+
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="/catalogs/courses"> </i> Courses</a></li>
+                <li class="active">New</li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="box no-border" id="courseTabs">
+                <div class="box-header no-border">
+                    <div id="courseTitle">
+                        <h1 editable-text="course.name">{{ course.name || def.name }}</h1>
+                    </div>
+                    <div id="category">
+                        <label>Category:</label>
+                        <a editable-select="course.category" onshow="loadCategories()"
+                           e-ng-options="c.slug as c.category for c in categories">
+                            {{ course.category || def.category }}
+                        </a>
+                    </div>
+
+                    <blockquote class="small" ng-hide="saved">
+                        Once you change the title and picked a category, your course will be automatically saved and
+                        available to all the users.
+                    </blockquote>
+
+                </div>
+                <div class="box-body no-border">
+
+                    <!-- tabs left -->
+                    <div class="tabbable tabs-left">
+                        <ul class="nav nav-tabs tabs-hide hidden-xs">
+                            <li class="active"><a href="#preview" data-toggle="tab">
+                                <i class="ionicons ion-ios-home-outline"></i><br>
+                                <span>Preview</span></a></li>
+
+                            <li class="disabled"><a href="" data-toggle="">
+                                <i class="ionicons ion-map"></i>
+                                <br>
+                                <span>CourseMap</span></a></li>
+
+                            <li class="disabled"><a href="#updates" ng-show="user" data-toggle="tab">
+                                <i class="ionicons ion-ios-time-outline"></i><br>
+                                <span>Updates</span></a></li>
+                            <li class="disabled"><a href="#discussion" ng-show="user" data-toggle="tab">
+                                <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
+                                <span>Discussion</span></a></li>
+                            <li class="disabled"><a href="#analytics" ng-show="user" data-toggle="tab">
+                                <i class="ionicons ion-stats-bars"></i><br>
+                                <span>Analytics</span></a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="preview">
+
+                                <div class="col-xs-9">
+                                    <div class="form-group">
+                                        Started on <b> {{course.startedDate | date:'yyyy-MM-dd'}}</b>
+                                    </div>
+                                    <a href="#map"><img src="http://placehold.it/350x150"></a>
+
+                                    <div class="form-group">
+                                        <br/>
+                                        <label>Description:</label>
+
+                                        <p>
+                                            <a href="#" editable-textarea="course.description" e-rows="7" e-cols="70">
+                                                {{ course.description || def.description }}
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <div class="form-group">
+                                        <!-- general public analytics about this course -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="map">
+                                <div class="box-body no-border" id="tree" ng-controller="TreeController">
+                                    <cm-tree el="treeSVG" width="4000" height="4000">
+                                        <% include rightMenu %>
+                                    </cm-tree>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="discussion"></div>
+                            <div class="tab-pane" id="updates"></div>
+                            <div class="tab-pane" id="analytics"></div>
+                        </div>
+                    </div>
+                    <!-- /tabs -->
+
+                </div>
+            </div>
+
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+
+<script src="/d3/d3.min.js"></script>
+<% include ../jsfooter %>
+<script src="/jquery/jquery-ui.min.js"></script>
+<script src="/jquery/jquery.ui.touch-punch.min.js"></script>
+<script src="/jquery/jquery.plugin.js"></script>
+<script>
+    $(document).ready(function () {
+    });
+
+</script>
+<script src="/d3/rightclick.js"></script>
+<script src="/d3/tree.js"></script>
+
+<% include ../footer %>

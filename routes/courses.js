@@ -71,6 +71,10 @@ router.get('/api/catalogs/course/:courseId/follow', function(req, res, next) {
     }
 });
 
+router.get('/catalogs/course/create', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/newCourse');
+});
+
 router.get('/catalogs/course/:courseId', function(req, res, next) {
     var params = {
         courseId: req.params.courseId
