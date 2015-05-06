@@ -29,6 +29,17 @@ catalog.prototype.getCategory = function(error, params, success){
         });
 };
 
+catalog.prototype.getCourse = function(error, params, success){
+    Course.findOne(params)
+        .populate('category tags').exec(function(err, docs) {
+            if (!err){
+                success(docs);
+            } else {
+                error(err);
+            }
+        });
+};
+
 catalog.prototype.getCategoryTags = function(error, params, success){
     this.getCategory(error, params, function(docs){
         success(docs.tags);
@@ -159,19 +170,22 @@ catalog.prototype.addTag = function(error, params, success){
 };
 
 catalog.prototype.addCourse = function(error, params, success){
-    if(params.category) {
+    var self = this;
+
+    if(typeof(params.category) != "undefined" && params.category != "undefined" && params.category) {
         //("finding Category");
         Category.findOne({slug: params.category},
             function (err, cat) {
                 if (err) {
-                    debug('cant find cat when adding course');
+                    debug('cant find category when adding course');
                     error(err);
                 }
-                else {
+                else if(cat && cat._id){
                     var course = new Course({
                         course: params.course,
                         category: cat._id
                     });
+
                     course.save(function(err, res) {
                         if (err) {
                             debug('failed saving new course');
@@ -179,11 +193,23 @@ catalog.prototype.addCourse = function(error, params, success){
                         }
                         else {
                             // success saved the course
-                            success(course);
+                            // find the newly saved course, and call the success Callback
+                            self.getCourse(
+                                error,
+                                {_id: course._id},
+                                function(crs){
+                                    success(crs);
+                                }
+                            );
                         }
                     });
                 }
+                else {
+                    error(new Error('cannot find category'));
+                }
             });
+    } else {
+        error(new Error("please give correct parameter"));
     }
 };
 

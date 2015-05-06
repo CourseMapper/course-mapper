@@ -26,13 +26,6 @@ admin.filter('capitalize', function() {
 
 });
 
-function transformRequest(obj) {
-    var str = [];
-    for(var p in obj)
-    str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-    return str.join("&");
-}
-
 admin.controller('categoryFormController', function($scope, $http){
     $scope.formData = [];
 

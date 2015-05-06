@@ -24,7 +24,20 @@ app.directive('onFinishRender', function ($timeout) {
  */
 app.run(function(editableOptions) {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
-});;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+});
+
+/**
+ * encode uri component for post request parameter
+ *
+ * @param obj
+ * @returns {string}
+ */
+function transformRequest(obj) {
+    var str = [];
+    for(var p in obj)
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    return str.join("&");
+};app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
   $http.get('/api/catalogs/categories').success(function(data) {
     $scope.categories = data;
@@ -43,17 +56,19 @@ app.controller('CourseListController', function($scope, $http, $rootScope) {
 
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
     $scope.course = {
-        name: '',
-        category: '',
-        startedDate: new Date()
+        course: null,
+        category: null,
+        description: '',
+        _id: null
     };
+
+    $scope.createdDate = new Date();
 
     $scope.saved = false;
     $scope.categories = [];
-    $scope.newCode = '';
 
     $scope.def = {
-        name: 'Untitled course',
+        course: 'Untitled course',
         description: 'This should be a text that explains generally about this course',
         category: 'Please pick a category'
     };
@@ -64,36 +79,80 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function(data) {
                 $scope.categories = data.categories;
             });
+
     };
 
-    $scope.date = new Date();
+    $scope.loadCategories();
 
     $scope.$watch('course.category', function(newVal, oldVal) {
+        console.log(newVal);
         if (newVal !== oldVal) {
             var selected = $filter('filter')($scope.categories, {slug: $scope.course.category});
-            $scope.course.slug = selected.length ? selected[0].text : null;
+            $scope.course.category = selected.length ? selected[0].slug : null;
         }
     });
+
+    /**
+     * check if the creator has added a course or category/ and not just a default value
+     * this is an initial saving to create a new course record in DB
 
     $scope.$watch('course', function(newVal, oldVal){
-        // check if the creator has added a course or category/ and not just a default value
         if(
-            newVal.name != '' && newVal.name !== $scope.def.name &&
-            newVal.category != '' && newVal.category !== $scope.def.category
+            newVal.course && newVal.course !== $scope.def.course &&
+            newVal.category && newVal.category !== $scope.def.category
         ){
-            console.log('saving');
-            $scope.saved = true;
-
-            $scope.newCode = '2akcoieuQ';
+            $scope.saveCourse();
         }
-    }, true);
+    }, true);*/
 
-    $scope.$watch('newCode', function(newVal, oldVal){
-        if($scope.newCode != ''){
-            $location.path('/catalog/course/' + $scope.newCode);
+
+    $scope.saveCourse = function() {
+        var d = transformRequest($scope.course);
+        $http({
+            method: 'POST',
+            url: '/api/catalogs/courses',
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    // if successful, bind success data.course to course
+                    $scope.courseModel = data.course;
+                    $scope.course._id = data.course._id;
+                    $scope.saved = true;
+
+                    $scope.$emit('onAfterCreateNewCourse');
+
+                    window.location.href = '/catalogs/course/' + $scope.course._id + '?savedNew';
+                }
+            })
+            .error(function(data){
+                if( data.result != null && !data.result){
+                    $scope.errorName = data.errors.name;
+                    console.log(data.errors);
+                }
+            });
+    };
+
+    /**
+     * this watch is for an create new course use case.
+     * we disable all tabs except 1st one, and enable it once we obtained course._id from server
+
+    $scope.$watch('course._id', function(newVal, oldVal){
+        if($scope.course._id && $scope.saved){
+            $location.path('/catalogs/course/' + $scope.course._id);
             $location.replace();
+
+            // enable all tabs
+            //$('#courseNavigationTabs ul li').removeClass('disabled');
+            //var a = $('#courseNavigationTabs ul li a');
+            //a.attr('data-toggle', 'tab');
+            //a.attr('href', a.attr('data-href'));
         }
-    });
+    });*/
 
     $scope.initAutoGrow = function(){
         if(jQuery().autoGrowInput) {
@@ -135,9 +194,9 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         */
         console.log("creating sub topic");
     }
-});;app.config(['$routeProvider', '$locationProvider',
+});;app.config(['$routeProvider', /*'$locationProvider',*/
 
-    function($routeProvider, $locationProvider) {
+    function($routeProvider/*, $locationProvider*/) {
 
         $routeProvider.
             when('/about', {
@@ -148,7 +207,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
                 redirectTo: '/'
             });
 
-        $locationProvider.html5Mode(true);
+        /*$locationProvider.html5Mode(true);*/
 
     }]);
 

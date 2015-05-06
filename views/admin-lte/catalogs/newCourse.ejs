@@ -14,94 +14,72 @@
                 <li class="active">New</li>
             </ol>
         </section>
-
         <!-- Main content -->
         <section class="content">
-            <div class="box no-border" id="courseTabs">
-                <div class="box-header no-border">
-                    <div id="courseTitle">
-                        <h1 editable-text="course.name">{{ course.name || def.name }}</h1>
-                    </div>
-                    <div id="category">
-                        <label>Category:</label>
-                        <a editable-select="course.category" onshow="loadCategories()"
-                           e-ng-options="c.slug as c.category for c in categories">
-                            {{ course.category || def.category }}
-                        </a>
-                    </div>
-
-                    <blockquote class="small" ng-hide="saved">
-                        Once you change the title and picked a category, your course will be automatically saved and
-                        available to all the users.
-                    </blockquote>
-
-                </div>
+            <div class="box no-border">
                 <div class="box-body no-border">
+                    <div class="col-xs-12 col-md-6">
+                        <form class=" " role="form" ng-submit="saveCourse()">
+                            <fieldset>
+                                <div id="legend">
+                                    <h1>Create a new course</h1>
+                                </div>
+                                <div class="control-group">
+                                    <label class="control-label" for="course">Course Name</label>
 
-                    <!-- tabs left -->
-                    <div class="tabbable tabs-left">
-                        <ul class="nav nav-tabs tabs-hide hidden-xs">
-                            <li class="active"><a href="#preview" data-toggle="tab">
-                                <i class="ionicons ion-ios-home-outline"></i><br>
-                                <span>Preview</span></a></li>
+                                    <div class="controls">
+                                        <input type="text" id="course" name="course" placeholder="" class="form-control"
+                                               ng-model="course.course">
 
-                            <li class="disabled"><a href="" data-toggle="">
-                                <i class="ionicons ion-map"></i>
-                                <br>
-                                <span>CourseMap</span></a></li>
-
-                            <li class="disabled"><a href="#updates" ng-show="user" data-toggle="tab">
-                                <i class="ionicons ion-ios-time-outline"></i><br>
-                                <span>Updates</span></a></li>
-                            <li class="disabled"><a href="#discussion" ng-show="user" data-toggle="tab">
-                                <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
-                                <span>Discussion</span></a></li>
-                            <li class="disabled"><a href="#analytics" ng-show="user" data-toggle="tab">
-                                <i class="ionicons ion-stats-bars"></i><br>
-                                <span>Analytics</span></a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="preview">
-
-                                <div class="col-xs-9">
-                                    <div class="form-group">
-                                        Started on <b> {{course.startedDate | date:'yyyy-MM-dd'}}</b>
-                                    </div>
-                                    <a href="#map"><img src="http://placehold.it/350x150"></a>
-
-                                    <div class="form-group">
-                                        <br/>
-                                        <label>Description:</label>
-
-                                        <p>
-                                            <a href="#" editable-textarea="course.description" e-rows="7" e-cols="70">
-                                                {{ course.description || def.description }}
-                                            </a>
-                                        </p>
-                                    </div>
-                                    <div class="form-group">
-                                        <!-- general public analytics about this course -->
+                                        <p class="help-block">Course name can contain any letters or numbers</p>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane" id="map">
-                                <div class="box-body no-border" id="tree" ng-controller="TreeController">
-                                    <cm-tree el="treeSVG" width="4000" height="4000">
-                                        <% include rightMenu %>
-                                    </cm-tree>
+
+                                <div class="control-group">
+                                    <label class="control-label" for="category">Category</label>
+
+                                    <div class="controls">
+                                        <select id="category" name="category" class="form-control"
+                                                ng-options="c.slug as c.category for c in categories"
+                                                ng-model="course.category">
+                                        </select>
+
+                                        <p class="help-block">Please pick one category</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="tab-pane" id="discussion"></div>
-                            <div class="tab-pane" id="updates"></div>
-                            <div class="tab-pane" id="analytics"></div>
-                        </div>
+
+                                <div class="control-group">
+                                    <label class="control-label" for="description">Description</label>
+
+                                    <div class="controls">
+                                <textarea type="description" id="description" name="description" placeholder=""
+                                          class="form-control" ng-model="course.description">
+                                </textarea>
+
+                                        <p class="help-block">Description about this course</p>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-lg btn-primary btn-block">Create New Course</button>
+                                    </div>
+                                </div>
+
+                                <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                            </fieldset>
+                        </form>
                     </div>
-                    <!-- /tabs -->
+                    <p></p>
+                    <br class="clear">
+                </div>
+
+                <div class="box-footer">
 
                 </div>
             </div>
-
-
+            {{course}}
         </section>
         <!-- /.content -->
     </div>

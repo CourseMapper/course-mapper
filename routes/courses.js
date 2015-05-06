@@ -22,7 +22,7 @@ router.post('/api/catalogs/courses', function(req, res, next){
         var catalog = new Catalog();
         catalog.addCourse(
             function (err) {
-                res.status(500).json({result:false, errors: err});
+                res.status(500).json({result:false, errors: [err.message]});
             },
 
             // parameters

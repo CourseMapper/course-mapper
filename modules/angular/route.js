@@ -1,6 +1,6 @@
-app.config(['$routeProvider', '$locationProvider',
+app.config(['$routeProvider', /*'$locationProvider',*/
 
-    function($routeProvider, $locationProvider) {
+    function($routeProvider/*, $locationProvider*/) {
 
         $routeProvider.
             when('/about', {
@@ -11,7 +11,7 @@ app.config(['$routeProvider', '$locationProvider',
                 redirectTo: '/'
             });
 
-        $locationProvider.html5Mode(true);
+        /*$locationProvider.html5Mode(true);*/
 
     }]);
 

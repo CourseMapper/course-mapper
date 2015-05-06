@@ -14,6 +14,9 @@ var courseSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
+    description: {
+        type: String
+    },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'categories'},
     updatedAt: { type: Date },
     tags:[{ type: mongoose.Schema.Types.ObjectId, ref: 'tags'}]

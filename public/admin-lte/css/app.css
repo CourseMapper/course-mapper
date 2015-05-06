@@ -352,12 +352,10 @@ div#courseTitle {
     margin-bottom:10px;
 }
 
-li.active i{
-    color:#3c8dbc;
-}
 li.active .ionicons{
     font-weight: bold;
-    font-size: 30px!important;
+    color:#3c8dbc;
+    font-size: 25px!important;
 }
 
 li.disabled i{

@@ -55,15 +55,14 @@
 
                             <form role="form" ng-submit="processForm()" id="addCourse">
                                 <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
-                                    <input type="text" name="category" class="form-control input-sm col-xs-3"
+                                    <input type="text" name="course" class="form-control input-sm col-xs-3"
                                            placeholder="Add New Course ..." ng-model="formData.course"/>
-                                    <input type="hidden" name="parent" ng-value="category.slug"
+                                    <input type="hidden" name="category" ng-value="category.slug"
                                            value="{{category.slug}}"
                                            ng-model="formData.category" ng-init="formData.category=category.slug"/>
                               <span class="input-group-btn">
                               <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category.slug)">
-                                  <i class="fa fa-plus"></i> Add New
-                                  Course
+                                  <i class="fa fa-plus"></i> Add New Course
                               </button>
                               </span>
                                 </div>

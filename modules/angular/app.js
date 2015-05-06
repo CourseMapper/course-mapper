@@ -25,3 +25,16 @@ app.directive('onFinishRender', function ($timeout) {
 app.run(function(editableOptions) {
     editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
 });
+
+/**
+ * encode uri component for post request parameter
+ *
+ * @param obj
+ * @returns {string}
+ */
+function transformRequest(obj) {
+    var str = [];
+    for(var p in obj)
+        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    return str.join("&");
+}
