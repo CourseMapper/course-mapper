@@ -5,6 +5,11 @@ app.controller('CourseListController', function($scope, $http, $rootScope) {
     });
 });
 
+app.controller('CourseController', function($scope, $filter, $http, $location) {
+    $scope.currentUrl = window.location.href;
+    $scope.followUrl = $scope.currentUrl + '?follow=1';
+});
+
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
     $scope.course = {
         course: null,
@@ -77,7 +82,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     $scope.$emit('onAfterCreateNewCourse');
 
-                    window.location.href = '/catalogs/course/' + $scope.course._id + '?savedNew';
+                    window.location.href = '/catalogs/course/' + $scope.course._id + '?new=1';
                 }
             })
             .error(function(data){
@@ -111,3 +116,4 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     }
 });
+

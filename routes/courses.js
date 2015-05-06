@@ -4,6 +4,7 @@ var appRoot = require('app-root-path');
 var Catalog = require(appRoot + '/modules/catalogs');
 var Account = require(appRoot + '/modules/accounts');
 var debug = require('debug')('cm:route');
+var moment = require('moment');
 
 var router = express.Router();
 
@@ -20,6 +21,8 @@ router.post('/api/catalogs/courses', function(req, res, next){
     }
     else {
         var catalog = new Catalog();
+        req.body.userId = req.user._id;
+
         catalog.addCourse(
             function (err) {
                 res.status(500).json({result:false, errors: [err.message]});
@@ -89,7 +92,7 @@ router.get('/catalogs/course/:courseId', function(req, res, next) {
         },
         params,
         function (course, follow){
-            res.render(config.get('theme') + '/catalogs/course', { title: course.course, course:course, user: req.user, follow: follow });
+            res.render(config.get('theme') + '/catalogs/course', { title: course.course, course:course, user: req.user, follow: follow, moment:moment });
         }
     );
 });

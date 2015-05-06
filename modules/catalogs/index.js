@@ -31,7 +31,7 @@ catalog.prototype.getCategory = function(error, params, success){
 
 catalog.prototype.getCourse = function(error, params, success){
     Course.findOne(params)
-        .populate('category tags').exec(function(err, docs) {
+        .populate('startedBy category tags').exec(function(err, docs) {
             if (!err){
                 success(docs);
             } else {
@@ -183,7 +183,9 @@ catalog.prototype.addCourse = function(error, params, success){
                 else if(cat && cat._id){
                     var course = new Course({
                         course: params.course,
-                        category: cat._id
+                        startedBy: mongoose.Types.ObjectId(params.userId),
+                        category: cat._id,
+                        description: params.description
                     });
 
                     course.save(function(err, res) {

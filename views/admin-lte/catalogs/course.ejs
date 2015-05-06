@@ -5,15 +5,14 @@
     <% include ../mainMenu %>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div class="content-wrapper" ng-controller="CourseController">
 
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li><a href="/catalogs/courses"> </i> Courses</a></li>
-                <li><a href="/catalogs/courses"> </i> I.T</a></li>
-                <li>Web Tech</li>
-                <li class="active">Dashboard</li>
+                <li><a href="/catalogs/<%=course.category.slug%>"> </i> <%=course.category.category%></a></li>
+                <li class="active"><%=course.course%></li>
             </ol>
         </section>
 
@@ -21,12 +20,19 @@
         <section class="content">
             <div class="box no-border" id="courseTabs">
                 <div class="box-header no-border">
-                    <h1>Web Tech</h1>
-                    <% if(!follow || !user){ %>
-                    <a class="btn btn-primary btn-flat" href="/api/catalogs/course/<%= course._id%>/follow">Follow</a>
-                    <% } else { %>
-                    You are following this course. <a class="" href="/api/catalogs/course/<%= course._id%>/unfollow">click here to Unfollow</a>
-                    <% } %>
+                    <h1><%=course.course%></h1>
+                    <% if(!user){ %>
+                        <a class="btn btn-primary btn-flat" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please login to follow this course</a>
+                    <% } else {
+                        if (!follow && course.startedBy.username != user.username){ %>
+                        <a class="btn btn-primary btn-flat" href="/api/catalogs/course/<%= course._id%>/follow">Follow</a>
+                        <% }
+                        if (course.startedBy.username == user.username){ %>
+
+                        <% } else { %>
+                        You are following this course. <a class="" href="/api/catalogs/course/<%= course._id%>/unfollow">click here to Unfollow</a>
+                        <% }
+                       }%>
                 </div>
                 <div class="box-body no-border">
 
@@ -37,10 +43,9 @@
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <% if(follow){ %>
+                            <% if(follow || course.startedBy.username == user.username){ %>
                             <li><a href="#map" data-toggle="tab">
                                 <i class="ionicons ion-map"></i>
-                                <br>
                                 <span>CourseMap</span></a></li>
                             <% }%>
                             <li><a href="#updates" ng-show="user" data-toggle="tab">
@@ -58,19 +63,20 @@
 
                                 <div class="col-xs-9">
                                     <div class="form-group">
-                                        Started By: <strong>Ridho Laksono</strong> on <b> 02/09/2014</b> -
+                                        Started By: <strong><%=(course.startedBy.username == user.username)?'You':course.startedBy.username%></strong> on <b> <%=moment(course.startedAt).fromNow()%></b>
+                                        <!-- -
                                         Last activity:<b> 2 days ago</b><br>
                                         User Rating:
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>
+                                        <i class="fa fa-star-o"></i>-->
                                     </div>
-                                    <a href="#map"><img src="/img/minitree.png"></a>
+                                        <img src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
                                     <div class="form-group">
-                                    The things that are related to Web Tech
-                                </div>
+                                    <%=course.description%>
+                                    </div>
                                     <div class="form-group">
                                         <!-- general public analytics about this course -->
                                     </div>
