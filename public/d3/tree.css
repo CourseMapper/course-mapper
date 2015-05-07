@@ -118,9 +118,22 @@ path.link {
 }
 div#tree{padding:0px;}
 svg{
-    border: 1px solid black; background: lightgrey;
+    background:#ECF0F5;
+    border:1px solid black;
 }
 
 .mainTopic{
     border:1px solid black;
+}
+
+.treeRoot{
+    border:1px solid blue;
+    fill:#ECF0F5;
+}
+
+.axis line {
+    fill: none;
+    stroke: #ddd;
+    shape-rendering: crispEdges;
+    vector-effect: non-scaling-stroke;
 }

@@ -6,8 +6,10 @@ app.controller('CourseListController', function($scope, $http, $rootScope) {
 });
 
 app.controller('CourseController', function($scope, $filter, $http, $location) {
+    $scope.course = null;
+
     $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?follow=1';
+    $scope.followUrl = $scope.currentUrl + '?follow=1'; 
 });
 
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
@@ -30,12 +32,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.loadCategories = function() {
-
         return $scope.categories.length ? null : $http.get('/api/catalogs/categories').success(
             function(data) {
                 $scope.categories = data.categories;
             });
-
     };
 
     $scope.loadCategories();

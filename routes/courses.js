@@ -53,6 +53,21 @@ router.get('/api/catalogs/courses', function(req, res, next) {
     );
 });
 
+router.get('/api/catalogs/course/:courseId', function(req, res, next) {
+    var cat = new Catalog();
+    cat.getCourse(
+        function(err){
+            res.status(500);
+        },
+        {
+            _id: req.params.courseId
+        },
+        function(course){
+            res.status(200).json({course: course});
+        }
+    );
+});
+
 router.get('/api/catalogs/course/:courseId/follow', function(req, res, next) {
     if(!req.params.courseId)
         res.status(500).send('parameter not complete');

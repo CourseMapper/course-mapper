@@ -39,22 +39,22 @@
                     <!-- tabs left -->
                     <div class="tabbable tabs-left">
                         <ul class="nav nav-tabs tabs-hide hidden-xs">
-                            <li class="active"><a href="#preview" data-toggle="tab">
+                            <li class="active"><a href="#/preview" data-toggle="tab" data-target="#preview">
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
                             <% if(follow || course.startedBy.username == user.username){ %>
-                            <li><a href="#map" data-toggle="tab">
+                            <li><a href="#/map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
                             <% }%>
-                            <li><a href="#updates" ng-show="user" data-toggle="tab">
+                            <li><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
                                 <i class="ionicons ion-ios-time-outline"></i><br>
                                 <span>Updates</span></a></li>
-                            <li><a href="#discussion" ng-show="user" data-toggle="tab">
+                            <li><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
                                 <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                 <span>Discussion</span></a></li>
-                            <li><a href="#analytics" ng-show="user" data-toggle="tab">
+                            <li><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
                                 <i class="ionicons ion-stats-bars"></i><br>
                                 <span>Analytics</span></a></li>
                         </ul>
@@ -112,11 +112,6 @@
 <% include ../jsfooter %>
 <script src="/jquery/jquery-ui.min.js"></script>
 <script src="/jquery/jquery.ui.touch-punch.min.js"></script>
-<script>
-$(document).ready(function(){
-});
-
-</script>
 <script src="/d3/rightclick.js"></script>
 <script src="/d3/tree.js"></script>
 
