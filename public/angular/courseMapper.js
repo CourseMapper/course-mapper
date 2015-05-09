@@ -249,17 +249,6 @@ var drag = d3.behavior.drag()
     .on("drag", dragged)
     .on("dragend", dragended);
 
-
-
-/*function dragmove() {
-    //if(modifier == null)
-    //    modifier = {x:0, y:0};
-
-    var x = d3.event.x;// - ($(this).attr("width")/2);
-    var y = d3.event.y;// - ($(this).attr("height")/2);
-    d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
-}*/
-
 function dragstarted(d) {
     d3.event.sourceEvent.stopPropagation();
     d3.select(this).classed("dragging", true);
@@ -270,8 +259,7 @@ function dragged(d) {
         .attr("cx", d3.event.x)
         .attr("cy", d3.event.y)
         .attr('data-x', d3.event.x)
-        .attr('data-y', d3.event.y)
-    ;
+        .attr('data-y', d3.event.y);
 }
 
 function dragended(d) {
@@ -282,12 +270,16 @@ function dragended(d) {
  * to use this, create an element <cm-tree></cm-tree>
  */
 app.directive('cmTree', function($timeout){
+
     /**
      * constructor of cm-tree
      */
     function link($scope, $element, $attrs, $ctrl){
         $scope.options = $attrs;
- 
+
+        /**
+         * enable zoom and panning behaviour. call this by el.call(zoom)
+         */
         var zoom = d3.behavior.zoom()
             .scaleExtent([1, 10])
             .on("zoom", zoomed);
@@ -295,6 +287,12 @@ app.directive('cmTree', function($timeout){
         function zoomed() {
             $scope.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
         }
+
+        $scope.subTopic = function (){
+            this.position = {};
+            this.name = "";
+            
+        };
 
         /**
          * d3 tree main object
@@ -308,12 +306,6 @@ app.directive('cmTree', function($timeout){
                 .append("g")
                 .attr("transform", "translate(" + 0 + "," + 0 + ")")
                 .call(zoom);
-
-            /*.on("mousemove", function(){
-                // Extract the click location
-                var point = d3.mouse(this);
-                $scope.mousePosition = {x: point[0], y: point[1] };
-            });*/
 
         // rectangle so we can drag the map
         $scope.vis.append("rect")
@@ -370,37 +362,69 @@ app.directive('cmTree', function($timeout){
 app.service('TreeService', function($document){
     var self = this;
 
+    function showMenu(){
+        var matrix = this.getScreenCTM()
+            .translate(+this.getAttribute("cx"),
+            +this.getAttribute("cy"));
+
+        var absoluteHTMLtooltip = d3.select("div#rightClick");
+        absoluteHTMLtooltip
+            .style("left",
+            (window.pageXOffset + matrix.e) + "px")
+            .style("top",
+            (window.pageYOffset + matrix.f + 30) + "px");
+
+        //var p = {pageX :rect.left, pageY:rect.top}
+        Menu.showMenu();
+        //d3.select(this).classed('displayNone',true);
+    }
+
+    function hideMenu(){
+        //Menu.closeMenu(d3.event);
+        d3.select(this).classed('displayNone',false);
+    }
+
     /**
      * a tree need a main topic
      */
-    this.createMainTopic = function($scope, $params){
-        var pos = $scope.mousePosition;
-        $scope.vis.append("circle")
-            .attr("transform", "translate(" + pos.x + "," + pos.y + ")")
+    this.createSubTopic = function($scope, $params){
+        //var pos = $scope.mousePosition;
+        $scope.container.append(newSubTopic)
+            .attr("transform", "translate(" + $params.pos.x + "," + $params.pos.y + ")")
             .attr("r", "45")
             .attr("class", "mainTopic");
 
-        console.log("created main topic on " + pos.x + "," + pos.y );
+        console.log("created main topic on " + $params.pos.x + "," + $params.pos.y );
     };
 
     /**
      * a tree need a main topic
      */
     this.createCenter = function($scope, $params){
-        var circle = $scope.container.append("circle")
-            //.attr("transform", "translate(" + $params.pos.x + "," + $params.pos.y + ")")
-            .attr("r", "65")
+        var g = $scope.container.append('g')
+            .attr("transform", "translate(" + $params.pos.x + "," + $params.pos.y + ")")
             .attr("data-x", $params.pos.x)
             .attr("data-y", $params.pos.y)
             .attr("cx", function(d) { return $(this).attr('data-x'); })
-            .attr("cy", function(d) { return $(this).attr('data-y'); })
-            .attr("class", "mainTopic")
-            //.call(drag);
+            .attr("cy", function(d) { return $(this).attr('data-y'); });
 
-        var text = circle.append('text')
-            .attr('dx', $params.pos.x)
-            .attr('dy',$params.pos.y)
-            .text($scope.course.course)
+        var circle = g.append("circle")
+            .attr("r", "65")
+            .attr("class", "mainTopic");
+
+        // menu icon
+        var menu = g.append("image")
+            .attr("xlink:href","/img/tree/icon-menu.svg")
+            .classed('iconMenu',true)
+            .attr('transform', 'translate(-65,-65)')
+            .attr("width", 16)
+            .attr("height", 16)
+            .on("mouseover", showMenu);
+            //.on("mouseout", hideMenu);
+
+        var text = g.append('text')
+            //.attr("transform", "translate(" + 65 + "," + 65 + ")")
+            .text($scope.course.course).attr('text-anchor','middle')
             .attr("class", "mainTopicText");
 
         console.log("createCenter on " + $params.pos.x + "," + $params.pos.y );
@@ -440,8 +464,6 @@ app.controller('TreeController', function($scope, $http, $attrs, TreeService, $a
         });
     };
 
-
-
     $scope.$watch('course', function(newVal, oldVal){
         if(newVal != null){
 
@@ -470,32 +492,6 @@ function initMapContainer(){
 
 function initDraggableUI(){
     var treeSVG = $('#treeSVG');
-    /*
-    // calculate containment
-    var t = $("#tree");
-    var wrapperOffset = t.offset();
-
-    var containment = [
-        t.width() - treeSVG.width() + wrapperOffset.left,
-        $('#map').height() - treeSVG.height() + wrapperOffset.top,
-        0,0
-        //wrapperOffset.left + 5,
-        //wrapperOffset.top
-
-        //t.width() - treeSVG.width() + wrapperOffset.left,
-        //$('#map').height() - treeSVG.height() + wrapperOffset.top,
-    ];
-
-    // enable canvas to be dragged along container
-    treeSVG.draggable({
-        containment: containment,
-        drag: function(event) {
-            //console.log($(this).css('top'));
-        }
-    });
-
-    console.log(containment);
-*/
     // enable rightclick open and close
     treeSVG.handleRightClick().handleLeftClick();
 };app.controller('widgetController', function($scope, $http, $rootScope) {

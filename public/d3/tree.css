@@ -31,17 +31,29 @@ path.link {
     left: -9999px;
     display: none;
 }
-
+.displayNone {
+    display: none;
+}
 #rightClick .show {
     display: block;
 }
 
 #rightClick {
     position: absolute;
-    width: 200px;
+    width: 150px;
     z-index:988;
-    margin-top: -140px;
-    margin-left: -10px;
+    margin-top: -150px;
+    margin-left: -25px;
+    padding-top:155px;
+    background: transparent;
+    box-shadow: 0px 0px 11px -1px rgba(0,0,0,0.75);
+}
+
+.closeMenu{
+    position: relative;
+    top:-150px;
+    font-size:18px;
+    left:30px;
 }
 
 #rightClick > .modal-dialog {
@@ -116,14 +128,21 @@ path.link {
     z-index: 10;
     display: block;
 }
-div#tree{padding:0px;}
+div#tree{
+    padding:0px;
+    margin-left: 15px;
+    overflow: hidden;
+}
 svg{
     background:#ECF0F5;
     border:1px solid black;
 }
 
 .mainTopic{
-    border:1px solid black;
+    fill:white;
+    stroke: steelblue;
+    stroke-width: 4px;
+    box-shadow: 0px 0px 11px -1px rgba(0,0,0,0.75);
 }
 
 .treeRoot{

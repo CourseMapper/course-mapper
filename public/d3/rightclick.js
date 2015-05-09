@@ -9,13 +9,13 @@ var Menu = {
         // show the right click menu
         el.removeClass('hide')
             .addClass('show')
-            .css("left", event.pageX).css("top", event.pageY)
-            .click(function(){Menu.closeMenu();})
+            //.css("left", event.pageX).css("top", event.pageY)
+            //.click(function(){Menu.closeMenu();})
             .on("contextmenu", function(event) {
                 //return false;
             });
 
-        console.log(event.pageX + " - y:" + event.pageY);
+        //console.log(event.pageX + " - y:" + event.pageY);
 
         // execute after shown callback
         if(shown) shown(event, el);
@@ -75,6 +75,8 @@ var Menu = {
         // to be able jquery method chaining
         return this;
     };
+
+    //$('#rightClick').mouseout(function(){$(this).fadeOut(200).addClass('hide')});
 
 }( jQuery ));
 

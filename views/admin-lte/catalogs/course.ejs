@@ -20,19 +20,22 @@
         <section class="content">
             <div class="box no-border" id="courseTabs">
                 <div class="box-header no-border">
-                    <h1><%=course.course%></h1>
+                    <h1><span class="hidden-xs course"></span><span class="visible-xs" style="margin-left:15px"></span><%=course.course%>
+                    </h1>
                     <% if(!user){ %>
-                        <a class="btn btn-primary btn-flat" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please login to follow this course</a>
+                    <a class="btn btn-primary btn-flat" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
+                        login to follow this course</a>
                     <% } else {
-                        if (!follow && course.startedBy.username != user.username){ %>
-                        <a class="btn btn-primary btn-flat" href="/api/catalogs/course/<%= course._id%>/follow">Follow</a>
-                        <% }
-                        if (course.startedBy.username == user.username){ %>
+                    if (!follow && course.startedBy.username != user.username){ %>
+                    <a class="btn btn-primary btn-flat" href="/api/catalogs/course/<%= course._id%>/follow">Follow</a>
+                    <% }
+                    if (course.startedBy.username == user.username){ %>
 
-                        <% } else { %>
-                        You are following this course. <a class="" href="/api/catalogs/course/<%= course._id%>/unfollow">click here to Unfollow</a>
-                        <% }
-                       }%>
+                    <% } else { %>
+                    You are following this course. <a class="" href="/api/catalogs/course/<%= course._id%>/unfollow">click
+                    here to Unfollow</a>
+                    <% }
+                    }%>
                 </div>
                 <div class="box-body no-border">
 
@@ -63,7 +66,9 @@
 
                                 <div class="col-xs-9">
                                     <div class="form-group">
-                                        Started By: <strong><%=(course.startedBy.username == user.username)?'You':course.startedBy.username%></strong> on <b> <%=moment(course.startedAt).fromNow()%></b>
+                                        Started By: <strong><%=(course.startedBy.username ==
+                                        user.username)?'You':course.startedBy.username%></strong> on <b>
+                                        <%=moment(course.startedAt).fromNow()%></b>
                                         <!-- -
                                         Last activity:<b> 2 days ago</b><br>
                                         User Rating:
@@ -73,16 +78,17 @@
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star-o"></i>-->
                                     </div>
-                                        <img src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
+                                    <img src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
+
                                     <div class="form-group">
-                                    <%=course.description%>
+                                        <%=course.description%>
                                     </div>
                                     <div class="form-group">
                                         <!-- general public analytics about this course -->
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane" id="map" >
+                            <div class="tab-pane" id="map">
                                 <div class="box-body no-border" id="tree" ng-controller="TreeController">
                                     <cm-tree el="treeSVG" width="4000" height="4000">
                                         <% include rightMenu %>
@@ -106,7 +112,6 @@
     <!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
-
 
 <script src="/d3/d3.min.js"></script>
 <% include ../jsfooter %>
