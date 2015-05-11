@@ -1,3 +1,28 @@
+$model = {
+    'type': 'main',
+    'course': 'Web Tech',
+    'subNodes': [
+        {
+            'type': 'subTopic',
+            'name': 'server technology',
+            'resources':[
+
+            ],
+            'position':{x:10, y:10},
+            'subNodes':[
+                {
+                    'type': 'pdf',
+                    'url': 'http://journal.r-project.org/archive/2014-1/murrell-potter.pdf'
+                },
+                {
+                    'type': 'subTopic',
+                    'name': 'server technology'
+                }
+            ]
+        }
+    ]
+};
+
 /**
  * call this to allow dragging on your svg element el.call(drag)
  */
@@ -46,10 +71,11 @@ app.directive('cmTree', function($timeout){
             $scope.container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
         }
 
+        /**
+         * data structure for subTopic
+         */
         $scope.subTopic = function (){
-            this.position = {};
-            this.name = "";
-            
+            this.name = "New Topic";
         };
 
         /**
@@ -146,13 +172,19 @@ app.service('TreeService', function($document){
      * a tree need a main topic
      */
     this.createSubTopic = function($scope, $params){
+        var sT = new $scope.subTopic();
+
+        $scope.course.subTopics.push(sT);
+
+        var sTCircle = '';
+
         //var pos = $scope.mousePosition;
         $scope.container.append(newSubTopic)
             .attr("transform", "translate(" + $params.pos.x + "," + $params.pos.y + ")")
             .attr("r", "45")
             .attr("class", "mainTopic");
 
-        console.log("created main topic on " + $params.pos.x + "," + $params.pos.y );
+        console.log("created sub topic on " + $params.pos.x + "," + $params.pos.y );
     };
 
     /**
