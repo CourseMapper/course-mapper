@@ -133,11 +133,6 @@ div#tree{
     margin-left: 15px;
     overflow: hidden;
 }
-svg{
-    background:#ECF0F5;
-    border:1px solid black;
-}
-
 .mainTopic{
     fill:white;
     stroke: steelblue;
