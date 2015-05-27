@@ -20,7 +20,15 @@
         -moz-transition: background-color 0.25s ease-in;
         transition: background-color 0.25s ease-in;
         max-width:100px;
-    }/*
+    }
+    [data-shape=Rectangle] {
+        width:210px;
+        height:70px;
+        left:380px;
+        top:505px;
+        line-height: 70px;
+    }
+    /*
     #opened {
         left: 10em;
         top: 5em;
@@ -95,22 +103,22 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-            <div class="w" id="{{data.slug}}" >
+            <div class="w" id="{{data.slug}}" data-shape="Rectangle">
                 {{data.category}}
-                <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
-                </div>
+            </div>
+            <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
             </div>
         </script>
 
-        <section class="content" ng-controller="CategoryListController as categoryList">
+        <section class="content">
 
             <div class="container">
                 <div class="category-map" id="category-map" >
 
-                    <div ng-repeat="data in categories.categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+                    <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
                     </div>
 
-                    <div class="w" id="center" ng-style="{left:center.x, top:center.y}">Center</div>
+                    <div class="w" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">Center</div>
                 </div>
             </div>
 
@@ -121,15 +129,6 @@
 
 </div><!-- ./wrapper -->
 <% include jsfooter %>
-<script>
-    jQuery(document).ready(function(){
-
-    });
-
-    function getCenter(){
-    }
-
-</script>
 <% include footer %>
 <!--
 <script>
