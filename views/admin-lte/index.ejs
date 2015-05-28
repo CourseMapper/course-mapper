@@ -1,6 +1,6 @@
 <% include header %>
 <style>
-    .w {
+    .w,.center-category {
         padding: 16px;
         position: absolute;
         z-index: 4;
@@ -118,7 +118,7 @@
                     <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
                     </div>
 
-                    <div class="w" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">Center</div>
+                    <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">Center</div>
                 </div>
             </div>
 

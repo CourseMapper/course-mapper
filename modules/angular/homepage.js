@@ -52,7 +52,20 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
 
         // let us drag and drop the cats
         var mapEl = jsPlumb.getSelector(".category-map .w");
-        instance.draggable(mapEl);
+        instance.draggable(mapEl,{
+            //drag: function() {
+            //    console.log($(this).offset());
+            //},
+            stop: function() {
+                var pos = $(this).offset();
+                var distanceFromCenter = {
+                    x: pos.left - $scope.center.x,
+                    y: pos.top - $scope.center.y
+                };
+
+                console.log(distanceFromCenter);
+            }
+        });
 
         instance.bind("click", function (c) {
             instance.detach(c);
@@ -60,25 +73,8 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
 
         // initialise all '.w' elements as connection targets.
         instance.batch(function () {
-            /*instance.makeSource(mapEl, {
-                filter: ".ep",
-                anchor: "Continuous",
-                connector: [ "StateMachine", { curviness: 20 } ],
-                connectorStyle: { strokeStyle: "#5c96bc", lineWidth: 2, outlineColor: "transparent", outlineWidth: 4 },
-                maxConnections: 5,
-                onMaxConnections: function (info, e) {
-                    alert("Maximum connections (" + info.maxConnections + ") reached");
-                }
-            });*/
-
-            /*instance.makeTarget(mapEl, {
-                dropOptions: {hoverClass: "dragHover"},
-                anchor: "Continuous",
-                allowLoopback: true
-            });*/
-
             /* connect center to first level cats*/
-            for(var i in $scope.categories){
+            /*for(var i in $scope.categories){
                 var cat = $scope.categories[i];
                 instance.connect({
                     source: 'center', target: cat.slug,
@@ -86,27 +82,28 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
                         [ "Perimeter", { shape: jsPlumb.getSelector('#center')[0].getAttribute("data-shape") }],
                         [ "Perimeter", { shape: jsPlumb.getSelector('#'+cat.slug)[0].getAttribute("data-shape") }]
                     ]
-                });
-                $scope.interConnect(cat, instance);
-            }
+                });*/
+            $scope.interConnect('center', $scope.categories, instance);
+            //}
         });
     };
 
-    $scope.interConnect = function(category, instance){
-        if(category.subCategories){
-            for(var i in category.subCategories){
-                var child = category.subCategories[i];
-                instance.connect({
-                    source: category.slug, target: child.slug,
-                    anchors: [
-                        [ "Perimeter", { shape: jsPlumb.getSelector('#'+category.slug)[0].getAttribute("data-shape") }],
-                        [ "Perimeter", { shape: jsPlumb.getSelector('#'+child.slug)[0].getAttribute("data-shape") }]
-                    ]
-                });
+    $scope.interConnect = function(parent, categories, instance){
+        for(var i in categories){
+            var child = categories[i];
+            instance.connect({
+                source: parent, target: child.slug,
+                anchors: [
+                    [ "Perimeter", { shape: jsPlumb.getSelector('#'+parent)[0].getAttribute("data-shape") }],
+                    [ "Perimeter", { shape: jsPlumb.getSelector('#'+child.slug)[0].getAttribute("data-shape") }]
+                ]
+            });
 
-                $scope.interConnect(child, instance);
+            if(child.subCategories) {
+                $scope.interConnect(child.slug, child.subCategories, instance);
             }
         }
+
     }
 
 });
