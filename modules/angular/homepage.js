@@ -20,7 +20,7 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
      */
     $http.get('/api/catalogs/categories').success(function (data) {
         if(data.categories) {
-            $scope.categories = data.categories; 
+            $scope.categories = data.categories;
         }
         else
             $scope.categories = false;
@@ -45,8 +45,9 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
 
     $scope.initJSPlumb = function(){
         var instance = jsPlumb.getInstance({
-            Endpoint: ["Dot", {radius: 2}],
-            HoverPaintStyle: {strokeStyle: "#1e8151", lineWidth: 2 },
+            Endpoint: ["Blank", {radius: 2}],
+            HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2 },
+            PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2 },
             ConnectionOverlays: [ ],
             Container: "category-map"
         });
@@ -76,10 +77,6 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
             }
         });
 
-        /*instance.bind("click", function (c) {
-            instance.detach(c);
-        });*/
-
         // initialise all '.w' elements as connection targets.
         instance.batch(function () {
             /* connect center to first level cats recursively*/
@@ -90,6 +87,14 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
     $scope.interConnect = function(parent, categories, instance){
         for(var i in categories){
             var child = categories[i];
+
+            // instantiate on hover
+            $('#' + child.slug).mouseover(function(){
+                $(this).find('ul').show();
+            }).mouseout(function(){$(this).find('ul').hide()});
+
+            //$('#' + child.slug).dropdown('toggle');
+
             instance.connect({
                 source: parent, target: child.slug,
                 anchors: [
