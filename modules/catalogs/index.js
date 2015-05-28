@@ -29,6 +29,29 @@ catalog.prototype.getCategory = function(error, params, success){
         });
 };
 
+catalog.prototype.updateCategoryPosition = function(error, paramsWhere, paramsUpdate, success){
+    Category.findOne(paramsWhere).exec(function(err, cat){
+        if(err) error(err);
+        else
+            cat.update({
+                $set: {
+                    fromCenter: {
+                        x: paramsUpdate.x,
+                        y: paramsUpdate.y
+                    }
+                }
+            }, function(err){
+                if (err) {
+                    debug('failed update cat position');
+                    error(err);
+                }
+                else
+                    // success saved the cat
+                    success(cat);
+            });
+    });
+};
+
 catalog.prototype.getCourse = function(error, params, success){
     Course.findOne(params)
         .populate('startedBy category tags').exec(function(err, docs) {

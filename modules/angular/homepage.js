@@ -19,8 +19,9 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
      * get all categories, recursived on the server
      */
     $http.get('/api/catalogs/categories').success(function (data) {
-        if(data.categories)
-            $scope.categories = data.categories;
+        if(data.categories) {
+            $scope.categories = data.categories; 
+        }
         else
             $scope.categories = false;
     });
@@ -53,38 +54,36 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
         // let us drag and drop the cats
         var mapEl = jsPlumb.getSelector(".category-map .w");
         instance.draggable(mapEl,{
-            //drag: function() {
-            //    console.log($(this).offset());
-            //},
+            // update position on drag stop
             stop: function() {
-                var pos = $(this).offset();
+                var el = $(this);
+                var pos = el.offset();
                 var distanceFromCenter = {
                     x: pos.left - $scope.center.x,
                     y: pos.top - $scope.center.y
                 };
 
+                $http.put('/api/catalogs/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
+                    .success(function(res, status){
+                        console.log(res);
+                    })
+                    .error(function(res, status){
+                        console.log('err');
+                        console.log(res);
+                    });
+
                 console.log(distanceFromCenter);
             }
         });
 
-        instance.bind("click", function (c) {
+        /*instance.bind("click", function (c) {
             instance.detach(c);
-        });
+        });*/
 
         // initialise all '.w' elements as connection targets.
         instance.batch(function () {
-            /* connect center to first level cats*/
-            /*for(var i in $scope.categories){
-                var cat = $scope.categories[i];
-                instance.connect({
-                    source: 'center', target: cat.slug,
-                    anchors: [
-                        [ "Perimeter", { shape: jsPlumb.getSelector('#center')[0].getAttribute("data-shape") }],
-                        [ "Perimeter", { shape: jsPlumb.getSelector('#'+cat.slug)[0].getAttribute("data-shape") }]
-                    ]
-                });*/
+            /* connect center to first level cats recursively*/
             $scope.interConnect('center', $scope.categories, instance);
-            //}
         });
     };
 

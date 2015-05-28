@@ -24,35 +24,8 @@
     [data-shape=Rectangle] {
         width:210px;
         height:70px;
-        left:380px;
-        top:505px;
-        line-height: 70px;
-    }
-    /*
-    #opened {
-        left: 10em;
-        top: 5em;
     }
 
-    #phone1 {
-        left: 35em;
-        top: 12em;
-    }
-
-    #inperson {
-        left: 12em;
-        top: 23em;
-    }
-
-    #phone2 {
-        left: 28em;
-        top: 24em;
-    }
-
-    #rejected {
-        left: 10em;
-        top: 35em;
-    }*/
 
 </style>
 <div class="wrapper">
@@ -103,7 +76,7 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-            <div class="w" id="{{data.slug}}" data-shape="Rectangle">
+            <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}">
                 {{data.category}}
             </div>
             <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
