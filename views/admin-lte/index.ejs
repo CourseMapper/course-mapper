@@ -1,8 +1,4 @@
 <% include header %>
-<style>
-
-
-</style>
 <div class="wrapper">
 
     <!-- Header Navbar -->
@@ -10,6 +6,13 @@
 
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" ng-controller="HomePageController">
+
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li >Browse Categories</li>
+            </ol>
+        </section>
 
         <!--<div ngCloak ng-hide="hideSlider" class="row row-centered" style="display: none;" >-->
         <div class="row row-centered" style="display: none;" >
@@ -53,9 +56,9 @@
         <script type="text/ng-template"  id="tree_item_renderer.html">
                 <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
 
-                    {{data.category}} <b class="caret"></b>
+                    {{data.category}} <!--<b class="caret"></b>-->
 
-                        <ul class="dropdown-menu box box-primary category"  >
+                        <ul class="dropdown-menu box box-primary category">
                             <li><b>{{data.category}}</b></li>
                             <li class="divider"></li>
                             <li> total 10 courses </li>
@@ -65,7 +68,9 @@
                             <li><a tabindex="-1" href="#">b</a></li>
                             <li><a tabindex="-1" href="#">c</a></li>
                             <li class="divider"></li>
-                            <li><a tabindex="-1" href="#">Browse Courses</a></li>
+                            <li>
+                                <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
+                            </li>
                         </ul>
 
                     </div>
@@ -85,6 +90,7 @@
 
                     <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">
                         <h4>CourseMapper</h4>
+                        is a mind map based collaborative course annotation platform.
                     </div>
                 </div>
             </div>

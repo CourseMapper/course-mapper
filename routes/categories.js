@@ -78,6 +78,10 @@ router.get('/api/catalogs/category/:category/tags', function(req, res, next) {
     );
 });
 
+/**
+ * get courses based on category slug
+ * return: json
+ */
 router.get('/api/catalogs/category/:category/courses', function(req, res, next) {
     var cat = new Catalog();
     cat.getCategoryCourses(
@@ -92,6 +96,14 @@ router.get('/api/catalogs/category/:category/courses', function(req, res, next) 
             res.status(200).json({courses: courses});
         }
     );
+});
+
+/**
+ * get courses based on category slug
+ * return: html view
+ */
+router.get('/catalogs/category/:category/courses', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', showSidebar:true });
 });
 
 router.post('/api/catalogs/categories', function(req, res, next){

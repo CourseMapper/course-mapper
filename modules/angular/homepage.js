@@ -11,7 +11,7 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
 
         $scope.width = jQuery(window).width();
         $scope.height = jQuery(window).height();
-        $scope.center = {x:$scope.width/2, y: $scope.height/2};
+        $scope.center = {x:$scope.width/2, y: ($scope.height/2)-100};
 
     });
 
@@ -107,7 +107,10 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
                 $scope.interConnect(child.slug, child.subCategories, instance);
             }
         }
+    }
 
+    $scope.goToDetail = function(categorySlug){
+        window.location.href = "/catalogs/category/" + categorySlug + "/courses";
     }
 
 });
