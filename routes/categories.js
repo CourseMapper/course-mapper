@@ -98,6 +98,14 @@ router.get('/api/catalogs/category/:category/courses', function(req, res, next) 
     );
 });
 
+/**
+ * get courses based on category slug
+ * return: html view
+ */
+router.get('/catalogs/category/:category/courses', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', showSidebar:true });
+});
+
 router.post('/api/catalogs/categories', function(req, res, next){
     if (req.user && req.user.roles != 'admin') {
         res.status(401).send('Unauthorized');

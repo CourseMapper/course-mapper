@@ -16,6 +16,7 @@ categorySchema.add({
     },
     parentCategory: mongoose.Schema.Types.ObjectId,
     subCategories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'categories'}],
+    fromCenter: mongoose.Schema.Types.Mixed,
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags'}],
     updatedAt: {
         type: Date
