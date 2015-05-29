@@ -1,15 +1,26 @@
-
-app.controller('CourseListController', function($scope, $http, $rootScope) {
-    $http.get('/api/catalogs/courses').success(function(data) {
-        $scope.courses = data;
-    });
-});
-
 app.controller('CourseController', function($scope, $filter, $http, $location) {
     $scope.course = null;
 
     $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?follow=1'; 
+    $scope.followUrl = $scope.currentUrl + '?follow=1';
+});
+
+
+app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
+    $scope.slug = $routeParams.slug;
+
+    //api/catalogs/category/:category/courses
+    //api/catalogs/category/:category/tags
+
+    $http.get('/api/catalogs/category/' + $scope.slug + '/courses').success(function(data) {
+        $scope.courses = data.courses;
+    });
+
+    $http.get('/api/catalogs/category/' + $scope.slug + '/tags').success(function(data) {
+        $scope.tags = data.tags;
+    });
+
+
 });
 
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {

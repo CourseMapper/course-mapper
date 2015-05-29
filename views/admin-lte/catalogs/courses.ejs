@@ -1,9 +1,8 @@
-<% include ../headerWithSidebar %>
+<% include ../header %>
 <div class="wrapper">
 
     <!-- Header Navbar -->
     <% include ../mainMenu %>
-    <% include ../sidebar %>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
 
@@ -14,19 +13,29 @@
             </ol>
             <!-- Sidebar toggle button-->
 
-            <h4>Filter Choices:</h4>
-            <img src="/img/tag_cloud_in.png">
+        </section>
 
-            <h1>
-                Browse Courses
-            </h1>
-
+        <% /*include ../sidebar*/ %>
+        <!-- for routing purpose we write it as an ng-view although we write the html also in this file. -->
+        <section class="content" ng-view>
         </section>
 
         <!-- Main content -->
-        <section class="content" ng-controller="CourseListController as courseList" id="courseList">
+        <script type="text/ng-template"  id="courses_list.html">
+
             <div class="col-md-12">
-                <div class="col-sm-6 col-lg-3" ng-repeat="c in courses.courses">
+                <div class="col-md-12 filter">
+                    <h4>Filtered By:</h4>
+                    <span class="label label-primary">
+                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        &nbsp;Processing</span>
+                    <h4>Available Tags:</h4>
+                    <span class="label label-primary" ng-repeat="t in tags">{{t.tag}}</span>
+                    <h4>Courses:</h4>
+                </div>
+
+
+                <div class="col-sm-6 col-lg-3" ng-repeat="c in courses">
                     <div class="form_hover">
                         <div class="box box-primary peekCourse">
                             <div class="box-header with-border">
@@ -65,7 +74,8 @@
                     </div>
                 </div>
             </div>
-        </section>
+
+        </script>
 
         <br class="clear">
         <!-- /.content -->

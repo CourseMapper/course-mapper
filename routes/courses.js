@@ -8,12 +8,15 @@ var moment = require('moment');
 
 var router = express.Router();
 
-function listCategories(req, res, next){
-    res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', showSidebar:true });
-}
 
-router.get('/catalogs', listCategories);
-router.get('/catalogs/courses', listCategories);
+/**
+ * get courses based on category slug
+ * return: html view
+ */
+router.get('/catalogs/courses', function (req, res, next){
+        res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', showSidebar:true });
+    }
+);
 
 router.post('/api/catalogs/courses', function(req, res, next){
     if (!req.user) {

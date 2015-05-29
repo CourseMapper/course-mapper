@@ -23,3 +23,5 @@ bower_components
 data/*
 
 public/pdf_js
+misc/jsPlumb-master
+misc
