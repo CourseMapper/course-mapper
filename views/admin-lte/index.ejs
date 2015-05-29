@@ -4,18 +4,18 @@
     <!-- Header Navbar -->
     <% include mainMenu %>
 
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+            <li >Browse Categories</li>
+        </ol>
+    </section>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" ng-controller="HomePageController">
 
-        <section class="content-header">
-            <ol class="breadcrumb">
-                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li >Browse Categories</li>
-            </ol>
-        </section>
 
-        <!--<div ngCloak ng-hide="hideSlider" class="row row-centered" style="display: none;" >-->
-        <div class="row row-centered" style="display: none;" >
+        <div ng-hide="hideSlider" class="row row-centered" id="sliderCarousel">
+        <!--<div class="row row-centered" style="" >-->
             <div class="col-lg-12 col-centered">
 
                 <div id="carousel-generic" class="carousel slide" data-ride="carousel">
@@ -80,22 +80,18 @@
             </div>
         </script>
 
-        <section class="content">
+        <div class="container">
+            <div class="category-map" id="category-map" >
 
-            <div class="container">
-                <div class="category-map" id="category-map" >
+                <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+                </div>
 
-                    <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
-                    </div>
-
-                    <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">
-                        <h4>CourseMapper</h4>
-                        is a mind map based collaborative course annotation platform.
-                    </div>
+                <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">
+                    <h4>CourseMapper</h4>
+                    is a mind map based collaborative course annotation platform.
                 </div>
             </div>
-
-        </section>
+        </div>
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
@@ -146,5 +142,16 @@
     });
 </script>
 <% } %>
-
+<script>
+    $(document).ready(function(){
+        //Get window height and the wrapper height
+        var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
+        var neg2= $('.content-header').outerHeight();
+        var window_height = $(window).height();
+        //Set the min-height of the content and sidebar based on the
+        //the height of the document.
+        $(".carousel").css('max-height', window_height - neg );
+        $(".content-wrapper").css('max-height', window_height - neg - neg2).css('min-height','');
+    });
+</script>
 <% include footer %>

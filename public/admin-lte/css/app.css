@@ -274,13 +274,16 @@ i.ionicons {
 }
 
 .carousel {
-    max-height: 500px;
     overflow: hidden;
+    background-color: black;
+    top: -51px;
+    z-index: 1000;
+    max-height: 800px;
 }
 
 .carousel .btn-slide {
     position: absolute;
-    bottom: 100px;
+    top: 60%;
     left: 50%;
     height: 50px;
     z-index: 15;
