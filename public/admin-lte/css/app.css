@@ -441,3 +441,4 @@ ul.dropdown-menu.category{
 .dropdown-menu>li>a.btn:hover{
     background: #2e6da4;
 }
+.hideSlider{visibility: hidden}

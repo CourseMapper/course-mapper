@@ -11,11 +11,8 @@
         </ol>
     </section>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" ng-controller="HomePageController">
-
-
-        <div ng-hide="hideSlider" class="row row-centered" id="sliderCarousel">
-        <!--<div class="row row-centered" style="" >-->
+    <div class="content-wrapper" ng-controller="HomePageController"> 
+        <div ng-class="{'hideSlider': hideSlider}" class="row row-centered" id="sliderCarousel">
             <div class="col-lg-12 col-centered">
 
                 <div id="carousel-generic" class="carousel slide" data-ride="carousel">
