@@ -41,6 +41,12 @@ router.get('/api/catalogs/category/:category', function(req, res, next) {
  * update category.fromCenter value
  */
 router.put('/api/catalogs/category/:category/fromCenter', function(req, res, next) {
+    // check for user rights, only admin can edit cats positions on the homepage
+    if (req.user && req.user.roles != 'admin') {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var cat = new Catalog();
 
     cat.updateCategoryPosition(
