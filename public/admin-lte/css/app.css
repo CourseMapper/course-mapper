@@ -363,3 +363,91 @@ li.active .ionicons{
 li.disabled i{
     opacity: 0.2;
 }
+
+.w,.center-category {
+    padding: 16px;
+    position: absolute;
+    border: 2px solid #3C8DBC;
+    box-shadow: 2px 2px 19px #e0e0e0;
+    border-radius: 6px;
+    cursor: default;
+    background-color: white;
+    font-size: 12px;
+    transition: background-color 0.25s ease-in;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.center-category{
+    width:160px!important;
+    height: 200px!important;
+    display: block;
+    background: #3C8DBC;
+    color:white;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.center-category h4{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+[data-shape=Rectangle] {
+    width:auto;
+    min-width: 150px;
+    height:auto;
+}
+
+.box.box-primary.dropdown-menu{
+    width: auto;
+    position: absolute;
+    box-shadow: 0 0px 10px grey;
+    top: 0px;
+}
+
+.dropdown-menu.category li{
+    padding-left: 14px;
+    padding-right: 14px;
+    text-transform: capitalize;
+    color: #777;
+}
+
+ul.dropdown-menu.category{
+    z-index:10;
+}
+
+.skin-blue .content-header {
+    background: white;
+    padding: 10px;
+    margin-left: 0px;
+}
+
+@media (max-width: 991px) {
+    .content-header > .breadcrumb {
+        background: transparent;
+        margin-top: 0px;
+    }
+}
+
+.dropdown-menu>li>a.btn{
+    color:white;
+}
+.dropdown-menu>li>a.btn:hover{
+    background: #2e6da4;
+}
+.filter .btn-box-tool {
+    box-shadow: none !important;
+    color: white;
+    font-size: inherit;
+    padding-top: 4px;
+    cursor: hand;
+}
+.filter .btn-box-tool:hover{
+    color:lightgrey;
+}
+.filter .label{
+    margin-right:5px;
+}

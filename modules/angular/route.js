@@ -1,18 +1,24 @@
-app.config(['$routeProvider', /*'$locationProvider',*/
+app.config(['$routeProvider', '$locationProvider',
 
-    function($routeProvider/*, $locationProvider*/) {
+    function($routeProvider, $locationProvider) {
 
         $routeProvider.
-            when('/about', {
+            when('/static/about', {
                 templateUrl: '/static/about',
                 controller: 'staticController'
             }).
+
+            when('/category/:slug', {
+                templateUrl: 'courses_list.html',
+                controller: 'CourseListController'
+            }).
+
             otherwise({
                 redirectTo: '/'
             });
 
-        /*$locationProvider.html5Mode(true);*/
+        /*$locationProvider.html5Mode({enabled: true,
+            requireBase: false});*/
 
     }]);
-
 

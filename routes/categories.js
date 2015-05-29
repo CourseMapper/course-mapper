@@ -37,6 +37,30 @@ router.get('/api/catalogs/category/:category', function(req, res, next) {
     );
 });
 
+/**
+ * update category.fromCenter value
+ */
+router.put('/api/catalogs/category/:category/fromCenter', function(req, res, next) {
+    var cat = new Catalog();
+
+    cat.updateCategoryPosition(
+        function(err){
+            res.status(500).json({});
+        },
+        {
+            slug: req.params.category
+        }
+        ,
+        {
+            x: req.body.x,
+            y: req.body.y
+        },
+        function(cat){
+            res.status(200).json({category: cat});
+        }
+    );
+});
+
 
 router.get('/api/catalogs/category/:category/tags', function(req, res, next) {
     var cat = new Catalog();
@@ -54,6 +78,10 @@ router.get('/api/catalogs/category/:category/tags', function(req, res, next) {
     );
 });
 
+/**
+ * get courses based on category slug
+ * return: json
+ */
 router.get('/api/catalogs/category/:category/courses', function(req, res, next) {
     var cat = new Catalog();
     cat.getCategoryCourses(
