@@ -4,18 +4,15 @@
     <!-- Header Navbar -->
     <% include mainMenu %>
 
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+            <li >Browse Categories</li>
+        </ol>
+    </section>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" ng-controller="HomePageController">
-
-        <section class="content-header">
-            <ol class="breadcrumb">
-                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li >Browse Categories</li>
-            </ol>
-        </section>
-
-        <!--<div ngCloak ng-hide="hideSlider" class="row row-centered" style="display: none;" >-->
-        <div class="row row-centered" style="display: none;" >
+    <div class="content-wrapper" ng-controller="HomePageController"> 
+        <div ng-class="{'hideSlider': hideSlider}" class="row row-centered" id="sliderCarousel">
             <div class="col-lg-12 col-centered">
 
                 <div id="carousel-generic" class="carousel slide" data-ride="carousel">
@@ -80,68 +77,78 @@
             </div>
         </script>
 
-        <section class="content">
+        <div class="container">
+            <div class="category-map" id="category-map" >
 
-            <div class="container">
-                <div class="category-map" id="category-map" >
+                <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+                </div>
 
-                    <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
-                    </div>
-
-                    <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">
-                        <h4>CourseMapper</h4>
-                        is a mind map based collaborative course annotation platform.
-                    </div>
+                <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">
+                    <h4>CourseMapper</h4>
+                    is a mind map based collaborative course annotation platform.
                 </div>
             </div>
-
-        </section>
+        </div>
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
 <% include jsfooter %>
-<% include footer %>
-<!--
+
+<% if(user && user.roles == 'admin'){ %>
+<div ng-controller="AdminHomePageController"></div>
 <script>
-    {
-        categories: [
-            {
-                _id: "5530bf0ee5a9e0dd261059b9",
-                updatedAt: "2015-04-17T08:06:38.549Z",
-                slug: "Math",
-                category: "Math",
-                parentCategory: null,
-                __v: 0,
-                tags: [ ],
-                subCategories: [
-                    {
-                        _id: "5565966edfccccb85c3b22f8",
-                        updatedAt: "2015-05-27T10:03:26.419Z",
-                        slug: "test",
-                        category: "test",
-                        parentCategory: "5530bf0ee5a9e0dd261059b9",
-                        __v: 0,
-                        tags: [ ],
-                        subCategories: [ ]
-                    }
-                ]
-            },
-            {
-                _id: "5530bf15e5a9e0dd261059ba",
-                updatedAt: "2015-04-17T08:06:45.274Z",
-                slug: "IT",
-                category: "I.T",
-                parentCategory: null,
-                __v: 0,
-                tags: [
-                    "5530c18029d64f5129d44c3d",
-                    "5530c18a29d64f5129d44c3e",
-                    "5530c19629d64f5129d44c3f"
-                ],
-                subCategories: [ ]
-            }
-        ]
-    }
-</script>-->
+    app.controller('AdminHomePageController', function($scope, $http, $rootScope) {
+        /**
+         * script enabled when the logged in user is an admin.
+         * it will allow this user to drag and save categories position
+         */
+        $rootScope.initDraggable = function (jsPlumbInstance, center){
+            // let us drag and drop the cats
+            var mapEl = jsPlumb.getSelector(".category-map .w");
+            jsPlumbInstance.draggable(mapEl,{
+                // update position on drag stop
+                stop: function() {
+                    var el = $(this);
+                    var pos = el.offset();
+                    var distanceFromCenter = {
+                        x: pos.left - center.x,
+                        y: pos.top - center.y
+                    };
+
+                    $http.put('/api/catalogs/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
+                            .success(function(res, status){
+                                console.log(res);
+                            })
+                            .error(function(res, status){
+                                console.log('err');
+                                console.log(res);
+                            });
+                }
+            });
+        }
+    });
+</script>
+<% } else {%>
+<script>
+    app.controller('SController', function($rootScope) {
+        $rootScope.initDraggable = function (a, b) {
+            return true;
+        }
+    });
+</script>
+<% } %>
+<script>
+    $(document).ready(function(){
+        //Get window height and the wrapper height
+        var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
+        var neg2= $('.content-header').outerHeight();
+        var window_height = $(window).height();
+        //Set the min-height of the content and sidebar based on the
+        //the height of the document.
+        $(".carousel").css('max-height', window_height - neg );
+        $(".content-wrapper").css('max-height', window_height - neg - neg2).css('min-height','');
+    });
+</script>
+<% include footer %>

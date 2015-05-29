@@ -210,7 +210,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.width = jQuery(window).width();
         $scope.height = jQuery(window).height();
         $scope.center = {x:$scope.width/2, y: ($scope.height/2)-100};
-
     });
 
     /**
@@ -250,30 +249,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             Container: "category-map"
         });
 
-        // let us drag and drop the cats
-        var mapEl = jsPlumb.getSelector(".category-map .w");
-        instance.draggable(mapEl,{
-            // update position on drag stop
-            stop: function() {
-                var el = $(this);
-                var pos = el.offset();
-                var distanceFromCenter = {
-                    x: pos.left - $scope.center.x,
-                    y: pos.top - $scope.center.y
-                };
-
-                $http.put('/api/catalogs/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
-                    .success(function(res, status){
-                        console.log(res);
-                    })
-                    .error(function(res, status){
-                        console.log('err');
-                        console.log(res);
-                    });
-
-                console.log(distanceFromCenter);
-            }
-        });
+        // so the ejs can access this instance
+        $rootScope.initDraggable(instance, $scope.center);
 
         // initialise all '.w' elements as connection targets.
         instance.batch(function () {
@@ -311,7 +288,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         window.location.href = "/catalogs/courses/#/category/" + categorySlug;
     };
 
-});;app.controller('MainMenuController', function($scope, $http, $rootScope) {
+});
+;app.controller('MainMenuController', function($scope, $http, $rootScope) {
     $http.get('/api/accounts').success(function(data) {
         $scope.user = data;
         $rootScope.user = data;

@@ -274,13 +274,15 @@ i.ionicons {
 }
 
 .carousel {
-    max-height: 500px;
     overflow: hidden;
+    background-color: black;
+    top: -51px;
+    z-index: 1000;
 }
 
 .carousel .btn-slide {
     position: absolute;
-    bottom: 100px;
+    top: 70%;
     left: 50%;
     height: 50px;
     z-index: 15;
@@ -438,6 +440,7 @@ ul.dropdown-menu.category{
 .dropdown-menu>li>a.btn:hover{
     background: #2e6da4;
 }
+.hideSlider{visibility: hidden}
 .filter .btn-box-tool {
     box-shadow: none !important;
     color: white;
