@@ -4,10 +4,15 @@
     <!-- Header Navbar -->
     <% include mainMenu %>
 
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+            <li >Browse Categories</li>
+        </ol>
+    </section>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-
-        <div class="row row-centered">
+    <div class="content-wrapper" ng-controller="HomePageController"> 
+        <div ng-class="{'hideSlider': hideSlider}" class="row row-centered" id="sliderCarousel">
             <div class="col-lg-12 col-centered">
 
                 <div id="carousel-generic" class="carousel slide" data-ride="carousel">
@@ -15,14 +20,14 @@
                         <li data-target="#carousel-generic" data-slide-to="0" class="active"></li>
                         <li data-target="#carousel-generic" data-slide-to="1" class=""></li>
                     </ol>
-                    <a class="btn btn-block btn-primary btn-flat btn-slide hidden-xs">Start Collaborating!</a>
+
+                    <a class="btn btn-block btn-primary btn-flat btn-slide hidden-xs" ng-click="setHideSlider()">Let's Start!</a>
 
                     <div class="carousel-inner">
                         <div class="item active">
                             <img src="/img/sliders/slider_3.png" alt="">
 
                             <div class="carousel-caption">
-
                             </div>
                         </div>
                         <div class="item">
@@ -43,83 +48,108 @@
                 <a class="btn btn-block btn-primary btn-flat visible-xs">Start a course map!</a>
             </div>
         </div>
-
         <!-- Main content -->
-        <section class="content" ng-controller="CategoryListController as categoryList">
 
-            <div class="container">
-                <div class="row row-centered">
-                    <div class="col-sm-6 col-lg-6 col-centered">
-                        <div class="text-center">
-                            <h1>Welcome to CourseMapper,
-                                let's start by going through our categories
-                            </h1>
-                        </div>
-                    </div>
-                </div>
-                <div class="row row-centered">
-                    <div class="col-xs-12 col-lg-9 col-centered">
-                        <div class="content">
-                            <div class="col-xs-12 col-sm-4 col-lg-4" ng-repeat="category in categories.categories">
-                                <div class="box box-solid">
-                                    <div class="box-header with-border">
-                                        <h3 class="box-title"><a href="/catalogs/courses/category/{{category.slug}}">{{category.category}}</a>
-                                        </h3>
-                                    </div>
-                                    <!-- /.box-header -->
-                                    <div class="box-body clearfix hidden-xs">
-                                        <img class="hidden-xs" src="/img/category_placeholder.png" style="width: 100%"
-                                             alt="category picture">
-                                    </div>
-                                    <!-- /.box-body -->
-                                    <div class="box-footer no-border">
-                                        20 courses available
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-sm-4 col-lg-4" ng-repeat="category in categories.categories">
-                                <div class="box box-solid">
-                                    <div class="box-header with-border">
-                                        <h3 class="box-title"><a href="/catalogs/courses/category/{{category.slug}}">{{category.category}}</a>
-                                        </h3>
-                                    </div>
-                                    <!-- /.box-header -->
-                                    <div class="box-body clearfix hidden-xs">
-                                        <img class="hidden-xs" src="/img/category_placeholder.png" style="width: 100%"
-                                             alt="category picture">
-                                    </div>
-                                    <!-- /.box-body -->
-                                    <div class="box-footer no-border">
-                                        20 courses available
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        <script type="text/ng-template"  id="tree_item_renderer.html">
+                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
+
+                    {{data.category}} <!--<b class="caret"></b>-->
+
+                        <ul class="dropdown-menu box box-primary category">
+                            <li><b>{{data.category}}</b></li>
+                            <li class="divider"></li>
+                            <li> total 10 courses </li>
+                            <li> total 250 nodes </li>
+                            <li><h5><b>Top Courses</b></h5></li>
+                            <li><a tabindex="-1" href="#">a</a></li>
+                            <li><a tabindex="-1" href="#">b</a></li>
+                            <li><a tabindex="-1" href="#">c</a></li>
+                            <li class="divider"></li>
+                            <li>
+                                <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
+                            </li>
+                        </ul>
+
                     </div>
                 </div>
 
-                <div class="row row-centered">
-                    <div class="col-lg-4 col-centered">
-                        <div class="text-center">
-                            <h1>Or browse through our tag cloud:
-                            </h1>
+            <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
+            </div>
+        </script>
 
-                            <p>&nbsp;</p>
-                        </div>
-                    </div>
+        <div class="container">
+            <div class="category-map" id="category-map" >
+
+                <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
                 </div>
 
-                <div class="row row-centered">
-                    <img src="/img/tag_cloud.png">
+                <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">
+                    <h4>CourseMapper</h4>
+                    is a mind map based collaborative course annotation platform.
                 </div>
             </div>
-
-
-        </section>
+        </div>
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
 <% include jsfooter %>
+
+<% if(user && user.roles == 'admin'){ %>
+<div ng-controller="AdminHomePageController"></div>
+<script>
+    app.controller('AdminHomePageController', function($scope, $http, $rootScope) {
+        /**
+         * script enabled when the logged in user is an admin.
+         * it will allow this user to drag and save categories position
+         */
+        $rootScope.initDraggable = function (jsPlumbInstance, center){
+            // let us drag and drop the cats
+            var mapEl = jsPlumb.getSelector(".category-map .w");
+            jsPlumbInstance.draggable(mapEl,{
+                // update position on drag stop
+                stop: function() {
+                    var el = $(this);
+                    var pos = el.offset();
+                    var distanceFromCenter = {
+                        x: pos.left - center.x,
+                        y: pos.top - center.y
+                    };
+
+                    $http.put('/api/catalogs/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
+                            .success(function(res, status){
+                                console.log(res);
+                            })
+                            .error(function(res, status){
+                                console.log('err');
+                                console.log(res);
+                            });
+                }
+            });
+        }
+    });
+</script>
+<% } else {%>
+<div ng-controller="SController"></div>
+<script>
+    app.controller('SController', function($rootScope) {
+        $rootScope.initDraggable = function (a, b) {
+            return true;
+        }
+    });
+</script>
+<% } %>
+<script>
+    $(document).ready(function(){
+        //Get window height and the wrapper height
+        var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
+        var neg2= $('.content-header').outerHeight();
+        var window_height = $(window).height();
+        //Set the min-height of the content and sidebar based on the
+        //the height of the document.
+        $(".carousel").css('max-height', window_height - neg );
+        $(".content-wrapper").css('max-height', window_height - neg - neg2).css('min-height','');
+    });
+</script>
 <% include footer %>
