@@ -1,15 +1,15 @@
-### pre-requisities:
+### Pre-requisities:
 1. MongoDB
 2. NodeJS
 3. npm
  
-### install some command line tools
+### Install some command line tools
 ```
 sudo npm install -g gulp
 sudo npm install -g grunt
 sudo npm install -g nodemon
 ```
-### this will install the needed modules
+### This will install the needed modules
 ```
 npm install 
 run mongoDB if it is not yet running
@@ -19,9 +19,10 @@ run mongoDB if it is not yet running
 [optional] bower install
 [optional] sudo npm install -g mocha 
 ```
-### run pre-script compiler
+### Run pre-script compiler
 `grunt`
 
-### run the application:
+### Run the application
 `npm start`
 
+### See wiki for further explanations
