@@ -21,6 +21,21 @@ router.get('/api/catalogs/categories', function(req, res, next) {
     );
 });
 
+router.get('/api/categories', function(req, res, next) {
+    var cat = new Catalog();
+    cat.getCategories(
+        function(err){
+            res.status(500).json({});
+        },
+        // to get all categories in flat format
+        {}
+        ,
+        function(categories){
+            res.status(200).json({categories: categories});
+        }
+    );
+});
+
 router.get('/api/catalogs/category/:category', function(req, res, next) {
     var cat = new Catalog();
     cat.getCategory(

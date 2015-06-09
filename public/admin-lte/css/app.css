@@ -116,10 +116,6 @@ i.ionicons {
     display: none !important
 }
 
-.layout-top-nav .content-wrapper-admin, .admin .main-footer {
-    margin-left: 230px;
-}
-
 .form_hover {
     padding: 0px;
     position: relative;
