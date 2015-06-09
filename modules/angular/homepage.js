@@ -17,7 +17,7 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
     /**
      * get all categories, recursived on the server
      */
-    $http.get('/api/catalogs/categories').success(function (data) {
+    $http.get('/api/categories').success(function (data) {
         if(data.categories) {
             $scope.categories = data.categories;
         }
@@ -69,8 +69,6 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
             $('#' + child.slug).mouseover(function(){
                 $(this).find('ul').show();
             }).mouseout(function(){$(this).find('ul').hide()});
-
-            //$('#' + child.slug).dropdown('toggle');
 
             instance.connect({
                 source: parent, target: child.slug,

@@ -50,33 +50,30 @@
                 <a class="btn btn-block btn-primary btn-flat visible-xs">Start a course map!</a>
             </div>
         </div>
-        <!-- /.content -->
-    </div>
-    <!-- /.content-wrapper -->
+        <!-- Main content -->
 
-</div><!-- ./wrapper -->
-<!-- Main content -->
-<script type="text/ng-template"  id="tree_item_renderer.html">
-    <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
+        <script type="text/ng-template"  id="tree_item_renderer.html">
+                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
 
-        {{data.category}}
+                    {{data.category}}
 
-        <ul class="dropdown-menu box box-primary category">
-            <li><b>{{data.category}}</b></li>
-            <li class="divider"></li>
-            <li> total 10 courses </li>
-            <li> total 250 nodes </li>
-            <li><h5><b>Top Courses</b></h5></li>
-            <li><a tabindex="-1" href="#">a</a></li>
-            <li><a tabindex="-1" href="#">b</a></li>
-            <li><a tabindex="-1" href="#">c</a></li>
-            <li class="divider"></li>
-            <li>
-                <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
-            </li>
-        </ul>
+                        <ul class="dropdown-menu box box-primary category">
+                            <li><b>{{data.category}}</b></li>
+                            <li class="divider"></li>
+                            <li> total 10 courses </li>
+                            <li> total 250 nodes </li>
+                            <li><h5><b>Top Courses</b></h5></li>
+                            <li><a tabindex="-1" href="#">a</a></li>
+                            <li><a tabindex="-1" href="#">b</a></li>
+                            <li><a tabindex="-1" href="#">c</a></li>
+                            <li class="divider"></li>
+                            <li>
+                                <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
+                            </li>
+                        </ul>
 
-    </div>
+                    </div>
+                </div>
 
     <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
     </div>
