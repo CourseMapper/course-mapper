@@ -1,8 +1,8 @@
 admin.controller('CategoryListController', function($scope, $http, $rootScope) {
 
   $scope.initData = function(){
-    $http.get('/api/catalogs/categories').success(function(data) {
-      $scope.categories = data;
+    $http.get('/api/categories').success(function(data) {
+      $scope.categories = data.categories;
     });
   };
 

@@ -8,10 +8,50 @@ var debug = require('debug')('cm:db');
 function catalog(){
 }
 
+function convertToDictionary(documents){
+    var ret = {};
+    for(var i in documents){
+        var doc = documents[i];
+        ret[doc._id] = doc.toObject({ getters: true, virtuals: false });
+    }
+
+    return ret;
+}
+
 catalog.prototype.getCategories = function(error, params, success){
     Category.find(params, function(err, docs) {
         if (!err){
-            success(docs);
+            var cats = convertToDictionary(docs);
+
+            var parent = 'parentCategory';
+            var children = 'subCategories';
+
+            var tree = [];
+
+            function again(cat){
+                if(cat[children]){
+                    var childrens = [];
+                    for(var e in cat[children]){
+                        var catId = cat[children][e];
+                        var childCat = cats[catId];
+                        childrens.push(childCat);
+                        again(childCat);
+                    }
+
+                    cat[children] = childrens;
+                }
+            }
+
+            for(var i in cats){
+                // get the root
+                var doc = cats[i];
+                if(!doc[parent]){
+                    again(doc);
+                    tree.push(doc);
+                }
+            }
+
+            success(tree);
         } else {
             error(err);
         }
@@ -81,12 +121,21 @@ catalog.prototype.getCategoriesRecursive = function(error, parentId, success){
     if(parentId)
         param = {_id: mongoose.Types.ObjectId(parentId)};
 
+
     // get the parent cats
     Category.find(param)
         // and populate sub cats
         .populate('subCategories').exec(function(err, docs){
         if (!err){
-            success(docs);
+            var opts = {
+                path: 'subCategories.subCategories',
+                model: Category
+            };
+            Category.populate(docs, opts, function(err, docs){
+                if (!err)
+                    success(docs);
+                else error(err);
+            });
         } else {
             error(err);
         }
