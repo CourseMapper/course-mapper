@@ -1,4 +1,6 @@
 <% include header %>
+<div ng-controller="HomePageController"> <!-- controller -->
+
 <div class="wrapper">
 
     <!-- Header Navbar -->
@@ -11,7 +13,7 @@
         </ol>
     </section>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" ng-controller="HomePageController"> 
+    <div class="content-wrapper" >
         <div ng-class="{'hideSlider': hideSlider}" class="row row-centered" id="sliderCarousel">
             <div class="col-lg-12 col-centered">
 
@@ -48,54 +50,186 @@
                 <a class="btn btn-block btn-primary btn-flat visible-xs">Start a course map!</a>
             </div>
         </div>
-        <!-- Main content -->
-
-        <script type="text/ng-template"  id="tree_item_renderer.html">
-                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
-
-                    {{data.category}} <!--<b class="caret"></b>-->
-
-                        <ul class="dropdown-menu box box-primary category">
-                            <li><b>{{data.category}}</b></li>
-                            <li class="divider"></li>
-                            <li> total 10 courses </li>
-                            <li> total 250 nodes </li>
-                            <li><h5><b>Top Courses</b></h5></li>
-                            <li><a tabindex="-1" href="#">a</a></li>
-                            <li><a tabindex="-1" href="#">b</a></li>
-                            <li><a tabindex="-1" href="#">c</a></li>
-                            <li class="divider"></li>
-                            <li>
-                                <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
-                            </li>
-                        </ul>
-
-                    </div>
-                </div>
-
-            <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
-            </div>
-        </script>
-
-        <div class="container">
-            <div class="category-map" id="category-map" >
-
-                <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
-                </div>
-
-                <div class="center-category" id="center" data-shape="Rectangle" ng-style="{left:center.x, top:center.y}">
-                    <h4>CourseMapper</h4>
-                    is a mind map based collaborative course annotation platform.
-                </div>
-            </div>
-        </div>
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
-<% include jsfooter %>
+<!-- Main content -->
+<script type="text/ng-template"  id="tree_item_renderer.html">
+    <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
 
+        {{data.category}}
+
+        <ul class="dropdown-menu box box-primary category">
+            <li><b>{{data.category}}</b></li>
+            <li class="divider"></li>
+            <li> total 10 courses </li>
+            <li> total 250 nodes </li>
+            <li><h5><b>Top Courses</b></h5></li>
+            <li><a tabindex="-1" href="#">a</a></li>
+            <li><a tabindex="-1" href="#">b</a></li>
+            <li><a tabindex="-1" href="#">c</a></li>
+            <li class="divider"></li>
+            <li>
+                <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
+            </li>
+        </ul>
+
+    </div>
+
+    <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
+    </div>
+</script>
+
+<div class="tree-container">
+    <div class="category-map" id="category-map" >
+
+        <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+        </div>
+
+        <div class="center-category" id="center" data-shape="Rectangle">
+            <h4>CourseMapper</h4>
+            is a mind map based collaborative course annotation platform.
+        </div>
+
+    </div>
+</div>
+
+</div><!-- controller -->
+
+<% include jsfooter %>
+<script>
+    /**
+     * Class Leave
+     *
+     * center leave -> fromCenter 0,0 'and .center-category
+     * for others -> fromCenter: from DB, and el-> .w
+     *
+     * @param jQEl
+     * @param fromCenter
+     * @constructor
+     */
+    function Leave(jQEl, fromCenter){
+        var self = this;
+
+        self.el = jQEl;
+        self.fromCenter = fromCenter;
+        self.w = 0;
+        self.h = 0;
+
+        self.init = function(w, h){
+            self.w = self.el.width();
+            self.h = self.el.height();
+
+            self.rePosition(w,h);
+        };
+
+        self.onWindowResize = function(w, h){
+            self.rePosition(w,h);
+        };
+
+        self.rePosition = function(w, h){
+            var left = ((self.fromCenter.x + w) / 2) - self.w/2;
+            var top = ((self.fromCenter.y + h) / 2) - self.h/2;
+            self.el.css({
+                left: left + "px",
+                top: top + "px"
+            }) ;
+        };
+    }
+
+    var Tree = {
+        center: null,
+
+        init: function(w, h){
+            this.center = new Leave($('.center-category'), {x:0,y:0});
+            this.center.init(w, h);
+        },
+
+        onWindowResize: function(w, h){
+            //this.center.onWindowResize(w, h);
+        },
+
+        update : function(){
+            this.center.update();
+        }
+    };
+
+    var Canvas = {
+        el: null,
+        draggable: null,
+        w: 2000,
+        h: 2000,
+
+        init: function(wWidth, wHeight){
+            var self = this;
+
+            this.el = $('.category-map');
+            this.draggable = this.el.draggable();
+
+            // so it big enough
+            this.el.css({
+                width: self.w + 'px',
+                height: self.h + 'px'
+            });
+
+            // put it on the center
+            this.el.css({
+                left: ( (wWidth - self.w)/2) + 'px',
+                top: ( (wHeight - self.h)/2) + 'px'
+            });
+
+
+            Tree.init(self.w, self.h);
+        },
+
+        onWindowResize: function(w, h){
+            Tree.init(self.w, self.h);
+        }
+
+    };
+
+    var Container = {
+        el: null,
+
+        init : function(){
+            this.el = $('.tree-container');
+
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+
+            this.el.css({
+                'width': w,
+                'height': h
+            });
+        },
+
+        onWindowResize: function(w, h){
+            // resize it to follow the window size
+            this.el.css({
+                'width': w,
+                'height': h
+            });
+        }
+    };
+
+    $(document).ready(function(){
+        Container.init();
+        Canvas.init(window.innerWidth, window.innerHeight);
+
+        $(window).resize(function(){
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+
+            Container.onWindowResize(w, h);
+            Canvas.onWindowResize(w, h);
+        });
+
+    });
+
+
+</script>
 <% if(user && user.roles == 'admin'){ %>
 <div ng-controller="AdminHomePageController"></div>
 <script>

@@ -422,9 +422,12 @@ ul.dropdown-menu.category{
 }
 
 .skin-blue .content-header {
+    /*background: rgba(255,255,255,0.96);*/
     background: white;
     padding: 10px;
     margin-left: 0px;
+    z-index:3;
+
 }
 
 @media (max-width: 991px) {
@@ -453,4 +456,13 @@ ul.dropdown-menu.category{
 }
 .filter .label{
     margin-right:5px;
+}
+.tree-container{
+    left:0px;
+    top:0px;
+    position: absolute;
+    overflow: hidden;
+}
+.category-map{
+    border: 1px solid black;
 }
