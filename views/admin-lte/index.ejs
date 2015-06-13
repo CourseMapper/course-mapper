@@ -96,7 +96,7 @@
 </div><!-- ./wrapper -->
 <% include jsfooter %>
 
-<% if(user && user.roles == 'admin'){ %>
+<% if(user && user.role == 'admin'){ %>
 <div ng-controller="AdminHomePageController"></div>
 <script>
     app.controller('AdminHomePageController', function($scope, $http, $rootScope) {

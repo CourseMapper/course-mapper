@@ -56,7 +56,7 @@ router.get('/category/:category', function(req, res, next) {
  */
 router.put('/category/:category/fromCenter', function(req, res, next) {
     // check for user rights, only admin can edit cats positions on the homepage
-    if (req.user && req.user.roles != 'admin') {
+    if (req.user && req.user.role != 'admin') {
         res.status(401).send('Unauthorized');
         return;
     }
@@ -119,7 +119,7 @@ router.get('/category/:category/courses', function(req, res, next) {
 });
 
 router.post('/categories', function(req, res, next){
-    if (req.user && req.user.roles != 'admin') {
+    if (req.user && req.user.role != 'admin') {
         res.status(401).send('Unauthorized');
     }
     else {

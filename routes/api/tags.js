@@ -10,7 +10,7 @@ var router = express.Router();
  * Access: admin
  */
 router.post('/tags', function(req, res, next){
-    if (req.user && req.user.roles != 'admin') {
+    if (req.user && req.user.role != 'admin') {
         res.status(401).send('Unauthorized');
     }
     else {

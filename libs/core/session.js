@@ -60,7 +60,7 @@ function session(app, db){
             _id: user._id,
             username: user.username,
             email: user.email,
-            roles: user.roles
+            role: user.role
         };
 
         done(null, sessionUser);
