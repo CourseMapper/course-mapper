@@ -6,10 +6,9 @@
                 <form role="form" ng-submit="processForm('root')" id="rootCategory">
                     <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
                         <input type="text" name="category" class="form-control input-sm col-xs-3"
-                               placeholder="Add New Category ..." ng-model="formData['root'].category"/>
+                               placeholder="Add New Category ..." ng-model="formData['root'].name"/>
                         <input type="hidden" name="parent" ng-value="0" value="0"
                                ng-model="formData['root'].parentCategory"/>
-
                               <span class="input-group-btn">
                               <button class="btn btn-info btn-flat" type="submit"><i class="fa fa-plus"></i> Add New
                                   Category
@@ -24,11 +23,11 @@
 
     <script type="text/ng-template"  id="tree_item_renderer.html">
         <li id="{{data.slug}}">
-            <p><span><a href="#/categories/{{data.slug}}">{{data.category}}</a></span></p>
+            <p><span><a href="#/categories/{{data.slug}}">{{data.name}}</a></span></p>
 
             <form role="form" ng-submit="processForm(data._id)">
                 <div class="col-xs-12 input-group input-group-sm col-lg-6" >
-                    <input name="category" type="text" ng-model="formData[data._id].category"
+                    <input name="category" type="text" ng-model="formData[data._id].name"
                            class="form-control input-sm col-xs-3" placeholder="Add Child ..."/>
                     <input type="hidden" name="parent" ng-value="data._id"
                            ng-model="formData[data._id].parentCategory"

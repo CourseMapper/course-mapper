@@ -5,21 +5,6 @@ var Catalog = require(appRoot + '/modules/catalogs');
 var debug = require('debug')('cm:route');
 var router = express.Router();
 
-/*router.get('/categories', function(req, res, next) {
-    var cat = new Catalog();
-    cat.getCategoriesRecursive(
-        function(err){
-            res.status(500).json({});
-        },
-        // pass 0 to get root categories(who dont have parents), and all of its subcats
-        0
-        ,
-        function(categories){
-            res.status(200).json({categories: categories});
-        }
-    );
-});*/
-
 router.get('/categories', function(req, res, next) {
     var cat = new Catalog();
     cat.getCategories(
@@ -52,9 +37,9 @@ router.get('/category/:category', function(req, res, next) {
 });
 
 /**
- * update category.fromCenter value
+ * update category.positionFromRoot value
  */
-router.put('/category/:category/fromCenter', function(req, res, next) {
+router.put('/category/:category/positionFromRoot', function(req, res, next) {
     // check for user rights, only admin can edit cats positions on the homepage
     if (req.user && req.user.role != 'admin') {
         res.status(401).send('Unauthorized');
@@ -118,6 +103,9 @@ router.get('/category/:category/courses', function(req, res, next) {
     );
 });
 
+/**
+ * save category into mongo
+ */
 router.post('/categories', function(req, res, next){
     if (req.user && req.user.role != 'admin') {
         res.status(401).send('Unauthorized');
@@ -138,6 +126,5 @@ router.post('/categories', function(req, res, next){
         );
     }
 });
-
 
 module.exports = router;

@@ -30,7 +30,7 @@ router.get('/accounts/logout', function(req, res, next) {
 
 router.get('/accounts', function(req, res, next) {
     if(req.user)
-        res.redirect('/accounts/' + req.user.username);
+        res.redirect('/api/accounts/' + req.user.username);
     else
         res.status(401).json({message: 'Not authorized'});
 });

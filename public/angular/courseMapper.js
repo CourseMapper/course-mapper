@@ -59,7 +59,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 ;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
-        $scope.categories = data;
+        $scope.categories = data.categories;
     });
 
     $scope.$on('sidebarInit', function (ngRepeatFinishedEvent) {

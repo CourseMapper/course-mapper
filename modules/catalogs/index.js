@@ -75,7 +75,7 @@ catalog.prototype.updateCategoryPosition = function(error, paramsWhere, paramsUp
         else
             cat.update({
                 $set: {
-                    fromCenter: {
+                    positionFromRoot: {
                         x: paramsUpdate.x,
                         y: paramsUpdate.y
                     }
@@ -147,12 +147,12 @@ catalog.prototype.addCategory = function(error, params, success){
         params.parentCategory = null;
 
     var cat = new Category({
-        category: params.category,
+        name: params.name,
         parentCategory: params.parentCategory,
         subCategories: []
     });
 
-    cat.setSlug(params.category);
+    cat.setSlug(params.name);
 
     cat.save(function (err) {
         if (err) {
@@ -244,8 +244,7 @@ catalog.prototype.addTag = function(error, params, success){
 catalog.prototype.addCourse = function(error, params, success){
     var self = this;
 
-    if(typeof(params.category) != "undefined" && params.category != "undefined" && params.category) {
-        //("finding Category");
+    if(params.category) {
         Category.findOne({slug: params.category},
             function (err, cat) {
                 if (err) {

@@ -4,7 +4,7 @@ var slug = require('slug');
 var categorySchema = new mongoose.Schema();
 
 categorySchema.add({
-    category: {
+    name: {
         type: String,
         unique: true,
         required: true
@@ -16,11 +16,10 @@ categorySchema.add({
     },
     parentCategory: mongoose.Schema.Types.ObjectId,
     subCategories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'categories'}],
-    fromCenter: mongoose.Schema.Types.Mixed,
+    positionFromRoot: mongoose.Schema.Types.Mixed,
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags'}],
-    updatedAt: {
-        type: Date
-    }
+    dateAdded: { type: Date },
+    dateUpdated: { type: Date }
 });
 
 categorySchema.methods.setSlug = function(catString) {
@@ -28,12 +27,16 @@ categorySchema.methods.setSlug = function(catString) {
 };
 
 categorySchema.pre('save', function(next){
-    this.updatedAt = new Date();
+    var now = new Date();
+    this.dateUpdated = now;
+    if ( !this.dateAdded ) {
+        this.dateAdded = now;
+    }
     next();
 });
 
 categorySchema.pre('update', function(next){
-    this.updatedAt = new Date();
+    this.dateUpdated = new Date();
     next();
 });
 

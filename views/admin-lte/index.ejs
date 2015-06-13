@@ -51,12 +51,12 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
+                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.positionFromRoot.x + center.x, top:data.positionFromRoot.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
 
-                    {{data.category}} <!--<b class="caret"></b>-->
+                    {{data.name}} <!--<b class="caret"></b>-->
 
                         <ul class="dropdown-menu box box-primary category">
-                            <li><b>{{data.category}}</b></li>
+                            <li><b>{{data.name}}</b></li>
                             <li class="divider"></li>
                             <li> total 10 courses </li>
                             <li> total 250 nodes </li>
@@ -117,7 +117,7 @@
                         y: pos.top - center.y
                     };
 
-                    $http.put('/api/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
+                    $http.put('/api/category/' + el.attr('id') + '/positionFromRoot', distanceFromCenter)
                             .success(function(res, status){
                                 console.log(res);
                             })
