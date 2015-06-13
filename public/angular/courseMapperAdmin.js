@@ -33,7 +33,7 @@ admin.controller('categoryFormController', function($scope, $http){
         var d = transformRequest($scope.formData[catId]);
         $http({
                 method: 'POST',
-                url: '/api/catalogs/categories',
+                url: '/api/categories',
                 data: d, // pass in data as strings
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -68,7 +68,7 @@ admin.controller('tagFormController', function($scope, $http){
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
-            url: '/api/catalogs/tags',
+            url: '/api/tags',
             data: d,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -102,7 +102,7 @@ admin.controller('courseFormController', function($scope, $http){
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
-            url: '/api/catalogs/courses',
+            url: '/api/courses',
             data: d,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -126,7 +126,7 @@ admin.controller('courseFormController', function($scope, $http){
 });
 
 admin.controller('CourseListController', function($scope, $http, $rootScope) {
-  $http.get('/api/catalogs/courses').success(function(data) {
+  $http.get('/api/courses').success(function(data) {
     $scope.courses = data;
   });
 });
@@ -136,7 +136,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
     $scope.courses = {};
     $scope.tags = {};
 
-    $http.get('/api/catalogs/category/' + $routeParams.category).success(function(data) {
+    $http.get('/api/category/' + $routeParams.category).success(function(data) {
         if(data.category){
             $scope.category = data.category;
             $scope.tags = data.category.tags;
@@ -144,13 +144,13 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
     });
 
     $scope.getCourses = function(){
-        $http.get('/api/catalogs/category/' + $scope.category.slug +'/courses').success(function(data) {
+        $http.get('/api/category/' + $scope.category.slug +'/courses').success(function(data) {
             $scope.courses = data.courses;
         });
     };
 
     $scope.getTags = function(){
-        $http.get('/api/catalogs/category/' + $scope.category.slug +'/tags').success(function(data) {
+        $http.get('/api/category/' + $scope.category.slug +'/tags').success(function(data) {
             $scope.tags = data.tags;
         });
     };
