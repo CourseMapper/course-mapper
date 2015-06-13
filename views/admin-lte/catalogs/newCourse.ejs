@@ -10,7 +10,7 @@
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li><a href="/catalogs/courses"> </i> Courses</a></li>
+                <li><a href="/courses"> </i> Courses</a></li>
                 <li class="active">New</li>
             </ol>
         </section>
@@ -26,48 +26,49 @@
                                 </div>
                                 <div class="control-group">
                                     <label class="control-label" for="course">Course Name</label>
+                                    <p class="help-block">Course name can contain any letters or numbers</p>
 
                                     <div class="controls">
                                         <input type="text" id="course" name="course" placeholder="" class="form-control"
                                                ng-model="course.course">
 
-                                        <p class="help-block">Course name can contain any letters or numbers</p>
                                     </div>
                                 </div>
 
                                 <div class="control-group">
+                                    <p></p>
                                     <label class="control-label" for="category">Category</label>
 
+                                    <p class="help-block">Please pick one category</p>
                                     <div class="controls">
                                         <select id="category" name="category" class="form-control"
                                                 ng-options="c.slug as c.category for c in categories"
                                                 ng-model="course.category">
                                         </select>
 
-                                        <p class="help-block">Please pick one category</p>
                                     </div>
                                 </div>
 
-                                <div class="control-group">
+                                <div class="control-group">     <p></p>
                                     <label class="control-label" for="description">Description</label>
 
+                                    <p class="help-block">Description about this course</p>
                                     <div class="controls">
                                 <textarea type="description" id="description" name="description" placeholder=""
                                           class="form-control" ng-model="course.description">
                                 </textarea>
 
-                                        <p class="help-block">Description about this course</p>
                                     </div>
                                 </div>
 
                                 <div class="control-group">
+                                    <p></p>
+                                    <span class="help-block" ng-show="errorName">{{ errorName }}</span>
                                     <!-- Button -->
                                     <div class="controls">
                                         <button class="btn btn-lg btn-primary btn-block">Create New Course</button>
                                     </div>
                                 </div>
-
-                                <span class="help-block" ng-show="errorName">{{ errorName }}</span>
                             </fieldset>
                         </form>
                     </div>

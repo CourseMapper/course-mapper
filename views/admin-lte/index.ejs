@@ -117,7 +117,7 @@
                         y: pos.top - center.y
                     };
 
-                    $http.put('/api/catalogs/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
+                    $http.put('/api/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
                             .success(function(res, status){
                                 console.log(res);
                             })

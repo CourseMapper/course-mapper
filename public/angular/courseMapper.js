@@ -58,7 +58,7 @@ function transformRequest(obj) {
 var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
 ;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
-    $http.get('/api/catalogs/categories').success(function (data) {
+    $http.get('/api/categories').success(function (data) {
         $scope.categories = data;
     });
 
@@ -77,14 +77,14 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
     $scope.slug = $routeParams.slug;
 
-    //api/catalogs/category/:category/courses
-    //api/catalogs/category/:category/tags
+    //api/category/:category/courses
+    //api/category/:category/tags
 
-    $http.get('/api/catalogs/category/' + $scope.slug + '/courses').success(function(data) {
+    $http.get('/api/category/' + $scope.slug + '/courses').success(function(data) {
         $scope.courses = data.courses;
     });
 
-    $http.get('/api/catalogs/category/' + $scope.slug + '/tags').success(function(data) {
+    $http.get('/api/category/' + $scope.slug + '/tags').success(function(data) {
         $scope.tags = data.tags;
     });
 
@@ -111,7 +111,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.loadCategories = function() {
-        return $scope.categories.length ? null : $http.get('/api/catalogs/categories').success(
+        return $scope.categories.length ? null : $http.get('/api/categories').success(
             function(data) {
                 $scope.categories = data.categories;
             });
@@ -145,7 +145,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         var d = transformRequest($scope.course);
         $http({
             method: 'POST',
-            url: '/api/catalogs/courses',
+            url: '/api/courses',
             data: d,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -161,7 +161,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     $scope.$emit('onAfterCreateNewCourse');
 
-                    window.location.href = '/catalogs/course/' + $scope.course._id + '?new=1';
+                    window.location.href = '/course/' + $scope.course._id + '?new=1';
                 }
             })
             .error(function(data){
@@ -178,7 +178,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.$watch('course._id', function(newVal, oldVal){
         if($scope.course._id && $scope.saved){
-            $location.path('/catalogs/course/' + $scope.course._id);
+            $location.path('/course/' + $scope.course._id);
             $location.replace();
 
             // enable all tabs
@@ -215,7 +215,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * get all categories, recursived on the server
      */
-    $http.get('/api/catalogs/categories').success(function (data) {
+    $http.get('/api/categories').success(function (data) {
         if(data.categories) {
             $scope.categories = data.categories;
         }
@@ -285,7 +285,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.goToDetail = function(categorySlug){
-        window.location.href = "/catalogs/courses/#/category/" + categorySlug;
+        window.location.href = "/courses/#/category/" + categorySlug;
     };
 
 });
@@ -592,7 +592,7 @@ app.controller('TreeController', function($scope, $http, $attrs, TreeService, $a
         $scope.courseId = k[k.length - 1];
 
         // get the course object
-        $http.get('/api/catalogs/course/' + $scope.courseId).success(function (data) {
+        $http.get('/api/course/' + $scope.courseId).success(function (data) {
             $scope.course = data.course;
 
             // create the center circle for this course

@@ -3,10 +3,13 @@ var config = require('config');
 var appRoot = require('app-root-path');
 var Catalog = require(appRoot + '/modules/catalogs');
 var debug = require('debug')('cm:route');
-
 var router = express.Router();
 
-router.post('/api/catalogs/tags', function(req, res, next){
+/**
+ * POST - insert a new tag
+ * Access: admin
+ */
+router.post('/tags', function(req, res, next){
     if (req.user && req.user.roles != 'admin') {
         res.status(401).send('Unauthorized');
     }
@@ -27,7 +30,10 @@ router.post('/api/catalogs/tags', function(req, res, next){
     }
 });
 
-router.get('/api/tags', function(req, res, next) {
+/**
+ * return tags
+ */
+router.get('/tags', function(req, res, next) {
     var cat = new Catalog();
     cat.getTags(
         function(err){
@@ -41,6 +47,5 @@ router.get('/api/tags', function(req, res, next) {
         }
     );
 });
-
 
 module.exports = router;

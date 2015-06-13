@@ -240,7 +240,7 @@ app.controller('TreeController', function($scope, $http, $attrs, TreeService, $a
         $scope.courseId = k[k.length - 1];
 
         // get the course object
-        $http.get('/api/catalogs/course/' + $scope.courseId).success(function (data) {
+        $http.get('/api/course/' + $scope.courseId).success(function (data) {
             $scope.course = data.course;
 
             // create the center circle for this course

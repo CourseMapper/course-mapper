@@ -10,8 +10,8 @@
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li><a href="/catalogs/courses"> </i> Courses</a></li>
-                <li><a href="/catalogs/<%=course.category.slug%>"> </i> <%=course.category.category%></a></li>
+                <li><a href="/courses"> </i> Courses</a></li>
+                <li><a href="/<%=course.category.slug%>"> </i> <%=course.category.category%></a></li>
                 <li class="active"><%=course.course%></li>
             </ol>
         </section>
@@ -27,12 +27,12 @@
                         login to follow this course</a>
                     <% } else {
                     if (!follow && course.startedBy.username != user.username){ %>
-                    <a class="btn btn-primary btn-flat" href="/api/catalogs/course/<%= course._id%>/follow">Follow</a>
+                    <a class="btn btn-primary btn-flat" href="/api/course/<%= course._id%>/follow">Follow</a>
                     <% }
                     if (course.startedBy.username == user.username){ %>
 
                     <% } else { %>
-                    You are following this course. <a class="" href="/api/catalogs/course/<%= course._id%>/unfollow">click
+                    You are following this course. <a class="" href="/api/course/<%= course._id%>/unfollow">click
                     here to Unfollow</a>
                     <% }
                     }%>

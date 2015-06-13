@@ -10,7 +10,7 @@
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li><a href="/catalogs/courses"> </i> Courses</a></li>
+                <li><a href="/courses"> </i> Courses</a></li>
                 <li class="active">New</li>
             </ol>
         </section>

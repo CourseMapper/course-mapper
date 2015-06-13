@@ -63,7 +63,7 @@ account.prototype.addUser = function(errorCallback, params, done){
 
     var user = new User({
         username: params.username,
-        email: params.email 
+        email: params.email
     });
 
     // hash the password first
