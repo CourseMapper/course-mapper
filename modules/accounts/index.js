@@ -14,7 +14,7 @@ function account(){
 account.prototype.createAdmin = function(username){
     var param = {
         username: "rpl",
-        roles: "admin",
+        role: "admin",
         email: "r@rpl.im",
         password: "1"
     };
@@ -63,8 +63,7 @@ account.prototype.addUser = function(errorCallback, params, done){
 
     var user = new User({
         username: params.username,
-        email: params.email,
-        roles: params.roles
+        email: params.email 
     });
 
     // hash the password first
@@ -183,6 +182,7 @@ account.prototype.handleRegisterPost = function(req, res, next) {
         function done(user) {
             // todo: implement flash
             return res.redirect('/accounts/login/#' + user.username);
+            // todo: implement redirect to previous screen.
         }
     );
 };

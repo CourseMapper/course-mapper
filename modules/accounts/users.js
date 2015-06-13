@@ -25,7 +25,7 @@ var userSchema = new mongoose.Schema({
         trim: true,
         validate: [validator.isEmail, 'invalid email']
     },
-    roles: { type: String, required: true, default: "user"},
+    role: { type: String, required: true, default: "user"},
 
     isActivated: {type: Boolean, required: true, default: true},
     activationCode: {type: String, required: true, default: "-"},
