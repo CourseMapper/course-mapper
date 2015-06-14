@@ -61,7 +61,7 @@ router.get('/course/:courseId', function(req, res, next) {
     );
 });
 
-router.get('/course/:courseId/follow', function(req, res, next) {
+router.get('/course/:courseId/enroll', function(req, res, next) {
     if(!req.params.courseId)
         res.status(500).send('parameter not complete');
 
@@ -70,12 +70,13 @@ router.get('/course/:courseId/follow', function(req, res, next) {
 
     else {
         var courseId = req.params.courseId;
-        var account = new Account();
-        account.follow(
+        var catalog = new Catalog();
+        catalog.enroll(
             function failed(err){
                 res.status(500).send({errors:err});
             },
-            {id: req.user._id}, {id: courseId},
+            {id: req.user._id},
+            {id: courseId},
             function (followed) {
                 res.status(200).json({result:true, follow: followed});
             });

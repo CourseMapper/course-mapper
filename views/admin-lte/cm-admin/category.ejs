@@ -18,7 +18,7 @@
                             <form role="form" ng-submit="processForm()" id="rootCategory">
                                 <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
                                     <input type="text" name="category" class="form-control input-sm col-xs-3"
-                                           placeholder="Add New Tags ..." ng-model="formData.tag"/>
+                                           placeholder="Add New Tags ..." ng-model="formData.name"/>
                                     <input type="hidden" name="parent" ng-value="category.slug"
                                            value="{{category.slug}}"
                                            ng-model="formData.category" ng-init="formData.category=category.slug"/>
@@ -35,7 +35,7 @@
                             <div class="box-body">
                                 <ul class="nav nav-pills nav-stacked" ng-show="(tags.length)">
                                     <li ng-repeat="tag in tags">
-                                        <a href="">{{tag.tag}}</a>
+                                        <a href="">{{tag.name}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -56,7 +56,7 @@
                             <form role="form" ng-submit="processForm()" id="addCourse">
                                 <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
                                     <input type="text" name="course" class="form-control input-sm col-xs-3"
-                                           placeholder="Add New Course ..." ng-model="formData.course"/>
+                                           placeholder="Add New Course ..." ng-model="formData.name"/>
                                     <input type="hidden" name="category" ng-value="category.slug"
                                            value="{{category.slug}}"
                                            ng-model="formData.category" ng-init="formData.category=category.slug"/>
@@ -72,7 +72,7 @@
                             <div class="box-body">
                                 <ul class="nav nav-pills nav-stacked" ng-show="(courses.length)">
                                     <li ng-repeat="c in courses">
-                                        <a href="">{{c.course}}</a>
+                                        <a href="">{{c.name}}</a>
                                     </li>
                                 </ul>
                             </div>

@@ -77,17 +77,13 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
     $scope.slug = $routeParams.slug;
 
-    //api/category/:category/courses
-    //api/category/:category/tags
-
     $http.get('/api/category/' + $scope.slug + '/courses').success(function(data) {
         $scope.courses = data.courses;
     });
 
-    $http.get('/api/category/' + $scope.slug + '/tags').success(function(data) {
-        $scope.tags = data.tags;
+    $http.get('/api/category/' + $scope.slug + '/courseTags').success(function(data) {
+        $scope.courseTags = data.courseTags;
     });
-
 
 });
 
@@ -156,12 +152,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 if(data.result) {
                     // if successful, bind success data.course to course
                     $scope.courseModel = data.course;
-                    $scope.course._id = data.course._id;
+                    $scope.course.shortId = data.course.shortId;
                     $scope.saved = true;
 
                     $scope.$emit('onAfterCreateNewCourse');
 
-                    window.location.href = '/course/' + $scope.course._id + '?new=1';
+                    window.location.href = '/course/' + $scope.course.shortId + '?new=1';
                 }
             })
             .error(function(data){

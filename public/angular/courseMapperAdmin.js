@@ -68,7 +68,7 @@ admin.controller('tagFormController', function($scope, $http){
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
-            url: '/api/tags',
+            url: '/api/courseTags',
             data: d,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -127,19 +127,19 @@ admin.controller('courseFormController', function($scope, $http){
 
 admin.controller('CourseListController', function($scope, $http, $rootScope) {
   $http.get('/api/courses').success(function(data) {
-    $scope.courses = data;
+      $scope.courses = data.courses;
   });
 });
 
 admin.controller('categoryDetailController', function($scope, $http, $routeParams){
     $scope.category = '';
     $scope.courses = {};
-    $scope.tags = {};
+    $scope.courseTags = {};
 
     $http.get('/api/category/' + $routeParams.category).success(function(data) {
         if(data.category){
             $scope.category = data.category;
-            $scope.tags = data.category.tags;
+            $scope.courseTags = data.category.courseTags;
         }
     });
 
@@ -149,22 +149,22 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
         });
     };
 
-    $scope.getTags = function(){
-        $http.get('/api/category/' + $scope.category.slug +'/tags').success(function(data) {
-            $scope.tags = data.tags;
+    $scope.getCourseTags = function(){
+        $http.get('/api/category/' + $scope.category.slug +'/courseTags').success(function(data) {
+            $scope.tags = data.courseTags;
         });
     };
 
     $scope.$watch('category', function(newValue, oldValue) {
         if ($scope.category) {
             $scope.getCourses();
-            $scope.getTags();
+            $scope.getCourseTags();
         }
     });
 
     $scope.initData = function(){
         $scope.getCourses();
-        $scope.getTags();
+        $scope.getCourseTags();
     };
 
     $scope.$on('init', function(event, args){
@@ -191,7 +191,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                         return( {
                             title: 'Manage Categories',
                             breads: [
-                                {a: '', active:true, title: 'Categories'}
+                                {a: '', active: true, title: 'Categories'}
                             ]
                         } );
                     }
@@ -205,8 +205,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                         return( {
                             title: 'Manage Category',
                             breads: [
-                                {a: '#/categories', active:false, title: 'Categories'},
-                                {a: '', active:true, title: 'Category: '}
+                                {a: '#/categories', active: false, title: 'Categories'}
                             ]
                         });
                     }

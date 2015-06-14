@@ -1,7 +1,7 @@
 var config = require('config');
 var Category = require('./categories.js');
 var Course = require('./courses.js');
-var Tag = require('./tags.js');
+var Tag = require('./courseTags.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 
@@ -60,7 +60,7 @@ catalog.prototype.getCategories = function(error, params, success){
 
 catalog.prototype.getCategory = function(error, params, success){
     Category.findOne(params)
-        .populate('subCategories tags').exec(function(err, docs) {
+        .populate('subCategories courseTags').exec(function(err, docs) {
             if (!err){
                 success(docs);
             } else {
@@ -94,7 +94,7 @@ catalog.prototype.updateCategoryPosition = function(error, paramsWhere, paramsUp
 
 catalog.prototype.getCourse = function(error, params, success){
     Course.findOne(params)
-        .populate('startedBy category tags').exec(function(err, docs) {
+        .populate('createdBy category courseTags').exec(function(err, docs) {
             if (!err){
                 success(docs);
             } else {
@@ -103,9 +103,15 @@ catalog.prototype.getCourse = function(error, params, success){
         });
 };
 
+/**
+ * get courseTags that belong to this category
+ * @param error
+ * @param params
+ * @param success
+ */
 catalog.prototype.getCategoryTags = function(error, params, success){
     this.getCategory(error, params, function(docs){
-        success(docs.tags);
+        success(docs.courseTags);
     });
 };
 
@@ -192,51 +198,87 @@ catalog.prototype.addCategory = function(error, params, success){
     });
 };
 
-catalog.prototype.addTag = function(error, params, success){
+catalog.prototype.addCourseTag = function(error, params, success){
     if(!params.category)
         params.category = null;
 
     var tag = new Tag({
-        tag: params.tag
+        name: params.name
     });
 
-    tag.setSlug(params.tag);
+    tag.setSlug(params.name);
 
     tag.save(function (err) {
         if (err) {
-            debug('save tag error');
+            debug('saving tag error');
             error(err);
         } else {
+            // the tag is successfully saved, we branch out the thread
+            // to save it as the relation to the category
+            // but we just gonna send the response to the user now before the category transaction finish.
             if(params.category) {
                 console.log("finding Category");
                 // if it has parent category, lets add it as its child
                 Category.findOne({slug: params.category},
                     function (err, cat) {
-                        if (err) {
+                        if (err)
                             debug('cant find linked cat');
-                            error(err);
-                        }
                         else
                             cat.update({
                                 $addToSet: {
-                                    tags: mongoose.Types.ObjectId(tag.id)
+                                    courseTags: mongoose.Types.ObjectId(tag.id)
                                 }
                             }, function(err, res){
-                                if (err) {
-                                    debug('failed updated linked cat');
-                                    error(err);
-                                }
-                                else {
-                                    // success saved the tag
-                                    success(tag);
-                                }
+                                if (err)
+                                    debug('failed updated on linking a category');
                             });
                     });
             }
-            else {
-                // success saved the cat
-                success(tag);
-            }
+
+            // success saved the tag
+            success(tag);
+        }
+    });
+};
+
+
+/**
+ *
+ * @param err
+ * @param userParam
+ * @param courseParam
+ * @param done
+ */
+catalog.prototype.enroll = function(err, userParam, courseParam, done){
+    var user = null;
+    var course = null;
+
+    /* find user first see if it exist */
+    var userPromise = User.findById(mongoose.Types.ObjectId(userParam.id)).exec();
+    userPromise.then(function(u){
+        user = u;
+        //{shortId:courseParam.shortId}
+        return Course.findOne(courseParam).exec();
+
+    }).then(function(c){
+        /* find course see if it exist */
+        course = c;
+        return UserCourse.find({userId: user._id, courseId: course._id}).exec();
+
+    }).then(function(uc){
+        /* user has not follow this course */
+        if(!uc.length){
+            var follow = new UserCourse({
+                userId: user._id,
+                courseId: course._id
+            });
+
+            follow.save(function(error, f){
+                if (error) err(error);
+                else done(f);
+            });
+        } else {
+            err(new Error('This user has followed this course already'));
         }
     });
 };
@@ -244,46 +286,51 @@ catalog.prototype.addTag = function(error, params, success){
 catalog.prototype.addCourse = function(error, params, success){
     var self = this;
 
-    if(params.category) {
-        Category.findOne({slug: params.category},
-            function (err, cat) {
-                if (err) {
-                    debug('cant find category when adding course');
-                    error(err);
-                }
-                else if(cat && cat._id){
-                    var course = new Course({
-                        course: params.course,
-                        startedBy: mongoose.Types.ObjectId(params.userId),
-                        category: cat._id,
-                        description: params.description
-                    });
-
-                    course.save(function(err, res) {
-                        if (err) {
-                            debug('failed saving new course');
-                            error(err);
-                        }
-                        else {
-                            // success saved the course
-                            // find the newly saved course, and call the success Callback
-                            self.getCourse(
-                                error,
-                                {_id: course._id},
-                                function(crs){
-                                    success(crs);
-                                }
-                            );
-                        }
-                    });
-                }
-                else {
-                    error(new Error('cannot find category'));
-                }
-            });
-    } else {
-        error(new Error("please give correct parameter"));
+    if(!params.category) {
+        throw new Error("please give category parameter");
     }
+
+    if(!params.name) {
+        throw new Error("please give name parameter");
+    }
+
+    // find the category first
+    Category.findOne({slug: params.category},
+        function (err, cat) {
+            if (err) {
+                debug('Cannot find category when adding course');
+                error(err);
+            }
+            else if(cat){
+                var course = new Course({
+                    name: params.name,
+                    createdBy: mongoose.Types.ObjectId(params.userId),
+                    category: cat._id,
+                    description: params.description
+                });
+
+                course.save(function(err, res) {
+                    if (err) {
+                        debug('failed saving new course');
+                        error(err);
+                    }
+                    else {
+                        // success saved the course
+                        // find the newly saved course, and call the success Callback
+                        self.getCourse(
+                            error,
+                            {_id: course._id},
+                            function(crs){
+                                success(crs);
+                            }
+                        );
+                    }
+                });
+            }
+            else {
+                error(new Error('cannot find category'));
+            }
+        });
 };
 
 catalog.prototype.getCourses = function(error, params, success){
@@ -319,8 +366,14 @@ catalog.prototype.getCategoryCourses = function(error, params, success){
         });
 };
 
-catalog.prototype.getTags = function(error, params, success){
-    Tag.find({}, function(err, docs) {
+/**
+ * get course tags
+ * @param error
+ * @param params
+ * @param success
+ */
+catalog.prototype.getCourseTags = function(error, params, success){
+    Tag.find(params, function(err, docs) {
         if (!err){
             success(docs);
         } else {

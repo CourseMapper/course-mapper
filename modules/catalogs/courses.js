@@ -1,40 +1,37 @@
 var mongoose = require('mongoose');
 var shortid = require('shortid');
 
-var Tag = require('./tags.js');
+var Tag = require('./courseTags.js');
 
 var courseSchema = new mongoose.Schema({
-    _id: {
+    shortId:{
         type: String,
         unique: true,
         default: shortid.generate
     },
-    course: {
+    name: {
         type: String,
         unique: true,
         required: true
     },
-    description: {
-        type: String
-    },
-    picture: {
-        type: String
-    },
+    description: { type: String },
+    picture: { type: String },
+    video: { type: String },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'categories', required: true},
-    startedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
-    startedAt: { type: Date },
-    updatedAt: { type: Date },
-    tags:[{ type: mongoose.Schema.Types.ObjectId, ref: 'tags'}]
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
+    courseTags:[{ type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
+    dateAdded: { type: Date },
+    dateUpdated: { type: Date }
 });
 
 courseSchema.pre('save', function(next){
     var now = new Date();
 
-    if ( !this.startedAt ) {
-        this.startedAt = now;
+    if ( !this.dateAdded ) {
+        this.dateAdded = now;
     }
 
-    this.updatedAt = now;
+    this.dateUpdated = now;
 
     next();
 });

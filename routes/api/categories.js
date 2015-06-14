@@ -67,7 +67,7 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
 });
 
 
-router.get('/category/:category/tags', function(req, res, next) {
+router.get('/category/:category/courseTags', function(req, res, next) {
     var cat = new Catalog();
     cat.getCategoryTags(
         function(err){
@@ -78,7 +78,7 @@ router.get('/category/:category/tags', function(req, res, next) {
         }
         ,
         function(tags){
-            res.status(200).json({tags: tags});
+            res.status(200).json({courseTags: tags});
         }
     );
 });
