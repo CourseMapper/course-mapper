@@ -10,9 +10,9 @@
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li><a href="/catalogs/courses"> </i> Courses</a></li>
-                <li><a href="/catalogs/<%=course.category.slug%>"> </i> <%=course.category.category%></a></li>
-                <li class="active"><%=course.course%></li>
+                <li><a href="/courses"> </i> Courses</a></li>
+                <li><a href="/<%=course.category.slug%>"> </i> <%=course.category.name%></a></li>
+                <li class="active"><%=course.name%></li>
             </ol>
         </section>
 
@@ -20,20 +20,20 @@
         <section class="content">
             <div class="box no-border" id="courseTabs">
                 <div class="box-header no-border">
-                    <h1><span class="hidden-xs course"></span><span class="visible-xs" style="margin-left:15px"></span><%=course.course%>
+                    <h1><span class="hidden-xs course"></span><span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
                     </h1>
                     <% if(!user){ %>
                     <a class="btn btn-primary btn-flat" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
                         login to follow this course</a>
                     <% } else {
                     if (!follow && course.startedBy.username != user.username){ %>
-                    <a class="btn btn-primary btn-flat" href="/api/catalogs/course/<%= course._id%>/follow">Follow</a>
+                    <a class="btn btn-primary btn-flat" href="/api/course/<%= course.shortId%>/enroll">Enroll</a>
                     <% }
                     if (course.startedBy.username == user.username){ %>
 
                     <% } else { %>
-                    You are following this course. <a class="" href="/api/catalogs/course/<%= course._id%>/unfollow">click
-                    here to Unfollow</a>
+                    You are following this course. <a class="" href="/api/course/<%= course.shortId%>/unenroll">click
+                    here to Unenroll</a>
                     <% }
                     }%>
                 </div>
@@ -66,9 +66,9 @@
 
                                 <div class="col-xs-9">
                                     <div class="form-group">
-                                        Started By: <strong><%=(course.startedBy.username ==
-                                        user.username)?'You':course.startedBy.username%></strong> on <b>
-                                        <%=moment(course.startedAt).fromNow()%></b>
+                                        Started By: <strong><%=(course.createdBy.username ==
+                                        user.username)?'You':course.createdBy.username%></strong> on <b>
+                                        <%=moment(course.dateAdded).fromNow()%></b>
                                         <!-- -
                                         Last activity:<b> 2 days ago</b><br>
                                         User Rating:

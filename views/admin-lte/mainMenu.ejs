@@ -3,14 +3,14 @@
     <!-- Logo -->
     <a href="/" class="logo"><b>Course</b>Mapper</a>
 
-    <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController as mainMenu">
+    <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController">
         <div class="navbar-left">
             <% if(locals.showSidebar && showSidebar){ %>
             <a class="top-menu-left visible-xs" data-toggle="offcanvas" role="button"><i class="ionicons ion-more"> </i>
             </a>
             <% } %>
 
-                <a ngCloak ng-show="user" href="/catalogs/course/create" class="top-menu-left">
+                <a ngCloak ng-show="user" href="/course/create" class="top-menu-left">
                     <i class="ionicons ion-android-create"></i>   <b>Create Course</b>
                 </a>
 
@@ -36,7 +36,7 @@
 
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="yes" name="rememberMe"> Remember me
+                                        <input type="checkbox" value="yes" name="rememberMe" ng-model="rememberMe" ng-checked="rememberMe"> Remember me
                                     </label>
                                 </div>
                                 <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>

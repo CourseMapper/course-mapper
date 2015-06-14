@@ -9,6 +9,6 @@
     "needActivation" : false
   },
 
-  "database": "@localhost/course_mapper"
+  "database": "rpl:1@localhost/course_mapper"
 }
 

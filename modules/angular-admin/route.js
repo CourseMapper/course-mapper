@@ -9,7 +9,7 @@ admin.config(['$routeProvider',
                         return( {
                             title: 'Manage Categories',
                             breads: [
-                                {a: '', active:true, title: 'Categories'}
+                                {a: '', active: true, title: 'Categories'}
                             ]
                         } );
                     }
@@ -23,8 +23,7 @@ admin.config(['$routeProvider',
                         return( {
                             title: 'Manage Category',
                             breads: [
-                                {a: '#/categories', active:false, title: 'Categories'},
-                                {a: '', active:true, title: 'Category: '}
+                                {a: '#/categories', active: false, title: 'Categories'}
                             ]
                         });
                     }

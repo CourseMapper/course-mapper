@@ -12,6 +12,7 @@
                 <li ng-repeat="bread in $route.current.locals.pd.breads">
                     <a ng-href="{{bread.a}}" ng-class="{'active':bread.active}">{{bread.title}}</a>
                 </li>
+                <li>{{$routeParams.category}}</li>
             </ol>
             <h1>
                 {{$route.current.locals.pd.title}}

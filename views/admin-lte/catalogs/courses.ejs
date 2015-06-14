@@ -30,7 +30,7 @@
                         <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                         &nbsp;Processing</span>
                     <h4>Available Tags:</h4>
-                    <span class="label label-primary" ng-repeat="t in tags">{{t.tag}}</span>
+                    <span class="label label-primary" ng-repeat="t in tags">{{t.name}}</span>
                     <h4>Courses:</h4>
                 </div>
 
@@ -39,7 +39,7 @@
                     <div class="form_hover">
                         <div class="box box-primary peekCourse">
                             <div class="box-header with-border">
-                                <a href="/catalogs/course/{{c._id}}" class="box-title">{{c.course}}</a>
+                                <a href="/course/{{c._id}}" class="box-title">{{c.course}}</a>
                             </div>
                             <div class="box-body"  style="text-align: center" >
                             <img src="/img/default-tree.png">
@@ -50,7 +50,7 @@
                             <div class="blur"></div>
                             <div class="box box-primary caption-text">
                                 <div class="box-header with-border">
-                                    <a href="/catalogs/course/{{c._id}}" class="box-title">{{c.course}}</a>
+                                    <a href="/course/{{c._id}}" class="box-title">{{c.course}}</a>
                                 </div>
                                 <div class="box-body">
                                     <div class="form-group">
@@ -67,7 +67,7 @@
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star-o"></i>
                                     </div>
-                                    <a class="btn btn-primary" href="/catalogs/course/{{c._id}}"><i class=""></i> Go to course</a>
+                                    <a class="btn btn-primary" href="/course/{{c._id}}"><i class=""></i> Go to course</a>
                                 </div>
                             </div>
                         </div>

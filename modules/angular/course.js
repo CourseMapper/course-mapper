@@ -9,17 +9,13 @@ app.controller('CourseController', function($scope, $filter, $http, $location) {
 app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
     $scope.slug = $routeParams.slug;
 
-    //api/catalogs/category/:category/courses
-    //api/catalogs/category/:category/tags
-
-    $http.get('/api/catalogs/category/' + $scope.slug + '/courses').success(function(data) {
+    $http.get('/api/category/' + $scope.slug + '/courses').success(function(data) {
         $scope.courses = data.courses;
     });
 
-    $http.get('/api/catalogs/category/' + $scope.slug + '/tags').success(function(data) {
-        $scope.tags = data.tags;
+    $http.get('/api/category/' + $scope.slug + '/courseTags').success(function(data) {
+        $scope.courseTags = data.courseTags;
     });
-
 
 });
 
@@ -43,7 +39,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.loadCategories = function() {
-        return $scope.categories.length ? null : $http.get('/api/catalogs/categories').success(
+        return $scope.categories.length ? null : $http.get('/api/categories').success(
             function(data) {
                 $scope.categories = data.categories;
             });
@@ -77,7 +73,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         var d = transformRequest($scope.course);
         $http({
             method: 'POST',
-            url: '/api/catalogs/courses',
+            url: '/api/courses',
             data: d,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -88,12 +84,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 if(data.result) {
                     // if successful, bind success data.course to course
                     $scope.courseModel = data.course;
-                    $scope.course._id = data.course._id;
+                    $scope.course.shortId = data.course.shortId;
                     $scope.saved = true;
 
                     $scope.$emit('onAfterCreateNewCourse');
 
-                    window.location.href = '/catalogs/course/' + $scope.course._id + '?new=1';
+                    window.location.href = '/course/' + $scope.course.shortId + '?new=1';
                 }
             })
             .error(function(data){
@@ -110,7 +106,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.$watch('course._id', function(newVal, oldVal){
         if($scope.course._id && $scope.saved){
-            $location.path('/catalogs/course/' + $scope.course._id);
+            $location.path('/course/' + $scope.course._id);
             $location.replace();
 
             // enable all tabs

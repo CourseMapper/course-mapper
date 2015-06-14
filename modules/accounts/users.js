@@ -25,15 +25,21 @@ var userSchema = new mongoose.Schema({
         trim: true,
         validate: [validator.isEmail, 'invalid email']
     },
-    roles: { type: String, required: true, default: "user"},
+    role: { type: String, required: true, default: "user"},
 
     isActivated: {type: Boolean, required: true, default: true},
     activationCode: {type: String, required: true, default: "-"},
-    updatedAt: { type: Date }
+    dateUpdated: { type: Date },
+    dateAdded: { type: Date }
 });
 
 userSchema.pre('save', function(next){
-    this.updatedAt = new Date();
+    this.dateUpdated = new Date();
+
+    if ( !this.dateAdded ) {
+        this.dateAdded = this.dateUpdated;
+    }
+
     next();
 });
 

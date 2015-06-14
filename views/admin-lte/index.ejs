@@ -1,6 +1,4 @@
 <% include header %>
-<div ng-controller="HomePageController"> <!-- controller -->
-
 <div class="wrapper">
 
     <!-- Header Navbar -->
@@ -13,7 +11,7 @@
         </ol>
     </section>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" >
+    <div class="content-wrapper" ng-controller="HomePageController"> 
         <div ng-class="{'hideSlider': hideSlider}" class="row row-centered" id="sliderCarousel">
             <div class="col-lg-12 col-centered">
 
@@ -53,12 +51,12 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.fromCenter.x + center.x, top:data.fromCenter.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
+                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.positionFromRoot.x + center.x, top:data.positionFromRoot.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
 
-                    {{data.category}}
+                    {{data.name}}
 
                         <ul class="dropdown-menu box box-primary category">
-                            <li><b>{{data.category}}</b></li>
+                            <li><b>{{data.name}}</b></li>
                             <li class="divider"></li>
                             <li> total 10 courses </li>
                             <li> total 250 nodes </li>
@@ -75,26 +73,25 @@
                     </div>
                 </div>
 
-    <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
-    </div>
-</script>
+            <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
+            </div>
+        </script>
 
-<div class="tree-container">
-    <div class="category-map" id="category-map" >
+	<div class="tree-container">
+    		<div class="category-map" id="category-map" >
 
-        <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
-        </div>
+        		<div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+        		</div>
 
-        <div class="center-category" id="center" data-shape="Rectangle">
-            <h4>CourseMapper</h4>
-            is a mind map based collaborative course annotation platform.
-        </div>
+        		<div class="center-category" id="center" data-shape="Rectangle">
+            		<h4>CourseMapper</h4>
+            		is a mind map based collaborative course annotation platform.
+        		</div>
 
-    </div>
-</div>
+    		</div>
+    	</div>
 
-</div><!-- controller -->
-
+</div><!-- ./wrapper -->
 <% include jsfooter %>
 <script>
     /**
@@ -248,7 +245,7 @@
                         y: pos.top - center.y
                     };
 
-                    $http.put('/api/catalogs/category/' + el.attr('id') + '/fromCenter', distanceFromCenter)
+                    $http.put('/api/category/' + el.attr('id') + '/positionFromRoot', distanceFromCenter)
                             .success(function(res, status){
                                 console.log(res);
                             })

@@ -37,7 +37,7 @@
                                             class="ionicons ion-toggle"></i> Plugins</a></li>
                                     <li><a href="#/apps/gallery" title="Add or remove dashboard widgets" data-toggle="modal" data-target="#modalAppGallery"><i
                                             class="ionicons ion-android-apps"></i> Widgets Store</a></li>
-                                    <% if(user.roles == 'admin'){ %>
+                                    <% if(user.role == 'admin'){ %>
                                     <li><a href="/cm-admin/" title="admin"> Admin Panel</a></li>
                                     <% }%>
                                 </ul>

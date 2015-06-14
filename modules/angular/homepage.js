@@ -85,7 +85,7 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
     };
 
     $scope.goToDetail = function(categorySlug){
-        window.location.href = "/catalogs/courses/#/category/" + categorySlug;
+        window.location.href = "/courses/#/category/" + categorySlug;
     };
 
 });

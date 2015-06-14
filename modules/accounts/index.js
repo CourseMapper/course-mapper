@@ -14,7 +14,7 @@ function account(){
 account.prototype.createAdmin = function(username){
     var param = {
         username: "rpl",
-        roles: "admin",
+        role: "admin",
         email: "r@rpl.im",
         password: "1"
     };
@@ -63,8 +63,7 @@ account.prototype.addUser = function(errorCallback, params, done){
 
     var user = new User({
         username: params.username,
-        email: params.email,
-        roles: params.roles
+        email: params.email
     });
 
     // hash the password first
@@ -183,58 +182,26 @@ account.prototype.handleRegisterPost = function(req, res, next) {
         function done(user) {
             // todo: implement flash
             return res.redirect('/accounts/login/#' + user.username);
+            // todo: implement redirect to previous screen.
         }
     );
 };
 
-account.prototype.follow = function(err, userParam, courseParam, done){
-    var user = null;
-    var course = null;
-
-    /* find user first see if it exist */
-    var userPromise = User.findById(mongoose.Types.ObjectId(userParam.id)).exec();
-    userPromise.then(function(u){
-        user = u;
-        return Course.findOne({_id:courseParam.id}).exec();
-
-        }).then(function(c){
-            /* find course see if it exist */
-            course = c;
-            return UserCourse.find({userId: user._id, courseId: course._id}).exec();
-
-            }).then(function(uc){
-                /* user has not follow this course */
-                if(!uc.length){
-                    var follow = new UserCourse({
-                        userId: user._id,
-                        courseId: course._id
-                    });
-
-                    follow.save(function(error, f){
-                        if (error) err(error);
-                        else
-                            done(f);
-                    });
-                } else {
-                    err(new Error('This user has followed this course already'));
-                }
-            });
-};
 
 account.prototype.getUserCourses = function(err, params, done){
     var course = null;
 
     /* find course see if it exist */
-    var coursePromise = Course.findOne({_id:params.courseId}).populate('startedBy category tags').exec();
+    var coursePromise = Course.findOne({_id:params.courseId}).populate('createdBy category courseTags').exec();
     coursePromise.then(function(c){
         course = c;
 
-        /* has this user followed? */
+        /* has this user enrolled? */
         return UserCourse.findOne({userId: mongoose.Types.ObjectId(params.userId), courseId: course.id}).exec();
 
     }).then(function(uc){
         console.log(uc);
-        /* user has followed this course */
+        /* user has enrolled in this course */
         if(uc){
             done(course, uc);
         } else
