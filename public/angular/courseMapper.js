@@ -1,4 +1,4 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'xeditable']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'xeditable']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -285,10 +285,21 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
 });
-;app.controller('MainMenuController', function($scope, $http, $rootScope) {
+;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies) {
+    $scope.rememberMe = false;
+
     $http.get('/api/accounts').success(function(data) {
         $scope.user = data;
         $rootScope.user = data;
+    });
+
+    if($cookies.rememberMe)
+        $scope.rememberMe = $cookies.rememberMe;
+
+    $scope.$watch('rememberMe', function(newVal, oldVal){
+        if(newVal !== oldVal){
+            $cookies.rememberMe = $scope.rememberMe;
+        }
     });
 });
 
