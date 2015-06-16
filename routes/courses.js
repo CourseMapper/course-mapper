@@ -19,6 +19,10 @@ router.get('/course/create', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/newCourse');
 });
 
+router.get('/course/:courseId/tree', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/course1', { title: req.params.courseId });
+});
+
 router.get('/course/:courseId', function(req, res, next) {
     var params = {
         courseId: req.params.courseId
@@ -37,11 +41,7 @@ router.get('/course/:courseId', function(req, res, next) {
         }
     );
 });
-
-router.get('/course/:courseId/tree', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/course1', { title: req.params.courseId });
-});
-
+/*
 router.get('/course/web-tech', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
 });
@@ -52,6 +52,6 @@ router.get('/course/web-tech2', function(req, res, next) {
 
 router.get('/course/:courseSlug', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
-});
+});*/
 
 module.exports = router;

@@ -30,7 +30,7 @@
 
                                     <div class="controls">
                                         <input type="text" id="course" name="course" placeholder="" class="form-control"
-                                               ng-model="course.course">
+                                               ng-model="course.name">
 
                                     </div>
                                 </div>
@@ -42,7 +42,7 @@
                                     <p class="help-block">Please pick one category</p>
                                     <div class="controls">
                                         <select id="category" name="category" class="form-control"
-                                                ng-options="c.slug as c.category for c in categories"
+                                                ng-options="c.slug as c.name for c in categories"
                                                 ng-model="course.category">
                                         </select>
 

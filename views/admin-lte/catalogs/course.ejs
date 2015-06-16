@@ -26,10 +26,10 @@
                     <a class="btn btn-primary btn-flat" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
                         login to follow this course</a>
                     <% } else {
-                    if (!follow && course.startedBy.username != user.username){ %>
+                    if (!follow && course.createdBy.username != user.username){ %>
                     <a class="btn btn-primary btn-flat" href="/api/course/<%= course.shortId%>/enroll">Enroll</a>
                     <% }
-                    if (course.startedBy.username == user.username){ %>
+                    if (course.createdBy.username == user.username){ %>
 
                     <% } else { %>
                     You are following this course. <a class="" href="/api/course/<%= course.shortId%>/unenroll">click
@@ -46,7 +46,7 @@
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <% if(follow || course.startedBy.username == user.username){ %>
+                            <% if(follow || course.createdBy.username == user.username){ %>
                             <li><a href="#/map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
