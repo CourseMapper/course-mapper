@@ -89,9 +89,10 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
 
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
     $scope.course = {
-        name: null,
+        course: null,
         category: null,
-        description: ''
+        description: '',
+        _id: null
     };
 
     $scope.createdDate = new Date();

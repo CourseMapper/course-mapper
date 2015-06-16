@@ -83,14 +83,6 @@ a.profile-picture {
     display: block;
 }
 
-a.profile-picture:hover {
-
-}
-
-i.ionicons {
-    margin-right: 10px;
-}
-
 .content-header {
     margin-left: 35px;
 }
@@ -418,9 +410,12 @@ ul.dropdown-menu.category{
 }
 
 .skin-blue .content-header {
+    /*background: rgba(255,255,255,0.96);*/
     background: white;
     padding: 10px;
     margin-left: 0px;
+    z-index:3;
+
 }
 
 @media (max-width: 991px) {
@@ -449,4 +444,17 @@ ul.dropdown-menu.category{
 }
 .filter .label{
     margin-right:5px;
+}
+.tree-container{
+    left:0px;
+    top:0px;
+    position: absolute;
+    overflow: hidden;
+}
+
+.control{
+    position: fixed;
+    top:120px;
+    left:20px;
+    z-index:4;
 }
