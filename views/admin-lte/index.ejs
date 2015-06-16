@@ -51,7 +51,7 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-                <div class="w" id="{{data.slug}}" data-shape="Rectangle" ng-style="{left:data.positionFromRoot.x + center.x, top:data.positionFromRoot.y+center.y}" data-toggle="dropdown" data-hover="dropdown">
+                <div class="w" id="{{data.slug}}" data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}" data-shape="Rectangle" data-toggle="dropdown" data-hover="dropdown">
 
                     {{data.name}}
 
@@ -76,20 +76,20 @@
             <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
             </div>
         </script>
-
+        <!--ng-style=""-->
 	<div class="tree-container">
-    		<div class="category-map" id="category-map" >
+        <div class="category-map" id="category-map" >
 
-        		<div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
-        		</div>
+            <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+            </div>
 
-        		<div class="center-category" id="center" data-shape="Rectangle">
-            		<h4>CourseMapper</h4>
-            		is a mind map based collaborative course annotation platform.
-        		</div>
+            <div class="center-category" id="center" data-shape="Rectangle">
+                <h4>CourseMapper</h4>
+                is a mind map based collaborative course annotation platform.
+            </div>
 
-    		</div>
-    	</div>
+        </div>
+    </div>
 
 </div><!-- ./wrapper -->
 <% include jsfooter %>
@@ -124,8 +124,9 @@
         };
 
         self.rePosition = function(w, h){
-            var left = ((self.fromCenter.x + w) / 2) - self.w/2;
-            var top = ((self.fromCenter.y + h) / 2) - self.h/2;
+            var left = w/2 + ((self.fromCenter.x - self.w/2)  ) ;
+            var top = h/2 + ((self.fromCenter.y - self.h/2)  );
+
             self.el.css({
                 left: left + "px",
                 top: top + "px"
@@ -135,18 +136,35 @@
 
     var Tree = {
         center: null,
+        leaves: {},
 
         init: function(w, h){
-            this.center = new Leave($('.center-category'), {x:0,y:0});
-            this.center.init(w, h);
+            var self = this;
+
+            self.center = new Leave($('.center-category'), {x:0,y:0});
+            self.center.init(w, h);
+
+            // initiate all leaves position
+            $('.w').each(function(){
+                var xFromRoot = $( this ).attr('data-from-root-x');
+                var yFromRoot = $( this ).attr('data-from-root-y');
+
+                var leave = new Leave($( this ), {x:parseInt(xFromRoot), y:parseInt(yFromRoot)});
+                leave.init(w, h);
+
+                self.leaves[$(this).attr('id')] = leave;
+            });
+
         },
 
         onWindowResize: function(w, h){
-            //this.center.onWindowResize(w, h);
-        },
+            var self = this;
 
-        update : function(){
-            this.center.update();
+            self.center.onWindowResize(w, h);
+            for(var i in self.leaves){
+                var el = self.leaves[i];
+                el.onWindowResize(w, h);
+            }
         }
     };
 
@@ -159,27 +177,36 @@
         init: function(wWidth, wHeight){
             var self = this;
 
-            this.el = $('.category-map');
-            this.draggable = this.el.draggable();
+            self.el = $('.category-map');
+            self.draggable = self.el.draggable();
 
             // so it big enough
-            this.el.css({
+            self.el.css({
                 width: self.w + 'px',
                 height: self.h + 'px'
             });
 
             // put it on the center
-            this.el.css({
+            self.putOnCenter(wWidth, wHeight);
+        },
+
+        putOnCenter: function(wWidth, wHeight){
+            var self = this;
+            // put it on the center
+            self.el.css({
                 left: ( (wWidth - self.w)/2) + 'px',
                 top: ( (wHeight - self.h)/2) + 'px'
             });
-
-
-            Tree.init(self.w, self.h);
         },
 
         onWindowResize: function(w, h){
-            Tree.init(self.w, self.h);
+            var self = this;
+
+            // put it on the center
+            self.putOnCenter(w, h);
+
+            //console.log('resize');
+            //Tree.onWindowResize(self.w, self.h);
         }
 
     };
@@ -224,7 +251,7 @@
 
 
 </script>
-<% if(user && user.roles == 'admin'){ %>
+<% if(user && user.role == 'admin'){ %>
 <div ng-controller="AdminHomePageController"></div>
 <script>
     app.controller('AdminHomePageController', function($scope, $http, $rootScope) {
@@ -232,17 +259,20 @@
          * script enabled when the logged in user is an admin.
          * it will allow this user to drag and save categories position
          */
-        $rootScope.initDraggable = function (jsPlumbInstance, center){
+        $rootScope.initDraggable = function (jsPlumbInstance){
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+
             // let us drag and drop the cats
             var mapEl = jsPlumb.getSelector(".category-map .w");
             jsPlumbInstance.draggable(mapEl,{
                 // update position on drag stop
                 stop: function() {
                     var el = $(this);
-                    var pos = el.offset();
+                    var pos = el.position();
                     var distanceFromCenter = {
-                        x: pos.left - center.x,
-                        y: pos.top - center.y
+                        x: pos.left - Canvas.w/2,
+                        y: pos.top - Canvas.h/2
                     };
 
                     $http.put('/api/category/' + el.attr('id') + '/positionFromRoot', distanceFromCenter)
@@ -258,6 +288,11 @@
         }
     });
 </script>
+<style>
+    .category-map{
+        border: 1px solid black;
+    }
+</style>
 <% } else {%>
 <div ng-controller="SController"></div>
 <script>

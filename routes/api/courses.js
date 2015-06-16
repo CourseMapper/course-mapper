@@ -6,7 +6,6 @@ var Account = require(appRoot + '/modules/accounts');
 var debug = require('debug')('cm:route');
 var moment = require('moment'); 
 var router = express.Router();
-  
 
 router.post('/courses', function(req, res, next){
     if (!req.user) {

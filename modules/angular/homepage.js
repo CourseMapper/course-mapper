@@ -38,11 +38,13 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        console.log((ngRepeatFinishedEvent));
+        console.log(ngRepeatFinishedEvent);
         $scope.initJSPlumb();
     });
 
     $scope.initJSPlumb = function(){
+        Tree.init(Canvas.w, Canvas.h);
+
         var instance = jsPlumb.getInstance({
             Endpoint: ["Blank", {radius: 2}],
             HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2 },
@@ -52,7 +54,7 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
         });
 
         // so the ejs can access this instance
-        $rootScope.initDraggable(instance, $scope.center);
+        $rootScope.initDraggable(instance);
 
         // initialise all '.w' elements as connection targets.
         instance.batch(function () {
