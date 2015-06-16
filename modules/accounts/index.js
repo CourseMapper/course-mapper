@@ -63,8 +63,11 @@ account.prototype.addUser = function(errorCallback, params, done){
 
     var user = new User({
         username: params.username,
-        email: params.email
+        email: params.email,
     });
+
+    if(params.role)
+        user.role = params.role;
 
     // hash the password first
     user.setPassword(params.password);
@@ -192,7 +195,7 @@ account.prototype.getUserCourses = function(err, params, done){
     var course = null;
 
     /* find course see if it exist */
-    var coursePromise = Course.findOne({_id:params.courseId}).populate('createdBy category courseTags').exec();
+    var coursePromise = Course.findOne({shortId:params.courseId}).populate('createdBy category courseTags').exec();
     coursePromise.then(function(c){
         course = c;
 

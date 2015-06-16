@@ -5,5 +5,5 @@
     "maxAge": 2419200000
   },
 
-  "database": "rpl:1@localhost/course_mapper_test"
+  "database": "localhost/course_mapper_test"
 }

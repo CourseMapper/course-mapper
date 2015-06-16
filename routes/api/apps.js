@@ -7,7 +7,7 @@ var router = express.Router();
 /**
  * get all active apps > widgets
  */
-router.get('/api/apps/', function(req, res, next) {
+router.get('/apps/', function(req, res, next) {
     var app = new AppsGallery();
     app.getWidgets(
         function(err){
@@ -25,7 +25,7 @@ router.get('/api/apps/', function(req, res, next) {
 /**
  * get apps>widgets that are active and on current location
  */
-router.get('/api/apps/:location', function(req, res, next){
+router.get('/apps/:location', function(req, res, next){
     var app = new AppsGallery();
     app.getWidgets(
         function(err){

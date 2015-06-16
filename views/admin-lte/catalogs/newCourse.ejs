@@ -29,21 +29,23 @@
                                         <label class="control-label" for="course">Course Name</label>
                                         <p class="help-block">Course name can contain any letters or numbers</p>
 
-                                        <div class="controls">
-                                            <input type="text" id="course" name="course" placeholder="" class="form-control"
-                                                   ng-model="course.course">
-                                        </div>
-                                    </div>
+                                    <div class="controls">
+                                        <input type="text" id="course" name="course" placeholder="" class="form-control"
+                                               ng-model="course.name">
 
-                                    <div class="control-group">
-                                        <p></p>
-                                        <label class="control-label" for="category">Category</label>
-                                        <p class="help-block">Please pick one category</p>
-                                        <div class="controls">
-                                            <select id="category" name="category" class="form-control"
-                                                    ng-options="c.slug as c.category for c in categories"
-                                                    ng-model="course.category">
-                                            </select>
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <p></p>
+                                    <label class="control-label" for="category">Category</label>
+
+                                    <p class="help-block">Please pick one category</p>
+                                    <div class="controls">
+                                        <select id="category" name="category" class="form-control"
+                                                ng-options="c.slug as c.name for c in categories"
+                                                ng-model="course.category">
+                                        </select>
 
                                         </div>
                                     </div>

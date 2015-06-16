@@ -155,7 +155,11 @@ catalog.prototype.addCategory = function(error, params, success){
     var cat = new Category({
         name: params.name,
         parentCategory: params.parentCategory,
-        subCategories: []
+        subCategories: [],
+        positionFromRoot: {
+            x: 100,
+            y: 70
+        }
     });
 
     cat.setSlug(params.name);
