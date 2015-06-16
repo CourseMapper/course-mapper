@@ -11,7 +11,10 @@
         </ol>
     </section>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" ng-controller="HomePageController"> 
+    <div class="content-wrapper" ng-controller="HomePageController">
+        <div class="control">
+        <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i class="ionicons ion-android-locate"></i></button>
+        </div>
         <div ng-class="{'hideSlider': hideSlider}" class="row row-centered" id="sliderCarousel">
             <div class="col-lg-12 col-centered">
 
@@ -173,6 +176,7 @@
         draggable: null,
         w: 2000,
         h: 2000,
+        centerCss: {},
 
         init: function(wWidth, wHeight){
             var self = this;
@@ -187,26 +191,35 @@
             });
 
             // put it on the center
-            self.putOnCenter(wWidth, wHeight);
+            self.setCenter(wWidth, wHeight);
+            self.putOnCenter();
         },
 
-        putOnCenter: function(wWidth, wHeight){
+        setCenter: function(wWidth, wHeight){
             var self = this;
-            // put it on the center
-            self.el.css({
+
+            self.centerCss = {
                 left: ( (wWidth - self.w)/2) + 'px',
                 top: ( (wHeight - self.h)/2) + 'px'
-            });
+            };
+        },
+
+        putOnCenter: function(animate){
+            var self = this;
+
+            if(animate)
+                self.el.animate(self.centerCss, {duration:1000, easing:'easeOutExpo'});
+            else
+                // put it on the center
+                self.el.css(self.centerCss);
         },
 
         onWindowResize: function(w, h){
             var self = this;
 
             // put it on the center
-            self.putOnCenter(w, h);
-
-            //console.log('resize');
-            //Tree.onWindowResize(self.w, self.h);
+            self.setCenter(w, h);
+            self.putOnCenter();
         }
 
     };
@@ -304,7 +317,8 @@
 </script>
 <% } %>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function configureSliderButton(){
+        // configure slider so it can be displayed on the center
         //Get window height and the wrapper height
         var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
         var neg2= $('.content-header').outerHeight();

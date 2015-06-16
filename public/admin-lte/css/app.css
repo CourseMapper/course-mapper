@@ -83,14 +83,6 @@ a.profile-picture {
     display: block;
 }
 
-a.profile-picture:hover {
-
-}
-
-i.ionicons {
-    margin-right: 10px;
-}
-
 .content-header {
     margin-left: 35px;
 }
@@ -458,4 +450,11 @@ ul.dropdown-menu.category{
     top:0px;
     position: absolute;
     overflow: hidden;
+}
+
+.control{
+    position: fixed;
+    top:120px;
+    left:20px;
+    z-index:4;
 }
