@@ -9,14 +9,41 @@ app.controller('CourseController', function($scope, $filter, $http, $location) {
 app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
     $scope.slug = $routeParams.slug;
 
+    // chosen filter
+    $scope.filterTags = [];
+    // this will be displayed on the available filter
+    $scope.availableTags = [];
+    // the original list
+    $scope.courseTags = [];
+    $scope.category = null;
+    $scope.courses = null;
+
     $http.get('/api/category/' + $scope.slug + '/courses').success(function(data) {
         $scope.courses = data.courses;
     });
 
-    $http.get('/api/category/' + $scope.slug + '/courseTags').success(function(data) {
-        $scope.courseTags = data.courseTags;
+    $http.get('/api/category/' + $scope.slug ).success(function(data) {
+        $scope.category = data.category;
     });
 
+    $http.get('/api/category/' + $scope.slug + '/courseTags').success(function(data) {
+        $scope.courseTags = data.courseTags;
+        $scope.availableTags = data.courseTags;
+    });
+
+    $scope.applyFilter = function(tag){
+        if(arrayObjectIndexOf($scope.filterTags, tag, 'name') < 0){
+            $scope.filterTags.push(tag);
+            removeObjectFromArray($scope.availableTags, tag, 'name');
+        }
+    };
+
+    $scope.removeFilter = function(tag){
+        if(arrayObjectIndexOf($scope.availableTags, tag, 'name') < 0){
+            $scope.availableTags.push(tag);
+            removeObjectFromArray($scope.filterTags, tag, 'name');
+        }
+    };
 });
 
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {

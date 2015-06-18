@@ -111,7 +111,10 @@ catalog.prototype.getCourse = function(error, params, success){
  */
 catalog.prototype.getCategoryTags = function(error, params, success){
     this.getCategory(error, params, function(docs){
-        success(docs.courseTags);
+        if(docs && docs.courseTags)
+            success(docs.courseTags);
+        else
+            success([]);
     });
 };
 

@@ -7,9 +7,13 @@ var router = express.Router();
 /**
  * get courses based on category slug
  * return: html view
- */
-router.get('/catalogs/category/:category/courses', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', showSidebar:true });
-});
+router.get('/category/:category/courses', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/courses', {
+        req:req,
+        title: 'Browse for Courses',
+        user: req.user,
+        showSidebar:true
+    });
+}); */
 
 module.exports = router;

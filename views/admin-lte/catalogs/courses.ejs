@@ -4,45 +4,53 @@
     <!-- Header Navbar -->
     <% include ../mainMenu %>
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div id="courses" class="content-wrapper" >
 
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li class="active">Browse Courses</li>
+                <li class="active">{{category.name}}</li>
             </ol>
-            <!-- Sidebar toggle button-->
-
+            <% if(locals.user){ %>
+            <a class="btn btn-primary btn-xs" style="float: right" data-toggle="modal" data-target="#modalCreateCourse">Create A Course</a>
+            <% }%>
         </section>
 
-        <% /*include ../sidebar*/ %>
         <!-- for routing purpose we write it as an ng-view although we write the html also in this file. -->
         <section class="content" ng-view>
         </section>
 
         <!-- Main content -->
-        <script type="text/ng-template"  id="courses_list.html">
+        <script type="text/ng-template" id="courses_list.html">
 
             <div class="col-md-12">
                 <div class="col-md-12 filter">
-                    <h4>Filtered By:</h4>
-                    <span class="label label-primary">
-                        <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                        &nbsp;Processing</span>
-                    <h4>Available Tags:</h4>
-                    <span class="label label-primary" ng-repeat="t in tags">{{t.name}}</span>
+                    <h4 ng-show="filterTags.length > 0">Filtered By:</h4>
+
+                    <span class="label label-primary" ng-repeat="tag in filterTags">
+                        <button class="btn btn-box-tool" ng-click="removeFilter(tag)">
+                            <i class="fa fa-times"></i></button>
+                         {{tag.name}}</span>
+
+                    <h4>Available Filters:</h4>
+                    <a class="label label-primary" ng-repeat="tag in availableTags" ng-click="applyFilter(tag)">
+                        {{tag.name}}</a>
+                    <span class="label label-primary" ng-show="availableTags.length == 0">-</span>
                     <h4>Courses:</h4>
                 </div>
 
+                <!--{{category}}-->
 
                 <div class="col-sm-6 col-lg-3" ng-repeat="c in courses">
                     <div class="form_hover">
                         <div class="box box-primary peekCourse">
                             <div class="box-header with-border">
-                                <a href="/course/{{c._id}}" class="box-title">{{c.course}}</a>
+                                <a href="/course/{{c.shortId}}" class="box-title">{{c.name}}</a>
                             </div>
                             <div class="box-body"  style="text-align: center" >
-                            <img src="/img/default-tree.png">
+                            <img ng-show="c.picture" ng-src="c.picture">
+                            <img ng-hide="c.picture" src="/img/default-tree.png">
                             </div>
                         </div>
 
@@ -50,24 +58,13 @@
                             <div class="blur"></div>
                             <div class="box box-primary caption-text">
                                 <div class="box-header with-border">
-                                    <a href="/course/{{c._id}}" class="box-title">{{c.course}}</a>
+                                    <a href="/course/{{c.shortId}}" class="box-title">{{c.name}}</a>
                                 </div>
                                 <div class="box-body">
                                     <div class="form-group">
-                                        Started Date:<b>02/09/2014</b>
+                                        Started Date: <b>{{c.dateAdded | date:'dd.MM.yyyy @ H:mm'}}</b>
                                     </div>
-                                    <div class="form-group">
-                                        Last activity:<b>2 days ago</b>
-                                    </div>
-                                    <div class="form-group">
-                                        User Rating:<br/>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>
-                                    </div>
-                                    <a class="btn btn-primary" href="/course/{{c._id}}"><i class=""></i> Go to course</a>
+                                    <a class="btn btn-primary" href="/course/{{c.shortId}}"><i class=""></i> Go to course</a>
                                 </div>
                             </div>
                         </div>
@@ -75,10 +72,16 @@
                 </div>
             </div>
 
+            <div class="row">
+                <div class="modal" id="modalCreateCourse" tabindex="-1" role="dialog" aria-labelledby="modalCreateCourse" aria-hidden="true">
+                    <div ng-include="'/course/create/' + category.slug"></div>
+                </div>
+            </div>
         </script>
 
         <br class="clear">
         <!-- /.content -->
+
     </div>
     <!-- /.content-wrapper -->
 

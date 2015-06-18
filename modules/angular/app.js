@@ -51,6 +51,23 @@ function transformRequest(obj) {
     return str.join("&");
 }
 
+function arrayObjectIndexOf(myArray, searchObj, property) {
+    for(var i = 0, len = myArray.length; i < len; i++) {
+        if (myArray[i][property] === searchObj[property])
+            return i;
+    }
+    return -1;
+}
+
+function removeObjectFromArray(myArray, searchObj, property){
+    for(var i = 0, len = myArray.length; i < len; i++) {
+        if (myArray[i][property] === searchObj[property])
+        {
+            myArray.splice(i, 1);
+            return;
+        }
+    }
+}
 /**
  * https://scotch.io/quick-tips/how-to-encode-and-decode-strings-with-base64-in-javascript
  * @type {{_keyStr: string, encode: Function, decode: Function, _utf8_encode: Function, _utf8_decode: Function}}

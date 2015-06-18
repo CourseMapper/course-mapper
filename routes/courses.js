@@ -11,12 +11,15 @@ var router = express.Router();
  * return: html view
  */
 router.get('/courses', function (req, res, next){
-        res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', showSidebar:true });
-    }
-); 
+        res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', user: req.user, showSidebar:true });
+});
 
 router.get('/course/create', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/newCourse');
+});
+
+router.get('/course/create/:categorySlug', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/newCourseModal');
 });
 
 router.get('/course/:courseId/tree', function(req, res, next) {
@@ -41,17 +44,5 @@ router.get('/course/:courseId', function(req, res, next) {
         }
     );
 });
-/*
-router.get('/course/web-tech', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
-});
-
-router.get('/course/web-tech2', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/course2', { title: req.params.courseSlug });
-});
-
-router.get('/course/:courseSlug', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/course', { title: req.params.courseSlug });
-});*/
 
 module.exports = router;

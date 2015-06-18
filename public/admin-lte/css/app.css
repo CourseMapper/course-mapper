@@ -458,3 +458,12 @@ ul.dropdown-menu.category{
     left:20px;
     z-index:4;
 }
+.content-header>.breadcrumb{
+    display: inline;
+}
+.content-header>.btn{
+    display: inline;
+}
+#courses h4{
+    font-size:15px;
+}
