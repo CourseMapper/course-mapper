@@ -1,4 +1,4 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'xeditable']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'xeditable', 'ngTagsInput']);
 
 app.filter('capitalize', function() {
     return function(input, all) {

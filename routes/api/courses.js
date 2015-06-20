@@ -7,6 +7,10 @@ var debug = require('debug')('cm:route');
 var moment = require('moment'); 
 var router = express.Router();
 
+/**
+ * POST
+ * create course
+ */
 router.post('/courses', function(req, res, next){
     if (!req.user) {
         res.status(401).send('Unauthorized');
@@ -14,6 +18,17 @@ router.post('/courses', function(req, res, next){
     else {
         var catalog = new Catalog();
         req.body.userId = req.user._id;
+
+        // format the tags data structure
+        if(req.body.tags) {
+            // because the data is in {text:the-tag} format. let's just get the values.
+            var tagSlugs = [];
+            var tTags = JSON.parse(req.body.tags);
+            for (var i in tTags) {
+                tagSlugs.push(tTags[i]['text']);
+            }
+            req.body.tagSlugs = tagSlugs;
+        }
 
         catalog.addCourse(
             function (err) {

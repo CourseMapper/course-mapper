@@ -1,0 +1,82 @@
+<!-- Main content -->
+<section class="content">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-5 col-centered">
+            <div class="box no-border" ng-controller="NewCourseController">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Create a new course under {{category.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form class="" role="form" ng-submit="saveCourse()">
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="course">Course Name</label>
+
+                                <p class="help-block">Course name can contain any letters or numbers</p>
+
+                                <div class="controls">
+                                    <input type="text" id="course" name="course" placeholder="" class="form-control"
+                                           ng-model="course.name">
+
+                                    <input type="hidden" id="category" name="category" class="form-control"
+                                           ng-model="course.category" value="{{category.slug}}"
+                                           ng-init="course.category=category.slug">
+                                    </input>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Description</label>
+
+                                <p class="help-block">Description about this course</p>
+
+                                <div class="controls">
+                                <textarea type="description" id="description" name="description" placeholder=""
+                                          class="form-control" ng-model="course.description">
+                                </textarea>
+
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Tagging (optional)</label>
+
+                                <p class="help-block">Put some tags related to this course</p>
+
+                                <div class="controls">
+                                    <tags-input ng-model="course.tags">
+                                        <auto-complete source="loadTags($query)"></auto-complete>
+                                    </tags-input>
+
+                                </div>
+                            </div>
+{{course}}
+                            <div class="control-group">
+                                <p class="help-block"></p>
+
+                                <p class="help-block"></p>
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-lg btn-primary btn-block">Create New Course</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

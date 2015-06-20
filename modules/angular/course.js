@@ -71,7 +71,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     };
 
-    $scope.loadCategories();
+    //$scope.loadCategories();
+    $scope.loadTags = function(query) {
+        return $http.get('/api/category/' + $scope.category.slug + '/courseTags?query=' + query);
+    };
 
     $scope.$watch('course.category', function(newVal, oldVal) {
         console.log(newVal);
@@ -94,8 +97,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     }, true);*/
 
-
     $scope.saveCourse = function() {
+        if($scope.course.tags) {
+            $scope.course.tags = JSON.stringify($scope.course.tags);
+        }
+
         var d = transformRequest($scope.course);
         $http({
             method: 'POST',

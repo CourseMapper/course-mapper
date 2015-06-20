@@ -152,8 +152,6 @@ catalog.prototype.getCategoriesRecursive = function(error, parentId, success){
 };
 
 catalog.prototype.addCategory = function(error, params, success){
-    if(!params.parentCategory)
-        params.parentCategory = null;
 
     var cat = new Category({
         name: params.name,
@@ -205,45 +203,92 @@ catalog.prototype.addCategory = function(error, params, success){
     });
 };
 
+catalog.prototype.AddTagToCategory = function(error, tag, params, success){
+    console.log("finding Category");
+    // if it has parent category, lets add it as its child
+    Category.findOne({slug: params.category},
+        function (err, cat) {
+            if (err)
+                debug('error finding category');
+            else if(cat)
+                cat.update({
+                    $addToSet: {
+                        courseTags: mongoose.Types.ObjectId(tag.id)
+                    }
+                }, function(err, res){
+                    if (err && error)
+                        error('failed updated on linking a category');
+                    else
+                        if(success)success(tag);
+                });
+        });
+};
+
+catalog.prototype.AddTagToCourse = function(error, tag, params, success){
+    debug("finding Course");
+    // if it has parent Course, lets add it as its child
+    Course.findOne({_id: params.course},
+        function (err, course) {
+            if (err)
+                debug('cant find course');
+            else
+                course.update({
+                    $addToSet: {
+                        courseTags: tag._id
+                    }
+                }, function(err, res){
+                    if (err)
+                        if(error)error('failed updated on linking a category');
+                    else
+                        if(success)success(tag);
+                });
+        });
+};
+
 catalog.prototype.addCourseTag = function(error, params, success){
-    if(!params.category)
-        params.category = null;
+    var self = this;
 
-    var tag = new Tag({
-        name: params.name
-    });
-
-    tag.setSlug(params.name);
-
-    tag.save(function (err) {
-        if (err) {
-            debug('saving tag error');
-            error(err);
-        } else {
-            // the tag is successfully saved, we branch out the thread
-            // to save it as the relation to the category
-            // but we just gonna send the response to the user now before the category transaction finish.
+    var tag = null;
+    // find one before creating the tag, and add to course or its category if the param provided
+    Tag.findOne({name: params.name}).exec().then(function(tag){
+        if(tag){
             if(params.category) {
-                console.log("finding Category");
-                // if it has parent category, lets add it as its child
-                Category.findOne({slug: params.category},
-                    function (err, cat) {
-                        if (err)
-                            debug('cant find linked cat');
-                        else
-                            cat.update({
-                                $addToSet: {
-                                    courseTags: mongoose.Types.ObjectId(tag.id)
-                                }
-                            }, function(err, res){
-                                if (err)
-                                    debug('failed updated on linking a category');
-                            });
-                    });
+                self.AddTagToCategory(error, tag, params, success);
             }
 
-            // success saved the tag
+            if(params.course){
+                self.AddTagToCourse(error, tag, params, success);
+            }
+
+            // success added the tag
             success(tag);
+        } else {
+            // create new tag, and then add the newly tag to course/category
+            var tag = new Tag({
+                name: params.name
+            });
+
+            tag.setSlug(params.name);
+            tag.save(function (err) {
+                if (err) {
+                    debug('saving tag error');
+                    error(err);
+                } else {
+                    // the tag is successfully saved, we branch out the thread
+                    // to save it as the relation to the category
+                    if(params.category) {
+                        self.AddTagToCategory(error, tag, params, success);
+                    }
+
+                    if(params.course){
+                        self.AddTagToCourse(error, tag, params, success);
+                    }
+
+                    // but we just gonna send the response to the user now before the category transaction finish.
+                    // success saved the tag
+                    success(tag);
+                }
+            });
         }
     });
 };
@@ -328,6 +373,26 @@ catalog.prototype.addCourse = function(error, params, success){
                             error,
                             {_id: course._id},
                             function(crs){
+                                // they giving us the tags in array of slug string.
+                                if(params.tagSlugs){
+                                    // insert all the tags, if it failed, means it is already there
+
+                                    // get all the tags, we need the _ids
+                                    for(var i in params.tagSlugs){
+                                        var tagParam = {
+                                            name : params.tagSlugs[i],
+                                            course : crs._id,
+                                            category: params.category
+                                        };
+
+                                        self.addCourseTag(function(err){
+                                                if(err) debug(err);
+                                            },
+                                            tagParam,
+                                            function(){});
+                                    }
+                                }
+
                                 success(crs);
                             }
                         );
