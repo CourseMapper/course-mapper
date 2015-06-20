@@ -6,10 +6,8 @@ var SlideViewer = require(appRoot + '/modules/slide-viewer');
 var router = express.Router();
 
 
-router.get('/slide-viewer', function(req, res, next) {
+router.get('/', function(req, res, next) {
     res.render('slide-viewer/slideViewer');
 });
-
-
 
 module.exports = router;
