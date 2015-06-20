@@ -68,11 +68,25 @@ function removeObjectFromArray(myArray, searchObj, property){
         }
     }
 }
+
 /**
  * https://scotch.io/quick-tips/how-to-encode-and-decode-strings-with-base64-in-javascript
  * @type {{_keyStr: string, encode: Function, decode: Function, _utf8_encode: Function, _utf8_decode: Function}}
  */
 var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+
+/*
+if(!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function(what, i) {
+        i = i || 0;
+        var L = this.length;
+        while (i < L) {
+            if(this[i] === what) return i;
+            ++i;
+        }
+        return -1;
+    };
+}*/
 ;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
@@ -84,19 +98,21 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
     });
 
 });
-;app.controller('CourseController', function($scope, $filter, $http, $location) {
+;app.controller('CourseController', function($scope, $filter, $http, $location, $routeParams) {
     $scope.course = null;
 
     $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?follow=1';
-});
+    $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
+    $scope.params = $routeParams;
+});
 
 app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
     $scope.slug = $routeParams.slug;
 
     // chosen filter
     $scope.filterTags = [];
+    $scope.filterTagsText = [];
     // this will be displayed on the available filter
     $scope.availableTags = [];
     // the original list
@@ -104,9 +120,20 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
     $scope.category = null;
     $scope.courses = null;
 
-    $http.get('/api/category/' + $scope.slug + '/courses').success(function(data) {
-        $scope.courses = data.courses;
-    });
+    $scope.getCoursesFromThisCategory = function(){
+        var url = '/api/category/' + $scope.slug + '/courses';
+        var t = [];
+        if($scope.filterTags.length > 0) {
+            for (var i in $scope.filterTags)
+                t.push($scope.filterTags[i]._id);
+
+            url += '?tags=' + t.join(',');
+        }
+
+        $http.get(url).success(function(data) {
+            $scope.courses = data.courses;
+        });
+    };
 
     $http.get('/api/category/' + $scope.slug ).success(function(data) {
         $scope.category = data.category;
@@ -115,19 +142,62 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
     $http.get('/api/category/' + $scope.slug + '/courseTags').success(function(data) {
         $scope.courseTags = data.courseTags;
         $scope.availableTags = data.courseTags;
+
+        $scope.initTagFromSearch();
     });
 
-    $scope.applyFilter = function(tag){
+    $scope.initTagFromSearch = function(){
+        var tagSearch = $location.search();
+        if(tagSearch && tagSearch.tags){
+            var tags = tagSearch.tags.split(',');
+            if(tags)
+            for(var i in tags){
+                var tag = tags[i];
+                if($scope.availableTags)
+                for(var j in $scope.availableTags) {
+                    var t = $scope.availableTags[j];
+                    if (t.slug == tag)
+                        $scope.applyFilter(t, true);
+                }
+            }
+        }
+
+        $scope.getCoursesFromThisCategory();
+
+        $scope.$watch(function(){ return $location.search() }, function(){
+            $scope.getCoursesFromThisCategory();
+        }, true);
+    };
+
+    $scope.applyFilter = function(tag, dontgo){
         if(arrayObjectIndexOf($scope.filterTags, tag, 'name') < 0){
             $scope.filterTags.push(tag);
+            $scope.filterTagsText.push(tag.slug);
             removeObjectFromArray($scope.availableTags, tag, 'name');
+            if(!dontgo)
+                $scope.go();
         }
+    };
+
+    $scope.go = function(){
+        if($scope.filterTags.length > 0)
+            $location.search({tags: $scope.filterTagsText.join(',')} );
+        else
+            $location.search({});
     };
 
     $scope.removeFilter = function(tag){
         if(arrayObjectIndexOf($scope.availableTags, tag, 'name') < 0){
             $scope.availableTags.push(tag);
             removeObjectFromArray($scope.filterTags, tag, 'name');
+
+            for (var i=$scope.filterTagsText.length-1; i>=0; i--) {
+                if ($scope.filterTagsText[i] === tag.slug) {
+                    $scope.filterTagsText.splice(i, 1);
+                    break;
+                }
+            }
+            $scope.go();
         }
     };
 });
@@ -235,13 +305,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             //a.attr('data-toggle', 'tab');
             //a.attr('href', a.attr('data-href'));
         }
-    });*/
+    });
 
     $scope.initAutoGrow = function(){
         if(jQuery().autoGrowInput) {
             jQuery('#courseTitle input[type=text]').autoGrowInput({ minWidth: 200, maxWidth: 600, comfortZone: 10 });
         }
-    }
+    }*/
 });
 
 ;app.controller('HomePageController', function($scope, $http, $rootScope) {
@@ -395,7 +465,8 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
             when('/category/:slug', {
                 templateUrl: 'courses_list.html',
-                controller: 'CourseListController'
+                controller: 'CourseListController',
+                reloadOnSearch: false
             }).
 
             otherwise({

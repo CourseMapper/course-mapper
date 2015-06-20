@@ -14,13 +14,13 @@ router.get('/courses', function (req, res, next){
         res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', user: req.user, showSidebar:true });
 });
 
-router.get('/course/create', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/newCourse');
-});
-
 router.get('/course/create/:categorySlug', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/newCourseModal');
 });
+
+/*router.get('/course/create', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/newCourse');
+});*/
 
 router.get('/course/:courseId/tree', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/course1', { title: req.params.courseId });

@@ -10,7 +10,8 @@ app.config(['$routeProvider', '$locationProvider',
 
             when('/category/:slug', {
                 templateUrl: 'courses_list.html',
-                controller: 'CourseListController'
+                controller: 'CourseListController',
+                reloadOnSearch: false
             }).
 
             otherwise({
