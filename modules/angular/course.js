@@ -112,19 +112,21 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         })
             .success(function(data) {
+                $scope.course = {};
                 console.log(data);
                 if(data.result) {
                     // if successful, bind success data.course to course
-                    $scope.courseModel = data.course;
+                    /*$scope.courseModel = data.course;
                     $scope.course.shortId = data.course.shortId;
-                    $scope.saved = true;
+                    $scope.saved = true;*/
 
                     $scope.$emit('onAfterCreateNewCourse');
 
-                    window.location.href = '/course/' + $scope.course.shortId + '?new=1';
+                    window.location.href = '/course/' + data.course.shortId + '?new=1';
                 }
             })
             .error(function(data){
+                $scope.course.tags = JSON.parse($scope.course.tags);
                 if( data.result != null && !data.result){
                     $scope.errorName = data.errors.name;
                     console.log(data.errors);
