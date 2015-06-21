@@ -64,7 +64,8 @@
                              </div>
                            </fieldset>
                         </form>
-                        <button class="btn btn-default" id="displayComments" name="displayComments">Display Comments</button>
+                        <button class="btn btn-default" id="displayComments" name="displayComments" onClick="displayComments();">Display Comments</button>
+                        <label id="numComments" name="numComments">{{comment.numberOfComments()}}</label>
                       </div>
                     </div>
                   </div>
@@ -124,4 +125,4 @@
 <script src="/jquery/jquery-ui.min.js"></script>
 <script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
-<script src="js/slideviewer.js"></script>
+<script src="/slide-viewer/js/slideviewer.js"></script>
