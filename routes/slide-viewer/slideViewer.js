@@ -8,7 +8,18 @@ var router = express.Router();
 
 
 router.get('/', function(req, res, next) {
-    res.render('slide-viewer/slideViewer');
+  var comment = new Comment();
+  comment.getAllComments(function(err, data) {
+
+    //res.json(data);
+      res.render('slide-viewer/slideViewer', {
+        numComments: data.length,
+        comments: data
+      }
+
+    );
+
+  });
 });
 
 router.post('/slide-viewer', function(req, res, next){
