@@ -17,13 +17,14 @@ router.get('/slide-viewer', function(req, res, next) {
     //res.json(data);
       res.render('slide-viewer/slideViewer', {
         numComments: data.length,
-        comments: data
+        comments: data,
+        currentUser: req.user
       }
 
     );
 
   });
-    
+
 
 });
 
