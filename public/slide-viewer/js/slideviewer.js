@@ -5,13 +5,13 @@
 
 var default1=0;
 
-function _init(){
-/*    console.log("WORKED3");
+/*function _init(){
+    console.log("WORKED3");
 
     $("numComments").on("click", function(event) {
       console.log("WORKED2");
 
-    });*/
+    });
 };
 
 function displayComments(){
@@ -24,4 +24,4 @@ function displayComments(){
 
     $("numComments").innerhtml(num);
 
-};
+};*/

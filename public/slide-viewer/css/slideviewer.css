@@ -3,10 +3,13 @@
     border-color: #ff0000;
 }
 .slide-wrapper{
+  background-image: url('../images/slide.png');
   background-size: cover;
   background-repeat: no-repeat;
-  width:100%;
-
+  widht:100%;
+}
+.slide-image{
+  max-width:100%;
 }
 .annotation-wrapper{
 
