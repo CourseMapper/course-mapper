@@ -1,0 +1,469 @@
+.row-centered {
+    text-align: center;
+}
+
+.col-centered {
+    display: inline-block;
+    float: none;
+    text-align: left;
+}
+
+.col-min {
+    min-width: 90%;
+}
+
+.col-centered .content {
+    text-align: center;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 10px;
+    margin: 0 auto;
+}
+
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+
+.form-signin .checkbox {
+    font-weight: normal;
+}
+
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+
+h1 span.course{margin-left:80px}
+
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+
+.form-signin input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#courseList ul li {
+    display: block;
+    width: 120px;
+    height: 120px;
+    float: left;
+    background: white;
+    border: solid 1px #3C8DBC;
+    text-align: center;
+    margin: 5px;
+    padding-top: 10px;
+}
+
+.form-horizontal {
+    width: 100%;
+    max-width: 400px;
+    margin: 0px auto;
+}
+
+a.profile-picture {
+    width: 100%;
+    height: 128px;
+    display: block;
+}
+
+.content-header {
+    margin-left: 35px;
+}
+
+.btn.widgetEmpty {
+    height: 60px;
+    width:250px;
+    margin-bottom: 20px;
+    margin-top:20px;
+    margin-left:auto;
+    margin-right: auto;
+}
+
+.widgetEmpty i {
+    font-size: 30px;
+}
+
+#dashboard .box-header {
+    cursor: move;
+}
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none !important
+}
+
+.form_hover {
+    padding: 0px;
+    position: relative;
+    overflow: hidden;
+    height: 240px;
+    margin-bottom: 30px;
+}
+
+.form_hover:hover .header {
+    opacity: 0.8;
+    -webkit-animation: fadeIn ease-in 1;
+    -moz-animation: fadeIn ease-in 1;
+    animation: fadeIn ease-in 1;
+
+    -webkit-animation-fill-mode: forwards;
+    -moz-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    animation-duration: 1s;
+}
+
+.form_hover img {
+    z-index: 4;
+}
+
+.form_hover .header {
+    opacity: 0;
+    position: absolute;
+    top: 0px;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.form_hover .blur {
+    height: 240px;
+    z-index: 5;
+    position: absolute;
+    width: 100%;
+}
+
+.form_hover .caption-text {
+    z-index: 10;
+    height: 240px;
+    width: 100%;
+}
+
+.form_hover .peekCourse {
+    display: block;
+    height: 240px;
+}
+
+/* custom inclusion of right, left and below tabs */
+
+.tabs-left > .nav-tabs {
+    border-bottom: 0;
+    width: 100px;
+    text-align: center;
+}
+
+.tabs-left > .nav-tabs.tabs-hide {
+    width: 64px;
+    margin-right: 0px;
+}
+
+.tabs-left > .nav-tabs.tabs-hide a span {
+    display: none;
+}
+
+.tabs-left > .nav-tabs.tabs-hide a {
+    line-height: 80px;
+}
+
+.tabs-left > .nav-tabs.tabs-hide > li > a {
+    min-width: 0px;
+}
+
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+    display: none;
+}
+
+.tab-content {
+    margin-left: 0px;
+}
+
+.tab-content > .active,
+.pill-content > .active {
+    display: block;
+}
+
+.nav-tabs .ionicons {
+    font-size: 40px;
+    margin-right: 0px;
+}
+
+.nav-tabs.tabs-hide .ionicons {
+    font-size: 20px;
+}
+
+.tabs-left > .nav-tabs > li {
+    float: none;
+    height: 100px;
+    text-align: center;
+}
+
+.tabs-left > .nav-tabs > li > a {
+    min-width: 74px;
+    margin-right: 0;
+    margin-bottom: 3px;
+    height: 100px;
+}
+
+.tabs-left > .nav-tabs {
+    float: left;
+    margin-right: 19px;
+    border-right: 1px solid #ddd;
+}
+
+.tabs-left > .nav-tabs > li > a {
+    margin-right: -1px;
+    -webkit-border-radius: 4px 0 0 4px;
+    -moz-border-radius: 4px 0 0 4px;
+    border-radius: 4px 0 0 4px;
+}
+
+.tabs-left > .nav-tabs > li > a:hover,
+.tabs-left > .nav-tabs > li > a:focus {
+    border-color: #eeeeee #dddddd #eeeeee #eeeeee;
+}
+
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
+.tabs-left > .nav-tabs .active > a:focus {
+    border-color: #ddd transparent #ddd #ddd;
+    *border-right-color: #ffffff;
+}
+
+.follow {
+    float: left;
+    width: 120px;
+    margin: 22px 20px 10px 20px;
+}
+
+.carousel-inner img {
+    width: 100%;
+}
+
+.carousel {
+    overflow: hidden;
+    background-color: black;
+    top: -51px;
+    z-index: 1000;
+}
+
+.carousel .btn-slide {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    height: 50px;
+    z-index: 15;
+    max-width: 10%;
+    margin-left: -5%;
+    text-align: center;
+    line-height: 35px;
+    font-weight: bold;
+    min-width: 190px;
+}
+
+.top-menu-left {
+    float: left;
+    background: transparent none;
+    padding: 15px 15px;
+    color: white;
+}
+
+.top-menu-left:hover {
+    background: #357CA5;
+    color: white;
+}
+
+.toggle-button {
+    width: 40px;
+    height: 37px;
+    position: absolute;
+    top: 82px;
+    z-index: 100;
+    line-height: 40px;
+    background: #3C8DBC;
+    text-align: center;
+    color: #ffffff;
+}
+
+.toggle-button:hover {
+    background: #357CA5;
+    color: white;
+}
+
+.toggle-button > i {
+    position: inherit;
+}
+
+.toggle-button .k {
+    height: 100%;
+}
+
+.clear{
+    clear:both;
+}
+
+.widgetSlot{
+    min-width:400px!important;
+}
+
+div#courseTitle {
+    display: flex;
+    display: -webkit-flex;
+}
+#courseTitle input[type=text]{
+    font-size: 26px;
+    height: 40px;
+    padding: 5px;
+    min-width:400px;
+    margin-top:20px;
+    margin-bottom:10px;
+}
+#courseTitle .editable-buttons{
+    margin-top:20px;
+    margin-bottom:10px;
+}
+
+li.active .ionicons{
+    font-weight: bold;
+    color:#3c8dbc;
+    font-size: 25px!important;
+}
+
+li.disabled i{
+    opacity: 0.2;
+}
+
+.w,.center-category {
+    padding: 16px;
+    position: absolute;
+    border: 2px solid #3C8DBC;
+    box-shadow: 2px 2px 19px #e0e0e0;
+    border-radius: 6px;
+    cursor: default;
+    background-color: white;
+    font-size: 12px;
+    transition: background-color 0.25s ease-in;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.center-category{
+    width:160px!important;
+    height: 200px!important;
+    display: block;
+    background: #3C8DBC;
+    color:white;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.center-category h4{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+[data-shape=Rectangle] {
+    width:auto;
+    min-width: 150px;
+    height:auto;
+}
+
+.box.box-primary.dropdown-menu{
+    width: auto;
+    position: absolute;
+    box-shadow: 0 0px 10px grey;
+    top: 0px;
+}
+
+.dropdown-menu.category li{
+    padding-left: 14px;
+    padding-right: 14px;
+    text-transform: capitalize;
+    color: #777;
+}
+
+ul.dropdown-menu.category{
+    z-index:10;
+}
+
+.skin-blue .content-header {
+    /*background: rgba(255,255,255,0.96);*/
+    background: white;
+    padding: 10px;
+    margin-left: 0px;
+    z-index:3;
+
+}
+
+@media (max-width: 991px) {
+    .content-header > .breadcrumb {
+        background: transparent;
+        margin-top: 0px;
+    }
+}
+
+.dropdown-menu>li>a.btn{
+    color:white;
+}
+.dropdown-menu>li>a.btn:hover{
+    background: #2e6da4;
+}
+.hideSlider{visibility: hidden}
+.filter .btn-box-tool {
+    box-shadow: none !important;
+    color: white;
+    font-size: inherit;
+    padding-top: 4px;
+    cursor: hand;
+}
+.filter .btn-box-tool:hover{
+    color:lightgrey;
+}
+.filter .label{
+    margin-right:5px;
+}
+.tree-container{
+    left:0px;
+    top:0px;
+    position: absolute;
+    overflow: hidden;
+}
+
+.control{
+    position: fixed;
+    top:120px;
+    left:20px;
+    z-index:4;
+}
+.content-header>.breadcrumb{
+    display: inline;
+}
+.content-header>.btn{
+    display: inline;
+}
+#courses h4{
+    font-size:15px;
+}

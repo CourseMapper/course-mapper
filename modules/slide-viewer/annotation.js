@@ -28,18 +28,6 @@ annotationPDFSchema.pre('save', function(next){
     next();
 });
 
-annotationPDFSchema.methods.setRawText = function(rawTextString) {
-  this.rawText = rawTextString;
-};
-
-annotationPDFSchema.methods.setAuthor = function(authorString) {
-  this.author = authorString;
-};
-
-annotationPDFSchema.methods.setOriginSlide = function(originSlideNumber) {
-  this.originSlide = originSlideNumber;
-};
-
 var AnnotationsPDF = mongoose.model('annotationsPDF', annotationPDFSchema);
 
 module.exports = AnnotationsPDF;

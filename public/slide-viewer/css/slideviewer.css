@@ -1,0 +1,13 @@
+.debug{
+    border-style: solid;
+    border-color: #ff0000;
+}
+.slide-wrapper{
+  height: 400px;
+  float: left;
+}
+.annotation-wrapper{
+  width: 400px;
+  height: 600px;
+  float: left;
+}
