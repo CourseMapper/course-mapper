@@ -24,20 +24,32 @@
                 </div>
                 <div class="col-sm-4 col-md-4">
                   <div class= "debug box box-solid annotation-wrapper">
-                    <form>
-                      <div class="form-group">
-                        <label for="rawText">rawText</label>
-                        <input type="rawText" class="form-control" id="rawText" placeholder="rawText">
-                      </div>
-                      <div class="form-group">
-                        <label for="author">author</label>
-                        <input type="author" class="form-control" id="author" placeholder="author">
-                      </div>
-                      <div class="form-group">
-                        <label for="originSlide">originSlide</label>
-                        <input type="originSlide" class="form-control" id="originSlide" placeholder="originSlide">
-                      </div>
-                      <button type="submit" class="btn btn-default">Submit</button>
+                    <form action='/slide-viewer' method="POST">
+                      <fieldset>
+                        <div class="control-group">
+                          <label for="rawText">rawText</label>
+                          <div class="controls">
+                            <input type="text" class="form-control" id="rawText" name="rawText" placeholder="rawText">
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label for="author">author</label>
+                          <div class="controls">
+                            <input type="text" class="form-control" id="author" name="author" placeholder="author">
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label for="originSlide">originSlide</label>
+                          <div class="controls">
+                            <input type="number" class="form-control" id="originSlide" name="originSlide" placeholder="originSlide">
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <div class="controls">
+                            <button type="submit" class="btn btn-default">Submit</button>
+                          </div>
+                        </div>
+                      </fieldset>
                     </form>
 
 

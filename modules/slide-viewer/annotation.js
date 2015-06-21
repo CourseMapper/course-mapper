@@ -28,6 +28,6 @@ annotationPDFSchema.pre('save', function(next){
     next();
 });
 
-var AnnotationsPDF = mongoose.model('annotationsPDF', annotationPDFSchema);
+var AnnotationsPDF = mongoose.model('annotationPDF', annotationPDFSchema);
 
 module.exports = AnnotationsPDF;

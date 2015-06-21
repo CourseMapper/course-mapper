@@ -10,8 +10,14 @@ router.get('/apps/gallery/:location', function(req, res, next) {
 
 
 //Workaround for slideViewer. To be deleted if no longer neccessary (TODO)
-/*router.get('/slide-viewer', function(req, res, next) {
+router.get('/slide-viewer', function(req, res, next) {
     res.render('slide-viewer/slideViewer');
-});*/
+});
+
+var Comment = require(appRoot + '/modules/slide-viewer');
+router.post('/slide-viewer', function(req, res, next){
+    var comment = new Comment();
+    comment.handleSubmitPost(req, res, next);
+});
 
 module.exports = router;
