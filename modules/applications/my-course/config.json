@@ -22,6 +22,28 @@
       "height":2,
       "isActive": "true",
       "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "widgetName": "My Summary",
+      "location": "user-profile",
+      "description": "Radar Graph to show summary of your learning process",
+      "entryPoint": "/my-course/my-summary",
+      "width": 2,
+      "height":2,
+      "isActive": "true",
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "widgetName": "My CourseProgress",
+      "location": "user-profile",
+      "description": "Line Graph to show history progress of one particular course",
+      "entryPoint": "/my-course/my-course-progress",
+      "width": 2,
+      "height":2,
+      "isActive": "true",
+      "icon":"/img/appPlaceholder.png"
     }
+
+
   ]
 }

@@ -22,6 +22,15 @@ router.get('/my-following-courses', function(req, res, next) {
     res.render('my-course/followingCourse');
 });
 
+//routes to my-activity-summary
+router.get('/my-activity-summary', function(req, res, next) {
+    res.render('my-course/activitySummary');
+});
+
+router.get('/my-course-progress', function(req, res, next) {
+    res.render('my-course/courseHistory');
+});
+
 /**
  * example of an entry point route
  */
