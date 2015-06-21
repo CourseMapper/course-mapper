@@ -43,26 +43,31 @@
                     <h3 class="">Comments</h3>
                     <div class="pannel box box-primary">
                       <div class= "annotation-wrapper">
+                        <% for(var i = 0; i < numComments; i++) {%>
+                          <div>
+                            <label><%=comments[i].author%>(<%=comments[i].dateOfCreation.toTimeString()%>)</label>
+                          </div>
+                          <div>
+                            <%=comments[i].rawText%>
+                          </div>
+                          <div>
+                            <br>
+                          </div>
+                        <% } %>
                         <form action='/slide-viewer' method="POST">
                           <fieldset>
                             <div class="control-group">
-                              <label for="author"><%=currentUser.username%></label>
-                              <div class="controls">
-                                <input type="text" class="form-control" id="author" name="author" placeholder="author" visibility="hidden"> <%=currentUser.username%> </input> 
-                              </div>
-                            </div>
-                             <div class="control-group">
-                               <label for="rawText">rawText</label>
+                               <label for="rawText">Commenting as <%=currentUser.username%></label>
                                <div class="controls">
-                                 <input type="text" class="form-control" id="rawText" name="rawText" placeholder="rawText">
+                                 <textarea class="form-control" id="rawText" name="rawText" placeholder="rawText"></textarea>
                                </div>
                              </div>
                              <div class="control-group">
-                               <label for="originSlide">originSlide</label>
                                <div class="controls">
-                                 <input type="number" class="form-control" id="originSlide" name="originSlide" placeholder="originSlide">
+                                 <input type="hidden" class="form-control" id="author" name="author" placeholder="author" value= <%=currentUser.username%> >
                                </div>
                              </div>
+
                              <div class="control-group">
                                <div class="controls">
                                  <button type="submit" class="btn btn-default">Submit</button>
@@ -70,20 +75,8 @@
                              </div>
                            </fieldset>
                         </form>
-                        <button class="btn btn-default" id="displayComments" name="displayComments" onClick="displayComments();">Display Comments</button>
-                        <a href="/slide-viewer/displayComments"> displayComments </a>
+
                         <div>
-                          <% for(var i = 0; i < numComments; i++) {%>
-                            <div>
-                              <label><%=comments[i].author%>(<%=comments[i].dateOfCreation.toTimeString()%>)</label>
-                            </div>
-                            <div>
-                              <label><%=comments[i].rawText%></label>
-                            </div>
-                            <div>
-                              <label>----------------------------------------------------------------</label>
-                            </div>
-                          <% } %>
                         </div>
                       </div>
                     </div>
