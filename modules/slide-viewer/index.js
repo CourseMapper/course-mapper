@@ -7,16 +7,11 @@ function comment(){
 }
 
 comment.prototype.sumbitAnnotation = function(err, params, done){
-  console.log(params);
-
-  //var self = this;
-
   var annotationsPDF = new AnnotationsPDF({
     rawText: params.rawText,
     author: params.author,
     originSlide: params.originSlide,
   });
-  console.log('Step2');
 
   // save it to db
   annotationsPDF.save(function (err) {
@@ -27,7 +22,6 @@ comment.prototype.sumbitAnnotation = function(err, params, done){
           //errorCallback(err);
       } else {
           // call success callback
-          console.log('Step3');
 
           done(annotationsPDF);
 
@@ -48,6 +42,15 @@ comment.prototype.handleSubmitPost = function(req, res, next) {
             // todo: implement redirect to previous screen.
         }
     );
+};
+
+comment.prototype.numberOfComments = function() {
+    var numComments = 0;
+    AnnotationsPDF.count({
+    }, function (err, count) {
+        numComments = count;
+    });
+    return numComments;
 };
 
 
