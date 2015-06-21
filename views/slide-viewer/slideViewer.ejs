@@ -17,10 +17,34 @@
         </section>
         <!-- Main content -->
         <section class="content" ng-controller="widgetController">
-          <div class= "col-sm-12 col-md-12">
-              <div class= "debug slide-wrapper"></div>
-              <div class= "debug annotation-wrapper"></div>
-          </div>  
+          <div class="row">
+            <div class= "col-sm-12 col-md-12">
+                <div class="col-sm-8 col-md-8">
+                  <div class= "debug box box-solid slide-wrapper"></div>
+                </div>
+                <div class="col-sm-4 col-md-4">
+                  <div class= "debug box box-solid annotation-wrapper">
+                    <form>
+                      <div class="form-group">
+                        <label for="rawText">rawText</label>
+                        <input type="rawText" class="form-control" id="rawText" placeholder="rawText">
+                      </div>
+                      <div class="form-group">
+                        <label for="author">author</label>
+                        <input type="author" class="form-control" id="author" placeholder="author">
+                      </div>
+                      <div class="form-group">
+                        <label for="originSlide">originSlide</label>
+                        <input type="originSlide" class="form-control" id="originSlide" placeholder="originSlide">
+                      </div>
+                      <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+
+
+                  </div>
+                </div>
+            </div>
+          </div>
         </section>
 
     </div>
