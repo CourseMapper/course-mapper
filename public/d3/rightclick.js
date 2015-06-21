@@ -79,5 +79,3 @@ var Menu = {
     //$('#rightClick').mouseout(function(){$(this).fadeOut(200).addClass('hide')});
 
 }( jQuery ));
-
- 
