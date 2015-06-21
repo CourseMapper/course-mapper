@@ -44,13 +44,33 @@ comment.prototype.handleSubmitPost = function(req, res, next) {
     );
 };
 
-comment.prototype.numberOfComments = function() {
+comment.prototype.numberOfComments = function(callback) {
     var numComments = 0;
     AnnotationsPDF.count({
+
     }, function (err, count) {
-        numComments = count;
+      if(err) {
+        console.log(err);
+      }
+      else {
+        callback(0, count);
+      }
+
     });
-    return numComments;
+};
+
+comment.prototype.getAllComments = function(callback) {
+    AnnotationsPDF.find({
+
+    }, function (err, data) {
+      if(err) {
+        console.log(err);
+      }
+      else {
+        callback(0, data);
+      }
+
+    });
 };
 
 

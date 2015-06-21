@@ -15,9 +15,27 @@ router.get('/slide-viewer', function(req, res, next) {
 });
 
 var Comment = require(appRoot + '/modules/slide-viewer');
+
+router.get('/slide-viewer/displayComments', function(req, res, next) {
+    var comment = new Comment();
+    comment.numberOfComments(function(err, data) {
+
+      //res.json(data);
+      res.render('slide-viewer/slideViewer', {
+          numComments: data
+        }
+
+      );
+
+    });
+});
+
 router.post('/slide-viewer', function(req, res, next){
     var comment = new Comment();
     comment.handleSubmitPost(req, res, next);
 });
+
+
+
 
 module.exports = router;
