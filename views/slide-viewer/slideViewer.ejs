@@ -67,8 +67,20 @@
                            </fieldset>
                         </form>
                         <button class="btn btn-default" id="displayComments" name="displayComments" onClick="displayComments();">Display Comments</button>
-                        <label id="numComments" name="numComments">{{numComments}}</label>
                         <a href="/slide-viewer/displayComments"> displayComments </a>
+                        <div>
+                          <% for(var i = 0; i < numComments; i++) {%>
+                            <div>
+                              <label><%=comments[i].author%>(<%=comments[i].dateOfCreation.toTimeString()%>)</label>
+                            </div>
+                            <div>
+                              <label><%=comments[i].rawText%></label>
+                            </div>
+                            <div>
+                              <label>----------------------------------------------------------------</label>
+                            </div>
+                          <% } %>
+                        </div>
                       </div>
                     </div>
                   </div>

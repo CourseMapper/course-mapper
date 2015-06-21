@@ -18,11 +18,12 @@ var Comment = require(appRoot + '/modules/slide-viewer');
 
 router.get('/slide-viewer/displayComments', function(req, res, next) {
     var comment = new Comment();
-    comment.numberOfComments(function(err, data) {
+    comment.getAllComments(function(err, data) {
 
       //res.json(data);
-      res.render('slide-viewer/slideViewer', {
-          numComments: data
+        res.render('slide-viewer/slideViewer', {
+          numComments: data.length,
+          comments: data
         }
 
       );
