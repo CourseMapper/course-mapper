@@ -3,11 +3,12 @@
     border-color: #ff0000;
 }
 .slide-wrapper{
-  height: 400px;
-  float: left;
+  background-image: url('../images/slide.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  widht:100%;
+  height:100%;
 }
 .annotation-wrapper{
-  width: 400px;
-  height: 600px;
-  float: left;
+
 }
