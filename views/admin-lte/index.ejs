@@ -15,10 +15,10 @@
         <div class="control">
         <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i class="ionicons ion-android-locate"></i></button>
         </div>
-        <div ng-class="{'hideSlider': hideSlider}" class="row row-centered" id="sliderCarousel">
+        <div ng-class="{'hideSlider': hideSlider}" class="row row-centered hidden-xs" id="sliderCarousel">
             <div class="col-lg-12 col-centered">
 
-                <div id="carousel-generic" class="carousel slide" data-ride="carousel">
+                <div id="carousel-generic" class="carousel slide " data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carousel-generic" data-slide-to="0" class="active"></li>
                         <li data-target="#carousel-generic" data-slide-to="1" class=""></li>
@@ -37,7 +37,6 @@
                             <img src="/img/sliders/slider_3.png" alt="">
 
                             <div class="carousel-caption">
-
                             </div>
                         </div>
                     </div>
@@ -48,7 +47,7 @@
                         <span class="fa fa-angle-right"></span>
                     </a>
                 </div>
-                <a class="btn btn-block btn-primary btn-flat visible-xs">Start a course map!</a>
+                <!--<a class="btn btn-block btn-primary btn-flat visible-xs" ng-click="setHideSlider()">Let's Start!</a>-->
             </div>
         </div>
         <!-- Main content -->

@@ -410,12 +410,10 @@ ul.dropdown-menu.category{
 }
 
 .skin-blue .content-header {
-    /*background: rgba(255,255,255,0.96);*/
     background: white;
     padding: 10px;
     margin-left: 0px;
     z-index:3;
-
 }
 
 @media (max-width: 991px) {
@@ -466,4 +464,72 @@ ul.dropdown-menu.category{
 }
 #courses h4{
     font-size:15px;
+}
+@media screen and (max-width: 768px) {
+    .control {
+        top: 155px;
+    }
+}
+.blue{
+    background: #3C8DBC!important;
+}
+.action-header {
+    padding: 7px;
+    margin-left: 0px;
+    z-index: 3;
+    color: white;
+    font-size: 12px;
+}
+.action-header>.breadcrumb>li{
+    color: white;
+}
+.action-header>.breadcrumb>li.home{
+    font-weight: bolder;
+    text-transform: capitalize;}
+.action-header .navbar-custom-menu{
+    margin-right: -10px;
+    float: right;
+}.action-header .navbar-custom-menu>ul, .action-header .navbar-custom-menu>ul>li{
+     display: inline;
+ }.action-header .navbar-custom-menu li a{
+       color: #ffffff;
+       padding-top: 10px;
+       padding-bottom: 11px;
+       padding-left: 5px;
+       padding-right: 5px;
+  }
+.action-header li>a:hover{  background: rgba(0,0,0,0.1);
+    color: #f6f6f6;}
+.content-course{
+          min-height: 250px; 
+          margin-right: auto;
+          margin-left: auto;
+      }
+.content-course .box{
+    margin-bottom: 0px !important;
+}
+#preview .preview-image{
+    width: 100%;
+}
+#preview .container{
+    top:0px;left:0px;
+    position: absolute;
+    padding: 20px;
+    background: transparent;
+    min-height: 120px;
+    width: 100%;
+    margin-right:40px;
+}
+#preview .container .excerpt{
+    background: white;
+    margin: 5px 20px 20px;
+    padding: 20px;
+    font-size: 13px;
+    -webkit-box-shadow: 0px 0px 26px -4px rgba(0,0,0,0.87);
+    -moz-box-shadow: 0px 0px 26px -4px rgba(0,0,0,0.87);
+    box-shadow: 0px 0px 26px -4px rgba(0,0,0,0.87);
+}
+#preview h1{
+    font-size: 27px;
+    margin-top: 10px;
 }

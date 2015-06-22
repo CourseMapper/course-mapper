@@ -14,28 +14,41 @@
                 <li class="active"><%=course.name%></li>
             </ol>
         </section>
+        <section class="content-header action-header blue">
+            <ol class="breadcrumb">
+                <li class="home"><%=course.name%></li>
+                <li class="active">Preview</li>
+            </ol>
+
+            <div class="navbar-custom-menu">
+                <ul class="">
+                    <li>
+                        <% if(!user){ %>
+                        <a class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
+                            login to enroll to this course</a>
+                        <% } else {
+                        if (!follow || course.createdBy.username != user.username){ %>
+                        <a class="" href="/api/course/<%= course._id%>/enroll">Enroll to this course</a>
+                        <% } else if (course.createdBy.username == user.username){ %>
+
+                        <% } else { %>
+                        You are following this course.
+                        <a class="" href="/api/course/<%= course.shortId%>/unenroll">click
+                        here to Unenroll</a>
+                        <% }
+                        }%>
+                    </li>
+                </ul>
+            </div>
+        </section>
 
         <!-- Main content -->
-        <section class="content">
+        <section class="content-course">
             <div class="box no-border" id="courseTabs">
-                <div class="box-header no-border">
+                <!--<div class="box-header no-border">
                     <h1><span class="hidden-xs course"></span><span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
                     </h1>
-                    <% if(!user){ %>
-                    <a class="btn btn-primary btn-flat" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
-                        login to follow this course</a>
-                    <% } else {
-                    if (!follow && course.createdBy.username != user.username){ %>
-                    <a class="btn btn-primary btn-flat" href="/api/course/<%= course.shortId%>/enroll">Enroll</a>
-                    <% }
-                    if (course.createdBy.username == user.username){ %>
-
-                    <% } else { %>
-                    You are following this course. <a class="" href="/api/course/<%= course.shortId%>/unenroll">click
-                    here to Unenroll</a>
-                    <% }
-                    }%>
-                </div>
+                </div>-->
                 <div class="box-body no-border">
 
                     <!-- tabs left -->
@@ -45,7 +58,7 @@
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <% if(follow || course.createdBy.username == user.username){ %>
+                            <% if(follow || (user && course.createdBy.username == user.username)){ %>
                             <li><a href="#/map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
@@ -64,27 +77,23 @@
                             <div class="tab-pane active" id="preview">
 
                                 <div class="col-xs-9">
-                                    <div class="form-group">
-                                        Started By: <strong><%=(course.createdBy.username ==
-                                        user.username)?'You':course.createdBy.username%></strong> on <b>
+                                    <img class="preview-image" src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
+                                    <div class="container">
+                                    <div class="excerpt">
+                                    <div class="description">
+                                        Started By:
+                                        <strong>
+                                            <%=course.createdBy.username%>
+                                        </strong> on <b>
                                         <%=moment(course.dateAdded).fromNow()%></b>
-                                        <!-- -
-                                        Last activity:<b> 2 days ago</b><br>
-                                        User Rating:
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>-->
-                                    </div>
-                                    <img src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
 
-                                    <div class="form-group">
+                                        <h1>
+                                            <span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
+                                        </h1>
                                         <%=course.description%>
                                     </div>
-                                    <div class="form-group">
-                                        <!-- general public analytics about this course -->
                                     </div>
+                                </div>
                                 </div>
                             </div>
                             <div class="tab-pane" id="map">
