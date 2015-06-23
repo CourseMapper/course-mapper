@@ -43,7 +43,7 @@
                         <div class="form_hover">
                             <div class="box box-primary peekCourse">
                                 <div class="box-header with-border">
-                                    <a href="/course/{{c.slug}}/#/{{c._id}}" class="box-title">{{c.name}}</a>
+                                    <a href="/course/{{c.slug}}/#/cid/{{c._id}}" class="box-title">{{c.name}}</a>
                                 </div>
                                 <div class="box-body" style="text-align: center">
                                     <!--<img ng-show="c.picture" src="{{c.picture}}">-->
@@ -55,13 +55,13 @@
                                 <div class="blur"></div>
                                 <div class="box box-primary caption-text">
                                     <div class="box-header with-border">
-                                        <a href="/course/{{c.slug}}/#/{{c._id}}" class="box-title">{{c.name}}</a>
+                                        <a href="/course/{{c.slug}}/#/cid/{{c._id}}" class="box-title">{{c.name}}</a>
                                     </div>
                                     <div class="box-body">
                                         <div class="form-group">
                                             Started Date: <b>{{c.dateAdded | date:'dd.MM.yyyy @ H:mm'}}</b>
                                         </div>
-                                        <a class="btn btn-primary" href="/course/{{c.slug}}/#/{{c._id}}"><i
+                                        <a class="btn btn-primary" href="/course/{{c.slug}}/#/cid/{{c._id}}"><i
                                                 class=""></i> Go to course</a>
                                     </div>
                                 </div>

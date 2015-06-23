@@ -43,7 +43,7 @@ router.get('/course/:slug', function(req, res, next) {
                 res.render(config.get('theme') + '/catalogs/course', { title: crs.name, course:crs, user: req.user, moment:moment });
         }
     );
- 
+
 });
 
 module.exports = router;
