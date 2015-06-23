@@ -1,7 +1,7 @@
 var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
-var Catalog = require(appRoot + '/modules/catalogs');
+var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var Account = require(appRoot + '/modules/accounts');
 var debug = require('debug')('cm:route');
 var moment = require('moment'); 
@@ -16,7 +16,7 @@ router.post('/courses', function(req, res, next){
         res.status(401).send('Unauthorized');
     }
     else {
-        var catalog = new Catalog();
+        var catalog = new Course();
         req.body.userId = req.user._id;
 
         // format the tags data structure
@@ -32,7 +32,7 @@ router.post('/courses', function(req, res, next){
 
         catalog.addCourse(
             function (err) {
-                res.status(500).json({result:false, errors: [err.message]});
+                res.status(200).json({result:false, errors: [err.message]});
             },
 
             // parameters
@@ -46,7 +46,7 @@ router.post('/courses', function(req, res, next){
 });
 
 router.get('/courses', function(req, res, next) {
-    var cat = new Catalog();
+    var cat = new Course();
     cat.getCourses(
         function(err){
             res.status(500);
@@ -61,7 +61,7 @@ router.get('/courses', function(req, res, next) {
 });
 
 router.get('/course/:courseId', function(req, res, next) {
-    var cat = new Catalog();
+    var cat = new Course();
     cat.getCourse(
         function(err){
             res.status(500);
@@ -84,7 +84,7 @@ router.get('/course/:courseId/enroll', function(req, res, next) {
 
     else {
         var courseId = req.params.courseId;
-        var catalog = new Catalog();
+        var catalog = new Course();
         catalog.enroll(
             function failed(err){
                 res.status(500).send({errors:err});

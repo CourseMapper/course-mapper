@@ -121,7 +121,7 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
     $scope.courses = null;
 
     $scope.getCoursesFromThisCategory = function(){
-        var url = '/api/category/' + $scope.slug + '/courses';
+        var url = '/api/category/' + $scope.category._id + '/courses';
         var t = [];
         if($scope.filterTags.length > 0) {
             for (var i in $scope.filterTags)
@@ -134,17 +134,6 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
             $scope.courses = data.courses;
         });
     };
-
-    $http.get('/api/category/' + $scope.slug ).success(function(data) {
-        $scope.category = data.category;
-    });
-
-    $http.get('/api/category/' + $scope.slug + '/courseTags').success(function(data) {
-        $scope.courseTags = data.courseTags;
-        $scope.availableTags = data.courseTags;
-
-        $scope.initTagFromSearch();
-    });
 
     $scope.initTagFromSearch = function(){
         var tagSearch = $location.search();
@@ -200,6 +189,21 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
             $scope.go();
         }
     };
+
+    /**
+     * init category data by slug
+     */
+    $http.get('/api/category/' + $scope.slug ).success(function(data) {
+        $scope.category = data.category;
+
+        // once we get the complete category structure, we operate by id
+        $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function(data) {
+            $scope.courseTags = data.courseTags;
+            $scope.availableTags = data.courseTags;
+
+            $scope.initTagFromSearch();
+        });
+    });
 });
 
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
@@ -214,44 +218,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.saved = false;
     $scope.categories = [];
 
-    $scope.def = {
+    /*$scope.def = {
         course: 'Untitled course',
         description: 'This should be a text that explains generally about this course',
         category: 'Please pick a category'
-    };
+    }; */
 
-    $scope.loadCategories = function() {
-        return $scope.categories.length ? null : $http.get('/api/categories').success(
-            function(data) {
-                $scope.categories = data.categories;
-            });
-    };
-
-    //$scope.loadCategories();
     $scope.loadTags = function(query) {
-        return $http.get('/api/category/' + $scope.category.slug + '/courseTags?query=' + query);
+        return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
     };
-
-    $scope.$watch('course.category', function(newVal, oldVal) {
-        console.log(newVal);
-        if (newVal !== oldVal) {
-            var selected = $filter('filter')($scope.categories, {slug: $scope.course.category});
-            $scope.course.category = selected.length ? selected[0].slug : null;
-        }
-    });
-
-    /**
-     * check if the creator has added a course or category/ and not just a default value
-     * this is an initial saving to create a new course record in DB
-
-    $scope.$watch('course', function(newVal, oldVal){
-        if(
-            newVal.course && newVal.course !== $scope.def.course &&
-            newVal.category && newVal.category !== $scope.def.category
-        ){
-            $scope.saveCourse();
-        }
-    }, true);*/
 
     $scope.saveCourse = function() {
         if($scope.course.tags) {
@@ -289,29 +264,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
             });
     };
-
-    /**
-     * this watch is for an create new course use case.
-     * we disable all tabs except 1st one, and enable it once we obtained course._id from server
-
-    $scope.$watch('course._id', function(newVal, oldVal){
-        if($scope.course._id && $scope.saved){
-            $location.path('/course/' + $scope.course._id);
-            $location.replace();
-
-            // enable all tabs
-            //$('#courseNavigationTabs ul li').removeClass('disabled');
-            //var a = $('#courseNavigationTabs ul li a');
-            //a.attr('data-toggle', 'tab');
-            //a.attr('href', a.attr('data-href'));
-        }
-    });
-
-    $scope.initAutoGrow = function(){
-        if(jQuery().autoGrowInput) {
-            jQuery('#courseTitle input[type=text]').autoGrowInput({ minWidth: 200, maxWidth: 600, comfortZone: 10 });
-        }
-    }*/
 });
 
 ;app.controller('HomePageController', function($scope, $http, $rootScope) {
