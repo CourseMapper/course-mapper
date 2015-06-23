@@ -7,6 +7,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.createdDate = new Date();
+    $scope.tagsRaw = null;
 
     $scope.saved = false;
     $scope.categories = [];
@@ -16,9 +17,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.saveCourse = function() {
-        if($scope.course.tags) {
-            $scope.course.tags = JSON.stringify($scope.course.tags);
+        if($scope.tagsRaw) {
+            $scope.course.tags = JSON.stringify($scope.tagsRaw);
         }
+        $scope.course.category = $scope.$parent.category._id;
 
         var d = transformRequest($scope.course);
         $http({
@@ -30,20 +32,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         })
             .success(function(data) {
-                $scope.course = {};
                 console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterCreateNewCourse');
-                    window.location.href = '/course/' + data.course.shortId + '?new=1';
+                    window.location.href = '/course/' + data.course.slug + '/#/cid/' + data.course._id + '?new=1';
+                } else {
+                    if( data.result != null && !data.result){
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
+                    }
                 }
-            })
-            .error(function(data){
-                $scope.course.tags = JSON.parse($scope.course.tags);
-                if( data.result != null && !data.result){
-                    $scope.errorName = data.errors.name;
-                    console.log(data.errors);
-                }
-            });
+            }) ;
     };
 });
 

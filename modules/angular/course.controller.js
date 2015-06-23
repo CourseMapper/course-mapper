@@ -2,12 +2,12 @@ app.controller('CourseController', function($scope, $filter, $http, $location, $
     $scope.course = null;
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
-    $scope.shortId = $scope.loc[$scope.loc.length -1];
+    $scope.courseId = $routeParams.courseId;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
-    $http.get('/api/course/' + $scope.shortId).success(function(res){
+    $http.get('/api/course/' + $scope.courseId).success(function(res){
         if(res.result)
             $scope.course = res.course;
     });

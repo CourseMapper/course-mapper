@@ -5,77 +5,78 @@
     <% include ../mainMenu %>
     <!-- Content Wrapper. Contains page content -->
     <div id="courses" class="content-wrapper" >
-
-        <section class="content-header" ng-controller="CourseController">
-            <ol class="breadcrumb">
-                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li class="active">Browse Courses</li>
-                <li class="active">{{params.slug}}</li>
-            </ol>
-            <% if(locals.user){ %>
-            <a class="btn btn-primary btn-xs" style="float: right" data-toggle="modal" data-target="#modalCreateCourse">Create A Course</a>
-            <% }%>
-        </section>
-
-        <!-- for routing purpose we write it as an ng-view although we write the html also in this file. -->
-        <section class="content" ng-view>
-        </section>
-
+        <ng-view></ng-view>
         <!-- Main content -->
         <script type="text/ng-template" id="courses_list.html">
+            <section class="content-header">
+                <ol class="breadcrumb">
+                    <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                    <li class="active">Browse Courses</li>
+                    <li class="active">{{category.name}}</li>
+                </ol>
+                <% if(locals.user){ %>
+                <a class="btn btn-primary btn-xs" style="float: right" data-toggle="modal"
+                   data-target="#modalCreateCourse">Create A Course</a>
+                <% }%>
+            </section>
 
-            <div class="col-md-12">
-                <div class="col-md-12 filter">
-                    <h4 ng-show="filterTags.length > 0">Filtered By:</h4>
+            <!-- for routing purpose we write it as an ng-view although we write the html also in this file. -->
+            <section class="content">
+                <div class="col-md-12">
+                    <div class="col-md-12 filter">
+                        <h4 ng-show="filterTags.length > 0">Filtered By:</h4>
                     <span class="label label-primary" ng-repeat="tag in filterTags">
                         <button class="btn btn-box-tool" ng-click="removeFilter(tag)">
                             <i class="fa fa-times"></i></button>
                          {{tag.name}}</span>
 
-                    <h4>Available Filters:</h4>
-                    <a class="label label-primary" ng-repeat="tag in availableTags" ng-click="applyFilter(tag)">
-                        {{tag.name}}</a>
-                    <span class="label label-primary" ng-show="availableTags.length == 0">-</span>
-                    <h4>Courses:</h4>
-                </div>
+                        <h4>Available Filters:</h4>
+                        <a class="label label-primary" ng-repeat="tag in availableTags" ng-click="applyFilter(tag)">
+                            {{tag.name}}</a>
+                        <span class="label label-primary" ng-show="availableTags.length == 0">-</span>
+                        <h4>Courses:</h4>
+                    </div>
 
-                <!--{{category}}-->
+                    <!--{{category}}-->
 
-                <div class="col-sm-6 col-lg-3" ng-repeat="c in courses">
-                    <div class="form_hover">
-                        <div class="box box-primary peekCourse">
-                            <div class="box-header with-border">
-                                <a href="/course/{{c.shortId}}" class="box-title">{{c.name}}</a>
-                            </div>
-                            <div class="box-body"  style="text-align: center" >
-                            <!--<img ng-show="c.picture" src="{{c.picture}}">-->
-                            <img ng-hide="c.picture" src="/img/default-tree.png">
-                            </div>
-                        </div>
-
-                        <div class="header">
-                            <div class="blur"></div>
-                            <div class="box box-primary caption-text">
+                    <div class="col-sm-6 col-lg-3" ng-repeat="c in courses">
+                        <div class="form_hover">
+                            <div class="box box-primary peekCourse">
                                 <div class="box-header with-border">
-                                    <a href="/course/{{c.shortId}}" class="box-title">{{c.name}}</a>
+                                    <a href="/course/{{c.slug}}/#/{{c._id}}" class="box-title">{{c.name}}</a>
                                 </div>
-                                <div class="box-body">
-                                    <div class="form-group">
-                                        Started Date: <b>{{c.dateAdded | date:'dd.MM.yyyy @ H:mm'}}</b>
+                                <div class="box-body" style="text-align: center">
+                                    <!--<img ng-show="c.picture" src="{{c.picture}}">-->
+                                    <img ng-hide="c.picture" src="/img/default-tree.png">
+                                </div>
+                            </div>
+
+                            <div class="header">
+                                <div class="blur"></div>
+                                <div class="box box-primary caption-text">
+                                    <div class="box-header with-border">
+                                        <a href="/course/{{c.slug}}/#/{{c._id}}" class="box-title">{{c.name}}</a>
                                     </div>
-                                    <a class="btn btn-primary" href="/course/{{c.shortId}}"><i class=""></i> Go to course</a>
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            Started Date: <b>{{c.dateAdded | date:'dd.MM.yyyy @ H:mm'}}</b>
+                                        </div>
+                                        <a class="btn btn-primary" href="/course/{{c.slug}}/#/{{c._id}}"><i
+                                                class=""></i> Go to course</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="modal" id="modalCreateCourse" tabindex="-1" role="dialog" aria-labelledby="modalCreateCourse" aria-hidden="true">
-                    <div ng-include="'/course/create/' + category.slug"></div>
+                <div class="row">
+                    <div class="modal" id="modalCreateCourse" tabindex="-1" role="dialog"
+                         aria-labelledby="modalCreateCourse" aria-hidden="true">
+                        <div ng-include="'/course/create/'"></div>
+                    </div>
                 </div>
-            </div>
+            </section>
         </script>
 
         <br class="clear">

@@ -14,6 +14,12 @@ app.config(['$routeProvider', '$locationProvider',
                 reloadOnSearch: false
             }).
 
+            when('/cid/:courseId', {
+                templateUrl: 'course_detail.html',
+                controller: 'CourseController',
+                reloadOnSearch: false
+            }).
+
             otherwise({
                 redirectTo: '/'
             });

@@ -75,9 +75,11 @@ catalog.prototype.addCourse = function(error, params, success){
     var course = new Course({
         name: params.name,
         createdBy: mongoose.Types.ObjectId(params.userId),
-        category: params.category,
+        category: mongoose.Types.ObjectId(params.category),
         description: params.description
     });
+
+    course.setSlug(params.name);
 
     course.save(function(err, res) {
         if (err) {
@@ -118,38 +120,6 @@ catalog.prototype.addCourse = function(error, params, success){
         }
     });
 };
-
-/**
- *
- * @param error
- * @param params
- * @param success
-
-catalog.prototype.getCategoryCourses = function(error, params, success){
-    var self = this;
-
-    if(params.tags && params.tags.length > 0) {
-        for (var i in params.tags)
-            params.tags[i] = mongoose.Types.ObjectId(params.tags[i]);
-    }
-
-    //get cat from slug
-    var catPromise = Category.findOne({slug: params.slug}).exec();
-    catPromise.then(function(cat){
-        if(cat) {
-            var getCParam = { category: cat._id };
-            if(params.tags)
-                getCParam.courseTags = {$in: params.tags};
-
-            var cc = new CourseController();
-            cc.getCourses(error, getCParam, success);
-        } else {
-            throw new Error('cant find category');
-        }
-    }).then(null, function(err){
-        error(err);
-    });
-};; */
 
 catalog.prototype.getCourses = function(error, params, success){
     Course.find(params, function(err, docs) {

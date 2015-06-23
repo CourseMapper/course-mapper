@@ -5,8 +5,12 @@
     <% include ../mainMenu %>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" ng-controller="CourseController">
+    <div class="content-wrapper" ng-view>
+    </div>
+    <!-- /.content-wrapper -->
 
+
+    <script type="text/ng-template" id="course_detail.html">
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
@@ -23,22 +27,19 @@
             <div class="navbar-custom-menu">
                 <ul class="">
                     <li>
-                        <% if(!user){ %>
-                        <a class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
+                        <a ng-hide="user" class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
                             login to enroll to this course</a>
-                        <% } else {
-                        if (!follow || course.createdBy.username != user.username){ %>
-                        <a class="" href="/api/course/<%= course._id%>/enroll">Enroll to this course</a>
-                        <% } else if (course.createdBy.username == user.username){ %>
 
-                        <% } else { %>
-                        You are following this course.
-                        <a class="" href="/api/course/<%= course.shortId%>/unenroll">click
-                        here to Unenroll</a>
-                        <% }
-                        }%>
+                        <i ng-show="loading" class="fa fa-refresh fa-spin"></i>
+                        <a ng-show="user && !enrolled" ng-click="enroll()" href=""><strong>Enroll here to participate in this course</strong></a>
+
+                        <span ng-show="enrolled">You are following this course.</span>
+                        <a ng-show="enrolled" class="" href="/api/course/<%= course._id%>/leave">
+                            click here to Unenroll</a>
+
                     </li>
                 </ul>
+                {{loc}}
             </div>
         </section>
 
@@ -58,18 +59,16 @@
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <% if(follow || (user && course.createdBy.username == user.username)){ %>
-                            <li><a href="#/map" data-toggle="tab" data-target="#map">
+                            <li ng-show="enrolled"><a href="#/map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
-                            <% }%>
-                            <li><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
+                            <li ng-show="enrolled"><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
                                 <i class="ionicons ion-ios-time-outline"></i><br>
                                 <span>Updates</span></a></li>
-                            <li><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
+                            <li ng-show="enrolled"><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
                                 <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                 <span>Discussion</span></a></li>
-                            <li><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
+                            <li ng-show="enrolled"><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
                                 <i class="ionicons ion-stats-bars"></i><br>
                                 <span>Analytics</span></a></li>
                         </ul>
@@ -79,21 +78,21 @@
                                 <div class="col-xs-9">
                                     <img class="preview-image" src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
                                     <div class="container">
-                                    <div class="excerpt">
-                                    <div class="description">
-                                        Started By:
-                                        <strong>
-                                            <%=course.createdBy.username%>
-                                        </strong> on <b>
-                                        <%=moment(course.dateAdded).fromNow()%></b>
+                                        <div class="excerpt">
+                                            <div class="description">
+                                                Started By:
+                                                <strong>
+                                                    <%=course.createdBy.username%>
+                                                </strong> on <b>
+                                                <%=moment(course.dateAdded).fromNow()%></b>
 
-                                        <h1>
-                                            <span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
-                                        </h1>
-                                        <%=course.description%>
+                                                <h1>
+                                                    <span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
+                                                </h1>
+                                                <%=course.description%>
+                                            </div>
+                                        </div>
                                     </div>
-                                    </div>
-                                </div>
                                 </div>
                             </div>
                             <div class="tab-pane" id="map">
@@ -116,8 +115,7 @@
 
         </section>
         <!-- /.content -->
-    </div>
-    <!-- /.content-wrapper -->
+    </script>
 
 </div><!-- ./wrapper -->
 

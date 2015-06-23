@@ -195,7 +195,7 @@ account.prototype.getUserCourses = function(err, params, done){
     var course = null;
 
     /* find course see if it exist */
-    var coursePromise = Course.findOne({shortId:params.courseId}).populate('createdBy category courseTags').exec();
+    var coursePromise = Course.findOne({_id:params.courseId}).populate('createdBy category courseTags').exec();
     coursePromise.then(function(c){
         course = c;
 

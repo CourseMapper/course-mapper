@@ -44,8 +44,9 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
 
         $scope.getCoursesFromThisCategory();
 
-        $scope.$watch(function(){ return $location.search() }, function(){
-            $scope.getCoursesFromThisCategory();
+        $scope.$watch(function(){ return $location.search() }, function(newVal, oldVal){
+            if(newVal && newVal !== oldVal)
+                $scope.getCoursesFromThisCategory();
         }, true);
     };
 
