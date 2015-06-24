@@ -1,3 +1,5 @@
+# Course Mapper
+
 ### Pre-requisities:
 1. MongoDB
 2. NodeJS
