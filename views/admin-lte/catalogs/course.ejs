@@ -31,25 +31,20 @@
                             login to enroll to this course</a>
 
                         <i ng-show="loading" class="fa fa-refresh fa-spin"></i>
-                        <a ng-show="user && !enrolled" ng-click="enroll()" href=""><strong>Enroll here to participate in this course</strong></a>
+                        <a ng-show="user && !enrolled" ng-click="enroll()" style="cursor: pointer"><strong>Enroll here to participate in this course</strong></a>
 
-                        <span ng-show="enrolled">You are following this course.</span>
-                        <a ng-show="enrolled" class="" href="/api/course/<%= course._id%>/leave">
-                            click here to Unenroll</a>
+                        <span ng-show="enrolled && !loading">You are following this course.</span>
+                        <a ng-show="enrolled" class="" style="cursor:pointer" ng-click="leave()">
+                            LEAVE COURSE</a>
 
                     </li>
                 </ul>
-                {{loc}}
             </div>
         </section>
 
         <!-- Main content -->
         <section class="content-course">
             <div class="box no-border" id="courseTabs">
-                <!--<div class="box-header no-border">
-                    <h1><span class="hidden-xs course"></span><span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
-                    </h1>
-                </div>-->
                 <div class="box-body no-border">
 
                     <!-- tabs left -->
@@ -96,7 +91,7 @@
                                 </div>
                             </div>
                             <div class="tab-pane" id="map">
-                                <div class="box-body no-border" id="tree" ng-controller="TreeController">
+                                <div class="box-body no-border" id="tree">
                                     <cm-tree el="treeSVG" width="4000" height="4000">
                                         <% include rightMenu %>
                                     </cm-tree>

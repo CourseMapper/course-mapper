@@ -2,6 +2,7 @@ var config = require('config');
 var Category = require('./categories.js');
 var Course = require('./courses.js');
 var Tag = require('./courseTags.js');
+var UserCourses = require('./userCourses.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var TagController = require('./tag.controller.js');
@@ -26,39 +27,50 @@ catalog.prototype.getCourse = function(error, params, success){
  * @param userParam
  * @param courseParam
  * @param done
+ * @param isEnrolled, if false, means that the user has left t
  */
-catalog.prototype.enroll = function(err, userParam, courseParam, done){
+catalog.prototype.enroll = function(error, userParam, courseParam, done, isEnrolled){
     var user = null;
     var course = null;
 
-    /* find user first see if it exist */
-    var userPromise = User.findById(mongoose.Types.ObjectId(userParam.id)).exec();
-    userPromise.then(function(u){
-        user = u;
-        //{shortId:courseParam.shortId}
-        return Course.findOne(courseParam).exec();
+    if(!userParam.id) {
+        throw new Error("please give user id parameter");
+    }
 
-    }).then(function(c){
-        /* find course see if it exist */
-        course = c;
-        return UserCourse.find({userId: user._id, courseId: course._id}).exec();
+    if(!courseParam.id) {
+        throw new Error("please give course id parameter");
+    }
 
-    }).then(function(uc){
-        /* user has not follow this course */
-        if(!uc.length){
-            var follow = new UserCourse({
-                userId: user._id,
-                courseId: course._id
-            });
+    var userId = mongoose.Types.ObjectId(userParam.id);
+    var courseId = mongoose.Types.ObjectId(courseParam.id);
 
-            follow.save(function(error, f){
-                if (error) err(error);
-                else done(f);
-            });
-        } else {
-            err(new Error('This user has followed this course already'));
-        }
-    });
+    UserCourses.findOneAndUpdate({
+        user: userId,
+        course: courseId
+    }, {
+        user: userId,
+        course: courseId,
+        isEnrolled: isEnrolled
+    },{upsert: true}
+    ).exec(function(err, doc){
+            if(err){
+                // perhaps this user is already enrolled
+                error(err)
+            } else {
+                done(doc);
+            }
+        });
+};
+
+/**
+ *
+ * @param err
+ * @param userParam
+ * @param courseParam
+ * @param done
+ */
+catalog.prototype.leave = function(error, userParam, courseParam, done){
+    this.enroll(error, userParam, courseParam, done, true);
 };
 
 catalog.prototype.addCourse = function(error, params, success){
@@ -128,6 +140,13 @@ catalog.prototype.getCourses = function(error, params, success){
         } else {
             error(err);
         }
+    });
+};
+
+catalog.prototype.getUserCourses = function(error, params, done){
+    UserCourses.find(params).populate('course user').exec(function(err, res){
+        if(err) error(err);
+        else done(res);
     });
 };
 

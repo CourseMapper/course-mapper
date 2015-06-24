@@ -1,6 +1,6 @@
 var User = require('./users.js');
-var UserCourse = require('./userCourses.js');
 var Course = require('../catalogs/courses.js');
+var UserCourse = require('../catalogs/userCourses.js');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
@@ -188,28 +188,6 @@ account.prototype.handleRegisterPost = function(req, res, next) {
             // todo: implement redirect to previous screen.
         }
     );
-};
-
-
-account.prototype.getUserCourses = function(err, params, done){
-    var course = null;
-
-    /* find course see if it exist */
-    var coursePromise = Course.findOne({_id:params.courseId}).populate('createdBy category courseTags').exec();
-    coursePromise.then(function(c){
-        course = c;
-
-        /* has this user enrolled? */
-        return UserCourse.findOne({userId: mongoose.Types.ObjectId(params.userId), courseId: course.id}).exec();
-
-    }).then(function(uc){
-        console.log(uc);
-        /* user has enrolled in this course */
-        if(uc){
-            done(course, uc);
-        } else
-            done(course, null);
-    });
 };
 
 module.exports = account;

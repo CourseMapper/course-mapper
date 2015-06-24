@@ -523,6 +523,7 @@ ul.dropdown-menu.category {
     padding-bottom: 11px;
     padding-left: 5px;
     padding-right: 5px;
+    font-weight: bold;
 }
 
 .action-header li > a:hover {
