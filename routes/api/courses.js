@@ -4,7 +4,9 @@ var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var Account = require(appRoot + '/modules/accounts');
 var debug = require('debug')('cm:route');
-var moment = require('moment'); 
+var moment = require('moment');
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 var router = express.Router();
 
 /**
@@ -37,6 +39,47 @@ router.post('/courses', function(req, res, next){
 
             // parameters
             req.body,
+
+            function (course) {
+                res.status(200).json({result:true, course: course});
+            }
+        );
+    }
+});
+
+/**
+ * POST
+ * update a course,
+ * can take a picture file as well
+ */
+router.post('/course/:courseId', multipartyMiddleware, function(req, res, next){
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+    }
+    else {
+        var catalog = new Course();
+        req.body.userId = req.user._id;
+        req.body.courseId = req.params.courseId;
+
+        // format the tags data structure
+        if(req.body.tags) {
+            // because the data is in {text:the-tag} format. let's just get the values.
+            var tagSlugs = [];
+            var tTags = JSON.parse(req.body.tags);
+            for (var i in tTags) {
+                tagSlugs.push(tTags[i]['text']);
+            }
+            req.body.tagSlugs = tagSlugs;
+        }
+
+        catalog.editCourse(
+            function (err) {
+                res.status(200).json({result:false, errors: [err.message]});
+            },
+
+            // parameters
+            req.body,
+            req.files.file,
 
             function (course) {
                 res.status(200).json({result:true, course: course});

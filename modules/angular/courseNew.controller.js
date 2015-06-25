@@ -6,11 +6,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         description: ''
     };
 
-    $scope.createdDate = new Date();
     $scope.tagsRaw = null;
-
-    $scope.saved = false;
-    $scope.categories = [];
 
     $scope.loadTags = function(query) {
         return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);

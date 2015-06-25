@@ -9,18 +9,17 @@
     </div>
     <!-- /.content-wrapper -->
 
-
     <script type="text/ng-template" id="course_detail.html">
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li><a href="/courses/#/category/<%=course.category.slug%>"> </i> <%=course.category.name%></a></li>
-                <li class="active"><%=course.name%></li>
+                <li class="active">{{course.name}}</li>
             </ol>
         </section>
         <section class="content-header action-header blue">
             <ol class="breadcrumb">
-                <li class="home"><%=course.name%></li>
+                <li class="home">{{course.name}}</li>
                 <li class="active">Preview</li>
             </ol>
 
@@ -42,11 +41,15 @@
                         You created this course
                     </li>
                     <li ng-show="isOwner">
-                        <a ng-click="editMode()" style="cursor: pointer"><i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
+                        <a style="cursor: pointer"
+                           data-toggle="modal" data-target="#editView"
+                           title="Edit this course's details">
+                            <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
                     </li>
                     <li ng-show="isOwner">
-                        <a data-toggle="modal" style="cursor: pointer;"
-                           data-target="#modalAppGallery" title="Add or remove dashboard widgets">
+                        <a  style="cursor: pointer;"
+                            data-toggle="modal" data-target="#modalAppGallery"
+                            title="Add or remove dashboard widgets">
                             <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
                     </li>
                 </ul>
@@ -65,16 +68,16 @@
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <li ng-show="enrolled"><a href="#/map" data-toggle="tab" data-target="#map">
+                            <li ng-show="enrolled || isOwner"><a href="#/map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
-                            <li ng-show="enrolled"><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
+                            <li ng-show="enrolled  || isOwner"><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
                                 <i class="ionicons ion-ios-time-outline"></i><br>
                                 <span>Updates</span></a></li>
-                            <li ng-show="enrolled"><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
+                            <li ng-show="enrolled  || isOwner"><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
                                 <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                 <span>Discussion</span></a></li>
-                            <li ng-show="enrolled"><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
+                            <li ng-show="enrolled  || isOwner"><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
                                 <i class="ionicons ion-stats-bars"></i><br>
                                 <span>Analytics</span></a></li>
                         </ul>
@@ -82,7 +85,8 @@
                             <div class="tab-pane active" id="preview">
 
                                 <div class="col-xs-9">
-                                    <img class="preview-image" src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
+                                    <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
+                                    <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
                                     <div class="container">
                                         <div class="excerpt">
                                             <div class="description">
@@ -93,9 +97,16 @@
                                                 <%=moment(course.dateAdded).fromNow()%></b>
 
                                                 <h1>
-                                                    <span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
+                                                    <span class="visible-xs" style="margin-left:15px"></span>
+                                                    {{course.name}}
                                                 </h1>
-                                                <%=course.description%>
+                                                <p ng-show="course.courseTags.length > 0" class="filter">
+                                                    <a class="label label-primary" style="cursor: default" ng-repeat="tag in course.courseTags">
+                                                        {{tag.name}}</a>
+                                                </p>
+                                                <p>
+                                                {{course.description}}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -117,20 +128,29 @@
 
                 </div>
             </div>
-
-
         </section>
         <!-- /.content -->
+
+        <!-- modal contents -->
+        <div class="row">
+            <div class="modal" id="modalAppGallery" tabindex="-1" role="dialog"
+                 aria-labelledby="modal app gallery" aria-hidden="true">
+                <div ng-include="'/apps/gallery/course-preview'"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="modal" id="editView" tabindex="-1" role="dialog"
+                 aria-labelledby="edit view" aria-hidden="true">
+                <div ng-include="'/course/edit'"></div>
+            </div>
+        </div>
+        <!-- /.modal contents -->
+
     </script>
 
 </div><!-- ./wrapper -->
 
-<div class="row">
-    <div class="modal" id="modalAppGallery" tabindex="-1" role="dialog"
-         aria-labelledby="modalAppGallery" aria-hidden="true">
-        <div ng-include="'/apps/gallery/course-preview'"></div>
-    </div>
-</div>
 
 <% include ../jsfooter %>
 <script src="/d3/rightclick.js"></script>

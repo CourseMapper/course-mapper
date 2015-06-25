@@ -8,11 +8,17 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
-    $http.get('/api/course/' + $scope.courseId).success(function(res){
-        if(res.result) {
-            $scope.course = res.course;
-        }
-    });
+    $scope.init = function(refreshPicture){
+        $http.get('/api/course/' + $scope.courseId).success(function(res){
+            if(res.result) {
+                $scope.course = res.course;
+
+                if(refreshPicture && $scope.course.picture)
+                    $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+            }
+        });
+    };
+    $scope.init();
 
     $rootScope.$watch('user', function(){
         if($rootScope.user) {
@@ -33,6 +39,10 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
         }
     });
 
+    $scope.$on('onAfterEditCourse',function(events, course){
+        //$scope.course = course;
+        $scope.init(true);
+    });
 
     $scope.enroll = function(){
         var url = '/api/course/' + $scope.course._id + '/enroll';

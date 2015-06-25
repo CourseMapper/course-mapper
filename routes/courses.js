@@ -16,7 +16,10 @@ router.get('/courses', function (req, res, next){
 
 router.get('/course/create', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/newCourseModal');
-    //res.render(config.get('theme') + '/catalogs/newCourse');
+});
+
+router.get('/course/edit', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/editCourseModal');
 });
 
 router.get('/course/:courseId/tree', function(req, res, next) {

@@ -6,6 +6,8 @@ var UserCourses = require('./userCourses.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var TagController = require('./tag.controller.js');
+var appRoot = require('app-root-path');
+var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 
 function catalog(){
 }
@@ -131,6 +133,79 @@ catalog.prototype.addCourse = function(error, params, success){
             );
         }
     });
+};
+
+catalog.prototype.editCourse = function(error, params, file, success){
+    var self = this;
+
+    if(!params.name) {
+        throw new Error("please give name parameter");
+    }
+
+    if(!params.courseId) {
+        throw new Error("please give courseId parameter");
+    }
+
+    self.getCourse(error, {_id: mongoose.Types.ObjectId(params.courseId)},
+        function(course){
+            if(course){
+                // check for owner ship
+                var uid = mongoose.Types.ObjectId(params.userId);
+                if(course.createdBy.equals(uid)){
+                    // this is the owner
+                    course.name = params.name;
+                    course.description = params.description;
+                    course.courseTags = [];
+
+                    if(file) {
+                        var extension = file.name.split('.');
+                        extension = extension[extension.length-1].toLowerCase();
+                        if(['jpg', 'png', 'jpeg'].indexOf(extension) < 0){
+                            // extension not right
+                            error("Extension not right");
+                            return;
+                        }
+                        else {
+                            var fn = '/img/courses/' + course.slug + '.' + extension;
+                            var dest = appRoot + '/public' + fn;
+                            handleUpload(file, dest, true);
+                            course.picture = fn;
+                        }
+                    }
+
+                    // save the update
+                    course.save();
+
+                    // they giving us the tags in array of slug string.
+                    if(params.tagSlugs){
+                        // insert all the tags, if it failed, means it is already there
+                        var tc = new TagController();
+                        // get all the tags, we need the _ids
+                        for(var i in params.tagSlugs){
+                            var tagParam = {
+                                name : params.tagSlugs[i],
+                                course : course._id,
+                                category: course.category._id
+                            };
+
+                            tc.addCourseTag(function(err){
+                                    if(err) debug(err);
+                                },
+                                tagParam,
+                                // we dont need to do anything after, so pass it an empty func
+                                function(){});
+                        }
+                    }
+
+                    success(course);
+                }
+                else
+                    error("You did not create this course");
+            }
+            else
+                error("Course not found");
+        }
+    );
 };
 
 catalog.prototype.getCourses = function(error, params, success){
