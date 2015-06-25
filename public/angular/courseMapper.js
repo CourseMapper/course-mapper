@@ -91,24 +91,34 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
     $scope.courseId = $routeParams.courseId;
+    $scope.isOwner = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
     $http.get('/api/course/' + $scope.courseId).success(function(res){
-        if(res.result)
+        if(res.result) {
             $scope.course = res.course;
+        }
     });
 
     $rootScope.$watch('user', function(){
-        if($rootScope.user)
-        $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId ).success(function(res){
-            if(res.result && res.courses) {
-                // this user is enrolled
-                $scope.course = res.courses.course;
-                $scope.enrolled = res.courses.isEnrolled;
+        if($rootScope.user) {
+            $scope.user = $rootScope.user;
+
+            $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
+                if (res.result && res.courses) {
+                    $scope.enrolled = res.courses.isEnrolled;
+                } else {
+                    $scope.enrolled = false;
+                }
+            });
+
+            if ($scope.course.createdBy == $rootScope.user._id) {
+                $scope.isOwner = true;
+                $scope.enrolled = true;
             }
-        });
+        }
     });
 
 

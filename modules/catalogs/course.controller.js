@@ -12,7 +12,7 @@ function catalog(){
 
 catalog.prototype.getCourse = function(error, params, success){
     Course.findOne(params)
-        .populate('createdBy category courseTags').exec(function(err, docs) {
+        .populate('category courseTags').exec(function(err, docs) {
             if (!err){
                 success(docs);
             } else {
@@ -144,7 +144,10 @@ catalog.prototype.getCourses = function(error, params, success){
 };
 
 catalog.prototype.getUserCourses = function(error, params, done){
-    UserCourses.find(params).populate('course user').exec(function(err, res){
+    params.course = mongoose.Types.ObjectId(params.course);
+    params.user = mongoose.Types.ObjectId(params.user);
+
+    UserCourses.find(params).populate('course').exec(function(err, res){
         if(err) error(err);
         else done(res);
     });

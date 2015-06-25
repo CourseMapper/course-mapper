@@ -26,7 +26,7 @@
 
             <div class="navbar-custom-menu">
                 <ul class="">
-                    <li>
+                    <li ng-hide="isOwner">
                         <a ng-hide="user" class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
                             login to enroll to this course</a>
 
@@ -37,6 +37,17 @@
                         <a ng-show="enrolled" class="" style="cursor:pointer" ng-click="leave()">
                             LEAVE COURSE</a>
 
+                    </li>
+                    <li ng-show="isOwner">
+                        You created this course
+                    </li>
+                    <li ng-show="isOwner">
+                        <a ng-click="editMode()" style="cursor: pointer"><i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
+                    </li>
+                    <li ng-show="isOwner">
+                        <a data-toggle="modal" style="cursor: pointer;"
+                           data-target="#modalAppGallery" title="Add or remove dashboard widgets">
+                            <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
                     </li>
                 </ul>
             </div>
@@ -77,7 +88,7 @@
                                             <div class="description">
                                                 Started By:
                                                 <strong>
-                                                    <%=course.createdBy.username%>
+                                                    {{user.username}}
                                                 </strong> on <b>
                                                 <%=moment(course.dateAdded).fromNow()%></b>
 
@@ -113,6 +124,13 @@
     </script>
 
 </div><!-- ./wrapper -->
+
+<div class="row">
+    <div class="modal" id="modalAppGallery" tabindex="-1" role="dialog"
+         aria-labelledby="modalAppGallery" aria-hidden="true">
+        <div ng-include="'/apps/gallery/course-preview'"></div>
+    </div>
+</div>
 
 <% include ../jsfooter %>
 <script src="/d3/rightclick.js"></script>

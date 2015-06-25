@@ -84,7 +84,9 @@ router.get('/accounts/:userId/course/:courseId', function(req, res, next) {
             },
             function success(courses){
                 if(courses.length > 0)
-                res.status(200).json({result:true, courses:courses[0]});
+                    res.status(200).json({result:true, courses:courses[0]});
+                else
+                    res.status(200).json({result:true, courses:null});
             }
         );
     }

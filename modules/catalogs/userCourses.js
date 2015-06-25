@@ -13,7 +13,7 @@ var userCoursesSchema = new mongoose.Schema({
     dateUpdated: { type: Date }
 });
 
-userCoursesSchema.index({ userId: 1, courseId: 1 }, { unique: true });
+userCoursesSchema.index({ user: 1, course: 1 }, { unique: true });
 
 userCoursesSchema.pre('save', function(next){
     var now = new Date();
