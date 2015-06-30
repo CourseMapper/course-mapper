@@ -1,14 +1,4 @@
 {
-  "theme": "admin-lte",
-  "session": {
-    "secret": "CatsRuleTehInterwebs",
-    "maxAge": 2419200000
-  },
-
-  "signUp": {
-    "needActivation" : false
-  },
-
-  "database": "localhost/course_mapper"
+  "database": ""
 }
 
