@@ -36,4 +36,4 @@ data/*
 
 bower_components
 .DS_Store
-public/img
+public/img/courses

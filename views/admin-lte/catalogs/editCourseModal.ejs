@@ -2,9 +2,9 @@
 <section class="content">
     <div class="row row-centered">
         <div class="col-xs-12 col-md-5 col-centered">
-            <div class="box no-border" ng-controller="NewCourseController">
+            <div class="box no-border" ng-controller="CourseEditController">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Create a new course under {{category.name}}</h3>
+                    <h3 class="box-title">Editing a course: {{course.name}}</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -42,18 +42,38 @@
 
                             <div class="control-group">
                                 <p></p>
-                                <label class="control-label" for="description">Tagging (optional)</label>
+                                <label class="control-label" for="description">Tagging</label>
 
                                 <p class="help-block">Put some tags related to this course</p>
 
                                 <div class="controls">
                                     <tags-input ng-model="tagsRaw">
-                                        <!--<auto-complete source="loadTags($query)"></auto-complete>-->
                                     </tags-input>
 
                                 </div>
                             </div>
- {{tagsRaw}}
+
+                            <div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Intro Picture</label>
+                                <p class="help-block">Select a jpg/png file (960 × 480 pixels) from your computer</p>
+                                <div class="controls">
+                                    <div class="btn btn-sm btn-default"
+                                         ngf-select accept="image/*" ngf-accept="'image/jpg,image/jpeg,image/png'"
+                                         ng-model="files" ngf-multiple="false" ngf-max-size='1000000'><i class="ionicons ion-image"></i> &nbsp; Select a picture</div>
+                                    &nbsp; <span ng-repeat="f in files">{{f.name}}</span>
+                                </div>
+                            </div>
+
+                            <!--<div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Intro Video</label>
+                                <p class="help-block">Select an mp4 video file from your computer. (max size: 7MB)</p>
+                                <div class="controls">
+                                    <div class="button" ngf-select ng-model="files" ngf-multiple="multiple">Select a picture</div>
+                                </div>
+                            </div>-->
+<!--{{tagsRaw}}-->
                             <div class="control-group">
                                 <p class="help-block"></p>
 
@@ -61,10 +81,11 @@
                                 <br class="clear">
 
                                 <div class="box-footer">
-                                    <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                                    <span class="help-block" ng-show="errors">{{ errors }}</span>
                                     <!-- Button -->
                                     <div class="controls">
-                                        <button class="btn btn-lg btn-primary btn-block">Create New Course</button>
+                                        <button class="btn btn-md btn-primary">Save Edit</button>
+                                        <button type="button" class="btn btn-md btn-primary" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span aria-hidden="true">Cancel</span></button>
                                     </div>
                                 </div>
                             </div>
@@ -72,6 +93,7 @@
                     </form>
                 </div>
             </div>
+            <!-- ./CourseEditController-->
         </div>
     </div>
 </section>

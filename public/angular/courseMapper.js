@@ -1,4 +1,4 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'xeditable', 'ngTagsInput']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'xeditable', 'ngTagsInput', 'ngFileUpload']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -73,21 +73,11 @@ function removeObjectFromArray(myArray, searchObj, property){
  * https://scotch.io/quick-tips/how-to-encode-and-decode-strings-with-base64-in-javascript
  * @type {{_keyStr: string, encode: Function, decode: Function, _utf8_encode: Function, _utf8_decode: Function}}
  */
-var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
 
-/*
-if(!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function(what, i) {
-        i = i || 0;
-        var L = this.length;
-        while (i < L) {
-            if(this[i] === what) return i;
-            ++i;
-        }
-        return -1;
-    };
-}*/
-;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+function cloneSimpleObject(obj){
+    return JSON.parse(JSON.stringify(obj));
+};app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -98,16 +88,206 @@ if(!Array.prototype.indexOf) {
     });
 
 });
-;app.controller('CourseController', function($scope, $filter, $http, $location, $routeParams) {
+;app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams) {
     $scope.course = null;
+    $scope.enrolled = false;
+    $scope.loc = $location.absUrl() ;
+    $scope.courseId = $routeParams.courseId;
+    $scope.isOwner = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
-    $scope.params = $routeParams;
+    $scope.init = function(refreshPicture){
+        $http.get('/api/course/' + $scope.courseId).success(function(res){
+            if(res.result) {
+                $scope.course = res.course;
+
+                if(refreshPicture && $scope.course.picture)
+                    $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+            }
+        });
+    };
+    $scope.init();
+
+    $rootScope.$watch('user', function(){
+        if($rootScope.user) {
+            $scope.user = $rootScope.user;
+
+            $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
+                if (res.result && res.courses) {
+                    $scope.enrolled = res.courses.isEnrolled;
+                } else {
+                    $scope.enrolled = false;
+                }
+            });
+
+            if ($scope.course.createdBy == $rootScope.user._id) {
+                $scope.isOwner = true;
+                $scope.enrolled = true;
+            }
+        }
+    });
+
+    $scope.$on('onAfterEditCourse',function(events, course){
+        //$scope.course = course;
+        $scope.init(true);
+    });
+
+    $scope.enroll = function(){
+        var url = '/api/course/' + $scope.course._id + '/enroll';
+        $scope.loading = true;
+        $http.put(url, {}).success(function(res){
+            if(res.result)
+                $scope.enrolled = true;
+        }).finally(function(){
+            $scope.loading = false;
+        });
+    };
+
+    $scope.leave = function(){
+        var url = '/api/course/' + $scope.course._id + '/leave';
+        $scope.loading = true;
+        $http.put(url, {}).success(function(res){
+            if(res.result){
+                // success leaving
+                $scope.enrolled = false;
+            }
+        }).finally(function(){
+            $scope.loading = false;
+        });
+    }
+});;
+app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
+    $scope.createdDate = new Date();
+    $scope.course = cloneSimpleObject($scope.$parent.course);
+    $scope.tagsRaw = [];
+    $scope.files = [];
+    $scope.errors = undefined;
+
+    if($scope.course.courseTags && $scope.course.courseTags.length > 0){
+        for(var i in $scope.course.courseTags) {
+            var t = $scope.course.courseTags[i];
+            $scope.tagsRaw.push( {"text": t.name} );
+        }
+    }
+
+    /*$scope.loadTags = function(query) {
+        return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
+    };*/
+
+    $scope.saveCourse = function() {
+        if($scope.tagsRaw) {
+            $scope.course.tags = JSON.stringify($scope.tagsRaw);
+        }
+
+        var uploadParams = {
+            url: '/api/course/' + $scope.course._id,
+            fields: {
+                name: $scope.course.name,
+                description: $scope.course.description,
+                tags: $scope.course.tags,
+            }
+        };
+
+        // we only take one file
+        if ($scope.files && $scope.files.length){
+            var file = $scope.files[0];
+            uploadParams.file = file;
+        }
+
+        Upload.upload(
+            uploadParams
+
+        ).progress(function (evt) {
+                if(!evt.config.file)
+                    return;
+
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+
+        }).success(function (data, status, headers, config) {
+            $scope.$emit('onAfterEditCourse', data.course);
+            $('#editView').modal('hide');
+        });
+            /*.finally(function(){
+                $scope.$parent.course.courseTags = $scope.de;
+            });*/
+
+
+        /*var d = transformRequest($scope.course);
+        $http({
+            method: 'PUT',
+            url: '/api/courses',
+            data: d,
+            headers: {
+                'Content-Type': undefined
+            }
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    $scope.$emit('onAfterEditCourse');
+                    //window.location.href = '/course/' + data.course.slug + '/#/cid/' + data.course._id + '?new=1';
+                } else {
+                    if( data.result != null && !data.result){
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
+                    }
+                }
+            }) ;*/
+    };
+
+    $scope.cancel = function(){
+        $scope.course = cloneSimpleObject($scope.$parent.course);
+    };
 });
 
-app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
+;
+app.controller('NewCourseController', function($scope, $filter, $http, $location) {
+    $scope.course = {
+        name: null,
+        category: null,
+        description: ''
+    };
+
+    $scope.tagsRaw = null;
+
+    $scope.loadTags = function(query) {
+        return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
+    };
+
+    $scope.saveCourse = function() {
+        if($scope.tagsRaw) {
+            $scope.course.tags = JSON.stringify($scope.tagsRaw);
+        }
+        $scope.course.category = $scope.$parent.category._id;
+
+        var d = transformRequest($scope.course);
+        $http({
+            method: 'POST',
+            url: '/api/courses',
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    $scope.$emit('onAfterCreateNewCourse');
+                    window.location.href = '/course/' + data.course.slug + '/#/cid/' + data.course._id + '?new=1';
+                } else {
+                    if( data.result != null && !data.result){
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
+                    }
+                }
+            }) ;
+    };
+});
+
+;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
     $scope.slug = $routeParams.slug;
 
     // chosen filter
@@ -140,21 +320,22 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
         if(tagSearch && tagSearch.tags){
             var tags = tagSearch.tags.split(',');
             if(tags)
-            for(var i in tags){
-                var tag = tags[i];
-                if($scope.availableTags)
-                for(var j in $scope.availableTags) {
-                    var t = $scope.availableTags[j];
-                    if (t.slug == tag)
-                        $scope.applyFilter(t, true);
+                for(var i in tags){
+                    var tag = tags[i];
+                    if($scope.availableTags)
+                        for(var j in $scope.availableTags) {
+                            var t = $scope.availableTags[j];
+                            if (t.slug == tag)
+                                $scope.applyFilter(t, true);
+                        }
                 }
-            }
         }
 
         $scope.getCoursesFromThisCategory();
 
-        $scope.$watch(function(){ return $location.search() }, function(){
-            $scope.getCoursesFromThisCategory();
+        $scope.$watch(function(){ return $location.search() }, function(newVal, oldVal){
+            if(newVal && newVal !== oldVal)
+                $scope.getCoursesFromThisCategory();
         }, true);
     };
 
@@ -205,67 +386,6 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
         });
     });
 });
-
-app.controller('NewCourseController', function($scope, $filter, $http, $location) {
-    $scope.course = {
-        name: null,
-        category: null,
-        description: ''
-    };
-
-    $scope.createdDate = new Date();
-
-    $scope.saved = false;
-    $scope.categories = [];
-
-    /*$scope.def = {
-        course: 'Untitled course',
-        description: 'This should be a text that explains generally about this course',
-        category: 'Please pick a category'
-    }; */
-
-    $scope.loadTags = function(query) {
-        return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
-    };
-
-    $scope.saveCourse = function() {
-        if($scope.course.tags) {
-            $scope.course.tags = JSON.stringify($scope.course.tags);
-        }
-
-        var d = transformRequest($scope.course);
-        $http({
-            method: 'POST',
-            url: '/api/courses',
-            data: d,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .success(function(data) {
-                $scope.course = {};
-                console.log(data);
-                if(data.result) {
-                    // if successful, bind success data.course to course
-                    /*$scope.courseModel = data.course;
-                    $scope.course.shortId = data.course.shortId;
-                    $scope.saved = true;*/
-
-                    $scope.$emit('onAfterCreateNewCourse');
-
-                    window.location.href = '/course/' + data.course.shortId + '?new=1';
-                }
-            })
-            .error(function(data){
-                $scope.course.tags = JSON.parse($scope.course.tags);
-                if( data.result != null && !data.result){
-                    $scope.errorName = data.errors.name;
-                    console.log(data.errors);
-                }
-            });
-    };
-});
-
 ;app.controller('HomePageController', function($scope, $http, $rootScope) {
     $scope.hideSlider = false;
 
@@ -418,6 +538,12 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             when('/category/:slug', {
                 templateUrl: 'courses_list.html',
                 controller: 'CourseListController',
+                reloadOnSearch: false
+            }).
+
+            when('/cid/:courseId', {
+                templateUrl: 'course_detail.html',
+                controller: 'CourseController',
                 reloadOnSearch: false
             }).
 

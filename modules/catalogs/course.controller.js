@@ -2,16 +2,19 @@ var config = require('config');
 var Category = require('./categories.js');
 var Course = require('./courses.js');
 var Tag = require('./courseTags.js');
+var UserCourses = require('./userCourses.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var TagController = require('./tag.controller.js');
+var appRoot = require('app-root-path');
+var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 
 function catalog(){
 }
 
 catalog.prototype.getCourse = function(error, params, success){
     Course.findOne(params)
-        .populate('createdBy category courseTags').exec(function(err, docs) {
+        .populate('category courseTags').exec(function(err, docs) {
             if (!err){
                 success(docs);
             } else {
@@ -26,39 +29,50 @@ catalog.prototype.getCourse = function(error, params, success){
  * @param userParam
  * @param courseParam
  * @param done
+ * @param isEnrolled, if false, means that the user has left t
  */
-catalog.prototype.enroll = function(err, userParam, courseParam, done){
+catalog.prototype.enroll = function(error, userParam, courseParam, done, isEnrolled){
     var user = null;
     var course = null;
 
-    /* find user first see if it exist */
-    var userPromise = User.findById(mongoose.Types.ObjectId(userParam.id)).exec();
-    userPromise.then(function(u){
-        user = u;
-        //{shortId:courseParam.shortId}
-        return Course.findOne(courseParam).exec();
+    if(!userParam.id) {
+        throw new Error("please give user id parameter");
+    }
 
-    }).then(function(c){
-        /* find course see if it exist */
-        course = c;
-        return UserCourse.find({userId: user._id, courseId: course._id}).exec();
+    if(!courseParam.id) {
+        throw new Error("please give course id parameter");
+    }
 
-    }).then(function(uc){
-        /* user has not follow this course */
-        if(!uc.length){
-            var follow = new UserCourse({
-                userId: user._id,
-                courseId: course._id
-            });
+    var userId = mongoose.Types.ObjectId(userParam.id);
+    var courseId = mongoose.Types.ObjectId(courseParam.id);
 
-            follow.save(function(error, f){
-                if (error) err(error);
-                else done(f);
-            });
-        } else {
-            err(new Error('This user has followed this course already'));
-        }
-    });
+    UserCourses.findOneAndUpdate({
+        user: userId,
+        course: courseId
+    }, {
+        user: userId,
+        course: courseId,
+        isEnrolled: isEnrolled
+    },{upsert: true}
+    ).exec(function(err, doc){
+            if(err){
+                // perhaps this user is already enrolled
+                error(err)
+            } else {
+                done(doc);
+            }
+        });
+};
+
+/**
+ *
+ * @param err
+ * @param userParam
+ * @param courseParam
+ * @param done
+ */
+catalog.prototype.leave = function(error, userParam, courseParam, done){
+    this.enroll(error, userParam, courseParam, done, true);
 };
 
 catalog.prototype.addCourse = function(error, params, success){
@@ -75,9 +89,11 @@ catalog.prototype.addCourse = function(error, params, success){
     var course = new Course({
         name: params.name,
         createdBy: mongoose.Types.ObjectId(params.userId),
-        category: params.category,
+        category: mongoose.Types.ObjectId(params.category),
         description: params.description
     });
+
+    course.setSlug(params.name);
 
     course.save(function(err, res) {
         if (err) {
@@ -119,37 +135,78 @@ catalog.prototype.addCourse = function(error, params, success){
     });
 };
 
-/**
- *
- * @param error
- * @param params
- * @param success
-
-catalog.prototype.getCategoryCourses = function(error, params, success){
+catalog.prototype.editCourse = function(error, params, file, success){
     var self = this;
 
-    if(params.tags && params.tags.length > 0) {
-        for (var i in params.tags)
-            params.tags[i] = mongoose.Types.ObjectId(params.tags[i]);
+    if(!params.name) {
+        throw new Error("please give name parameter");
     }
 
-    //get cat from slug
-    var catPromise = Category.findOne({slug: params.slug}).exec();
-    catPromise.then(function(cat){
-        if(cat) {
-            var getCParam = { category: cat._id };
-            if(params.tags)
-                getCParam.courseTags = {$in: params.tags};
+    if(!params.courseId) {
+        throw new Error("please give courseId parameter");
+    }
 
-            var cc = new CourseController();
-            cc.getCourses(error, getCParam, success);
-        } else {
-            throw new Error('cant find category');
+    self.getCourse(error, {_id: mongoose.Types.ObjectId(params.courseId)},
+        function(course){
+            if(course){
+                // check for owner ship
+                var uid = mongoose.Types.ObjectId(params.userId);
+                if(course.createdBy.equals(uid)){
+                    // this is the owner
+                    course.name = params.name;
+                    course.description = params.description;
+                    course.courseTags = [];
+
+                    if(file) {
+                        var extension = file.name.split('.');
+                        extension = extension[extension.length-1].toLowerCase();
+                        if(['jpg', 'png', 'jpeg'].indexOf(extension) < 0){
+                            // extension not right
+                            error("Extension not right");
+                            return;
+                        }
+                        else {
+                            var fn = '/img/courses/' + course.slug + '.' + extension;
+                            var dest = appRoot + '/public' + fn;
+                            handleUpload(file, dest, true);
+                            course.picture = fn;
+                        }
+                    }
+
+                    // save the update
+                    course.save();
+
+                    // they giving us the tags in array of slug string.
+                    if(params.tagSlugs){
+                        // insert all the tags, if it failed, means it is already there
+                        var tc = new TagController();
+                        // get all the tags, we need the _ids
+                        for(var i in params.tagSlugs){
+                            var tagParam = {
+                                name : params.tagSlugs[i],
+                                course : course._id,
+                                category: course.category._id
+                            };
+
+                            tc.addCourseTag(function(err){
+                                    if(err) debug(err);
+                                },
+                                tagParam,
+                                // we dont need to do anything after, so pass it an empty func
+                                function(){});
+                        }
+                    }
+
+                    success(course);
+                }
+                else
+                    error("You did not create this course");
+            }
+            else
+                error("Course not found");
         }
-    }).then(null, function(err){
-        error(err);
-    });
-};; */
+    );
+};
 
 catalog.prototype.getCourses = function(error, params, success){
     Course.find(params, function(err, docs) {
@@ -158,6 +215,16 @@ catalog.prototype.getCourses = function(error, params, success){
         } else {
             error(err);
         }
+    });
+};
+
+catalog.prototype.getUserCourses = function(error, params, done){
+    params.course = mongoose.Types.ObjectId(params.course);
+    params.user = mongoose.Types.ObjectId(params.user);
+
+    UserCourses.find(params).populate('course').exec(function(err, res){
+        if(err) error(err);
+        else done(res);
     });
 };
 
