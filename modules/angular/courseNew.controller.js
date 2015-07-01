@@ -7,6 +7,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.tagsRaw = null;
+    $scope.errorName = "";
 
     $scope.loadTags = function(query) {
         return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);

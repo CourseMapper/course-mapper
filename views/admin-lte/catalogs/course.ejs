@@ -84,7 +84,7 @@
                         <div class="tab-content">
                             <div class="tab-pane active" id="preview">
 
-                                <div class="col-xs-9">
+                                <div class="col-xs-12 col-md-8">
                                     <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
                                     <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
                                     <div class="container">
@@ -111,6 +111,21 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- analytics-->
+                                <div class="grid-stack col-xs-12 col-md-3">
+                                    <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
+                                        <div class="grid-stack-item-content">
+                                            <div ng-include src="'/my-course/my-following-courses'" onload="initWidgetButton()"></div>
+                                        </div>
+                                    </div>
+                                    <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
+                                        <div class="grid-stack-item-content">
+                                            <div ng-include src="'/my-course/my-activity-summary'" onload="initWidgetButton()"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- analytics-->
                             </div>
                             <div class="tab-pane" id="map">
                                 <div class="box-body no-border" id="tree">
@@ -127,6 +142,7 @@
                     <!-- /tabs -->
 
                 </div>
+                <div class="clear"></div>
             </div>
         </section>
         <!-- /.content -->
@@ -153,7 +169,48 @@
 
 
 <% include ../jsfooter %>
-<script src="/d3/rightclick.js"></script>
-<script src="/d3/tree.js"></script>
+<!--<script src="/d3/rightclick.js"></script>
+<script src="/d3/tree.js"></script>-->
+
+<script src="/jquery/jquery-ui.min.js"></script>
+<script src="/gridstack/lodash.min.js"></script>
+<script src="/gridstack/gridstack.js"></script>
+<!--add sample analytics widgets js source-->
+<script src="/chartjs/Chart.min.js"></script>
+<script src="/chartjs/data.js"></script>
+<script src="/chartjs/options.js"></script>
+
+<script>
+    $(function initiateDraggableGrid() {
+        var options = {
+            cell_height: 400,
+            vertical_margin: 10,
+            resizable: false,
+            allowed_grids: [0, 4, 8]
+        };
+
+        var curNode = {x:0, y:0};
+        var $gs = $('.grid-stack');
+        $gs.gridstack(options);
+
+        $gs.on('onStartMove', function (e, node) {
+            curNode.x = node.x;
+            curNode.y = node.y;
+        });
+
+        $gs.on('onFinishDrop', function (e, node) {
+            var o = $(node.el);
+            if(options.allowed_grids.indexOf(node.x) < 0){
+                o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+            }
+            console.log("onFinishDrop");
+        });
+
+        $gs.on('onMove', function (e, node) {
+            console.log(node.x + " ++ " + node.y);
+        });
+    });
+
+</script>
 
 <% include ../footer %>

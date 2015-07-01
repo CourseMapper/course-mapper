@@ -1,17 +1,21 @@
 
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
     $scope.createdDate = new Date();
-    $scope.course = cloneSimpleObject($scope.$parent.course);
+    $scope.course = null;
     $scope.tagsRaw = [];
     $scope.files = [];
-    $scope.errors = undefined;
+    $scope.errors = "";
 
-    if($scope.course.courseTags && $scope.course.courseTags.length > 0){
-        for(var i in $scope.course.courseTags) {
-            var t = $scope.course.courseTags[i];
-            $scope.tagsRaw.push( {"text": t.name} );
+    $scope.$on('onAfterInitCourse', function(crs){
+        $scope.course = cloneSimpleObject($scope.$parent.course);
+
+        if($scope.course.courseTags && $scope.course.courseTags.length > 0){
+            for(var i in $scope.course.courseTags) {
+                var t = $scope.course.courseTags[i];
+                $scope.tagsRaw.push( {"text": t.name} );
+            }
         }
-    }
+    });
 
     /*$scope.loadTags = function(query) {
         return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
@@ -51,32 +55,6 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             $scope.$emit('onAfterEditCourse', data.course);
             $('#editView').modal('hide');
         });
-            /*.finally(function(){
-                $scope.$parent.course.courseTags = $scope.de;
-            });*/
-
-
-        /*var d = transformRequest($scope.course);
-        $http({
-            method: 'PUT',
-            url: '/api/courses',
-            data: d,
-            headers: {
-                'Content-Type': undefined
-            }
-        })
-            .success(function(data) {
-                console.log(data);
-                if(data.result) {
-                    $scope.$emit('onAfterEditCourse');
-                    //window.location.href = '/course/' + data.course.slug + '/#/cid/' + data.course._id + '?new=1';
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
-                }
-            }) ;*/
     };
 
     $scope.cancel = function(){

@@ -15,9 +15,12 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
 
                 if(refreshPicture && $scope.course.picture)
                     $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+
+                $scope.$broadcast('onAfterInitCourse', $scope.course);
             }
         });
     };
+
     $scope.init();
 
     $rootScope.$watch('user', function(){
