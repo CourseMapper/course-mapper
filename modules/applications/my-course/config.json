@@ -1,6 +1,5 @@
 {
   "name": "My Courses",
-  "description": "oyeahh",
   "widgets":[
     {
       "name": "My Courses List",
@@ -38,7 +37,5 @@
       "height":2,
       "icon":"/img/appPlaceholder.png"
     }
-
-
   ]
 }
