@@ -197,6 +197,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                     }
                 }
             }).
+
             when('/categories/:category', {
                 templateUrl: '/cm-admin/category',
                 controller: 'adminController',
@@ -211,6 +212,22 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                     }
                 }
             }).
+
+            when('/applications', {
+                templateUrl: '/cm-admin/applications',
+                controller: 'adminController',
+                resolve: {
+                    pd: function( $q ) {
+                        return( {
+                            title: 'Manage Applications',
+                            breads: [
+                                {a: '#/applications', active: false, title: 'Applications'}
+                            ]
+                        });
+                    }
+                }
+            }).
+
             otherwise({
                 redirectTo: '/cm-admin'
             });

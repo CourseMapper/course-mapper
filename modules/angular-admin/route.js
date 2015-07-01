@@ -15,6 +15,7 @@ admin.config(['$routeProvider',
                     }
                 }
             }).
+
             when('/categories/:category', {
                 templateUrl: '/cm-admin/category',
                 controller: 'adminController',
@@ -29,6 +30,37 @@ admin.config(['$routeProvider',
                     }
                 }
             }).
+
+            when('/applications', {
+                templateUrl: '/cm-admin/applications',
+                controller: 'applicationsController',
+                resolve: {
+                    pd: function( $q ) {
+                        return( {
+                            title: 'Manage Applications',
+                            breads: [
+                                {a: '#/applications', active: false, title: 'Applications'}
+                            ]
+                        });
+                    }
+                }
+            }).
+
+            when('/application/:appName', {
+                templateUrl: '/cm-admin/application',
+                controller: 'applicationController',
+                resolve: {
+                    pd: function( $q ) {
+                        return( {
+                            title: 'Manage Applications',
+                            breads: [
+                                {a: '#/applications', active: false, title: 'Applications'}
+                            ]
+                        });
+                    }
+                }
+            }).
+
             otherwise({
                 redirectTo: '/cm-admin'
             });

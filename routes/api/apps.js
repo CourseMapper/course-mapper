@@ -45,4 +45,25 @@ router.get('/apps/:location', function(req, res, next){
     );
 });
 
+/**
+ * get all apps. both active and inactive
+ */
+router.get('/apps/all', function(req, res, next){
+    var app = new AppsGallery();
+    app.getApps(
+        function(err){
+            res.status(200).json({result:false, message:err});
+        },
+        // get all
+        {
+        }
+        ,
+        function(wgs){
+            res.status(200).json({result: (wgs.length >= 0),apps: wgs});
+        }
+    );
+});
+
+
+
 module.exports = router;
