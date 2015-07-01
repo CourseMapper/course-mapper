@@ -51,6 +51,34 @@ appStore.prototype.getApps = function(failed, isActive, success){
     });
 };
 
+appStore.prototype.getAppsAll = function(failed, success){
+    var self = this;
+
+    fs.readdir(self.directory + p.sep, function(err, paths){
+        if (err) throw err;
+
+        var appsPool = [];
+
+        for(var i in paths){
+            var dir = paths[i];
+
+            // check if it exist
+            var configPath = self.directory + p.sep + dir + p.sep + 'config.json';
+            var stats = fs.lstatSync(configPath);
+
+            if(stats.isFile()){
+                // lets read the config file
+                var json = fs.readFileSync(configPath, 'utf8');
+                var app = JSON.parse(json);
+                app.dir = dir;
+                appsPool.push(app);
+            }
+        }
+
+        success(appsPool);
+    });
+};
+
 /**
  *
  * @param failed cb

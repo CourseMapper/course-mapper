@@ -13,11 +13,28 @@ router.get('/apps/', function(req, res, next) {
         function(err){
             res.status(500).json({});
         },
+        // get active apps only
         true,
         {}
         ,
         function(widgets){
             res.status(200).json({widgets: widgets});
+        }
+    );
+});
+
+/**
+ * get all apps. both active and inactive
+ */
+router.get('/apps/all', function(req, res, next){
+    var app = new AppsGallery();
+    app.getAppsAll(
+        function(err){
+            res.status(500).json({result:false, message:err});
+        }
+        ,
+        function(wgs){
+            res.status(200).json({result: true, apps: wgs});
         }
     );
 });
@@ -45,24 +62,6 @@ router.get('/apps/:location', function(req, res, next){
     );
 });
 
-/**
- * get all apps. both active and inactive
- */
-router.get('/apps/all', function(req, res, next){
-    var app = new AppsGallery();
-    app.getApps(
-        function(err){
-            res.status(200).json({result:false, message:err});
-        },
-        // get all
-        {
-        }
-        ,
-        function(wgs){
-            res.status(200).json({result: (wgs.length >= 0),apps: wgs});
-        }
-    );
-});
 
 
 

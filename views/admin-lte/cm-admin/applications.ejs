@@ -1,5 +1,5 @@
 <!-- Main content -->
-<div class="col-lg-12" ng-controller="">
+<div class="col-lg-12" id="Applications">
     <!-- Custom Tabs -->
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
@@ -12,15 +12,59 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
+                <div ng-show="allApps">
 
-            </div><!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_2">
+                    <table class="table table-bordered">
+                        <tbody>
+                        <tr>
+                            <th>Apps Description</th>
+                            <th>Widgets</th>
+                        </tr>
+                        <tr ng-repeat="app in allApps">
+                            <td>
+                                <h4>{{app.name}}</h4>
 
-            </div><!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_3">
+                                <p>
+                                    {{app.description}}
+                                </p>
+                                <button class="btn btn-primary btn-xs" ng-click="activateApp(app.dir)">Activate
+                                </button>
+                            </td>
+                            <td>
 
-            </div><!-- /.tab-pane -->
-        </div><!-- /.tab-content -->
-    </div><!-- nav-tabs-custom -->
+                                <div class="widget col-xs-12 col-md-3 col-lg-3" ng-repeat="widget in app.widgets">
+                                    <h5 class="box-title"> {{widget.name}} </h5>
+                                    <!-- /.box-header -->
+                                    <p><strong>Location:</strong> {{widget.location}} </p>
+                                    <!-- /.box-body -->
+                                </div>
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_2">
+
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_3">
+
+        </div>
+        <!-- /.tab-pane -->
+    </div>
+    <!-- /.tab-content -->
 </div>
+<!-- nav-tabs-custom -->
+</div>
+
+<!--<pre>
+{{route}}
+{{location}}
+{{routeParams}}
+</pre>-->
+
 <div class="clear"></div>

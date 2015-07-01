@@ -6,7 +6,27 @@ admin.filter('capitalize', function() {
     }
 });
 
-;admin.controller('CategoryListController', function($scope, $http, $rootScope) {
+;admin.controller('applicationsController', function($scope, $route, $routeParams, $location, $http) {
+    $scope.route = $route;
+    $scope.location = $location;
+    $scope.routeParams = $routeParams;
+    $scope.allApps = null;
+
+    $scope.init = function(){
+        $http.get('/api/apps/all').success(function(res){
+            if(res.result && res.apps){
+                $scope.allApps = res.apps;
+            }
+        });
+    };
+
+    $scope.activateApp = function(app){
+        alert(app);
+    };
+
+    $scope.init();
+
+});;admin.controller('CategoryListController', function($scope, $http, $rootScope) {
 
   $scope.initData = function(){
     $http.get('/api/categories').success(function(data) {
