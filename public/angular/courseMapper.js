@@ -175,6 +175,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         if(!$scope.courseEdit)
             $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
 
+        if($scope.courseEdit)
         if($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0){
             for(var i in $scope.courseEdit.courseTags) {
                 var t = $scope.courseEdit.courseTags[i];
