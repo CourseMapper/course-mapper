@@ -31,15 +31,15 @@ admin.config(['$routeProvider',
                 }
             }).
 
-            when('/applications', {
+            when('/widgets', {
                 templateUrl: '/cm-admin/applications',
                 controller: 'applicationsController',
                 resolve: {
                     pd: function( $q ) {
                         return( {
-                            title: 'Manage Applications',
+                            title: 'Manage Widgets',
                             breads: [
-                                {a: '#/applications', active: false, title: 'Applications'}
+                                {a: '#/widgets', active: false, title: 'Widgets'}
                             ]
                         });
                     }

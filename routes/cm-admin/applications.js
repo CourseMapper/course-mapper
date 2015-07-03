@@ -7,7 +7,14 @@ var router = express.Router();
 
 router.get('/applications', function(req, res, next) {
     var app = new AppsGallery();
-    app.populateApplications();
+    app.populateApplications(
+        function(err){
+            console.log("error populating app");
+        },
+        function(){
+            console.log("success populating app");
+        });
+
     res.render(config.get('theme') + '/cm-admin/applications', {title: "Manage Applications"});
 });
 

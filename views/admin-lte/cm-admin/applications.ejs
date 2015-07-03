@@ -4,53 +4,116 @@
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
             <li class="active">
-                <a href="#/applications" data-toggle="tab_1">All Applications</a></li>
+                <a data-toggle="tab" data-target="#tab_1">All Widgets</a></li>
             <li>
-                <a href="#/applications" data-toggle="tab_2">Active</a></li>
+                <a data-toggle="tab" data-target="#tab_2">Active</a></li>
             <li>
-                <a href="#/applications" data-toggle="tab_3">InActive</a></li>
+                <a data-toggle="tab" data-target="#tab_3">Not Active</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
-                <div ng-show="allApps">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Application</th>
+                        <th>Widget</th>
+                        <th>Location</th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets">
+                        <td>
+                            {{widget.application}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
 
-                    <table class="table table-bordered">
-                        <tbody>
-                        <tr>
-                            <th>Apps Description</th>
-                            <th>Widgets</th>
-                        </tr>
-                        <tr ng-repeat="app in allApps">
-                            <td>
-                                <h4>{{app.name}}</h4>
-                                <button class="btn btn-primary btn-xs" ng-click="activateApp(app.dir)">Activate
-                                </button>
-                            </td>
-                            <td>
-
-                                <div class="widget col-xs-12 col-md-3 col-lg-3" ng-repeat="widget in app.widgets">
-                                    <h5 class="box-title"> {{widget.name}} </h5>
-                                    <!-- /.box-header -->
-                                    <p><strong>Location:</strong> {{widget.location}} </p>
-                                    <!-- /.box-body -->
-                                </div>
-
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
+                            <button class="btn btn-sm btn-primary" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
             </div>
-        </div>
-        <!-- /.tab-pane -->
-        <div class="tab-pane" id="tab_2">
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_2">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Application</th>
+                        <th>Widget</th>
+                        <th>Location</th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets" ng-show="widget.isActive">
+                        <td>
+                            {{widget.application}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
 
-        </div>
-        <!-- /.tab-pane -->
-        <div class="tab-pane" id="tab_3">
+                            <button class="btn btn-sm btn-primary" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_3">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Application</th>
+                        <th>Widget</th>
+                        <th>Location</th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets" ng-hide="widget.isActive">
+                        <td>
+                            {{widget.application}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
 
+                            <button class="btn btn-sm btn-primary" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
         </div>
-        <!-- /.tab-pane -->
     </div>
     <!-- /.tab-content -->
 </div>
