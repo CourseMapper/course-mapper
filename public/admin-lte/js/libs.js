@@ -1,17 +1,12 @@
 
-$(document).ready(function() {
-    handleTab();
-
-    if (location.hash !== '')
-        $(document).scrollTop(0);
-});
-
 function handleTab(){
     var id = "preview";
     if (location.hash !== ''){
         var be = location.hash.split('?');
-        id = be[be.length-1];
-        $('a[data-target=#' + id + ']').tab('show');
+        if(be.length>1) {
+            id = be[be.length - 1];
+            $('a[data-target=#' + id + ']').tab('show');
+        }
     }
 
     // add a hash to the URL when the user clicks on a tab

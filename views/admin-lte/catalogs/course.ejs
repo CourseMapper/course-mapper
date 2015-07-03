@@ -210,6 +210,12 @@
         });
     });
 
+    $(document).ready(function() {
+        handleTab();
+
+        if (location.hash !== '')
+            $(document).scrollTop(0);
+    });
 </script>
 
 <% include ../footer %>
