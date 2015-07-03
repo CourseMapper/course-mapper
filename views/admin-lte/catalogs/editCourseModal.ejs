@@ -2,9 +2,9 @@
 <section class="content">
     <div class="row row-centered">
         <div class="col-xs-12 col-md-5 col-centered">
-            <div class="box no-border" ng-controller="CourseEditController">
+            <div class="box no-border" ng-controller="CourseEditController" ng-init="init()">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Editing a course: {{course.name}}</h3>
+                    <h3 class="box-title">Editing a course: {{courseEdit.name}}</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -22,7 +22,7 @@
 
                                 <div class="controls">
                                     <input type="text" id="course" name="course" placeholder="" class="form-control"
-                                           ng-model="course.name">
+                                           ng-model="courseEdit.name">
                                 </div>
                             </div>
 
@@ -34,7 +34,7 @@
 
                                 <div class="controls">
                                 <textarea type="description" id="description" name="description" placeholder=""
-                                          class="form-control" ng-model="course.description">
+                                          class="form-control" ng-model="courseEdit.description">
                                 </textarea>
 
                                 </div>

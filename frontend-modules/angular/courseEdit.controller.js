@@ -1,21 +1,28 @@
 
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
     $scope.createdDate = new Date();
-    $scope.course = null;
+    $scope.courseEdit = null;
     $scope.tagsRaw = [];
     $scope.files = [];
     $scope.errors = "";
 
     $scope.$on('onAfterInitCourse', function(crs){
-        $scope.course = cloneSimpleObject($scope.$parent.course);
+        $scope.init();
+    });
 
-        if($scope.course.courseTags && $scope.course.courseTags.length > 0){
-            for(var i in $scope.course.courseTags) {
-                var t = $scope.course.courseTags[i];
+    $scope.init = function(){
+        $scope.tagsRaw = [];
+
+        if(!$scope.courseEdit)
+            $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+
+        if($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0){
+            for(var i in $scope.courseEdit.courseTags) {
+                var t = $scope.courseEdit.courseTags[i];
                 $scope.tagsRaw.push( {"text": t.name} );
             }
         }
-    });
+    };
 
     /*$scope.loadTags = function(query) {
         return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
@@ -23,15 +30,15 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
     $scope.saveCourse = function() {
         if($scope.tagsRaw) {
-            $scope.course.tags = JSON.stringify($scope.tagsRaw);
+            $scope.courseEdit.tags = JSON.stringify($scope.tagsRaw);
         }
 
         var uploadParams = {
-            url: '/api/course/' + $scope.course._id,
+            url: '/api/course/' + $scope.courseEdit._id,
             fields: {
-                name: $scope.course.name,
-                description: $scope.course.description,
-                tags: $scope.course.tags,
+                name: $scope.courseEdit.name,
+                description: $scope.courseEdit.description,
+                tags: $scope.courseEdit.tags,
             }
         };
 
@@ -58,7 +65,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     };
 
     $scope.cancel = function(){
-        $scope.course = cloneSimpleObject($scope.$parent.course);
+        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
     };
 });
 
