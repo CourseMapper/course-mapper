@@ -273,7 +273,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                 }
             }).
 
-            when('/application/:appName', {
+            /*when('/application/:appName', {
                 templateUrl: '/cm-admin/application',
                 controller: 'applicationController',
                 resolve: {
@@ -286,7 +286,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                         });
                     }
                 }
-            }).
+            }).*/
 
             otherwise({
                 redirectTo: '/cm-admin'

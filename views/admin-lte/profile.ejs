@@ -35,8 +35,12 @@
                                             class="ionicons ion-ios-gear"></i> Account Settings</a></li>
                                     <li><a href="#" title="Turn on or off some features"><i
                                             class="ionicons ion-toggle"></i> Plugins</a></li>
-                                    <li><a href="#/apps/gallery" title="Add or remove dashboard widgets" data-toggle="modal" data-target="#modalAppGallery"><i
+                                    <li>
+                                        <a style="cursor: pointer;"
+                                           title="Add or remove dashboard widgets"
+                                           data-toggle="modal" data-target="#widgetGallery"><i
                                             class="ionicons ion-android-apps"></i> Widgets Store</a></li>
+
                                     <% if(user.role == 'admin'){ %>
                                     <li><a href="/cm-admin/" title="admin"> Admin Panel</a></li>
                                     <% }%>
@@ -72,8 +76,11 @@
 
                     <div class="row">
 
-                        <div class="modal" id="modalAppGallery" tabindex="-1" role="dialog" aria-labelledby="modalAppGallery" aria-hidden="true">
-                            <div ng-view></div>
+                        <div class="row" ng-controller="WidgetGalleryController">
+                            <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
+                                 aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('user-profile')">
+                                <div ng-include="'/widgets/gallery'"></div>
+                            </div>
                         </div>
 
                     </div>

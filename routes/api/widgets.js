@@ -70,7 +70,7 @@ router.get('/widgets/:location', function(req, res, next){
     var app = new AppsGallery();
     app.getWidgets(
         function(err){
-            res.status(500).json({});
+            res.status(500).json(err);
         },
         // get active widgets and correct location
         {
@@ -79,7 +79,7 @@ router.get('/widgets/:location', function(req, res, next){
         }
         ,
         function(wgs){
-            res.status(200).json({widgets: wgs});
+            res.status(200).json({result: true, widgets: wgs});
         }
     );
 });

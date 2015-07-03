@@ -563,7 +563,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         $.AdminLTE.boxWidget.activate();
     }
 });
-
+/*
 app.controller('WidgetListController', function ($scope, $http, $rootScope) {
 
     $scope.initData = function () {
@@ -580,4 +580,17 @@ app.controller('WidgetListController', function ($scope, $http, $rootScope) {
         $(window).resize();
     });
 
+});*/
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+    $scope.location = "";
+    /**
+     * get widgets store data from the server
+     */
+    $scope.initData = function (location) {
+        $scope.location = location;
+
+        $http.get('/api/widgets/' + location).success(function (data) {
+            $scope.widgets = data.widgets;
+        });
+    };
 });

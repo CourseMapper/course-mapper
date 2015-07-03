@@ -1,9 +1,9 @@
-<section class="content" ng-controller="WidgetListController">
+<section class="content"  >
     <div class="row row-centered">
         <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
-            <div class="box no-border no-round">
+            <div class="widget-item box no-border no-round">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Applications Gallery</h3>
+                    <h3 class="box-title">Widgets Store on {{location}}</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -13,11 +13,11 @@
                 <div class="box-body">
                     <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="widget in widgets">
                         <div class="thumbnail center">
-                            <img src="{{widget.icon}}">
+                            <img ng-src="{{widget.icon}}">
                             <div class="caption">
                                 <h4>{{widget.widgetName}}</h4>
                                 <p>{{widget.description}}</p>
-                                <a href="#" class="btn btn-primary btn-sm" role="button"><i class="glyphicon glyphicon-cart"></i> Install </a>
+                                <a href="#" class="btn btn-primary btn-sm" role="button"><i class="fa fa-download"></i> Install </a>
                                 <span class="label label-info pull-right">W:{{widget.width}} by H:{{widget.height}}</span>
                             </div>
                         </div>
