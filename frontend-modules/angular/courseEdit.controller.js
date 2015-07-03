@@ -13,8 +13,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.init = function(){
         $scope.tagsRaw = [];
 
-        if(!$scope.courseEdit)
-            $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
 
         if($scope.courseEdit)
         if($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0){
