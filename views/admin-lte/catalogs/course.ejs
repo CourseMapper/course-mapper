@@ -64,20 +64,21 @@
                     <!-- tabs left -->
                     <div class="tabbable tabs-left">
                         <ul class="nav nav-tabs tabs-hide hidden-xs">
-                            <li class="active"><a href="#/preview" data-toggle="tab" data-target="#preview">
+                            <li class="active">
+                                <a href="#/cid/{{course._id}}/preview" data-toggle="tab" data-target="#preview">
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <li ng-show="enrolled || isOwner"><a href="#/map" data-toggle="tab" data-target="#map">
+                            <li ng-show="enrolled || isOwner"><a href="#/cid/{{course._id}}/map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/updates" ng-show="user" data-toggle="tab" data-target="#updates">
                                 <i class="ionicons ion-ios-time-outline"></i><br>
                                 <span>Updates</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
                                 <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                 <span>Discussion</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
                                 <i class="ionicons ion-stats-bars"></i><br>
                                 <span>Analytics</span></a></li>
                         </ul>
@@ -127,10 +128,11 @@
                     <!-- /tabs -->
 
                 </div>
+
+                <div class="clear"></div>
             </div>
         </section>
         <!-- /.content -->
-
         <!-- modal contents -->
         <div class="row" ng-controller="WidgetGalleryController">
             <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
@@ -154,6 +156,5 @@
 
 <% include ../jsfooter %>
 <script src="/d3/rightclick.js"></script>
-<script src="/d3/tree.js"></script>
 
 <% include ../footer %>

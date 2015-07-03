@@ -1,4 +1,4 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'xeditable', 'ngTagsInput', 'ngFileUpload']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'ngTagsInput', 'ngFileUpload']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -29,13 +29,6 @@ app.directive('onFinishRender', function ($timeout) {
             }
         }
     }
-});
-
-/**
- * xeditable
- */
-app.run(function(editableOptions) {
-    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
 });
 
 /**
@@ -542,6 +535,12 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             }).
 
             when('/cid/:courseId', {
+                templateUrl: 'course_detail.html',
+                controller: 'CourseController',
+                reloadOnSearch: false
+            }).
+
+            when('/cid/:courseId/:tab', {
                 templateUrl: 'course_detail.html',
                 controller: 'CourseController',
                 reloadOnSearch: false

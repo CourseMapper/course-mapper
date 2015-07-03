@@ -48,9 +48,9 @@ module.exports = function (grunt) {
         src: 'frontend-modules/angular-admin/*.js',
         dest: 'public/angular/courseMapperAdmin.js'
       },
-      jqueryJS: {
-        src: 'frontend-modules/jquery-plugin/*.js',
-        dest: 'public/jquery/jquery.plugin.js'
+      libsJS: {
+        src: 'frontend-modules/libs/*.js',
+        dest: 'public/admin-lte/js/libs.js'
       }
     },
 
@@ -59,9 +59,9 @@ module.exports = function (grunt) {
         files: [
             'frontend-modules/angular/*.js',
             'frontend-modules/angular-admin/*.js',
-            'frontend-modules/jquery-plugin/*.js'
+            'frontend-modules/libs/*.js'
         ],
-        tasks: ['concat:dist', 'concat:js', 'concat:jqueryJS'],
+        tasks: ['concat:dist', 'concat:js', 'concat:libsJS'],
         options: {
           spawn: false
         }
@@ -71,5 +71,5 @@ module.exports = function (grunt) {
   });
 
   // the default task (running "grunt" in console)
-  grunt.registerTask('default', ['bowercopy', 'concat:dist', 'concat:js', 'concat:jqueryJS']);
+  grunt.registerTask('default', ['bowercopy', 'concat:dist', 'concat:js', 'concat:libsJS']);
 };
