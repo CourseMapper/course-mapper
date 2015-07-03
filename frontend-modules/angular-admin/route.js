@@ -46,7 +46,7 @@ admin.config(['$routeProvider',
                 }
             }).
 
-            when('/application/:appName', {
+            /*when('/application/:appName', {
                 templateUrl: '/cm-admin/application',
                 controller: 'applicationController',
                 resolve: {
@@ -59,7 +59,7 @@ admin.config(['$routeProvider',
                         });
                     }
                 }
-            }).
+            }).*/
 
             otherwise({
                 redirectTo: '/cm-admin'
