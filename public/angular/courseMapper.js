@@ -81,7 +81,7 @@ function cloneSimpleObject(obj){
     });
 
 });
-;app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams) {
+;app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
@@ -99,7 +99,11 @@ function cloneSimpleObject(obj){
                 if(refreshPicture && $scope.course.picture)
                     $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
 
-                $scope.$broadcast('onAfterInitCourse', $scope.course);
+                $timeout(function(){
+                    $scope.$broadcast('onAfterInitCourse', $scope.course);
+                });
+
+                //$scope.$broadcast('onAfterInitCourse', $scope.course);
             }
         });
     };
@@ -517,12 +521,6 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             }).
 
             when('/cid/:courseId', {
-                templateUrl: 'course_detail.html',
-                controller: 'CourseController',
-                reloadOnSearch: false
-            }).
-
-            when('/cid/:courseId/:tab', {
                 templateUrl: 'course_detail.html',
                 controller: 'CourseController',
                 reloadOnSearch: false

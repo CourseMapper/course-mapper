@@ -65,20 +65,20 @@
                     <div class="tabbable tabs-left">
                         <ul class="nav nav-tabs tabs-hide hidden-xs">
                             <li class="active">
-                                <a href="#/cid/{{course._id}}/preview" data-toggle="tab" data-target="#preview">
+                                <a href="#/cid/{{course._id}}?preview" data-toggle="tab" data-target="#preview">
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <li ng-show="enrolled || isOwner"><a href="#/cid/{{course._id}}/map" data-toggle="tab" data-target="#map">
+                            <li ng-show="enrolled || isOwner"><a href="#/cid/{{course._id}}?map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/updates" ng-show="user" data-toggle="tab" data-target="#updates">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?updates" ng-show="user" data-toggle="tab" data-target="#updates">
                                 <i class="ionicons ion-ios-time-outline"></i><br>
                                 <span>Updates</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
                                 <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                 <span>Discussion</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
                                 <i class="ionicons ion-stats-bars"></i><br>
                                 <span>Analytics</span></a></li>
                         </ul>
@@ -172,7 +172,6 @@
 <!--<script src="/d3/rightclick.js"></script>
 <script src="/d3/tree.js"></script>-->
 
-<script src="/jquery/jquery-ui.min.js"></script>
 <script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
 <!--add sample analytics widgets js source-->

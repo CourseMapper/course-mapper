@@ -1,4 +1,4 @@
-app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams) {
+app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
@@ -16,7 +16,11 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
                 if(refreshPicture && $scope.course.picture)
                     $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
 
-                $scope.$broadcast('onAfterInitCourse', $scope.course);
+                $timeout(function(){
+                    $scope.$broadcast('onAfterInitCourse', $scope.course);
+                });
+
+                //$scope.$broadcast('onAfterInitCourse', $scope.course);
             }
         });
     };
