@@ -22,8 +22,11 @@ function handleTab(){
     // navigate to a tab when the history changes
     window.addEventListener("popstate", function(e) {
         var activeTab = '';
-        if(location.hash)
-            activeTab = $('[href=' + location.hash + ']');
+        if (location.hash !== ''){
+            var be = location.hash.split('/');
+            id = be[be.length-1];
+            activeTab = $('a[data-target=#' + id + ']');
+        }
 
         if (activeTab.length) {
             activeTab.tab('show');
