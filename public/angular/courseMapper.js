@@ -1,4 +1,4 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'xeditable', 'ngTagsInput', 'ngFileUpload']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'ngTagsInput', 'ngFileUpload']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -29,13 +29,6 @@ app.directive('onFinishRender', function ($timeout) {
             }
         }
     }
-});
-
-/**
- * xeditable
- */
-app.run(function(editableOptions) {
-    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
 });
 
 /**
@@ -529,6 +522,12 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
                 reloadOnSearch: false
             }).
 
+            when('/cid/:courseId/:tab', {
+                templateUrl: 'course_detail.html',
+                controller: 'CourseController',
+                reloadOnSearch: false
+            }).
+
             otherwise({
                 redirectTo: '/'
             });
@@ -545,7 +544,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         $.AdminLTE.boxWidget.activate();
     }
 });
-
+/*
 app.controller('WidgetListController', function ($scope, $http, $rootScope) {
 
     $scope.initData = function () {
@@ -562,4 +561,17 @@ app.controller('WidgetListController', function ($scope, $http, $rootScope) {
         $(window).resize();
     });
 
+});*/
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+    $scope.location = "";
+    /**
+     * get widgets store data from the server
+     */
+    $scope.initData = function (location) {
+        $scope.location = location;
+
+        $http.get('/api/widgets/' + location).success(function (data) {
+            $scope.widgets = data.widgets;
+        });
+    };
 });

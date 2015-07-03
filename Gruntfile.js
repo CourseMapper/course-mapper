@@ -40,28 +40,28 @@ module.exports = function (grunt) {
       },
       dist: {
         src: [
-          'modules/angular/*.js'
+          'frontend-modules/angular/*.js'
         ],
         dest: 'public/angular/courseMapper.js'
       },
       js: {
-        src: 'modules/angular-admin/*.js',
+        src: 'frontend-modules/angular-admin/*.js',
         dest: 'public/angular/courseMapperAdmin.js'
       },
-      jqueryJS: {
-        src: 'modules/jquery-plugin/*.js',
-        dest: 'public/jquery/jquery.plugin.js'
+      libsJS: {
+        src: 'frontend-modules/libs/*.js',
+        dest: 'public/admin-lte/js/libs.js'
       }
     },
 
     watch: {
       scripts: {
         files: [
-            'modules/angular/*.js',
-            'modules/angular-admin/*.js',
-            'modules/jquery-plugin/*.js'
+            'frontend-modules/angular/*.js',
+            'frontend-modules/angular-admin/*.js',
+            'frontend-modules/libs/*.js'
         ],
-        tasks: ['concat:dist', 'concat:js', 'concat:jqueryJS'],
+        tasks: ['concat:dist', 'concat:js', 'concat:libsJS'],
         options: {
           spawn: false
         }
@@ -71,5 +71,5 @@ module.exports = function (grunt) {
   });
 
   // the default task (running "grunt" in console)
-  grunt.registerTask('default', ['bowercopy', 'concat:dist', 'concat:js', 'concat:jqueryJS']);
+  grunt.registerTask('default', ['bowercopy', 'concat:dist', 'concat:js', 'concat:libsJS']);
 };

@@ -48,8 +48,8 @@
                     </li>
                     <li ng-show="isOwner">
                         <a  style="cursor: pointer;"
-                            data-toggle="modal" data-target="#modalAppGallery"
-                            title="Add or remove dashboard widgets">
+                            data-toggle="modal" data-target="#widgetGallery"
+                            title="Add or remove preview widgets">
                             <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
                     </li>
                 </ul>
@@ -64,20 +64,21 @@
                     <!-- tabs left -->
                     <div class="tabbable tabs-left">
                         <ul class="nav nav-tabs tabs-hide hidden-xs">
-                            <li class="active"><a href="#/preview" data-toggle="tab" data-target="#preview">
+                            <li class="active">
+                                <a href="#/cid/{{course._id}}/preview" data-toggle="tab" data-target="#preview">
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <li ng-show="enrolled || isOwner"><a href="#/map" data-toggle="tab" data-target="#map">
+                            <li ng-show="enrolled || isOwner"><a href="#/cid/{{course._id}}/map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/updates" ng-show="user" data-toggle="tab" data-target="#updates">
                                 <i class="ionicons ion-ios-time-outline"></i><br>
                                 <span>Updates</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
                                 <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                 <span>Discussion</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
                                 <i class="ionicons ion-stats-bars"></i><br>
                                 <span>Analytics</span></a></li>
                         </ul>
@@ -146,12 +147,11 @@
             </div>
         </section>
         <!-- /.content -->
-
         <!-- modal contents -->
-        <div class="row">
-            <div class="modal" id="modalAppGallery" tabindex="-1" role="dialog"
-                 aria-labelledby="modal app gallery" aria-hidden="true">
-                <div ng-include="'/apps/gallery/course-preview'"></div>
+        <div class="row" ng-controller="WidgetGalleryController">
+            <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
+                 aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('course-preview')">
+                <div ng-include="'/widgets/gallery'"></div>
             </div>
         </div>
 

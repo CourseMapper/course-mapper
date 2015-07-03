@@ -3,7 +3,7 @@ app.controller('widgetController', function($scope, $http, $rootScope) {
         $.AdminLTE.boxWidget.activate();
     }
 });
-
+/*
 app.controller('WidgetListController', function ($scope, $http, $rootScope) {
 
     $scope.initData = function () {
@@ -20,4 +20,4 @@ app.controller('WidgetListController', function ($scope, $http, $rootScope) {
         $(window).resize();
     });
 
-});
+});*/

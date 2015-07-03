@@ -29,6 +29,7 @@
     "serve-favicon": "~2.2.0",
     "shortid": "^2.2.2",
     "slug": "^0.8.0",
+    "underscore": "^1.8.3",
     "validator": "^3.35.0"
   },
   "devDependencies": {
