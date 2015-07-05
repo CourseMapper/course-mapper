@@ -12,7 +12,10 @@ var annotationPDFSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    //renderedText: {},
+    renderedText: {
+        type: String,
+        required: false
+    },
     author: {
         type: String,
         required: true,

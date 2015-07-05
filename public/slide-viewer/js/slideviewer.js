@@ -13,15 +13,49 @@ var default1=0;
 
     });
 };
+*/
+function displayCommentsIntern(filter, order){
 
-function displayComments(){
-    console.log("WORKED");
+    var url = "/slide-viewer/disComm";
+    var urlFilterOrder = url + "/" + order + "/" + filter;
 
-    var comment = new Comment();
+    $.ajax( {
+      "url": urlFilterOrder,
+      //"async": false,
+      "dataType": "html",
+      "success": function (html) {
+        $("#showComments").html(html);
+        $(".commentText").each(function(index){
+          $(this).html($(this).text());
+        });
+      }
+
+    } );
+
+
+
+    /*var comment = new Comment();
     var num = comment.numberOfComments();
 
     console.log("WORKED");
 
-    $("numComments").innerhtml(num);
+    $("numComments").innerhtml(num);*/
 
-};*/
+};
+
+function displayComments(){
+
+  var fType = $("#filterTypeSelect").val();
+  var fValue = $("#filterValueText").val();
+  var oType = $("#orderTypeSelect").val();
+  var oAsc = $("#orderAscendingSelect").val();
+
+
+  var filter = '{}';
+  if(fType != "none")
+    filter='{"' + fType + '":"' + fValue + '"}';
+  var order= '{"type": "' + oType + '","ascending": "' + oAsc + '"}';
+  filter = JSON.parse(filter);
+  order = JSON.parse(order);
+  displayCommentsIntern(JSON.stringify(filter),JSON.stringify(order));
+};

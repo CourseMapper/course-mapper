@@ -9,9 +9,13 @@ function comment(){
 comment.prototype.sumbitAnnotation = function(err, params, done){
   var annotationsPDF = new AnnotationsPDF({
     rawText: params.rawText,
+    renderedText: this.convertRawText(params.rawText),
     author: params.author,
     originSlide: params.originSlide,
   });
+
+  console.log(this.convertRawText(params.rawText));
+
 
   // save it to db
   annotationsPDF.save(function (err) {
@@ -28,6 +32,30 @@ comment.prototype.sumbitAnnotation = function(err, params, done){
       }
   });
 };
+
+comment.prototype.convertRawText = function(rawText){
+
+
+  var renderedText = rawText.replace(/#(\w+)/g, function(x){
+      if(this.checkTagName(x)){
+        var ret = "<label class='blueText'> " + x + " </label>";
+        return ret;
+      }
+      else {
+        return x;
+      }
+
+    }
+
+  )
+  return renderedText;
+}
+
+//TODO Really check if tag name exists
+comment.prototype.checkTagName = function(tagName){
+    return true;
+}
+
 
 comment.prototype.handleSubmitPost = function(req, res, next) {
     console.log(req);
@@ -71,6 +99,34 @@ comment.prototype.getAllComments = function(callback) {
       }
 
     });
+};
+
+comment.prototype.getOrderedFilteredComments = function(order,filters,callback) {
+
+    var orderString= ""+order.type;;
+    if(order.ascending == "false")
+    {
+      console.log("inside if");
+      orderString = "-"+orderString;
+    }
+
+    console.log(orderString);
+
+    AnnotationsPDF.find(filters, function (err, data) {
+      if(err) {
+        console.log(err);
+      }
+    }).sort(orderString).exec(function (err, data) {
+      if(err) {
+        console.log(err);
+      }
+      else {
+        callback(0, data);
+      }
+
+    });
+
+
 };
 
 
