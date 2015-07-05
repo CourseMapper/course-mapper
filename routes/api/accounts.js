@@ -54,9 +54,6 @@ router.get('/accounts/:username', function(req, res, next) {
         res.status(401).json({message: 'Not authorized'});
 });
 
-<<<<<<< HEAD
-module.exports = router;
-=======
 router.get('/accounts/:userId/courses', function(req, res, next) {
     if(req.session.passport.user) {
         var crs = new Course();
@@ -98,4 +95,3 @@ router.get('/accounts/:userId/course/:courseId', function(req, res, next) {
 });
 
 module.exports = router;
->>>>>>> 2eb329e44827e6ef0d379b2b3a8b53ac564d0bee

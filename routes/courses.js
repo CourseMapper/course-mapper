@@ -1,12 +1,9 @@
 var express = require('express');
 var config = require('config');
-<<<<<<< HEAD
 var appRoot = require('app-root-path');
-var Account = require(appRoot + '/modules/accounts');
-=======
-var appRoot = require('app-root-path'); 
+//var Account = require(appRoot + '/modules/accounts');
+var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
->>>>>>> 2eb329e44827e6ef0d379b2b3a8b53ac564d0bee
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var router = express.Router();

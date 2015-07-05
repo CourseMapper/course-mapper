@@ -85,7 +85,7 @@ AppStore.prototype.updateWidget = function(failed, params, updateParams, success
 
 /**
  * read through applications directory, and detect for config.json
- * 
+ *
  * @param failed
  * @param success
  */

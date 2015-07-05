@@ -566,9 +566,7 @@ app.controller('WidgetListController', function ($scope, $http, $rootScope) {
         $(window).resize();
     });
 
-<<<<<<< HEAD
-});
-=======
+
 });*/
 ;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     $scope.location = "";
@@ -583,4 +581,3 @@ app.controller('WidgetListController', function ($scope, $http, $rootScope) {
         });
     };
 });
->>>>>>> 2eb329e44827e6ef0d379b2b3a8b53ac564d0bee
