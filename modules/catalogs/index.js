@@ -423,13 +423,21 @@ catalog.prototype.getCourses = function(error, params, success){
  */
 catalog.prototype.getCategoryCourses = function(error, params, success){
     var self = this;
+
+    if(params.tags && params.tags.length > 0) {
+        for (var i in params.tags)
+            params.tags[i] = mongoose.Types.ObjectId(params.tags[i]);
+    }
+
     //get cat from slug
     var catPromise = Category.findOne({slug: params.slug}).exec();
     catPromise.then(function(cat){
         if(cat) {
-            self.getCourses(error, {
-                category: cat._id
-            }, success);
+            var getCParam = { category: cat._id };
+            if(params.tags)
+                getCParam.courseTags = {$in: params.tags};
+
+            self.getCourses(error, getCParam, success);
         } else {
             throw new Error('cant find category');
         }

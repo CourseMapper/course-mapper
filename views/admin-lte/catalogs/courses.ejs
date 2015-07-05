@@ -6,11 +6,11 @@
     <!-- Content Wrapper. Contains page content -->
     <div id="courses" class="content-wrapper" >
 
-        <section class="content-header">
+        <section class="content-header" ng-controller="CourseController">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li class="active">Browse Courses</li>
-                <li class="active">{{category.name}}</li>
+                <li class="active">{{params.slug}}</li>
             </ol>
             <% if(locals.user){ %>
             <a class="btn btn-primary btn-xs" style="float: right" data-toggle="modal" data-target="#modalCreateCourse">Create A Course</a>
@@ -27,7 +27,6 @@
             <div class="col-md-12">
                 <div class="col-md-12 filter">
                     <h4 ng-show="filterTags.length > 0">Filtered By:</h4>
-
                     <span class="label label-primary" ng-repeat="tag in filterTags">
                         <button class="btn btn-box-tool" ng-click="removeFilter(tag)">
                             <i class="fa fa-times"></i></button>
@@ -49,7 +48,7 @@
                                 <a href="/course/{{c.shortId}}" class="box-title">{{c.name}}</a>
                             </div>
                             <div class="box-body"  style="text-align: center" >
-                            <img ng-show="c.picture" ng-src="c.picture">
+                            <!--<img ng-show="c.picture" src="{{c.picture}}">-->
                             <img ng-hide="c.picture" src="/img/default-tree.png">
                             </div>
                         </div>

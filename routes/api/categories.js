@@ -88,13 +88,18 @@ router.get('/category/:category/courseTags', function(req, res, next) {
  * return: json
  */
 router.get('/category/:category/courses', function(req, res, next) {
+    var tags = req.query.tags;
+    if(tags)
+        tags = tags.split(',');
+
     var cat = new Catalog();
     cat.getCategoryCourses(
         function(err){
             res.status(500).json({errors:err});
         },
         {
-            slug: req.params.category
+            slug: req.params.category,
+            tags: tags
         }
         ,
         function(courses){
