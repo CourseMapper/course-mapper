@@ -5,90 +5,131 @@
     <% include ../mainMenu %>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper" ng-controller="CourseController">
+    <div class="content-wrapper" ng-view>
+    </div>
+    <!-- /.content-wrapper -->
 
+    <script type="text/ng-template" id="course_detail.html">
         <section class="content-header">
             <ol class="breadcrumb">
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li><a href="/courses/#/category/<%=course.category.slug%>"> </i> <%=course.category.name%></a></li>
-                <li class="active"><%=course.name%></li>
+                <li class="active">{{course.name}}</li>
             </ol>
+        </section>
+        <section class="content-header action-header blue">
+            <ol class="breadcrumb">
+                <li class="home">{{course.name}}</li>
+                <li class="active">Preview</li>
+            </ol>
+
+            <div class="navbar-custom-menu">
+                <ul class="">
+                    <li ng-hide="isOwner">
+                        <a ng-hide="user" class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
+                            login to enroll to this course</a>
+
+                        <i ng-show="loading" class="fa fa-refresh fa-spin"></i>
+                        <a ng-show="user && !enrolled" ng-click="enroll()" style="cursor: pointer"><strong>Enroll here to participate in this course</strong></a>
+
+                        <span ng-show="enrolled && !loading">You are following this course.</span>
+                        <a ng-show="enrolled" class="" style="cursor:pointer" ng-click="leave()">
+                            LEAVE COURSE</a>
+
+                    </li>
+                    <li ng-show="isOwner">
+                        You created this course
+                    </li>
+                    <li ng-show="isOwner">
+                        <a style="cursor: pointer"
+                           data-toggle="modal" data-target="#editView"
+                           title="Edit this course's details">
+                            <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
+                    </li>
+                    <li ng-show="isOwner">
+                        <a  style="cursor: pointer;"
+                            data-toggle="modal" data-target="#widgetGallery"
+                            title="Add or remove preview widgets">
+                            <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
+                    </li>
+                </ul>
+            </div>
         </section>
 
         <!-- Main content -->
-        <section class="content">
+        <section class="content-course">
             <div class="box no-border" id="courseTabs">
-                <div class="box-header no-border">
-                    <h1><span class="hidden-xs course"></span><span class="visible-xs" style="margin-left:15px"></span><%=course.name%>
-                    </h1>
-                    <% if(!user){ %>
-                    <a class="btn btn-primary btn-flat" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
-                        login to follow this course</a>
-                    <% } else {
-                    if (!follow && course.createdBy.username != user.username){ %>
-                    <a class="btn btn-primary btn-flat" href="/api/course/<%= course.shortId%>/enroll">Enroll</a>
-                    <% }
-                    if (course.createdBy.username == user.username){ %>
-
-                    <% } else { %>
-                    You are following this course. <a class="" href="/api/course/<%= course.shortId%>/unenroll">click
-                    here to Unenroll</a>
-                    <% }
-                    }%>
-                </div>
                 <div class="box-body no-border">
 
                     <!-- tabs left -->
                     <div class="tabbable tabs-left">
                         <ul class="nav nav-tabs tabs-hide hidden-xs">
-                            <li class="active"><a href="#/preview" data-toggle="tab" data-target="#preview">
+                            <li class="active">
+                                <a href="#/cid/{{course._id}}?preview" data-toggle="tab" data-target="#preview">
                                 <i class="ionicons ion-ios-home-outline"></i><br>
                                 <span>Preview</span></a></li>
 
-                            <% if(follow || course.createdBy.username == user.username){ %>
-                            <li><a href="#/map" data-toggle="tab" data-target="#map">
+                            <li ng-show="enrolled || isOwner"><a href="#/cid/{{course._id}}?map" data-toggle="tab" data-target="#map">
                                 <i class="ionicons ion-map"></i>
                                 <span>CourseMap</span></a></li>
-                            <% }%>
-                            <li><a href="#/updates" ng-show="user" data-toggle="tab" data-target="#updates">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?updates" ng-show="user" data-toggle="tab" data-target="#updates">
                                 <i class="ionicons ion-ios-time-outline"></i><br>
                                 <span>Updates</span></a></li>
-                            <li><a href="#/discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
                                 <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                 <span>Discussion</span></a></li>
-                            <li><a href="#/analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
+                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
                                 <i class="ionicons ion-stats-bars"></i><br>
                                 <span>Analytics</span></a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="preview">
 
-                                <div class="col-xs-9">
-                                    <div class="form-group">
-                                        Started By: <strong><%=(course.createdBy.username ==
-                                        user.username)?'You':course.createdBy.username%></strong> on <b>
-                                        <%=moment(course.dateAdded).fromNow()%></b>
-                                        <!-- -
-                                        Last activity:<b> 2 days ago</b><br>
-                                        User Rating:
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star-o"></i>-->
-                                    </div>
-                                    <img src="/img/courses/<%=(course.picture)?course.picture:'placeholder.png'%>">
+                                <div class="col-xs-12 col-md-8">
+                                    <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
+                                    <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
+                                    <div class="container">
+                                        <div class="excerpt">
+                                            <div class="description">
+                                                Started By:
+                                                <strong>
+                                                    {{user.username}}
+                                                </strong> on <b>
+                                                <%=moment(course.dateAdded).fromNow()%></b>
 
-                                    <div class="form-group">
-                                        <%=course.description%>
-                                    </div>
-                                    <div class="form-group">
-                                        <!-- general public analytics about this course -->
+                                                <h1>
+                                                    <span class="visible-xs" style="margin-left:15px"></span>
+                                                    {{course.name}}
+                                                </h1>
+                                                <p ng-show="course.courseTags.length > 0" class="filter">
+                                                    <a class="label label-primary" style="cursor: default" ng-repeat="tag in course.courseTags">
+                                                        {{tag.name}}</a>
+                                                </p>
+                                                <p>
+                                                {{course.description}}
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- analytics-->
+                                <div class="grid-stack col-xs-12 col-md-3">
+                                    <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
+                                        <div class="grid-stack-item-content">
+                                            <div ng-include src="'/my-course/my-following-courses'" onload="initWidgetButton()"></div>
+                                        </div>
+                                    </div>
+                                    <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
+                                        <div class="grid-stack-item-content">
+                                            <div ng-include src="'/my-course/my-activity-summary'" onload="initWidgetButton()"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- analytics-->
                             </div>
                             <div class="tab-pane" id="map">
-                                <div class="box-body no-border" id="tree" ng-controller="TreeController">
+                                <div class="box-body no-border" id="tree">
                                     <cm-tree el="treeSVG" width="4000" height="4000">
                                         <% include rightMenu %>
                                     </cm-tree>
@@ -102,18 +143,79 @@
                     <!-- /tabs -->
 
                 </div>
+                <div class="clear"></div>
             </div>
-
-
         </section>
         <!-- /.content -->
-    </div>
-    <!-- /.content-wrapper -->
+        <!-- modal contents -->
+        <div class="row" ng-controller="WidgetGalleryController">
+            <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
+                 aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('course-preview')">
+                <div ng-include="'/widgets/gallery'"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="modal" id="editView" tabindex="-1" role="dialog"
+                 aria-labelledby="edit view" aria-hidden="true">
+                <div ng-include="'/course/edit'"></div>
+            </div>
+        </div>
+        <!-- /.modal contents -->
+
+    </script>
 
 </div><!-- ./wrapper -->
 
+
 <% include ../jsfooter %>
-<script src="/d3/rightclick.js"></script>
-<script src="/d3/tree.js"></script>
+<!--<script src="/d3/rightclick.js"></script>
+<script src="/d3/tree.js"></script>-->
+
+<script src="/gridstack/lodash.min.js"></script>
+<script src="/gridstack/gridstack.js"></script>
+<!--add sample analytics widgets js source-->
+<script src="/chartjs/Chart.min.js"></script>
+<script src="/chartjs/data.js"></script>
+<script src="/chartjs/options.js"></script>
+
+<script>
+    $(function initiateDraggableGrid() {
+        var options = {
+            cell_height: 400,
+            vertical_margin: 10,
+            resizable: false,
+            allowed_grids: [0, 4, 8]
+        };
+
+        var curNode = {x:0, y:0};
+        var $gs = $('.grid-stack');
+        $gs.gridstack(options);
+
+        $gs.on('onStartMove', function (e, node) {
+            curNode.x = node.x;
+            curNode.y = node.y;
+        });
+
+        $gs.on('onFinishDrop', function (e, node) {
+            var o = $(node.el);
+            if(options.allowed_grids.indexOf(node.x) < 0){
+                o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+            }
+            console.log("onFinishDrop");
+        });
+
+        $gs.on('onMove', function (e, node) {
+            console.log(node.x + " ++ " + node.y);
+        });
+    });
+
+    $(document).ready(function() {
+        handleTab();
+
+        if (location.hash !== '')
+            $(document).scrollTop(0);
+    });
+</script>
 
 <% include ../footer %>

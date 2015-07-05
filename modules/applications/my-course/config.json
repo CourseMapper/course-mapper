@@ -1,26 +1,49 @@
 {
   "name": "My Courses",
-  "description": "",
-  "isActive": "true",
   "widgets":[
     {
-      "widgetName": "My Courses List",
+      "name": "My Courses List",
       "location": "user-profile",
       "description": "Will list all your following courses",
       "entryPoint": "/my-course/my-following-courses",
       "width": 2,
       "height":4,
-      "isActive": "true",
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "widgetName": "My Progress",
-      "location": "course",
+      "name": "My Progress",
+      "location": "course-preview",
       "description": "show your overal progress on this particular course",
       "entryPoint": "/my-course/journey",
       "width": 2,
       "height":2,
-      "isActive": "true",
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Summary",
+      "location": "user-profile",
+      "description": "Radar Graph to show summary of your learning process",
+      "entryPoint": "/my-course/my-summary",
+      "width": 2,
+      "height":2,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "My CourseProgress",
+      "location": "user-profile",
+      "description": "Line Graph to show history progress of one particular course",
+      "entryPoint": "/my-course/my-course-progress",
+      "width": 2,
+      "height":2,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Contributor",
+      "location": "course-preview",
+      "description": "show contributor of this course",
+      "entryPoint": "/my-course/journey",
+      "width": 2,
+      "height":2,
       "icon":"/img/appPlaceholder.png"
     }
   ]

@@ -6,6 +6,10 @@ var appRoot = require('app-root-path');
 
 var staticFiles = fs.readdirSync(appRoot + '/views/widgets/');
 
+router.get('/widgets/gallery', function(req, res, next) {
+    res.render(config.get('theme') + '/apps/gallery', {location: req.params.location});
+});
+
 router.get('/widgets/:page', function(req, res, next) {
     var fn = req.params.page + '.ejs';
 

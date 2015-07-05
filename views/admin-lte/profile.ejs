@@ -35,8 +35,12 @@
                                             class="ionicons ion-ios-gear"></i> Account Settings</a></li>
                                     <li><a href="#" title="Turn on or off some features"><i
                                             class="ionicons ion-toggle"></i> Plugins</a></li>
-                                    <li><a href="#/apps/gallery" title="Add or remove dashboard widgets" data-toggle="modal" data-target="#modalAppGallery"><i
+                                    <li>
+                                        <a style="cursor: pointer;"
+                                           title="Add or remove dashboard widgets"
+                                           data-toggle="modal" data-target="#widgetGallery"><i
                                             class="ionicons ion-android-apps"></i> Widgets Store</a></li>
+
                                     <% if(user.role == 'admin'){ %>
                                     <li><a href="/cm-admin/" title="admin"> Admin Panel</a></li>
                                     <li><a href="/slide-viewer" title="Slider Mockup Preview"> Slides</a></li>
@@ -56,20 +60,28 @@
                         </div>
                         <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
                             <div class="grid-stack-item-content">
-                                <div ng-include src="'/widgets/chart'" onload="initWidgetButton()"></div>
+                                <div ng-include src="'/my-course/my-activity-summary'" onload="initWidgetButton()"></div>
                             </div>
                         </div>
                         <div class="grid-stack-item" data-gs-x="8" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
                             <div class="grid-stack-item-content">
-                                <div ng-include src="'/widgets/pie'" onload="initWidgetButton()"></div>
+                                <div ng-include src="'/widgets/chart'" onload="initWidgetButton()"></div>
+                            </div>
+                        </div>
+                        <div class="grid-stack-item" data-gs-x="0" data-gs-y="1" data-gs-width="8" data-gs-no-resize="yes" data-gs-locked="yes">
+                            <div class="grid-stack-item-content">
+                                <div ng-include src="'/my-course/my-course-progress'" onload="initWidgetButton()"></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
 
-                        <div class="modal" id="modalAppGallery" tabindex="-1" role="dialog" aria-labelledby="modalAppGallery" aria-hidden="true">
-                            <div ng-view></div>
+                        <div class="row" ng-controller="WidgetGalleryController">
+                            <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
+                                 aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('user-profile')">
+                                <div ng-include="'/widgets/gallery'"></div>
+                            </div>
                         </div>
 
                     </div>
@@ -90,6 +102,10 @@
 <script src="/jquery/jquery-ui.min.js"></script>
 <script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
+<!--add sample analytics widgets js source-->
+<script src="/chartjs/Chart.min.js"></script>
+<script src="/chartjs/data.js"></script>
+<script src="/chartjs/options.js"></script>
 
 <script>
     $(function initiateDraggableGrid() {

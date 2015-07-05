@@ -7,6 +7,7 @@ var config = require('config');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
+var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var router = express.Router();
 
 router.post('/accounts/signUp', function(req, res, next){
@@ -53,4 +54,48 @@ router.get('/accounts/:username', function(req, res, next) {
         res.status(401).json({message: 'Not authorized'});
 });
 
+<<<<<<< HEAD
 module.exports = router;
+=======
+router.get('/accounts/:userId/courses', function(req, res, next) {
+    if(req.session.passport.user) {
+        var crs = new Course();
+        crs.getUserCourses(
+            function error(err){
+                res.status(200).json({result:false, message:err});
+            },
+            { user: req.params.userId },
+            function success(courses){
+                res.status(200).json({result:true, courses:courses});
+            }
+        );
+    }
+    else
+        res.status(401).json({message: 'Not authorized'});
+});
+
+router.get('/accounts/:userId/course/:courseId', function(req, res, next) {
+    if(req.session.passport.user){
+        var crs = new Course();
+        crs.getUserCourses(
+            function error(err){
+                res.status(200).json({result:false, message:err});
+            },
+            {
+                user: req.params.userId,
+                course: req.params.courseId
+            },
+            function success(courses){
+                if(courses.length > 0)
+                    res.status(200).json({result:true, courses:courses[0]});
+                else
+                    res.status(200).json({result:true, courses:null});
+            }
+        );
+    }
+    else
+        res.status(401).json({message: 'Not authorized'});
+});
+
+module.exports = router;
+>>>>>>> 2eb329e44827e6ef0d379b2b3a8b53ac564d0bee

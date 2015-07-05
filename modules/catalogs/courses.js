@@ -1,15 +1,14 @@
 var mongoose = require('mongoose');
-var shortid = require('shortid');
-
+var slug = require('slug');
 var Tag = require('./courseTags.js');
 
 var courseSchema = new mongoose.Schema({
-    shortId:{
+    name: {
         type: String,
         unique: true,
-        default: shortid.generate
+        required: true
     },
-    name: {
+    slug: {
         type: String,
         unique: true,
         required: true
@@ -23,6 +22,10 @@ var courseSchema = new mongoose.Schema({
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
 });
+
+courseSchema.methods.setSlug = function(cString) {
+    this.slug = slug(cString);
+};
 
 courseSchema.pre('save', function(next){
     var now = new Date();

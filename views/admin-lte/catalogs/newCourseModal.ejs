@@ -23,11 +23,6 @@
                                 <div class="controls">
                                     <input type="text" id="course" name="course" placeholder="" class="form-control"
                                            ng-model="course.name">
-
-                                    <input type="hidden" id="category" name="category" class="form-control"
-                                           ng-model="course.category" value="{{category.slug}}"
-                                           ng-init="course.category=category.slug">
-                                    </input>
                                 </div>
                             </div>
 
@@ -52,13 +47,13 @@
                                 <p class="help-block">Put some tags related to this course</p>
 
                                 <div class="controls">
-                                    <tags-input ng-model="course.tags">
-                                        <auto-complete source="loadTags($query)"></auto-complete>
+                                    <tags-input ng-model="tagsRaw">
+                                        <!--<auto-complete source="loadTags($query)"></auto-complete>-->
                                     </tags-input>
 
                                 </div>
                             </div>
-<!--{{course}}-->
+
                             <div class="control-group">
                                 <p class="help-block"></p>
 

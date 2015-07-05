@@ -19,11 +19,11 @@
                                 <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
                                     <input type="text" name="category" class="form-control input-sm col-xs-3"
                                            placeholder="Add New Tags ..." ng-model="formData.name"/>
-                                    <input type="hidden" name="parent" ng-value="category.slug"
-                                           value="{{category.slug}}"
-                                           ng-model="formData.category" ng-init="formData.category=category.slug"/>
+                                    <input type="hidden" name="parent" ng-value="category._id"
+                                           value="{{category._id}}"
+                                           ng-model="formData.category" ng-init="formData.category=category._id"/>
                               <span class="input-group-btn">
-                              <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category.slug)">
+                              <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category._id)">
                                   <i class="fa fa-plus"></i> Add New
                                   Tag
                               </button>
@@ -57,11 +57,11 @@
                                 <div class="col-xs-6 input-group input-group-sm" ng-class="{ 'has-error' : errorName }">
                                     <input type="text" name="course" class="form-control input-sm col-xs-3"
                                            placeholder="Add New Course ..." ng-model="formData.name"/>
-                                    <input type="hidden" name="category" ng-value="category.slug"
-                                           value="{{category.slug}}"
-                                           ng-model="formData.category" ng-init="formData.category=category.slug"/>
+                                    <input type="hidden" name="category" ng-value="category._id"
+                                           value="{{category._id}}"
+                                           ng-model="formData.category" ng-init="formData.category=category._id"/>
                               <span class="input-group-btn">
-                              <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category.slug)">
+                              <button class="btn btn-info btn-flat" type="submit" ng-click="setCategory(category._id)">
                                   <i class="fa fa-plus"></i> Add New Course
                               </button>
                               </span>

@@ -6,7 +6,52 @@ admin.filter('capitalize', function() {
     }
 });
 
-;admin.controller('CategoryListController', function($scope, $http, $rootScope) {
+;admin.controller('applicationsController', function($scope, $route, $routeParams, $location, $http) {
+    $scope.route = $route;
+    $scope.location = $location;
+    $scope.routeParams = $routeParams;
+    $scope.widgets = null;
+
+    $scope.init = function(){
+        $http.get('/api/widgets/all').success(function(res){
+            if(res.result && res.widgets){
+                $scope.widgets = res.widgets;
+            }
+        });
+    };
+
+    function updateWidgetResult(updated, widgets){
+        for(var i in widgets){
+            var wdg = widgets[i];
+            if(wdg.name == updated.name){
+                wdg.isActive = updated.isActive;
+            }
+        }
+    }
+
+    $scope.activate = function(app, widgetName){
+        $http.put('/api/widgets/' + app + '/' + widgetName, {
+            isActive:true
+        }).success(function(res){
+            if(res.result && res.widget){
+                updateWidgetResult(res.widget, $scope.widgets);
+            }
+        });
+    };
+
+    $scope.deactivate = function(app, widgetName){
+        $http.put('/api/widgets/' + app + '/' + widgetName, {
+            isActive:false
+        }).success(function(res){
+            if(res.result && res.widget){
+                updateWidgetResult(res.widget, $scope.widgets);
+            }
+        });
+    };
+
+    $scope.init();
+
+});;admin.controller('CategoryListController', function($scope, $http, $rootScope) {
 
   $scope.initData = function(){
     $http.get('/api/categories').success(function(data) {
@@ -144,13 +189,13 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
     });
 
     $scope.getCourses = function(){
-        $http.get('/api/category/' + $scope.category.slug +'/courses').success(function(data) {
+        $http.get('/api/category/' + $scope.category._id +'/courses').success(function(data) {
             $scope.courses = data.courses;
         });
     };
 
     $scope.getCourseTags = function(){
-        $http.get('/api/category/' + $scope.category.slug +'/courseTags').success(function(data) {
+        $http.get('/api/category/' + $scope.category._id +'/courseTags').success(function(data) {
             $scope.tags = data.courseTags;
         });
     };
@@ -197,6 +242,7 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                     }
                 }
             }).
+
             when('/categories/:category', {
                 templateUrl: '/cm-admin/category',
                 controller: 'adminController',
@@ -211,6 +257,37 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                     }
                 }
             }).
+
+            when('/widgets', {
+                templateUrl: '/cm-admin/applications',
+                controller: 'applicationsController',
+                resolve: {
+                    pd: function( $q ) {
+                        return( {
+                            title: 'Manage Widgets',
+                            breads: [
+                                {a: '#/widgets', active: false, title: 'Widgets'}
+                            ]
+                        });
+                    }
+                }
+            }).
+
+            /*when('/application/:appName', {
+                templateUrl: '/cm-admin/application',
+                controller: 'applicationController',
+                resolve: {
+                    pd: function( $q ) {
+                        return( {
+                            title: 'Manage Applications',
+                            breads: [
+                                {a: '#/applications', active: false, title: 'Applications'}
+                            ]
+                        });
+                    }
+                }
+            }).*/
+
             otherwise({
                 redirectTo: '/cm-admin'
             });

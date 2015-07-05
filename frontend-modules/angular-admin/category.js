@@ -136,13 +136,13 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
     });
 
     $scope.getCourses = function(){
-        $http.get('/api/category/' + $scope.category.slug +'/courses').success(function(data) {
+        $http.get('/api/category/' + $scope.category._id +'/courses').success(function(data) {
             $scope.courses = data.courses;
         });
     };
 
     $scope.getCourseTags = function(){
-        $http.get('/api/category/' + $scope.category.slug +'/courseTags').success(function(data) {
+        $http.get('/api/category/' + $scope.category._id +'/courseTags').success(function(data) {
             $scope.tags = data.courseTags;
         });
     };

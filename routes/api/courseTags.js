@@ -1,7 +1,7 @@
 var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
-var Catalog = require(appRoot + '/modules/catalogs');
+var Catalog = require(appRoot + '/modules/catalogs/tag.controller.js');
 var debug = require('debug')('cm:route');
 var router = express.Router();
 
@@ -31,7 +31,7 @@ router.post('/courseTags', function(req, res, next){
 });
 
 /**
- * return tags
+ * return all tags
  */
 router.get('/courseTags', function(req, res, next) {
     var cat = new Catalog();

@@ -1,12 +1,14 @@
 var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
-var Catalog = require(appRoot + '/modules/catalogs');
+var mongoose = require('mongoose');
+var Category = require(appRoot + '/modules/catalogs/category.controller.js');
+var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var debug = require('debug')('cm:route');
 var router = express.Router();
 
 router.get('/categories', function(req, res, next) {
-    var cat = new Catalog();
+    var cat = new Category();
     cat.getCategories(
         function(err){
             res.status(500).json({});
@@ -21,7 +23,7 @@ router.get('/categories', function(req, res, next) {
 });
 
 router.get('/category/:category', function(req, res, next) {
-    var cat = new Catalog();
+    var cat = new Category();
     cat.getCategory(
         function(err){
             res.status(500).json({});
@@ -46,7 +48,7 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
         return;
     }
 
-    var cat = new Catalog();
+    var cat = new Category();
 
     cat.updateCategoryPosition(
         function(err){
@@ -68,13 +70,13 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
 
 
 router.get('/category/:category/courseTags', function(req, res, next) {
-    var cat = new Catalog();
+    var cat = new Category();
     cat.getCategoryTags(
         function(err){
             res.status(500).json({});
         },
         {
-            slug: req.params.category
+            _id: req.params.category
         }
         ,
         function(tags){
@@ -84,23 +86,30 @@ router.get('/category/:category/courseTags', function(req, res, next) {
 });
 
 /**
- * get courses based on category slug
+ * get courses based on category id
  * return: json
  */
 router.get('/category/:category/courses', function(req, res, next) {
-    var tags = req.query.tags;
-    if(tags)
-        tags = tags.split(',');
+    var getCParam = { category: req.params.category };
 
-    var cat = new Catalog();
-    cat.getCategoryCourses(
+    // converting tag ids csv into tag (object ids)
+    var tags = req.query.tags;
+    if(tags) {
+        tags = tags.split(',');
+        if(tags.length > 0) {
+            for (var i in tags)
+                tags[i] = mongoose.Types.ObjectId(tags[i]);
+
+            getCParam.courseTags = {$in: tags};
+        }
+    }
+
+    var cat = new Course();
+    cat.getCourses(
         function(err){
             res.status(500).json({errors:err});
         },
-        {
-            slug: req.params.category,
-            tags: tags
-        }
+        getCParam
         ,
         function(courses){
             res.status(200).json({courses: courses});
@@ -116,7 +125,7 @@ router.post('/categories', function(req, res, next){
         res.status(401).send('Unauthorized');
     }
     else {
-        var cat = new Catalog();
+        var cat = new Category();
         cat.addCategory(
             function (err) {
                 res.status(500).json({result:false, errors: err});
