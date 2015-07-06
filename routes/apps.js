@@ -4,6 +4,10 @@ var appRoot = require('app-root-path');
 var AppsGallery = require(appRoot + '/modules/apps-gallery');
 var router = express.Router();
 
+//Workaround: TODO delete
+var AnnZones = require(appRoot + '/modules/annotationZones/');
+
+
 router.get('/apps/gallery/:location', function(req, res, next) {
     res.render(config.get('theme') + '/apps/gallery', {location: req.params.location});
 });
@@ -32,7 +36,7 @@ var Comment = require(appRoot + '/modules/slide-viewer');
 
 
 
-router.post('/slide-viewer', function(req, res, next){
+router.post('/slide-viewer/submitComment', function(req, res, next){
     var comment = new Comment();
     comment.handleSubmitPost(req, res, next);
 });
@@ -71,6 +75,12 @@ router.get('/slide-viewer/disComm/:order/:filters', function(req, res, next){
 
   });
 });
+
+router.post('/slide-viewer/submitTag', function(req, res, next){
+    var annZone = new AnnZones();
+    annZone.handleZoneSubmitPost(req, res, next);
+});
+
 
 
 

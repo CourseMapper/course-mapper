@@ -2,11 +2,12 @@ var AnnotationsPDF = require('./annotation')
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
+var AnnZones = require('../annotationZones/index');
 
-function comment(){
+function Comment(){
 }
 
-comment.prototype.sumbitAnnotation = function(err, params, done){
+Comment.prototype.sumbitAnnotation = function(err, params, done){
   var annotationsPDF = new AnnotationsPDF({
     rawText: params.rawText,
     renderedText: this.convertRawText(params.rawText),
@@ -14,7 +15,7 @@ comment.prototype.sumbitAnnotation = function(err, params, done){
     originSlide: params.originSlide,
   });
 
-  console.log(this.convertRawText(params.rawText));
+  //console.log(this.convertRawText(params.rawText));
 
 
   // save it to db
@@ -33,11 +34,24 @@ comment.prototype.sumbitAnnotation = function(err, params, done){
   });
 };
 
-comment.prototype.convertRawText = function(rawText){
+//TODO Really check if tag name exists
+Comment.prototype.checkTagName = function(tagName){
+    var annZone = new AnnZones();
+    return annZone.annotationZoneNameExists(tagName);
+
+
+}
+
+//TODO Not working correctly yet
+Comment.prototype.convertRawText = function(rawText){
+  var check = this.checkTagName;
 
 
   var renderedText = rawText.replace(/#(\w+)/g, function(x){
-      if(this.checkTagName(x)){
+      console.log(check(x));
+      if(check(x)){
+
+        //console.log("ADDED LABEL");
         var ret = "<label class='blueText'> " + x + " </label>";
         return ret;
       }
@@ -48,17 +62,32 @@ comment.prototype.convertRawText = function(rawText){
     }
 
   )
+
+  /*var tagArray = [];
+  var arrayIndex = 0;
+
+  rawText.replace(/#(\w+)/g, function(x){
+        tagArray[arrayIndex] = x;
+        arrayIndex = arrayIndex + 1;
+        return x;
+      }
+    }
+  )
+
+  check(tagArray, function(foundArray){
+
+  });
+
+
+  var ret = "<label class='blueText'> " + x + " </label>";
+*/
   return renderedText;
 }
 
-//TODO Really check if tag name exists
-comment.prototype.checkTagName = function(tagName){
-    return true;
-}
 
 
-comment.prototype.handleSubmitPost = function(req, res, next) {
-    console.log(req);
+Comment.prototype.handleSubmitPost = function(req, res, next) {
+    //console.log(req);
     this.sumbitAnnotation(
         function error(err){
             return next(err);
@@ -72,7 +101,7 @@ comment.prototype.handleSubmitPost = function(req, res, next) {
     );
 };
 
-comment.prototype.numberOfComments = function(callback) {
+Comment.prototype.numberOfComments = function(callback) {
     var numComments = 0;
     AnnotationsPDF.count({
 
@@ -87,7 +116,7 @@ comment.prototype.numberOfComments = function(callback) {
     });
 };
 
-comment.prototype.getAllComments = function(callback) {
+Comment.prototype.getAllComments = function(callback) {
     AnnotationsPDF.find({
 
     }, function (err, data) {
@@ -101,16 +130,16 @@ comment.prototype.getAllComments = function(callback) {
     });
 };
 
-comment.prototype.getOrderedFilteredComments = function(order,filters,callback) {
+Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) {
 
     var orderString= ""+order.type;;
     if(order.ascending == "false")
     {
-      console.log("inside if");
+      //console.log("inside if");
       orderString = "-"+orderString;
     }
 
-    console.log(orderString);
+    //console.log(orderString);
 
     AnnotationsPDF.find(filters, function (err, data) {
       if(err) {
@@ -132,4 +161,4 @@ comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
 
 
 
-module.exports = comment;
+module.exports = Comment;

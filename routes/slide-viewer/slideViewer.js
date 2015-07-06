@@ -2,6 +2,10 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var SlideViewer = require(appRoot + '/modules/slide-viewer');
+var SlideAnnotationZones = require(appRoot + '/modules/annotationZones');
+//var Comment = require(appRoot + '/modules/slide-viewer/index');
+//var AnnZones = require(appRoot + '/modules/annotationZones/index');
+
 
 
 var router = express.Router();
