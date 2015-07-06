@@ -1,0 +1,23 @@
+{
+  "name": "Course Analytics",
+  "widgets":[
+   {
+      "name": "Top Contributors",
+      "location": "course",
+      "description": "List of top contributor for current course",
+      "entryPoint": "/course-analytics/top-contributors",
+      "width": 2,
+      "height":2,
+      "icon":"/img/appPlaceholder.png"
+   },
+   {
+      "name": "Course Statistics",
+      "location": "course",
+      "description": "Course Statistics data for current course",
+      "entryPoint": "/course-analytics/course-statistics",
+      "width": 2,
+      "height":2,
+      "icon":"/img/appPlaceholder.png"
+   }
+  ]
+}
