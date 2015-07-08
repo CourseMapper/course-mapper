@@ -115,14 +115,15 @@
 
                                 <!-- analytics-->
                                 <div class="grid-stack col-xs-12 col-md-3">
+
                                     <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
                                         <div class="grid-stack-item-content">
-                                            <div ng-include src="'/my-course/my-following-courses'" onload="initWidgetButton()"></div>
+                                            <div ng-include src="'/course-analytics/course-statistics'" onload="initWidgetButton()"></div>
                                         </div>
                                     </div>
                                     <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
-                                        <div class="grid-stack-item-content">
-                                            <div ng-include src="'/my-course/my-activity-summary'" onload="initWidgetButton()"></div>
+                                        <div class="grid-stack-item-content" data-gs-height="10" >
+                                            <div ng-include src="'/course-analytics/top-contributors'" onload="initWidgetButton()"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -174,15 +175,14 @@
 
 <script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
-<!--add sample analytics widgets js source-->
-<script src="/chartjs/Chart.min.js"></script>
-<script src="/chartjs/data.js"></script>
-<script src="/chartjs/options.js"></script>
+<!--course widget static source from public/course-analytics (css file should be removed to header later)-->
+<link rel="stylesheet" type="text/css" href="/course-analytics/user_profile.css">
+
 
 <script>
     $(function initiateDraggableGrid() {
         var options = {
-            cell_height: 400,
+            cell_height: 350,
             vertical_margin: 10,
             resizable: false,
             allowed_grids: [0, 4, 8]
