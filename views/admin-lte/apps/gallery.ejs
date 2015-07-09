@@ -15,9 +15,9 @@
                         <div class="thumbnail center">
                             <img ng-src="{{widget.icon}}">
                             <div class="caption">
-                                <h4>{{widget.widgetName}}</h4>
+                                <h4>{{widget.name}}</h4>
                                 <p>{{widget.description}}</p>
-                                <a href="#" class="btn btn-primary btn-sm" role="button"><i class="fa fa-download"></i> Install </a>
+                                <a style="cursor: pointer" ng-click="install(location, widget.application, widget.name, course._id)" class="btn btn-primary btn-sm" role="button"><i class="fa fa-download"></i> Install </a>
                                 <span class="label label-info pull-right">W:{{widget.width}} by H:{{widget.height}}</span>
                             </div>
                         </div>

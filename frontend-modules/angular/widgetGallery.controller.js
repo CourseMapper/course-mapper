@@ -10,4 +10,19 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
             $scope.widgets = data.widgets;
         });
     };
+
+    $scope.install = function(location, application, name, courseId){
+        $http.put('/api/widgets/install', {
+            application: application,
+            widget: name,
+            location: location,
+            courseId: courseId
+        }).success(function (data) {
+            if(data.result)
+                $scope.installedWidget = data.installed;
+
+            // hide the widget gallery
+            $('#widgetGallery').modal('hide');
+        });
+    }
 });

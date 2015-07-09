@@ -19,8 +19,6 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitCourse', $scope.course);
                 });
-
-                //$scope.$broadcast('onAfterInitCourse', $scope.course);
             }
         });
     };

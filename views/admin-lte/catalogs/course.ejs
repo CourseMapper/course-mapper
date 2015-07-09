@@ -114,16 +114,20 @@
                                 </div>
 
                                 <!-- analytics-->
-                                <div class="grid-stack col-xs-12 col-md-3">
+                                <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
+                                     ng-controller="widgetController"
+                                     ng-init="location='course-preview'" onFinishRender="initiateDraggableGrid()">
 
-                                    <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
-                                        <div class="grid-stack-item-content">
-                                            <div ng-include src="'/course-analytics/course-statistics'" onload="initWidgetButton()"></div>
-                                        </div>
-                                    </div>
-                                    <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
-                                        <div class="grid-stack-item-content" data-gs-height="10" >
-                                            <div ng-include src="'/course-analytics/top-contributors'" onload="initWidgetButton()"></div>
+                                    <div class="grid-stack-item"
+                                         data-gs-x="0"
+                                         data-gs-width="12"
+                                         data-gs-locked="yes"
+                                         data-gs-no-resize="yes"
+                                         ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}" >
+                                        <div class="grid-stack-item-content" >
+                                            <div ng-include src="wdg.widgetId.entryPoint"
+                                                 onload="initWidgetButton(wdg.widgetId._id)">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -170,19 +174,22 @@
 
 
 <% include ../jsfooter %>
-<!--<script src="/d3/rightclick.js"></script>
-<script src="/d3/tree.js"></script>-->
 
 <script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
+<!--add chart.js source-->
+<script src="/chartjs/Chart.min.js"></script>
+<!--add statics files from public/my-course/-->
+<script src="/my-course/data.js"></script>
+<script src="/my-course/options.js"></script>
+
 <!--course widget static source from public/course-analytics (css file should be removed to header later)-->
 <link rel="stylesheet" type="text/css" href="/course-analytics/user_profile.css">
 
-
 <script>
-    $(function initiateDraggableGrid() {
+    function initiateDraggableGrid() {
         var options = {
-            cell_height: 350,
+            cell_height: 400,
             vertical_margin: 10,
             resizable: false,
             allowed_grids: [0, 4, 8]
@@ -208,9 +215,11 @@
         $gs.on('onMove', function (e, node) {
             console.log(node.x + " ++ " + node.y);
         });
-    });
+    }
 
     $(document).ready(function() {
+        initiateDraggableGrid();
+
         handleTab();
 
         if (location.hash !== '')

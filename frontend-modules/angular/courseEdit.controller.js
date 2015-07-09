@@ -6,7 +6,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.files = [];
     $scope.errors = "";
 
-    $scope.$on('onAfterInitCourse', function(crs){
+    $scope.$on('onAfterInitCourse', function(event, course){
         $scope.init();
     });
 

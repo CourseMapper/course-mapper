@@ -102,8 +102,6 @@ function cloneSimpleObject(obj){
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitCourse', $scope.course);
                 });
-
-                //$scope.$broadcast('onAfterInitCourse', $scope.course);
             }
         });
     };
@@ -165,7 +163,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.files = [];
     $scope.errors = "";
 
-    $scope.$on('onAfterInitCourse', function(crs){
+    $scope.$on('onAfterInitCourse', function(event, course){
         $scope.init();
     });
 
@@ -545,30 +543,34 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });;app.controller('widgetController', function($scope, $http, $rootScope) {
-    $scope.initWidgetButton = function(){
-        $.AdminLTE.boxWidget.activate();
-    }
-});
-/*
-app.controller('WidgetListController', function ($scope, $http, $rootScope) {
+    $scope.location = "";
 
-    $scope.initData = function () {
-        $http.get('/api/apps/user-profile').success(function (data) {
+    $scope.initWidgetButton = function(id){
+        $.AdminLTE.boxWidget.activate();
+        $scope.addWidget(id);
+    };
+
+    $scope.$on('onAfterInitCourse', function(event, course){
+        $scope.course = course;
+        $scope.getWidgets();
+    });
+
+    $scope.getWidgets = function(){
+        $http.get('/api/widgets/' + $scope.location + '/' + $scope.course._id).success(function (data) {
             $scope.widgets = data.widgets;
         });
     };
 
-    $scope.initData();
+    $scope.getEntryPoint = function(entry){
+        return entry;
+    };
 
-    $scope.$on('init', function (event, args) {
-        $scope.initData();
-
-        $(window).resize();
-    });
-
-
-});*/
-;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+    $scope.addWidget = function(id){
+        var grid = $('.grid-stack').data('gridstack');
+        var el = '#' + id;
+        grid.add_widget(el, 0, 0, 12, 1, true);
+    };
+});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     $scope.location = "";
     /**
      * get widgets store data from the server
@@ -580,4 +582,19 @@ app.controller('WidgetListController', function ($scope, $http, $rootScope) {
             $scope.widgets = data.widgets;
         });
     };
+
+    $scope.install = function(location, application, name, courseId){
+        $http.put('/api/widgets/install', {
+            application: application,
+            widget: name,
+            location: location,
+            courseId: courseId
+        }).success(function (data) {
+            if(data.result)
+                $scope.installedWidget = data.installed;
+
+            // hide the widget gallery
+            $('#widgetGallery').modal('hide');
+        });
+    }
 });

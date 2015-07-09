@@ -63,6 +63,48 @@ router.get('/widgets/all', function(req, res, next){
     );
 });
 
+router.put('/widgets/install', function(req, res, next){
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    req.body.userId = req.user._id;
+
+    var app = new AppsGallery();
+    app.installWidget(function(err){
+            console.log(err);
+            res.status(500).json(err);
+        },
+        // get active widgets and correct location
+        req.body
+        ,
+        function(wgs){
+            res.status(200).json({result: true, installed: wgs});
+        });
+});
+
+/**
+ * get apps>widgets that are active and on course-preview
+ */
+router.get('/widgets/:location/:courseId', function(req, res, next){
+    var app = new AppsGallery();
+    app.getInstalledWidgets(
+        function(err){
+            res.status(500).json(err);
+        },
+        // get active widgets and correct location
+        {
+            location: req.params.location,
+            courseId: req.params.courseId
+        }
+        ,
+        function(wgs){
+            res.status(200).json({result: true, widgets: wgs});
+        }
+    );
+});
+
 /**
  * get apps>widgets that are active and on current location
  */
@@ -83,8 +125,6 @@ router.get('/widgets/:location', function(req, res, next){
         }
     );
 });
-
-
 
 
 module.exports = router;
