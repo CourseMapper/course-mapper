@@ -292,3 +292,5 @@ admin.controller('categoryDetailController', function($scope, $http, $routeParam
                 redirectTo: '/cm-admin'
             });
     }]);
+
+

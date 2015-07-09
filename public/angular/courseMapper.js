@@ -469,6 +469,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $http.get('/api/accounts').success(function(data) {
         $scope.user = data;
         $rootScope.user = data;
+
+        $rootScope.$broadcast('onAfterInitUser', data);
     });
 
     if($cookies.rememberMe)
@@ -555,20 +557,40 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         $scope.getWidgets();
     });
 
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.$watch('location', function(newVal, oldVal){
+            if($scope.location == 'user-profile'){
+                $scope.getWidgets();
+            }
+        });
+    });
+
+    $scope.$on('onAfterInstall', function(event, newWidget){
+        $scope.getWidgets();
+    });
+
     $scope.getWidgets = function(){
-        $http.get('/api/widgets/' + $scope.location + '/' + $scope.course._id).success(function (data) {
+        var id = "";
+        if($scope.location == 'user-profile')
+            id = $rootScope.user._id;
+        else if($scope.location == 'course-preview' || $scope.location == 'course-analytics')
+            id = $scope.course._id;
+
+        $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
             $scope.widgets = data.widgets;
         });
-    };
-
-    $scope.getEntryPoint = function(entry){
-        return entry;
     };
 
     $scope.addWidget = function(id){
         var grid = $('.grid-stack').data('gridstack');
         var el = '#' + id;
-        grid.add_widget(el, 0, 0, 12, 1, true);
+
+        // get width and height
+        var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
+        var wdg = $scope.widgets[i];
+
+        //add_widget(el, x, y, width, height, auto_position)
+        grid.add_widget(el, 0, 0, wdg.width, wdg.height, true);
     };
 });;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     $scope.location = "";
@@ -584,17 +606,27 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
     };
 
     $scope.install = function(location, application, name, courseId){
-        $http.put('/api/widgets/install', {
+        var params = {
             application: application,
             widget: name,
-            location: location,
-            courseId: courseId
-        }).success(function (data) {
+            location: location
+        };
+
+        if(courseId)
+            params.courseId = courseId;
+
+        $http.put('/api/widgets/install', params).success(function (data) {
             if(data.result)
                 $scope.installedWidget = data.installed;
 
             // hide the widget gallery
             $('#widgetGallery').modal('hide');
+
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
+
+            $rootScope.$broadcast('onAfterInstall', $scope.installedWidget);
         });
     }
 });

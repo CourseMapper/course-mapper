@@ -12,13 +12,15 @@
                 <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li class="active">My account</li>
             </ol>
-            <h1>
-                My Account
-            </h1>
+        </section>
+        <section class="content-header action-header blue">
+            <ol class="breadcrumb">
+                <li class="home">My Account</li>
+            </ol>
         </section>
 
         <!-- Main content -->
-        <section class="content" ng-controller="widgetController">
+        <section class="content" ng-controller="widgetController" ng-init="location='user-profile'">
             <div class="row" id="dashboard">
                 <!-- main user menu -->
                 <div class="col-sm-12 col-md-12">
@@ -52,25 +54,13 @@
                     </div>
                     <!-- main user menu end -->
 
-                    <div class="grid-stack col-sm-6 col-md-10">
-                        <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
+                    <div class="grid-stack col-sm-6 col-md-10" id="user-profile-widgets">
+                        <div class="grid-stack-item"
+                             data-gs-no-resize="yes"
+                             data-gs-locked="yes"
+                             ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}" >
                             <div class="grid-stack-item-content">
-                                <div ng-include src="'/my-course/my-following-courses'" onload="initWidgetButton()"></div>
-                            </div>
-                        </div>
-                        <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
-                            <div class="grid-stack-item-content">
-                                <div ng-include src="'/my-course/my-activity-summary'" onload="initWidgetButton()"></div>
-                            </div>
-                        </div>
-                        <div class="grid-stack-item" data-gs-x="8" data-gs-y="0" data-gs-width="4" data-gs-no-resize="yes" data-gs-locked="yes">
-                            <div class="grid-stack-item-content">
-                                <div ng-include src="'/widgets/chart'" onload="initWidgetButton()"></div>
-                            </div>
-                        </div>
-                        <div class="grid-stack-item" data-gs-x="0" data-gs-y="1" data-gs-width="8" data-gs-no-resize="yes" data-gs-locked="yes">
-                            <div class="grid-stack-item-content">
-                                <div ng-include src="'/my-course/my-course-progress'" onload="initWidgetButton()"></div>
+                                <div ng-include src="wdg.widgetId.entryPoint" onload="initWidgetButton(wdg.widgetId._id)"></div>
                             </div>
                         </div>
                     </div>
@@ -99,7 +89,6 @@
 
 <% include jsfooter %>
 
-<script src="/jquery/jquery-ui.min.js"></script>
 <script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
 <!--add chart.js source-->
@@ -109,50 +98,9 @@
 <script src="/my-course/options.js"></script>
 
 <script>
-    $(function initiateDraggableGrid() {
-        var options = {
-            cell_height: 400,
-            vertical_margin: 10,
-            resizable: false,
-            allowed_grids: [0, 4, 8]
-        };
-
-        var curNode = {x:0, y:0};
-        var $gs = $('.grid-stack');
-        $gs.gridstack(options);
-
-        $gs.on('onStartMove', function (e, node) {
-            curNode.x = node.x;
-            curNode.y = node.y;
-        });
-
-        $gs.on('onFinishDrop', function (e, node) {
-            var o = $(node.el);
-            if(options.allowed_grids.indexOf(node.x) < 0){
-                o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
-            }
-            console.log("onFinishDrop");
-        });
-
-        $gs.on('onMove', function (e, node) {
-            console.log(node.x + " ++ " + node.y);
-        });
+    $(document).ready(function() {
+        initiateDraggableGrid();
     });
-
-    app.config(['$routeProvider',
-        function($routeProvider) {
-            $routeProvider.
-                    when('/apps/gallery', {
-                        templateUrl: '/apps/gallery/user-profile',
-                        controller: 'WidgetListController'
-                    }).
-                    otherwise({
-                        redirectTo: '/'
-                    });
-        }]);
-
-
-
 </script>
 
 <% include footer %>

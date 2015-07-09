@@ -12,17 +12,27 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     };
 
     $scope.install = function(location, application, name, courseId){
-        $http.put('/api/widgets/install', {
+        var params = {
             application: application,
             widget: name,
-            location: location,
-            courseId: courseId
-        }).success(function (data) {
+            location: location
+        };
+
+        if(courseId)
+            params.courseId = courseId;
+
+        $http.put('/api/widgets/install', params).success(function (data) {
             if(data.result)
                 $scope.installedWidget = data.installed;
 
             // hide the widget gallery
             $('#widgetGallery').modal('hide');
+
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
+
+            $rootScope.$broadcast('onAfterInstall', $scope.installedWidget);
         });
     }
 });

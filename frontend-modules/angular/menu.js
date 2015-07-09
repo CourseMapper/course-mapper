@@ -4,6 +4,8 @@ app.controller('MainMenuController', function($scope, $http, $rootScope, $cookie
     $http.get('/api/accounts').success(function(data) {
         $scope.user = data;
         $rootScope.user = data;
+
+        $rootScope.$broadcast('onAfterInitUser', data);
     });
 
     if($cookies.rememberMe)

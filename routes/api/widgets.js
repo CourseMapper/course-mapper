@@ -85,19 +85,26 @@ router.put('/widgets/install', function(req, res, next){
 });
 
 /**
- * get apps>widgets that are active and on course-preview
+ * get apps>widgets that are active and on particular location
  */
-router.get('/widgets/:location/:courseId', function(req, res, next){
+router.get('/widgets/:location/:id', function(req, res, next){
     var app = new AppsGallery();
+    var params = {
+        location: req.params.location
+    };
+
+    if(params.location == 'user-profile'){
+        params.userId = req.params.id
+    } else if(params.location == 'course-preview' || params.location == 'course-analytics'){
+        params.courseId = req.params.id
+    }
+
     app.getInstalledWidgets(
         function(err){
             res.status(500).json(err);
         },
         // get active widgets and correct location
-        {
-            location: req.params.location,
-            courseId: req.params.courseId
-        }
+        params
         ,
         function(wgs){
             res.status(200).json({result: true, widgets: wgs});
