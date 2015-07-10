@@ -5,7 +5,8 @@ app.config(['$routeProvider', '$locationProvider',
         $routeProvider.
             when('/static/about', {
                 templateUrl: '/static/about',
-                controller: 'staticController'
+                controller: 'staticController',
+                reloadOnSearch: false
             }).
 
             when('/category/:slug', {

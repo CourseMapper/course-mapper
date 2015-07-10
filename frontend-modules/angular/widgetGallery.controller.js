@@ -12,8 +12,11 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
         });
     };
 
-    $scope.$on('onAfterGetWidgets', function(event, installedWidgets){
-        $scope.installedWidgets = installedWidgets;
+    $scope.$watch('location', function(newVal, oldVal) {
+        var onafter = 'onAfterGetWidgets' + $scope.location;
+        $scope.$on(onafter, function (event, installedWidgets) {
+            $scope.installedWidgets = installedWidgets;
+        });
     });
 
     $scope.isInstalled = function(widgetId){
@@ -42,7 +45,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
             // hide the widget gallery
             $('#widgetGallery').modal('hide');
 
-            $rootScope.$broadcast('onAfterInstall', $scope.installedWidget);
+            $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
         });
     };
 
@@ -63,7 +66,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
             // hide the widget gallery
             $('#widgetGallery').modal('hide');
 
-            $rootScope.$broadcast('onAfterUninstall', $scope.uninstalledWidget);
+            $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
         });
     }
 });

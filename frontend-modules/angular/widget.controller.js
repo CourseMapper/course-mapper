@@ -1,38 +1,45 @@
-app.controller('widgetController', function($scope, $http, $rootScope) {
+app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
     $scope.location = "";
+    $scope.widgets = [];
 
     $scope.initWidgetButton = function(id){
         $.AdminLTE.boxWidget.activate();
         $scope.addWidget(id);
     };
 
-    $scope.$on('onAfterInitCourse', function(event, course){
-        $scope.course = course;
-        $scope.getWidgets();
-    });
-
     $scope.$on('onAfterInitUser', function(event, user){
         $scope.$watch('location', function(newVal, oldVal){
             if($scope.location == 'user-profile'){
+                console.log('onAfterInitUser');
                 $scope.getWidgets();
             }
         });
     });
 
-    $scope.$on('onAfterInstall', function(event, newWidget){
-        // remove all widget in the page
-        var grid = $('.grid-stack').data('gridstack');
-        grid.remove_all();
-
+    $scope.$on('onAfterInitCourse', function(event, course){
+        console.log('onAfterInitCourse');
+        $scope.course = course;
         $scope.getWidgets();
     });
 
-    $scope.$on('onAfterUninstall', function(event, newWidget){
-        // remove all widget in the page
-        var grid = $('.grid-stack').data('gridstack');
-        grid.remove_all();
+    $scope.$watch('location', function(newVal, oldVal) {
+        var onafter = 'onAfterInstall' + $scope.location;
+        $scope.$on(onafter, function (event, newWidget) {
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
 
-        $scope.getWidgets();
+            $scope.getWidgets();
+        });
+
+        var onafter = 'onAfterUninstall' + $scope.location;
+        $scope.$on( onafter, function(event, newWidget){
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
+
+            $scope.getWidgets();
+        });
     });
 
     $scope.getWidgets = function(){
@@ -45,12 +52,14 @@ app.controller('widgetController', function($scope, $http, $rootScope) {
         $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
             $scope.widgets = data.widgets;
 
-            $rootScope.$broadcast('onAfterGetWidgets', $scope.widgets);
+            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgets);
         });
     };
 
     $scope.addWidget = function(id){
-        var grid = $('.grid-stack').data('gridstack');
+        var loc = '#' + $scope.location + '-widgets';
+        var grid = $(loc).data('gridstack');
+
         var el = '#' + id;
 
         // get width and height

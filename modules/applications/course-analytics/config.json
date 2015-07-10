@@ -2,22 +2,40 @@
   "name": "Course Analytics",
   "widgets":[
    {
-      "name": "Top Contributors",
-      "location": "course",
+      "name": "Top Contributors analytics",
+      "location": "course-analytics",
       "description": "List of top contributor for current course",
       "entryPoint": "/course-analytics/top-contributors",
-      "width": 2,
-      "height":2,
+      "width": 4,
+      "height":1,
       "icon":"/img/appPlaceholder.png"
    },
    {
-      "name": "Course Statistics",
-      "location": "course",
+      "name": "Course Statistics analytics",
+      "location": "course-analytics",
       "description": "Course Statistics data for current course",
       "entryPoint": "/course-analytics/course-statistics",
-      "width": 2,
-      "height":2,
+      "width": 12,
+      "height":1,
       "icon":"/img/appPlaceholder.png"
-   }
+   },
+    {
+      "name": "Top Contributors",
+      "location": "course-preview",
+      "description": "List of top contributor for current course",
+      "entryPoint": "/course-analytics/top-contributors",
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Course Statistics",
+      "location": "course-preview",
+      "description": "Course Statistics data for current course",
+      "entryPoint": "/course-analytics/course-statistics",
+      "width": 12,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    }
   ]
 }

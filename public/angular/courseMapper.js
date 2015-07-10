@@ -91,6 +91,26 @@ function cloneSimpleObject(obj){
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
+    $scope.currentTab = "preview";
+    $scope.tabs = {
+        'preview':'preview',
+        'analytics':'analytics',
+        'map':'map',
+        'updates':'updates',
+        'discussion':'discussion'
+    };
+
+    $scope.changeTab = function(){
+        var paths = $location.search();
+        var path = "preview";
+        if(paths){
+            path = _.findKey(paths);
+        }
+
+        $scope.currentTab = $scope.tabs[path];
+        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+    };
+
     $scope.init = function(refreshPicture){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
@@ -104,6 +124,8 @@ function cloneSimpleObject(obj){
                 });
             }
         });
+
+        $scope.changeTab();
     };
 
     $scope.init();
@@ -154,7 +176,11 @@ function cloneSimpleObject(obj){
         }).finally(function(){
             $scope.loading = false;
         });
-    }
+    };
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
 });;
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
     $scope.createdDate = new Date();
@@ -518,7 +544,8 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         $routeProvider.
             when('/static/about', {
                 templateUrl: '/static/about',
-                controller: 'staticController'
+                controller: 'staticController',
+                reloadOnSearch: false
             }).
 
             when('/category/:slug', {
@@ -544,41 +571,48 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
-});;app.controller('widgetController', function($scope, $http, $rootScope) {
+});;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
     $scope.location = "";
+    $scope.widgets = [];
 
     $scope.initWidgetButton = function(id){
         $.AdminLTE.boxWidget.activate();
         $scope.addWidget(id);
     };
 
-    $scope.$on('onAfterInitCourse', function(event, course){
-        $scope.course = course;
-        $scope.getWidgets();
-    });
-
     $scope.$on('onAfterInitUser', function(event, user){
         $scope.$watch('location', function(newVal, oldVal){
             if($scope.location == 'user-profile'){
+                console.log('onAfterInitUser');
                 $scope.getWidgets();
             }
         });
     });
 
-    $scope.$on('onAfterInstall', function(event, newWidget){
-        // remove all widget in the page
-        var grid = $('.grid-stack').data('gridstack');
-        grid.remove_all();
-
+    $scope.$on('onAfterInitCourse', function(event, course){
+        console.log('onAfterInitCourse');
+        $scope.course = course;
         $scope.getWidgets();
     });
 
-    $scope.$on('onAfterUninstall', function(event, newWidget){
-        // remove all widget in the page
-        var grid = $('.grid-stack').data('gridstack');
-        grid.remove_all();
+    $scope.$watch('location', function(newVal, oldVal) {
+        var onafter = 'onAfterInstall' + $scope.location;
+        $scope.$on(onafter, function (event, newWidget) {
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
 
-        $scope.getWidgets();
+            $scope.getWidgets();
+        });
+
+        var onafter = 'onAfterUninstall' + $scope.location;
+        $scope.$on( onafter, function(event, newWidget){
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
+
+            $scope.getWidgets();
+        });
     });
 
     $scope.getWidgets = function(){
@@ -591,12 +625,14 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
             $scope.widgets = data.widgets;
 
-            $rootScope.$broadcast('onAfterGetWidgets', $scope.widgets);
+            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgets);
         });
     };
 
     $scope.addWidget = function(id){
-        var grid = $('.grid-stack').data('gridstack');
+        var loc = '#' + $scope.location + '-widgets';
+        var grid = $(loc).data('gridstack');
+
         var el = '#' + id;
 
         // get width and height
@@ -620,8 +656,11 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         });
     };
 
-    $scope.$on('onAfterGetWidgets', function(event, installedWidgets){
-        $scope.installedWidgets = installedWidgets;
+    $scope.$watch('location', function(newVal, oldVal) {
+        var onafter = 'onAfterGetWidgets' + $scope.location;
+        $scope.$on(onafter, function (event, installedWidgets) {
+            $scope.installedWidgets = installedWidgets;
+        });
     });
 
     $scope.isInstalled = function(widgetId){
@@ -650,7 +689,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             // hide the widget gallery
             $('#widgetGallery').modal('hide');
 
-            $rootScope.$broadcast('onAfterInstall', $scope.installedWidget);
+            $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
         });
     };
 
@@ -671,7 +710,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             // hide the widget gallery
             $('#widgetGallery').modal('hide');
 
-            $rootScope.$broadcast('onAfterUninstall', $scope.uninstalledWidget);
+            $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
         });
     }
 });
