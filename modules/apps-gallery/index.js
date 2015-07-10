@@ -144,8 +144,8 @@ AppStore.prototype.populateApplications = function(failed, success){
                 // get the widgets on the db that is in this app.
                 self.getWidgets(failed, {application: app.dir}, function(widgets, p){
 
-                    for(var j in app.widgets) {
-                        var wdg = app.widgets[j];
+                    for(var j in this.app.widgets) {
+                        var wdg = this.app.widgets[j];
 
                         // first we need to get the widget, is it in the db or not
                         if(existing = isWidgetExist(wdg, widgets)){
@@ -166,11 +166,11 @@ AppStore.prototype.populateApplications = function(failed, success){
                     // now delete the widgets that are in db, but not in config.json
                     for(var k in widgets){
                         var w = widgets[k];
-                        if(!isWidgetExist(w, app.widgets)){
+                        if(!isWidgetExist(w, this.app.widgets)){
                             Widgets.findByIdAndRemove(w._id, function(err, success){});
                         }
                     }
-                });
+                }.bind({app:app}));
             }
         }
 
@@ -248,7 +248,7 @@ AppStore.prototype.installWidget = function(error, params, success){
                     if(params.categoryId)
                         ins.categoryId = mongoose.Types.ObjectId(params.categoryId);
 
-                    if(params.location == 'course-preview'){
+                    if(params.location == 'course-preview' || params.location == 'course-analytics'){
                         WP.findOneAndUpdate(
                             {
                                 application: wdg.application,
@@ -285,7 +285,7 @@ AppStore.prototype.installWidget = function(error, params, success){
     }
 
     // check owner of this course and submitter
-    if(params.location == 'course-preview'){
+    if(params.location == 'course-preview' || params.location == 'course-analytics'){
         if(!params.courseId)
             throw ("no course id when location is course-preview");
 
