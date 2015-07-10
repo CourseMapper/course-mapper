@@ -11,6 +11,7 @@ var widgetPlacementsSchema = new mongoose.Schema({
     categoryId: {type: mongoose.Schema.Types.ObjectId, ref: "categories"},
 
     position: {type: Number, default:0},
+    isInstalled: {type: Boolean, default:true},
 
     width: {type: Number},
     height: {type: Number},

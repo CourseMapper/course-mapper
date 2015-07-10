@@ -233,6 +233,7 @@ AppStore.prototype.installWidget = function(error, params, success){
                         widgetId: wdg._id,
 
                         location: wdg.location,
+                        isInstalled: params.isInstalled,
 
                         width: wdg.width,
                         height: wdg.height

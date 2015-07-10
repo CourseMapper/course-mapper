@@ -70,6 +70,7 @@ router.put('/widgets/install', function(req, res, next){
     }
 
     req.body.userId = req.user._id;
+    req.body.isInstalled = true;
 
     var app = new AppsGallery();
     app.installWidget(function(err){
@@ -84,13 +85,35 @@ router.put('/widgets/install', function(req, res, next){
         });
 });
 
+router.put('/widgets/uninstall', function(req, res, next){
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    req.body.userId = req.user._id;
+    req.body.isInstalled = false;
+
+    var app = new AppsGallery();
+    app.installWidget(function(err){
+            console.log(err);
+            res.status(500).json(err);
+        },
+        // get active widgets and correct location
+        req.body
+        ,
+        function(wgs){
+            res.status(200).json({result: true, uninstalled: wgs});
+        });
+});
 /**
  * get apps>widgets that are active and on particular location
  */
 router.get('/widgets/:location/:id', function(req, res, next){
     var app = new AppsGallery();
     var params = {
-        location: req.params.location
+        location: req.params.location,
+        isInstalled: true
     };
 
     if(params.location == 'user-profile'){

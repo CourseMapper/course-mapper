@@ -20,6 +20,18 @@ app.controller('widgetController', function($scope, $http, $rootScope) {
     });
 
     $scope.$on('onAfterInstall', function(event, newWidget){
+        // remove all widget in the page
+        var grid = $('.grid-stack').data('gridstack');
+        grid.remove_all();
+
+        $scope.getWidgets();
+    });
+
+    $scope.$on('onAfterUninstall', function(event, newWidget){
+        // remove all widget in the page
+        var grid = $('.grid-stack').data('gridstack');
+        grid.remove_all();
+
         $scope.getWidgets();
     });
 
@@ -32,6 +44,8 @@ app.controller('widgetController', function($scope, $http, $rootScope) {
 
         $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
             $scope.widgets = data.widgets;
+
+            $rootScope.$broadcast('onAfterGetWidgets', $scope.widgets);
         });
     };
 
