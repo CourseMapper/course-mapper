@@ -62,7 +62,7 @@ AppStore.prototype.getWidgets = function(error, params, success){
         if(err)
             error();
         else
-            success(widgets);
+            success(widgets, params);
     });
 };
 
@@ -142,7 +142,7 @@ AppStore.prototype.populateApplications = function(failed, success){
                 var app = apps[i];
 
                 // get the widgets on the db that is in this app.
-                self.getWidgets(failed, {application: app.dir}, function(widgets){
+                self.getWidgets(failed, {application: app.dir}, function(widgets, p){
 
                     for(var j in app.widgets) {
                         var wdg = app.widgets[j];
@@ -157,7 +157,7 @@ AppStore.prototype.populateApplications = function(failed, success){
                         }
                         else {
                             // create new because it doesnt exist yet
-                            wdg.application = app.dir;
+                            wdg.application = p.application;
                             var newApp = new Widgets(wdg);
                             newApp.save();
                         }
