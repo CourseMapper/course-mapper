@@ -50,6 +50,11 @@
             </li>
         </ul>
     </script>
+    <script type="text/ng-template" id="actionBar-course-map">
+        <ul class="">
+        </ul>
+    </script>
+
     <script type="text/ng-template" id="course_detail.html">
         <section class="content-header">
             <ol class="breadcrumb">
@@ -68,6 +73,8 @@
                  src="'actionBar-course-preview'"></div>
             <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
                  src="'actionBar-course-analytics'"></div>
+            <div class="navbar-custom-menu" ng-show="currentTab=='map'" ng-include
+                 src="'actionBar-course-map'"></div>
 
         </section>
 
@@ -169,7 +176,7 @@
                             </div>
                             <div class="tab-pane" id="map">
                                 <div class="box-body no-border" id="tree">
-                                    <cm-tree el="treeSVG" width="4000" height="4000">
+                                    <cm-tree width="4000" height="4000">
                                         <% include rightMenu %>
                                     </cm-tree>
                                 </div>
