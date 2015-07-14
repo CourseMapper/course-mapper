@@ -99,19 +99,19 @@
                                         >
                                     <i class="ionicons ion-map"></i>
                                     <span>CourseMap</span></a></li>
-                            <li ng-show="enrolled  || isOwner">
+                            <li ng-show="enrolled || isOwner">
                                 <a href="#/cid/{{course._id}}?updates" ng-show="user"
                                    data-toggle="tab" data-target="#updates"
                                         >
                                     <i class="ionicons ion-ios-time-outline"></i><br>
                                     <span>Updates</span></a></li>
-                            <li ng-show="enrolled  || isOwner">
+                            <li ng-show="enrolled || isOwner">
                                 <a href="#/cid/{{course._id}}?discussion" ng-show="user"
                                    data-toggle="tab" data-target="#discussion"
                                         >
                                     <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
                                     <span>Discussion</span></a></li>
-                            <li ng-show="enrolled  || isOwner">
+                            <li ng-show="enrolled || isOwner">
                                 <a href="#/cid/{{course._id}}?analytics" ng-show="user"
                                    data-toggle="tab" data-target="#analytics"
                                         >
@@ -175,11 +175,9 @@
                                 <!-- analytics-->
                             </div>
                             <div class="tab-pane" id="map">
-                                <div class="box-body no-border" id="tree">
-                                    <cm-tree width="4000" height="4000">
-                                        <% include rightMenu %>
-                                    </cm-tree>
+                                <div class="box-body no-border" id="tree" ng-include="'/course/map'">
                                 </div>
+                                <div class="clear"></div>
                             </div>
                             <div class="tab-pane" id="discussion"></div>
                             <div class="tab-pane" id="updates"></div>
@@ -214,6 +212,7 @@
         </section>
         <!-- /.content -->
         <!-- modal contents -->
+        <!-- widgetGallery for course preview -->
         <div class="row" ng-controller="WidgetGalleryController">
             <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
                  aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('course-preview')">
@@ -221,6 +220,7 @@
             </div>
         </div>
 
+        <!-- widgetGallery for course analytics -->
         <div class="row" ng-controller="WidgetGalleryController">
             <div class="modal" id="widgetGalleryAnalytics" tabindex="-1" role="dialog"
                  aria-labelledby="wigets gallery Analytics" aria-hidden="true" ng-init="initData('course-analytics')">
@@ -228,12 +228,14 @@
             </div>
         </div>
 
+        <!-- course edit form -->
         <div class="row">
             <div class="modal" id="editView" tabindex="-1" role="dialog"
                  aria-labelledby="edit view" aria-hidden="true">
                 <div ng-include="'/course/edit'"></div>
             </div>
         </div>
+
         <!-- /.modal contents -->
 
     </script>

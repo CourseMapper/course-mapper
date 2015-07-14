@@ -53,7 +53,10 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-                <div class="w" id="{{data.slug}}" data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}" data-shape="Rectangle" data-toggle="dropdown" data-hover="dropdown">
+                <div class="w" id="{{data.slug}}"
+                     data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}"
+                     data-shape="Rectangle"
+                        >
 
                     {{data.name}}
 
@@ -72,13 +75,12 @@
                             </li>
                         </ul>
 
-                    </div>
                 </div>
 
             <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
             </div>
         </script>
-        <!--ng-style=""-->
+
 	<div class="tree-container">
         <div class="category-map" id="category-map" >
 
