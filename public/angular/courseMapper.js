@@ -512,19 +512,34 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.jsPlumbConnections = [];
 
     /**
-     * find node based on _id
-     * @param id
+     * find node recursively
+     *
+     * @param obj
+     * @param col next search will be the array value of this key
+     * @param searchKey
+     * @param searchValue
      * @returns {*}
      */
-    $scope.findNode = function(id){
-        var pNode = _($scope.treeNodes)
-            .thru(function (coll) {
-                return _.union(coll, _.pluck(coll, 'childrens'));
-            })
-            .flatten()
-            .find({_id: id});
+    var found = false;
+    $scope.findNode = function(obj, col, searchKey, searchValue){
+        if(found)
+            return found;
 
-        return pNode;
+        for(var i in obj){
+            var tn = obj[i];
+
+            if(tn[searchKey] && tn[searchKey] == searchValue) {
+                found = tn;
+                return tn;
+            }
+            else if(tn[col] && tn[col].length > 0){
+                // search again
+                $scope.findNode(tn[col], col, searchKey, searchValue);
+            }
+        }
+
+        if(found)
+            return found;
     };
 
     $(document).ready(function(){
@@ -578,12 +593,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 };
 
                 var nId = el.attr('id').substring(1); // remove 't' from the node id
-                var pNode = $scope.findNode(nId);
-                
+                found = false;
+                var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nId);
+
                 $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
                     .success(function(res, status){
                         console.log(res);
-                        pNode.positionFromRoot = distanceFromCenter;
+                        if(pNode)
+                            pNode.positionFromRoot = distanceFromCenter;
                     })
                     .error(function(res, status){
                         console.log('err');
@@ -688,7 +705,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.$on('onAfterCreateNode', function(event, treeNode){
         if(treeNode.parent) {
-            var pNode = $scope.findNode(treeNode.parent);
+            found = false;
+            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
 
             if(pNode) {
                 pNode.childrens.push(treeNode);
