@@ -19,7 +19,7 @@ function displayCommentsIntern(filter, order){
     var url = "/slide-viewer/disComm";
     var urlFilterOrder = url + "/" + order + "/" + filter;
 
-    $.ajax( {
+    /*$.ajax( {
       "url": urlFilterOrder,
       //"async": false,
       "dataType": "html",
@@ -30,7 +30,14 @@ function displayCommentsIntern(filter, order){
         });
       }
 
-    } );
+    } );*/
+    /*$http.get({
+      urlFilterOrder,
+    }).success(function(data, status, headers, config) {
+      $scope.comments = data;
+    }).error(function(data, status, headers, config) {
+      $scope.comments = status;
+    });*/
 
 
 

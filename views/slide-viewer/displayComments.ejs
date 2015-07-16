@@ -1,4 +1,10 @@
 
+<body ng-app="courseMapper">
+  <div ng-controller="CommentListController">
+    {{comments}}
+  </div>
+</body>
+
 <% for(var i = 0; i < numComments; i++) {%>
   <div>
     <label><%=comments[i].author%>(<%=comments[i].dateOfCreation.toTimeString()%>)</label>

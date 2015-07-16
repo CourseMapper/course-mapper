@@ -21,6 +21,13 @@ app.config(['$routeProvider', '$locationProvider',
                 reloadOnSearch: false
             }).
 
+            when('/slide-viewer', {
+                templateUrl: 'slideViewer.html',
+                controller: 'CommentListController',
+                reloadOnSearch: false
+            }).
+
+
             otherwise({
                 redirectTo: '/'
             });
@@ -29,4 +36,3 @@ app.config(['$routeProvider', '$locationProvider',
             requireBase: false});*/
 
     }]);
-
