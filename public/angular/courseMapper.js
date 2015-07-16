@@ -103,7 +103,7 @@ function cloneSimpleObject(obj){
     $scope.changeTab = function(){
         var paths = $location.search();
         var path = "preview";
-        if(paths){
+        if(!_.isEmpty(paths)){
             path = _.findKey(paths);
         }
 
@@ -507,8 +507,25 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
-});;app.controller('MapController', function($scope, $http, $rootScope) {
+});;app.controller('MapController', function($scope, $http, $rootScope, $timeout) {
     $scope.treeNodes = [];
+    $scope.jsPlumbConnections = [];
+
+    /**
+     * find node based on _id
+     * @param id
+     * @returns {*}
+     */
+    $scope.findNode = function(id){
+        var pNode = _($scope.treeNodes)
+            .thru(function (coll) {
+                return _.union(coll, _.pluck(coll, 'childrens'));
+            })
+            .flatten()
+            .find({_id: id});
+
+        return pNode;
+    };
 
     $(document).ready(function(){
         $scope.width = jQuery(window).width();
@@ -526,12 +543,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }).mouseout(function(){$(this).find('ul').hide()});
 
         // get node data
-        $http.get('/api/course/' + $scope.course._id + '/map/').success(function (data) {
-            if(data.treeNodes) {
-                $scope.treeNodes = data.treeNodes;
-            }
-
-            $scope.initJSPlumb();
+        $http.get('/api/treeNodes/course/' + $scope.course._id ).success(function (data) {
+            if(!data.result)
+                console.log(data.errors);
+            else
+                if(data.treeNodes.length > 0) {
+                    $scope.treeNodes = data.treeNodes;
+                }
+                else
+                    $scope.initJSPlumb();
         });
     };
 
@@ -540,12 +560,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.init();
     });
 
+    // initiate draggable jqUI to the topic node
     $scope.initDraggable = function (jsPlumbInstance){
         var w = window.innerWidth;
         var h = window.innerHeight;
 
         // let us drag and drop the cats
-        var mapEl = jsPlumb.getSelector(".category-map .w");
+        var mapEl = jsPlumb.getSelector(".course-map .w");
         jsPlumbInstance.draggable(mapEl,{
             // update position on drag stop
             stop: function() {
@@ -556,9 +577,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     y: pos.top - Canvas.h/2
                 };
 
-                $http.put('/api/category/' + el.attr('id') + '/positionFromRoot', distanceFromCenter)
+                var nId = el.attr('id').substring(1); // remove 't' from the node id
+                var pNode = $scope.findNode(nId);
+                
+                $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
                     .success(function(res, status){
                         console.log(res);
+                        pNode.positionFromRoot = distanceFromCenter;
                     })
                     .error(function(res, status){
                         console.log('err');
@@ -576,38 +601,42 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2 },
             PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2 },
             ConnectionOverlays: [ ],
-            Container: "category-map"
+            Container: "course-map"
         });
 
-        // so the ejs can access this instance
         $scope.initDraggable(instance);
 
         // initialise all '.w' elements as connection targets.
         instance.batch(function () {
             /* connect center to first level cats recursively*/
-            $scope.interConnect('center', $scope.categories, instance);
+            $scope.interConnect('center', $scope.treeNodes, instance);
         });
     };
 
-    $scope.interConnect = function(parent, categories, instance){
-        for(var i in categories){
-            var child = categories[i];
+    $scope.interConnect = function(parent, treeNodes, instance){
+        // added "t" in id because id cannot start with number
+        for(var i in treeNodes){
+            var child = treeNodes[i];
+            var childId = 't' + child._id;
 
             // instantiate on hover
-            $('#' + child.slug).mouseover(function(){
+            $('#' + childId).mouseover(function(){
                 $(this).find('ul').show();
             }).mouseout(function(){$(this).find('ul').hide()});
 
-            instance.connect({
-                source: parent, target: child.slug,
+            // connecting parent and chidlern
+            var conn = instance.connect({
+                source: parent, target: childId,
                 anchors: [
-                    [ "Perimeter", { shape: jsPlumb.getSelector('#'+parent)[0].getAttribute("data-shape") }],
-                    [ "Perimeter", { shape: jsPlumb.getSelector('#'+child.slug)[0].getAttribute("data-shape") }]
+                    [ "Perimeter", { shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape") }],
+                    [ "Perimeter", { shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape") }]
                 ]
             });
 
-            if(child.subCategories) {
-                $scope.interConnect(child.slug, child.subCategories, instance);
+            $scope.jsPlumbConnections.push(conn);
+
+            if(child.childrens) {
+                $scope.interConnect(childId, child.childrens, instance);
             }
         }
     };
@@ -642,12 +671,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.nodeModaltitle = $scope.currentNodeAction.mode + " " + $scope.currentNodeAction.typeText;
 
-        if(parent)
+        if(parent) {
             $scope.currentNodeAction.parent = parent;
+            $scope.nodeModaltitle += " under " + parent.name;
+        }
         else
             $scope.currentNodeAction.parent = false;
 
-        $scope.$emit('onAfterSetMode', $scope.course);
+        $rootScope.$broadcast('onAfterSetMode', $scope.$parent.course);
     };
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
@@ -655,6 +686,34 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.initJSPlumb();
     });
 
+    $scope.$on('onAfterCreateNode', function(event, treeNode){
+        if(treeNode.parent) {
+            var pNode = $scope.findNode(treeNode.parent);
+
+            if(pNode) {
+                pNode.childrens.push(treeNode);
+
+                $scope.destroyJSPlumb();
+
+                $scope.treeNodes = angular.copy($scope.treeNodes);
+                $timeout(
+                    function(){
+                        $scope.$apply();
+                    });
+            }
+        }
+        else
+            $scope.treeNodes.push(treeNode);
+    });
+
+    $scope.destroyJSPlumb = function(){
+        //jsPlumb.removeAllEndpoints('#course-map', true);
+        for(var i in $scope.jsPlumbConnections){
+            var conn = $scope.jsPlumbConnections[i];
+            jsPlumb.detach(conn);
+        }
+        $scope.jsPlumbConnections = [];
+    }
 });
 ;app.controller('NodeEditController', function($scope, $http, $rootScope) {
 
@@ -663,16 +722,20 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.init = function(){
     };
 
-    $scope.$on('onAfterSetMode', function(course){
+    $scope.$on('onAfterSetMode', function(event, course){
         $scope.formData.courseId = course._id;
-        $scope.formData.parent = $scope.currentNodeAction.parent;
+
+        if($scope.currentNodeAction.parent)
+            $scope.formData.parent = $scope.currentNodeAction.parent._id;
+
+        $scope.formData.type = "subTopic";
     });
 
     $scope.saveNode = function(){
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
-            url: '/api/course/nodes',
+            url: '/api/treeNodes',
             data: d,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -681,13 +744,20 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             .success(function(data) {
                 console.log(data);
                 if(data.result) {
-                    $scope.$emit('onAfterCreateNode', data.treeNode);
+                    $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
+                    $('#addSubTopicModal').modal('hide');
+                    $('#addContentNodeModal').modal('hide');
                 } else {
                     if( !data.result){
                         $scope.errors = data.errors;
                         console.log(data.errors);
                     }
                 }
+
+                // cleaining up formData
+                $scope.formData.name = "";
+                if($scope.formData.parent)
+                    delete $scope.formData.parent;
             });
     };
 });;
@@ -754,70 +824,6 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
-});;/**
- * to use this, create an element <cm-tree></cm-tree>
- */
-app.directive('cmTree', function($timeout){
-    /**
-     * option parameter
-     * @type {{width: number, height: number}}
-
-    this.options = {
-        width : 0,
-        height : 0
-    };*/
-
-
-    /**
-     * d3 tree main object
-     */
-    this.vis = {};
-
-    /**
-     * constructor of cm-tree
-     */
-    function link($scope, $el, $attr){
-
-        $scope.vis = d3.select($el[0]).append("svg:svg")
-            .attr("width", $attr.width)
-            .attr("height", $attr.height)
-            .attr("on-finish-render", "initDraggableUI")
-            .attr("id", $attr.el);
-
-        createMainTopic($scope, $el, $attr);
-
-        $scope.options = $attr;
-    }
-
-    /**
-     * a tree need a main topic
-     */
-    function createMainTopic($scope, $el, $attr){
-        var pos = {x:300, y:300};
-        $scope.vis.append("circle")
-            .attr("transform", "translate(" + pos.x + "," + pos.y + ")")
-            .attr("r", "45")
-            .attr("class", "mainTopic");
-    }
-
-    var drag = d3.behavior.drag()
-        .on("drag", dragmove);
-
-    function dragmove(d) {
-        var x = d3.event.x;
-        var y = d3.event.y;
-        d3.select(this).attr("transform", "translate(" + x + "," + y + ")");
-    }
-
-    $timeout(function () {
-        //DOM has finished rendering
-        initDraggableUI();
-    });
-
-    return {
-        link: link,
-        restrict: 'E'
-    }
 });;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
