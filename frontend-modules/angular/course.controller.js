@@ -8,6 +8,26 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
+    $scope.currentTab = "preview";
+    $scope.tabs = {
+        'preview':'preview',
+        'analytics':'analytics',
+        'map':'map',
+        'updates':'updates',
+        'discussion':'discussion'
+    };
+
+    $scope.changeTab = function(){
+        var paths = $location.search();
+        var path = "preview";
+        if(paths){
+            path = _.findKey(paths);
+        }
+
+        $scope.currentTab = $scope.tabs[path];
+        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+    };
+
     $scope.init = function(refreshPicture){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
@@ -19,10 +39,10 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitCourse', $scope.course);
                 });
-
-                //$scope.$broadcast('onAfterInitCourse', $scope.course);
             }
         });
+
+        $scope.changeTab();
     };
 
     $scope.init();
@@ -73,5 +93,9 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
         }).finally(function(){
             $scope.loading = false;
         });
-    }
+    };
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
 });

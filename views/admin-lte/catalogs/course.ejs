@@ -9,6 +9,47 @@
     </div>
     <!-- /.content-wrapper -->
 
+    <script type="text/ng-template" id="actionBar-course-preview">
+        <ul class="">
+            <li ng-hide="isOwner">
+                <a ng-hide="user" class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
+                    login to enroll to this course</a>
+
+                <i ng-show="loading" class="fa fa-refresh fa-spin"></i>
+                <a ng-show="user && !enrolled" ng-click="enroll()" style="cursor: pointer"><strong>Enroll here to
+                    participate in this course</strong></a>
+
+                <span ng-show="enrolled && !loading">You are following this course.</span>
+                <a ng-show="enrolled" class="" style="cursor:pointer" ng-click="leave()">
+                    LEAVE COURSE</a>
+            </li>
+            <li ng-show="isOwner">
+                You created this course
+            </li>
+            <li ng-show="isOwner">
+                <a style="cursor: pointer"
+                   data-toggle="modal" data-target="#editView"
+                   title="Edit this course's details">
+                    <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
+            </li>
+            <li ng-show="isOwner">
+                <a style="cursor: pointer;"
+                   data-toggle="modal" data-target="#widgetGallery"
+                   title="Add or remove preview widgets">
+                    <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
+            </li>
+        </ul>
+    </script>
+    <script type="text/ng-template" id="actionBar-course-analytics">
+        <ul class="">
+            <li>
+                <a style="cursor: pointer;"
+                   data-toggle="modal" data-target="#widgetGalleryAnalytics"
+                   title="Add or remove preview widgets">
+                    <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
+            </li>
+        </ul>
+    </script>
     <script type="text/ng-template" id="course_detail.html">
         <section class="content-header">
             <ol class="breadcrumb">
@@ -20,40 +61,14 @@
         <section class="content-header action-header blue">
             <ol class="breadcrumb">
                 <li class="home">{{course.name}}</li>
-                <li class="active">Preview</li>
+                <li class="active">{{currentTab}}</li>
             </ol>
 
-            <div class="navbar-custom-menu">
-                <ul class="">
-                    <li ng-hide="isOwner">
-                        <a ng-hide="user" class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
-                            login to enroll to this course</a>
+            <div class="navbar-custom-menu" ng-show="currentTab=='preview'" ng-include
+                 src="'actionBar-course-preview'"></div>
+            <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
+                 src="'actionBar-course-analytics'"></div>
 
-                        <i ng-show="loading" class="fa fa-refresh fa-spin"></i>
-                        <a ng-show="user && !enrolled" ng-click="enroll()" style="cursor: pointer"><strong>Enroll here to participate in this course</strong></a>
-
-                        <span ng-show="enrolled && !loading">You are following this course.</span>
-                        <a ng-show="enrolled" class="" style="cursor:pointer" ng-click="leave()">
-                            LEAVE COURSE</a>
-
-                    </li>
-                    <li ng-show="isOwner">
-                        You created this course
-                    </li>
-                    <li ng-show="isOwner">
-                        <a style="cursor: pointer"
-                           data-toggle="modal" data-target="#editView"
-                           title="Edit this course's details">
-                            <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
-                    </li>
-                    <li ng-show="isOwner">
-                        <a  style="cursor: pointer;"
-                            data-toggle="modal" data-target="#widgetGallery"
-                            title="Add or remove preview widgets">
-                            <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
-                    </li>
-                </ul>
-            </div>
         </section>
 
         <!-- Main content -->
@@ -65,29 +80,45 @@
                     <div class="tabbable tabs-left">
                         <ul class="nav nav-tabs tabs-hide hidden-xs">
                             <li class="active">
-                                <a href="#/cid/{{course._id}}?preview" data-toggle="tab" data-target="#preview">
-                                <i class="ionicons ion-ios-home-outline"></i><br>
-                                <span>Preview</span></a></li>
+                                <a href="#/cid/{{course._id}}?preview"
+                                   data-toggle="tab" data-target="#preview"
+                                        >
+                                    <i class="ionicons ion-ios-home-outline"></i><br>
+                                    <span>Preview</span></a></li>
 
-                            <li ng-show="enrolled || isOwner"><a href="#/cid/{{course._id}}?map" data-toggle="tab" data-target="#map">
-                                <i class="ionicons ion-map"></i>
-                                <span>CourseMap</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?updates" ng-show="user" data-toggle="tab" data-target="#updates">
-                                <i class="ionicons ion-ios-time-outline"></i><br>
-                                <span>Updates</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?discussion" ng-show="user" data-toggle="tab" data-target="#discussion">
-                                <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
-                                <span>Discussion</span></a></li>
-                            <li ng-show="enrolled  || isOwner"><a href="#/cid/{{course._id}}?analytics" ng-show="user" data-toggle="tab" data-target="#analytics">
-                                <i class="ionicons ion-stats-bars"></i><br>
-                                <span>Analytics</span></a></li>
+                            <li ng-show="enrolled || isOwner">
+                                <a href="#/cid/{{course._id}}?map"
+                                   data-toggle="tab" data-target="#map"
+                                        >
+                                    <i class="ionicons ion-map"></i>
+                                    <span>CourseMap</span></a></li>
+                            <li ng-show="enrolled  || isOwner">
+                                <a href="#/cid/{{course._id}}?updates" ng-show="user"
+                                   data-toggle="tab" data-target="#updates"
+                                        >
+                                    <i class="ionicons ion-ios-time-outline"></i><br>
+                                    <span>Updates</span></a></li>
+                            <li ng-show="enrolled  || isOwner">
+                                <a href="#/cid/{{course._id}}?discussion" ng-show="user"
+                                   data-toggle="tab" data-target="#discussion"
+                                        >
+                                    <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
+                                    <span>Discussion</span></a></li>
+                            <li ng-show="enrolled  || isOwner">
+                                <a href="#/cid/{{course._id}}?analytics" ng-show="user"
+                                   data-toggle="tab" data-target="#analytics"
+                                        >
+                                    <i class="ionicons ion-stats-bars"></i><br>
+                                    <span>Analytics</span></a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="preview">
 
                                 <div class="col-xs-12 col-md-8">
-                                    <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
+                                    <img class="preview-image" ng-hide="course.picture"
+                                         src="/img/courses/placeholder.png">
                                     <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
+
                                     <div class="container">
                                         <div class="excerpt">
                                             <div class="description">
@@ -101,12 +132,15 @@
                                                     <span class="visible-xs" style="margin-left:15px"></span>
                                                     {{course.name}}
                                                 </h1>
+
                                                 <p ng-show="course.courseTags.length > 0" class="filter">
-                                                    <a class="label label-primary" style="cursor: default" ng-repeat="tag in course.courseTags">
+                                                    <a class="label label-primary" style="cursor: default"
+                                                       ng-repeat="tag in course.courseTags">
                                                         {{tag.name}}</a>
                                                 </p>
+
                                                 <p>
-                                                {{course.description}}
+                                                    {{course.description}}
                                                 </p>
                                             </div>
                                         </div>
@@ -114,16 +148,20 @@
                                 </div>
 
                                 <!-- analytics-->
-                                <div class="grid-stack col-xs-12 col-md-3">
+                                <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
+                                     ng-controller="widgetController"
+                                     ng-init="location='course-preview'">
 
-                                    <div class="grid-stack-item" data-gs-x="0" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
+                                    <div class="grid-stack-item"
+                                         data-gs-x="0"
+                                         data-gs-width="12"
+                                         data-gs-locked="yes"
+                                         data-gs-no-resize="yes"
+                                         ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
                                         <div class="grid-stack-item-content">
-                                            <div ng-include src="'/course-analytics/course-statistics'" onload="initWidgetButton()"></div>
-                                        </div>
-                                    </div>
-                                    <div class="grid-stack-item" data-gs-x="4" data-gs-y="0" data-gs-width="12" data-gs-no-resize="yes" data-gs-locked="yes">
-                                        <div class="grid-stack-item-content" data-gs-height="10" >
-                                            <div ng-include src="'/course-analytics/top-contributors'" onload="initWidgetButton()"></div>
+                                            <div ng-include src="wdg.widgetId.entryPoint"
+                                                 onload="initWidgetButton(wdg.widgetId._id)">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +176,27 @@
                             </div>
                             <div class="tab-pane" id="discussion"></div>
                             <div class="tab-pane" id="updates"></div>
-                            <div class="tab-pane" id="analytics"></div>
+                            <div class="tab-pane" id="analytics">
+                                <!-- analytics-->
+                                <div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-3"
+                                     ng-controller="widgetController"
+                                     ng-init="location='course-analytics'">
+
+                                    <div class="grid-stack-item"
+                                         data-gs-x="0"
+                                         data-gs-width="12"
+                                         data-gs-locked="yes"
+                                         data-gs-no-resize="yes"
+                                         ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
+                                        <div class="grid-stack-item-content">
+                                            <div ng-include src="wdg.widgetId.entryPoint"
+                                                 onload="initWidgetButton(wdg.widgetId._id)">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- analytics-->
+                            </div>
                         </div>
                     </div>
                     <!-- /tabs -->
@@ -152,6 +210,13 @@
         <div class="row" ng-controller="WidgetGalleryController">
             <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
                  aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('course-preview')">
+                <div ng-include="'/widgets/gallery'"></div>
+            </div>
+        </div>
+
+        <div class="row" ng-controller="WidgetGalleryController">
+            <div class="modal" id="widgetGalleryAnalytics" tabindex="-1" role="dialog"
+                 aria-labelledby="wigets gallery Analytics" aria-hidden="true" ng-init="initData('course-analytics')">
                 <div ng-include="'/widgets/gallery'"></div>
             </div>
         </div>
@@ -170,47 +235,21 @@
 
 
 <% include ../jsfooter %>
-<!--<script src="/d3/rightclick.js"></script>
-<script src="/d3/tree.js"></script>-->
 
-<script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
+<!--add chart.js source-->
+<script src="/chartjs/Chart.min.js"></script>
+<!--add statics files from public/my-course/-->
+<script src="/my-course/data.js"></script>
+<script src="/my-course/options.js"></script>
+
 <!--course widget static source from public/course-analytics (css file should be removed to header later)-->
 <link rel="stylesheet" type="text/css" href="/course-analytics/user_profile.css">
 
-
 <script>
-    $(function initiateDraggableGrid() {
-        var options = {
-            cell_height: 350,
-            vertical_margin: 10,
-            resizable: false,
-            allowed_grids: [0, 4, 8]
-        };
+    $(document).ready(function () {
+        initiateDraggableGrid(['#course-preview-widgets', '#course-analytics-widgets']);
 
-        var curNode = {x:0, y:0};
-        var $gs = $('.grid-stack');
-        $gs.gridstack(options);
-
-        $gs.on('onStartMove', function (e, node) {
-            curNode.x = node.x;
-            curNode.y = node.y;
-        });
-
-        $gs.on('onFinishDrop', function (e, node) {
-            var o = $(node.el);
-            if(options.allowed_grids.indexOf(node.x) < 0){
-                o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
-            }
-            console.log("onFinishDrop");
-        });
-
-        $gs.on('onMove', function (e, node) {
-            console.log(node.x + " ++ " + node.y);
-        });
-    });
-
-    $(document).ready(function() {
         handleTab();
 
         if (location.hash !== '')

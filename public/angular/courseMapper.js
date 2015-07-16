@@ -91,6 +91,26 @@ function cloneSimpleObject(obj){
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
+    $scope.currentTab = "preview";
+    $scope.tabs = {
+        'preview':'preview',
+        'analytics':'analytics',
+        'map':'map',
+        'updates':'updates',
+        'discussion':'discussion'
+    };
+
+    $scope.changeTab = function(){
+        var paths = $location.search();
+        var path = "preview";
+        if(paths){
+            path = _.findKey(paths);
+        }
+
+        $scope.currentTab = $scope.tabs[path];
+        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+    };
+
     $scope.init = function(refreshPicture){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
@@ -102,10 +122,10 @@ function cloneSimpleObject(obj){
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitCourse', $scope.course);
                 });
-
-                //$scope.$broadcast('onAfterInitCourse', $scope.course);
             }
         });
+
+        $scope.changeTab();
     };
 
     $scope.init();
@@ -156,7 +176,11 @@ function cloneSimpleObject(obj){
         }).finally(function(){
             $scope.loading = false;
         });
-    }
+    };
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
 });;
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
     $scope.createdDate = new Date();
@@ -165,7 +189,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.files = [];
     $scope.errors = "";
 
-    $scope.$on('onAfterInitCourse', function(crs){
+    $scope.$on('onAfterInitCourse', function(event, course){
         $scope.init();
     });
 
@@ -471,6 +495,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $http.get('/api/accounts').success(function(data) {
         $scope.user = data;
         $rootScope.user = data;
+
+        $rootScope.$broadcast('onAfterInitUser', data);
     });
 
     if($cookies.rememberMe)
@@ -518,7 +544,8 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         $routeProvider.
             when('/static/about', {
                 templateUrl: '/static/about',
-                controller: 'staticController'
+                controller: 'staticController',
+                reloadOnSearch: false
             }).
 
             when('/category/:slug', {
@@ -544,32 +571,80 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
-});;app.controller('widgetController', function($scope, $http, $rootScope) {
-    $scope.initWidgetButton = function(){
-        $.AdminLTE.boxWidget.activate();
-    }
-});
-/*
-app.controller('WidgetListController', function ($scope, $http, $rootScope) {
+});;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
+    $scope.location = "";
+    $scope.widgets = [];
 
-    $scope.initData = function () {
-        $http.get('/api/apps/user-profile').success(function (data) {
+    $scope.initWidgetButton = function(id){
+        $.AdminLTE.boxWidget.activate();
+        $scope.addWidget(id);
+    };
+
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.$watch('location', function(newVal, oldVal){
+            if($scope.location == 'user-profile'){
+                console.log('onAfterInitUser');
+                $scope.getWidgets();
+            }
+        });
+    });
+
+    $scope.$on('onAfterInitCourse', function(event, course){
+        console.log('onAfterInitCourse');
+        $scope.course = course;
+        $scope.getWidgets();
+    });
+
+    $scope.$watch('location', function(newVal, oldVal) {
+        var onafter = 'onAfterInstall' + $scope.location;
+        $scope.$on(onafter, function (event, newWidget) {
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
+
+            $scope.getWidgets();
+        });
+
+        var onafter = 'onAfterUninstall' + $scope.location;
+        $scope.$on( onafter, function(event, newWidget){
+            // remove all widget in the page
+            var grid = $('.grid-stack').data('gridstack');
+            grid.remove_all();
+
+            $scope.getWidgets();
+        });
+    });
+
+    $scope.getWidgets = function(){
+        var id = "";
+        if($scope.location == 'user-profile')
+            id = $rootScope.user._id;
+        else if($scope.location == 'course-preview' || $scope.location == 'course-analytics')
+            id = $scope.course._id;
+
+        $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
             $scope.widgets = data.widgets;
+
+            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgets);
         });
     };
 
-    $scope.initData();
+    $scope.addWidget = function(id){
+        var loc = '#' + $scope.location + '-widgets';
+        var grid = $(loc).data('gridstack');
 
-    $scope.$on('init', function (event, args) {
-        $scope.initData();
+        var el = '#' + id;
 
-        $(window).resize();
-    });
+        // get width and height
+        var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
+        var wdg = $scope.widgets[i];
 
-
-});*/
-;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+        //add_widget(el, x, y, width, height, auto_position)
+        grid.add_widget(el, 0, 0, wdg.width, wdg.height, true);
+    };
+});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     $scope.location = "";
+    $scope.installedWidgets;
     /**
      * get widgets store data from the server
      */
@@ -580,4 +655,62 @@ app.controller('WidgetListController', function ($scope, $http, $rootScope) {
             $scope.widgets = data.widgets;
         });
     };
+
+    $scope.$watch('location', function(newVal, oldVal) {
+        var onafter = 'onAfterGetWidgets' + $scope.location;
+        $scope.$on(onafter, function (event, installedWidgets) {
+            $scope.installedWidgets = installedWidgets;
+        });
+    });
+
+    $scope.isInstalled = function(widgetId){
+        if($scope.installedWidgets){
+            var isInstalled = _.find($scope.installedWidgets, {widgetId:{_id: widgetId}});
+            return isInstalled;
+        }
+
+        return false;
+    };
+
+    $scope.install = function(location, application, name, courseId){
+        var params = {
+            application: application,
+            widget: name,
+            location: location
+        };
+
+        if(courseId)
+            params.courseId = courseId;
+
+        $http.put('/api/widgets/install', params).success(function (data) {
+            if(data.result)
+                $scope.installedWidget = data.installed;
+
+            // hide the widget gallery
+            $('#widgetGallery').modal('hide');
+
+            $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
+        });
+    };
+
+    $scope.uninstall = function(location, application, name, courseId){
+        var params = {
+            application: application,
+            widget: name,
+            location: location
+        };
+
+        if(courseId)
+            params.courseId = courseId;
+
+        $http.put('/api/widgets/uninstall', params).success(function (data) {
+            if(data.result)
+                $scope.uninstalledWidget = data.uninstalled;
+
+            // hide the widget gallery
+            $('#widgetGallery').modal('hide');
+
+            $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
+        });
+    }
 });
