@@ -32,10 +32,8 @@ if (!PDFJS.PDFViewer || !PDFJS.getDocument) {
 // PDFJS.cMapPacked = true;
 
 var DEFAULT_URL = '../../../slide-viewer/ressources/00_Orga.pdf';
-var PAGE_TO_VIEW = 1;
-var SCALE = 1.0;
-
-var pdfPageView;
+var PAGE_TO_VIEW = 2;
+var SCALE = 1.5;
 
 var container = document.getElementById('viewerContainer');
 
@@ -44,7 +42,7 @@ PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
   // Document loaded, retrieving the page.
   return pdfDocument.getPage(PAGE_TO_VIEW).then(function (pdfPage) {
     // Creating the page view with default parameters.
-    pdfPageView = new PDFJS.PDFPageView({
+    var pdfPageView = new PDFJS.PDFPageView({
       container: container,
       id: PAGE_TO_VIEW,
       scale: SCALE,
@@ -55,14 +53,6 @@ PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
     });
     // Associates the actual page with the view, and drawing it
     pdfPageView.setPdfPage(pdfPage);
-    SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
-    pdfPageView.update(SCALE,0);
     return pdfPageView.draw();
   });
-});
-
-$( window ).resize(function() {
-  SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
-  pdfPageView.update(SCALE,0);
-  pdfPageView.draw();
 });
