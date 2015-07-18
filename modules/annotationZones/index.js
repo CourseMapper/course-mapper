@@ -2,6 +2,9 @@ var AnnotationZonesPDF = require('./annotationZones')
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+
 
 function AnnZones(){
 }
@@ -41,26 +44,23 @@ AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
     );
 };
 
-AnnZones.prototype.annotationZoneNameExists = function(name) {
-    //console.log("REACHED FUNCTION");
-    return AnnotationZonesPDF.count({"annotationZoneName": name});
+AnnZones.prototype.annotationZoneNameExists = async(function(name) {
 
-    /*.exec(function (err, data) {
-      console.log("REACHED INSIDE");
-      if(err) {
-        console.log(ERROR);
-        return next(err);
-      }
-      else {
-        if(data != 0)
-          callback(true);
-        else
-          callback(false);
-      }
-    });*/
+      var count = await (AnnotationZonesPDF.count({"annotationZoneName": name}));
+      console.log(count != 0);
+      return (count != 0);
+});
+
+AnnZones.prototype.getAllAnnotationZoneNames = function(callback) {
+  AnnotationZonesPDF.find({},function (err, data) {
+    if(err) {
+      console.log(err);
+    }
+    else {
+      callback(data);
+    }
+  });
 };
-
-
 
 
 module.exports = AnnZones;
