@@ -9,7 +9,7 @@ var await = require('asyncawait/await');
 function AnnZones(){
 }
 
-AnnZones.prototype.sumbitAnnotationZone = function(err, params, done){
+AnnZones.prototype.submitAnnotationZone = function(err, params, done){
   var annotationZonePDF = new AnnotationZonesPDF({
     annotationZoneName: params.annotationZoneName,
   });
@@ -32,7 +32,7 @@ AnnZones.prototype.sumbitAnnotationZone = function(err, params, done){
 
 AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
     //console.log(req);
-    this.sumbitAnnotationZone(
+    this.submitAnnotationZone(
         function error(err){
             return next(err);
         },

@@ -7,7 +7,7 @@ var AnnZones = require('../annotationZones/index');
 function Comment(){
 }
 
-Comment.prototype.sumbitAnnotation = function(err, params, done){
+Comment.prototype.submitAnnotation = function(err, params, done){
   this.convertRawText(params.rawText,function(renderedText){
     var annotationsPDF = new AnnotationsPDF({
       rawText: params.rawText,
@@ -107,7 +107,7 @@ Comment.prototype.convertRawText = function(rawText,callback){
 
 Comment.prototype.handleSubmitPost = function(req, res, next) {
     //console.log(req);
-    this.sumbitAnnotation(
+    this.submitAnnotation(
         function error(err){
             return next(err);
         },
