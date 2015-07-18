@@ -23,11 +23,12 @@
                   <div class="box-body with-border">
                     <h3 class="">Slides</h3>
                     <div class="pannel box box-primary">
-                      <div class= "slide-wrapper" id="slideWrapper">
-                        <canvas id="the-canvas"></canvas>
+                      <body tabindex="1">
+                        <div id="viewerContainer">
+                          <div id="viewer" class="pdfViewer"></div>
+                        </div>
 
 
-                      </div>
                     </div>
 
                   </div>
@@ -110,31 +111,19 @@
 </div><!-- ./wrapper -->
 <% include ../admin-lte/jsfooter %>
 
+
+
+
+
+
 <script src="/jquery/jquery-ui.min.js"></script>
 <script src="/gridstack/lodash.min.js"></script>
 <script src="/gridstack/gridstack.js"></script>
-<script src="js/slideviewer.js"></script>
-<script src="js/drawdiv.js"></script>
-<script src="../pdfjs/pdf.js"></script>
-<script>PDFJS.workerSrc ="../pdfjs/pdf.worker.js"</script>
-<script>
-  PDFJS.getDocument('ressources/00_Orga.pdf').then(function(pdf){
-    pdf.getPage(1).then(function(page) {
-      // you can now use *page* here
-      var scale = 1.5;
-var viewport = page.getViewport(scale);
 
-var canvas = document.getElementById('the-canvas');
-var context = canvas.getContext('2d');
-canvas.height = viewport.height;
-canvas.width = viewport.width;
+<link rel="stylesheet" href="../pdfjs/build/components/pdf_viewer.css">
 
-var renderContext = {
-  canvasContext: context,
-  viewport: viewport
-};
-page.render(renderContext);
-
-    });
-  });
- </script>
+<!-- for legacy browsers -->
+<script src="../pdfjs/build/components/compatibility.js"></script>
+<script src="../pdfjs/build/pdf.js"></script>
+<script src="../pdfjs/build/components/pdf_viewer.js"></script>
+<script src="../pdfjs/examples/components/pageviewer.js"></script>
