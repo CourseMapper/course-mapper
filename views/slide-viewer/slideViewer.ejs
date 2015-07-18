@@ -24,12 +24,8 @@
                     <h3 class="">Slides</h3>
                     <div class="pannel box box-primary">
                       <div class= "slide-wrapper" id="slideWrapper">
+                        <canvas id="the-canvas"></canvas>
 
-                        <img src="images/slide.png" class="slide-image" >
-                        </img>
-                        <!--<object data="ressources/test.pdf" type="application/pdf" class="slide-wrapper">
-                            alt : <a href="test.pdf">test.pdf</a>
-                        </object>-->
 
                       </div>
                     </div>
@@ -119,3 +115,26 @@
 <script src="/gridstack/gridstack.js"></script>
 <script src="js/slideviewer.js"></script>
 <script src="js/drawdiv.js"></script>
+<script src="../pdfjs/pdf.js"></script>
+<script>PDFJS.workerSrc ="../pdfjs/pdf.worker.js"</script>
+<script>
+  PDFJS.getDocument('ressources/00_Orga.pdf').then(function(pdf){
+    pdf.getPage(1).then(function(page) {
+      // you can now use *page* here
+      var scale = 1.5;
+var viewport = page.getViewport(scale);
+
+var canvas = document.getElementById('the-canvas');
+var context = canvas.getContext('2d');
+canvas.height = viewport.height;
+canvas.width = viewport.width;
+
+var renderContext = {
+  canvasContext: context,
+  viewport: viewport
+};
+page.render(renderContext);
+
+    });
+  });
+ </script>

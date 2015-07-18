@@ -3,9 +3,7 @@
     border-color: #ff0000;
 }
 .slide-wrapper{
-  background-image: url('../images/slide.png');
-  background-size: cover;
-  background-repeat: no-repeat;
+
   widht:100%;
 }
 .slide-image{
