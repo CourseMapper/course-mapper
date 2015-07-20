@@ -56,7 +56,7 @@
                           </div>
                         <% } %>-->
                         </div>
-                        <form action='/slide-viewer' method="POST">
+                        <form action='/slide-viewer/submitComment' method="POST">
                           <fieldset>
                             <div class="control-group">
                                <label for="rawText">Commenting as <%=currentUser.username%></label>
@@ -96,6 +96,24 @@
                             <option value="author">author</option>
                           </select>
                           <input id="filterValueText"></input>
+                        </div>
+                        <div>
+
+                          <form action='/slide-viewer/submitTag' method="POST">
+                            <fieldset>
+                              <div class="control-group">
+                                 <div class="controls">
+                                   <input class="form-control" id="annotationZoneName" name="annotationZoneName" placeholder="annotationZoneName"></textarea>
+                                 </div>
+                               </div>
+                             </fieldset>
+                             <div class="control-group">
+                               <div class="controls">
+                                 <button type="submit" class="btn btn-default">Submit</button>
+                               </div>
+                             </div>
+                          </form>
+
                         </div>
 
                         <div>
