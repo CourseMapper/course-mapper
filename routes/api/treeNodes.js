@@ -5,6 +5,8 @@ var Tree = require(appRoot + '/modules/trees/index.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var mongoose = require('mongoose');
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 
 var router = express.Router();
 
@@ -12,8 +14,8 @@ var router = express.Router();
  * POST
  * create course
  */
-router.post('/treeNodes', function(req, res, next){
-    // check for user rights
+router.post('/treeNodes', multipartyMiddleware, function(req, res, next){
+    // check for user logins
     if (!req.user) {
         res.status(401).send('Unauthorized');
         return;
@@ -38,6 +40,9 @@ router.post('/treeNodes', function(req, res, next){
 
         // parameters
         req.body,
+
+        // files pdf and video
+        req.files,
 
         function (course) {
             res.status(200).json({

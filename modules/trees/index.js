@@ -2,6 +2,8 @@ var config = require('config');
 var mongoose = require('mongoose');
 var TreeNodes = require('./treeNodes.js');
 var Resources = require('./resources.js');
+var appRoot = require('app-root-path');
+var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 var debug = require('debug')('cm:db');
 
 function catalog(){
@@ -17,12 +19,61 @@ function convertToDictionary(documents){
     return ret;
 }
 
-catalog.prototype.addTreeNode = function(error, params, success){
+/**
+ *
+ * @param filetype array of string
+ * @param file file object of multiparty
+ * @param contentNode treeNode
+ * @param createdBy objectId of a user
+ * @param courseId objectId of a course
+ */
+catalog.prototype.saveResourceFile = function(filetype, file, contentNode, createdBy, courseId){
+    var extension = file.name.split('.');
+    extension = extension[extension.length-1].toLowerCase();
+
+    if(filetype.indexOf(extension) < 0){
+        // extension not right
+        error("File extension not right, expecting " + filetype);
+    }
+    else {
+        var fn = '/resources/' + contentNode.id + '.' + extension;
+        var dest = appRoot + '/public' + fn;
+        handleUpload(file, dest, true);
+
+        var Res = new Resources({
+            type: extension,
+            createdBy: createdBy,
+            link: fn,
+            courseId: courseId,
+            treeNodeId: contentNode._id
+        });
+
+        Res.save(function(){
+            contentNode.resources.push(Res._id);
+            contentNode.save();
+        });
+    }
+};
+
+catalog.prototype.addTreeNode = function(error, params, files, success){
+    var self = this;
+
     var node = {
         positionFromRoot: {x:40, y:60},
         type: params.type,
         name: params.name
     };
+
+    // check for at least 1 resource either it s a pdf or a video
+    if(params.type == 'contentNode'){
+        if(!files.file){
+            error({message:'need at least 1 resource'});
+            return;
+        } else if(files.file.constructor != Array){
+            var be = [files.file];
+            files.file = be;
+        }
+    }
 
     node.createdBy = mongoose.Types.ObjectId(params.userId);
     node.courseId = mongoose.Types.ObjectId(params.courseId);
@@ -38,7 +89,58 @@ catalog.prototype.addTreeNode = function(error, params, success){
                 debug('failed adding Tree Node');
                 error(err);
             } else {
-                // put this object as the parent's child, --its oke that client dont need to wait for this.
+                if(files) {
+                    for (var i in files.file) {
+                        var f = files.file[i];
+                        self.saveResourceFile(
+                            ['pdf', 'mp4', 'webm'], f,
+                            tn,
+                            node.createdBy,
+                            node.courseId
+                        );
+                    }
+                }
+
+                // save resources
+                /*if(files['pdf']) {
+                    var file = files['pdf'];
+                    self.saveResourceFile(['pdf'], file);
+                }
+                // save resources
+                if(files['video']) {
+                    var file = files['video'];
+                    self.saveResourceFile(['mp4', 'webm'], file);
+                }*/
+
+                // save resources
+                /*if(files['video']) {
+                    var file = files['video'];
+                    var extension = file.name.split('.');
+                    extension = extension[extension.length-1].toLowerCase();
+
+                    if(['mp4'].indexOf(extension) < 0){
+                        // extension not right
+                        error("File extension not right, expecting mp4");
+                        return;
+                    }
+                    else {
+                        var fn = '/resources/' + tn.id + '.mp4';
+                        var dest = appRoot + '/public' + fn;
+                        handleUpload(file, dest, true);
+
+                        var Res = new Resources({
+                            type:"video",
+                            createdBy:createdBy,
+                            link:fn,
+                            courseId:courseId,
+                            treeNodeId:tn._id,
+                        });
+
+                        Res.save();
+                    }
+                }*/
+
+                // put this object as the parent's child,
                 if(node.parent) {
                     TreeNodes.findOne({_id : node.parent}, function(err, doc){
                         if(doc){
@@ -74,7 +176,7 @@ catalog.prototype.addTreeNode = function(error, params, success){
  * @param success
  */
 catalog.prototype.getTreeNodes = function(error, params, success){
-    TreeNodes.find(params, function(err, docs){
+    TreeNodes.find(params).populate('resources').exec(function(err, docs){
         if (!err){
             var cats = convertToDictionary(docs);
 

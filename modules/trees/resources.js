@@ -10,13 +10,14 @@
 var mongoose = require('mongoose');
 
 var resourcesSchema = new mongoose.Schema({
-    treeNodeId: { type: mongoose.Schema.Types.ObjectId,  required: true },
+    treeNodeId: { type: mongoose.Schema.Types.ObjectId, ref: 'treeNodes', required: true },
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'courses', required: true },
 
     //type{'pdf', 'video'}
-    type:{type:String, required:true},
-    name: {type:String},
+    type: {type:String, required:true},
+    link: {type:String},
 
-    isDeleted: {type:Boolean, required:true, default:true},
+    isDeleted: {type:Boolean, required:true, default:false},
 
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
     dateAdded: { type: Date },

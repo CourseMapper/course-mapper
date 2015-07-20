@@ -27,7 +27,7 @@ var treeNodesSchema = new mongoose.Schema({
     name: {type:String},
     description: {type:String},
 
-    isDeleted: {type:Boolean, required:true, default:true},
+    isDeleted: {type:Boolean, required:true, default:false},
 
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
 

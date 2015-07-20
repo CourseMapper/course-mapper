@@ -46,7 +46,7 @@ router.get('/course/addSubTopic', function(req, res, next) {
  * partial for add sub topic modal
  */
 router.get('/course/addContentNode', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/addSubTopicModal');
+    res.render(config.get('theme') + '/catalogs/addContentNodeModal');
 });
 
 router.get('/course/:courseId/tree', function(req, res, next) {

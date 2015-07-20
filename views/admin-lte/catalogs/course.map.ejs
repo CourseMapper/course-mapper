@@ -1,7 +1,12 @@
 <script type="text/ng-template" id="tree_item_renderer.html">
-    <div class="w" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
+    <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}" data-shape="Rectangle" data-toggle="dropdown"
          data-hover="dropdown">
+        <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
+            <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
+
+            </i>
+        </span>
 
         {{data.name}}
 
@@ -39,9 +44,6 @@
                 <li>
                     <a class="" data-toggle="modal" data-target="#addSubTopicModal" ng-click="setMode('add', 'subTopic')">Add A Sub Topic</a>
                 </li>
-                <!--<li>
-                    <a class="" data-toggle="modal" data-target="#addContentNodeModal" ng-click="setMode('add', 'contentNode')">Add A Content Node</a>
-                </li>-->
             </ul>
         </div>
 

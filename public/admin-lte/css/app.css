@@ -373,6 +373,12 @@ li.disabled i {
     font-weight: 500;
 }
 
+.w.contentNode{
+    border-radius: 0px;
+}
+.w.subTopic{
+}
+
 .center-course{
     background-color: #3C8DBC;
     color:white;
