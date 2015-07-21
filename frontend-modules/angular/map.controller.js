@@ -242,4 +242,11 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout) {
                 return 'fa fa-file-video-o';
         }
     }
+
+    $scope.getDataShape = function(nodeType){
+        if(nodeType == 'subTopic')
+            return 'Ellipse';
+
+        return 'Rectangle';
+    }
 });

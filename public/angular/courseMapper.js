@@ -751,6 +751,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 return 'fa fa-file-video-o';
         }
     }
+
+    $scope.getDataShape = function(nodeType){
+        if(nodeType == 'subTopic')
+            return 'Ellipse';
+
+        return 'Rectangle';
+    }
 });
 ;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
 

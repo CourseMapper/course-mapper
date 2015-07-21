@@ -374,9 +374,27 @@ li.disabled i {
 }
 
 .w.contentNode{
-    border-radius: 0px;
+    border-radius: 0;
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #3C8DBC;
+    max-width: 200px;
+    min-width: 160px;
+}
+.w.contentNode i{
+    font-size: 20px;
+    margin-right: 5px;
 }
 .w.subTopic{
+    border-radius: 24px;
+    max-width: 180px;
+    min-width: 160px;
+    height: auto;
+}
+.w.contentNode .contentNode-analytics i{
+    margin-left: 7px;
+    margin-right: 0px;
+    font-size: 10px;
 }
 
 .center-course{
@@ -411,8 +429,18 @@ li.disabled i {
 
 [data-shape=Rectangle] {
     width: auto;
+    max-width: 180px;
     min-width: 160px;
     height: auto;
+}
+[data-shape=Ellipse] {
+    /*width:210px;
+    height:70px;
+    left:250px;
+    top:300px;
+    line-height: 70px;*/
+    max-width: 200px;
+    min-width: 120px;
 }
 
 .box.box-primary.dropdown-menu {

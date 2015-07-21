@@ -1,24 +1,46 @@
 <script type="text/ng-template" id="tree_item_renderer.html">
     <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
-         data-from-root-y="{{data.positionFromRoot.y}}" data-shape="Rectangle" data-toggle="dropdown"
-         data-hover="dropdown">
+         data-from-root-y="{{data.positionFromRoot.y}}"
+         data-shape="{{getDataShape(data.type)}}"
+         data-toggle="dropdown" data-hover="dropdown">
+
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
-
             </i>
         </span>
 
         {{data.name}}
 
-        <ul class="dropdown-menu dropdown-course">
-            <li ng-show="data.type=='subTopic'">
-                <a class="" data-toggle="modal" data-target="#addSubTopicModal" ng-click="setMode('add', 'subTopic', data)">Add A Sub Topic</a>
+        <!-- subtopic menu-->
+        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic'">
+            <li>
+                <a class="" data-toggle="modal" data-target="#addSubTopicModal"
+                   ng-click="setMode('add', 'subTopic', data)">Add A Sub Topic</a>
             </li>
-            <li ng-show="data.type=='subTopic'">
-                <a class="" data-toggle="modal" data-target="#addContentNodeModal" ng-click="setMode('add', 'contentNode', data)">Add A Content Node</a>
+            <li>
+                <a class="" data-toggle="modal" data-target="#addContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)">Add A Content Node</a>
+            </li>
+            <li ng-show="data.type=='contentNode'">
+                <a class="" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)">Edit</a>
             </li>
         </ul>
 
+        <!-- contentnode menu-->
+        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode'">
+            <!-- analytics -->
+            <li class="contentNode-analytics">
+                <i class="fa fa-pencil-square"></i> 12
+                <i class="fa fa-link"></i> 5
+                <i class="fa fa-heart"></i> 12
+            </li>
+
+            <li>
+                <a class="" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)">Edit</a>
+            </li>
+        </ul>
     </div>
 
     <div ng-repeat="data in data.childrens" ng-include="'tree_item_renderer.html'">
@@ -42,7 +64,8 @@
 
             <ul class="dropdown-menu dropdown-course">
                 <li>
-                    <a class="" data-toggle="modal" data-target="#addSubTopicModal" ng-click="setMode('add', 'subTopic')">Add A Sub Topic</a>
+                    <a class="" data-toggle="modal" data-target="#addSubTopicModal"
+                       ng-click="setMode('add', 'subTopic')">Add A Sub Topic</a>
                 </li>
             </ul>
         </div>
