@@ -297,7 +297,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 });
 
-;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location) {
+;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce ) {
     $scope.slug = $routeParams.slug;
 
     // chosen filter
@@ -309,6 +309,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.courseTags = [];
     $scope.category = null;
     $scope.courses = null;
+
+    $scope.widgets = [];
 
     $scope.getCoursesFromThisCategory = function(){
         var url = '/api/category/' + $scope.category._id + '/courses';
@@ -347,6 +349,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             if(newVal && newVal !== oldVal)
                 $scope.getCoursesFromThisCategory();
         }, true);
+    };
+
+    $scope.getCourseAnalytics = function(cid){
+        $http.get('/api/server-widgets/course-listing/?cid=' + cid).success(
+            function(res){
+                if(res.result){
+                    $scope.widgets[cid] = $sce.trustAsHtml(res.widgets);
+                }
+            }
+        ).error(function(){
+
+        });
     };
 
     $scope.applyFilter = function(tag, dontgo){

@@ -44,6 +44,14 @@
       "entryPoint": "/course-analytics/category-stats.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
+    },
+    {
+      "name": "course listing AAAA",
+      "location": "course-listing",
+      "description": "aaaaaaa cat",
+      "entryPoint": "/course-analytics/course-listing.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
     }
   ]
 }
