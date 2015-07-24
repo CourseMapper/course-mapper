@@ -1,4 +1,5 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'ngTagsInput', 'ngFileUpload']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies',
+    'ngTagsInput', 'ngFileUpload','oc.lazyLoad']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -29,6 +30,19 @@ app.directive('onFinishRender', function ($timeout) {
             }
         }
     }
+});
+
+app.directive('script', function($parse, $rootScope, $compile) {
+    return {
+        restrict: 'E',
+        terminal: true,
+        link: function(scope, element, attr) {
+            if (attr.ngSrc) {
+                var domElem = '<script src="'+attr.ngSrc+'" async defer></script>';
+                $(element).append($compile(domElem)(scope));
+            }
+        }
+    };
 });
 
 /**
@@ -1059,7 +1073,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         //add_widget(el, x, y, width, height, auto_position)
         grid.add_widget(el, 0, 0, wdg.width, wdg.height, true);
     };
-});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -1077,6 +1091,13 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         var onafter = 'onAfterGetWidgets' + $scope.location;
         $scope.$on(onafter, function (event, installedWidgets) {
             $scope.installedWidgets = installedWidgets;
+
+            for(var i in $scope.installedWidgets){
+                var wdg = $scope.installedWidgets[i];
+
+                // loop to load the js (if exist)
+                $ocLazyLoad.load('/' + wdg.application + '/' + wdg.application + '.js');
+            }
         });
     });
 
