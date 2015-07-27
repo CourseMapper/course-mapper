@@ -630,3 +630,6 @@ ul.dropdown-menu.course{
     font-size: 27px;
     margin-top: 10px;
 }
+.grid-stack>.grid-stack-item>.grid-stack-item-content{
+    background: white;
+}

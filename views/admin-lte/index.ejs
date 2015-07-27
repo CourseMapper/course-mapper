@@ -10,6 +10,7 @@
             <li >Browse Categories</li>
         </ol>
     </section>
+
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper" ng-controller="HomePageController">
         <div class="control">
@@ -53,22 +54,17 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-                <div class="w" id="{{data.slug}}"
+                <div class="w dropdown-toggle" id="{{data.slug}}"
                      data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}"
-                     data-shape="Rectangle"
-                        >
+                     data-shape="Rectangle" >
 
                     {{data.name}}
 
                         <ul class="dropdown-menu box box-primary category">
                             <li><b>{{data.name}}</b></li>
                             <li class="divider"></li>
-                            <li> total 10 courses </li>
-                            <li> total 250 nodes </li>
-                            <li><h5><b>Top Courses</b></h5></li>
-                            <li><a tabindex="-1" href="#">a</a></li>
-                            <li><a tabindex="-1" href="#">b</a></li>
-                            <li><a tabindex="-1" href="#">c</a></li>
+                            <li id="analytics-{{data.slug}}" ng-bind-html="widgets[data.slug]">
+                            </li>
                             <li class="divider"></li>
                             <li>
                                 <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
@@ -76,7 +72,6 @@
                         </ul>
 
                 </div>
-
             <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'" >
             </div>
         </script>

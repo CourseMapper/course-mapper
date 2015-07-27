@@ -36,6 +36,22 @@
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Category analytics",
+      "location": "category-homepage",
+      "description": "category stats that say about this cat",
+      "entryPoint": "/course-analytics/category-stats.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "course listing AAAA",
+      "location": "course-listing",
+      "description": "aaaaaaa cat",
+      "entryPoint": "/course-analytics/course-listing.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
     }
   ]
 }
