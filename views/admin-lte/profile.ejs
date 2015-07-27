@@ -60,7 +60,26 @@
                              data-gs-locked="yes"
                              ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}" >
                             <div class="grid-stack-item-content">
+                                <div class="box no-shadow">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">{{wdg.widget}}</h3>
+                                        <div class="box-tools pull-right">
+                                            <button class="btn btn-box-tool" data-widget="remove"
+                                                    data-toggle="tooltip" title="Remove"
+                                                    ng-click="closeWidget(wdg.widgetId._id);"
+                                                    >
+                                                <i class="fa fa-times"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="box-body">
+
+                                <!-- start widget render -->
                                 <div ng-include src="wdg.widgetId.entryPoint" onload="initWidgetButton(wdg.widgetId._id)"></div>
+                                <!-- start widget render -->
+
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>

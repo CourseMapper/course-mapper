@@ -1,29 +1,11 @@
 <script type="application/javascript" ng-src="/my-course/data.js"></script>
 <script type="application/javascript" ng-src="/my-course/options.js"></script>
 
-<div class="box" ng-controller="BeController">
-    <div class="box-header with-border">
-        <h3 class="box-title">I am following these courses</h3>
 
-        <div class="box-tools pull-right">
-            <button class="btn btn-box-tool" data-widget="refresh" data-toggle="tooltip" title="Refresh"><i
-                    class="fa fa-refresh"></i></button>
-            <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i
-                    class="fa fa-minus"></i></button>
-            <button class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove"><i
-                    class="fa fa-times"></i></button>
-        </div>
-    </div>
-    <div class="box-body">
-        <div style="width:250px; height:250px">
+        <div ng-controller="BeController" style="width:250px; height:250px">
             <ul>
                 <li ng-repeat="cat in categories">
                     {{cat.name}}
                 </li>
             </ul>
         </div>
-    </div>
-    <div class="box-footer">
-
-    </div>
-</div>

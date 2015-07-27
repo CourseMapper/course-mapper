@@ -1073,7 +1073,14 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         //add_widget(el, x, y, width, height, auto_position)
         grid.add_widget(el, 0, 0, wdg.width, wdg.height, true);
     };
-});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad) {
+
+    $scope.closeWidget = function(id){
+        var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
+        var wdg = $scope.widgets[i];
+
+        $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
+    }
+});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -1098,6 +1105,11 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
                 // loop to load the js (if exist)
                 $ocLazyLoad.load('/' + wdg.application + '/' + wdg.application + '.js');
             }
+        });
+
+        var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
+        $scope.$on(onCloseButtonClicked, function (event, widget) {
+             $scope.uninstall(widget.location, widget.application, widget.widget);
         });
     });
 
@@ -1150,5 +1162,6 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
             $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
         });
-    }
+    };
+
 });

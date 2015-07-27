@@ -1,4 +1,4 @@
-app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad) {
+app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -23,6 +23,11 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $
                 // loop to load the js (if exist)
                 $ocLazyLoad.load('/' + wdg.application + '/' + wdg.application + '.js');
             }
+        });
+
+        var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
+        $scope.$on(onCloseButtonClicked, function (event, widget) {
+             $scope.uninstall(widget.location, widget.application, widget.widget);
         });
     });
 
@@ -75,5 +80,6 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $
 
             $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
         });
-    }
+    };
+
 });
