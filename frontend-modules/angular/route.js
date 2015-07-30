@@ -21,12 +21,15 @@ app.config(['$routeProvider', '$locationProvider',
                 reloadOnSearch: false
             }).
 
-            when('/slide-viewer', {
+            // we dont need it here, because you are not using
+            // '#' (hash tag in the url). please refer to "angular route" in google for this.
+            // in the way you are doing now, you can just use the express routing system.
+            // the file you have to take care is /routes/slide-viewer/slideViewer.js
+            /*when('/slide-viewer', {
                 templateUrl: 'slideViewer.html',
                 controller: 'CommentListController',
                 reloadOnSearch: false
-            }).
-
+            }).*/
 
             otherwise({
                 redirectTo: '/'

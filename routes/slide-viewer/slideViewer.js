@@ -6,10 +6,7 @@ var SlideAnnotationZones = require(appRoot + '/modules/annotationZones');
 //var Comment = require(appRoot + '/modules/slide-viewer/index');
 //var AnnZones = require(appRoot + '/modules/annotationZones/index');
 
-
-
 var router = express.Router();
-
 
 router.get('/', function(req, res, next) {
   var comment = new Comment();

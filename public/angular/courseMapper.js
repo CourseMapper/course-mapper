@@ -537,7 +537,15 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         */
         console.log("creating sub topic");
     }
-});;app.config(['$routeProvider', '$locationProvider',
+});;app.controller('CommentListController', function($scope, $http, $rootScope, $sce) {
+
+    $http.get('/slide-viewer/disComm').success(function (data) {
+        console.log("Inside http get");
+        $scope.comments = $sce.trustAsHtml(data);
+    });
+
+});
+;app.config(['$routeProvider', '$locationProvider',
 
     function($routeProvider, $locationProvider) {
 
@@ -560,6 +568,16 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
                 reloadOnSearch: false
             }).
 
+            // we dont need it here, because you are not using
+            // '#' (hash tag in the url). please refer to "angular route" in google for this.
+            // in the way you are doing now, you can just use the express routing system.
+            // the file you have to take care is /routes/slide-viewer/slideViewer.js
+            /*when('/slide-viewer', {
+                templateUrl: 'slideViewer.html',
+                controller: 'CommentListController',
+                reloadOnSearch: false
+            }).*/
+
             otherwise({
                 redirectTo: '/'
             });
@@ -568,7 +586,6 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             requireBase: false});*/
 
     }]);
-
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {

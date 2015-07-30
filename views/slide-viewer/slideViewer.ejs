@@ -8,7 +8,7 @@
 
         <section class="content-header">
             <ol class ="breadcrumb">
-                <li><a href="/"><iclass="fa fa-home"></i> Home</a></li>
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li class ="active"> Slides ></li>
             </ol>
             <h1>
@@ -116,8 +116,7 @@
 
                         </div>
                         <div ng-controller="CommentListController">
-                            <div ng-show="comments">
-                              {{comments}}
+                            <div ng-show="comments" ng-bind-html="comments">
                             </div>
                         </div>
 
@@ -143,3 +142,5 @@
 <script src="/gridstack/gridstack.js"></script>
 <script src="js/slideviewer.js"></script>
 <script src="js/drawdiv.js"></script>
+
+<% include ../admin-lte/footer %>
