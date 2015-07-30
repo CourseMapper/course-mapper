@@ -21,12 +21,15 @@ app.config(['$routeProvider', '$locationProvider',
                 reloadOnSearch: false
             }).
 
+            when('/cid/:courseId/nid/:nodeId', {
+                templateUrl: '/course/nodeDetail',
+                controller: 'NodeDetailController',
+                reloadOnSearch: false
+            }).
+
             otherwise({
                 redirectTo: '/'
             });
-
-        /*$locationProvider.html5Mode({enabled: true,
-            requireBase: false});*/
 
     }]);
 

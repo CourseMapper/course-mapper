@@ -11,7 +11,11 @@ var router = express.Router();
  * return: html view
  */
 router.get('/courses', function (req, res, next){
-        res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', user: req.user, showSidebar:true });
+    res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', user: req.user, showSidebar:true });
+});
+
+router.get('/course/nodeDetail', function (req, res, next){
+    res.render(config.get('theme') + '/catalogs/nodeDetail');
 });
 
 /**

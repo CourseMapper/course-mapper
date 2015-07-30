@@ -5,6 +5,14 @@
     <% include ../mainMenu %>
 
     <!-- Content Wrapper. Contains page content -->
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+            <li><a href="/courses/#/category/<%=course.category.slug%>"> </i> <%=course.category.name%></a></li>
+            <li class="active">{{course.name}}</li>
+        </ol>
+    </section>
+
     <div class="content-wrapper" ng-view>
     </div>
     <!-- /.content-wrapper -->
@@ -56,13 +64,6 @@
     </script>
 
     <script type="text/ng-template" id="course_detail.html">
-        <section class="content-header">
-            <ol class="breadcrumb">
-                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                <li><a href="/courses/#/category/<%=course.category.slug%>"> </i> <%=course.category.name%></a></li>
-                <li class="active">{{course.name}}</li>
-            </ol>
-        </section>
         <section class="content-header action-header blue">
             <ol class="breadcrumb">
                 <li class="home">{{course.name}}</li>

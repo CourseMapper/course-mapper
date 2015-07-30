@@ -1,6 +1,7 @@
-app.controller('MapController', function($scope, $http, $rootScope, $timeout) {
+app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce) {
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
+    $scope.widgets = [];
 
     /**
      * find node recursively
@@ -130,7 +131,12 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout) {
             // instantiate on hover
             $('#' + childId).mouseover(function(){
                 $(this).find('ul').show();
-            }).mouseout(function(){$(this).find('ul').hide()});
+                $rootScope.$broadcast('onTopicHover', $(this).attr('id'));
+
+            }).mouseout(function(){
+                $(this).find('ul').hide();
+                $rootScope.$broadcast('onTopicHoverOut', $(this).attr('id'));
+            });
 
             // connecting parent and chidlern
             var conn = instance.connect({
@@ -241,12 +247,39 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout) {
             case 'video':
                 return 'fa fa-file-video-o';
         }
-    }
+    };
 
     $scope.getDataShape = function(nodeType){
         if(nodeType == 'subTopic')
             return 'Ellipse';
 
         return 'Rectangle';
+    };
+
+    $scope.$on('onTopicHover', function(event, nodeId){
+        if($scope.isRequesting)
+            return;
+
+        $scope.isRequesting = true;
+        // the nodeId has "t", so we remove them first
+        nodeId = nodeId.substring(1);
+        $http.get('/api/server-widgets/node-icon-analytics/?nodeId=' + nodeId).success(
+            function(res){
+                $scope.isRequesting = false;
+                if(res.result){
+                    $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
+                }
+            }
+        ).error(function(){
+                $scope.isRequesting = false;
+            });
+    });
+
+    $scope.$on('onTopicHoverOut', function(event, slug){
+        $scope.isRequesting = false;
+    });
+
+    $scope.getContentNodeLink = function(d){
+        return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
     }
 });

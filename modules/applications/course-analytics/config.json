@@ -52,6 +52,14 @@
       "entryPoint": "/course-analytics/course-listing.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
+    },
+    {
+      "name": "node topic",
+      "location": "node-icon-analytics",
+      "description": "bbb bbb",
+      "entryPoint": "/course-analytics/icon-analytics.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
     }
   ]
 }

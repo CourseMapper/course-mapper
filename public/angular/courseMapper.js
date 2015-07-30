@@ -563,9 +563,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
-});;app.controller('MapController', function($scope, $http, $rootScope, $timeout) {
+});;app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce) {
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
+    $scope.widgets = [];
 
     /**
      * find node recursively
@@ -695,7 +696,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             // instantiate on hover
             $('#' + childId).mouseover(function(){
                 $(this).find('ul').show();
-            }).mouseout(function(){$(this).find('ul').hide()});
+                $rootScope.$broadcast('onTopicHover', $(this).attr('id'));
+
+            }).mouseout(function(){
+                $(this).find('ul').hide();
+                $rootScope.$broadcast('onTopicHoverOut', $(this).attr('id'));
+            });
 
             // connecting parent and chidlern
             var conn = instance.connect({
@@ -806,16 +812,149 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             case 'video':
                 return 'fa fa-file-video-o';
         }
-    }
+    };
 
     $scope.getDataShape = function(nodeType){
         if(nodeType == 'subTopic')
             return 'Ellipse';
 
         return 'Rectangle';
+    };
+
+    $scope.$on('onTopicHover', function(event, nodeId){
+        if($scope.isRequesting)
+            return;
+
+        $scope.isRequesting = true;
+        // the nodeId has "t", so we remove them first
+        nodeId = nodeId.substring(1);
+        $http.get('/api/server-widgets/node-icon-analytics/?nodeId=' + nodeId).success(
+            function(res){
+                $scope.isRequesting = false;
+                if(res.result){
+                    $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
+                }
+            }
+        ).error(function(){
+                $scope.isRequesting = false;
+            });
+    });
+
+    $scope.$on('onTopicHoverOut', function(event, slug){
+        $scope.isRequesting = false;
+    });
+
+    $scope.getContentNodeLink = function(d){
+        return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
     }
 });
-;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
+;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+    $scope.course = null;
+    $scope.user = null;
+    $scope.enrolled = false;
+    $scope.loc = $location.absUrl() ;
+    $scope.courseId = $routeParams.courseId;
+    $scope.nodeId = $routeParams.nodeId;
+    $scope.isOwner = false;
+
+    $scope.currentUrl = window.location.href;
+    $scope.followUrl = $scope.currentUrl + '?enroll=1';
+
+    $scope.currentTab = "preview";
+    $scope.tabs = {
+        'preview':'preview',
+        'analytics':'analytics',
+        'map':'map',
+        'updates':'updates',
+        'discussion':'discussion'
+    };
+
+    $scope.changeTab = function(){
+        var paths = $location.search();
+        var path = "preview";
+        if(!_.isEmpty(paths)){
+            path = _.findKey(paths);
+        }
+
+        $scope.currentTab = $scope.tabs[path];
+        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+    };
+
+    $scope.init = function(refreshPicture){
+        $http.get('/api/course/' + $scope.courseId).success(function(res){
+            if(res.result) {
+                $scope.course = res.course;
+
+                if(refreshPicture && $scope.course.picture)
+                    $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+
+                $timeout(function(){
+                    $scope.$broadcast('onAfterInitCourse', $scope.course);
+                });
+            }
+        });
+
+        $scope.changeTab();
+    };
+
+    $scope.init();
+
+    $rootScope.$watch('user', function(){
+        if($rootScope.user) {
+            $scope.user = $rootScope.user;
+        }
+    });
+
+    $scope.$watchGroup(['user', 'course'], function(){
+        if($scope.user != null && $scope.course != null) {
+            $http.get('/api/accounts/' + $scope.user._id + '/course/' + $scope.courseId).success(function (res) {
+                if (res.result && res.courses) {
+                    $scope.enrolled = res.courses.isEnrolled;
+                } else {
+                    $scope.enrolled = false;
+                }
+            });
+
+            if ($scope.course.createdBy == $rootScope.user._id) {
+                $scope.isOwner = true;
+                $scope.enrolled = true;
+            }
+        }
+    });
+
+    $scope.$on('onAfterEditCourse',function(events, course){
+        //$scope.course = course;
+        $scope.init(true);
+    });
+
+    $scope.enroll = function(){
+        var url = '/api/course/' + $scope.course._id + '/enroll';
+        $scope.loading = true;
+        $http.put(url, {}).success(function(res){
+            if(res.result)
+                $scope.enrolled = true;
+        }).finally(function(){
+            $scope.loading = false;
+        });
+    };
+
+    $scope.leave = function(){
+        var url = '/api/course/' + $scope.course._id + '/leave';
+        $scope.loading = true;
+        $http.put(url, {}).success(function(res){
+            if(res.result){
+                // success leaving
+                $scope.enrolled = false;
+            }
+        }).finally(function(){
+            $scope.loading = false;
+        });
+    };
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
+});;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -991,12 +1130,15 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
                 reloadOnSearch: false
             }).
 
+            when('/cid/:courseId/nid/:nodeId', {
+                templateUrl: '/course/nodeDetail',
+                controller: 'NodeDetailController',
+                reloadOnSearch: false
+            }).
+
             otherwise({
                 redirectTo: '/'
             });
-
-        /*$locationProvider.html5Mode({enabled: true,
-            requireBase: false});*/
 
     }]);
 

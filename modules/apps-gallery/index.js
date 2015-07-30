@@ -181,6 +181,7 @@ AppStore.prototype.populateApplications = function(failed, success){
 };
 
 AppStore.prototype.getServerWidgets = function(error, params, widgetParams, success){
+    params.runOn = 'server';
     Widgets.find(params).exec(
         function(err, docs){
             if(err) error(err);
@@ -189,9 +190,7 @@ AppStore.prototype.getServerWidgets = function(error, params, widgetParams, succ
                 var loopWidgets = async ( function(docs){
 
                     for(var i in docs){
-                        var widg = docs[i];
-                        if(widg.runOn != 'server')
-                            continue;
+                        var widg = docs[i]; 
 
                         var ep = appRoot + ('/modules/applications' + widg.entryPoint);
                         var OBJ = require(ep);

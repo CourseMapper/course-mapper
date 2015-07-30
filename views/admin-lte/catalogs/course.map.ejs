@@ -9,7 +9,9 @@
             </i>
         </span>
 
-        {{data.name}}
+        <a ng-show="data.type == 'contentNode'"
+           ng-href="{{getContentNodeLink(data)}}"> {{data.name}} </a>
+        <span ng-show="data.type != 'contentNode'" > {{data.name}} </span>
 
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic'">
@@ -30,11 +32,7 @@
         <!-- contentnode menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode'">
             <!-- analytics -->
-            <li class="contentNode-analytics">
-                <i class="fa fa-pencil-square"></i> 12
-                <i class="fa fa-link"></i> 5
-                <i class="fa fa-heart"></i> 12
-                <br>
+            <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>
 
             <li>
