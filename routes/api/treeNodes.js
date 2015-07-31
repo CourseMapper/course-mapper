@@ -75,6 +75,29 @@ router.get('/treeNodes/course/:courseId', function(req, res, next) {
     );
 });
 
+
+/**
+ * get all tree nodes based on course id
+ */
+router.get('/treeNode/:nodeId', function(req, res, next) {
+    var tr = new Tree();
+
+    tr.getTreeNode(
+        function (err) {
+            res.status(200).json({
+                result: false,
+                errors: [err.message]
+            });
+        },
+        {
+            _id: mongoose.Types.ObjectId(req.params.nodeId)
+        },
+        function(treeNode){
+            res.status(200).json({result:true, treeNode: treeNode});
+        }
+    );
+});
+
 /**
  * update node.positionFromRoot value
  */

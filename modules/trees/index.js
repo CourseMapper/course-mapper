@@ -101,45 +101,6 @@ catalog.prototype.addTreeNode = function(error, params, files, success){
                     }
                 }
 
-                // save resources
-                /*if(files['pdf']) {
-                    var file = files['pdf'];
-                    self.saveResourceFile(['pdf'], file);
-                }
-                // save resources
-                if(files['video']) {
-                    var file = files['video'];
-                    self.saveResourceFile(['mp4', 'webm'], file);
-                }*/
-
-                // save resources
-                /*if(files['video']) {
-                    var file = files['video'];
-                    var extension = file.name.split('.');
-                    extension = extension[extension.length-1].toLowerCase();
-
-                    if(['mp4'].indexOf(extension) < 0){
-                        // extension not right
-                        error("File extension not right, expecting mp4");
-                        return;
-                    }
-                    else {
-                        var fn = '/resources/' + tn.id + '.mp4';
-                        var dest = appRoot + '/public' + fn;
-                        handleUpload(file, dest, true);
-
-                        var Res = new Resources({
-                            type:"video",
-                            createdBy:createdBy,
-                            link:fn,
-                            courseId:courseId,
-                            treeNodeId:tn._id,
-                        });
-
-                        Res.save();
-                    }
-                }*/
-
                 // put this object as the parent's child,
                 if(node.parent) {
                     TreeNodes.findOne({_id : node.parent}, function(err, doc){
@@ -166,6 +127,16 @@ catalog.prototype.addTreeNode = function(error, params, files, success){
                 }
             }
         });
+};
+
+catalog.prototype.getTreeNode = function(error, params, success){
+    TreeNodes.findOne(params).populate('resources').exec(function(err, doc){
+        if (err){
+            error(err);
+        }
+        else
+            success(doc);
+    });
 };
 
 /**

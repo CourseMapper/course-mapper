@@ -1,6 +1,7 @@
 app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
     $scope.user = null;
+    $scope.treeNode = null;
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
     $scope.courseId = $routeParams.courseId;
@@ -15,8 +16,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         'preview':'preview',
         'analytics':'analytics',
         'map':'map',
-        'updates':'updates',
-        'discussion':'discussion'
+        'updates':'updates'
     };
 
     $scope.changeTab = function(){
@@ -31,14 +31,12 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     };
 
     $scope.initNode = function(){
-        $http.get('/api/course/' + $scope.courseId).success(function(res){
+        $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
             if(res.result) {
-                $scope.course = res.course;
-
-
+                $scope.treeNode = res.treeNode;
 
                 $timeout(function(){
-                    $scope.$broadcast('onAfterInitCourse', $scope.course);
+                    $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
                 });
             }
         });
@@ -48,6 +46,8 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
                 $scope.course = res.course;
+
+                $scope.initNode();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitCourse', $scope.course);

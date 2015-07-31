@@ -550,6 +550,9 @@ ul.dropdown-menu.course{
 .blue {
     background: #3C8DBC !important;
 }
+.red {
+    background: #db4865 !important;
+}
 
 .action-header {
     padding: 7px;

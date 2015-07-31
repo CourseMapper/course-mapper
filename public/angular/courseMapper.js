@@ -851,6 +851,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 ;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
     $scope.user = null;
+    $scope.treeNode = null;
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
     $scope.courseId = $routeParams.courseId;
@@ -865,8 +866,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         'preview':'preview',
         'analytics':'analytics',
         'map':'map',
-        'updates':'updates',
-        'discussion':'discussion'
+        'updates':'updates'
     };
 
     $scope.changeTab = function(){
@@ -880,13 +880,24 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
     };
 
-    $scope.init = function(refreshPicture){
+    $scope.initNode = function(){
+        $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
+            if(res.result) {
+                $scope.treeNode = res.treeNode;
+
+                $timeout(function(){
+                    $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
+                });
+            }
+        });
+    };
+
+    $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
                 $scope.course = res.course;
 
-                if(refreshPicture && $scope.course.picture)
-                    $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+                $scope.initNode();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitCourse', $scope.course);

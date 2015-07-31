@@ -1,0 +1,211 @@
+<% include actionBarCourse %>
+
+<section class="content-header action-header blue">
+    <ol class="breadcrumb">
+        <li class="home">{{course.name}}</li>
+        <li class="active">{{currentTab}}</li>
+    </ol>
+
+    <div class="navbar-custom-menu" ng-show="currentTab=='preview'" ng-include
+         src="'actionBar-course-preview'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
+         src="'actionBar-course-analytics'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='map'" ng-include
+         src="'actionBar-course-map'"></div>
+
+</section>
+
+<!-- Main content -->
+<section class="content-course">
+    <div class="box no-border" id="courseTabs">
+        <div class="box-body no-border">
+
+            <!-- tabs left -->
+            <div class="tabbable tabs-left">
+                <ul class="nav nav-tabs tabs-hide hidden-xs">
+                    <li class="active">
+                        <a href="#/cid/{{course._id}}?preview"
+                           data-toggle="tab" data-target="#preview"
+                                >
+                            <i class="ionicons ion-ios-home-outline"></i><br>
+                            <span>Preview</span></a></li>
+
+                    <li ng-show="enrolled || isOwner">
+                        <a href="#/cid/{{course._id}}?map"
+                           data-toggle="tab" data-target="#map"
+                                >
+                            <i class="ionicons ion-map"></i>
+                            <span>CourseMap</span></a></li>
+                    <li ng-show="enrolled || isOwner">
+                        <a href="#/cid/{{course._id}}?updates" ng-show="user"
+                           data-toggle="tab" data-target="#updates"
+                                >
+                            <i class="ionicons ion-ios-time-outline"></i><br>
+                            <span>Updates</span></a></li>
+                    <li ng-show="enrolled || isOwner">
+                        <a href="#/cid/{{course._id}}?discussion" ng-show="user"
+                           data-toggle="tab" data-target="#discussion"
+                                >
+                            <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
+                            <span>Discussion</span></a></li>
+                    <li ng-show="enrolled || isOwner">
+                        <a href="#/cid/{{course._id}}?analytics" ng-show="user"
+                           data-toggle="tab" data-target="#analytics"
+                                >
+                            <i class="ionicons ion-stats-bars"></i><br>
+                            <span>Analytics</span></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="preview">
+
+                        <div class="col-xs-12 col-md-8">
+                            <img class="preview-image" ng-hide="course.picture"
+                                 src="/img/courses/placeholder.png">
+                            <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
+
+                            <div class="container">
+                                <div class="excerpt">
+                                    <div class="description">
+                                        Started By:
+                                        <strong>
+                                            {{user.username}}
+                                        </strong> on <b>
+                                        <%=moment(course.dateAdded).fromNow()%></b>
+
+                                        <h1>
+                                            <span class="visible-xs" style="margin-left:15px"></span>
+                                            {{course.name}}
+                                        </h1>
+
+                                        <p ng-show="course.courseTags.length > 0" class="filter">
+                                            <a class="label label-primary" style="cursor: default"
+                                               ng-repeat="tag in course.courseTags">
+                                                {{tag.name}}</a>
+                                        </p>
+
+                                        <p>
+                                            {{course.description}}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- analytics-->
+                        <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
+                             ng-controller="widgetController"
+                             ng-init="location='course-preview'">
+
+                            <div class="grid-stack-item"
+                                 data-gs-x="0"
+                                 data-gs-width="12"
+                                 data-gs-locked="yes"
+                                 data-gs-no-resize="yes"
+                                 ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
+                                <div class="grid-stack-item-content">
+                                    <div class="box no-shadow">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title">{{wdg.widget}}</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="box-body-widget">
+
+                                            <div ng-include src="wdg.widgetId.entryPoint"
+                                                 onload="initWidgetButton(wdg.widgetId._id)">
+                                            </div>
+
+                                        </div>
+                                        <div class="box-footer"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- analytics-->
+                    </div>
+                    <div class="tab-pane" id="map">
+                        <div class="box-body no-border" id="tree" ng-include="'/course/map'">
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="tab-pane" id="discussion"></div>
+                    <div class="tab-pane" id="updates"></div>
+                    <div class="tab-pane" id="analytics">
+                        <!-- analytics-->
+                        <div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-3"
+                             ng-controller="widgetController"
+                             ng-init="location='course-analytics'">
+
+                            <div class="grid-stack-item"
+                                 data-gs-x="0"
+                                 data-gs-width="12"
+                                 data-gs-locked="yes"
+                                 data-gs-no-resize="yes"
+                                 ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
+                                <div class="grid-stack-item-content">
+
+                                    <div class="box no-shadow">
+                                        <div class="box-header with-border">
+                                            <h3 class="box-title">{{wdg.widget}}</h3>
+                                            <div class="box-tools pull-right">
+                                                <button class="btn btn-box-tool" data-widget="remove"
+                                                        data-toggle="tooltip" title="Remove"
+                                                        ng-click="closeWidget(wdg.widgetId._id);"
+                                                        >
+                                                    <i class="fa fa-times"></i></button>
+                                            </div>
+                                        </div>
+                                        <div class="box-body">
+
+                                            <!-- start widget render -->
+                                            <div ng-include src="wdg.widgetId.entryPoint"
+                                                 onload="initWidgetButton(wdg.widgetId._id)">
+                                            </div>
+                                            <!-- start widget render -->
+
+                                        </div>
+                                        <div class="box-footer">
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- analytics-->
+                    </div>
+                </div>
+            </div>
+            <!-- /tabs -->
+
+        </div>
+        <div class="clear"></div>
+    </div>
+</section>
+<!-- /.content -->
+<!-- modal contents -->
+<!-- widgetGallery for course preview -->
+<div class="row" ng-controller="WidgetGalleryController">
+    <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
+         aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('course-preview')">
+        <div ng-include="'/widgets/gallery'"></div>
+    </div>
+</div>
+
+<!-- widgetGallery for course analytics -->
+<div class="row" ng-controller="WidgetGalleryController">
+    <div class="modal" id="widgetGalleryAnalytics" tabindex="-1" role="dialog"
+         aria-labelledby="wigets gallery Analytics" aria-hidden="true" ng-init="initData('course-analytics')">
+        <div ng-include="'/widgets/gallery'"></div>
+    </div>
+</div>
+
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="editView" tabindex="-1" role="dialog"
+         aria-labelledby="edit view" aria-hidden="true">
+        <div ng-include="'/course/edit'"></div>
+    </div>
+</div>
+
+<!-- /.modal contents -->

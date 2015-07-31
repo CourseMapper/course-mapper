@@ -18,6 +18,10 @@ router.get('/course/nodeDetail', function (req, res, next){
     res.render(config.get('theme') + '/catalogs/nodeDetail');
 });
 
+router.get('/course/courseDetail', function (req, res, next){
+    res.render(config.get('theme') + '/catalogs/courseDetail');
+});
+
 /**
  * partial for add new course modal form accessed from top menu in course list page
  */

@@ -1,15 +1,18 @@
-<section class="content-header action-header blue">
+<section class="content-header action-header red">
     <ol class="breadcrumb">
         <li class="home">{{course.name}}</li>
+        <li class="home">{{treeNode.name}}</li>
         <li class="active">{{currentTab}}</li>
     </ol>
 
-    <div class="navbar-custom-menu" ng-show="currentTab=='preview'" ng-include
-         src="'actionBar-course-preview'"></div>
-    <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
-         src="'actionBar-course-analytics'"></div>
-    <div class="navbar-custom-menu" ng-show="currentTab=='map'" ng-include
-         src="'actionBar-course-map'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-preview'" ng-include
+         src="'actionBar-node-preview'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-analytics'" ng-include
+         src="'actionBar-node-analytics'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-map'" ng-include
+         src="'actionBar-node-map'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-update'" ng-include
+         src="'actionBar-node-map'"></div>
 
 </section>
 
@@ -48,65 +51,17 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="preview">
-
                         <div class="col-xs-12 col-md-8">
                             preview
                         </div>
-
-                        <!-- analytics-->
-                        <!-- analytics-->
                     </div>
                     <div class="tab-pane" id="map">
-                        <div class="box-body no-border" id="tree"  >
+                        <div class="box-body no-border" id="tree">
                         </div>
                         <div class="clear"></div>
                     </div>
-                    <div class="tab-pane" id="discussion"></div>
                     <div class="tab-pane" id="updates"></div>
-                    <div class="tab-pane" id="analytics">
-                        <!-- analytics-->
-                        <div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-3"
-                             ng-controller="widgetController"
-                             ng-init="location='course-analytics'">
-
-                            <div class="grid-stack-item"
-                                 data-gs-x="0"
-                                 data-gs-width="12"
-                                 data-gs-locked="yes"
-                                 data-gs-no-resize="yes"
-                                 ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
-                                <div class="grid-stack-item-content">
-
-                                    <div class="box no-shadow">
-                                        <div class="box-header with-border">
-                                            <h3 class="box-title">{{wdg.widget}}</h3>
-
-                                            <div class="box-tools pull-right">
-                                                <button class="btn btn-box-tool" data-widget="remove"
-                                                        data-toggle="tooltip" title="Remove"
-                                                        ng-click="closeWidget(wdg.widgetId._id);"
-                                                        >
-                                                    <i class="fa fa-times"></i></button>
-                                            </div>
-                                        </div>
-                                        <div class="box-body">
-
-                                            <!-- start widget render -->
-                                            <div ng-include src="wdg.widgetId.entryPoint"
-                                                 onload="initWidgetButton(wdg.widgetId._id)">
-                                            </div>
-                                            <!-- start widget render -->
-
-                                        </div>
-                                        <div class="box-footer">
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                        <!-- analytics-->
-                    </div>
+                    <div class="tab-pane" id="analytics" ng-include="'node-analytics.html'"></div>
                 </div>
             </div>
             <!-- /tabs -->
@@ -127,3 +82,50 @@
 </div>
 
 <!-- /.modal contents -->
+
+<% include actionBarNode %>
+
+<script type="text/ng-template" id="node-analytics.html">
+    <!-- analytics-->
+    <div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-3"
+         ng-controller="widgetController"
+         ng-init="location='course-analytics'">
+
+        <div class="grid-stack-item"
+             data-gs-x="0"
+             data-gs-width="12"
+             data-gs-locked="yes"
+             data-gs-no-resize="yes"
+             ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
+            <div class="grid-stack-item-content">
+
+                <div class="box no-shadow">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{wdg.widget}}</h3>
+
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="remove"
+                                    data-toggle="tooltip" title="Remove"
+                                    ng-click="closeWidget(wdg.widgetId._id);"
+                                    >
+                                <i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+
+                        <!-- start widget render -->
+                        <div ng-include src="wdg.widgetId.entryPoint"
+                             onload="initWidgetButton(wdg.widgetId._id)">
+                        </div>
+                        <!-- start widget render -->
+
+                    </div>
+                    <div class="box-footer">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- analytics-->
+</script>
