@@ -18,6 +18,8 @@ function displayCommentsIntern(filter, order){
     var url = "/slide-viewer/disComm";
     var urlFilterOrder = url + "/" + order + "/" + filter;
 
+    console.log(urlFilterOrder);
+
     /*$.ajax( {
       "url": urlFilterOrder,
       //"async": false,

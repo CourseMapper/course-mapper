@@ -79,6 +79,9 @@
                         </form>
                         <div class="controls">
                           <button class="btn btn-default" onclick="displayComments();">Show comments</button>
+                          <div ng-controller="CommentListController">
+                            <button class="btn btn-default" ng-click="loadComments('author','true','{}')">Show comments Angular</button>
+                          </div>
                           Sort by:
                           <select id="orderTypeSelect">
                             <option value="author">author</option>
@@ -128,8 +131,6 @@
                               </div>
                             </div>
                         </div>
-
-
                         <div>
                         </div>
                       </div>
