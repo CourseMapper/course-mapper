@@ -3,7 +3,6 @@
 //var appRoot = require('app-root-path');
 //var SlideViewer = require(appRoot + '/modules/slide-viewer');
 
-var default1=0;
 
 /*function _init(){
     console.log("WORKED3");

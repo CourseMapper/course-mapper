@@ -116,7 +116,19 @@
 
                         </div>
                         <div ng-controller="CommentListController">
-                            <div ng-show="comments" ng-bind-html="comments">
+                            <div ng-repeat="comment in comments">
+                              <div ng-bind-html="comment.html">
+                                <div>
+                                  <label>{{comment.author}}({{comment.date}}</label>
+                                </div>
+                                <div class="commentText">
+                                  {{comment.html}}
+                                </div>
+                                <div>
+                                  <br>
+                                </div>
+
+                              </div>
                             </div>
                         </div>
 

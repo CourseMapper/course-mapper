@@ -44,15 +44,20 @@ router.post('/slide-viewer/submitComment', function(req, res, next){
 router.get('/slide-viewer/disComm', function(req, res, next){
   var comment = new Comment();
   comment.getAllComments(function(err, data) {
-
-    //res.json(data);
-      res.render('slide-viewer/displayComments', {
-        numComments: data.length,
-        comments: data
-      }
-
-    );
-
+    var modifiedData = new Array(data.length);
+    for(var i=0; i<data.length; i++){
+      modifiedData[i] = {
+        author: data[i].author,
+        date: data[i].dateOfCreation.toTimeString(),
+        slide: data[i].originSlide,
+        html: data[i].renderedText
+      };
+    }
+    res.status(200).json({result:true, comments: modifiedData});
+    /*res.render('slide-viewer/displayComments', {
+      numComments: data.length,
+      comments: modifiedData
+    });*/
   });
 });
 
@@ -60,10 +65,10 @@ router.get('/slide-viewer/disComm/:order/:filters', function(req, res, next){
   var comment = new Comment();
 
   var order = JSON.parse(req.params.order);
-  var filter = JSON.parse(req.params.filters);
+  var filter = JSON.parse(req.params.filter);
 
 
-  comment.getOrderedFilteredComments(order,filter,function(err, data) {
+  comment.getAllComments(function(err, data) {
 
     //res.json(data);
       res.render('slide-viewer/displayComments', {

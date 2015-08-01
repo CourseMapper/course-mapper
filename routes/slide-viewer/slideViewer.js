@@ -8,7 +8,7 @@ var SlideAnnotationZones = require(appRoot + '/modules/annotationZones');
 
 var router = express.Router();
 
-router.get('/', function(req, res, next) {
+/*router.get('/', function(req, res, next) {
   var comment = new Comment();
   comment.getAllComments(function(err, data) {
 
@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
     );
 
   });
-});
+});*/
 
 router.post('/slide-viewer', function(req, res, next){
     var comment = new Comment();
@@ -31,15 +31,24 @@ router.post('/slide-viewer', function(req, res, next){
 router.get('/slide-viewer/disComm', function(req, res, next){
   var comment = new Comment();
   comment.getAllComments(function(err, data) {
-
-    //res.json(data);
-      res.render('slide-viewer/displayComments', {
-        numComments: data.length,
-        comments: data
-      }
-
-    );
-
+    console.log("TESTTEST");
+    var modifiedData;
+    for(var i=0; i<data.length; i++){
+      modifiedData[i] = {
+        results: true,
+        comments:{
+          author: data.author,
+          date: data.dateOfCreation,
+          slide: data.originSlide,
+          html: data.renderedText
+        }
+      };
+    }
+    res.render(modifiedData);
+    /*res.render('slide-viewer/displayComments', {
+      numComments: data.length,
+      comments: modifiedData
+    });*/
   });
 });
 
