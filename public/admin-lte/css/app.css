@@ -554,6 +554,10 @@ ul.dropdown-menu.course{
     background: #db4865 !important;
 }
 
+.content-header.red>.breadcrumb>li+li:before{
+    color:white;
+}
+
 .action-header {
     padding: 7px;
     margin-left: 0px;
