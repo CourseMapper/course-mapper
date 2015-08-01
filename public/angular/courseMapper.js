@@ -864,7 +864,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         'preview':'preview',
         'analytics':'analytics',
         'map':'map',
-        'updates':'updates'
+        'updates':'updates',
+        'external-resources':'external resources'
     };
 
     $scope.changeTab = function(){

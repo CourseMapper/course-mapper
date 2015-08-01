@@ -16,7 +16,8 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         'preview':'preview',
         'analytics':'analytics',
         'map':'map',
-        'updates':'updates'
+        'updates':'updates',
+        'external-resources':'external resources'
     };
 
     $scope.changeTab = function(){

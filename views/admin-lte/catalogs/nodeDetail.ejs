@@ -1,13 +1,17 @@
 <section class="content-header action-header red">
+    <!-- breadcrumb 2nd row -->
     <ol class="breadcrumb">
-        <li class="home">{{course.name}}</li>
-        <li class="home">{{treeNode.name}}</li>
+        <li class="home"><a href="#/cid/{{course._id}}?map&center={{nodeId}}"> &leftarrow;Back &nbsp;&nbsp; {{course.name}}</a></li>
+        <li>Content Node</li>
+        <li class="home"><a href="#/cid/{{course._id}}/nid/{{nodeId}}?preview">{{treeNode.name}}</a></li>
         <li class="active">{{currentTab}}</li>
     </ol>
+    <!-- breadcrumb 2nd row -->
 
+    <!-- ACTION BAR switches -->
     <div class="navbar-custom-menu" ng-show="currentTab=='node-preview'" ng-include
          src="'actionBar-node-preview'"></div>
-    <div class="navbar-custom-menu" ng-show="currentTab=='node-analytics'" ng-include
+    <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
          src="'actionBar-node-analytics'"></div>
     <div class="navbar-custom-menu" ng-show="currentTab=='node-map'" ng-include
          src="'actionBar-node-map'"></div>
@@ -15,6 +19,7 @@
          src="'actionBar-node-update'"></div>
     <div class="navbar-custom-menu" ng-show="currentTab=='node-external-resources'" ng-include
          src="'actionBar-node-external-resources'"></div>
+    <!-- ACTION BAR switches -->
 
 </section>
 
@@ -25,51 +30,27 @@
 
             <!-- tabs left -->
             <div class="tabbable tabs-left">
-                <ul class="nav nav-tabs tabs-hide hidden-xs">
-                    <li class="active">
-                        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?preview"
-                           data-toggle="tab" data-target="#preview">
-                            <i class="ionicons ion-ios-home-outline"></i><br>
-                            <span>Home</span></a></li>
-
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?map"
-                           data-toggle="tab" data-target="#map">
-                            <i class="ionicons ion-map"></i>
-                            <span>Video Map</span></a></li>
-
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?external-resources"
-                           data-toggle="tab" data-target="#external-resources">
-                            <i class="ionicons ion-link"></i>
-                            <span>External Resources</span></a></li>
-
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?updates" ng-show="user"
-                           data-toggle="tab" data-target="#updates">
-                            <i class="ionicons ion-ios-time-outline"></i><br>
-                            <span>Updates</span></a></li>
-
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?analytics" ng-show="user"
-                           data-toggle="tab" data-target="#analytics">
-                            <i class="ionicons ion-stats-bars"></i><br>
-                            <span>Analytics</span></a></li>
-                </ul>
+                <% include nodeDetailLeftTab %>
+                <!-- end tab menu -->
 
                 <div class="tab-content">
                     <div class="tab-pane active" id="preview">
                         <div class="col-xs-12 col-md-8">
-                            preview
+                            <% include nodeDetailContentPreview %>
                         </div>
                     </div>
                     <div class="tab-pane" id="map">
-                        <div class="box-body no-border" id="tree">
-                        </div>
-                        <div class="clear"></div>
+                        <% include nodeDetailContentMap %>
                     </div>
-                    <div class="tab-pane" id="updates"></div>
-                    <div class="tab-pane" id="analytics" ng-include="'node-analytics.html'"></div>
+                    <div class="tab-pane" id="updates">
+                        <% include nodeDetailContentUpdates %>
+                    </div>
+                    <div class="tab-pane" id="external-resources">
+                        <% include nodeDetailContentExternalResources %>
+                    </div>
+                    <div class="tab-pane" id="analytics">
+                        <% include nodeDetailContentNodeAnalytics %>
+                    </div>
                 </div>
             </div>
             <!-- /tabs -->
@@ -83,8 +64,8 @@
 
 <!-- widgetGallery for course analytics -->
 <div class="row" ng-controller="WidgetGalleryController">
-    <div class="modal" id="widgetGalleryAnalytics" tabindex="-1" role="dialog"
-         aria-labelledby="wigets gallery Analytics" aria-hidden="true" ng-init="initData('node-analytics')">
+    <div class="modal" id="widgetGalleryNodeAnalytics" tabindex="-1" role="dialog"
+         aria-labelledby="wigets gallery node Analytics" aria-hidden="true" ng-init="initData('node-analytics')">
         <div ng-include="'/widgets/gallery'"></div>
     </div>
 </div>
@@ -96,53 +77,7 @@
         add bookmark
     </div>
 </div>
-
 <!-- /.modal contents -->
-
-<script type="text/ng-template" id="node-analytics.html">
-    <!-- analytics-->
-    <div id="node-analytics-widgets" class="grid-stack col-xs-12 col-md-3"
-         ng-controller="widgetController"
-         ng-init="location='node-analytics'">
-
-        <div class="grid-stack-item"
-             data-gs-x="0"
-             data-gs-width="12"
-             data-gs-locked="yes"
-             data-gs-no-resize="yes"
-             ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
-            <div class="grid-stack-item-content">
-
-                <div class="box no-shadow">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">{{wdg.widget}}</h3>
-
-                        <div class="box-tools pull-right">
-                            <button class="btn btn-box-tool" data-widget="remove"
-                                    data-toggle="tooltip" title="Remove"
-                                    ng-click="closeWidget(wdg.widgetId._id);"
-                                    >
-                                <i class="fa fa-times"></i></button>
-                        </div>
-                    </div>
-                    <div class="box-body">
-
-                        <!-- start widget render -->
-                        <div ng-include src="wdg.widgetId.entryPoint"
-                             onload="initWidgetButton(wdg.widgetId._id)">
-                        </div>
-                        <!-- start widget render -->
-
-                    </div>
-                    <div class="box-footer">
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-    <!-- analytics-->
-</script>
 
 <% include actionBarNode %>
 
