@@ -32,15 +32,4 @@
 <!--course widget static source from public/course-analytics (css file should be removed to header later)-->
 <link rel="stylesheet" type="text/css" href="/course-analytics/user_profile.css">
 
-<script>
-    $(document).ready(function () {
-        initiateDraggableGrid(['#course-preview-widgets', '#course-analytics-widgets']);
-
-        handleTab();
-
-        if (location.hash !== '')
-            $(document).scrollTop(0);
-    });
-</script>
-
 <% include ../footer %>

@@ -144,10 +144,8 @@ function cloneSimpleObject(obj){
 
     $scope.init();
 
-    $rootScope.$watch('user', function(){
-        if($rootScope.user) {
-            $scope.user = $rootScope.user;
-
+    $scope.$watchGroup(['user', 'course'], function(){
+        if($scope.user != null && $scope.course != null) {
             $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
                 if (res.result && res.courses) {
                     $scope.enrolled = res.courses.isEnrolled;
@@ -1136,7 +1134,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             }).
 
             when('/cid/:courseId', {
-                templateUrl: 'course_detail.html',
+                templateUrl: '/course/courseDetail',
                 controller: 'CourseController',
                 reloadOnSearch: false
             }).

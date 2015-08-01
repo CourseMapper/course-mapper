@@ -70,7 +70,7 @@
                                         <strong>
                                             {{user.username}}
                                         </strong> on <b>
-                                        <%=moment(course.dateAdded).fromNow()%></b>
+                                        {{course.dateAdded}}</b>
 
                                         <h1>
                                             <span class="visible-xs" style="margin-left:15px"></span>
@@ -209,3 +209,14 @@
 </div>
 
 <!-- /.modal contents -->
+
+<script>
+    $(document).ready(function () {
+        initiateDraggableGrid(['#course-preview-widgets', '#course-analytics-widgets']);
+
+        handleTab();
+
+        if (location.hash !== '')
+            $(document).scrollTop(0);
+    });
+</script>
