@@ -27,7 +27,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
         $scope.$on(onCloseButtonClicked, function (event, widget) {
-             $scope.uninstall(widget.location, widget.application, widget.widget);
+             $scope.uninstall(widget.location, widget.application, widget.widget, widget.courseId);
         });
     });
 

@@ -502,6 +502,7 @@ ul.dropdown-menu.course{
 
 .filter .label {
     margin-right: 5px;
+    white-space: normal;
 }
 
 .tree-container {
