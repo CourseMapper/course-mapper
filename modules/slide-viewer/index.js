@@ -8,8 +8,11 @@ function Comment(){
 }
 
 Comment.prototype.submitAnnotation = function(err, params, done){
+  var temp = this.convertRawText;
+
   this.submitAllTags(err,params.tags,function(){
-    this.convertRawText(params.rawText,function(renderedText){
+    console.log("GOT TO THE END");
+    temp(params.rawText,function(renderedText){
       var annotationsPDF = new AnnotationsPDF({
         rawText: params.rawText,
         renderedText: renderedText,
@@ -71,7 +74,8 @@ Comment.prototype.convertRawText = function(rawText,callback){
 
   var check = this.checkTagName;
 
-  this.getAllTagNames(function(data){
+  var comm = new Comment();
+  comm.getAllTagNames(function(data){
 
   var tagNameList = [];
 
@@ -80,8 +84,9 @@ Comment.prototype.convertRawText = function(rawText,callback){
   }
 
   var renderedText = rawText.replace(/#(\w+)/g, function(x){
-      console.log(check(x,tagNameList));
-      if(check(x,tagNameList)){
+      var comm = new Comment();
+      console.log(comm.checkTagName(x,tagNameList));
+      if(comm.checkTagName(x,tagNameList)){
         console.log("ADDED LABEL");
         var ret = "<label class='blueText'> " + x + " </label>";
         return ret;

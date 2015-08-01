@@ -7,6 +7,7 @@ var foreach = require('async-foreach').forEach;
 var await = require('asyncawait/await');
 
 
+
 function AnnZones(){
 }
 
@@ -52,23 +53,40 @@ function temp(item, done) {
   });
 }
 
+
+
+var permArray;
+
 AnnZones.prototype.submitTagList = function(err,tagList, callback){
+  if(tagList>=1){
+    temp(tagList[0],this.submitTagList(err,tagList.slice(1,(tagList.length-1),callback)));
+  }
+  else {
+    temp(tagList[0],callback);
+  }
+
+};
+
+/*AnnZones.prototype.submitTagList = function(err,tagList, callback){
 
   console.log("got here1");
 
   console.log(temp);
   console.log(foreach);
+  console.log(callback);
 
 
-
-
-  foreach(tagList,temp,function(err) {
-    console.log("All Done");
-    callback();
+  var asy = async( function(){
+    for(var i = 0; i < tagList.length; i++)
+      await (temp(tagList[i],i));
+    return;
   });
-  console.log("got here3");
 
-};
+  asy().then(callback());
+  //foreach(tagList,temp,callback());
+  //console.log("got here3");
+
+};*/
 
 
 AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
