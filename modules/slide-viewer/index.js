@@ -8,33 +8,44 @@ function Comment(){
 }
 
 Comment.prototype.submitAnnotation = function(err, params, done){
-  this.convertRawText(params.rawText,function(renderedText){
-    var annotationsPDF = new AnnotationsPDF({
-      rawText: params.rawText,
-      renderedText: renderedText,
-      author: params.author,
-      originSlide: params.originSlide
-    });
+  this.submitAllTags(err,params.tags,function(){
+    this.convertRawText(params.rawText,function(renderedText){
+      var annotationsPDF = new AnnotationsPDF({
+        rawText: params.rawText,
+        renderedText: renderedText,
+        author: params.author,
+        originSlide: params.originSlide
+      });
 
-    //console.log(this.convertRawText(params.rawText));
+      //console.log(this.convertRawText(params.rawText));
 
 
-    // save it to db
-    annotationsPDF.save(function (err) {
-        if (err) {
-            console.log('annotation submitting error');
-            // call error callback
-            console.log(err);
-            //errorCallback(err);
-        } else {
-            // call success callback
+      // save it to db
+      annotationsPDF.save(function (err) {
+          if (err) {
+              console.log('annotation submitting error');
+              // call error callback
+              console.log(err);
+              //errorCallback(err);
+          } else {
+              // call success callback
 
-            done(annotationsPDF);
+              done(annotationsPDF);
 
-        }
+          }
+      });
     });
   });
 };
+
+Comment.prototype.submitAllTags = function(err,tags,callback){
+  var annZone = new AnnZones();
+  var tagList = tags.split(",");
+  console.log(tagList);
+  annZone.submitTagList(err,tagList,callback);
+}
+
+
 
 //TODO Really check if tag name exists
 Comment.prototype.checkTagName = function(tagName,tagNameList){
