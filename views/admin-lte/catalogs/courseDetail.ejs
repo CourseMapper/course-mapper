@@ -22,157 +22,29 @@
 
             <!-- tabs left -->
             <div class="tabbable tabs-left">
-                <ul class="nav nav-tabs tabs-hide hidden-xs">
-                    <li class="active">
-                        <a href="#/cid/{{course._id}}?tab=preview"
-                           data-toggle="tab" data-target="#preview"
-                                >
-                            <i class="ionicons ion-ios-home-outline"></i><br>
-                            <span>Preview</span></a></li>
 
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}?tab=map"
-                           data-toggle="tab" data-target="#map"
-                                >
-                            <i class="ionicons ion-map"></i>
-                            <span>CourseMap</span></a></li>
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}?tab=updates" ng-show="user"
-                           data-toggle="tab" data-target="#updates"
-                                >
-                            <i class="ionicons ion-ios-time-outline"></i><br>
-                            <span>Updates</span></a></li>
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}?tab=discussion" ng-show="user"
-                           data-toggle="tab" data-target="#discussion"
-                                >
-                            <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
-                            <span>Discussion</span></a></li>
-                    <li ng-show="enrolled || isOwner">
-                        <a href="#/cid/{{course._id}}?tab=analytics" ng-show="user"
-                           data-toggle="tab" data-target="#analytics"
-                                >
-                            <i class="ionicons ion-stats-bars"></i><br>
-                            <span>Analytics</span></a></li>
-                </ul>
+                <% include courseDetailLeftTab %>
+
                 <div class="tab-content">
                     <div class="tab-pane active" id="preview">
-
-                        <div class="col-xs-12 col-md-8">
-                            <img class="preview-image" ng-hide="course.picture"
-                                 src="/img/courses/placeholder.png">
-                            <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
-
-                            <div class="container">
-                                <div class="excerpt">
-                                    <div class="description">
-                                        Started By:
-                                        <strong>
-                                            {{user.username}}
-                                        </strong> on <b>
-                                        {{course.dateAdded}}</b>
-
-                                        <h1>
-                                            <span class="visible-xs" style="margin-left:15px"></span>
-                                            {{course.name}}
-                                        </h1>
-
-                                        <p ng-show="course.courseTags.length > 0" class="filter">
-                                            <a class="label label-primary" style="cursor: default"
-                                               ng-repeat="tag in course.courseTags">
-                                                {{tag.name}}</a>
-                                        </p>
-
-                                        <p>
-                                            {{course.description}}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- analytics-->
-                        <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
-                             ng-controller="widgetController"
-                             ng-init="location='course-preview'">
-
-                            <div class="grid-stack-item"
-                                 data-gs-x="0"
-                                 data-gs-width="12"
-                                 data-gs-locked="yes"
-                                 data-gs-no-resize="yes"
-                                 ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
-                                <div class="grid-stack-item-content">
-                                    <div class="box no-shadow">
-                                        <div class="box-header with-border">
-                                            <h3 class="box-title">{{wdg.widget}}</h3>
-                                            <div class="box-tools pull-right">
-                                                <button class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
-                                            </div>
-                                        </div>
-                                        <div class="box-body-widget">
-
-                                            <div ng-include src="wdg.widgetId.entryPoint"
-                                                 onload="initWidgetButton(wdg.widgetId._id)">
-                                            </div>
-
-                                        </div>
-                                        <div class="box-footer"> </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- analytics-->
+                        <% include courseDetailContentPreview %>
                     </div>
+
                     <div class="tab-pane" id="map">
-                        <div class="box-body no-border" id="tree" ng-include="'/course/map'">
-                        </div>
+                        <% include courseDetailContentMap %>
                         <div class="clear"></div>
                     </div>
-                    <div class="tab-pane" id="discussion"></div>
-                    <div class="tab-pane" id="updates"></div>
+
+                    <div class="tab-pane" id="discussion">
+                        <% include courseDetailContentDiscussion %>
+                    </div>
+
+                    <div class="tab-pane" id="updates">
+                        <% include courseDetailContentUpdates %>
+                    </div>
+
                     <div class="tab-pane" id="analytics">
-                        <!-- analytics-->
-                        <div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-3"
-                             ng-controller="widgetController"
-                             ng-init="location='course-analytics'">
-
-                            <div class="grid-stack-item"
-                                 data-gs-x="0"
-                                 data-gs-width="12"
-                                 data-gs-locked="yes"
-                                 data-gs-no-resize="yes"
-                                 ng-repeat="wdg in widgets" id="{{wdg.widgetId._id}}">
-                                <div class="grid-stack-item-content">
-
-                                    <div class="box no-shadow">
-                                        <div class="box-header with-border">
-                                            <h3 class="box-title">{{wdg.widget}}</h3>
-                                            <div class="box-tools pull-right">
-                                                <button class="btn btn-box-tool" data-widget="remove"
-                                                        data-toggle="tooltip" title="Remove"
-                                                        ng-click="closeWidget(wdg.widgetId._id);"
-                                                        >
-                                                    <i class="fa fa-times"></i></button>
-                                            </div>
-                                        </div>
-                                        <div class="box-body">
-
-                                            <!-- start widget render -->
-                                            <div ng-include src="wdg.widgetId.entryPoint"
-                                                 onload="initWidgetButton(wdg.widgetId._id)">
-                                            </div>
-                                            <!-- start widget render -->
-
-                                        </div>
-                                        <div class="box-footer">
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                        <!-- analytics-->
+                        <% include courseDetailContentAnalytics %>
                     </div>
                 </div>
             </div>

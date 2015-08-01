@@ -37,13 +37,6 @@ router.get('/course/edit', function(req, res, next) {
 });
 
 /**
- * partial for map tab in course detail page
- */
-router.get('/course/map', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/course.map.ejs');
-});
-
-/**
  * partial for add sub topic modal
  */
 router.get('/course/addSubTopic', function(req, res, next) {
