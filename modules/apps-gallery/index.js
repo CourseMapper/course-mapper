@@ -6,6 +6,8 @@ var Widgets = require(appRoot + '/modules/apps-gallery/widgets.js');
 var WP = require(appRoot + '/modules/apps-gallery/widgetsPlacements.js');
 var Courses = require(appRoot + '/modules/catalogs/courses.js');
 var _ = require('underscore');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 function AppStore(){
     this.directory = appRoot + '/modules/applications';
@@ -178,6 +180,48 @@ AppStore.prototype.populateApplications = function(failed, success){
     });
 };
 
+AppStore.prototype.getServerWidgets = function(error, params, widgetParams, success){
+    Widgets.find(params).exec(
+        function(err, docs){
+            if(err) error(err);
+            else{
+                var resHtml = "";
+                var loopWidgets = async ( function(docs){
+
+                    for(var i in docs){
+                        var widg = docs[i];
+                        if(widg.runOn != 'server')
+                            continue;
+
+                        var ep = appRoot + ('/modules/applications' + widg.entryPoint);
+                        var OBJ = require(ep);
+                        var widgetInstance = new OBJ();
+
+                        await ( widgetInstance.init(widgetParams) );
+                        await ( widgetInstance.run() );
+
+                        var resHtmlTemp = widgetInstance.render();
+                        resHtml += resHtmlTemp;
+                    }
+
+                    return resHtml;
+                });
+
+                loopWidgets(docs)
+                    .then(function(html){
+                        success(html);
+                    })
+                    .catch(function(err){
+                        console.log('getServerWidgets failed ' + err);
+                        error(err);
+                    })
+                ;
+            }
+        }
+    );
+
+};
+
 /**
  * get installed widget based on parameters
  * e.g {location, userId, courseId}
@@ -185,9 +229,10 @@ AppStore.prototype.populateApplications = function(failed, success){
  * @param params
  * @param success
  */
-AppStore.prototype.getInstalledWidgets  = function(error, params, success){
+AppStore.prototype.getInstalledWidgets = function(error, params, success){
     if(params.courseId)
         params.courseId = mongoose.Types.ObjectId(params.courseId);
+
     if(params.userId)
         params.userId = mongoose.Types.ObjectId(params.userId);
 

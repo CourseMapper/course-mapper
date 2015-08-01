@@ -19,6 +19,14 @@ function convertToDictionary(documents){
     return ret;
 }
 
+/**
+ * get all categories based on params,
+ * and form the data into recursive tree
+ *
+ * @param error
+ * @param params
+ * @param success
+ */
 catalog.prototype.getCategories = function(error, params, success){
     Category.find(params, function(err, docs) {
         if (!err){

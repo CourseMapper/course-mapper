@@ -20,7 +20,7 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
     $scope.changeTab = function(){
         var paths = $location.search();
         var path = "preview";
-        if(paths){
+        if(!_.isEmpty(paths)){
             path = _.findKey(paths);
         }
 

@@ -1,4 +1,5 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies', 'ngTagsInput', 'ngFileUpload']);
+var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies',
+    'ngTagsInput', 'ngFileUpload','oc.lazyLoad']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -29,6 +30,19 @@ app.directive('onFinishRender', function ($timeout) {
             }
         }
     }
+});
+
+app.directive('script', function($parse, $rootScope, $compile) {
+    return {
+        restrict: 'E',
+        terminal: true,
+        link: function(scope, element, attr) {
+            if (attr.ngSrc) {
+                var domElem = '<script src="'+attr.ngSrc+'" async defer></script>';
+                $(element).append($compile(domElem)(scope));
+            }
+        }
+    };
 });
 
 /**

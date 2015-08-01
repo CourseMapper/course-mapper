@@ -69,4 +69,11 @@ app.controller('widgetController', function($scope, $http, $rootScope, $timeout)
         //add_widget(el, x, y, width, height, auto_position)
         grid.add_widget(el, 0, 0, wdg.width, wdg.height, true);
     };
+
+    $scope.closeWidget = function(id){
+        var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
+        var wdg = $scope.widgets[i];
+
+        $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
+    }
 });

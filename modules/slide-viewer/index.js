@@ -7,51 +7,71 @@ var AnnZones = require('../annotationZones/index');
 function Comment(){
 }
 
-Comment.prototype.sumbitAnnotation = function(err, params, done){
-  var annotationsPDF = new AnnotationsPDF({
-    rawText: params.rawText,
-    renderedText: this.convertRawText(params.rawText),
-    author: params.author,
-    originSlide: params.originSlide,
-  });
+Comment.prototype.submitAnnotation = function(err, params, done){
+  this.convertRawText(params.rawText,function(renderedText){
+    var annotationsPDF = new AnnotationsPDF({
+      rawText: params.rawText,
+      renderedText: renderedText,
+      author: params.author,
+      originSlide: params.originSlide
+    });
 
-  //console.log(this.convertRawText(params.rawText));
+    //console.log(this.convertRawText(params.rawText));
 
 
-  // save it to db
-  annotationsPDF.save(function (err) {
-      if (err) {
-          console.log('annotation submitting error');
-          // call error callback
-          console.log(err);
-          //errorCallback(err);
-      } else {
-          // call success callback
+    // save it to db
+    annotationsPDF.save(function (err) {
+        if (err) {
+            console.log('annotation submitting error');
+            // call error callback
+            console.log(err);
+            //errorCallback(err);
+        } else {
+            // call success callback
 
-          done(annotationsPDF);
+            done(annotationsPDF);
 
-      }
+        }
+    });
   });
 };
 
 //TODO Really check if tag name exists
-Comment.prototype.checkTagName = function(tagName){
-    var annZone = new AnnZones();
-    return annZone.annotationZoneNameExists(tagName);
-
+Comment.prototype.checkTagName = function(tagName,tagNameList){
+//    var annZone = new AnnZones();
+//    return annZone.annotationZoneNameExists(tagName);
+  for(var i = 0; i < tagNameList.length; i++){
+    if(tagName == tagNameList[i])
+      return true;
+  }
+  return false;
 
 }
 
+Comment.prototype.getAllTagNames = function(callback){
+    var annZone = new AnnZones();
+    annZone.getAllAnnotationZoneNames(callback);
+}
+
+
 //TODO Not working correctly yet
-Comment.prototype.convertRawText = function(rawText){
+Comment.prototype.convertRawText = function(rawText,callback){
+
+
   var check = this.checkTagName;
 
+  this.getAllTagNames(function(data){
+
+  var tagNameList = [];
+
+  for(var i = 0; i < data.length; i++){
+    tagNameList[i] = data[i].annotationZoneName;
+  }
 
   var renderedText = rawText.replace(/#(\w+)/g, function(x){
-      console.log(check(x));
-      if(check(x)){
-
-        //console.log("ADDED LABEL");
+      console.log(check(x,tagNameList));
+      if(check(x,tagNameList)){
+        console.log("ADDED LABEL");
         var ret = "<label class='blueText'> " + x + " </label>";
         return ret;
       }
@@ -59,10 +79,10 @@ Comment.prototype.convertRawText = function(rawText){
         return x;
       }
 
-    }
+  });
 
-  )
-
+  callback(renderedText);
+  });
   /*var tagArray = [];
   var arrayIndex = 0;
 
@@ -81,14 +101,13 @@ Comment.prototype.convertRawText = function(rawText){
 
   var ret = "<label class='blueText'> " + x + " </label>";
 */
-  return renderedText;
-}
+};
 
 
 
 Comment.prototype.handleSubmitPost = function(req, res, next) {
     //console.log(req);
-    this.sumbitAnnotation(
+    this.submitAnnotation(
         function error(err){
             return next(err);
         },

@@ -1,0 +1,77 @@
+<!-- Main content -->
+<section class="content" ng-controller="NodeEditController" >
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-5 col-centered">
+            <div class="box no-border" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{nodeModaltitle}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form class="" role="form" ng-submit="saveContentNode()">
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="name">{{currentNodeAction.typeText}} name</label>
+                                <p class="help-block">{{currentNodeAction.typeText}} name can contain any letters or numbers</p>
+                                <div class="controls">
+                                    <input type="text" id="name" name="name" placeholder="" class="form-control"
+                                           ng-model="formData.name">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="pdf">
+                                <div class="control-group">
+                                    <p></p>
+                                    <label class="control-label" for="pdf">Upload PDF file</label>
+                                    <div class="controls">
+                                        <div class="btn btn-sm btn-default"
+                                             ngf-select accept="application/pdf" ngf-accept="'application/pdf'"
+                                             ng-model="filespdf" ngf-multiple="false" ngf-max-size='1000000'><i class="fa fa-file-pdf-o"></i> &nbsp; Select a pdf file</div>
+                                        &nbsp; <span ng-repeat="f in filespdf">{{f.name}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="video">
+                                <div class="control-group">
+                                    <p></p>
+                                    <label class="control-label" for="pdf">Upload Video File</label>
+                                    <div class="controls">
+                                        <div class="btn btn-sm btn-default"
+                                             ngf-select accept="video/*" ngf-accept="'video/*'"
+                                             ng-model="filesvideo" ngf-multiple="false" ngf-max-size='100000000'><i class="`"></i> &nbsp; Select a video file</div>
+                                        &nbsp; <span ng-repeat="f in filesvideo">{{f.name}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p class="help-block"></p>
+                                <p class="help-block"></p>
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <span class="help-block" ng-show="errors">{{ errors }}</span>
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-md btn-primary">Save</button>
+                                        <button type="button" class="btn btn-md btn-primary"
+                                                data-dismiss="modal" aria-label="Close"
+                                                ng-click="cancel()">
+                                            <span aria-hidden="true">Cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <!-- ./CourseEditController-->
+        </div>
+    </div>
+</section>

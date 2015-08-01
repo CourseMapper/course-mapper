@@ -10,6 +10,7 @@ var widgetSchema = new mongoose.Schema({
     width: {type: Number},
     height: {type: Number},
     icon: {type: String},
+    runOn: {type: String},
 
     isActive: {type: Boolean, required: true, default:false},
 

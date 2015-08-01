@@ -27,6 +27,10 @@ router.get('/my-activity-summary', function(req, res, next) {
     res.render('my-course/activitySummary');
 });
 
+router.get('/my-summary', function(req, res, next) {
+    res.render('my-course/activitySummary');
+});
+
 router.get('/my-course-progress', function(req, res, next) {
     res.render('my-course/courseHistory');
 });
@@ -38,11 +42,5 @@ router.get('/journey', function(req, res, next) {
     res.render('my-course/journey' );
 });
 
-/**
- * example of api route
- */
-router.get('/api/getmycourses', function(req, res, next) {
-    res.status(200).json({result:true});
-});
 
 module.exports = router;
