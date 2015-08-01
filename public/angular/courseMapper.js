@@ -115,13 +115,14 @@ function cloneSimpleObject(obj){
     };
 
     $scope.changeTab = function(){
-        var paths = $location.search();
-        var path = "preview";
-        if(!_.isEmpty(paths)){
-            path = _.findKey(paths);
+        var defaultPath = "preview";
+        var q = $location.search();
+
+        if(q.tab){
+            defaultPath = q.tab;
         }
 
-        $scope.currentTab = $scope.tabs[path];
+        $scope.currentTab = $scope.tabs[defaultPath];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
     };
 
@@ -869,13 +870,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.changeTab = function(){
-        var paths = $location.search();
-        var path = "preview";
-        if(!_.isEmpty(paths)){
-            path = _.findKey(paths);
+        var defaultPath = "preview";
+        var q = $location.search();
+
+        if(q.tab){
+            defaultPath = q.tab;
         }
 
-        $scope.currentTab = $scope.tabs[path];
+        $scope.currentTab = $scope.tabs[defaultPath];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
     };
 
