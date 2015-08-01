@@ -32,9 +32,9 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
 
 function temp(item, done) {
   console.log("Got at least here");
-
+  console.log(item);
   var annotationZonePDF = new AnnotationZonesPDF({
-    annotationZoneName: item
+    annotationZoneName: item,
   });
 
   // save it to db
@@ -57,8 +57,8 @@ AnnZones.prototype.submitTagList = function(err,tagList, callback){
   console.log("got here1");
 
   console.log(temp);
-  console.log(async);
-  
+  console.log(foreach);
+
 
 
 
