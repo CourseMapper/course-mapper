@@ -37,11 +37,10 @@
      ng-init="location='course-preview'">
 
     <div class="grid-stack-item"
-         data-gs-x="0"
-         data-gs-width="12"
          data-gs-locked="yes"
          data-gs-no-resize="yes"
-         ng-repeat="wdg in widgets" id="t{{wdg.widgetId._id}}">
+         ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}" >
+        <!--on-finish-render="OnAfterWidgetLoadedcourse-preview"-->
         <div class="grid-stack-item-content">
             <div class="box no-shadow">
                 <div class="box-header with-border">

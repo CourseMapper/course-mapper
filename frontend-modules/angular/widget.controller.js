@@ -26,8 +26,11 @@ app.controller('widgetController', function($scope, $http, $rootScope, $timeout)
         var onafter = 'onAfterInstall' + $scope.location;
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
-            var grid = $('.grid-stack').data('gridstack');
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
+            //for(var i in $scope.widgets){
+            //    grid.remove_widget();
+            //}
 
             $scope.getWidgets();
         });
@@ -35,10 +38,16 @@ app.controller('widgetController', function($scope, $http, $rootScope, $timeout)
         var onafter = 'onAfterUninstall' + $scope.location;
         $scope.$on( onafter, function(event, newWidget){
             // remove all widget in the page
-            var grid = $('.grid-stack').data('gridstack');
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
 
             $scope.getWidgets();
+        });
+
+        var onafterW = 'OnAfterWidgetLoaded' + $scope.location;
+        $scope.$on(onafterW, function(){
+            $scope.initiateDraggableGrid($scope.location);
+            //$scope.populateWidgets($scope.location);
         });
     });
 
@@ -60,7 +69,7 @@ app.controller('widgetController', function($scope, $http, $rootScope, $timeout)
         var loc = '#' + $scope.location + '-widgets';
         var grid = $(loc).data('gridstack');
 
-        var el = '#' + id;
+        var el = '#w' + id;
 
         // get width and height
         var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
@@ -75,5 +84,16 @@ app.controller('widgetController', function($scope, $http, $rootScope, $timeout)
         var wdg = $scope.widgets[i];
 
         $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
+    };
+
+    $scope.initiateDraggableGrid = function(locs){
+        $scope.location = locs;
+        initiateDraggableGrid(['#' + locs + '-widgets']);
+    };
+
+    $scope.populateWidgets = function(){
+        for(var i in $scope.widgets){
+            $scope.addWidget($scope.widgets[i].widgetId._id);
+        }
     }
 });
