@@ -69,6 +69,11 @@
                                  <input type="hidden" class="form-control" id="author" name="author" placeholder="author" value= <%=currentUser.username%> >
                                </div>
                              </div>
+                             <div class="control-group">
+                               <div class="controls">
+                                 <input class="form-control" id="tags" name="tags" placeholder="tags">
+                               </div>
+                             </div>
 
                              <div class="control-group">
                                <div class="controls">
@@ -101,7 +106,7 @@
                             <input id="filterValueText" ng-model="filtersRaw"></input>
                           </div>
                         </div>
-                        <div>
+                        <!--<div>
 
                           <form action='/slide-viewer/submitTag' method="POST">
                             <fieldset>
@@ -118,11 +123,11 @@
                              </div>
                           </form>
 
-                        </div>
+                        </div>-->
                         <div >
                             <div ng-repeat="comment in comments">
                               <div>
-                                  <label>{{comment.author}}({{comment.date}}</label>
+                                  <label class='authorLabel' onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
 
                                   <div class="commentText" ng-bind-html="comment.html">
                                   </div>
