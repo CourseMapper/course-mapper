@@ -101,7 +101,9 @@
                             <option value="none">none</option>
                             <option value="author">author</option>
                           </select>
-                          <input id="filterValueText"></input>
+                          <div ng-controller="CommentListController">
+                            <input id="filterValueText" ng-model="filtersRaw"></input>
+                          </div>
                         </div>
                         <div>
 
