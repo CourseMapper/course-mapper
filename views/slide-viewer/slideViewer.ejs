@@ -15,7 +15,7 @@
                 Slides
             </h1>
         </section>
-        <section class="content">
+        <section class="content" ng-controller="CommentListController">
           <div class="row">
             <div class= "col-sm-12 col-md-12">
               <div class="col-sm-7 col-md-7">
@@ -79,12 +79,12 @@
                         </form>
                         <div class="controls">
                           <button class="btn btn-default" onclick="displayComments();">Show comments</button>
-                          <div ng-controller="CommentListController">
+                          <div >
                             <button class="btn btn-default" ng-click="loadComments('renderedText','true','{}')">Show comments Angular</button>
                             <button class="btn btn-default" ng-click="loadComments('renderedText','false','{}')">Show comments Angular2</button>
                           </div>
                           Sort by:
-                          <div ng-controller="CommentListController">
+                          <div >
 
                             <select id="orderTypeSelect" ng-model="orderType">
                               <option value="author">author</option>
@@ -101,7 +101,7 @@
                             <option value="none">none</option>
                             <option value="author">author</option>
                           </select>
-                          <div ng-controller="CommentListController">
+                          <div >
                             <input id="filterValueText" ng-model="filtersRaw"></input>
                           </div>
                         </div>
@@ -123,8 +123,7 @@
                           </form>
 
                         </div>
-                        <div ng-controller="CommentListController">
-                            {{comments}}
+                        <div >
                             <div ng-repeat="comment in comments">
                               <div>
                                   <label>{{comment.author}}({{comment.date}}</label>
