@@ -80,19 +80,22 @@
                         <div class="controls">
                           <button class="btn btn-default" onclick="displayComments();">Show comments</button>
                           <div ng-controller="CommentListController">
-                            <button class="btn btn-default" ng-click="loadComments('author','true','{}')">Show comments Angular</button>
+                            <button class="btn btn-default" ng-click="loadComments('renderedText','true','{}')">Show comments Angular</button>
+                            <button class="btn btn-default" ng-click="loadComments('renderedText','false','{}')">Show comments Angular2</button>
                           </div>
                           Sort by:
-                          <select id="orderTypeSelect">
-                            <option value="author">author</option>
-                            <option value="dateOfCreation">dateOfCreation</option>
-                            <option value="rawText">rawText</option>
-                          </select>
-                          <select id="orderAscendingSelect">
-                            <option value="true">ascending</option>
-                            <option value="false">descending</option>
-                          </select>
+                          <div ng-controller="CommentListController">
 
+                            <select id="orderTypeSelect" ng-model="orderType">
+                              <option value="author">author</option>
+                              <option value="dateOfCreation">dateOfCreation</option>
+                              <option value="rawText">rawText</option>
+                            </select>
+                            <select id="orderAscendingSelect" ng-model="ascending">
+                              <option value="true">ascending</option>
+                              <option value="false">descending</option>
+                            </select>
+                          </div>
                           Filter by:
                           <select id="filterTypeSelect">
                             <option value="none">none</option>
@@ -119,6 +122,7 @@
 
                         </div>
                         <div ng-controller="CommentListController">
+                            {{comments}}
                             <div ng-repeat="comment in comments">
                               <div>
                                   <label>{{comment.author}}({{comment.date}}</label>

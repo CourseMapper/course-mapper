@@ -120,7 +120,7 @@ router.get('/disComm', function(req, res, next){
   });
 });
 
-router.get('/disComm/:order/:filters', function(req, res, next){
+/*router.get('/disComm/:order/:filters', function(req, res, next){
   var comment = new Comment();
 
   var order = JSON.parse(req.params.order);
@@ -136,6 +136,30 @@ router.get('/disComm/:order/:filters', function(req, res, next){
       }
 
     );
+
+  });
+});*/
+
+router.get('/disComm/:order/:filters/', function(req, res, next){
+  var comment = new Comment();
+
+
+  var order = JSON.parse(req.params.order);
+  var filter = JSON.parse(req.params.filters);
+  console.log("GOT HERE");
+
+
+  comment.getOrderedFilteredComments(order,filter,function(err, data) {
+    var modifiedData = new Array(data.length);
+    for(var i=0; i<data.length; i++){
+      modifiedData[i] = {
+        author: data[i].author,
+        date: data[i].dateOfCreation.toTimeString(),
+        slide: data[i].originSlide,
+        html: data[i].renderedText
+      };
+    }
+    res.status(200).json({result:true, comments: modifiedData});
 
   });
 });

@@ -84,7 +84,8 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 function cloneSimpleObject(obj){
     return JSON.parse(JSON.stringify(obj));
-};app.controller('CategoryListController', function($scope, $http, $rootScope) {
+}
+;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -195,7 +196,8 @@ function cloneSimpleObject(obj){
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();
     });
-});;
+});
+;
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
     $scope.createdDate = new Date();
     $scope.courseEdit = null;
@@ -265,7 +267,6 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
     };
 });
-
 ;
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
     $scope.course = {
@@ -310,7 +311,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }) ;
     };
 });
-
 ;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce ) {
     $scope.slug = $routeParams.slug;
 
@@ -938,7 +938,46 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             });
     }
-});;app.controller('CommentListController', function($scope, $http, $rootScope, $sce) {
+});
+;app.controller('CommentListController', function($scope, $http, $rootScope, $sce) {
+
+    $scope.orderType = "author";
+    $scope.ascending = "true";
+    //$scope.filters = '{"author":"Kaet"}';
+    $scope.filters = '{}';
+
+
+    $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+
+    function updateScope(url){
+      $http.get(url).success(function (data) {
+        $scope.comments = data.comments;
+
+        for(var i in $scope.comments){
+          var cmnt = $scope.comments[i];
+          cmnt.html = $sce.trustAsHtml(cmnt.html);
+        }
+      });
+    };
+
+
+    $scope.$watch("orderType",function(newValue,oldValue){
+      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      updateScope($scope.commentGetUrl);
+    });
+
+    $scope.$watch("ascending",function(newValue,oldValue){
+      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      updateScope($scope.commentGetUrl);
+    });
+
+    $scope.$watch("filters",function(newValue,oldValue){
+      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      updateScope($scope.commentGetUrl);
+    });
+
+
+
 
     $http.get('/slide-viewer/disComm').success(function (data) {
         console.log(data);
@@ -950,8 +989,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
 
 
-        $scope.loadComments = function (orderType, ascending, filters) {
-          var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/' + filters;
+        /*$scope.loadComments = function (orderType, ascending, filters) {
+          //var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/' + filters;
+          var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/{"author":"Kaet"}';
           console.log(url);
           $http.get(url).success(function (data) {
               console.log(data);
@@ -964,7 +1004,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
           });
 
-        };
+
+
+
+        };*/
     });
 
 });
@@ -1041,7 +1084,8 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
     }]);
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
-});;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
+});
+;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
 
@@ -1119,7 +1163,8 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
         $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
     }
-});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+});
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
