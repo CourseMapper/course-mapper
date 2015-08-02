@@ -1,0 +1,33 @@
+<ul class="nav nav-tabs tabs-hide hidden-xs">
+    <li class="active">
+        <a href="#/cid/{{course._id}}?tab=preview"
+           data-toggle="tab" data-target="#preview"
+                >
+            <i class="ionicons ion-ios-home-outline"></i><br>
+            <span>Preview</span></a></li>
+
+    <li ng-show="enrolled || isOwner">
+        <a href="#/cid/{{course._id}}?tab=map"
+           data-toggle="tab" data-target="#map"
+                >
+            <i class="ionicons ion-map"></i>
+            <span>CourseMap</span></a></li>
+    <li ng-show="enrolled || isOwner">
+        <a href="#/cid/{{course._id}}?tab=updates" ng-show="user"
+           data-toggle="tab" data-target="#updates"
+                >
+            <i class="ionicons ion-ios-time-outline"></i><br>
+            <span>Updates</span></a></li>
+    <li ng-show="enrolled || isOwner">
+        <a href="#/cid/{{course._id}}?tab=discussion" ng-show="user"
+           data-toggle="tab" data-target="#discussion"
+                >
+            <i class="ionicons ionicons ion-ios-chatboxes-outline"></i><br>
+            <span>Discussion</span></a></li>
+    <li ng-show="enrolled || isOwner">
+        <a href="#/cid/{{course._id}}?tab=analytics" ng-show="user"
+           data-toggle="tab" data-target="#analytics"
+                >
+            <i class="ionicons ion-stats-bars"></i><br>
+            <span>Analytics</span></a></li>
+</ul>

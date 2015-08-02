@@ -116,13 +116,14 @@ function cloneSimpleObject(obj){
     };
 
     $scope.changeTab = function(){
-        var paths = $location.search();
-        var path = "preview";
-        if(!_.isEmpty(paths)){
-            path = _.findKey(paths);
+        var defaultPath = "preview";
+        var q = $location.search();
+
+        if(q.tab){
+            defaultPath = q.tab;
         }
 
-        $scope.currentTab = $scope.tabs[path];
+        $scope.currentTab = $scope.tabs[defaultPath];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
     };
 
@@ -145,10 +146,8 @@ function cloneSimpleObject(obj){
 
     $scope.init();
 
-    $rootScope.$watch('user', function(){
-        if($rootScope.user) {
-            $scope.user = $rootScope.user;
-
+    $scope.$watchGroup(['user', 'course'], function(){
+        if($scope.user != null && $scope.course != null) {
             $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
                 if (res.result && res.courses) {
                     $scope.enrolled = res.courses.isEnrolled;
@@ -563,9 +562,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
-});;app.controller('MapController', function($scope, $http, $rootScope, $timeout) {
+});;app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce) {
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
+    $scope.widgets = [];
 
     /**
      * find node recursively
@@ -695,7 +695,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             // instantiate on hover
             $('#' + childId).mouseover(function(){
                 $(this).find('ul').show();
-            }).mouseout(function(){$(this).find('ul').hide()});
+                $rootScope.$broadcast('onTopicHover', $(this).attr('id'));
+
+            }).mouseout(function(){
+                $(this).find('ul').hide();
+                $rootScope.$broadcast('onTopicHoverOut', $(this).attr('id'));
+            });
 
             // connecting parent and chidlern
             var conn = instance.connect({
@@ -806,16 +811,162 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             case 'video':
                 return 'fa fa-file-video-o';
         }
-    }
+    };
 
     $scope.getDataShape = function(nodeType){
         if(nodeType == 'subTopic')
             return 'Ellipse';
 
         return 'Rectangle';
+    };
+
+    $scope.$on('onTopicHover', function(event, nodeId){
+        if($scope.isRequesting)
+            return;
+
+        $scope.isRequesting = true;
+        // the nodeId has "t", so we remove them first
+        nodeId = nodeId.substring(1);
+        $http.get('/api/server-widgets/node-icon-analytics/?nodeId=' + nodeId).success(
+            function(res){
+                $scope.isRequesting = false;
+                if(res.result){
+                    $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
+                }
+            }
+        ).error(function(){
+                $scope.isRequesting = false;
+            });
+    });
+
+    $scope.$on('onTopicHoverOut', function(event, slug){
+        $scope.isRequesting = false;
+    });
+
+    $scope.getContentNodeLink = function(d){
+        return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
     }
 });
-;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
+;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+    $scope.course = null;
+    $scope.user = null;
+    $scope.treeNode = null;
+    $scope.enrolled = false;
+    $scope.loc = $location.absUrl() ;
+    $scope.courseId = $routeParams.courseId;
+    $scope.nodeId = $routeParams.nodeId;
+    $scope.isOwner = false;
+
+    $scope.currentUrl = window.location.href;
+    $scope.followUrl = $scope.currentUrl + '?enroll=1';
+
+    $scope.currentTab = "preview";
+    $scope.tabs = {
+        'preview':'preview',
+        'analytics':'analytics',
+        'map':'map',
+        'updates':'updates',
+        'external-resources':'external resources'
+    };
+
+    $scope.changeTab = function(){
+        var defaultPath = "preview";
+        var q = $location.search();
+
+        if(q.tab){
+            defaultPath = q.tab;
+        }
+
+        $scope.currentTab = $scope.tabs[defaultPath];
+        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+    };
+
+    $scope.initNode = function(){
+        $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
+            if(res.result) {
+                $scope.treeNode = res.treeNode;
+
+                $timeout(function(){
+                    $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
+                });
+            }
+        });
+    };
+
+    $scope.init = function(){
+        $http.get('/api/course/' + $scope.courseId).success(function(res){
+            if(res.result) {
+                $scope.course = res.course;
+
+                $scope.initNode();
+
+                $timeout(function(){
+                    $scope.$broadcast('onAfterInitCourse', $scope.course);
+                });
+            }
+        });
+
+        $scope.changeTab();
+    };
+
+    $scope.init();
+
+    $rootScope.$watch('user', function(){
+        if($rootScope.user) {
+            $scope.user = $rootScope.user;
+        }
+    });
+
+    $scope.$watchGroup(['user', 'course'], function(){
+        if($scope.user != null && $scope.course != null) {
+            $http.get('/api/accounts/' + $scope.user._id + '/course/' + $scope.courseId).success(function (res) {
+                if (res.result && res.courses) {
+                    $scope.enrolled = res.courses.isEnrolled;
+                } else {
+                    $scope.enrolled = false;
+                }
+            });
+
+            if ($scope.course.createdBy == $rootScope.user._id) {
+                $scope.isOwner = true;
+                $scope.enrolled = true;
+            }
+        }
+    });
+
+    $scope.$on('onAfterEditCourse',function(events, course){
+        //$scope.course = course;
+        $scope.init(true);
+    });
+
+    $scope.enroll = function(){
+        var url = '/api/course/' + $scope.course._id + '/enroll';
+        $scope.loading = true;
+        $http.put(url, {}).success(function(res){
+            if(res.result)
+                $scope.enrolled = true;
+        }).finally(function(){
+            $scope.loading = false;
+        });
+    };
+
+    $scope.leave = function(){
+        var url = '/api/course/' + $scope.course._id + '/leave';
+        $scope.loading = true;
+        $http.put(url, {}).success(function(res){
+            if(res.result){
+                // success leaving
+                $scope.enrolled = false;
+            }
+        }).finally(function(){
+            $scope.loading = false;
+        });
+    };
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
+});;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -1090,8 +1241,14 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             }).
 
             when('/cid/:courseId', {
-                templateUrl: 'course_detail.html',
+                templateUrl: '/course/courseDetail',
                 controller: 'CourseController',
+                reloadOnSearch: false
+            }).
+
+            when('/cid/:courseId/nid/:nodeId', {
+                templateUrl: '/course/nodeDetail',
+                controller: 'NodeDetailController',
                 reloadOnSearch: false
             }).
 
@@ -1108,9 +1265,6 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             otherwise({
                 redirectTo: '/'
             });
-
-        /*$locationProvider.html5Mode({enabled: true,
-            requireBase: false});*/
 
     }]);
 ;app.controller('staticController', function($scope, $http, $rootScope) {
@@ -1144,8 +1298,11 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         var onafter = 'onAfterInstall' + $scope.location;
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
-            var grid = $('.grid-stack').data('gridstack');
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
+            //for(var i in $scope.widgets){
+            //    grid.remove_widget();
+            //}
 
             $scope.getWidgets();
         });
@@ -1153,10 +1310,16 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         var onafter = 'onAfterUninstall' + $scope.location;
         $scope.$on( onafter, function(event, newWidget){
             // remove all widget in the page
-            var grid = $('.grid-stack').data('gridstack');
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
 
             $scope.getWidgets();
+        });
+
+        var onafterW = 'OnAfterWidgetLoaded' + $scope.location;
+        $scope.$on(onafterW, function(){
+            $scope.initiateDraggableGrid($scope.location);
+            //$scope.populateWidgets($scope.location);
         });
     });
 
@@ -1178,7 +1341,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         var loc = '#' + $scope.location + '-widgets';
         var grid = $(loc).data('gridstack');
 
-        var el = '#' + id;
+        var el = '#w' + id;
 
         // get width and height
         var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
@@ -1193,6 +1356,17 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         var wdg = $scope.widgets[i];
 
         $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
+    };
+
+    $scope.initiateDraggableGrid = function(locs){
+        $scope.location = locs;
+        initiateDraggableGrid(['#' + locs + '-widgets']);
+    };
+
+    $scope.populateWidgets = function(){
+        for(var i in $scope.widgets){
+            $scope.addWidget($scope.widgets[i].widgetId._id);
+        }
     }
 });
 ;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
@@ -1224,7 +1398,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
         $scope.$on(onCloseButtonClicked, function (event, widget) {
-             $scope.uninstall(widget.location, widget.application, widget.widget);
+             $scope.uninstall(widget.location, widget.application, widget.widget, widget.courseId);
         });
     });
 

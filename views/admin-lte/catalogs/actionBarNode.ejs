@@ -1,0 +1,46 @@
+<script type="text/ng-template" id="actionBar-node-preview">
+    <ul class="">
+        <li ng-show="isOwner">
+            You created this content node
+        </li>
+        <li ng-show="isOwner">
+            <a style="cursor: pointer"
+               data-toggle="modal" data-target="#editView"
+               title="Edit this content node">
+                <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
+        </li>
+    </ul>
+</script>
+
+<script type="text/ng-template" id="actionBar-node-analytics">
+    <ul class="">
+        <li>
+            <a style="cursor: pointer;"
+               data-toggle="modal" data-target="#widgetGalleryNodeAnalytics"
+               title="Add or remove preview widgets">
+                <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
+        </li>
+    </ul>
+</script>
+
+<script type="text/ng-template" id="actionBar-node-map">
+    <ul class="">
+    </ul>
+</script>
+
+<script type="text/ng-template" id="actionBar-node-external-resources">
+    <ul class="">
+        <a style="cursor: pointer"
+           data-toggle="modal" data-target="#addBookmark"
+           title="Add External Resource">
+            <i class="ionicons ion-edit"></i> &nbsp; ADD</a>
+    </ul>
+</script>
+
+<script type="text/ng-template" id="actionBar-node-update">
+    <ul class="">
+        <a style="cursor: pointer"
+           title="Add External Resource">
+            <i class="ionicons ion-edit"></i> &nbsp; FILTER</a>
+    </ul>
+</script>

@@ -1,8 +1,11 @@
-app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
+    $scope.user = null;
+    $scope.treeNode = null;
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
     $scope.courseId = $routeParams.courseId;
+    $scope.nodeId = $routeParams.nodeId;
     $scope.isOwner = false;
 
     $scope.currentUrl = window.location.href;
@@ -14,7 +17,7 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
         'analytics':'analytics',
         'map':'map',
         'updates':'updates',
-        'discussion':'discussion'
+        'external-resources':'external resources'
     };
 
     $scope.changeTab = function(){
@@ -29,13 +32,24 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
     };
 
-    $scope.init = function(refreshPicture){
+    $scope.initNode = function(){
+        $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
+            if(res.result) {
+                $scope.treeNode = res.treeNode;
+
+                $timeout(function(){
+                    $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
+                });
+            }
+        });
+    };
+
+    $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
                 $scope.course = res.course;
 
-                if(refreshPicture && $scope.course.picture)
-                    $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+                $scope.initNode();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitCourse', $scope.course);
@@ -48,9 +62,15 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
 
     $scope.init();
 
+    $rootScope.$watch('user', function(){
+        if($rootScope.user) {
+            $scope.user = $rootScope.user;
+        }
+    });
+
     $scope.$watchGroup(['user', 'course'], function(){
         if($scope.user != null && $scope.course != null) {
-            $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
+            $http.get('/api/accounts/' + $scope.user._id + '/course/' + $scope.courseId).success(function (res) {
                 if (res.result && res.courses) {
                     $scope.enrolled = res.courses.isEnrolled;
                 } else {

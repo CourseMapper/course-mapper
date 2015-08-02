@@ -1,0 +1,93 @@
+<section class="content-header action-header red">
+    <!-- breadcrumb 2nd row -->
+    <ol class="breadcrumb">
+        <li class="home"><a href="#/cid/{{course._id}}?tab=map&center={{nodeId}}"> &leftarrow;Back &nbsp;&nbsp; {{course.name}}</a></li>
+        <li>Map</li>
+        <li class="home">Content Node : <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=preview">{{treeNode.name}}</a></li>
+        <li class="active">{{currentTab}}</li>
+    </ol>
+    <!-- breadcrumb 2nd row -->
+
+    <!-- ACTION BAR switches -->
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-preview'" ng-include
+         src="'actionBar-node-preview'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
+         src="'actionBar-node-analytics'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-map'" ng-include
+         src="'actionBar-node-map'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-update'" ng-include
+         src="'actionBar-node-update'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='node-external-resources'" ng-include
+         src="'actionBar-node-external-resources'"></div>
+    <!-- ACTION BAR switches -->
+
+</section>
+
+<!-- Main content -->
+<section class="content-course">
+    <div class="box no-border" id="courseTabs">
+        <div class="box-body no-border">
+
+            <!-- tabs left -->
+            <div class="tabbable tabs-left">
+                <% include nodeDetailLeftTab %>
+                <!-- end tab menu -->
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="preview">
+                        <div class="col-xs-12 col-md-8">
+                            <% include nodeDetailContentPreview %>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="map">
+                        <% include nodeDetailContentMap %>
+                    </div>
+                    <div class="tab-pane" id="updates">
+                        <% include nodeDetailContentUpdates %>
+                    </div>
+                    <div class="tab-pane" id="external-resources">
+                        <% include nodeDetailContentExternalResources %>
+                    </div>
+                    <div class="tab-pane" id="analytics">
+                        <% include nodeDetailContentNodeAnalytics %>
+                    </div>
+                </div>
+            </div>
+            <!-- /tabs -->
+
+        </div>
+        <div class="clear"></div>
+    </div>
+</section>
+<!-- /.content -->
+<!-- modal contents -->
+
+<!-- widgetGallery for course analytics -->
+<div class="row" ng-controller="WidgetGalleryController">
+    <div class="modal" id="widgetGalleryNodeAnalytics" tabindex="-1" role="dialog"
+         aria-labelledby="wigets gallery node Analytics" aria-hidden="true" ng-init="initData('node-analytics')">
+        <div ng-include="'/widgets/gallery'"></div>
+    </div>
+</div>
+
+<!-- addBookmark modal -->
+<div class="row" >
+    <div class="modal" id="addBookmarkModal" tabindex="-1" role="dialog"
+         aria-labelledby="add Bookmark Modal" aria-hidden="true">
+        add bookmark
+    </div>
+</div>
+<!-- /.modal contents -->
+
+<% include actionBarNode %>
+
+<script>
+    $(document).ready(function () {
+        initiateDraggableGrid(['#node-analytics-widgets']);
+
+        handleTab();
+
+        if (location.hash !== '')
+            $(document).scrollTop(0);
+    });
+</script>

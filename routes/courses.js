@@ -11,7 +11,15 @@ var router = express.Router();
  * return: html view
  */
 router.get('/courses', function (req, res, next){
-        res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', user: req.user, showSidebar:true });
+    res.render(config.get('theme') + '/catalogs/courses', { req:req, title: 'Browse for Courses', user: req.user, showSidebar:true });
+});
+
+router.get('/course/nodeDetail', function (req, res, next){
+    res.render(config.get('theme') + '/catalogs/nodeDetail');
+});
+
+router.get('/course/courseDetail', function (req, res, next){
+    res.render(config.get('theme') + '/catalogs/courseDetail');
 });
 
 /**
@@ -26,13 +34,6 @@ router.get('/course/create', function(req, res, next) {
  */
 router.get('/course/edit', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/editCourseModal');
-});
-
-/**
- * partial for map tab in course detail page
- */
-router.get('/course/map', function(req, res, next) {
-    res.render(config.get('theme') + '/catalogs/course.map.ejs');
 });
 
 /**

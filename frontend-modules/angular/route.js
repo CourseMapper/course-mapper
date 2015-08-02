@@ -16,8 +16,14 @@ app.config(['$routeProvider', '$locationProvider',
             }).
 
             when('/cid/:courseId', {
-                templateUrl: 'course_detail.html',
+                templateUrl: '/course/courseDetail',
                 controller: 'CourseController',
+                reloadOnSearch: false
+            }).
+
+            when('/cid/:courseId/nid/:nodeId', {
+                templateUrl: '/course/nodeDetail',
+                controller: 'NodeDetailController',
                 reloadOnSearch: false
             }).
 
@@ -34,8 +40,5 @@ app.config(['$routeProvider', '$locationProvider',
             otherwise({
                 redirectTo: '/'
             });
-
-        /*$locationProvider.html5Mode({enabled: true,
-            requireBase: false});*/
 
     }]);

@@ -1,0 +1,68 @@
+<div class="col-xs-12 col-md-8">
+    <img class="preview-image" ng-hide="course.picture"
+         src="/img/courses/placeholder.png">
+    <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
+
+    <div class="container">
+        <div class="excerpt">
+            <div class="description">
+                Started By:
+                <strong>
+                    {{user.username}}
+                </strong> on <b>
+                {{course.dateAdded}}</b>
+
+                <h1>
+                    <span class="visible-xs" style="margin-left:15px"></span>
+                    {{course.name}}
+                </h1>
+
+                <p ng-show="course.courseTags.length > 0" class="filter">
+                    <a class="label label-primary" style="cursor: default"
+                       ng-repeat="tag in course.courseTags">
+                        {{tag.name}}</a>
+                </p>
+
+                <p>
+                    {{course.description}}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- analytics-->
+<div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
+     ng-controller="widgetController"
+     ng-init="location='course-preview'">
+
+    <div class="grid-stack-item"
+         data-gs-locked="yes"
+         data-gs-no-resize="yes"
+         ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}" >
+        <!--on-finish-render="OnAfterWidgetLoadedcourse-preview"-->
+        <div class="grid-stack-item-content">
+            <div class="box no-shadow">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{wdg.widget}}</h3>
+                    <div class="box-tools pull-right">
+                        <button class="btn btn-box-tool" data-widget="remove"
+                                data-toggle="tooltip" title="Remove"
+                                ng-click="closeWidget(wdg.widgetId._id);"
+                                >
+                            <i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body-widget">
+
+                    <div ng-include src="wdg.widgetId.entryPoint"
+                         onload="initWidgetButton(wdg.widgetId._id)">
+                    </div>
+
+                </div>
+                <div class="box-footer"> </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- analytics-->

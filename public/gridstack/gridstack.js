@@ -268,6 +268,9 @@
     };
 
     GridStackEngine.prototype.remove_node = function (node) {
+        if(!node)
+            return;
+
         node._id = null;
         this.nodes = _.without(this.nodes, node);
         this._pack_nodes();

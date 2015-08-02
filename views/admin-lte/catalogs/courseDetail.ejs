@@ -1,0 +1,94 @@
+<% include actionBarCourse %>
+
+<section class="content-header action-header blue">
+    <ol class="breadcrumb">
+        <li class="home">{{course.name}}</li>
+        <li class="active">{{currentTab}}</li>
+    </ol>
+
+    <div class="navbar-custom-menu" ng-show="currentTab=='preview'" ng-include
+         src="'actionBar-course-preview'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
+         src="'actionBar-course-analytics'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='map'" ng-include
+         src="'actionBar-course-map'"></div>
+
+</section>
+
+<!-- Main content -->
+<section class="content-course">
+    <div class="box no-border" id="courseTabs">
+        <div class="box-body no-border">
+
+            <!-- tabs left -->
+            <div class="tabbable tabs-left">
+
+                <% include courseDetailLeftTab %>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="preview">
+                        <% include courseDetailContentPreview %>
+                    </div>
+
+                    <div class="tab-pane" id="map">
+                        <% include courseDetailContentMap %>
+                        <div class="clear"></div>
+                    </div>
+
+                    <div class="tab-pane" id="discussion">
+                        <% include courseDetailContentDiscussion %>
+                    </div>
+
+                    <div class="tab-pane" id="updates">
+                        <% include courseDetailContentUpdates %>
+                    </div>
+
+                    <div class="tab-pane" id="analytics">
+                        <% include courseDetailContentAnalytics %>
+                    </div>
+                </div>
+            </div>
+            <!-- /tabs -->
+
+        </div>
+        <div class="clear"></div>
+    </div>
+</section>
+<!-- /.content -->
+<!-- modal contents -->
+<!-- widgetGallery for course preview -->
+<div class="row" ng-controller="WidgetGalleryController">
+    <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
+         aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('course-preview')">
+        <div ng-include="'/widgets/gallery'"></div>
+    </div>
+</div>
+
+<!-- widgetGallery for course analytics -->
+<div class="row" ng-controller="WidgetGalleryController">
+    <div class="modal" id="widgetGalleryAnalytics" tabindex="-1" role="dialog"
+         aria-labelledby="wigets gallery Analytics" aria-hidden="true" ng-init="initData('course-analytics')">
+        <div ng-include="'/widgets/gallery'"></div>
+    </div>
+</div>
+
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="editView" tabindex="-1" role="dialog"
+         aria-labelledby="edit view" aria-hidden="true">
+        <div ng-include="'/course/edit'"></div>
+    </div>
+</div>
+
+<!-- /.modal contents -->
+
+<script>
+    $(document).ready(function () {
+        initiateDraggableGrid(['#course-preview-widgets', '#course-analytics-widgets']);
+
+        handleTab();
+
+        if (location.hash !== '')
+            $(document).scrollTop(0);
+    });
+</script>
