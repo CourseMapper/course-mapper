@@ -76,6 +76,7 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
         $http.put(url, {}).success(function(res){
             if(res.result)
                 $scope.enrolled = true;
+
         }).finally(function(){
             $scope.loading = false;
         });

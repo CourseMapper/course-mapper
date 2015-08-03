@@ -1,4 +1,5 @@
 
+/*
 function initiateDraggableGrid(locs) {
     var options = {
         cell_height: 340,
@@ -31,7 +32,8 @@ function initiateDraggableGrid(locs) {
             console.log(node.x + " ++ " + node.y);
         });
     }
-};/**
+}*/
+;/**
  * parse url parameter / query parameter in the url
  * @param url string
  * @returns {} dictionary

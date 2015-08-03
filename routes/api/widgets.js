@@ -4,6 +4,7 @@ var appRoot = require('app-root-path');
 var _ = require('underscore');
 var AppsGallery = require(appRoot + '/modules/apps-gallery');
 var router = express.Router();
+var mongoose = require('mongoose');
 
 /**
  * get all active apps > widgets
@@ -187,5 +188,27 @@ router.get('/widgets/:location', function(req, res, next){
     );
 });
 
+router.put('/widget/:id/setPosition', function(req, res, next){
+    var app = new AppsGallery();
+    app.setPosition(
+        function(err){
+            res.status(500).json(err);
+        },
+
+        // get and verify if this widget belongs to this user.
+        {
+            userId: mongoose.Types.ObjectId(req.user._id),
+            widgetId:mongoose.Types.ObjectId(req.params.id)
+        }
+        ,
+
+        req.body.x,
+        req.body.y,
+
+        function(wgs){
+            res.status(200).json({result: true, widget: wgs});
+        }
+    );
+});
 
 module.exports = router;

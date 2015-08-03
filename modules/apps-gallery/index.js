@@ -245,6 +245,32 @@ AppStore.prototype.getInstalledWidgets = function(error, params, success){
     );
 };
 
+AppStore.prototype.setPosition = function(error, params, x, y, success){
+    if(x == null || y == null){
+        error(new Error('x or y position is not provided'));
+        return;
+    }
+
+    WP.findOne(params, function(err, doc){
+        if(err) error(err);
+        else {
+            doc.position = {
+                x: x,
+                y: y
+            };
+
+            doc.save(function(err, w){
+                if (err) {
+                    error(err);
+                } else {
+                    // call success callback
+                    success(w);
+                }
+            });
+        }
+    });
+};
+
 /**
  * install widget into the position
  * it has logic and filtering for different locations installation
@@ -280,7 +306,9 @@ AppStore.prototype.installWidget = function(error, params, success){
                         isInstalled: params.isInstalled,
 
                         width: wdg.width,
-                        height: wdg.height
+                        height: wdg.height,
+
+                        position: {x:0, y:0}
                     };
 
                     if(params.userId)

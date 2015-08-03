@@ -34,7 +34,8 @@
 <!-- analytics-->
 <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
      ng-controller="widgetController"
-     ng-init="location='course-preview'">
+     ng-init="location='course-preview';
+              initiateDraggableGrid('course-preview');">
 
     <div class="grid-stack-item"
          data-gs-locked="yes"
