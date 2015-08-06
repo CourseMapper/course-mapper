@@ -1,5 +1,5 @@
 var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies',
-    'ngTagsInput', 'ngFileUpload','oc.lazyLoad']);
+    'ngTagsInput', 'ngFileUpload','oc.lazyLoad',  'wysiwyg.module']);
 
 app.filter('capitalize', function() {
     return function(input, all) {

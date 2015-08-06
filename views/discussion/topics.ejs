@@ -2,12 +2,26 @@
 <div  ng-controller="DiscussionController">
     <div class="row">
         <div class="col-md-5" id="topicLists">
+            <div ng-hide="topics">
+                <h3>No Topics to Show</h3>
+            </div>
+
+            <div ng-show="topics">
+                <ul>
+                    <li ng-repeat="topic in topics">
+                        <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
+                            {{topic.discussion.title}}
+                        </a></h4>
+                    </li>
+                </ul>
+            </div>
 
         </div>
         <div class="col-md-6" id="topicContents">
             <div ng-show=""></div>
         </div>
     </div>
-</div>
 
-<% include addNewTopicModal %>
+    <% include addNewTopicModal %>
+
+</div>

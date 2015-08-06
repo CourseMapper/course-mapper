@@ -42,7 +42,7 @@ router.post('/discussions/:courseId', function(req, res, next){
             title: req.body.title,
             content: req.body.content,
             createdBy: mongoose.Types.ObjectId(req.user._id),
-            courseId: mongoose.Types.ObjectId(params.courseId),
+            courseId: mongoose.Types.ObjectId(req.params.courseId),
             //params.parentPost
             //params.parentPath
         },

@@ -15,11 +15,46 @@
                             </div>
                         </div>
                         <div class="box-body">
+                            <form class="" role="form" ng-submit="saveNewPost()">
+                                <fieldset>
+                                    <div class="control-group">
+                                        <label class="control-label" for="title">Title</label>
+                                        <p class="help-block">Title can contain any letters or numbers</p>
+                                        <div class="controls">
+                                            <input type="text" id="title" name="title" placeholder="" class="form-control"
+                                                   ng-model="formData.title">
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="control-group">
+                                        <label class="control-label">Content</label>
+                                        <div class="controls">
+                                            <wysiwyg textarea-id="Content"
+                                                     textarea-class="form-control"
+                                                     textarea-height="180px"
+                                                     textarea-name="Content"
+                                                     textarea-required
+                                                     ng-model="formData.content"
+                                                     textarea-menu="menu" >
+                                            </wysiwyg>
+                                        </div>
+                                    </div>
 
-                            <br class="clear" />
-                        </div>
-                        <div class="box-footer">
-
+                                    <div class="control-group">
+                                        <br class="clear">
+                                            <span class="help-block" ng-show="errors">{{ errors }}</span>
+                                            <!-- Button -->
+                                            <div class="controls">
+                                                <button class="btn btn-md btn-primary">Save</button>
+                                                <button type="button" class="btn btn-md btn-primary"
+                                                        data-dismiss="modal" aria-label="Close"
+                                                        ng-click="cancel()">
+                                                    <span aria-hidden="true">Cancel</span>
+                                                </button>
+                                            </div>
+                                    </div>
+                                </fieldset>
+                            </form>
                         </div>
                     </div>
                 </div>
