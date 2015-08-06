@@ -423,7 +423,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
+;app.
+    controller('DiscussionController', function($scope, $http) {
+        console.log('DiscussionController');
+    });;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];

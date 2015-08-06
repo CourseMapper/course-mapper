@@ -168,5 +168,4 @@ catalog.prototype.addCategory = function(error, params, success){
     });
 };
 
-
 module.exports = catalog;
