@@ -1,7 +1,9 @@
 app.
     controller('ReplyController', function($scope, $http) {
-        $scope.formData = {};
-        $scope.course = {};
+        $scope.formData = {
+            title: "",
+            content: ""
+        };
 
         $scope.menu = [
             ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
@@ -40,17 +42,31 @@ app.
                 }) ;
         };
 
-        $scope.$on('$routeUpdate', function(){
-            $scope.pid = $location.search().pid;
-            $scope.getReplies($scope.pid);
-        });
+        $scope.saveEditReply = function(){
+            console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
 
-        $scope.getReplies = function(postId){
-            $http.get('/api/discussions/' + postId + '/posts').success(function(res){
-                if(res.result){
-                    $scope.replies = res.posts;
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'PUT',
+                url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            });
-        }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterEditReply', data.post);
+
+                        $('#EditReplyModal').modal('hide');
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
 
     });

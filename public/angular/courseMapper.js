@@ -464,7 +464,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewTopic', data.post);
 
-                        $('#addNewTopic').modal('hide');
+                        $('#addNewTopicModal').modal('hide');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;

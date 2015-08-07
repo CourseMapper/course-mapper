@@ -91,6 +91,8 @@ router.post('/discussions/replies', function(req, res, next){
 });
 
 router.put('/discussion/:postId', function(req, res, next){
+    // todo: auth
+
     var cat = new CourseDiscussionController();
     cat.editPost(
         function(err){

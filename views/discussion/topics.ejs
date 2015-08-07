@@ -25,8 +25,15 @@
 
             <a style="cursor: pointer;"
                data-toggle="modal" data-target="#addReplyModal"
-               ng-init="currentReplyingTo = topic.discussion._id"
+               ng-click="currentReplyingTo = currentTopic.discussion._id"
                title="Reply">REPLY</a>
+            <a style="cursor: pointer;" ng-show="currentTopic.createdBy==$root.user._id"
+               ng-click="deletePost(currentTopic.discussion._id)"
+               title="delete">DELETE</a>
+
+            <div ng-show="currentTopic">
+                <h4>{{currentTopic.title}}</h4>
+            </div>
 
             <div ng-show="replies">
                 <ul class="replies">
@@ -34,6 +41,20 @@
                             <div class="reply">{{re.content}}</div>
                         <div class="postedAt">
                             Posted at: {{re.dateAdded}}
+                        </div>
+                        <div class="editReplyButton">
+                            <a ng-show="re.createdBy==$root.user._id" style="cursor: pointer;"
+                               data-toggle="modal" data-target="#editReplyModal"
+                               title="Edit"
+                               ng-click="currentEditPost=re">EDIT</a>
+                        </div>
+                        <div class="deleteReplyButton">
+                            <a ng-show="re.createdBy==$root.user._id" style="cursor: pointer;"
+                               title="Delete"
+                               ng-click="deletePost(re._id)">EDIT</a>
+                            <a style="cursor: pointer;" ng-show="re.createdBy==$root.user._id"
+                               ng-click="deletePost(re._id)"
+                               title="delete">DELETE</a>
                         </div>
                     </li>
                 </ul>
@@ -43,5 +64,7 @@
 
     <% include addNewTopicModal %>
     <% include addNewReplyModal %>
+    <% include editTopicModal %>
+    <% include editReplyModal %>
 
 </div>

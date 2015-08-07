@@ -1,13 +1,13 @@
 <!-- course edit form -->
 <div class="row">
-    <div class="modal" id="addNewTopicModal" tabindex="-1" role="dialog"
-         aria-labelledby="Add New Topic" aria-hidden="true">
+    <div class="modal" id="editTopicModal" tabindex="-1" role="dialog"
+         aria-labelledby="Edit Topic" aria-hidden="true">
         <section class="content">
             <div class="row row-centered">
                 <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
                     <div class="widget-item box no-border no-round">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Add A New Topic</h3>
+                            <h3 class="box-title">Edit Topic</h3>
 
                             <div class="box-tools pull-right">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -15,43 +15,48 @@
                             </div>
                         </div>
                         <div class="box-body">
-                            <form class="" role="form" ng-submit="saveNewPost()">
+                            <form class="" role="form" ng-submit="saveEditPost()">
                                 <fieldset>
                                     <div class="control-group">
                                         <label class="control-label" for="title">Title</label>
+
                                         <p class="help-block">Title can contain any letters or numbers</p>
+
                                         <div class="controls">
-                                            <input type="text" id="title" name="title" placeholder="" class="form-control"
-                                                   ng-model="formData.title">
+                                            <input type="text" id="title" name="title" placeholder=""
+                                                   class="form-control"
+                                                   ng-model="currentTopic.title">
                                         </div>
                                     </div>
                                     <br>
+
                                     <div class="control-group">
                                         <label class="control-label">Content</label>
+
                                         <div class="controls">
                                             <wysiwyg textarea-id="Content"
                                                      textarea-class="form-control"
                                                      textarea-height="180px"
                                                      textarea-name="Content"
                                                      textarea-required
-                                                     ng-model="formData.content"
-                                                     textarea-menu="menu" >
+                                                     ng-model="currentTopic.content"
+                                                     textarea-menu="menu">
                                             </wysiwyg>
                                         </div>
                                     </div>
 
                                     <div class="control-group">
                                         <br class="clear">
-                                            <span class="help-block" ng-show="errors">{{ errors }}</span>
-                                            <!-- Button -->
-                                            <div class="controls">
-                                                <button class="btn btn-md btn-primary">Save</button>
-                                                <button type="button" class="btn btn-md btn-primary"
-                                                        data-dismiss="modal" aria-label="Close"
-                                                        ng-click="cancel()">
-                                                    <span aria-hidden="true">Cancel</span>
-                                                </button>
-                                            </div>
+                                        <span class="help-block" ng-show="errors">{{ errors }}</span>
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <button class="btn btn-md btn-primary">Save</button>
+                                            <button type="button" class="btn btn-md btn-primary"
+                                                    data-dismiss="modal" aria-label="Close"
+                                                    ng-click="cancel()">
+                                                <span aria-hidden="true">Cancel</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 </fieldset>
                             </form>

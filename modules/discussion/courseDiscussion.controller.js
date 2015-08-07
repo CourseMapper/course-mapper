@@ -129,7 +129,8 @@ courseDiscussion.prototype.deletePost = function(error, params, success){
         },
         {
             $set: {
-                isDeleted: true
+                isDeleted: true,
+                content: "DELETED"
             }
         },
         function(err, doc){
