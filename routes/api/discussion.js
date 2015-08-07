@@ -31,6 +31,12 @@ router.get('/discussions/:courseId', function(req, res, next) {
 
 router.post('/discussions/:courseId', function(req, res, next){
     var cat = new CourseDiscussionController();
+
+    // todo: check for enrollment
+    {
+        //
+    }
+
     cat.addPost(
         function(err){
             res.status(500).json({
@@ -45,6 +51,36 @@ router.post('/discussions/:courseId', function(req, res, next){
             courseId: mongoose.Types.ObjectId(req.params.courseId),
             //params.parentPost
             //params.parentPath
+        },
+        function(post){
+            res.status(200).json({
+                result:true, post: post
+            });
+        }
+    );
+});
+
+router.post('/discussions/replies', function(req, res, next){
+    var cat = new CourseDiscussionController();
+
+    // todo: check for enrollment
+    {
+        //
+    }
+
+    cat.addPost(
+        function(err){
+            res.status(500).json({
+                result: false,
+                errors: err
+            });
+        },
+        {
+            title: "",
+            content: req.body.content,
+            createdBy: mongoose.Types.ObjectId(req.user._id),
+            parentPost:req.params.parentPost
+            //params.parentPath: []
         },
         function(post){
             res.status(200).json({
@@ -98,7 +134,10 @@ router.delete('/discussion/:postId', function(req, res, next){
     );
 });
 
-router.get('/discussions/:discussionId/posts', function(req, res, next) {
+/**
+ * get all posts/replies under a post
+ */
+router.get('/discussions/:postId/posts', function(req, res, next) {
     var cat = new CourseDiscussionController();
     cat.getCourseDiscussionPosts(
         function(err){
@@ -108,7 +147,7 @@ router.get('/discussions/:discussionId/posts', function(req, res, next) {
             });
         },
         // parameters
-        mongoose.Types.ObjectId(req.params.discussionId)
+        mongoose.Types.ObjectId(req.params.postId)
         ,
         function(posts){
             res.status(200).json({

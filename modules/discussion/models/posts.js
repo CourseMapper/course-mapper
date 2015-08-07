@@ -15,8 +15,8 @@ postSchema.add({
         required: true
     },
 
-    content: {type: String},
-    createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
+    content: {type: String, required: true},
+    createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
 
     parentPost: {type: mongoose.Schema.Types.ObjectId, ref: 'posts'},
     // for level more than 1st

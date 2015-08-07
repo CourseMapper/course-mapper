@@ -176,7 +176,7 @@ courseDiscussion.prototype.addPost = function(error, params, success){
         }
 
         // make a relation to courseDiscussion
-        {
+        if(params.courseId) {
             var cd = new Discussion({
                 course: params.courseId,
                 createdBy: params.userId,

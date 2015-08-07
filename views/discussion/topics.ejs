@@ -12,16 +12,36 @@
                         <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
                             {{topic.discussion.title}}
                         </a></h4>
+                        Posted at: {{topic.discussion.dateAdded}}
                     </li>
                 </ul>
             </div>
 
         </div>
         <div class="col-md-6" id="topicContents">
-            <div ng-show=""></div>
+            <div ng-hide="replies && topics.length > 0">
+                <h3>Please pick one from the posts</h3>
+            </div>
+
+            <a style="cursor: pointer;"
+               data-toggle="modal" data-target="#addReplyModal"
+               ng-init="currentReplyingTo = topic.discussion._id"
+               title="Reply">REPLY</a>
+
+            <div ng-show="replies">
+                <ul class="replies">
+                    <li ng-repeat="re in replies">
+                            <div class="reply">{{re.content}}</div>
+                        <div class="postedAt">
+                            Posted at: {{re.dateAdded}}
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
     <% include addNewTopicModal %>
+    <% include addNewReplyModal %>
 
 </div>
