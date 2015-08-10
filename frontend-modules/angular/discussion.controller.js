@@ -1,5 +1,5 @@
 app.
-    controller('DiscussionController', function($scope, $http) {
+    controller('DiscussionController', function($scope, $http, $location) {
         $scope.formData = {};
         $scope.course = {};
         $scope.currentReplyingTo = false;

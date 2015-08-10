@@ -424,9 +424,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });
 });
 ;app.
-    controller('DiscussionController', function($scope, $http) {
+    controller('DiscussionController', function($scope, $http, $location) {
         $scope.formData = {};
         $scope.course = {};
+        $scope.currentReplyingTo = false;
+        $scope.currentEditPost = {};
+        $scope.currentTopic = {};
+
         $scope.menu = [
             ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
             [ 'font-size' ],
@@ -436,6 +440,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         ];
 
         $scope.topics = [];
+        $scope.replies = [];
 
         $scope.$on('onAfterInitCourse', function(e, course){
             $scope.course= course;
@@ -473,6 +478,72 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     }
                 }) ;
         };
+
+        $scope.saveEditPost = function(){
+            console.log('saving edit post');
+
+            var d = transformRequest($scope.currentTopic);
+            $http({
+                method: 'PUT',
+                url: '/api/discussion/' + $scope.currentTopic._id,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterEditTopic', data.post);
+
+                        $('#editTopicModal').modal('hide');
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        $scope.deletePost = function(postId){
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
+
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        $scope.$on('$routeUpdate', function(){
+            $scope.pid = $location.search().pid;
+            $scope.getReplies($scope.pid);
+        });
+
+        $scope.getReplies = function(postId){
+            var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
+            $scope.currentTopic = $scope.topics[i].discussion;
+
+            $http.get('/api/discussions/' + postId + '/posts').success(function(res){
+                if(res.result){
+                    $scope.replies = res.posts;
+                }
+            });
+        }
 
     });;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
@@ -1244,7 +1315,78 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });*/
 
 });
-;
+;app.
+    controller('ReplyController', function($scope, $http) {
+        $scope.formData = {
+            title: "",
+            content: ""
+        };
+
+        $scope.menu = [
+            ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+            [ 'font-size' ],
+            ['ordered-list', 'unordered-list', 'outdent', 'indent'],
+            ['left-justify', 'center-justify', 'right-justify'],
+            ['code', 'quote', 'paragraph']
+        ];
+
+
+        $scope.saveNewReply = function(){
+            console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
+            $scope.formData.parentPost = $scope.$parent.currentReplyingTo;
+
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'POST',
+                url: '/api/discussions/replies/',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterCreateReply', data.post);
+
+                        $('#addNewReplyModal').modal('hide');
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        $scope.saveEditReply = function(){
+            console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
+
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'PUT',
+                url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterEditReply', data.post);
+
+                        $('#EditReplyModal').modal('hide');
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+    });;
 
 app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
     $scope.createTopic = function(name, event){
