@@ -1,13 +1,13 @@
 <!-- course edit form -->
 <div class="row">
-    <div class="modal" id="addReplyModal" tabindex="-1" role="dialog"
+    <div class="modal" id="editReplyModal" tabindex="-1" role="dialog"
          aria-labelledby="Reply Form" aria-hidden="true">
         <section class="content" ng-controller="ReplyController">
             <div class="row row-centered">
                 <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
                     <div class="widget-item box no-border no-round">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Add A Reply</h3>
+                            <h3 class="box-title">Edit Reply</h3>
 
                             <div class="box-tools pull-right">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -15,7 +15,7 @@
                             </div>
                         </div>
                         <div class="box-body">
-                            <form class="" role="form" ng-submit="saveNewReply()">
+                            <form class="" role="form" ng-submit="saveEditReply()">
                                 <fieldset>  
                                     <div class="control-group">
                                         <label class="control-label">Content</label>

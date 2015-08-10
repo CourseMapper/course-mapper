@@ -1,5 +1,9 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies',
-    'ngTagsInput', 'ngFileUpload','oc.lazyLoad',  'wysiwyg.module']);
+(function(){"use strict";angular.module("relativeDate",[]).value("now",null).value("relativeDateTranslations",{just_now:"just now",seconds_ago:"{{time}} seconds ago",a_minute_ago:"a minute ago",minutes_ago:"{{time}} minutes ago",an_hour_ago:"an hour ago",hours_ago:"{{time}} hours ago",a_day_ago:"yesterday",days_ago:"{{time}} days ago",a_week_ago:"a week ago",weeks_ago:"{{time}} weeks ago",a_month_ago:"a month ago",months_ago:"{{time}} months ago",a_year_ago:"a year ago",years_ago:"{{time}} years ago",over_a_year_ago:"over a year ago",seconds_from_now:"{{time}} seconds from now",a_minute_from_now:"a minute from now",minutes_from_now:"{{time}} minutes from now",an_hour_from_now:"an hour from now",hours_from_now:"{{time}} hours from now",a_day_from_now:"tomorrow",days_from_now:"{{time}} days from now",a_week_from_now:"a week from now",weeks_from_now:"{{time}} weeks from now",a_month_from_now:"a month from now",months_from_now:"{{time}} months from now",a_year_from_now:"a year from now",years_from_now:"{{time}} years from now",over_a_year_from_now:"over a year from now"}).filter("relativeDate",["$injector","now","relativeDateTranslations",function(a,b,c){var d,e;return d=a.has("$translate")?a.get("$translate"):{instant:function(a,b){return c[a].replace("{{time}}",b.time)}},e=function(a,b){return Math.round(Math.abs(a-b)/1e3)},function(a){var c,f,g,h,i,j,k,l,m;switch(j=b?b:new Date,a instanceof Date||(a=new Date(a)),f=null,h=60,g=60*h,c=24*g,l=7*c,i=30*c,m=365*c,f=e(j,a),f>c&&l>f&&(a=new Date(a.getFullYear(),a.getMonth(),a.getDate(),0,0,0),f=e(j,a)),k=function(b,c){var e;return e="just_now"===b?b:j>=a?""+b+"_ago":""+b+"_from_now",d.instant(e,{time:c})},!1){case!(30>f):return k("just_now");case!(h>f):return k("seconds",f);case!(2*h>f):return k("a_minute");case!(g>f):return k("minutes",Math.floor(f/h));case 1!==Math.floor(f/g):return k("an_hour");case!(c>f):return k("hours",Math.floor(f/g));case!(2*c>f):return k("a_day");case!(l>f):return k("days",Math.floor(f/c));case 1!==Math.floor(f/l):return k("a_week");case!(i>f):return k("weeks",Math.floor(f/l));case 1!==Math.floor(f/i):return k("a_month");case!(m>f):return k("months",Math.floor(f/i));case 1!==Math.floor(f/m):return k("a_year");default:return k("over_a_year")}}}])}).call(this);
+
+var app = angular.module('courseMapper', [
+    'ngResource', 'ngRoute', 'ngCookies',
+    'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
+    'relativeDate', 'wysiwyg.module']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -18,6 +22,8 @@ app.filter('base64Decode', function() {
         return (!!input) ? Base64.decode(input) : '';
     }
 });
+
+app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
 
 app.directive('onFinishRender', function ($timeout) {
     return {
@@ -84,8 +90,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 function cloneSimpleObject(obj){
     return JSON.parse(JSON.stringify(obj));
-}
-;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+};app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -424,12 +429,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });
 });
 ;app.
-    controller('DiscussionController', function($scope, $http, $location) {
+    controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce) {
         $scope.formData = {};
         $scope.course = {};
         $scope.currentReplyingTo = false;
         $scope.currentEditPost = {};
         $scope.currentTopic = {};
+
+        $scope.pid = false;
 
         $scope.menu = [
             ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
@@ -442,12 +449,23 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.topics = [];
         $scope.replies = [];
 
+        $scope.initiateTopic = function(){
+            $scope.pid = $location.search().pid;
+            $scope.manageActionBar($scope.pid);
+
+            if($scope.pid) {
+                $scope.getReplies($scope.pid);
+            }
+        };
+
         $scope.$on('onAfterInitCourse', function(e, course){
             $scope.course= course;
 
             $http.get('/api/discussions/' + course._id).success(function(res){
                if(res.result && res.posts){
                    $scope.topics = res.posts;
+
+                   $scope.initiateTopic();
                }
             });
         });
@@ -506,11 +524,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }) ;
         };
 
+        $scope.editReply = function(re){
+            $scope.currentEditPost = re;
+            $scope.$broadcast('onEditReplyClicked', re);
+        };
+
         $scope.deletePost = function(postId){
             $http({
                 method: 'DELETE',
                 url: '/api/discussion/' + postId,
-                data: d,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -530,17 +552,62 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         };
 
         $scope.$on('$routeUpdate', function(){
-            $scope.pid = $location.search().pid;
-            $scope.getReplies($scope.pid);
+            $scope.initiateTopic();
         });
+
+        $scope.$on('onAfterEditReply', function(e, f){
+            var i = _.findIndex($scope.replies, { '_id' : f.postId});
+            $scope.replies[i].content = f.content;
+            $timeout(function(){
+                $scope.$apply();
+            });
+        });
+
+        $scope.$on('onAfterDeletePost', function(e, postId){
+            var i = _.findIndex($scope.replies, { '_id' : postId});
+            $scope.replies[i].content = '[DELETED]';
+            $timeout(function(){
+                $scope.$apply();
+            });
+        });
+
+        $scope.manageActionBar = function(){
+            var menuContainer = $('.actionBar-discussion-buttons');
+            if($scope.pid){
+                var newMenu = '<li>' +
+                    '<a style="cursor: pointer;"' +
+                        'data-toggle="modal" data-target="#addNewReplyModal"' +
+                        'title="Reply">' +
+                        '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>' +
+                    '</li>';
+
+                if($scope.currentTopic.createdBy==$rootScope.user._id) {
+                    newMenu += '<li>' +
+                                '<a style="cursor: pointer;"' +
+                                'click="deletePost(' + $scope.currentTopic._id + ')"' +
+                                'title = "delete" > ' +
+                                '&nbsp;&nbsp; <i class="ionicons ion-close"></i> &nbsp;DELETE THIS TOPIC</a>' +
+                                '</li>';
+                }
+
+                menuContainer.html(newMenu);
+            }
+            else if(!$scope.pid){
+                menuContainer.html('');
+            }
+        };
 
         $scope.getReplies = function(postId){
             var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
             $scope.currentTopic = $scope.topics[i].discussion;
+            $scope.currentReplyingTo = $scope.currentTopic._id;
 
-            $http.get('/api/discussions/' + postId + '/posts').success(function(res){
+            $http.get('/api/discussion/' + postId + '/posts').success(function(res){
                 if(res.result){
                     $scope.replies = res.posts;
+
+                    //$sce.trustAsHtml(res.widgets);
+
                 }
             });
         }
@@ -1318,7 +1385,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 ;app.
     controller('ReplyController', function($scope, $http) {
         $scope.formData = {
-            title: "",
+            title: " ",
             content: ""
         };
 
@@ -1330,6 +1397,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             ['code', 'quote', 'paragraph']
         ];
 
+        $scope.$on('onEditReplyClicked', function(e, post){
+            $scope.formData.content = post.content;
+            $scope.formData.postId = post._id;
+        });
 
         $scope.saveNewReply = function(){
             console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
@@ -1338,7 +1409,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             var d = transformRequest($scope.formData);
             $http({
                 method: 'POST',
-                url: '/api/discussions/replies/',
+                url: '/api/discussion/replies/',
                 data: d,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -1374,9 +1445,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 .success(function(data) {
                     console.log(data);
                     if(data.result) {
-                        $scope.$emit('onAfterEditReply', data.post);
+                        $scope.$emit('onAfterEditReply', $scope.formData);
 
-                        $('#EditReplyModal').modal('hide');
+                        $('#editReplyModal').modal('hide');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;

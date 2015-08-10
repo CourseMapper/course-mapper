@@ -1,7 +1,7 @@
 app.
     controller('ReplyController', function($scope, $http) {
         $scope.formData = {
-            title: "",
+            title: " ",
             content: ""
         };
 
@@ -13,6 +13,10 @@ app.
             ['code', 'quote', 'paragraph']
         ];
 
+        $scope.$on('onEditReplyClicked', function(e, post){
+            $scope.formData.content = post.content;
+            $scope.formData.postId = post._id;
+        });
 
         $scope.saveNewReply = function(){
             console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
@@ -21,7 +25,7 @@ app.
             var d = transformRequest($scope.formData);
             $http({
                 method: 'POST',
-                url: '/api/discussions/replies/',
+                url: '/api/discussion/replies/',
                 data: d,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -57,9 +61,9 @@ app.
                 .success(function(data) {
                     console.log(data);
                     if(data.result) {
-                        $scope.$emit('onAfterEditReply', data.post);
+                        $scope.$emit('onAfterEditReply', $scope.formData);
 
-                        $('#EditReplyModal').modal('hide');
+                        $('#editReplyModal').modal('hide');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;

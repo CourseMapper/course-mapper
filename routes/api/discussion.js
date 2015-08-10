@@ -29,6 +29,33 @@ router.get('/discussions/:courseId', function(req, res, next) {
     );
 });
 
+
+/**
+ * get all posts/replies under a post
+ */
+router.get('/discussion/:postId/posts', function(req, res, next) {
+    var cat = new CourseDiscussionController();
+    cat.getReplies(
+        function(err){
+            res.status(500).json({
+                result: false,
+                errors: err
+            });
+        },
+        // parameters
+        mongoose.Types.ObjectId(req.params.postId)
+        ,
+        function(posts){
+            res.status(200).json({
+                result:true, posts: posts
+            });
+        }
+    );
+});
+
+/**
+ * create a new topic under a course
+ */
 router.post('/discussions/:courseId', function(req, res, next){
     var cat = new CourseDiscussionController();
 
@@ -60,7 +87,10 @@ router.post('/discussions/:courseId', function(req, res, next){
     );
 });
 
-router.post('/discussions/replies', function(req, res, next){
+/**
+ * create a new reply under a post
+ */
+router.post('/discussion/replies', function(req, res, next){
     var cat = new CourseDiscussionController();
 
     // todo: check for enrollment
@@ -76,10 +106,10 @@ router.post('/discussions/replies', function(req, res, next){
             });
         },
         {
-            title: "",
+            title: " ",
             content: req.body.content,
             createdBy: mongoose.Types.ObjectId(req.user._id),
-            parentPost:req.params.parentPost
+            parentPost: mongoose.Types.ObjectId(req.body.parentPost)
             //params.parentPath: []
         },
         function(post){
@@ -131,29 +161,6 @@ router.delete('/discussion/:postId', function(req, res, next){
         function(post){
             res.status(200).json({
                 result:true, post: post
-            });
-        }
-    );
-});
-
-/**
- * get all posts/replies under a post
- */
-router.get('/discussions/:postId/posts', function(req, res, next) {
-    var cat = new CourseDiscussionController();
-    cat.getCourseDiscussionPosts(
-        function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
-        },
-        // parameters
-        mongoose.Types.ObjectId(req.params.postId)
-        ,
-        function(posts){
-            res.status(200).json({
-                result:true, posts: posts
             });
         }
     );

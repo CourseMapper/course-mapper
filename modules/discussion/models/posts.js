@@ -6,13 +6,11 @@ var postSchema = new mongoose.Schema();
 postSchema.add({
     title: {
         type: String,
-        unique: true,
         required: true
     },
 
     slug: {
-        type: String,
-        required: true
+        type: String
     },
 
     content: {type: String, required: true},

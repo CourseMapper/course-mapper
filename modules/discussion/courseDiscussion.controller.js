@@ -46,11 +46,10 @@ courseDiscussion.prototype.getCourseDiscussions = function(error, courseId, succ
  * @param params
  * @param success
  */
-courseDiscussion.prototype.getCourseDiscussionPosts = function(error, discussionId, success){
+courseDiscussion.prototype.getReplies = function(error, parentId, success){
     Posts.find({
         $or: [
-            { _id: discussionId },
-            { parentPost: discussionId }
+            { parentPost: parentId }
             //,{ parentPath : { $in: [ discussionId ] }}
         ]
     }, function(err, docs) {
@@ -77,12 +76,9 @@ courseDiscussion.prototype.getCourseDiscussionPosts = function(error, discussion
             }
 
             for(var i in cats){
-                // get the root
                 var doc = cats[i];
-                if(!doc[parent]){
-                    again(doc);
-                    tree.push(doc);
-                }
+                again(doc);
+                tree.push(doc);
             }
 
             success(tree);
@@ -130,7 +126,7 @@ courseDiscussion.prototype.deletePost = function(error, params, success){
         {
             $set: {
                 isDeleted: true,
-                content: "DELETED"
+                content: "[DELETED]"
             }
         },
         function(err, doc){
@@ -145,7 +141,7 @@ courseDiscussion.prototype.addPost = function(error, params, success){
     var newPost = new Posts({
         title: params.title,
         content: params.content,
-        createdBy: params.userId,
+        createdBy: params.createdBy,
         isDeleted: false
     });
 
@@ -180,7 +176,7 @@ courseDiscussion.prototype.addPost = function(error, params, success){
         if(params.courseId) {
             var cd = new Discussion({
                 course: params.courseId,
-                createdBy: params.userId,
+                createdBy: params.createdBy,
                 discussion: newPost._id
             });
 
