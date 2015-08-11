@@ -8,33 +8,47 @@ function Comment(){
 }
 
 Comment.prototype.submitAnnotation = function(err, params, done){
-  this.convertRawText(params.rawText,function(renderedText){
-    var annotationsPDF = new AnnotationsPDF({
-      rawText: params.rawText,
-      renderedText: renderedText,
-      author: params.author,
-      originSlide: params.originSlide
-    });
+  var temp = this.convertRawText;
 
-    //console.log(this.convertRawText(params.rawText));
+  this.submitAllTags(err,params.tags,function(){
+    console.log("GOT TO THE END");
+    temp(params.rawText,function(renderedText){
+      var annotationsPDF = new AnnotationsPDF({
+        rawText: params.rawText,
+        renderedText: renderedText,
+        author: params.author,
+        originSlide: params.originSlide
+      });
+
+      //console.log(this.convertRawText(params.rawText));
 
 
-    // save it to db
-    annotationsPDF.save(function (err) {
-        if (err) {
-            console.log('annotation submitting error');
-            // call error callback
-            console.log(err);
-            //errorCallback(err);
-        } else {
-            // call success callback
+      // save it to db
+      annotationsPDF.save(function (err) {
+          if (err) {
+              console.log('annotation submitting error');
+              // call error callback
+              console.log(err);
+              //errorCallback(err);
+          } else {
+              // call success callback
 
-            done(annotationsPDF);
+              done(annotationsPDF);
 
-        }
+          }
+      });
     });
   });
 };
+
+Comment.prototype.submitAllTags = function(err,tags,callback){
+  var annZone = new AnnZones();
+  var tagList = tags.split(",");
+  console.log(tagList);
+  annZone.submitTagList(err,tagList,callback);
+}
+
+
 
 //TODO Really check if tag name exists
 Comment.prototype.checkTagName = function(tagName,tagNameList){
@@ -60,7 +74,8 @@ Comment.prototype.convertRawText = function(rawText,callback){
 
   var check = this.checkTagName;
 
-  this.getAllTagNames(function(data){
+  var comm = new Comment();
+  comm.getAllTagNames(function(data){
 
   var tagNameList = [];
 
@@ -69,8 +84,9 @@ Comment.prototype.convertRawText = function(rawText,callback){
   }
 
   var renderedText = rawText.replace(/#(\w+)/g, function(x){
-      console.log(check(x,tagNameList));
-      if(check(x,tagNameList)){
+      var comm = new Comment();
+      console.log(comm.checkTagName(x,tagNameList));
+      if(comm.checkTagName(x,tagNameList)){
         console.log("ADDED LABEL");
         var ret = "<label class='blueText'> " + x + " </label>";
         return ret;

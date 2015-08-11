@@ -84,7 +84,8 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 function cloneSimpleObject(obj){
     return JSON.parse(JSON.stringify(obj));
-};app.controller('CategoryListController', function($scope, $http, $rootScope) {
+}
+;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -195,7 +196,8 @@ function cloneSimpleObject(obj){
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();
     });
-});;
+});
+;
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
     $scope.createdDate = new Date();
     $scope.courseEdit = null;
@@ -265,7 +267,6 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
     };
 });
-
 ;
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
     $scope.course = {
@@ -310,7 +311,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }) ;
     };
 });
-
 ;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce ) {
     $scope.slug = $routeParams.slug;
 
@@ -1090,7 +1090,111 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             });
     }
-});;
+});
+;app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
+
+    $scope.orderType = "author";
+    $scope.ascending = "true";
+    $scope.filters = '{}';
+    $scope.filtersRaw = '';
+
+
+    $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+
+
+    function updateScope(url){
+      $http.get(url).success(function (data) {
+        console.log('UPDATED');
+        console.log(data);
+
+        $scope.comments = data.comments;
+
+        for(var i in $scope.comments){
+          var cmnt = $scope.comments[i];
+          cmnt.html = $sce.trustAsHtml(cmnt.html);
+
+          $timeout(function(){
+            $scope.$apply();
+          });
+        };
+      });
+    };
+
+    function getCurrentFilters(filtersRaw){
+      var finalFilters;
+      if($scope.filtersRaw.length == 0)
+        finalFilters='{}';
+      else {
+        var filterStrings = $scope.filtersRaw.split(';');
+        finalFilters = '{';
+        for(var i=0; i < filterStrings.length; i++){
+          var temp = filterStrings[i].split(',');
+          finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
+          if(i != filterStrings.length-1)
+            finalFilters = finalFilters + ',';
+        }
+        finalFilters = finalFilters + '}';
+
+      }
+
+      return finalFilters;
+    }
+
+
+    $scope.$watch("orderType",function(newValue,oldValue){
+      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      updateScope($scope.commentGetUrl);
+    });
+
+    $scope.$watch("ascending",function(newValue,oldValue){
+      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      updateScope($scope.commentGetUrl);
+    });
+
+    $scope.$watch("filtersRaw",function(newValue,oldValue){
+      $scope.filters = getCurrentFilters($scope.filtersRaw);
+      console.log("FILTERSCOPE CHANGED");
+      console.log($scope.filters);
+      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      updateScope($scope.commentGetUrl);
+    });
+
+
+
+
+    /*$http.get('/slide-viewer/disComm').success(function (data) {
+        console.log(data);
+        $scope.comments = data.comments;
+
+        for(var i in $scope.comments){
+            var cmnt = $scope.comments[i];
+            cmnt.html = $sce.trustAsHtml(cmnt.html);
+        }
+
+
+        $scope.loadComments = function (orderType, ascending, filters) {
+          //var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/' + filters;
+          var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/{"author":"Kaet"}';
+          console.log(url);
+          $http.get(url).success(function (data) {
+              console.log(data);
+              $scope.comments = data.comments;
+
+              for(var i in $scope.comments){
+                  var cmnt = $scope.comments[i];
+                  cmnt.html = $sce.trustAsHtml(cmnt.html);
+              }
+
+          });
+
+
+
+
+        };
+    });*/
+
+});
+;
 
 app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
     $scope.createTopic = function(name, event){
@@ -1149,15 +1253,25 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
                 reloadOnSearch: false
             }).
 
+            // we dont need it here, because you are not using
+            // '#' (hash tag in the url). please refer to "angular route" in google for this.
+            // in the way you are doing now, you can just use the express routing system.
+            // the file you have to take care is /routes/slide-viewer/slideViewer.js
+            /*when('/slide-viewer', {
+                templateUrl: 'slideViewer.html',
+                controller: 'CommentListController',
+                reloadOnSearch: false
+            }).*/
+
             otherwise({
                 redirectTo: '/'
             });
 
     }]);
-
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
-});;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
+});
+;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
 
@@ -1305,7 +1419,8 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             $scope.addWidget($scope.widgets[i].widgetId._id);
         }
     }
-});;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+});
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
     $scope.location = "";
     $scope.installedWidgets;
     /**

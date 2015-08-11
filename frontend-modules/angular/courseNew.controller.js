@@ -42,4 +42,3 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }) ;
     };
 });
-

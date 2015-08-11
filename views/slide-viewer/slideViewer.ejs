@@ -8,14 +8,14 @@
 
         <section class="content-header">
             <ol class ="breadcrumb">
-                <li><a href="/"><iclass="fa fa-home"></i> Home</a></li>
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
                 <li class ="active"> Slides ></li>
             </ol>
             <h1>
                 Slides
             </h1>
         </section>
-        <section class="content">
+        <section class="content" ng-controller="CommentListController">
           <div class="row">
             <div class= "col-sm-12 col-md-12">
               <div class="col-sm-7 col-md-7">
@@ -69,6 +69,11 @@
                                  <input type="hidden" class="form-control" id="author" name="author" placeholder="author" value= <%=currentUser.username%> >
                                </div>
                              </div>
+                             <div class="control-group">
+                               <div class="controls">
+                                 <input class="form-control" id="tags" name="tags" placeholder="tags">
+                               </div>
+                             </div>
 
                              <div class="control-group">
                                <div class="controls">
@@ -79,25 +84,29 @@
                         </form>
                         <div class="controls">
                           <button class="btn btn-default" onclick="displayComments();">Show comments</button>
+                          <div >
+                            <button class="btn btn-default" ng-click="loadComments('renderedText','true','{}')">Show comments Angular</button>
+                            <button class="btn btn-default" ng-click="loadComments('renderedText','false','{}')">Show comments Angular2</button>
+                          </div>
                           Sort by:
-                          <select id="orderTypeSelect">
-                            <option value="author">author</option>
-                            <option value="dateOfCreation">dateOfCreation</option>
-                            <option value="rawText">rawText</option>
-                          </select>
-                          <select id="orderAscendingSelect">
-                            <option value="true">ascending</option>
-                            <option value="false">descending</option>
-                          </select>
+                          <div >
 
+                            <select id="orderTypeSelect" ng-model="orderType">
+                              <option value="author">author</option>
+                              <option value="dateOfCreation">dateOfCreation</option>
+                              <option value="rawText">rawText</option>
+                            </select>
+                            <select id="orderAscendingSelect" ng-model="ascending">
+                              <option value="true">ascending</option>
+                              <option value="false">descending</option>
+                            </select>
+                          </div>
                           Filter by:
-                          <select id="filterTypeSelect">
-                            <option value="none">none</option>
-                            <option value="author">author</option>
-                          </select>
-                          <input id="filterValueText"></input>
+                          <div >
+                            <input id="filterValueText" ng-model="filtersRaw"></input>
+                          </div>
                         </div>
-                        <div>
+                        <!--<div>
 
                           <form action='/slide-viewer/submitTag' method="POST">
                             <fieldset>
@@ -114,8 +123,20 @@
                              </div>
                           </form>
 
-                        </div>
+                        </div>-->
+                        <div >
+                            <div ng-repeat="comment in comments">
+                              <div>
+                                  <label class='authorLabel' onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
 
+                                  <div class="commentText" ng-bind-html="comment.html">
+                                  </div>
+                                  <br>
+                                </div>
+
+                              </div>
+                            </div>
+                        </div>
                         <div>
                         </div>
                       </div>
@@ -137,3 +158,5 @@
 <script src="/gridstack/gridstack.js"></script>
 <script src="js/slideviewer.js"></script>
 <script src="js/drawdiv.js"></script>
+
+<% include ../admin-lte/footer %>
