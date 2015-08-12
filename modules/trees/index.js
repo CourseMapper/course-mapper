@@ -6,6 +6,8 @@ var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 var debug = require('debug')('cm:db');
 
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
+
 function catalog(){
 }
 
@@ -101,6 +103,14 @@ catalog.prototype.addTreeNode = function(error, params, files, success){
                     }
                 }
 
+                if(params.type == 'contentNode') {
+                    Plugin.doAction('onAfterContentNodeCreated', tn);
+                } else {
+                    Plugin.doAction('onAfterSubTopicCreated', tn);
+                }
+
+                debug('success added node');
+
                 // put this object as the parent's child,
                 if(node.parent) {
                     TreeNodes.findOne({_id : node.parent}, function(err, doc){
@@ -122,7 +132,6 @@ catalog.prototype.addTreeNode = function(error, params, files, success){
                         }
                     });
                 } else {
-                    debug('success added node');
                     success(tn);
                 }
             }

@@ -75,7 +75,7 @@ AppStore.prototype.getWidgets = function(error, params, success){
  * @param success cb
  */
 AppStore.prototype.updateWidget = function(failed, params, updateParams, success){
-    Widgets.findOneAndUpdate(params, updateParams, {new:true}, function(err, wdg){
+    Widgets.findOneAndUpdate(params, updateParams, {upsert:true}, function(err, wdg){
         if(err)
             failed(err);
         else
