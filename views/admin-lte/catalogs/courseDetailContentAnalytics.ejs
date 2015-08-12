@@ -1,7 +1,9 @@
 <!-- analytics-->
 <div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-11"
      ng-controller="widgetController"
-     ng-init="location='course-analytics'">
+     ng-init="location='course-analytics';
+              initiateDraggableGrid('course-analytics');
+     ">
 
     <div class="grid-stack-item"
          data-gs-locked="yes"
@@ -21,7 +23,7 @@
                             <i class="fa fa-times"></i></button>
                     </div>
                 </div>
-                <div class="box-body">
+                <div class="box-body-widget">
 
                     <!-- start widget render -->
                     <div ng-include src="wdg.widgetId.entryPoint"

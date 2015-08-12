@@ -54,7 +54,9 @@
                     </div>
                     <!-- main user menu end -->
 
-                    <div class="grid-stack col-sm-6 col-md-10" id="user-profile-widgets">
+                    <div class="grid-stack col-sm-6 col-md-10" id="user-profile-widgets"
+                         ng-init="location='user-profile';
+                                  initiateDraggableGrid('user-profile');">
                         <div class="grid-stack-item"
                              data-gs-no-resize="yes"
                              data-gs-locked="yes"
@@ -111,11 +113,5 @@
 <script src="/gridstack/gridstack.js"></script>
 <!--add chart.js source-->
 <script src="/chartjs/Chart.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        initiateDraggableGrid(['#user-profile-widgets']);
-    });
-</script>
 
 <% include footer %>
