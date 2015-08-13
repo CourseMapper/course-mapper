@@ -1,5 +1,5 @@
 app.
-    controller('ReplyController', function($scope, $http) {
+    controller('ReplyController', function($scope, $http, $timeout) {
         $scope.formData = {
             title: " ",
             content: ""
@@ -37,6 +37,9 @@ app.
                         $scope.$emit('onAfterCreateReply', data.post);
 
                         $('#addNewReplyModal').modal('hide');
+
+                        $scope.formData.content = "";
+                        $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
@@ -61,7 +64,7 @@ app.
                 .success(function(data) {
                     console.log(data);
                     if(data.result) {
-                        $scope.$emit('onAfterEditReply', $scope.formData);
+                        $scope.$emit('onAfterEditReply', data.post);
 
                         $('#editReplyModal').modal('hide');
                     } else {

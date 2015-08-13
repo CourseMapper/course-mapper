@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-5" id="topicLists">
 
-            <h5>General Discussion for This Course</h5>
+            <h4>The Discussion Topics</h4>
 
             <div ng-show="topics.length == 0" class="posts-list">
                 <ul class="posts">
@@ -22,7 +22,8 @@
                             {{topic.discussion.title}}
                         </a></h4>
                         <span class="posted-at">
-                                Posted at: {{topic.discussion.dateAdded | relativeDate}}
+                            Posted <strong>{{topic.discussion.dateAdded | relativeDate}}</strong>
+                            By <strong>{{topic.createdBy.username}}</strong>
                         </span>
                     </li>
                 </ul>
@@ -30,10 +31,10 @@
 
         </div>
         <div class="col-md-6" id="topicContents">
-            <h5>Topic Description</h5>
+            <!--<h5>Topic Description</h5>-->
 
             <div ng-hide="pid || topics.length == 0">
-                <h4>Please pick one from the left</h4>
+                <h4>Please pick one from the existing topics</h4>
             </div>
 
             <div ng-show="pid" class="replies-wrapper">
@@ -42,11 +43,12 @@
                     <div class="box box-solid">
                         <div class="box-header with-border">
                             <h4>{{currentTopic.title}}</h4>
-                            <span class="posted-at"><strong>Posted At:</strong>
-                                {{currentTopic.dateAdded | relativeDate}}</span>
+                            <span class="posted-at">
+                                Posted <strong>{{currentTopic.dateAdded | relativeDate}}</strong>
+                            By <strong>{{currentTopic.createdBy.username}}</strong>
+                            </span>
                         </div>
                         <div class="box-body">
-
                             <p class="topicContent" ng-bind-html="currentTopic.content | unsafe">
                             </p>
                         </div>
@@ -70,7 +72,8 @@
                             <div class="box box-solid">
                                 <div class="box-body">
                                     <span class="posted-at">
-                                        <strong>Posted at:</strong> {{re.dateAdded | relativeDate}}
+                                        Posted <strong>{{re.dateAdded | relativeDate}}</strong>
+                                        By <strong>{{re.createdBy.username}}</strong>
                                     </span>
 
                                     <p class="reply" ng-bind-html="re.content | unsafe"></p>
@@ -78,10 +81,10 @@
                                 </div>
                                 <div class="box-footer">
                                     <div class="replyControl"
-                                         ng-show="re.createdBy==$root.user._id && re.content !='[DELETED]'"
+                                         ng-show="re.createdBy._id==$root.user._id && re.content !='[DELETED]'"
                                             >
                                         <div class="editReplyButton">
-                                            <a ng-show="re.createdBy==$root.user._id" style="cursor: pointer;"
+                                            <a ng-show="re.createdBy._id==$root.user._id" style="cursor: pointer;"
                                                data-toggle="modal" data-target="#editReplyModal"
                                                title="Edit"
                                                ng-click="editReply(re)"
@@ -89,7 +92,7 @@
                                                     >EDIT</a>
                                         </div>
                                         <div class="deleteReplyButton">
-                                            <a style="cursor: pointer;" ng-show="re.createdBy==$root.user._id"
+                                            <a style="cursor: pointer;" ng-show="re.createdBy._id==$root.user._id"
                                                ng-click="deletePost(re._id)"
                                                title="delete"
                                                class="btn btn-danger btn-xs">DELETE</a>

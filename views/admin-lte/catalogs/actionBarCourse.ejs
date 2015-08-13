@@ -57,13 +57,15 @@
                    title="Add or remove preview widgets">
                     <i class="ionicons ion-android-add"></i> &nbsp; ADD NEW TOPIC</a>
             </li>
-            <li ng-repeat="EAM in extraActionsMenu" ng-show="EAM.html" ng-bind-html="EAM.html|unsafe">
-            </li>
 
-            <li ng-repeat="EAM in extraActionsMenu" ng-show="EAM.clickAction">
-                <a class="cursor" ng-show="EAM.clickAction" ng-click="EAM.clickAction(EAM.clickParams)" ng-bind-html="EAM.title|unsafe">
+            <li ng-repeat="EAM in extraActionsMenu">
+                <a ng-if="EAM.html" ng-bind-html="EAM.html|unsafe"></a>
+                <i class="ionicons ion-android-more-vertical" ng-if="EAM.separator">&nbsp;</i>
+                <a class="cursor" title="EAM.aTitle" ng-show="EAM.clickAction" ng-click="EAM.clickAction(EAM.clickParams)" ng-bind-html="EAM.title|unsafe">
                 </a>
             </li>
+
+
     </ul>
 
 </script>
