@@ -3,6 +3,9 @@
 <div ng-controller="DiscussionController">
     <div class="row">
         <div class="col-md-5" id="topicLists">
+
+            <h5>General Discussion for This Course</h5>
+
             <div ng-show="topics.length == 0" class="posts-list">
                 <ul class="posts">
                     <li class="post">
@@ -27,6 +30,8 @@
 
         </div>
         <div class="col-md-6" id="topicContents">
+            <h5>Topic Description</h5>
+
             <div ng-hide="pid || topics.length == 0">
                 <h4>Please pick one from the left</h4>
             </div>

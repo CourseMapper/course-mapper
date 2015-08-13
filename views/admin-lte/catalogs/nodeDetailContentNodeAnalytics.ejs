@@ -3,6 +3,13 @@
      ng-controller="widgetController"
      ng-init="location='node-analytics'">
 
+    <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
+        There is no registered widget here.
+        <span ng-show="isOwner" class="empty-widget">
+          Go to the widget store to add one.
+        </span>
+    </div>
+
     <div class="grid-stack-item"
          data-gs-x="0"
          data-gs-width="12"

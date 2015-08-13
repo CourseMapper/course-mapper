@@ -4,7 +4,12 @@
      ng-init="location='course-analytics';
               initiateDraggableGrid('course-analytics');
      ">
-
+    <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
+        There is no registered widget here.
+        <span ng-show="isOwner" class="empty-widget">
+          Go to the widget store to add one.
+        </span>
+    </div>
     <div class="grid-stack-item"
          data-gs-locked="yes"
          data-gs-no-resize="yes"

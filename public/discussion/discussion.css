@@ -1,5 +1,5 @@
 .posts-list ul.posts, ul.replies{
-    list-style-type: none;
+    list-style-type: none;padding: 0;
 }
 
 .posts-list li.post h4, .currentTopic h4 {
@@ -8,7 +8,7 @@
 }
 .currentTopic h4{color: #3c8dbc;}
 li.post, li.reply{
-    padding: 20px;
+    padding: 15px;
 }
 li.post:hover {
     /*background: rgba(136, 208, 255, 0.3);*/

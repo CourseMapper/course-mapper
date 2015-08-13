@@ -27,7 +27,8 @@ function convertToDictionary(documents){
  */
 courseDiscussion.prototype.getCourseDiscussions = function(error, courseId, success){
     Discussion.find({
-        course: courseId
+        course: courseId,
+        isDeleted: false
     })
         .populate('discussion').exec(function(err, docs) {
             if (!err){
@@ -51,6 +52,9 @@ courseDiscussion.prototype.getReplies = function(error, parentId, success){
         $or: [
             { parentPost: parentId }
             //,{ parentPath : { $in: [ discussionId ] }}
+        ],
+        $and:[
+            {isDeleted: false}
         ]
     }, function(err, docs) {
         if (!err){
@@ -89,15 +93,6 @@ courseDiscussion.prototype.getReplies = function(error, parentId, success){
 };
 
 courseDiscussion.prototype.editPost = function(error, params, success){
-    /*Posts.findOne().exec(function(err, doc){
-        if(!err){
-            if(doc){
-
-            }
-        }
-        else error(err);
-    });*/
-
     Posts.update(
         {
             _id: params.postId,
@@ -125,15 +120,27 @@ courseDiscussion.prototype.deletePost = function(error, params, success){
         },
         {
             $set: {
-                isDeleted: true,
-                content: "[DELETED]"
+                isDeleted: true
             }
         },
         function(err, doc){
             if(err)
                 error(err);
-            else
+            else {
+                if(params.courseId){
+                    Discussion.update({
+                            discussion: params.postId,
+                            createdBy: params.userId
+                        },
+                        {
+                            $set: {
+                                isDeleted: true
+                            }
+                        });
+                }
+
                 success(doc);
+            }
         });
 };
 
@@ -177,7 +184,8 @@ courseDiscussion.prototype.addPost = function(error, params, success){
             var cd = new Discussion({
                 course: params.courseId,
                 createdBy: params.createdBy,
-                discussion: newPost._id
+                discussion: newPost._id,
+                isDeleted: false
             });
 
             cd.save(function (err) {
@@ -185,6 +193,10 @@ courseDiscussion.prototype.addPost = function(error, params, success){
                     success(newPost);
                 } else error(err);
             });
+
+        } else {
+            // there isno course id, maybe its a reply
+            success(newPost);
         }
     });
 };

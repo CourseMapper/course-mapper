@@ -73,4 +73,30 @@ app.
                 }) ;
         };
 
+        /**
+         * deleting root topic
+         * @param postId
+         */
+        $scope.deletePost = function(postId){
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
+
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
     });
