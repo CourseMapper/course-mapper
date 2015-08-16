@@ -1,12 +1,12 @@
 
-<% for(var i = 0; i < numComments; i++) {%>
+<% for(var i = 0; i < comments.length; i++) {%>-->
   <div>
-    <label><%=comments[i].author%>(<%=comments[i].dateOfCreation.toTimeString()%>)</label>
+    <label><%=comments.author%>(<%=comments.date.toTimeString()%>)</label>
   </div>
   <div class="commentText">
-    <%=comments[i].renderedText%>
+    <%=comments.html%>
   </div>
   <div>
     <br>
   </div>
-<% } %>
+<!--<% } %>-->

@@ -103,6 +103,23 @@ router.get('/courses', function(req, res, next) {
     );
 });
 
+router.get('/course/:courseId/map', function(req, res, next) {
+    res.status(200).json({result:true, treeNodes: []});
+    return;
+    var cat = new Course();
+    cat.getCourse(
+        function(err){
+            res.status(500);
+        },
+        {
+            _id: req.params.courseId
+        },
+        function(course){
+            res.status(200).json({result:true, course: course});
+        }
+    );
+});
+
 router.get('/course/:courseId', function(req, res, next) {
     var cat = new Course();
     cat.getCourse(

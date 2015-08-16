@@ -1,5 +1,7 @@
-app.controller('HomePageController', function($scope, $http, $rootScope) {
+app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
+    $scope.isRequesting = false;
+    $scope.widgets = [];
 
     $(document).ready(function(){
         if(typeof(localStorage) !== "undefined") {
@@ -68,9 +70,14 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
             var child = categories[i];
 
             // instantiate on hover
-            $('#' + child.slug).mouseover(function(){
+            $('#' + child.slug).mouseover(function(event){
                 $(this).find('ul').show();
-            }).mouseout(function(){$(this).find('ul').hide()});
+                $rootScope.$broadcast('onCategoryHover', $(this).attr('id'));
+
+            }).mouseout(function(){
+                $(this).find('ul').hide();
+                $rootScope.$broadcast('onCategoryHoverOut', $(this).attr('id'));
+            });
 
             instance.connect({
                 source: parent, target: child.slug,
@@ -85,6 +92,27 @@ app.controller('HomePageController', function($scope, $http, $rootScope) {
             }
         }
     };
+
+    $scope.$on('onCategoryHover', function(event, slug){
+        if($scope.isRequesting)
+            return;
+
+        $scope.isRequesting = true;
+        $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
+           function(res){
+               $scope.isRequesting = false;
+               if(res.result){
+                    $scope.widgets[slug] = $sce.trustAsHtml(res.widgets);
+               }
+           }
+       ).error(function(){
+                $scope.isRequesting = false;
+            });
+    });
+
+    $scope.$on('onCategoryHoverOut', function(event, slug){
+        $scope.isRequesting = false;
+    });
 
     $scope.goToDetail = function(categorySlug){
         window.location.href = "/courses/#/category/" + categorySlug;

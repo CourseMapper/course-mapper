@@ -68,4 +68,3 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
     };
 });
-

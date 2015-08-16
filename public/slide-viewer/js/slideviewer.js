@@ -3,7 +3,6 @@
 //var appRoot = require('app-root-path');
 //var SlideViewer = require(appRoot + '/modules/slide-viewer');
 
-var default1=0;
 
 /*function _init(){
     console.log("WORKED3");
@@ -19,7 +18,9 @@ function displayCommentsIntern(filter, order){
     var url = "/slide-viewer/disComm";
     var urlFilterOrder = url + "/" + order + "/" + filter;
 
-    $.ajax( {
+    console.log(urlFilterOrder);
+
+    /*$.ajax( {
       "url": urlFilterOrder,
       //"async": false,
       "dataType": "html",
@@ -30,7 +31,14 @@ function displayCommentsIntern(filter, order){
         });
       }
 
-    } );
+    } );*/
+    /*$http.get({
+      urlFilterOrder,
+    }).success(function(data, status, headers, config) {
+      $scope.comments = data;
+    }).error(function(data, status, headers, config) {
+      $scope.comments = status;
+    });*/
 
 
 
@@ -59,3 +67,21 @@ function displayComments(){
   order = JSON.parse(order);
   displayCommentsIntern(JSON.stringify(filter),JSON.stringify(order));
 };
+
+function authorLabelClick(element){
+  console.log("GOT HERE");
+  var filterInput = $('#filterValueText');
+  console.log(element);
+  var authorName = element.text();
+
+  if (filterInput.val().length == 0){
+    filterInput.val('author,' + authorName + '');
+  }
+  else {
+    filterInput.val('');
+  }
+  filterInput.trigger('input');
+
+
+
+}

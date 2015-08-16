@@ -43,7 +43,7 @@ router.get('/category/:category', function(req, res, next) {
  */
 router.put('/category/:category/positionFromRoot', function(req, res, next) {
     // check for user rights, only admin can edit cats positions on the homepage
-    if (req.user && req.user.role != 'admin') {
+    if (!req.user || (req.user && req.user.role != 'admin')) {
         res.status(401).send('Unauthorized');
         return;
     }
@@ -67,7 +67,6 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
         }
     );
 });
-
 
 router.get('/category/:category/courseTags', function(req, res, next) {
     var cat = new Category();

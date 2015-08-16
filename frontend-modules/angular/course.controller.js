@@ -18,13 +18,14 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
     };
 
     $scope.changeTab = function(){
-        var paths = $location.search();
-        var path = "preview";
-        if(paths){
-            path = _.findKey(paths);
+        var defaultPath = "preview";
+        var q = $location.search();
+
+        if(q.tab){
+            defaultPath = q.tab;
         }
 
-        $scope.currentTab = $scope.tabs[path];
+        $scope.currentTab = $scope.tabs[defaultPath];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
     };
 
@@ -47,10 +48,8 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
 
     $scope.init();
 
-    $rootScope.$watch('user', function(){
-        if($rootScope.user) {
-            $scope.user = $rootScope.user;
-
+    $scope.$watchGroup(['user', 'course'], function(){
+        if($scope.user != null && $scope.course != null) {
             $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
                 if (res.result && res.courses) {
                     $scope.enrolled = res.courses.isEnrolled;
@@ -77,6 +76,7 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
         $http.put(url, {}).success(function(res){
             if(res.result)
                 $scope.enrolled = true;
+
         }).finally(function(){
             $scope.loading = false;
         });
