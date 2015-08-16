@@ -141,6 +141,7 @@ router.get('/disComm', function(req, res, next){
 });*/
 
 router.get('/disComm/:order/:filters/', function(req, res, next){
+  console.log("Got here2");
   var comment = new Comment();
 
 
@@ -148,6 +149,7 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
   var filter = JSON.parse(req.params.filters);
   console.log("GOT HERE");
 
+  console.log("Got here3");
 
   comment.getOrderedFilteredComments(order,filter,function(err, data) {
     var modifiedData = new Array(data.length);
@@ -159,6 +161,7 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
         html: data[i].renderedText
       };
     }
+    console.log("Got here1");
     res.status(200).json({result:true, comments: modifiedData});
 
   });

@@ -174,7 +174,7 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
       orderString = "-"+orderString;
     }
 
-    //console.log(orderString);
+    console.log(filters);
 
     AnnotationsPDF.find(filters, function (err, data) {
       if(err) {

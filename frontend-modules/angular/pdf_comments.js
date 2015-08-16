@@ -28,6 +28,8 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
     };
 
     function getCurrentFilters(filtersRaw){
+      console.log("Got here");
+
       var finalFilters;
       if($scope.filtersRaw.length == 0)
         finalFilters='{}';
@@ -36,7 +38,15 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
         finalFilters = '{';
         for(var i=0; i < filterStrings.length; i++){
           var temp = filterStrings[i].split(',');
-          finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
+          if(temp.length != 1)
+            finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
+          else
+          {
+            temp = filterStrings[i].split(':');
+            finalFilters = finalFilters + '"' + temp[0] + '":{"$regex": "' + temp[1] + '","$options":"ix"}';
+          }
+
+
           if(i != filterStrings.length-1)
             finalFilters = finalFilters + ',';
         }
