@@ -111,15 +111,19 @@ AnnZones.prototype.annotationZoneNameExists = async(function(name) {
 });
 
 AnnZones.prototype.getAllAnnotationZoneNames = function(callback) {
+  this.getAllAnnotationZones(callback); //TODO fuse
+};
+
+AnnZones.prototype.getAllAnnotationZones = function(callback) {
   AnnotationZonesPDF.find({},function (err, data) {
     if(err) {
       console.log(err);
     }
     else {
-      callback(data);
+      console.log(data);
+      callback(0, data);
     }
   });
 };
-
 
 module.exports = AnnZones;

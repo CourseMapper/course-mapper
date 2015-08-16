@@ -90,7 +90,8 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 function cloneSimpleObject(obj){
     return JSON.parse(JSON.stringify(obj));
-};app.controller('CategoryListController', function($scope, $http, $rootScope) {
+}
+;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -1280,6 +1281,31 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     }
 });
+;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {
+
+
+    //function updateScope(url){
+      //$http.get(url).success(function (data) {
+    $http.get('/slide-viewer/disAnnZones').success(function (data) {
+        console.log('TAGS UPDATED');
+        console.log(data);
+
+        $scope.annZones = data.annZones;
+
+        $timeout(function(){
+          $scope.$apply();
+        });
+
+      //});
+    });
+
+    /*$scope.$watch("annZones",function(newValue,oldValue){
+      $scope.getUrl = '/slide-viewer/disAnnZones';
+      updateScope($scope.getUrl);
+    });*/
+
+
+});
 ;app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
 
     $scope.orderType = "author";
@@ -1468,7 +1494,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }) ;
         };
 
-    });;
+    });
+;
 
 app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
     $scope.createTopic = function(name, event){

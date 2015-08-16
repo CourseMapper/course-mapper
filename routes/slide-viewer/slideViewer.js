@@ -141,15 +141,10 @@ router.get('/disComm', function(req, res, next){
 });*/
 
 router.get('/disComm/:order/:filters/', function(req, res, next){
-  console.log("Got here2");
   var comment = new Comment();
-
 
   var order = JSON.parse(req.params.order);
   var filter = JSON.parse(req.params.filters);
-  console.log("GOT HERE");
-
-  console.log("Got here3");
 
   comment.getOrderedFilteredComments(order,filter,function(err, data) {
     var modifiedData = new Array(data.length);
@@ -167,7 +162,22 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
   });
 });
 
+router.get('/disAnnZones/', function(req, res, next){
+  var annZone = new AnnZones();
 
+  
+  annZone.getAllAnnotationZones(function(err, data) {
+    var modifiedData = new Array(data.length);
+    for(var i=0; i<data.length; i++){
+      modifiedData[i] = {
+        name: data[i].annotationZoneName
+      };
+    }
+    console.log(modifiedData);
+    res.status(200).json({result:true, annZones: modifiedData});
+
+  });
+});
 
 
 
