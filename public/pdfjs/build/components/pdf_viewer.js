@@ -3126,4 +3126,3 @@ var PDFHistory = (function () {
   PDFJS.getFileName = getFileName;
   PDFJS.ProgressBar = ProgressBar;
 }).call((typeof window === 'undefined') ? this : window);
-

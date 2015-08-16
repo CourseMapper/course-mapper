@@ -31,11 +31,13 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
   });
 };
 
-function temp(item, done) {
-  console.log("Got at least here");
-  console.log(item);
+function submitSingleTag(tagList, err, restList, mainCallback, done) {
+  //console.log(tagList);
   var annotationZonePDF = new AnnotationZonesPDF({
-    annotationZoneName: item,
+    annotationZoneName: tagList[0],
+    relativeCoordinates: tagList[1],
+    relativeDimensions: tagList[2],
+    color: tagList[3]
   });
 
   // save it to db
@@ -47,22 +49,46 @@ function temp(item, done) {
           //errorCallback(err);
       } else {
           // call success callback
-          console.log("Got here");
-          done();
+          done(err, restList, mainCallback);
       }
   });
-}
+};
+
+function submitSingleTagLast(tagList, mainCallback) {
+  //console.log(tagList);
+  var annotationZonePDF = new AnnotationZonesPDF({
+    annotationZoneName: tagList[0],
+    relativeCoordinates: tagList[1],
+    relativeDimensions: tagList[2],
+    color: tagList[3]
+  });
+
+  // save it to db
+  annotationZonePDF.save(function (err) {
+      if (err) {
+          console.log('annotation submitting error');
+          // call error callback
+          console.log(err);
+          //errorCallback(err);
+      } else {
+          // call success callback
+          mainCallback();
+      }
+  });
+};
 
 
 
 var permArray;
 
 AnnZones.prototype.submitTagList = function(err,tagList, callback){
-  if(tagList>=1){
-    temp(tagList[0],this.submitTagList(err,tagList.slice(1,(tagList.length-1),callback)));
+  if(tagList.length>1){
+    //console.log(tagList[0]);
+    var restList = tagList.slice(1,(tagList.length));
+    submitSingleTag(tagList[0],err, restList, callback, this.submitTagList);
   }
   else {
-    temp(tagList[0],callback);
+    submitSingleTagLast(tagList[0],callback);
   }
 
 };
