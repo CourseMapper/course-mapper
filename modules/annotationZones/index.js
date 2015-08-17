@@ -64,8 +64,14 @@ function submitSingleTagLast(tagList, mainCallback) {
   //console.log(tagList);
   var annotationZonePDF = new AnnotationZonesPDF({
     annotationZoneName: tagList[0],
-    relativeCoordinates: tagList[1],
-    relativeDimensions: tagList[2],
+    relativeCoordinates: {
+      X: tagList[1].split(";")[0],
+      Y: tagList[1].split(";")[1]
+    },
+    relativeDimensions: {
+      X: tagList[2].split(";")[0],
+      Y: tagList[2].split(";")[1]
+    },
     color: tagList[3]
   });
 
