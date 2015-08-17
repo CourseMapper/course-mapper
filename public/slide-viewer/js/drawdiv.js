@@ -46,6 +46,7 @@ function absToViewTop(relToView,canvas){
 	return rootDivDom.offset().top+parseInt(relToView,10);
 }
 function absToViewLeft(relToView,canvas){
+	console.log("CHECK: "+ relToView);
 	return rootDivDom.offset().left+parseInt(relToView,10);
 }
 
@@ -291,7 +292,6 @@ function alwaysRescaleRects(){
 }
 
 function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
-
 	//creating Div with default values
 	element = $('<div/>', {
 		id: rectPrefix+divCounter,
@@ -309,8 +309,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 	//tag
 	element.attr("data-tagName","#"+tagname);
 
-	//setting drawed div on activeRects
-	element.className = element.className+ " activeRect tagname-"+element.attr("data-tagName").slice(1);
 
 
 	//transition //CHECK IF THIS LINES ARE CORRECT
@@ -320,18 +318,16 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 	element.prop("transition", "opacity 0.1s linear");
 
 
-	element.attr("data-relstartcoord",(startXRel+";"+startYRel));
+
 
 	var currCanWidth = rootDivDom.width();
 
 	var attrRelLeft = relLeft*currCanWidth;
 	var currCanHeight =rootDivDom.height();
 	var attrRelTop  = relTop* currCanHeight;
-	console.log("relLeft relTop"+relLeft+" "+relTop);
-	console.log("width x height: "+currCanWidth+"x"+currCanHeight);
-
-	element.offset({left: absToViewLeft(startXRel, this)});
-	element.offset({top: absToViewLeft(startYRel, this)});
+	element.attr("data-relstartcoord",(attrRelLeft+";"+attrRelTop));
+	element.offset({left: absToViewLeft(attrRelLeft, this)});
+	element.offset({top: absToViewLeft(attrRelTop, this)});
 	element.css('height',  currCanHeight*relHeight);
 	element.css('width',   currCanWidth*relWidth);
 	element.css('opacity', opacityFactor)
