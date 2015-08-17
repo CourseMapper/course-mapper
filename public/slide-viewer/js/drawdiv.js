@@ -264,19 +264,16 @@ function rescalingRects(rectClassName,tagClassName){
 	tagOffsetTop = tagFontSize+4;
 	//console.log("Scaling factor: "+scalingFactor);
 
-	if(currentCanvasHeight!=0){
-		for (var i = 0, len = allElements.length; i < len; i++) {
-			var coordAttr=$(allElements[i]).attr("data-relstartcoord").split(";");
-			var startXAttr = coordAttr[0]*scalingFactor;
-			var startYAttr = coordAttr[1]*scalingFactor;
-	  	$(allElements[i]).attr("data-relstartcoord",startXAttr+";"+startYAttr);
-			$(allElements[i]).css('left',  Math.round(startXAttr));
-			$(allElements[i]).css('top',  Math.round(startYAttr));
-	  	$(allElements[i]).css('height',  Math.round(parseInt($(allElements[i]).css('height'))*scalingFactor));
-			$(allElements[i]).css('width',   Math.round(parseInt($(allElements[i]).css('width'))*scalingFactor));
-		}
+	for (var i = 0, len = allElements.length; i < len; i++) {
+		var coordAttr=$(allElements[i]).attr("data-relstartcoord").split(";");
+		var startXAttr = coordAttr[0]*scalingFactor;
+		var startYAttr = coordAttr[1]*scalingFactor;
+  	$(allElements[i]).attr("data-relstartcoord",startXAttr+";"+startYAttr);
+		$(allElements[i]).css('left',  Math.round(startXAttr));
+		$(allElements[i]).css('top',  Math.round(startYAttr));
+  	$(allElements[i]).css('height',  Math.round(parseInt($(allElements[i]).css('height'))*scalingFactor));
+		$(allElements[i]).css('width',   Math.round(parseInt($(allElements[i]).css('width'))*scalingFactor));
 	}
-
 	currentCanvasHeight=parseInt(rootDivDom.height());
 }
 
