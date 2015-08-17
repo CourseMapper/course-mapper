@@ -14,17 +14,18 @@
 };
 */
 
-var pdfIsLoaded;
-var annotationZonesAreLoaded;
+var pdfIsLoaded = false;
+var annotationZonesAreLoaded = false;
 
-var toDrawAnnotationZoneData;
+var toDrawAnnotationZoneData = [];
 
-$(document).ready(function(){
+/*$(document).ready(function(){
   console.log("Init");
   pdfIsLoaded = false;
   annotationZonesAreLoaded = false;
   toDrawAnnotationZoneData = [];
 });
+*/
 
 function tagListLoaded(tagList) {
 
