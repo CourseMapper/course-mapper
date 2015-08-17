@@ -83,6 +83,8 @@
                              </div>
                            </fieldset>
                         </form>
+                        <button class="btn btn-default" onclick="addAnnotationZoneData('test',1,2,3,4,'Red');">CREATE TEST ANNOTATION ZONE</button>
+                        
                         <div class="controls">
                           <!--<button class="btn btn-default" onclick="displayComments();">Show comments</button>
                           <div >
@@ -126,16 +128,20 @@
 
                         </div>-->
                         <div >
-                            <div ng-controller="AnnotationZoneListController">
-
-                              <div id="annotationZoneList" ng-repeat="annZone in annZones">
-                                <div>
+                            <div id="annZoneList" ng-controller="AnnotationZoneListController">
+                              Annotation Zone List:
+                              <div id="annotationZoneList" ng-repeat="annZone in annZones" ng-cloak>
+                                <div class="{{annZone.name}}">
                                   {{annZone.name}}
+                                  {{annZone.color}}
+
+                                  </script>
                                 </div>
                               </div>
 
                             <div>
-                            <div ng-repeat="comment in comments">
+                            Comment List:
+                            <div ng-repeat="comment in comments" ng-cloak>
                               <div>
                                   <label class='authorLabel' onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
 
@@ -166,6 +172,8 @@
 
 
 
+
+<script src="/slide-viewer/js/slideviewer.js"></script>
 
 
 <script src="/jquery/jquery-ui.min.js"></script>

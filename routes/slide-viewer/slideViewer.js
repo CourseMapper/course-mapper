@@ -156,7 +156,6 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
         html: data[i].renderedText
       };
     }
-    console.log("Got here1");
     res.status(200).json({result:true, comments: modifiedData});
 
   });
@@ -170,10 +169,15 @@ router.get('/disAnnZones/', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
-        name: data[i].annotationZoneName
+        name: data[i].annotationZoneName,
+        relPosX: data[i].relativeCoordinates.X,
+        relPosY: data[i].relativeCoordinates.Y,
+        relWidth: data[i].relativeDimensions.X,
+        relHeight: data[i].relativeDimensions.Y,
+        color: data[i].color
       };
     }
-    console.log(modifiedData);
+    //console.log(modifiedData);
     res.status(200).json({result:true, annZones: modifiedData});
 
   });

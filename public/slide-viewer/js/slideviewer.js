@@ -14,8 +14,40 @@
 };
 */
 
-function tagListLoaded() {
-    console.log("ALL DONE ONCHANGE");
+function tagListLoaded(tagList) {
+    for(var i = 0; i < tagList.length; i++) {
+      createAnnoationZone(tagList[i].name, tagList[i].relPosX, tagList[i].relPosY, tagList[i].relWidth, tagList[i].relHeight, tagList[i].color);
+    }
+};
+
+function createAnnoationZone(name,relPosX,relPosY,relWidth,relHeight,color) {
+  console.log("THEORETICAL TAG CREATED");
+};
+
+function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
+  console.log("GOT CALLED");
+  var oldText;
+  oldText = $("#tagNames").val();
+  if(oldText.length != 0){
+    oldText = oldText + ",";
+  }
+  $("#tagNames").val(oldText + "" + name);
+  oldText = $("#tagRelPos").val();
+  if(oldText.length != 0){
+    oldText = oldText + ",";
+  }
+  $("#tagRelPos").val(oldText + "" + relPosX + ";" + relPosY);
+  oldText = $("#tagRelCoord").val();
+  if(oldText.length != 0){
+    oldText = oldText + ",";
+  }
+  $("#tagRelCoord").val(oldText + "" + relWidth + ";" + relHeight);
+  oldText = $("#tagColor").val();
+  if(oldText.length != 0){
+    oldText = oldText + ",";
+  }
+  $("#tagColor").val(oldText + "" + color);
+
 };
 
 
@@ -23,8 +55,6 @@ function displayCommentsIntern(filter, order){
 
     var url = "/slide-viewer/disComm";
     var urlFilterOrder = url + "/" + order + "/" + filter;
-
-    console.log(urlFilterOrder);
 
     /*$.ajax( {
       "url": urlFilterOrder,
@@ -38,23 +68,6 @@ function displayCommentsIntern(filter, order){
       }
 
     } );*/
-    /*$http.get({
-      urlFilterOrder,
-    }).success(function(data, status, headers, config) {
-      $scope.comments = data;
-    }).error(function(data, status, headers, config) {
-      $scope.comments = status;
-    });*/
-
-
-
-    /*var comment = new Comment();
-    var num = comment.numberOfComments();
-
-    console.log("WORKED");
-
-    $("numComments").innerhtml(num);*/
-
 };
 
 function displayComments(){
@@ -75,9 +88,7 @@ function displayComments(){
 };
 
 function authorLabelClick(element){
-  console.log("GOT HERE");
   var filterInput = $('#filterValueText');
-  console.log(element);
   var authorName = element.text();
 
   if (filterInput.val().length == 0){

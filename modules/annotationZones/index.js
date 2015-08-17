@@ -35,8 +35,14 @@ function submitSingleTag(tagList, err, restList, mainCallback, done) {
   //console.log(tagList);
   var annotationZonePDF = new AnnotationZonesPDF({
     annotationZoneName: tagList[0],
-    relativeCoordinates: tagList[1],
-    relativeDimensions: tagList[2],
+    relativeCoordinates: {
+      X: tagList[1].split(";")[0],
+      Y: tagList[1].split(";")[1]
+    },
+    relativeDimensions: {
+      X: tagList[2].split(";")[0],
+      Y: tagList[2].split(";")[1]
+    },
     color: tagList[3]
   });
 
@@ -132,7 +138,6 @@ AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
 AnnZones.prototype.annotationZoneNameExists = async(function(name) {
 
       var count = await (AnnotationZonesPDF.count({"annotationZoneName": name}));
-      console.log(count != 0);
       return (count != 0);
 });
 
@@ -146,7 +151,6 @@ AnnZones.prototype.getAllAnnotationZones = function(callback) {
       console.log(err);
     }
     else {
-      console.log(data);
       callback(0, data);
     }
   });
