@@ -23,7 +23,7 @@ CatStats.prototype.run = async ( function(){
 
 
 CatStats.prototype.render = function(){
-    return '<h4>' + this.result.name + '<h4>';
+    return '<h4>' + this.result.name + '</h4>';
 };
 
 module.exports = CatStats;

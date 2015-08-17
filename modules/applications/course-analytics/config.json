@@ -15,7 +15,7 @@
       "location": "course-analytics",
       "description": "Course Statistics data for current course",
       "entryPoint": "/course-analytics/course-statistics",
-      "width": 12,
+      "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
    },
@@ -24,7 +24,7 @@
       "location": "course-preview",
       "description": "List of top contributor for current course",
       "entryPoint": "/course-analytics/top-contributors",
-      "width": 4,
+      "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     },
@@ -38,18 +38,34 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "Category analytics",
+      "name": "Category Name",
       "location": "category-homepage",
-      "description": "category stats that say about this cat",
-      "entryPoint": "/course-analytics/category-stats.js",
+      "description": "Name of the course",
+      "entryPoint": "/course-analytics/category-name.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },
     {
-      "name": "course listing AAAA",
+      "name": "Category Rating",
+      "location": "category-homepage",
+      "description": "Rating of the category",
+      "entryPoint": "/course-analytics/category-rating.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Course Listing Date Created",
       "location": "course-listing",
-      "description": "aaaaaaa cat",
+      "description": "Date of the course created",
       "entryPoint": "/course-analytics/course-listing.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Course Listing Rating",
+      "location": "course-listing",
+      "description": "Star rating of the course",
+      "entryPoint": "/course-analytics/course-listing-rating.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },

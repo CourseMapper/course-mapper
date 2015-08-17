@@ -15,8 +15,8 @@
       "location": "course-preview",
       "description": "show your overal progress on this particular course",
       "entryPoint": "/my-course/journey",
-      "width": 2,
-      "height":2,
+      "width": 12,
+      "height":1,
       "icon":"/img/appPlaceholder.png"
     },
     {
@@ -42,8 +42,8 @@
       "location": "course-preview",
       "description": "show contributor of this course",
       "entryPoint": "/my-course/journey",
-      "width": 2,
-      "height":2,
+      "width": 12,
+      "height":1,
       "icon":"/img/appPlaceholder.png"
     }
   ]
