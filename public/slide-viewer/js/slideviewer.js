@@ -14,15 +14,41 @@
 };
 */
 
+var pdfIsLoaded;
+var annotationZonesAreLoaded;
+
+var toDrawAnnotationZoneData;
+
+$(document).ready(function(){
+  console.log("Init");
+  pdfIsLoaded = false;
+  annotationZonesAreLoaded = false;
+  toDrawAnnotationZoneData = [];
+});
+
 function tagListLoaded(tagList) {
-    for(var i = 0; i < tagList.length; i++) {
-      createAnnoationZone(tagList[i].name, tagList[i].relPosX, tagList[i].relPosY, tagList[i].relWidth, tagList[i].relHeight, tagList[i].color);
-    }
+
+  for(var i = 0; i < tagList.length; i++) {
+    toDrawAnnotationZoneData[i] = [tagList[i].name, tagList[i].relPosX, tagList[i].relPosY, tagList[i].relWidth, tagList[i].relHeight, tagList[i].color];
+  }
+  annotationZonesAreLoaded = true;
+  drawAnnZonesWhenPDFAndDBDone();
 };
 
-function createAnnoationZone(name,relPosX,relPosY,relWidth,relHeight,color) {
+/*function createAnnoationZone(name,relPosX,relPosY,relWidth,relHeight,color) {
   console.log("createAnnotationZones");
   loadRect(relPosX, relPosY, relWidth, relHeight, color, name)
+};*/
+
+function drawAnnZonesWhenPDFAndDBDone() {
+  console.log(annotationZonesAreLoaded);
+  console.log(pdfIsLoaded);
+  if(annotationZonesAreLoaded && pdfIsLoaded) {
+    for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
+      console.log("createAnnotationZones");
+      loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0])
+    }
+  }
 };
 
 function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
