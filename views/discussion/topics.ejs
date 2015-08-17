@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-md-5" id="topicLists">
 
-            <h4>The Discussion Topics</h4>
+            <h4f>The Discussion Topics</h4f>
 
             <div ng-show="topics.length == 0" class="posts-list">
                 <ul class="posts">
@@ -17,7 +17,7 @@
 
             <div class="posts-list" ng-show="topics.length > 0">
                 <ul class="posts">
-                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''">
+                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''" ng-hide="topic.isDeleted">
                         <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
                             {{topic.discussion.title}}
                         </a></h4>

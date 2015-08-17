@@ -143,10 +143,13 @@ courseDiscussion.prototype.deletePost = function(error, params, success){
                             $set: {
                                 isDeleted: true
                             }
-                        });
+                        },
+                    function(){
+                        success(doc);
+                    });
                 }
-
-                success(doc);
+                else
+                    success(doc);
             }
         });
 };
