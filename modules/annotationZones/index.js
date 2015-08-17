@@ -138,7 +138,6 @@ AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
 AnnZones.prototype.annotationZoneNameExists = async(function(name) {
 
       var count = await (AnnotationZonesPDF.count({"annotationZoneName": name}));
-      console.log(count != 0);
       return (count != 0);
 });
 
@@ -152,7 +151,6 @@ AnnZones.prototype.getAllAnnotationZones = function(callback) {
       console.log(err);
     }
     else {
-      console.log(data);
       callback(0, data);
     }
   });

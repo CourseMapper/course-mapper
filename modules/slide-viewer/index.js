@@ -47,7 +47,6 @@ Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,ta
   var tagRelCoordList = tagRelCoord.split(",");
   var tagColorList = tagColor.split(",");
 
-  console.log(tagNameList[0]);
 
   if(tagNameList.length == 0){
     callback();
@@ -107,9 +106,8 @@ Comment.prototype.convertRawText = function(rawText,callback){
 
   var renderedText = rawText.replace(/#(\w+)/g, function(x){
       var comm = new Comment();
-      console.log(comm.checkTagName(x,tagNameList));
+      //console.log(comm.checkTagName(x,tagNameList));
       if(comm.checkTagName(x,tagNameList)){
-        console.log("ADDED LABEL");
         var ret = "<label class='blueText'> " + x + " </label>";
         return ret;
       }
@@ -196,8 +194,6 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
       orderString = "-"+orderString;
     }
 
-    console.log(filters);
-
     AnnotationsPDF.find(filters, function (err, data) {
       if(err) {
         console.log(err);
@@ -214,8 +210,4 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
 
 
 };
-
-
-
-
 module.exports = Comment;

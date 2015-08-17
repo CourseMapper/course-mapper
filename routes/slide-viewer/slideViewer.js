@@ -156,7 +156,6 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
         html: data[i].renderedText
       };
     }
-    console.log("Got here1");
     res.status(200).json({result:true, comments: modifiedData});
 
   });
@@ -178,7 +177,7 @@ router.get('/disAnnZones/', function(req, res, next){
         color: data[i].color
       };
     }
-    console.log(modifiedData);
+    //console.log(modifiedData);
     res.status(200).json({result:true, annZones: modifiedData});
 
   });

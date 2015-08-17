@@ -1286,8 +1286,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $http.get('/slide-viewer/disAnnZones').success(function (data) {
         console.log('TAGS UPDATED');
-        console.log(data);
-
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -1317,8 +1315,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     function updateScope(url){
       $http.get(url).success(function (data) {
-        console.log('UPDATED');
-        console.log(data);
+        console.log('COMMENTS UPDATED');
 
         $scope.comments = data.comments;
 
@@ -1334,8 +1331,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     function getCurrentFilters(filtersRaw){
-      console.log("Got here");
-
       var finalFilters;
       if($scope.filtersRaw.length == 0)
         finalFilters='{}';
@@ -1376,8 +1371,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.$watch("filtersRaw",function(newValue,oldValue){
       $scope.filters = getCurrentFilters($scope.filtersRaw);
-      console.log("FILTERSCOPE CHANGED");
-      console.log($scope.filters);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
       updateScope($scope.commentGetUrl);
     });

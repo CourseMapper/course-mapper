@@ -3,8 +3,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $http.get('/slide-viewer/disAnnZones').success(function (data) {
         console.log('TAGS UPDATED');
-        console.log(data);
-
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
