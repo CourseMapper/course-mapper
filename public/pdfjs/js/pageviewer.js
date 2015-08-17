@@ -57,6 +57,8 @@ PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
     pdfPageView.setPdfPage(pdfPage);
     SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
     pdfPageView.update(SCALE,0);
+    currentCanvasHeight=parseInt(rootDivDom.height());
+
     return pdfPageView.draw();
   });
 });

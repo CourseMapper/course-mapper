@@ -22,6 +22,7 @@ function tagListLoaded(tagList) {
 
 function createAnnoationZone(name,relPosX,relPosY,relWidth,relHeight,color) {
   console.log("createAnnotationZones");
+  console.log("name: "+name+" relPosX: "+relPosX+" relPosY: "+ relPosY+" relWidth: "+relWidth+ " relHeight: "+relHeight+" color: "+color);
   loadRect(relPosX, relPosY, relWidth, relHeight, color, name)
 };
 
