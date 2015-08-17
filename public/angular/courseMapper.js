@@ -1669,14 +1669,13 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
                 .success(function(data) {
                     console.log(data);
                     if(data.result) {
-                        // if successful, bind success message to message
                         $scope.$emit('init');
                         $('#editAccountModal').modal('hide');
                     }
                 })
                 .error(function(data){
                     if(!data.result){
-                        $scope.errorName = data.errors.name;
+                        $scope.errors = data.errors;
                         console.log(data.errors);
                     }
                 });
