@@ -1,10 +1,11 @@
 app.
-    controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce) {
+    controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
         $scope.formData = {};
         $scope.course = {};
         $scope.currentReplyingTo = false;
         $scope.currentEditPost = {};
-        $scope.currentTopic = {};
+        $scope.currentTopic = false;
+        $scope.originalCurrentTopic = {};
 
         $scope.pid = false;
 
@@ -40,6 +41,13 @@ app.
             });
         });
 
+        $scope.$on('onAfterCreateReply', function(e, reply){
+            if(reply){
+                reply.createdBy = $rootScope.user;
+                $scope.replies.unshift(reply);
+            }
+        });
+
         $scope.saveNewPost = function(){
             console.log('saving');
 
@@ -56,6 +64,10 @@ app.
                     console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewTopic', data.post);
+                        data.post.discussion = data.post;
+                        data.post.createdBy = $rootScope.user;
+                        $scope.topics.unshift(data.post);
+                        $timeout(function(){$scope.$apply()});
 
                         $('#addNewTopicModal').modal('hide');
                     } else {
@@ -85,6 +97,10 @@ app.
                         $scope.$emit('onAfterEditTopic', data.post);
 
                         $('#editTopicModal').modal('hide');
+
+                        var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
+                        $scope.topics[i].discussion = data.post;
+                        $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
@@ -121,12 +137,38 @@ app.
                 }) ;
         };
 
+        $scope.deleteTopic = function(postId){
+            var r = confirm("Are you sure you want to delete this topic?");
+
+            if (r == true) {
+                $http({
+                    method: 'DELETE',
+                    url: '/api/discussions/' + $scope.course._id +'/topic/' + postId,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(function(data) {
+                        console.log(data);
+                        if(data.result) {
+                            $scope.$emit('onAfterDeleteTopic', postId);
+
+                        } else {
+                            if( data.result != null && !data.result){
+                                $scope.errorName = data.errors;
+                                console.log(data.errors);
+                            }
+                        }
+                    }) ;
+            }
+        };
+
         $scope.$on('$routeUpdate', function(){
             $scope.initiateTopic();
         });
 
         $scope.$on('onAfterEditReply', function(e, f){
-            var i = _.findIndex($scope.replies, { '_id' : f.postId});
+            var i = _.findIndex($scope.replies, { '_id' : f._id});
             $scope.replies[i].content = f.content;
             $timeout(function(){
                 $scope.$apply();
@@ -142,44 +184,69 @@ app.
         });
 
         $scope.manageActionBar = function(){
-            var menuContainer = $('.actionBar-discussion-buttons');
             if($scope.pid){
-                var newMenu = '<li>' +
-                    '<a style="cursor: pointer;"' +
-                        'data-toggle="modal" data-target="#addNewReplyModal"' +
-                        'title="Reply">' +
-                        '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>' +
-                    '</li>';
+                ActionBarService.extraActionsMenu = [];
 
-                if($scope.currentTopic.createdBy==$rootScope.user._id) {
-                    newMenu += '<li>' +
-                                '<a style="cursor: pointer;"' +
-                                'click="deletePost(' + $scope.currentTopic._id + ')"' +
-                                'title = "delete" > ' +
-                                '&nbsp;&nbsp; <i class="ionicons ion-close"></i> &nbsp;DELETE THIS TOPIC</a>' +
-                                '</li>';
-                }
+                ActionBarService.extraActionsMenu.unshift({
+                    separator: true
+                });
 
-                menuContainer.html(newMenu);
+                ActionBarService.extraActionsMenu.push(
+                    {
+                        'html':
+                        '<a style="cursor: pointer;"' +
+                        ' data-toggle="modal" data-target="#addNewReplyModal"' +
+                        ' title="Reply">' +
+                        '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>'
+                    }
+                );
             }
             else if(!$scope.pid){
-                menuContainer.html('');
+                $scope.currentTopic = {};
+                ActionBarService.extraActionsMenu = [];
             }
         };
 
+        $scope.$on('onAfterInitUser', function(event, user){
+            $scope.$watch('currentTopic', function(oldVal, newVal){
+                if($scope.currentTopic && $scope.currentTopic.createdBy._id==$rootScope.user._id) {
+
+                    ActionBarService.extraActionsMenu.push({
+                        'html':
+                        '<a style="cursor: pointer;"' +
+                        ' data-toggle="modal" data-target="#editTopicModal"' +
+                        ' title="Edit">' +
+                        '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                    });
+
+                    ActionBarService.extraActionsMenu.push({
+                        clickAction: $scope.deleteTopic,
+                        clickParams: $scope.currentTopic._id,
+                        title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                        aTitle: 'DELETE THIS TOPIC AND ITS REPLIES'
+                    });
+                }
+            });
+        });
+
         $scope.getReplies = function(postId){
             var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
-            $scope.currentTopic = $scope.topics[i].discussion;
+            $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
+
+            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
+
             $scope.currentReplyingTo = $scope.currentTopic._id;
 
             $http.get('/api/discussion/' + postId + '/posts').success(function(res){
                 if(res.result){
                     $scope.replies = res.posts;
-
-                    //$sce.trustAsHtml(res.widgets);
-
                 }
             });
+        };
+
+        $scope.cancel = function(){
+            $scope.currentTopic = $scope.originalCurrentTopic;
         }
 
     });

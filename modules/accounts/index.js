@@ -5,6 +5,12 @@ var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
 
+var crypto = require('crypto');
+
+function hash(passwd, salt) {
+    return crypto.createHmac('sha256', salt).update(passwd).digest('hex');
+}
+
 function account(){
 }
 
@@ -167,6 +173,28 @@ account.prototype.handleLoginPost = function(req, res, next) {
             return res.redirect('/accounts/' + user.username);
         });
     })(req, res, next);
+};
+
+account.prototype.changePassword = function(error, params, success){
+    if(params.password == params.passwordConfirm){
+        User.findOne({_id: params.userId})
+            .exec(function(err, doc){
+                if(err){
+                    error(err);
+                } else {
+                    var hashedPwd = hash(params.oldPassword, doc.salt);
+                    // check old pwd d
+                    if(hashedPwd == doc.password){
+                        doc.setPassword(params.password);
+                        doc.save(function(){
+                            success();
+                        });
+                    } else {
+                        error (new Error("old password is not correct"));
+                    }
+                }
+            });
+    }
 };
 
 /**

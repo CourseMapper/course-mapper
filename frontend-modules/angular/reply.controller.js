@@ -1,5 +1,5 @@
 app.
-    controller('ReplyController', function($scope, $http) {
+    controller('ReplyController', function($scope, $http, $timeout) {
         $scope.formData = {
             title: " ",
             content: ""
@@ -37,6 +37,9 @@ app.
                         $scope.$emit('onAfterCreateReply', data.post);
 
                         $('#addNewReplyModal').modal('hide');
+
+                        $scope.formData.content = "";
+                        $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
@@ -61,9 +64,35 @@ app.
                 .success(function(data) {
                     console.log(data);
                     if(data.result) {
-                        $scope.$emit('onAfterEditReply', $scope.formData);
+                        $scope.$emit('onAfterEditReply', data.post);
 
                         $('#editReplyModal').modal('hide');
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        /**
+         * deleting root topic
+         * @param postId
+         */
+        $scope.deletePost = function(postId){
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
+
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;

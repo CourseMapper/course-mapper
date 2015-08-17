@@ -431,12 +431,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });
 });
 ;app.
-    controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce) {
+    controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
         $scope.formData = {};
         $scope.course = {};
         $scope.currentReplyingTo = false;
         $scope.currentEditPost = {};
-        $scope.currentTopic = {};
+        $scope.currentTopic = false;
+        $scope.originalCurrentTopic = {};
 
         $scope.pid = false;
 
@@ -472,6 +473,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
         });
 
+        $scope.$on('onAfterCreateReply', function(e, reply){
+            if(reply){
+                reply.createdBy = $rootScope.user;
+                $scope.replies.unshift(reply);
+            }
+        });
+
         $scope.saveNewPost = function(){
             console.log('saving');
 
@@ -488,6 +496,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewTopic', data.post);
+                        data.post.discussion = data.post;
+                        data.post.createdBy = $rootScope.user;
+                        $scope.topics.unshift(data.post);
+                        $timeout(function(){$scope.$apply()});
 
                         $('#addNewTopicModal').modal('hide');
                     } else {
@@ -517,6 +529,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         $scope.$emit('onAfterEditTopic', data.post);
 
                         $('#editTopicModal').modal('hide');
+
+                        var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
+                        $scope.topics[i].discussion = data.post;
+                        $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
@@ -553,12 +569,38 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }) ;
         };
 
+        $scope.deleteTopic = function(postId){
+            var r = confirm("Are you sure you want to delete this topic?");
+
+            if (r == true) {
+                $http({
+                    method: 'DELETE',
+                    url: '/api/discussions/' + $scope.course._id +'/topic/' + postId,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(function(data) {
+                        console.log(data);
+                        if(data.result) {
+                            $scope.$emit('onAfterDeleteTopic', postId);
+
+                        } else {
+                            if( data.result != null && !data.result){
+                                $scope.errorName = data.errors;
+                                console.log(data.errors);
+                            }
+                        }
+                    }) ;
+            }
+        };
+
         $scope.$on('$routeUpdate', function(){
             $scope.initiateTopic();
         });
 
         $scope.$on('onAfterEditReply', function(e, f){
-            var i = _.findIndex($scope.replies, { '_id' : f.postId});
+            var i = _.findIndex($scope.replies, { '_id' : f._id});
             $scope.replies[i].content = f.content;
             $timeout(function(){
                 $scope.$apply();
@@ -574,44 +616,69 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
 
         $scope.manageActionBar = function(){
-            var menuContainer = $('.actionBar-discussion-buttons');
             if($scope.pid){
-                var newMenu = '<li>' +
-                    '<a style="cursor: pointer;"' +
-                        'data-toggle="modal" data-target="#addNewReplyModal"' +
-                        'title="Reply">' +
-                        '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>' +
-                    '</li>';
+                ActionBarService.extraActionsMenu = [];
 
-                if($scope.currentTopic.createdBy==$rootScope.user._id) {
-                    newMenu += '<li>' +
-                                '<a style="cursor: pointer;"' +
-                                'click="deletePost(' + $scope.currentTopic._id + ')"' +
-                                'title = "delete" > ' +
-                                '&nbsp;&nbsp; <i class="ionicons ion-close"></i> &nbsp;DELETE THIS TOPIC</a>' +
-                                '</li>';
-                }
+                ActionBarService.extraActionsMenu.unshift({
+                    separator: true
+                });
 
-                menuContainer.html(newMenu);
+                ActionBarService.extraActionsMenu.push(
+                    {
+                        'html':
+                        '<a style="cursor: pointer;"' +
+                        ' data-toggle="modal" data-target="#addNewReplyModal"' +
+                        ' title="Reply">' +
+                        '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>'
+                    }
+                );
             }
             else if(!$scope.pid){
-                menuContainer.html('');
+                $scope.currentTopic = {};
+                ActionBarService.extraActionsMenu = [];
             }
         };
 
+        $scope.$on('onAfterInitUser', function(event, user){
+            $scope.$watch('currentTopic', function(oldVal, newVal){
+                if($scope.currentTopic && $scope.currentTopic.createdBy._id==$rootScope.user._id) {
+
+                    ActionBarService.extraActionsMenu.push({
+                        'html':
+                        '<a style="cursor: pointer;"' +
+                        ' data-toggle="modal" data-target="#editTopicModal"' +
+                        ' title="Edit">' +
+                        '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                    });
+
+                    ActionBarService.extraActionsMenu.push({
+                        clickAction: $scope.deleteTopic,
+                        clickParams: $scope.currentTopic._id,
+                        title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                        aTitle: 'DELETE THIS TOPIC AND ITS REPLIES'
+                    });
+                }
+            });
+        });
+
         $scope.getReplies = function(postId){
             var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
-            $scope.currentTopic = $scope.topics[i].discussion;
+            $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
+
+            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
+
             $scope.currentReplyingTo = $scope.currentTopic._id;
 
             $http.get('/api/discussion/' + postId + '/posts').success(function(res){
                 if(res.result){
                     $scope.replies = res.posts;
-
-                    //$sce.trustAsHtml(res.widgets);
-
                 }
             });
+        };
+
+        $scope.cancel = function(){
+            $scope.currentTopic = $scope.originalCurrentTopic;
         }
 
     });;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
@@ -1038,7 +1105,22 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
     }
 });
-;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+;app.controller('ActionBarController', function($scope, ActionBarService, $sce, $compile) {
+    $scope.extraActionsMenu = [];
+
+    $scope.$watch(function(){
+        return ActionBarService.extraActionsMenu;
+    },
+        function (newValue) {
+            $scope.extraActionsMenu = ActionBarService.extraActionsMenu;
+        });
+
+   /* $scope.deletePost = function(s){
+        alert('asdfasdf');
+    }*/
+});;app.service('ActionBarService', function() {
+    this.extraActionsMenu = [];
+});;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
     $scope.user = null;
     $scope.treeNode = null;
@@ -1411,7 +1493,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
 });
 ;app.
-    controller('ReplyController', function($scope, $http) {
+    controller('ReplyController', function($scope, $http, $timeout) {
         $scope.formData = {
             title: " ",
             content: ""
@@ -1449,6 +1531,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         $scope.$emit('onAfterCreateReply', data.post);
 
                         $('#addNewReplyModal').modal('hide');
+
+                        $scope.formData.content = "";
+                        $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
@@ -1473,7 +1558,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 .success(function(data) {
                     console.log(data);
                     if(data.result) {
-                        $scope.$emit('onAfterEditReply', $scope.formData);
+                        $scope.$emit('onAfterEditReply', data.post);
 
                         $('#editReplyModal').modal('hide');
                     } else {
@@ -1485,8 +1570,33 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }) ;
         };
 
-    });
-;
+        /**
+         * deleting root topic
+         * @param postId
+         */
+        $scope.deletePost = function(postId){
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
+
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+    });;
 
 app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
     $scope.createTopic = function(name, event){
@@ -1561,6 +1671,47 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
     }]);
 ;app.controller('staticController', function($scope, $http, $rootScope) {
+
+});
+;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout) {
+    $scope.user = {};
+    $scope.formData = {};
+    $scope.errors = null;
+
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.user = user;
+    });
+
+    $scope.saveEditUser = function(){
+        if($scope.formData.password == $scope.formData.passwordConfirm){
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'PUT',
+                url: '/api/accounts/' + $scope.user._id + '/changePassword',
+                data: d, // pass in data as strings
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('init');
+                        $('#editAccountModal').modal('hide');
+                    }
+                })
+                .error(function(data){
+                    if(!data.result){
+                        $scope.errors = data.errors;
+                        console.log(data.errors);
+                    }
+                });
+        }
+    };
+
+    $scope.cancel = function(){
+        $('#editAccountModal').modal('hide');
+    }
 
 });
 ;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {

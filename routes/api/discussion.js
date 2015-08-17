@@ -166,4 +166,26 @@ router.delete('/discussion/:postId', function(req, res, next){
     );
 });
 
+router.delete('/discussions/:courseId/topic/:postId', function(req, res, next){
+    var cat = new CourseDiscussionController();
+    cat.deletePost(
+        function(err){
+            res.status(500).json({
+                result: false,
+                errors: err
+            });
+        },
+        {
+            postId: mongoose.Types.ObjectId(req.params.postId),
+            courseId: mongoose.Types.ObjectId(req.params.courseId),
+            userId: mongoose.Types.ObjectId(req.user._id)
+        },
+        function(post){
+            res.status(200).json({
+                result:true, post: post
+            });
+        }
+    );
+});
+
 module.exports = router;

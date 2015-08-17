@@ -13,6 +13,8 @@ courseDiscussionSchema.add({
     discussion: {
         type: mongoose.Schema.Types.ObjectId, ref: 'posts'},
 
+    isDeleted: Boolean,
+
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
 });
