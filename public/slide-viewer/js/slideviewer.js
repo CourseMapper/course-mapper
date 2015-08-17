@@ -13,6 +13,12 @@
     });
 };
 */
+
+function tagListLoaded() {
+    console.log("ALL DONE ONCHANGE");
+};
+
+
 function displayCommentsIntern(filter, order){
 
     var url = "/slide-viewer/disComm";
@@ -84,4 +90,4 @@ function authorLabelClick(element){
 
 
 
-}
+};
