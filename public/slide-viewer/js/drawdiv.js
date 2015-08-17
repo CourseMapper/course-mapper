@@ -288,8 +288,61 @@ function alwaysRescaleRects(){
 	max_height_rect_abs=currentCanvasHeight*max_height_rect_rel;
 	min_width_rect_abs=currentCanvasHeight*min_width_rect_rel;
 	max_width_rect_abs=currentCanvasHeight*max_width_rect_rel;
+}
+
+function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
+console.log("TEST");
+
+	//creating Div with default values
+	element = $('<div/>', {
+		id: rectPrefix+divCounter,
+		position: 'absolute',
+		class: 'slideRect debug',
+		opacity: opacityFactorHighlight
+	});
+//CHANGE LATER
+	element.css({
+		position: 'absolute',
+		backgroundColor: getCurrentTagColor(),
+		borderRadius: bWidth+"px solid #C1E0FF",
+	});
+
+	//tag
+	element.attr("data-tagName","#"+tagname);
+
+	//setting drawed div on activeRects
+	element.className = element.className+ " activeRect tagname-"+element.attr("data-tagName").slice(1);
+
+
+	//transition //CHECK IF THIS LINES ARE CORRECT
+	element.prop("-moz-transition", "opacity 0.1s linear");
+	element.prop("-ms-transition", "opacity 0.1s linear");
+	element.prop("-o-transition", "opacity 0.1s linear");
+	element.prop("transition", "opacity 0.1s linear");
+
+
+	element.attr("data-relstartcoord",(startXRel+";"+startYRel));
+
+	var currCanWidth = rootDivDom.width();
+	var attrRelLeft = relLeft*currCanWidth;
+	var currCanHeight =rootDivDom.height();
+	var attrRelTop  = relTop* currCanHeight;
+
+	element.offset({left: absToViewLeft(startXRel, this)});
+	element.offset({top: absToViewLeft(startYRel, this)});
+	element.css('height',  currCanHeight*relHeight);
+	element.css('width',   currCanWidth*relWidth);
+	element.css('opacity', opacityFactor)
+
+	element.appendTo('#annotationZone');
+	divCounter=divCounter+1;
+
+
 
 }
+
+
+
 console.log("test: "+rootDivDom.height());
 initRects();
 
