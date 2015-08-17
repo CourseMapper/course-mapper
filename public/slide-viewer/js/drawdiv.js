@@ -17,6 +17,10 @@ var startYRel;
 var opacityFactor ="0.125";
 var opacityFactorHighlight ="0.5";
 
+//Random Values
+var tagFontSize = 1;
+var tagIffsetTop =4;
+
 
 var currentCanvasHeight=0;
 var min_height_rect_rel=0.06;
@@ -36,7 +40,9 @@ var bWidth ="3";
 var bRadius = "4";
 
 
+
 function absToViewTop(relToView,canvas){
+	console.log(rootDivDom.offset().top);
 	return rootDivDom.offset().top+parseInt(relToView,10);
 }
 function absToViewLeft(relToView,canvas){
@@ -247,10 +253,49 @@ function mouseMove(e){
 function mouseLeave(e){
 	if(drag){mouseleftCanvas=true;}
 }
-//predefined variables
 
 
+function rescalingRects(rectClassName,tagClassName){
+	var allElements = $("."+rectClassName);
+	var scalingFactor = parseInt(rootDivDom.height())/currentCanvasHeight;
+	//console.log("height "+ rootDivDom.height() + " currentCanvasHeight"+ currentCanvasHeight)
+	/*var allElementsTag = $("."+tagClassName);
+	tagFontSize = parseInt(rootDivDom.height())*tagFontSizeFactor;*/
+	tagOffsetTop = tagFontSize+4;
+	//console.log("Scaling factor: "+scalingFactor);
 
+	if(currentCanvasHeight!=0){
+		for (var i = 0, len = allElements.length; i < len; i++) {
+			var coordAttr=$(allElements[i]).attr("data-relstartcoord").split(";");
+			var startXAttr = coordAttr[0]*scalingFactor;
+			var startYAttr = coordAttr[1]*scalingFactor;
+	  	$(allElements[i]).attr("data-relstartcoord",startXAttr+";"+startYAttr);
+			$(allElements[i]).css('left',  Math.round(startXAttr));
+			$(allElements[i]).css('top',  Math.round(startYAttr));
+	  	$(allElements[i]).css('height',  Math.round(parseInt($(allElements[i]).css('height'))*scalingFactor));
+			$(allElements[i]).css('width',   Math.round(parseInt($(allElements[i]).css('width'))*scalingFactor));
+		}
+	}
 
+	currentCanvasHeight=parseInt(rootDivDom.height());
+}
+
+function alwaysRescaleRects(){
+	rescalingRects("slideRect", "slideRectTag");
+	currentCanvasHeight=parseInt(rootDivDom.height());
+
+	//tagFontSize = currentCanvasHeight*tagFontSizeFactor;
+	//tagOffsetTop = tagFontSize+4;
+
+	min_height_rect_abs=currentCanvasHeight*min_height_rect_rel;
+	max_height_rect_abs=currentCanvasHeight*max_height_rect_rel;
+	min_width_rect_abs=currentCanvasHeight*min_width_rect_rel;
+	max_width_rect_abs=currentCanvasHeight*max_width_rect_rel;
+
+}
 console.log("test: "+rootDivDom.height());
 initRects();
+
+window.onresize = function(){
+  		alwaysRescaleRects();
+}
