@@ -21,7 +21,8 @@ function tagListLoaded(tagList) {
 };
 
 function createAnnoationZone(name,relPosX,relPosY,relWidth,relHeight,color) {
-  console.log("THEORETICAL TAG CREATED");
+  console.log("createAnnotationZones");
+  loadRect(relPosX, relPosY, relWidth, relHeight, color, name)
 };
 
 function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
