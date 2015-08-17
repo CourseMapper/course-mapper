@@ -170,7 +170,12 @@ router.get('/disAnnZones/', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
-        name: data[i].annotationZoneName
+        name: data[i].annotationZoneName,
+        relPosX: data[i].relativeCoordinates.X,
+        relPosY: data[i].relativeCoordinates.Y,
+        relWidth: data[i].relativeDimensions.X,
+        relHeight: data[i].relativeDimensions.Y,
+        color: data[i].color
       };
     }
     console.log(modifiedData);

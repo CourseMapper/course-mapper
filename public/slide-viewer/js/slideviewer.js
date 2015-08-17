@@ -14,8 +14,9 @@
 };
 */
 
-function tagListLoaded() {
+function tagListLoaded(text) {
     console.log("ALL DONE ONCHANGE");
+    console.log(text[2]);
 };
 
 
@@ -91,3 +92,12 @@ function authorLabelClick(element){
 
 
 };
+
+angular.element(document).ready(function () {
+  console.log("ANGULAR RDY");
+  //console.log(angular.element("#AnnotationZoneListController").scope());
+
+});
+
+
+console.log("LOADED JS");

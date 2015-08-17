@@ -1290,13 +1290,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.annZones = data.annZones;
 
+        tagListLoaded($scope.annZones);
+
+        $timeout(function(){
+          $scope.$apply();
+        });
+
+
         /*$scope.$on('$stateChangeSuccess', function(){
           console.log("ALL DONE AJS");
         });
         */
-        $timeout(function(){
-          $scope.$apply();
-        });
+
     });
 });
 ;app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
