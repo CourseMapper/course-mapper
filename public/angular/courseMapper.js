@@ -1646,6 +1646,48 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
+;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout) {
+    $scope.user = {};
+    $scope.formData = {};
+    $scope.errors = null;
+
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.user = user;
+    });
+
+    $scope.saveEditUser = function(){
+        if($scope.formData.password == $scope.formData.passwordConfirm){
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'PUT',
+                url: '/api/accounts/' + $scope.user._id + '/changePassword',
+                data: d, // pass in data as strings
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        // if successful, bind success message to message
+                        $scope.$emit('init');
+                        $('#editAccountModal').modal('hide');
+                    }
+                })
+                .error(function(data){
+                    if(!data.result){
+                        $scope.errorName = data.errors.name;
+                        console.log(data.errors);
+                    }
+                });
+        }
+    };
+
+    $scope.cancel = function(){
+        $('#editAccountModal').modal('hide');
+    }
+
+});
 ;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
