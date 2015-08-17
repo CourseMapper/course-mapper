@@ -291,7 +291,6 @@ function alwaysRescaleRects(){
 }
 
 function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
-console.log("TEST");
 
 	//creating Div with default values
 	element = $('<div/>', {
@@ -324,9 +323,12 @@ console.log("TEST");
 	element.attr("data-relstartcoord",(startXRel+";"+startYRel));
 
 	var currCanWidth = rootDivDom.width();
+
 	var attrRelLeft = relLeft*currCanWidth;
 	var currCanHeight =rootDivDom.height();
 	var attrRelTop  = relTop* currCanHeight;
+	console.log("relLeft relTop"+relLeft+" "+relTop);
+	console.log("width x height: "+currCanWidth+"x"+currCanHeight);
 
 	element.offset({left: absToViewLeft(startXRel, this)});
 	element.offset({top: absToViewLeft(startYRel, this)});
