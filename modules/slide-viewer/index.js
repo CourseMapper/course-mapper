@@ -10,8 +10,7 @@ function Comment(){
 Comment.prototype.submitAnnotation = function(err, params, done){
   var temp = this.convertRawText;
 
-  this.submitAllTags(err,params.tags,function(){
-    console.log("GOT TO THE END");
+  this.submitAllTags(err,params.tagNames,params.tagRelPos,params.tagRelCoord,params.tagColor,function(){
     temp(params.rawText,function(renderedText){
       var annotationsPDF = new AnnotationsPDF({
         rawText: params.rawText,
@@ -41,11 +40,33 @@ Comment.prototype.submitAnnotation = function(err, params, done){
   });
 };
 
-Comment.prototype.submitAllTags = function(err,tags,callback){
+Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,callback){
   var annZone = new AnnZones();
-  var tagList = tags.split(",");
-  console.log(tagList);
-  annZone.submitTagList(err,tagList,callback);
+  var tagNameList = tagNames.split(",");
+  var tagRelPosList = tagRelPos.split(",");
+  var tagRelCoordList = tagRelCoord.split(",");
+  var tagColorList = tagColor.split(",");
+
+
+  if(tagNameList.length == 0){
+    callback();
+  }
+  else if((tagNameList.length == tagRelPosList.length) && (tagRelCoordList.length == tagRelPosList.length) && (tagRelCoordList.length == tagColorList.length)) {
+    var tagList = [];
+    for(var n=0; n<tagNameList.length; n++) {
+      tagList[n] = [];
+      tagList[n][0] = tagNameList[n];
+      tagList[n][1] = tagRelPosList[n];
+      tagList[n][2] = tagRelCoordList[n];
+      tagList[n][3] = tagColorList[n];
+
+    }
+
+    annZone.submitTagList(err,tagList,callback);
+  }
+  else
+    console.log("Error: Tag string-lists differ");
+
 }
 
 
@@ -85,9 +106,8 @@ Comment.prototype.convertRawText = function(rawText,callback){
 
   var renderedText = rawText.replace(/#(\w+)/g, function(x){
       var comm = new Comment();
-      console.log(comm.checkTagName(x,tagNameList));
+      //console.log(comm.checkTagName(x,tagNameList));
       if(comm.checkTagName(x,tagNameList)){
-        console.log("ADDED LABEL");
         var ret = "<label class='blueText'> " + x + " </label>";
         return ret;
       }
@@ -174,8 +194,6 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
       orderString = "-"+orderString;
     }
 
-    //console.log(orderString);
-
     AnnotationsPDF.find(filters, function (err, data) {
       if(err) {
         console.log(err);
@@ -192,8 +210,4 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
 
 
 };
-
-
-
-
 module.exports = Comment;

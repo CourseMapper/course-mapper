@@ -72,10 +72,10 @@ router.post('/submitComment/', function(req, res, next){
 
 
 
-router.post('/submitTag/', function(req, res, next){
+/*router.post('/submitTag/', function(req, res, next){
     var annZone = new AnnZones();
     annZone.handleZoneSubmitPost(req, res, next);
-});
+});*/
 
 
 router.get('/slide-viewer', function(req, res, next) {
@@ -143,11 +143,8 @@ router.get('/disComm', function(req, res, next){
 router.get('/disComm/:order/:filters/', function(req, res, next){
   var comment = new Comment();
 
-
   var order = JSON.parse(req.params.order);
   var filter = JSON.parse(req.params.filters);
-  console.log("GOT HERE");
-
 
   comment.getOrderedFilteredComments(order,filter,function(err, data) {
     var modifiedData = new Array(data.length);
@@ -164,7 +161,27 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
   });
 });
 
+router.get('/disAnnZones/', function(req, res, next){
+  var annZone = new AnnZones();
 
+
+  annZone.getAllAnnotationZones(function(err, data) {
+    var modifiedData = new Array(data.length);
+    for(var i=0; i<data.length; i++){
+      modifiedData[i] = {
+        name: data[i].annotationZoneName,
+        relPosX: data[i].relativeCoordinates.X,
+        relPosY: data[i].relativeCoordinates.Y,
+        relWidth: data[i].relativeDimensions.X,
+        relHeight: data[i].relativeDimensions.Y,
+        color: data[i].color
+      };
+    }
+    //console.log(modifiedData);
+    res.status(200).json({result:true, annZones: modifiedData});
+
+  });
+});
 
 
 

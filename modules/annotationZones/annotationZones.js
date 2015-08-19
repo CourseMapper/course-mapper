@@ -5,10 +5,30 @@ var annotationZonesPDFSchema = new mongoose.Schema({
     annotationZoneName: {
       type: String,
       required: true
+    },
+    relativeCoordinates: {
+      X: {
+        type: Number
+      },
+      Y: {
+        type: Number
+      }
+
+    //  required: true
+    },
+    relativeDimensions: {
+      X: {
+        type: Number
+      },
+      Y: {
+        type: Number
+      }
+    //  required: true
+    },
+    color: {
+      type: String,
+    //  required: true
     }
-    //relativeCoordinates: {},
-    //relativeDimensions: {},
-    //color: {},
     //annotationId: {}
 });
 

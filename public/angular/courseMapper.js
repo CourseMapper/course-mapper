@@ -90,7 +90,8 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 function cloneSimpleObject(obj){
     return JSON.parse(JSON.stringify(obj));
-};app.controller('CategoryListController', function($scope, $http, $rootScope) {
+}
+;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -1362,6 +1363,27 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     }
 });
+;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {
+
+
+    $http.get('/slide-viewer/disAnnZones').success(function (data) {
+        console.log('TAGS UPDATED');
+        $scope.annZones = data.annZones;
+
+        tagListLoaded($scope.annZones);
+
+        $timeout(function(){
+          $scope.$apply();
+        });
+
+
+        /*$scope.$on('$stateChangeSuccess', function(){
+          console.log("ALL DONE AJS");
+        });
+        */
+
+    });
+});
 ;app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
 
     $scope.orderType = "author";
@@ -1375,8 +1397,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     function updateScope(url){
       $http.get(url).success(function (data) {
-        console.log('UPDATED');
-        console.log(data);
+        console.log('COMMENTS UPDATED');
 
         $scope.comments = data.comments;
 
@@ -1400,7 +1421,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         finalFilters = '{';
         for(var i=0; i < filterStrings.length; i++){
           var temp = filterStrings[i].split(',');
-          finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
+          if(temp.length != 1)
+            finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
+          else
+          {
+            temp = filterStrings[i].split(':');
+            finalFilters = finalFilters + '"' + temp[0] + '":{"$regex": "' + temp[1] + '","$options":"ix"}';
+          }
+
+
           if(i != filterStrings.length-1)
             finalFilters = finalFilters + ',';
         }
@@ -1424,8 +1453,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.$watch("filtersRaw",function(newValue,oldValue){
       $scope.filters = getCurrentFilters($scope.filtersRaw);
-      console.log("FILTERSCOPE CHANGED");
-      console.log($scope.filters);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
       updateScope($scope.commentGetUrl);
     });
