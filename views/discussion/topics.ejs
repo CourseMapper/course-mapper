@@ -1,0 +1,116 @@
+<link href="/discussion/discussion.css" rel="stylesheet" type="text/css"/>
+
+<div ng-controller="DiscussionController">
+    <div class="row">
+        <div class="col-md-5" id="topicLists">
+
+            <h4>The Discussion Topics</h4>
+
+            <div ng-show="topics.length == 0" class="posts-list">
+                <ul class="posts">
+                    <li class="post">
+                        <h5>There is no topic to show, you can add a new one by clicking the
+                            "ADD NEW TOPIC" button on the top right of this page</h5>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="posts-list" ng-show="topics.length > 0">
+                <ul class="posts">
+                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''">
+                        <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
+                            {{topic.discussion.title}}
+                        </a></h4>
+                        <span class="posted-at">
+                            Posted <strong>{{topic.discussion.dateAdded | relativeDate}}</strong>
+                            By <strong>{{topic.createdBy.username}}</strong>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="col-md-6" id="topicContents">
+            <!--<h5>Topic Description</h5>-->
+
+            <div ng-hide="pid || topics.length == 0">
+                <h4>Please pick one from the existing topics</h4>
+            </div>
+
+            <div ng-show="pid" class="replies-wrapper">
+
+                <div ng-show="currentTopic" class="currentTopic">
+                    <div class="box box-solid">
+                        <div class="box-header with-border">
+                            <h4>{{currentTopic.title}}</h4>
+                            <span class="posted-at">
+                                Posted <strong>{{currentTopic.dateAdded | relativeDate}}</strong>
+                            By <strong>{{currentTopic.createdBy.username}}</strong>
+                            </span>
+                        </div>
+                        <div class="box-body">
+                            <p class="topicContent" ng-bind-html="currentTopic.content | unsafe">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-show="replies.length == 0 && pid">
+                    <br><br>
+
+                    <div class="box box-solid">
+                        <div class="box-body">There is no reply yet.
+                            You can reply by clicking "REPLY" button at the top right of this page.
+                        </div>
+                    </div>
+                </div>
+
+
+                <div ng-show="replies && pid">
+                    <ul class="replies">
+                        <li class="reply" ng-repeat="re in replies">
+                            <div class="box box-solid">
+                                <div class="box-body">
+                                    <span class="posted-at">
+                                        Posted <strong>{{re.dateAdded | relativeDate}}</strong>
+                                        By <strong>{{re.createdBy.username}}</strong>
+                                    </span>
+
+                                    <p class="reply" ng-bind-html="re.content | unsafe"></p>
+
+                                </div>
+                                <div class="box-footer">
+                                    <div class="replyControl"
+                                         ng-show="re.createdBy._id==$root.user._id && re.content !='[DELETED]'"
+                                            >
+                                        <div class="editReplyButton">
+                                            <a ng-show="re.createdBy._id==$root.user._id" style="cursor: pointer;"
+                                               data-toggle="modal" data-target="#editReplyModal"
+                                               title="Edit"
+                                               ng-click="editReply(re)"
+                                               class="btn btn-warning btn-xs"
+                                                    >EDIT</a>
+                                        </div>
+                                        <div class="deleteReplyButton">
+                                            <a style="cursor: pointer;" ng-show="re.createdBy._id==$root.user._id"
+                                               ng-click="deletePost(re._id)"
+                                               title="delete"
+                                               class="btn btn-danger btn-xs">DELETE</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /. show when pid -->
+        </div>
+    </div>
+
+    <% include addNewTopicModal %>
+    <% include addNewReplyModal %>
+    <% include editTopicModal %>
+    <% include editReplyModal %>
+
+</div>

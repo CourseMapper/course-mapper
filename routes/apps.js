@@ -8,7 +8,4 @@ router.get('/apps/gallery/:location', function(req, res, next) {
     res.render(config.get('theme') + '/apps/gallery', {location: req.params.location});
 });
 
-
-
-
 module.exports = router;

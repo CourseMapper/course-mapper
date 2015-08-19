@@ -9,8 +9,8 @@
                 Started By:
                 <strong>
                     {{user.username}}
-                </strong> on <b>
-                {{course.dateAdded}}</b>
+                </strong> at <b>
+                {{course.dateAdded | relativeDate}}</b>
 
                 <h1>
                     <span class="visible-xs" style="margin-left:15px"></span>
@@ -34,7 +34,15 @@
 <!-- analytics-->
 <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
      ng-controller="widgetController"
-     ng-init="location='course-preview'">
+     ng-init="location='course-preview';
+              initiateDraggableGrid('course-preview');">
+
+    <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
+        There is no registered widget here.
+        <span ng-show="isOwner" class="empty-widget">
+          Go to the widget store to add one.
+        </span>
+    </div>
 
     <div class="grid-stack-item"
          data-gs-locked="yes"

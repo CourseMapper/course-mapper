@@ -1,5 +1,9 @@
-var app = angular.module('courseMapper', ['ngResource', 'ngRoute', 'ngCookies',
-    'ngTagsInput', 'ngFileUpload','oc.lazyLoad']);
+(function(){"use strict";angular.module("relativeDate",[]).value("now",null).value("relativeDateTranslations",{just_now:"just now",seconds_ago:"{{time}} seconds ago",a_minute_ago:"a minute ago",minutes_ago:"{{time}} minutes ago",an_hour_ago:"an hour ago",hours_ago:"{{time}} hours ago",a_day_ago:"yesterday",days_ago:"{{time}} days ago",a_week_ago:"a week ago",weeks_ago:"{{time}} weeks ago",a_month_ago:"a month ago",months_ago:"{{time}} months ago",a_year_ago:"a year ago",years_ago:"{{time}} years ago",over_a_year_ago:"over a year ago",seconds_from_now:"{{time}} seconds from now",a_minute_from_now:"a minute from now",minutes_from_now:"{{time}} minutes from now",an_hour_from_now:"an hour from now",hours_from_now:"{{time}} hours from now",a_day_from_now:"tomorrow",days_from_now:"{{time}} days from now",a_week_from_now:"a week from now",weeks_from_now:"{{time}} weeks from now",a_month_from_now:"a month from now",months_from_now:"{{time}} months from now",a_year_from_now:"a year from now",years_from_now:"{{time}} years from now",over_a_year_from_now:"over a year from now"}).filter("relativeDate",["$injector","now","relativeDateTranslations",function(a,b,c){var d,e;return d=a.has("$translate")?a.get("$translate"):{instant:function(a,b){return c[a].replace("{{time}}",b.time)}},e=function(a,b){return Math.round(Math.abs(a-b)/1e3)},function(a){var c,f,g,h,i,j,k,l,m;switch(j=b?b:new Date,a instanceof Date||(a=new Date(a)),f=null,h=60,g=60*h,c=24*g,l=7*c,i=30*c,m=365*c,f=e(j,a),f>c&&l>f&&(a=new Date(a.getFullYear(),a.getMonth(),a.getDate(),0,0,0),f=e(j,a)),k=function(b,c){var e;return e="just_now"===b?b:j>=a?""+b+"_ago":""+b+"_from_now",d.instant(e,{time:c})},!1){case!(30>f):return k("just_now");case!(h>f):return k("seconds",f);case!(2*h>f):return k("a_minute");case!(g>f):return k("minutes",Math.floor(f/h));case 1!==Math.floor(f/g):return k("an_hour");case!(c>f):return k("hours",Math.floor(f/g));case!(2*c>f):return k("a_day");case!(l>f):return k("days",Math.floor(f/c));case 1!==Math.floor(f/l):return k("a_week");case!(i>f):return k("weeks",Math.floor(f/l));case 1!==Math.floor(f/i):return k("a_month");case!(m>f):return k("months",Math.floor(f/i));case 1!==Math.floor(f/m):return k("a_year");default:return k("over_a_year")}}}])}).call(this);
+
+var app = angular.module('courseMapper', [
+    'ngResource', 'ngRoute', 'ngCookies',
+    'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
+    'relativeDate', 'wysiwyg.module']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -18,6 +22,8 @@ app.filter('base64Decode', function() {
         return (!!input) ? Base64.decode(input) : '';
     }
 });
+
+app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
 
 app.directive('onFinishRender', function ($timeout) {
     return {
@@ -84,8 +90,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 function cloneSimpleObject(obj){
     return JSON.parse(JSON.stringify(obj));
-}
-;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+};app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -174,6 +179,7 @@ function cloneSimpleObject(obj){
         $http.put(url, {}).success(function(res){
             if(res.result)
                 $scope.enrolled = true;
+
         }).finally(function(){
             $scope.loading = false;
         });
@@ -423,7 +429,258 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
+;app.
+    controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+        $scope.formData = {};
+        $scope.course = {};
+        $scope.currentReplyingTo = false;
+        $scope.currentEditPost = {};
+        $scope.currentTopic = false;
+        $scope.originalCurrentTopic = {};
+
+        $scope.pid = false;
+
+        $scope.menu = [
+            ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+            [ 'font-size' ],
+            ['ordered-list', 'unordered-list', 'outdent', 'indent'],
+            ['left-justify', 'center-justify', 'right-justify'],
+            ['code', 'quote', 'paragraph']
+        ];
+
+        $scope.topics = [];
+        $scope.replies = [];
+
+        $scope.initiateTopic = function(){
+            $scope.pid = $location.search().pid;
+            $scope.manageActionBar($scope.pid);
+
+            if($scope.pid) {
+                $scope.getReplies($scope.pid);
+            }
+        };
+
+        $scope.$on('onAfterInitCourse', function(e, course){
+            $scope.course= course;
+
+            $http.get('/api/discussions/' + course._id).success(function(res){
+               if(res.result && res.posts){
+                   $scope.topics = res.posts;
+
+                   $scope.initiateTopic();
+               }
+            });
+        });
+
+        $scope.$on('onAfterCreateReply', function(e, reply){
+            if(reply){
+                reply.createdBy = $rootScope.user;
+                $scope.replies.unshift(reply);
+            }
+        });
+
+        $scope.saveNewPost = function(){
+            console.log('saving');
+
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'POST',
+                url: '/api/discussions/' + $scope.course._id,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterCreateNewTopic', data.post);
+                        data.post.discussion = data.post;
+                        data.post.createdBy = $rootScope.user;
+                        $scope.topics.unshift(data.post);
+                        $timeout(function(){$scope.$apply()});
+
+                        $('#addNewTopicModal').modal('hide');
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        $scope.saveEditPost = function(){
+            console.log('saving edit post');
+
+            var d = transformRequest($scope.currentTopic);
+            $http({
+                method: 'PUT',
+                url: '/api/discussion/' + $scope.currentTopic._id,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterEditTopic', data.post);
+
+                        $('#editTopicModal').modal('hide');
+
+                        var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
+                        $scope.topics[i].discussion = data.post;
+                        $timeout(function(){$scope.$apply()});
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        $scope.editReply = function(re){
+            $scope.currentEditPost = re;
+            $scope.$broadcast('onEditReplyClicked', re);
+        };
+
+        $scope.deletePost = function(postId){
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
+
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        $scope.deleteTopic = function(postId){
+            var r = confirm("Are you sure you want to delete this topic?");
+
+            if (r == true) {
+                $http({
+                    method: 'DELETE',
+                    url: '/api/discussions/' + $scope.course._id +'/topic/' + postId,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(function(data) {
+                        console.log(data);
+                        if(data.result) {
+                            $scope.$emit('onAfterDeleteTopic', postId);
+
+                        } else {
+                            if( data.result != null && !data.result){
+                                $scope.errorName = data.errors;
+                                console.log(data.errors);
+                            }
+                        }
+                    }) ;
+            }
+        };
+
+        $scope.$on('$routeUpdate', function(){
+            $scope.initiateTopic();
+        });
+
+        $scope.$on('onAfterEditReply', function(e, f){
+            var i = _.findIndex($scope.replies, { '_id' : f._id});
+            $scope.replies[i].content = f.content;
+            $timeout(function(){
+                $scope.$apply();
+            });
+        });
+
+        $scope.$on('onAfterDeletePost', function(e, postId){
+            var i = _.findIndex($scope.replies, { '_id' : postId});
+            $scope.replies[i].content = '[DELETED]';
+            $timeout(function(){
+                $scope.$apply();
+            });
+        });
+
+        $scope.manageActionBar = function(){
+            if($scope.pid){
+                ActionBarService.extraActionsMenu = [];
+
+                ActionBarService.extraActionsMenu.unshift({
+                    separator: true
+                });
+
+                ActionBarService.extraActionsMenu.push(
+                    {
+                        'html':
+                        '<a style="cursor: pointer;"' +
+                        ' data-toggle="modal" data-target="#addNewReplyModal"' +
+                        ' title="Reply">' +
+                        '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>'
+                    }
+                );
+            }
+            else if(!$scope.pid){
+                $scope.currentTopic = {};
+                ActionBarService.extraActionsMenu = [];
+            }
+        };
+
+        $scope.$on('onAfterInitUser', function(event, user){
+            $scope.$watch('currentTopic', function(oldVal, newVal){
+                if($scope.currentTopic && $scope.currentTopic.createdBy._id==$rootScope.user._id) {
+
+                    ActionBarService.extraActionsMenu.push({
+                        'html':
+                        '<a style="cursor: pointer;"' +
+                        ' data-toggle="modal" data-target="#editTopicModal"' +
+                        ' title="Edit">' +
+                        '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                    });
+
+                    ActionBarService.extraActionsMenu.push({
+                        clickAction: $scope.deleteTopic,
+                        clickParams: $scope.currentTopic._id,
+                        title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                        aTitle: 'DELETE THIS TOPIC AND ITS REPLIES'
+                    });
+                }
+            });
+        });
+
+        $scope.getReplies = function(postId){
+            var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
+            $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
+
+            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
+
+            $scope.currentReplyingTo = $scope.currentTopic._id;
+
+            $http.get('/api/discussion/' + postId + '/posts').success(function(res){
+                if(res.result){
+                    $scope.replies = res.posts;
+                }
+            });
+        };
+
+        $scope.cancel = function(){
+            $scope.currentTopic = $scope.originalCurrentTopic;
+        }
+
+    });;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];
@@ -847,7 +1104,22 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
     }
 });
-;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+;app.controller('ActionBarController', function($scope, ActionBarService, $sce, $compile) {
+    $scope.extraActionsMenu = [];
+
+    $scope.$watch(function(){
+        return ActionBarService.extraActionsMenu;
+    },
+        function (newValue) {
+            $scope.extraActionsMenu = ActionBarService.extraActionsMenu;
+        });
+
+   /* $scope.deletePost = function(s){
+        alert('asdfasdf');
+    }*/
+});;app.service('ActionBarService', function() {
+    this.extraActionsMenu = [];
+});;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
     $scope.user = null;
     $scope.treeNode = null;
@@ -1193,7 +1465,111 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });*/
 
 });
-;
+;app.
+    controller('ReplyController', function($scope, $http, $timeout) {
+        $scope.formData = {
+            title: " ",
+            content: ""
+        };
+
+        $scope.menu = [
+            ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+            [ 'font-size' ],
+            ['ordered-list', 'unordered-list', 'outdent', 'indent'],
+            ['left-justify', 'center-justify', 'right-justify'],
+            ['code', 'quote', 'paragraph']
+        ];
+
+        $scope.$on('onEditReplyClicked', function(e, post){
+            $scope.formData.content = post.content;
+            $scope.formData.postId = post._id;
+        });
+
+        $scope.saveNewReply = function(){
+            console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
+            $scope.formData.parentPost = $scope.$parent.currentReplyingTo;
+
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'POST',
+                url: '/api/discussion/replies/',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterCreateReply', data.post);
+
+                        $('#addNewReplyModal').modal('hide');
+
+                        $scope.formData.content = "";
+                        $timeout(function(){$scope.$apply()});
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        $scope.saveEditReply = function(){
+            console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
+
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'PUT',
+                url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterEditReply', data.post);
+
+                        $('#editReplyModal').modal('hide');
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+        /**
+         * deleting root topic
+         * @param postId
+         */
+        $scope.deletePost = function(postId){
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
+
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errorName = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        };
+
+    });;
 
 app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
     $scope.createTopic = function(name, event){
@@ -1270,6 +1646,47 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 ;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
+;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout) {
+    $scope.user = {};
+    $scope.formData = {};
+    $scope.errors = null;
+
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.user = user;
+    });
+
+    $scope.saveEditUser = function(){
+        if($scope.formData.password == $scope.formData.passwordConfirm){
+            var d = transformRequest($scope.formData);
+            $http({
+                method: 'PUT',
+                url: '/api/accounts/' + $scope.user._id + '/changePassword',
+                data: d, // pass in data as strings
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(data) {
+                    console.log(data);
+                    if(data.result) {
+                        $scope.$emit('init');
+                        $('#editAccountModal').modal('hide');
+                    }
+                })
+                .error(function(data){
+                    if(!data.result){
+                        $scope.errors = data.errors;
+                        console.log(data.errors);
+                    }
+                });
+        }
+    };
+
+    $scope.cancel = function(){
+        $('#editAccountModal').modal('hide');
+    }
+
+});
 ;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
@@ -1318,7 +1735,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
         var onafterW = 'OnAfterWidgetLoaded' + $scope.location;
         $scope.$on(onafterW, function(){
-            $scope.initiateDraggableGrid($scope.location);
+            //$scope.initiateDraggableGrid($scope.location);
             //$scope.populateWidgets($scope.location);
         });
     });
@@ -1327,6 +1744,7 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         var id = "";
         if($scope.location == 'user-profile')
             id = $rootScope.user._id;
+
         else if($scope.location == 'course-preview' || $scope.location == 'course-analytics')
             id = $scope.course._id;
 
@@ -1348,7 +1766,13 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
         var wdg = $scope.widgets[i];
 
         //add_widget(el, x, y, width, height, auto_position)
-        grid.add_widget(el, 0, 0, wdg.width, wdg.height, true);
+        var x = 0;
+        var y = 0;
+        if(wdg.position){
+            x = wdg.position.x;
+            y = wdg.position.y;
+        }
+        grid.add_widget(el, x, y, wdg.width, wdg.height, false);
     };
 
     $scope.closeWidget = function(id){
@@ -1360,7 +1784,50 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
 
     $scope.initiateDraggableGrid = function(locs){
         $scope.location = locs;
-        initiateDraggableGrid(['#' + locs + '-widgets']);
+        var loc = '#' + locs + '-widgets';
+
+        var options = {
+            cell_height: 340,
+            vertical_margin: 10,
+            resizable: false
+            //allowed_grids: [0, 4, 8]
+        };
+
+        var curNode = {x:0, y:0};
+        //for(var i in locs){
+            //var loc = locs[i];
+
+        var $gs = $(loc);
+        $gs.gridstack(options);
+
+        $gs.on('onStartMove', function (e, node) {
+            curNode.x = node.x;
+            curNode.y = node.y;
+        });
+
+        $gs.on('onMove', function (e, node) {
+            console.log(node.x + " ++ " + node.y);
+        });
+
+        $gs.on('onFinishDrop', function (e, node) {
+            var o = $(node.el);
+
+            if(options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0){
+                o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+            }
+            console.log("onFinishDrop");
+            var wId = o.attr('id').substr(1);
+            $scope.setPosition(wId, node.x, node.y);
+        });
+    };
+
+    $scope.setPosition = function(wId, x, y){
+        $http.put('/api/widget/' + wId + '/setPosition/', {
+            x:x, y:y
+        }).success(function(res){
+            if(res.result)
+                console.log('set position success');
+        });
     };
 
     $scope.populateWidgets = function(){

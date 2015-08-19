@@ -31,17 +31,23 @@
                                         src="/img/default-profile-picture.png" class="img-circle"
                                         title="Change profile picture" alt="Change profile picture"></a>
                             </div>
+
                             <div class="box-body no-padding">
                                 <ul class="nav nav-pills nav-stacked">
-                                    <li><a href="#" title="Change email or password settings"><i
-                                            class="ionicons ion-ios-gear"></i> Account Settings</a></li>
+                                    <li>
+                                        <a class="cursor"
+                                           data-toggle="modal" data-target="#editAccountModal"
+                                           title="Change password settings">
+                                            <i class="ionicons ion-ios-gear"></i> Account Settings</a></li>
+
                                     <li><a href="#" title="Turn on or off some features"><i
                                             class="ionicons ion-toggle"></i> Plugins</a></li>
+
                                     <li>
                                         <a style="cursor: pointer;"
                                            title="Add or remove dashboard widgets"
                                            data-toggle="modal" data-target="#widgetGallery"><i
-                                            class="ionicons ion-android-apps"></i> Widgets Store</a></li>
+                                                class="ionicons ion-android-apps"></i> Widgets Store</a></li>
 
                                     <% if(user.role == 'admin'){ %>
                                     <li><a href="/cm-admin/" title="admin"> Admin Panel</a></li>
@@ -54,15 +60,19 @@
                     </div>
                     <!-- main user menu end -->
 
-                    <div class="grid-stack col-sm-6 col-md-10" id="user-profile-widgets">
+                    <!-- analytics-->
+                    <div class="grid-stack col-sm-6 col-md-10" id="user-profile-widgets"
+                         ng-init="location='user-profile';
+                                  initiateDraggableGrid('user-profile');">
                         <div class="grid-stack-item"
                              data-gs-no-resize="yes"
                              data-gs-locked="yes"
-                             ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}" >
+                             ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}">
                             <div class="grid-stack-item-content">
                                 <div class="box no-shadow">
                                     <div class="box-header with-border">
                                         <h3 class="box-title">{{wdg.widget}}</h3>
+
                                         <div class="box-tools pull-right">
                                             <button class="btn btn-box-tool" data-widget="remove"
                                                     data-toggle="tooltip" title="Remove"
@@ -73,9 +83,10 @@
                                     </div>
                                     <div class="box-body">
 
-                                <!-- start widget render -->
-                                <div ng-include src="wdg.widgetId.entryPoint" onload="initWidgetButton(wdg.widgetId._id)"></div>
-                                <!-- start widget render -->
+                                        <!-- start widget render -->
+                                        <div ng-include src="wdg.widgetId.entryPoint"
+                                             onload="initWidgetButton(wdg.widgetId._id)"></div>
+                                        <!-- start widget render -->
 
                                     </div>
                                 </div>
@@ -83,19 +94,16 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
-
                         <div class="row" ng-controller="WidgetGalleryController">
                             <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
                                  aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('user-profile')">
                                 <div ng-include="'/widgets/gallery'"></div>
                             </div>
                         </div>
-
                     </div>
+                    <!-- analytics-->
                 </div>
-
 
             </div>
         </section>
@@ -106,16 +114,12 @@
 
 </div><!-- ./wrapper -->
 
+<% include profiles/editAccountModal %>
+
 <% include jsfooter %>
 
 <script src="/gridstack/gridstack.js"></script>
 <!--add chart.js source-->
 <script src="/chartjs/Chart.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        initiateDraggableGrid(['#user-profile-widgets']);
-    });
-</script>
 
 <% include footer %>

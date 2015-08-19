@@ -20,7 +20,7 @@ var treeNodesSchema = new mongoose.Schema({
     childrens: [{ type: mongoose.Schema.Types.ObjectId }],
     positionFromRoot: mongoose.Schema.Types.Mixed,
 
-    //type{'subTopic', 'content'}
+    //type{'subTopic', 'contentNode'}
     type:{type:String, required:true, default:"subTopic"},
     resources:[{ type: mongoose.Schema.Types.ObjectId, ref: 'resources'}],
 

@@ -641,3 +641,12 @@ ul.dropdown-menu.course{
 .grid-stack>.grid-stack-item>.grid-stack-item-content{
     background: white;
 }
+
+.empty-widget{
+    width: 100%;
+    text-align: center;
+    min-height: 800px;
+}
+a.cursor {
+    cursor: pointer;
+}

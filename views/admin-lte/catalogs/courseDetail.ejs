@@ -8,10 +8,15 @@
 
     <div class="navbar-custom-menu" ng-show="currentTab=='preview'" ng-include
          src="'actionBar-course-preview'"></div>
+
     <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
          src="'actionBar-course-analytics'"></div>
+
     <div class="navbar-custom-menu" ng-show="currentTab=='map'" ng-include
          src="'actionBar-course-map'"></div>
+
+    <div class="navbar-custom-menu" ng-show="currentTab=='discussion'" ng-include
+         src="'actionBar-course-discussion'"></div>
 
 </section>
 
@@ -36,7 +41,7 @@
                     </div>
 
                     <div class="tab-pane" id="discussion">
-                        <% include courseDetailContentDiscussion %>
+                        <% include ../../discussion/topics %>
                     </div>
 
                     <div class="tab-pane" id="updates">
@@ -55,37 +60,13 @@
     </div>
 </section>
 <!-- /.content -->
+
 <!-- modal contents -->
-<!-- widgetGallery for course preview -->
-<div class="row" ng-controller="WidgetGalleryController">
-    <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
-         aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('course-preview')">
-        <div ng-include="'/widgets/gallery'"></div>
-    </div>
-</div>
-
-<!-- widgetGallery for course analytics -->
-<div class="row" ng-controller="WidgetGalleryController">
-    <div class="modal" id="widgetGalleryAnalytics" tabindex="-1" role="dialog"
-         aria-labelledby="wigets gallery Analytics" aria-hidden="true" ng-init="initData('course-analytics')">
-        <div ng-include="'/widgets/gallery'"></div>
-    </div>
-</div>
-
-<!-- course edit form -->
-<div class="row">
-    <div class="modal" id="editView" tabindex="-1" role="dialog"
-         aria-labelledby="edit view" aria-hidden="true">
-        <div ng-include="'/course/edit'"></div>
-    </div>
-</div>
-
+<% include courseDetailModals %>
 <!-- /.modal contents -->
 
 <script>
     $(document).ready(function () {
-        initiateDraggableGrid(['#course-preview-widgets', '#course-analytics-widgets']);
-
         handleTab();
 
         if (location.hash !== '')
