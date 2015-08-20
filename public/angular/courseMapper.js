@@ -496,8 +496,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewTopic', data.post);
-                        data.post.discussion = data.post;
-                        data.post.createdBy = $rootScope.user;
                         $scope.topics.unshift(data.post);
                         $timeout(function(){$scope.$apply()});
 
@@ -618,10 +616,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.$on('onAfterDeleteTopic', function(e, postId){
             var i = _.findIndex($scope.topics, { discussion: { '_id' : postId}});
             $scope.topics[i].isDeleted = true;
+
+            $scope.currentTopic = false;
+            $scope.replies = [];
+            $scope.pid = false;
+            $location.search('pid', '');
+            $scope.initiateTopic();
+
             $timeout(function(){
-                $scope.currentTopic = false;
                 $scope.$apply();
-                $scope.replies = [];
             });
         });
 
@@ -651,7 +654,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.$on('onAfterInitUser', function(event, user){
             $scope.$watch('currentTopic', function(oldVal, newVal){
-                if($scope.currentTopic && $scope.currentTopic.createdBy._id==$rootScope.user._id) {
+                if($scope.currentTopic && $scope.currentTopic.createdBy &&
+                    $scope.currentTopic.createdBy._id == $rootScope.user._id) {
 
                     ActionBarService.extraActionsMenu.push({
                         'html':
@@ -1511,6 +1515,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             content: ""
         };
 
+        $scope.formNewData = {
+            title: " ",
+            content: ""
+        };
+
         $scope.menu = [
             ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
             [ 'font-size' ],
@@ -1526,9 +1535,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.saveNewReply = function(){
             console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
-            $scope.formData.parentPost = $scope.$parent.currentReplyingTo;
+            $scope.formNewData.parentPost = $scope.$parent.currentReplyingTo;
 
-            var d = transformRequest($scope.formData);
+            var d = transformRequest($scope.formNewData);
             $http({
                 method: 'POST',
                 url: '/api/discussion/replies/',
@@ -1544,7 +1553,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                         $('#addNewReplyModal').modal('hide');
 
-                        $scope.formData.content = "";
+                        $scope.formNewData.content = "";
+
                         $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
@@ -1553,6 +1563,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         }
                     }
                 }) ;
+        };
+
+        $scope.cancel = function(){
+            $scope.formData.content = "";
+            $scope.formNewData.content = "";
+
+            $timeout(function(){$scope.$apply()});
         };
 
         $scope.saveEditReply = function(){
@@ -1571,6 +1588,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterEditReply', data.post);
+
+                        $scope.formData.content = "";
+                        $timeout(function(){$scope.$apply()});
 
                         $('#editReplyModal').modal('hide');
                     } else {
