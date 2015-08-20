@@ -5,6 +5,11 @@ app.
             content: ""
         };
 
+        $scope.formNewData = {
+            title: " ",
+            content: ""
+        };
+
         $scope.menu = [
             ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
             [ 'font-size' ],
@@ -20,9 +25,9 @@ app.
 
         $scope.saveNewReply = function(){
             console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
-            $scope.formData.parentPost = $scope.$parent.currentReplyingTo;
+            $scope.formNewData.parentPost = $scope.$parent.currentReplyingTo;
 
-            var d = transformRequest($scope.formData);
+            var d = transformRequest($scope.formNewData);
             $http({
                 method: 'POST',
                 url: '/api/discussion/replies/',
@@ -38,7 +43,8 @@ app.
 
                         $('#addNewReplyModal').modal('hide');
 
-                        $scope.formData.content = "";
+                        $scope.formNewData.content = "";
+
                         $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
@@ -47,6 +53,13 @@ app.
                         }
                     }
                 }) ;
+        };
+
+        $scope.cancel = function(){
+            $scope.formData.content = "";
+            $scope.formNewData.content = "";
+
+            $timeout(function(){$scope.$apply()});
         };
 
         $scope.saveEditReply = function(){
@@ -65,6 +78,9 @@ app.
                     console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterEditReply', data.post);
+
+                        $scope.formData.content = "";
+                        $timeout(function(){$scope.$apply()});
 
                         $('#editReplyModal').modal('hide');
                     } else {
