@@ -42,6 +42,22 @@ courseDiscussion.prototype.getCourseDiscussions = function(error, courseId, succ
         });
 };
 
+courseDiscussion.prototype.getCourseDiscussion = function(error, pId, success){
+    Discussion.findOne({
+        _id: pId
+    })
+        .sort({dateAdded: -1})
+        .populate('discussion')
+        .populate('createdBy', 'username')
+        .exec(function(err, docs) {
+            if (!err){
+                success(docs);
+            } else {
+                error(err);
+            }
+        });
+};
+
 /**
  * get all categories based on params,
  * and form the data into recursive tree
@@ -143,15 +159,20 @@ courseDiscussion.prototype.deletePost = function(error, params, success){
                             $set: {
                                 isDeleted: true
                             }
-                        });
+                        },
+                    function(){
+                        success(doc);
+                    });
                 }
-
-                success(doc);
+                else
+                    success(doc);
             }
         });
 };
 
 courseDiscussion.prototype.addPost = function(error, params, success){
+    var self = this;
+
     var newPost = new Posts({
         title: params.title,
         content: params.content,
@@ -197,12 +218,16 @@ courseDiscussion.prototype.addPost = function(error, params, success){
 
             cd.save(function (err) {
                 if (!err) {
-                    success(newPost);
+                    cd.discussion = newPost;
+
+                    self.getCourseDiscussion(error, cd._id, function(b){
+                        success(b);
+                    });
                 } else error(err);
             });
 
         } else {
-            // there isno course id, maybe its a reply
+            // there is no course id, maybe its a reply
             success(newPost);
         }
     });

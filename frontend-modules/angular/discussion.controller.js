@@ -64,8 +64,6 @@ app.
                     console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewTopic', data.post);
-                        data.post.discussion = data.post;
-                        data.post.createdBy = $rootScope.user;
                         $scope.topics.unshift(data.post);
                         $timeout(function(){$scope.$apply()});
 
@@ -183,6 +181,21 @@ app.
             });
         });
 
+        $scope.$on('onAfterDeleteTopic', function(e, postId){
+            var i = _.findIndex($scope.topics, { discussion: { '_id' : postId}});
+            $scope.topics[i].isDeleted = true;
+
+            $scope.currentTopic = false;
+            $scope.replies = [];
+            $scope.pid = false;
+            $location.search('pid', '');
+            $scope.initiateTopic();
+
+            $timeout(function(){
+                $scope.$apply();
+            });
+        });
+
         $scope.manageActionBar = function(){
             if($scope.pid){
                 ActionBarService.extraActionsMenu = [];
@@ -209,7 +222,8 @@ app.
 
         $scope.$on('onAfterInitUser', function(event, user){
             $scope.$watch('currentTopic', function(oldVal, newVal){
-                if($scope.currentTopic && $scope.currentTopic.createdBy._id==$rootScope.user._id) {
+                if($scope.currentTopic && $scope.currentTopic.createdBy &&
+                    $scope.currentTopic.createdBy._id == $rootScope.user._id) {
 
                     ActionBarService.extraActionsMenu.push({
                         'html':
@@ -231,18 +245,20 @@ app.
 
         $scope.getReplies = function(postId){
             var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
-            $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
-            $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
+            if($scope.topics[i]){
+                $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+                $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
 
-            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
+                $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
 
-            $scope.currentReplyingTo = $scope.currentTopic._id;
+                $scope.currentReplyingTo = $scope.currentTopic._id;
 
-            $http.get('/api/discussion/' + postId + '/posts').success(function(res){
-                if(res.result){
-                    $scope.replies = res.posts;
-                }
-            });
+                $http.get('/api/discussion/' + postId + '/posts').success(function(res){
+                    if(res.result){
+                        $scope.replies = res.posts;
+                    }
+                });
+            }
         };
 
         $scope.cancel = function(){
