@@ -183,17 +183,19 @@ app.
 
         $scope.$on('onAfterDeleteTopic', function(e, postId){
             var i = _.findIndex($scope.topics, { discussion: { '_id' : postId}});
-            $scope.topics[i].isDeleted = true;
+            //$scope.topics[i].isDeleted = true;
+            if(i >= 0) {
+                $scope.topics.splice(i, 1);
+                $scope.currentTopic = false;
+                $scope.replies = [];
+                $scope.pid = false;
+                $location.search('pid', '');
+                $scope.initiateTopic();
 
-            $scope.currentTopic = false;
-            $scope.replies = [];
-            $scope.pid = false;
-            $location.search('pid', '');
-            $scope.initiateTopic();
-
-            $timeout(function(){
-                $scope.$apply();
-            });
+                $timeout(function () {
+                    $scope.$apply();
+                });
+            }
         });
 
         $scope.manageActionBar = function(){

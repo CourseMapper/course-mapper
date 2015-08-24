@@ -84,7 +84,7 @@ NodeLinks.prototype.deletePost = function(error, params, success){
             if(err)
                 error(err);
             else {
-                if(params.courseId){
+                if(params.nodeId){
                     Links.update({
                             link: params.postId,
                             createdBy: params.userId
