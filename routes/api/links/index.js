@@ -133,7 +133,7 @@ router.delete('/:postId', function(req, res, next){
     );
 });
 
-router.delete('/:nodeId/topic/:postId', function(req, res, next){
+router.delete('/:nodeId/link/:postId', function(req, res, next){
     var cat = new Controller();
     cat.deletePost(
         function(err){
@@ -144,7 +144,7 @@ router.delete('/:nodeId/topic/:postId', function(req, res, next){
         },
         {
             postId: mongoose.Types.ObjectId(req.params.postId),
-            courseId: mongoose.Types.ObjectId(req.params.courseId),
+            nodeId: mongoose.Types.ObjectId(req.params.nodeId),
             userId: mongoose.Types.ObjectId(req.user._id)
         },
         function(post){

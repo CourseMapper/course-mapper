@@ -615,17 +615,19 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.$on('onAfterDeleteTopic', function(e, postId){
             var i = _.findIndex($scope.topics, { discussion: { '_id' : postId}});
-            $scope.topics[i].isDeleted = true;
+            //$scope.topics[i].isDeleted = true;
+            if(i >= 0) {
+                $scope.topics.splice(i, 1);
+                $scope.currentTopic = false;
+                $scope.replies = [];
+                $scope.pid = false;
+                $location.search('pid', '');
+                $scope.initiateTopic();
 
-            $scope.currentTopic = false;
-            $scope.replies = [];
-            $scope.pid = false;
-            $location.search('pid', '');
-            $scope.initiateTopic();
-
-            $timeout(function(){
-                $scope.$apply();
-            });
+                $timeout(function () {
+                    $scope.$apply();
+                });
+            }
         });
 
         $scope.manageActionBar = function(){
@@ -902,8 +904,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                         $('#editLinksModal').modal('hide');
 
-                        var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
-                        $scope.topics[i].discussion = data.post;
+                        var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
+                        $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
@@ -911,7 +913,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                             console.log(data.errors);
                         }
                     }
-                }) ;
+                });
         };
 
         $scope.deletePost = function(postId){
@@ -920,7 +922,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             if (r == true) {
                 $http({
                     method: 'DELETE',
-                    url: '/api/links/' + $scope.course._id +'/link/' + postId,
+                    url: '/api/links/' + $scope.contentNode._id + '/link/' + postId,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
@@ -945,17 +947,19 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
 
         $scope.$on('onAfterDeleteLink', function(e, postId){
-            var i = _.findIndex($scope.topics, { discussion: { '_id' : postId}});
-            $scope.links[i].isDeleted = true;
+            var i = _.findIndex($scope.links, { link: { '_id' : postId}});
+            if(i>=0) {
+                //$scope.links[i].isDeleted = true;
+                $scope.links.splice(i, 1);
+                $scope.currentLink = false;
+                $scope.pid = false;
+                $location.search('pid', '');
+                $scope.initiateLink();
 
-            $scope.currentLink = false;
-            $scope.pid = false;
-            $location.search('pid', '');
-            $scope.initiateLink();
-
-            $timeout(function(){
-                $scope.$apply();
-            });
+                $timeout(function () {
+                    $scope.$apply();
+                });
+            }
         });
 
         $scope.manageActionBar = function(){
@@ -999,7 +1003,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             if($scope.links[i]){
                 $scope.currentLink = cloneSimpleObject($scope.links[i].link);
                 $scope.currentLink.createdBy = $scope.links[i].createdBy;
-                $scope.originalCurrentTopic = cloneSimpleObject($scope.links[i].link);
+                $scope.originalCurrentLink = cloneSimpleObject($scope.links[i].link);
                 $scope.currentLinkUrl = $sce.trustAsResourceUrl($scope.currentLink.content);
             }
         };
