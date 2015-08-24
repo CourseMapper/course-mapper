@@ -1,0 +1,62 @@
+<link href="/admin-lte/css/posts.css" rel="stylesheet" type="text/css"/>
+<div ng-controller="LinksController">
+
+    <div class="row">
+        <div class="col-md-3" id="LinksList">
+            <h4>Links</h4>
+
+            <div ng-show="links.length == 0" class="posts-list">
+                <ul class="posts">
+                    <li class="post">
+                        <h5>There is no links to show, you can add a new one by clicking the
+                            "ADD NEW LINK" button on the top right of this page</h5>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="posts-list" ng-show="links.length > 0">
+                <ul class="posts">
+                    <li class="post" ng-repeat="bookmark in links" ng-class="(pid==bookmark.link._id)?'active':''"
+                        ng-hide="bookmark.isDeleted">
+                        <h4><a ng-href="#/cid/{{course._id}}/nid/{{contentNode._id}}?tab=links&pid={{bookmark.link._id}}">
+                            {{bookmark.link.title}}
+                        </a></h4>
+                        <span class="posted-at">
+                            Posted <strong>{{bookmark.link.dateAdded | relativeDate}}</strong>
+                            By <strong>{{bookmark.createdBy.username}}</strong>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-8" id="linksContent">
+
+            <div ng-hide="pid || links.length == 0">
+                <h4>Please pick one from the existing links</h4>
+            </div>
+
+            <div ng-show="pid" class="replies-wrapper">
+
+                <div ng-show="currentLink" class="currentTopic">
+                    <div class="box box-solid">
+                        <div class="box-header with-border">
+                            <h4>{{currentLink.title}}</h4>
+                            <span class="posted-at">
+                                Posted <strong>{{currentLink.dateAdded | relativeDate}}</strong>
+                            By <strong>{{currentLink.createdBy.username}}</strong>
+                            </span>
+                        </div>
+                        <div class="box-body">
+                            <iframe ng-src="{{currentLinkUrl}}" class="link" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /. show when pid -->
+        </div>
+    </div>
+
+    <% include addNewLinksModal %>
+    <% include editLinksModal %>
+
+</div>

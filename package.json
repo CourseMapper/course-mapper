@@ -32,7 +32,8 @@
     "shortid": "^2.2.2",
     "slug": "^0.8.0",
     "underscore": "^1.8.3",
-    "validator": "^3.35.0"
+    "validator": "^3.35.0",
+    "x-frame-options": "^1.0.0"
   },
   "devDependencies": {
     "connect-livereload": "^0.5.3",

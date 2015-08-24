@@ -4,21 +4,19 @@
         <li class="home"><a href="#/cid/{{course._id}}?tab=map&center={{nodeId}}"> &leftarrow;Back &nbsp;&nbsp; {{course.name}}</a></li>
         <li>Map</li>
         <li class="home">Content Node : <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=preview">{{treeNode.name}}</a></li>
-        <li class="active">{{currentTab}}</li>
+        <li class="active">{{tabs[currentTab]}}</li>
     </ol>
     <!-- breadcrumb 2nd row -->
 
     <!-- ACTION BAR switches -->
-    <div class="navbar-custom-menu" ng-show="currentTab=='node-preview'" ng-include
+    <div class="navbar-custom-menu" ng-show="currentTab=='preview'" ng-include
          src="'actionBar-node-preview'"></div>
     <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
          src="'actionBar-node-analytics'"></div>
-    <div class="navbar-custom-menu" ng-show="currentTab=='node-map'" ng-include
-         src="'actionBar-node-map'"></div>
-    <div class="navbar-custom-menu" ng-show="currentTab=='node-update'" ng-include
-         src="'actionBar-node-update'"></div>
-    <div class="navbar-custom-menu" ng-show="currentTab=='node-external-resources'" ng-include
-         src="'actionBar-node-external-resources'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='updates'" ng-include
+         src="'actionBar-node-updates'"></div>
+    <div class="navbar-custom-menu" ng-show="currentTab=='links'" ng-include
+         src="'actionBar-node-links'"></div>
     <!-- ACTION BAR switches -->
 
 </section>
@@ -39,14 +37,11 @@
                             <% include nodeDetailContentPreview %>
                         </div>
                     </div>
-                    <div class="tab-pane" id="map">
-                        <% include nodeDetailContentMap %>
-                    </div>
                     <div class="tab-pane" id="updates">
                         <% include nodeDetailContentUpdates %>
                     </div>
-                    <div class="tab-pane" id="external-resources">
-                        <% include nodeDetailContentExternalResources %>
+                    <div class="tab-pane" id="links">
+                        <% include ../links/links %>
                     </div>
                     <div class="tab-pane" id="analytics">
                         <% include nodeDetailContentNodeAnalytics %>
