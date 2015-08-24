@@ -13,11 +13,10 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
 
     $scope.currentTab = "preview";
     $scope.tabs = {
-        'preview':'preview',
-        'analytics':'analytics',
-        'map':'map',
-        'updates':'updates',
-        'external-resources':'external resources'
+        'preview':'Preview',
+        'analytics':'Analytics',
+        'updates':'Updates',
+        'links':'Links'
     };
 
     $scope.changeTab = function(){
@@ -28,7 +27,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             defaultPath = q.tab;
         }
 
-        $scope.currentTab = $scope.tabs[defaultPath];
+        $scope.currentTab = defaultPath;
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
     };
 

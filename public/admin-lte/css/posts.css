@@ -5,8 +5,15 @@
 .posts-list li.post h4, .currentTopic h4 {
     font-size: 20px;
     margin-bottom: 0px;
+    margin-top: 0px;
 }
 .currentTopic h4{color: #3c8dbc;}
+
+iframe.link{
+    width:100%;
+    min-height: 640px;
+    overflow: scroll;
+}
 li.post, li.reply{
     padding: 15px;
 }
