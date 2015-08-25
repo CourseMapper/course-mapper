@@ -16,16 +16,28 @@
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic'">
             <li>
-                <a class="" data-toggle="modal" data-target="#addSubTopicModal"
-                   ng-click="setMode('add', 'subTopic', data)">Add A Sub Topic</a>
+                <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
+                   ng-click="setMode('add', 'subTopic', data)">
+                    <i class="ionicons ion-android-add"></i>
+                    <i class="ionicons ion-android-folder"></i>
+                    Add Sub Topic</a>
             </li>
             <li>
-                <a class="" data-toggle="modal" data-target="#addContentNodeModal"
-                   ng-click="setMode('add', 'contentNode', data)">Add A Content Node</a>
+                <a class="cursor" data-toggle="modal" data-target="#addContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)">
+                    <i class="ionicons ion-android-add"></i>
+                    <i class="ionicons ion-android-document"></i>
+                    Add Content Node</a>
             </li>
-            <li ng-show="data.type=='contentNode'">
-                <a class="" data-toggle="modal" data-target="#editContentNodeModal"
-                   ng-click="setMode('add', 'contentNode', data)">Edit</a>
+            <li class="separator"></li>
+            <li>
+                <a class="cursor" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)"><i class="ionicons ion-edit"></i> Edit</a>
+            </li>
+
+            <li>
+                <a class="cursor" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)"><i class="ionicons ion-close"></i> Delete</a>
             </li>
         </ul>
 
@@ -34,10 +46,15 @@
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>
+            <li class="separator"></li>
+            <li>
+                <a class="cursor" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)"><i class="ionicons ion-edit"></i> Edit</a>
+            </li>
 
             <li>
-                <a class="" data-toggle="modal" data-target="#editContentNodeModal"
-                   ng-click="setMode('add', 'contentNode', data)">Edit</a>
+                <a class="cursor" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)"><i class="ionicons ion-close"></i> Delete</a>
             </li>
         </ul>
     </div>

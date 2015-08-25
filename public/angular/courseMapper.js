@@ -1095,8 +1095,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 if(data.treeNodes.length > 0) {
                     $scope.treeNodes = data.treeNodes;
                 }
-                //else
-                //    $scope.initJSPlumb();
         });
     };
 

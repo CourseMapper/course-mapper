@@ -55,23 +55,9 @@
     </div>
 </section>
 <!-- /.content -->
+
 <!-- modal contents -->
-
-<!-- widgetGallery for course analytics -->
-<div class="row" ng-controller="WidgetGalleryController">
-    <div class="modal" id="widgetGalleryNodeAnalytics" tabindex="-1" role="dialog"
-         aria-labelledby="wigets gallery node Analytics" aria-hidden="true" ng-init="initData('node-analytics')">
-        <div ng-include="'/widgets/gallery'"></div>
-    </div>
-</div>
-
-<!-- addBookmark modal -->
-<div class="row" >
-    <div class="modal" id="addBookmarkModal" tabindex="-1" role="dialog"
-         aria-labelledby="add Bookmark Modal" aria-hidden="true">
-        add bookmark
-    </div>
-</div>
+<% include nodeDetailModal %>
 <!-- /.modal contents -->
 
 <% include actionBarNode %>
