@@ -59,8 +59,6 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
                 if(data.treeNodes.length > 0) {
                     $scope.treeNodes = data.treeNodes;
                 }
-                //else
-                //    $scope.initJSPlumb();
         });
     };
 

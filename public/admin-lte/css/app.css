@@ -381,7 +381,7 @@ li.disabled i {
     max-width: 200px;
     min-width: 160px;
 }
-.w.contentNode i{
+.w.contentNode span i{
     font-size: 20px;
     margin-right: 5px;
 }
@@ -390,6 +390,7 @@ li.disabled i {
     max-width: 180px;
     min-width: 160px;
     height: auto;
+    z-index: 1;
 }
 .w.contentNode .contentNode-analytics i{
     margin-left: 7px;
@@ -406,11 +407,18 @@ li.disabled i {
 
 .dropdown-course{
     width:100%;
-    font-size:12px;
+    font-size:13px;
     border: 1px solid #e3e3e3;
     color:#333;
+    margin-top: 1px!important;
 }
 
+.dropdown-course li.separator{
+    width: 100%;
+    margin: 0px;
+    height: 4px;
+    background: #e1e3e9;
+}
 .center-category {
     width: 160px !important;
     height: 200px !important;

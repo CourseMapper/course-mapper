@@ -2,8 +2,15 @@
 
 <!-- course edit form -->
 <div class="row">
-    <div class="modal" id="editView" tabindex="-1" role="dialog"
+    <div class="modal" id="nodeEditView" tabindex="-1" role="dialog"
          aria-labelledby="edit view" aria-hidden="true">
         <div ng-include="'/course/edit'"></div>
+    </div>
+</div>
+<!-- widgetGallery for course analytics -->
+<div class="row" ng-controller="WidgetGalleryController">
+    <div class="modal" id="widgetGalleryNodeAnalytics" tabindex="-1" role="dialog"
+         aria-labelledby="wigets gallery node Analytics" aria-hidden="true" ng-init="initData('node-analytics')">
+        <div ng-include="'/widgets/gallery'"></div>
     </div>
 </div>
