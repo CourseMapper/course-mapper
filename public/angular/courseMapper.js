@@ -1034,10 +1034,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
-});;app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce) {
+});;app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce, $location) {
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
+    $scope.isTreeInitiated = false;
+    $scope.isCurrentTabIsMap = false;
 
     /**
      * find node recursively
@@ -1093,8 +1095,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 if(data.treeNodes.length > 0) {
                     $scope.treeNodes = data.treeNodes;
                 }
-                else
-                    $scope.initJSPlumb();
+                //else
+                //    $scope.initJSPlumb();
         });
     };
 
@@ -1139,6 +1141,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.initJSPlumb = function(){
+        console.log('drawing tree');
         Tree.init(Canvas.w, Canvas.h);
 
         var instance = jsPlumb.getInstance({
@@ -1231,9 +1234,21 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $rootScope.$broadcast('onAfterSetMode', $scope.$parent.course);
     };
 
+    $scope.$watch(function(){ return $location.search() }, function(newVal, oldVal){
+        var currentTab = $location.search().tab;
+        if(currentTab == 'map'){
+            $scope.isCurrentTabIsMap = true;
+        }
+    }, true);
+
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        console.log(ngRepeatFinishedEvent);
-        $scope.initJSPlumb();
+        $scope.isTreeInitiated = true;
+    });
+
+    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function(oldVal, newVal){
+        if($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
+            $scope.initJSPlumb();
+        }
     });
 
     $scope.$on('onAfterCreateNode', function(event, treeNode){

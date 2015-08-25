@@ -1,7 +1,9 @@
-app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce) {
+app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce, $location) {
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
+    $scope.isTreeInitiated = false;
+    $scope.isCurrentTabIsMap = false;
 
     /**
      * find node recursively
@@ -57,8 +59,8 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
                 if(data.treeNodes.length > 0) {
                     $scope.treeNodes = data.treeNodes;
                 }
-                else
-                    $scope.initJSPlumb();
+                //else
+                //    $scope.initJSPlumb();
         });
     };
 
@@ -103,6 +105,7 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
     };
 
     $scope.initJSPlumb = function(){
+        console.log('drawing tree');
         Tree.init(Canvas.w, Canvas.h);
 
         var instance = jsPlumb.getInstance({
@@ -195,9 +198,21 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
         $rootScope.$broadcast('onAfterSetMode', $scope.$parent.course);
     };
 
+    $scope.$watch(function(){ return $location.search() }, function(newVal, oldVal){
+        var currentTab = $location.search().tab;
+        if(currentTab == 'map'){
+            $scope.isCurrentTabIsMap = true;
+        }
+    }, true);
+
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        console.log(ngRepeatFinishedEvent);
-        $scope.initJSPlumb();
+        $scope.isTreeInitiated = true;
+    });
+
+    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function(oldVal, newVal){
+        if($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
+            $scope.initJSPlumb();
+        }
     });
 
     $scope.$on('onAfterCreateNode', function(event, treeNode){
