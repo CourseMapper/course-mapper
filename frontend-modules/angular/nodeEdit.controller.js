@@ -8,15 +8,20 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
     $scope.init = function(){
     };
 
-    $scope.$on('onAfterSetMode', function(event, course){
+    $scope.$on('onAfterSetMode', function(event, course, treeNode){
         $scope.formData.courseId = course._id;
 
         if($scope.currentNodeAction.parent)
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
 
         $scope.currentEditNode = $scope.currentNodeAction.parent;
-
         $scope.formData.type = $scope.currentNodeAction.type;
+
+        if(treeNode){
+            $scope.formData.name = treeNode.name;
+            $scope.formData.nodeId = treeNode._id;
+            $scope.currentEditNode = treeNode;
+        }
     });
 
     $scope.parseNgFile = function(ngFile){
@@ -29,6 +34,9 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
         return ret;
     };
 
+    /**
+     * save add sub topic node
+     */
     $scope.saveNode = function(){
         var d = transformRequest($scope.formData);
         $http({
@@ -62,6 +70,10 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             });
     };
 
+    /**
+     * save edit sub topic node
+     * and saving edit of content node
+     */
     $scope.saveEditNode = function(){
         var updateValue = {
             name: $scope.currentEditNode.name
@@ -82,6 +94,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     $rootScope.$broadcast('onAfterEditNode', data.treeNode);
 
                     $('#editSubTopicModal').modal('hide');
+                    $('#editContentNodeModal').modal('hide');
                 } else {
                     if( !data.result){
                         $scope.errors = data.errors;
@@ -91,7 +104,16 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             });
     };
 
+    /**
+     * save add content node
+     */
     $scope.saveContentNode = function(){
+        // use saveEditNode for editing the content node.
+        if($scope.currentNodeAction.mode == 'edit'){
+            $scope.saveEditNode();
+            return;
+        }
+
         var uploadParams = {
             url: '/api/treeNodes',
             fields: $scope.formData

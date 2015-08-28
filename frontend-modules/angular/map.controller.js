@@ -339,7 +339,7 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
                         $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
+                            $scope.errors = data.errors;
                             console.log(data.errors);
                         }
                     }

@@ -141,6 +141,9 @@ app.
         });
 
         $scope.manageActionBar = function(){
+            if($scope.$parent.currentTab != 'links')
+                return;
+
             if($scope.pid){
                 ActionBarService.extraActionsMenu = [];
                 ActionBarService.extraActionsMenu.unshift({

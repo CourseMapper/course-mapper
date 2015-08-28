@@ -7,8 +7,4 @@ app.controller('ActionBarController', function($scope, ActionBarService, $sce, $
         function (newValue) {
             $scope.extraActionsMenu = ActionBarService.extraActionsMenu;
         });
-
-   /* $scope.deletePost = function(s){
-        alert('asdfasdf');
-    }*/
 });

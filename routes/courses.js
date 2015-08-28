@@ -43,11 +43,22 @@ router.get('/course/addSubTopic', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/addSubTopicModal');
 });
 
+router.get('/course/editSubTopic', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/editSubTopicModal');
+});
+
 /**
- * partial for add sub topic modal
+ * partial for add content node modal
  */
 router.get('/course/addContentNode', function(req, res, next) {
     res.render(config.get('theme') + '/catalogs/addContentNodeModal');
+});
+
+/**
+ * partial for edit content node modal
+ */
+router.get('/course/editContentNode', function(req, res, next) {
+    res.render(config.get('theme') + '/catalogs/editSubTopicModal');
 });
 
 router.get('/course/:courseId/tree', function(req, res, next) {

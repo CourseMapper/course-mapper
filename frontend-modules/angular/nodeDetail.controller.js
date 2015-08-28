@@ -1,4 +1,4 @@
-app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout, ActionBarService) {
     $scope.course = null;
     $scope.user = null;
     $scope.treeNode = null;
@@ -7,6 +7,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     $scope.courseId = $routeParams.courseId;
     $scope.nodeId = $routeParams.nodeId;
     $scope.isOwner = false;
+    $scope.isNodeOwner = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
@@ -19,6 +20,49 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         'links':'Links'
     };
 
+    $scope.deleteNode = function(id){
+        var msg = 'Are you sure you want to delete this content node?';
+
+        if (confirm(msg)) {
+            $http({
+                method: 'DELETE',
+                url: '/api/treeNodes/' + id,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(res) {
+                    console.log(res);
+                    if(res.result){
+                        //todo: go to map view
+                        console.log("node deleted");
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errors = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        }
+    };
+
+    $scope.manageActionBar = function(){
+        if($scope.currentTab == 'preview' && $scope.treeNode) {
+            if (
+                $scope.treeNode.createdBy == $rootScope.user._id) {
+
+                ActionBarService.extraActionsMenu = [];
+
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deleteNode,
+                    clickParams: $scope.treeNode._id,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE THIS NODE AND ITS CONTENTS'
+                });
+            }
+        }
+    };
+
     $scope.changeTab = function(){
         var defaultPath = "preview";
         var q = $location.search();
@@ -28,13 +72,34 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         }
 
         $scope.currentTab = defaultPath;
-        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+        $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
+
+        $scope.manageActionBar();
+    };
+
+    $scope.currentNodeAction = {};
+    $scope.setEditMode = function(){
+        $scope.currentNodeAction.mode = "edit";
+        $scope.currentNodeAction.type = "contentNode";
+        $scope.currentNodeAction.typeText = "Content Node";
+
+        $scope.nodeModaltitle = "Edit " + $scope.currentNodeAction.typeText;
+        //$scope.nodeModaltitle += " " + $scope.treeNode.name;
+
+        $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
     };
 
     $scope.initNode = function(){
         $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
             if(res.result) {
                 $scope.treeNode = res.treeNode;
+
+                if ($scope.treeNode.createdBy == $rootScope.user._id) {
+                    $scope.isNodeOwner = true;
+                    $scope.setEditMode();
+                }
+
+                $scope.manageActionBar();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
@@ -83,35 +148,6 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             }
         }
     });
-
-    $scope.$on('onAfterEditCourse',function(events, course){
-        //$scope.course = course;
-        $scope.init(true);
-    });
-
-    $scope.enroll = function(){
-        var url = '/api/course/' + $scope.course._id + '/enroll';
-        $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result)
-                $scope.enrolled = true;
-        }).finally(function(){
-            $scope.loading = false;
-        });
-    };
-
-    $scope.leave = function(){
-        var url = '/api/course/' + $scope.course._id + '/leave';
-        $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result){
-                // success leaving
-                $scope.enrolled = false;
-            }
-        }).finally(function(){
-            $scope.loading = false;
-        });
-    };
 
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();

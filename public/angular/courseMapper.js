@@ -430,125 +430,149 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.
-    controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
-        $scope.formData = {};
-        $scope.course = {};
-        $scope.currentReplyingTo = false;
-        $scope.currentEditPost = {};
-        $scope.currentTopic = false;
-        $scope.originalCurrentTopic = {};
+;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+    $scope.formData = {};
+    $scope.course = {};
+    $scope.currentReplyingTo = false;
+    $scope.currentEditPost = {};
+    $scope.currentTopic = false;
+    $scope.originalCurrentTopic = {};
 
-        $scope.pid = false;
+    $scope.pid = false;
 
-        $scope.menu = [
-            ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-            [ 'font-size' ],
-            ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-            ['left-justify', 'center-justify', 'right-justify'],
-            ['code', 'quote', 'paragraph']
-        ];
+    $scope.menu = [
+        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+        [ 'font-size' ],
+        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
+        ['left-justify', 'center-justify', 'right-justify'],
+        ['code', 'quote', 'paragraph']
+    ];
 
-        $scope.topics = [];
-        $scope.replies = [];
+    $scope.topics = [];
+    $scope.replies = [];
 
-        $scope.initiateTopic = function(){
-            $scope.pid = $location.search().pid;
-            $scope.manageActionBar($scope.pid);
+    $scope.initiateTopic = function(){
+        $scope.pid = $location.search().pid;
+        $scope.manageActionBar();
 
-            if($scope.pid) {
-                $scope.getReplies($scope.pid);
-            }
-        };
+        if($scope.pid) {
+            $scope.getReplies($scope.pid);
+        }
+    };
 
-        $scope.$on('onAfterInitCourse', function(e, course){
-            $scope.course= course;
+    $scope.$on('onAfterInitCourse', function(e, course){
+        $scope.course= course;
 
-            $http.get('/api/discussions/' + course._id).success(function(res){
-               if(res.result && res.posts){
-                   $scope.topics = res.posts;
+        $http.get('/api/discussions/' + course._id).success(function(res){
+           if(res.result && res.posts){
+               $scope.topics = res.posts;
 
-                   $scope.initiateTopic();
-               }
-            });
+               $scope.initiateTopic();
+           }
         });
+    });
 
-        $scope.$on('onAfterCreateReply', function(e, reply){
-            if(reply){
-                reply.createdBy = $rootScope.user;
-                $scope.replies.unshift(reply);
+    $scope.$on('onAfterCreateReply', function(e, reply){
+        if(reply){
+            reply.createdBy = $rootScope.user;
+            $scope.replies.unshift(reply);
+        }
+    });
+
+    $scope.saveNewPost = function(){
+        console.log('saving');
+
+        var d = transformRequest($scope.formData);
+        $http({
+            method: 'POST',
+            url: '/api/discussions/' + $scope.course._id,
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
-        });
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    $scope.$emit('onAfterCreateNewTopic', data.post);
+                    $scope.topics.unshift(data.post);
+                    $timeout(function(){$scope.$apply()});
 
-        $scope.saveNewPost = function(){
-            console.log('saving');
-
-            var d = transformRequest($scope.formData);
-            $http({
-                method: 'POST',
-                url: '/api/discussions/' + $scope.course._id,
-                data: d,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('onAfterCreateNewTopic', data.post);
-                        $scope.topics.unshift(data.post);
-                        $timeout(function(){$scope.$apply()});
-
-                        $('#addNewTopicModal').modal('hide');
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                    $('#addNewTopicModal').modal('hide');
+                } else {
+                    if( data.result != null && !data.result){
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
                     }
-                }) ;
-        };
-
-        $scope.saveEditPost = function(){
-            console.log('saving edit post');
-
-            var d = transformRequest($scope.currentTopic);
-            $http({
-                method: 'PUT',
-                url: '/api/discussion/' + $scope.currentTopic._id,
-                data: d,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('onAfterEditTopic', data.post);
+            }) ;
+    };
 
-                        $('#editTopicModal').modal('hide');
+    $scope.saveEditPost = function(){
+        console.log('saving edit post');
 
-                        var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
-                        $scope.topics[i].discussion = data.post;
-                        $timeout(function(){$scope.$apply()});
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+        var d = transformRequest($scope.currentTopic);
+        $http({
+            method: 'PUT',
+            url: '/api/discussion/' + $scope.currentTopic._id,
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    $scope.$emit('onAfterEditTopic', data.post);
+
+                    $('#editTopicModal').modal('hide');
+
+                    var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
+                    $scope.topics[i].discussion = data.post;
+                    $timeout(function(){$scope.$apply()});
+                } else {
+                    if( data.result != null && !data.result){
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
                     }
-                }) ;
-        };
+                }
+            }) ;
+    };
 
-        $scope.editReply = function(re){
-            $scope.currentEditPost = re;
-            $scope.$broadcast('onEditReplyClicked', re);
-        };
+    $scope.editReply = function(re){
+        $scope.currentEditPost = re;
+        $scope.$broadcast('onEditReplyClicked', re);
+    };
 
-        $scope.deletePost = function(postId){
+    $scope.deletePost = function(postId){
+        $http({
+            method: 'DELETE',
+            url: '/api/discussion/' + postId,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    $scope.$emit('onAfterDeletePost', postId);
+
+                } else {
+                    if( data.result != null && !data.result){
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
+                    }
+                }
+            }) ;
+    };
+
+    $scope.deleteTopic = function(postId){
+        var r = confirm("Are you sure you want to delete this topic?");
+
+        if (r == true) {
             $http({
                 method: 'DELETE',
-                url: '/api/discussion/' + postId,
+                url: '/api/discussions/' + $scope.course._id +'/topic/' + postId,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
@@ -556,7 +580,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 .success(function(data) {
                     console.log(data);
                     if(data.result) {
-                        $scope.$emit('onAfterDeletePost', postId);
+                        $scope.$emit('onAfterDeleteTopic', postId);
 
                     } else {
                         if( data.result != null && !data.result){
@@ -565,141 +589,119 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         }
                     }
                 }) ;
-        };
+        }
+    };
 
-        $scope.deleteTopic = function(postId){
-            var r = confirm("Are you sure you want to delete this topic?");
+    $scope.$on('$routeUpdate', function(){
+        $scope.initiateTopic();
+    });
 
-            if (r == true) {
-                $http({
-                    method: 'DELETE',
-                    url: '/api/discussions/' + $scope.course._id +'/topic/' + postId,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    }
-                })
-                    .success(function(data) {
-                        console.log(data);
-                        if(data.result) {
-                            $scope.$emit('onAfterDeleteTopic', postId);
+    $scope.$on('onAfterEditReply', function(e, f){
+        var i = _.findIndex($scope.replies, { '_id' : f._id});
+        $scope.replies[i].content = f.content;
+        $timeout(function(){
+            $scope.$apply();
+        });
+    });
 
-                        } else {
-                            if( data.result != null && !data.result){
-                                $scope.errorName = data.errors;
-                                console.log(data.errors);
-                            }
-                        }
-                    }) ;
-            }
-        };
+    $scope.$on('onAfterDeletePost', function(e, postId){
+        var i = _.findIndex($scope.replies, { '_id' : postId});
+        $scope.replies[i].content = '[DELETED]';
+        $timeout(function(){
+            $scope.$apply();
+        });
+    });
 
-        $scope.$on('$routeUpdate', function(){
+    $scope.$on('onAfterDeleteTopic', function(e, postId){
+        var i = _.findIndex($scope.topics, { discussion: { '_id' : postId}});
+        //$scope.topics[i].isDeleted = true;
+        if(i >= 0) {
+            $scope.topics.splice(i, 1);
+            $scope.currentTopic = false;
+            $scope.replies = [];
+            $scope.pid = false;
+            $location.search('pid', '');
             $scope.initiateTopic();
-        });
 
-        $scope.$on('onAfterEditReply', function(e, f){
-            var i = _.findIndex($scope.replies, { '_id' : f._id});
-            $scope.replies[i].content = f.content;
-            $timeout(function(){
+            $timeout(function () {
                 $scope.$apply();
             });
-        });
+        }
+    });
 
-        $scope.$on('onAfterDeletePost', function(e, postId){
-            var i = _.findIndex($scope.replies, { '_id' : postId});
-            $scope.replies[i].content = '[DELETED]';
-            $timeout(function(){
-                $scope.$apply();
+    $scope.manageActionBar = function(){
+        if($scope.$parent.currentTab != 'discussion')
+            return;
+
+        if($scope.pid){
+            ActionBarService.extraActionsMenu = [];
+
+            ActionBarService.extraActionsMenu.unshift({
+                separator: true
             });
-        });
 
-        $scope.$on('onAfterDeleteTopic', function(e, postId){
-            var i = _.findIndex($scope.topics, { discussion: { '_id' : postId}});
-            //$scope.topics[i].isDeleted = true;
-            if(i >= 0) {
-                $scope.topics.splice(i, 1);
-                $scope.currentTopic = false;
-                $scope.replies = [];
-                $scope.pid = false;
-                $location.search('pid', '');
-                $scope.initiateTopic();
+            ActionBarService.extraActionsMenu.push(
+                {
+                    'html':
+                    '<a style="cursor: pointer;"' +
+                    ' data-toggle="modal" data-target="#addNewReplyModal"' +
+                    ' title="Reply">' +
+                    '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>'
+                }
+            );
+        }
+        else if(!$scope.pid){
+            $scope.currentTopic = {};
+            ActionBarService.extraActionsMenu = [];
+        }
+    };
 
-                $timeout(function () {
-                    $scope.$apply();
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.$watch('currentTopic', function(oldVal, newVal){
+            if($scope.currentTopic && $scope.currentTopic.createdBy &&
+                $scope.currentTopic.createdBy._id == $rootScope.user._id) {
+
+                ActionBarService.extraActionsMenu.push({
+                    'html':
+                    '<a style="cursor: pointer;"' +
+                    ' data-toggle="modal" data-target="#editTopicModal"' +
+                    ' title="Edit">' +
+                    '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                });
+
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deleteTopic,
+                    clickParams: $scope.currentTopic._id,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE THIS TOPIC AND ITS REPLIES'
                 });
             }
         });
+    });
 
-        $scope.manageActionBar = function(){
-            if($scope.pid){
-                ActionBarService.extraActionsMenu = [];
+    $scope.getReplies = function(postId){
+        var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
+        if($scope.topics[i]){
+            $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
 
-                ActionBarService.extraActionsMenu.unshift({
-                    separator: true
-                });
+            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
 
-                ActionBarService.extraActionsMenu.push(
-                    {
-                        'html':
-                        '<a style="cursor: pointer;"' +
-                        ' data-toggle="modal" data-target="#addNewReplyModal"' +
-                        ' title="Reply">' +
-                        '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>'
-                    }
-                );
-            }
-            else if(!$scope.pid){
-                $scope.currentTopic = {};
-                ActionBarService.extraActionsMenu = [];
-            }
-        };
+            $scope.currentReplyingTo = $scope.currentTopic._id;
 
-        $scope.$on('onAfterInitUser', function(event, user){
-            $scope.$watch('currentTopic', function(oldVal, newVal){
-                if($scope.currentTopic && $scope.currentTopic.createdBy &&
-                    $scope.currentTopic.createdBy._id == $rootScope.user._id) {
-
-                    ActionBarService.extraActionsMenu.push({
-                        'html':
-                        '<a style="cursor: pointer;"' +
-                        ' data-toggle="modal" data-target="#editTopicModal"' +
-                        ' title="Edit">' +
-                        '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
-                    });
-
-                    ActionBarService.extraActionsMenu.push({
-                        clickAction: $scope.deleteTopic,
-                        clickParams: $scope.currentTopic._id,
-                        title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
-                        aTitle: 'DELETE THIS TOPIC AND ITS REPLIES'
-                    });
+            $http.get('/api/discussion/' + postId + '/posts').success(function(res){
+                if(res.result){
+                    $scope.replies = res.posts;
                 }
             });
-        });
-
-        $scope.getReplies = function(postId){
-            var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
-            if($scope.topics[i]){
-                $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
-                $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
-
-                $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
-
-                $scope.currentReplyingTo = $scope.currentTopic._id;
-
-                $http.get('/api/discussion/' + postId + '/posts').success(function(res){
-                    if(res.result){
-                        $scope.replies = res.posts;
-                    }
-                });
-            }
-        };
-
-        $scope.cancel = function(){
-            $scope.currentTopic = $scope.originalCurrentTopic;
         }
+    };
 
-    });;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
+    $scope.cancel = function(){
+        $scope.currentTopic = $scope.originalCurrentTopic;
+    };
+
+});;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];
@@ -963,6 +965,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
 
         $scope.manageActionBar = function(){
+            if($scope.$parent.currentTab != 'links')
+                return;
+
             if($scope.pid){
                 ActionBarService.extraActionsMenu = [];
                 ActionBarService.extraActionsMenu.unshift({
@@ -1375,7 +1380,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         $timeout(function(){$scope.$apply()});
                     } else {
                         if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
+                            $scope.errors = data.errors;
                             console.log(data.errors);
                         }
                     }
@@ -1392,13 +1397,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         function (newValue) {
             $scope.extraActionsMenu = ActionBarService.extraActionsMenu;
         });
-
-   /* $scope.deletePost = function(s){
-        alert('asdfasdf');
-    }*/
 });;app.service('ActionBarService', function() {
     this.extraActionsMenu = [];
-});;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+});;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout, ActionBarService) {
     $scope.course = null;
     $scope.user = null;
     $scope.treeNode = null;
@@ -1407,6 +1408,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.courseId = $routeParams.courseId;
     $scope.nodeId = $routeParams.nodeId;
     $scope.isOwner = false;
+    $scope.isNodeOwner = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
@@ -1419,6 +1421,49 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         'links':'Links'
     };
 
+    $scope.deleteNode = function(id){
+        var msg = 'Are you sure you want to delete this content node?';
+
+        if (confirm(msg)) {
+            $http({
+                method: 'DELETE',
+                url: '/api/treeNodes/' + id,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function(res) {
+                    console.log(res);
+                    if(res.result){
+                        //todo: go to map view
+                        console.log("node deleted");
+                    } else {
+                        if( data.result != null && !data.result){
+                            $scope.errors = data.errors;
+                            console.log(data.errors);
+                        }
+                    }
+                }) ;
+        }
+    };
+
+    $scope.manageActionBar = function(){
+        if($scope.currentTab == 'preview' && $scope.treeNode) {
+            if (
+                $scope.treeNode.createdBy == $rootScope.user._id) {
+
+                ActionBarService.extraActionsMenu = [];
+
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deleteNode,
+                    clickParams: $scope.treeNode._id,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE THIS NODE AND ITS CONTENTS'
+                });
+            }
+        }
+    };
+
     $scope.changeTab = function(){
         var defaultPath = "preview";
         var q = $location.search();
@@ -1428,13 +1473,34 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
 
         $scope.currentTab = defaultPath;
-        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+        $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
+
+        $scope.manageActionBar();
+    };
+
+    $scope.currentNodeAction = {};
+    $scope.setEditMode = function(){
+        $scope.currentNodeAction.mode = "edit";
+        $scope.currentNodeAction.type = "contentNode";
+        $scope.currentNodeAction.typeText = "Content Node";
+
+        $scope.nodeModaltitle = "Edit " + $scope.currentNodeAction.typeText;
+        //$scope.nodeModaltitle += " " + $scope.treeNode.name;
+
+        $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
     };
 
     $scope.initNode = function(){
         $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
             if(res.result) {
                 $scope.treeNode = res.treeNode;
+
+                if ($scope.treeNode.createdBy == $rootScope.user._id) {
+                    $scope.isNodeOwner = true;
+                    $scope.setEditMode();
+                }
+
+                $scope.manageActionBar();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
@@ -1484,35 +1550,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     });
 
-    $scope.$on('onAfterEditCourse',function(events, course){
-        //$scope.course = course;
-        $scope.init(true);
-    });
-
-    $scope.enroll = function(){
-        var url = '/api/course/' + $scope.course._id + '/enroll';
-        $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result)
-                $scope.enrolled = true;
-        }).finally(function(){
-            $scope.loading = false;
-        });
-    };
-
-    $scope.leave = function(){
-        var url = '/api/course/' + $scope.course._id + '/leave';
-        $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result){
-                // success leaving
-                $scope.enrolled = false;
-            }
-        }).finally(function(){
-            $scope.loading = false;
-        });
-    };
-
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();
     });
@@ -1526,15 +1563,20 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.init = function(){
     };
 
-    $scope.$on('onAfterSetMode', function(event, course){
+    $scope.$on('onAfterSetMode', function(event, course, treeNode){
         $scope.formData.courseId = course._id;
 
         if($scope.currentNodeAction.parent)
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
 
         $scope.currentEditNode = $scope.currentNodeAction.parent;
-
         $scope.formData.type = $scope.currentNodeAction.type;
+
+        if(treeNode){
+            $scope.formData.name = treeNode.name;
+            $scope.formData.nodeId = treeNode._id;
+            $scope.currentEditNode = treeNode;
+        }
     });
 
     $scope.parseNgFile = function(ngFile){
@@ -1547,6 +1589,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return ret;
     };
 
+    /**
+     * save add sub topic node
+     */
     $scope.saveNode = function(){
         var d = transformRequest($scope.formData);
         $http({
@@ -1580,6 +1625,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     };
 
+    /**
+     * save edit sub topic node
+     * and saving edit of content node
+     */
     $scope.saveEditNode = function(){
         var updateValue = {
             name: $scope.currentEditNode.name
@@ -1600,6 +1649,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $rootScope.$broadcast('onAfterEditNode', data.treeNode);
 
                     $('#editSubTopicModal').modal('hide');
+                    $('#editContentNodeModal').modal('hide');
                 } else {
                     if( !data.result){
                         $scope.errors = data.errors;
@@ -1609,7 +1659,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     };
 
+    /**
+     * save add content node
+     */
     $scope.saveContentNode = function(){
+        // use saveEditNode for editing the content node.
+        if($scope.currentNodeAction.mode == 'edit'){
+            $scope.saveEditNode();
+            return;
+        }
+
         var uploadParams = {
             url: '/api/treeNodes',
             fields: $scope.formData

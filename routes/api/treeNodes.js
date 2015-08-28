@@ -12,7 +12,7 @@ var router = express.Router();
 
 /**
  * POST
- * create course
+ * create node, and allow upload
  */
 router.post('/treeNodes', multipartyMiddleware, function(req, res, next){
     // check for user logins
