@@ -16,7 +16,8 @@ courseDiscussionSchema.add({
     isDeleted: Boolean,
 
     dateAdded: { type: Date },
-    dateUpdated: { type: Date }
+    dateUpdated: { type: Date },
+    dateDeleted: { type: Date }
 });
 
 courseDiscussionSchema.pre('save', function(next){

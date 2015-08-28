@@ -134,5 +134,70 @@ router.put('/treeNodes/:nodeId/positionFromRoot', function(req, res, next) {
     );
 });
 
+/**
+ * update node name value
+ */
+router.put('/treeNodes/:nodeId', function(req, res, next) {
+    // check for user rights
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    // todo: check for enrollement / ownership
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var tr = new Tree();
+
+    tr.updateNode(
+        function(err){
+            res.status(500).json({result: false, errors: err.message});
+        },
+        {
+            _id: mongoose.Types.ObjectId(req.params.nodeId)
+        }
+        ,
+        req.body,
+        function(tn){
+            res.status(200).json({result:((tn)?true:false), treeNode: tn});
+        }
+    );
+});
+
+/**
+ * delete a node (setting isDeleted to true)
+ */
+router.delete('/treeNodes/:nodeId', function(req, res, next) {
+    // check for user rights
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    // todo: check for enrollement / ownership
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var tr = new Tree();
+
+    tr.deleteNode(
+        function (err) {
+            res.status(500).json({result: false, errors: [err.message]});
+        },
+        {
+            _id: mongoose.Types.ObjectId(req.params.nodeId)
+        }
+        ,
+        function (ret) {
+            res.status(200).json({result: ret});
+        }
+    );
+});
+
 
 module.exports = router;
