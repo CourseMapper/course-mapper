@@ -143,7 +143,8 @@ courseDiscussion.prototype.deletePost = function(error, params, success){
         },
         {
             $set: {
-                isDeleted: true
+                isDeleted: true,
+                dateDeleted: new Date()
             }
         },
         function(err, doc){
@@ -157,7 +158,8 @@ courseDiscussion.prototype.deletePost = function(error, params, success){
                         },
                         {
                             $set: {
-                                isDeleted: true
+                                isDeleted: true,
+                                dateDeleted: new Date()
                             }
                         },
                     function(){

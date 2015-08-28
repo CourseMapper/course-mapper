@@ -26,7 +26,8 @@ postSchema.add({
     totalViews: Number,
 
     dateAdded: { type: Date },
-    dateUpdated: { type: Date }
+    dateUpdated: { type: Date },
+    dateDeleted: { type: Date }
 });
 
 postSchema.methods.setSlug = function(s) {

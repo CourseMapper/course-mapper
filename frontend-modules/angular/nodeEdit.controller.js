@@ -3,6 +3,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
     $scope.formData = {};
     $scope.filespdf = [];
     $scope.filesvideo = [];
+    $scope.currentEditNode = false;
 
     $scope.init = function(){
     };
@@ -13,14 +14,13 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
         if($scope.currentNodeAction.parent)
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
 
+        $scope.currentEditNode = $scope.currentNodeAction.parent;
+
         $scope.formData.type = $scope.currentNodeAction.type;
     });
 
     $scope.parseNgFile = function(ngFile){
         var t = ngFile.type.split('/')[1];
-        /*if(t != 'pdf'){
-         t = 'video';
-         }*/
 
         var ret = {
             type: t
@@ -53,6 +53,35 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     // cleaining up formData
                     $scope.formData.name = "";
 
+                } else {
+                    if( !data.result){
+                        $scope.errors = data.errors;
+                        console.log(data.errors);
+                    }
+                }
+            });
+    };
+
+    $scope.saveEditNode = function(){
+        var updateValue = {
+            name: $scope.currentEditNode.name
+        };
+
+        var d = transformRequest(updateValue);
+        $http({
+            method: 'PUT',
+            url: '/api/treeNodes/' + $scope.currentEditNode._id,
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function(data) {
+                console.log(data);
+                if(data.result) {
+                    $rootScope.$broadcast('onAfterEditNode', data.treeNode);
+
+                    $('#editSubTopicModal').modal('hide');
                 } else {
                     if( !data.result){
                         $scope.errors = data.errors;

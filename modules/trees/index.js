@@ -143,8 +143,13 @@ catalog.prototype.getTreeNode = function(error, params, success){
         if (err){
             error(err);
         }
-        else
+        else {
+            if(doc.isDeleted) {
+                doc.name = "[DELETED]";
+            }
+
             success(doc);
+        }
     });
 };
 
@@ -183,6 +188,11 @@ catalog.prototype.getTreeNodes = function(error, params, success){
             for(var i in cats){
                 // get the root
                 var doc = cats[i];
+
+                if(doc.isDeleted){
+                    doc.name = "[DELETED]";
+                }
+
                 if(!doc[parent]){
                     again(doc);
                     tree.push(doc);
@@ -216,6 +226,59 @@ catalog.prototype.updateNodePosition = function(error, paramsWhere, paramsUpdate
                 // success saved the cat
                     success(tn);
             });
+    });
+};
+
+catalog.prototype.updateNode = function(error, paramsWhere, paramsUpdate, success){
+    TreeNodes.findById(paramsWhere).exec(function(err, tn){
+        if(err) error(err);
+        else{
+            if(!tn)
+                error(new Error("cannot find node"));
+            else {
+                if (paramsUpdate['name']) {
+                    tn.name = paramsUpdate['name'];
+                }
+
+                tn.save(function (err) {
+                    if (err) {
+                        debug('failed update node content');
+                        error(err);
+                    }
+                    else {
+                        // success saved the cat
+                        success(tn);
+                    }
+                });
+            }
+        }
+    });
+};
+
+catalog.prototype.deleteNode = function(error, params, success){
+    TreeNodes.findById(params).exec(function(err, tn){
+        if(err) error(err);
+        else {
+            if(!tn)
+                error(new Error("cannot find node"));
+
+            else{
+                tn.isDeleted = true;
+                tn.dateDeleted = new Date();
+                tn.save(
+                    function(err){
+                        if (err) {
+                            debug('failed update node position');
+                            error(err);
+                        }
+                        else {
+                            success(true);
+                        }
+                    }
+                );
+            }
+        }
+
     });
 };
 
