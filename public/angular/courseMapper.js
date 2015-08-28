@@ -1818,6 +1818,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.$watch("filtersRaw",function(newValue,oldValue){
       $scope.filters = getCurrentFilters($scope.filtersRaw);
+      console.log("FILTERSCOPE CHANGED");
+      console.log($scope.filters);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
       updateScope($scope.commentGetUrl);
     });
