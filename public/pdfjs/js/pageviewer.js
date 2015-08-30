@@ -64,10 +64,15 @@ PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
   });
 });
 
-function changeSlide(newslideNumber){
-  PAGE_TO_VIEW = newslideNumber;
-  pdfPageView.setPdfPage(PAGE_TO_VIEW);
-  pdfPageView.draw();
+function changeSlide(newSlideNumber){
+  PAGE_TO_VIEW = newSlideNumber;
+
+  PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
+    pdfDocument.getPage(PAGE_TO_VIEW).then(function (pdfPage) {
+      pdfPageView.setPdfPage(pdfPage);
+      pdfPageView.draw();
+    });
+  });
 }
 
 $( window ).resize(function() {
