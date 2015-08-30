@@ -16,12 +16,18 @@
 
 #viewerContainer{
 }
-
+.notSelectable{
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+}
 .iconSlideNav{
     font-size: 15pt;
     vertical-align: middle;
     display: inline-block;
-    color: #fff
+    color: #fff;
+    cursor: pointer;
 }
 
 #slideNavText{
