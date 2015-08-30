@@ -12,6 +12,7 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
     function updateScope(url){
       $http.get(url).success(function (data) {
         console.log('COMMENTS UPDATED');
+        console.log("url: " + url);
 
         $scope.comments = data.comments;
 
@@ -40,7 +41,13 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
           else
           {
             temp = filterStrings[i].split(':');
-            finalFilters = finalFilters + '"' + temp[0] + '":{"$regex": "' + temp[1] + '","$options":"ix"}';
+            if(typeof temp[1] != 'undefined') {
+              if(temp[1].charAt(0) == "#")
+                finalFilters = finalFilters + '"' + temp[0] + '":{"regex_hash": "' + temp[1].substring(1) + '"}';
+              else {
+                finalFilters = finalFilters + '"' + temp[0] + '":{"regex": "' + temp[1].substring(1) + '"}';
+              }
+            }
           }
 
 
@@ -50,7 +57,7 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
         finalFilters = finalFilters + '}';
 
       }
-
+      console.log("Final Filters: " + finalFilters);
       return finalFilters;
     }
 
@@ -68,6 +75,7 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
     $scope.$watch("filtersRaw",function(newValue,oldValue){
       $scope.filters = getCurrentFilters($scope.filtersRaw);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      console.log("commentGetUrl: " + $scope.commentGetUrl);
       updateScope($scope.commentGetUrl);
     });
 

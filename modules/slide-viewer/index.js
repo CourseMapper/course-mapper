@@ -86,7 +86,7 @@ Comment.prototype.checkTagName = function(tagName,tagNameList){
 
 Comment.prototype.getAllTagNames = function(callback){
     var annZone = new AnnZones();
-    annZone.getAllAnnotationZoneNames(callback);
+    annZone.getAllAnnotationZones(callback);
 }
 
 
@@ -191,12 +191,29 @@ Comment.prototype.getAllComments = function(callback) {
 
 Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) {
 
-    var orderString= ""+order.type;;
+    var orderString= ""+order.type;
     if(order.ascending == "false")
     {
       //console.log("inside if");
       orderString = "-"+orderString;
     }
+
+
+
+    if(typeof filters["renderedText"] != 'undefined') {
+      if(typeof filters["renderedText"]["regex_hash"] != 'undefined'){
+        filters["renderedText"] = new RegExp('#' + filters["renderedText"]["regex_hash"],'i');
+        console.log("found tag request");
+      }
+    }
+
+    if(typeof filters["renderedText"] != 'undefined') {
+      if(typeof filters["renderedText"]["regex"] != 'undefined'){
+        filters["renderedText"] = new RegExp(filters["renderedText"]["regex"],'i');
+        console.log("found tag request");
+      }
+    }
+
 
     AnnotationsPDF.find(filters, function (err, data) {
       if(err) {
