@@ -14,9 +14,37 @@
   position: absolute;
 }
 
-
 #viewerContainer{
 }
+
+.iconSlideNav{
+    font-size: 15pt;
+    vertical-align: middle;
+    display: inline-block;
+    color: #fff
+}
+
+#slideNavText{
+    font-size: 12pt;
+    vertical-align: middle;
+    display: inline-block;
+    color: #fff
+}
+
+#slideNavigationProgress{
+  width: 100%;
+}
+
+#slideNavigation{
+  background-color: black;
+  margin-right: 0px;
+  margin-left: 0px;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  width: 100%;
+}
+
+
 
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
