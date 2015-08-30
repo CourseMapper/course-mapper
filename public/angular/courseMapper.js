@@ -1736,6 +1736,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
       console.log("GOT CALLED");
       if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
         $scope.currentPageNumber = $scope.currentPageNumber + value;
+        changeSlide($scope.currentPageNumber);
     }
 });
 ;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {

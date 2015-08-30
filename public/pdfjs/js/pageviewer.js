@@ -64,6 +64,12 @@ PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
   });
 });
 
+function changeSlide(newslideNumber){
+  PAGE_TO_VIEW = newslideNumber;
+  pdfPageView.setPdfPage(PAGE_TO_VIEW);
+  pdfPageView.draw();
+}
+
 $( window ).resize(function() {
   SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
   pdfPageView.update(SCALE,0);

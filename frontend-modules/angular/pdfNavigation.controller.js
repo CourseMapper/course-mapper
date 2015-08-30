@@ -6,5 +6,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       console.log("GOT CALLED");
       if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
         $scope.currentPageNumber = $scope.currentPageNumber + value;
+        changeSlide($scope.currentPageNumber);
     }
 });
