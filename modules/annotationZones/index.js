@@ -46,6 +46,8 @@ function submitSingleTag(tagList, err, restList, mainCallback, done) {
     color: tagList[3]
   });
 
+  console.log("Added Tag with name: " + tagList[0]);
+
   // save it to db
   annotationZonePDF.save(function (err) {
       if (err) {
@@ -75,6 +77,8 @@ function submitSingleTagLast(tagList, mainCallback) {
     color: tagList[3]
   });
 
+  console.log("Added Tag with name: " + tagList[0]);
+
   // save it to db
   annotationZonePDF.save(function (err) {
       if (err) {
@@ -95,8 +99,6 @@ var permArray;
 
 AnnZones.prototype.submitTagList = function(err,tagList, callback){
   if(tagList.length!=0) {
-    console.log("TAGLIST FOLLOWING");
-    console.log(tagList);
     if(tagList.length>1){
       //console.log(tagList[0]);
       var restList = tagList.slice(1,(tagList.length));

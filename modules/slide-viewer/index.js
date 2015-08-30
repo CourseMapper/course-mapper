@@ -97,28 +97,31 @@ Comment.prototype.convertRawText = function(rawText,callback){
   var check = this.checkTagName;
 
   var comm = new Comment();
-  comm.getAllTagNames(function(data){
+  comm.getAllTagNames(function(success,data){
+    //TODO: test for success
+    var tagNameList = [];
 
-  var tagNameList = [];
+    for(var i = 0; i < data.length; i++){
+      tagNameList[i] = data[i].annotationZoneName;
+    }
+    console.log(data);
 
-  for(var i = 0; i < data.length; i++){
-    tagNameList[i] = data[i].annotationZoneName;
-  }
 
-  var renderedText = rawText.replace(/#(\w+)/g, function(x){
-      var comm = new Comment();
-      //console.log(comm.checkTagName(x,tagNameList));
-      if(comm.checkTagName(x,tagNameList)){
-        var ret = "<label class='blueText'> " + x + " </label>";
-        return ret;
-      }
-      else {
-        return x;
-      }
+    var renderedText = rawText.replace(/#(\w+)/g, function(x){
+        var comm = new Comment();
+        console.log("Found tag with name: "+x);
+        if(comm.checkTagName(x,tagNameList)){
+          console.log("Checked tag with name: "+x);
+          var ret = "<label class='blueText'> " + x + " </label>";
+          return ret;
+        }
+        else {
+          return x;
+        }
 
-  });
+    });
 
-  callback(renderedText);
+    callback(renderedText);
   });
   /*var tagArray = [];
   var arrayIndex = 0;
