@@ -1728,7 +1728,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     }
 });
-;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {
+;;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {
 
 
     $http.get('/slide-viewer/disAnnZones').success(function (data) {
