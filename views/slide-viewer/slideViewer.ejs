@@ -53,7 +53,7 @@
                           </div>
                         <% } %>-->
                         </div>
-                        <form action='/slide-viewer/submitComment' method="POST">
+                        <form action='/slide-viewer/submitComment' method="POST" onsubmit="return commentOnSubmit()">
                           <fieldset>
                             <div class="control-group">
                                <label for="rawText">Commenting as <%=currentUser.username%></label>
@@ -68,12 +68,25 @@
                              </div>
                              <div class="control-group">
                                <div class="controls">
-                                 <input class="form-control" id="tagNames" name="tagNames" placeholder="tagNames">
-                                 <input class="form-control" id="tagRelPos" name="tagRelPos" placeholder="tagRelPos">
-                                 <input class="form-control" id="tagRelCoord" name="tagRelCoord" placeholder="tagRelCoord">
-                                 <input class="form-control" id="tagColor" name="tagColor" placeholder="tagColor">
+                                 <input class="form-control" id="tagNames" name="tagNames" placeholder="tagNames" type="hidden">
+                                 <input class="form-control" id="tagRelPos" name="tagRelPos" placeholder="tagRelPos" type="hidden">
+                                 <input class="form-control" id="tagRelCoord" name="tagRelCoord" placeholder="tagRelCoord" type="hidden">
+                                 <input class="form-control" id="tagColor" name="tagColor" placeholder="tagColor" type="hidden">
 
                                </div>
+                             </div>
+                             <!--Used as Template for annotation zone items -->
+                             <div id="annotationZoneSubmitTemplate" style="visibility: hidden;">
+                               <input id="annotationZoneSubmitName" placeholder="Enter annotation zone name">
+                               <select id="annotationZoneSubmitColor">
+                                 <option>Red</option>
+                                 <option>Blue</option>
+                                 <option>Green</option>
+                               </select>
+                               <button class="btn btn-default" onclick="removeAnnotationZone(this);">Remove</button>
+                             </div>
+                             <!-- Will be filled when annotation zones are created -->
+                             <div id="annotationZoneSubmitList">
                              </div>
 
                              <div class="control-group">
@@ -83,8 +96,8 @@
                              </div>
                            </fieldset>
                         </form>
-                        <button class="btn btn-default" onclick="addAnnotationZoneData('test',1,2,3,4,'Red');">CREATE TEST ANNOTATION ZONE</button>
-                        
+                        <!--<button class="btn btn-default" onclick="addAnnotationZoneData('test',1,2,3,4,'Red');">CREATE TEST ANNOTATION ZONE</button>-->
+
                         <div class="controls">
                           <!--<button class="btn btn-default" onclick="displayComments();">Show comments</button>
                           <div >

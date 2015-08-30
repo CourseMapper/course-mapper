@@ -19,6 +19,7 @@ var annotationZonesAreLoaded = false;
 
 var toDrawAnnotationZoneData = [];
 
+
 /*$(document).ready(function(){
   console.log("Init");
   pdfIsLoaded = false;
@@ -53,8 +54,59 @@ function drawAnnZonesWhenPDFAndDBDone() {
   }
 };
 
+function removeAnnotationZone(childElement) {
+  var element = $(childElement).parent();
+  var rectId = element.find("#rectangleId").val();
+  var rectElement = $("#"+rectId);
+  rectElement.remove();
+  element.remove();
+}
+
+function addAnnotationZoneElement(element) {
+
+  var htmlTemplate = $("#annotationZoneSubmitTemplate").html();
+  var elementField = "<input id='rectangleId' type='hidden' value='" + element.attr('id') + "'>";
+  annotationHtmlString = "<div>" + elementField + htmlTemplate + "</div>";
+
+
+  $("#annotationZoneSubmitList").append(annotationHtmlString);
+
+};
+
+function commentOnSubmit() {
+  console.log("IT WOKRS");
+
+  annotationList = $("#annotationZoneSubmitList div");
+
+  for(var i = 0; i < annotationList.length; i++) {
+    console.log("added tag");
+    //TODO: Adapt to next rectangle iteration
+    var elementId = $("#annotationZoneSubmitList #rectangleId").eq(i).val();
+    var element = $("#"+elementId);
+    var relPosX = element.position().left/rootDivDom.width();
+  	var relPosY = element.position().top/ rootDivDom.height();
+  	var relWidth = element.width()/rootDivDom.width();
+  	var relHeight = element.height()/rootDivDom.height();
+
+    var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
+    var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
+
+    if(name == "") {
+      console.log("Error encountered while extracting annotation zone during submission.");
+      return false;
+    }
+    else {
+      addAnnotationZoneData("#" + name,relPosX,relPosY,relWidth,relHeight,color);
+    }
+  }
+
+
+  //TODO: Check integrity of the input
+  console.log("got here");
+  return true;
+};
+
 function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
-  console.log("GOT CALLED");
   var oldText;
   oldText = $("#tagNames").val();
   if(oldText.length != 0){

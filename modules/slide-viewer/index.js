@@ -25,7 +25,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
       // save it to db
       annotationsPDF.save(function (err) {
           if (err) {
-              console.log('annotation submitting error');
+              console.log('annotation submitting error1');
               // call error callback
               console.log(err);
               //errorCallback(err);
@@ -48,11 +48,12 @@ Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,ta
   var tagColorList = tagColor.split(",");
 
 
-  if(tagNameList.length == 0){
+  if(tagNames.length == 0){
     callback();
   }
   else if((tagNameList.length == tagRelPosList.length) && (tagRelCoordList.length == tagRelPosList.length) && (tagRelCoordList.length == tagColorList.length)) {
     var tagList = [];
+    console.log(tagNameList.length);
     for(var n=0; n<tagNameList.length; n++) {
       tagList[n] = [];
       tagList[n][0] = tagNameList[n];

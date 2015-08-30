@@ -19,7 +19,7 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
   // save it to db
   annotationZonePDF.save(function (err) {
       if (err) {
-          console.log('annotation submitting error');
+          console.log('annotation submitting error2');
           // call error callback
           console.log(err);
           //errorCallback(err);
@@ -49,7 +49,7 @@ function submitSingleTag(tagList, err, restList, mainCallback, done) {
   // save it to db
   annotationZonePDF.save(function (err) {
       if (err) {
-          console.log('annotation submitting error');
+          console.log('annotation submitting error3');
           // call error callback
           console.log(err);
           //errorCallback(err);
@@ -78,7 +78,7 @@ function submitSingleTagLast(tagList, mainCallback) {
   // save it to db
   annotationZonePDF.save(function (err) {
       if (err) {
-          console.log('annotation submitting error');
+          console.log('annotation submitting error4');
           // call error callback
           console.log(err);
           //errorCallback(err);
@@ -94,13 +94,20 @@ function submitSingleTagLast(tagList, mainCallback) {
 var permArray;
 
 AnnZones.prototype.submitTagList = function(err,tagList, callback){
-  if(tagList.length>1){
-    //console.log(tagList[0]);
-    var restList = tagList.slice(1,(tagList.length));
-    submitSingleTag(tagList[0],err, restList, callback, this.submitTagList);
+  if(tagList.length!=0) {
+    console.log("TAGLIST FOLLOWING");
+    console.log(tagList);
+    if(tagList.length>1){
+      //console.log(tagList[0]);
+      var restList = tagList.slice(1,(tagList.length));
+      submitSingleTag(tagList[0],err, restList, callback, this.submitTagList);
+    }
+    else {
+      submitSingleTagLast(tagList[0],callback);
+    }
   }
   else {
-    submitSingleTagLast(tagList[0],callback);
+    callback();
   }
 
 };

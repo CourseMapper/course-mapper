@@ -169,11 +169,7 @@ function mouseUp(e){
   drag = false;
 
 
-	var relLeft = element.position().left/rootDivDom.width();
-	var relTop = element.position().top/ rootDivDom.height();
-	var relWidth = element.width()/rootDivDom.width();
-	var relHeight = element.height()/rootDivDom.height();
-	 addAnnotationZoneData("examplename",relLeft,relTop,relWidth,relHeight,"Red")
+	addAnnotationZoneElement(element);
 }
 
 function mouseMove(e){
