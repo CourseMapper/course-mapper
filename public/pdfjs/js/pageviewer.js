@@ -41,6 +41,10 @@ var container = document.getElementById('viewerContainer');
 
 // Loading document.
 PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
+  $(document).ready(function(){
+    console.log("got here");
+    angular.element(document.querySelector('[ng-controller="PDFNavigationController"]')).scope().maxPageNumber = pdfDocument.numPages;
+  });
   // Document loaded, retrieving the page.
   return pdfDocument.getPage(PAGE_TO_VIEW).then(function (pdfPage) {
     // Creating the page view with default parameters.
@@ -65,6 +69,7 @@ PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
 });
 
 function changeSlide(newSlideNumber){
+
   PAGE_TO_VIEW = newSlideNumber;
 
   PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
