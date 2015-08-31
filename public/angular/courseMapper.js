@@ -472,11 +472,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.initiateTopic = function(){
         $scope.pid = $location.search().pid;
-        $scope.manageActionBar();
 
         if($scope.pid) {
             $scope.getReplies($scope.pid);
         }
+
+        $scope.manageActionBar();
     };
 
     $scope.$on('onAfterInitCourse', function(e, course){
@@ -615,6 +616,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.initiateTopic();
     });
 
+    $scope.$on('onAfterCreateNewTopic', function(e, f){
+        $scope.formData.title = "";
+        $scope.formData.content = "";
+    });
+
     $scope.$on('onAfterEditReply', function(e, f){
         var i = _.findIndex($scope.replies, { '_id' : f._id});
         $scope.replies[i].content = f.content;
@@ -655,7 +661,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if($scope.pid){
             ActionBarService.extraActionsMenu = [];
 
-            ActionBarService.extraActionsMenu.unshift({
+            ActionBarService.extraActionsMenu.push({
                 separator: true
             });
 
@@ -668,15 +674,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>'
                 }
             );
-        }
-        else if(!$scope.pid){
-            $scope.currentTopic = {};
-            ActionBarService.extraActionsMenu = [];
-        }
-    };
 
-    $scope.$on('onAfterInitUser', function(event, user){
-        $scope.$watch('currentTopic', function(oldVal, newVal){
             if($scope.currentTopic && $scope.currentTopic.createdBy &&
                 $scope.currentTopic.createdBy._id == $rootScope.user._id) {
 
@@ -694,6 +692,21 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
                     aTitle: 'DELETE THIS TOPIC AND ITS REPLIES'
                 });
+            }
+
+        }
+        else if(!$scope.pid){
+            $scope.currentTopic = {};
+            ActionBarService.extraActionsMenu = [];
+        }
+    };
+
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.$watch('currentTopic', function(oldVal, newVal){
+            if(oldVal !== newVal) {
+                if ($scope.currentTopic && $scope.currentTopic._id) {
+                    //$scope.manageActionBar();
+                }
             }
         });
     });
