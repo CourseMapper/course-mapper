@@ -19,12 +19,23 @@ var annotationZonesAreLoaded = false;
 
 var toDrawAnnotationZoneData = [];
 
+//var commentsFullyLoaded = false;
 
-function commentsLoaded() {
-  $("#commentList .annotationZoneReference").click(function(){
-    console.log("TEST:" + $(this));
-    switchRegexFilter("renderedText",$(this).html());
-  });
+
+function commentsLoaded(){
+  //if(commentsFullyLoaded)
+  //  return;
+  //commentsFullyLoaded = true;
+  if($("#commentList .annotationZoneReference").not('.hasOnClick').length != 0) {
+    console.log("ADDED CLICK FUNCTION");
+    console.log($("#commentList .annotationZoneReference").length);
+    $("#commentList .annotationZoneReference").not('.hasOnClick').click(function(){
+      console.log("TEST:");
+      switchRegexFilter("renderedText",$(this).html());
+    });
+    $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
+
+  }
 };
 
 

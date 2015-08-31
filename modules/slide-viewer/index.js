@@ -112,7 +112,7 @@ Comment.prototype.convertRawText = function(rawText,callback){
         console.log("Found tag with name: "+x);
         if(comm.checkTagName(x,tagNameList)){
           console.log("Checked tag with name: "+x);
-          var ret = "<label class='annotationZoneReference'> " + x + " </label>";
+          var ret = "<label class='annotationZoneReference'>" + x + "</label>";
           return ret;
         }
         else {
