@@ -51,8 +51,12 @@ catalog.prototype.saveResourceFile = function(filetype, file, contentNode, creat
         });
 
         Res.save(function(){
-            contentNode.resources.push(Res._id);
-            contentNode.save();
+            TreeNodes.update({_id: contentNode._id}, {
+                $addToSet:{
+                    resources:Res._id
+                }
+            },
+            function(){}); 
         });
     }
 };
