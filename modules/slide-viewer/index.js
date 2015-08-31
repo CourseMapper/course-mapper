@@ -25,7 +25,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
       // save it to db
       annotationsPDF.save(function (err) {
           if (err) {
-              console.log('annotation submitting error');
+              console.log('annotation submitting error1');
               // call error callback
               console.log(err);
               //errorCallback(err);
@@ -48,11 +48,12 @@ Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,ta
   var tagColorList = tagColor.split(",");
 
 
-  if(tagNameList.length == 0){
+  if(tagNames.length == 0){
     callback();
   }
   else if((tagNameList.length == tagRelPosList.length) && (tagRelCoordList.length == tagRelPosList.length) && (tagRelCoordList.length == tagColorList.length)) {
     var tagList = [];
+    console.log(tagNameList.length);
     for(var n=0; n<tagNameList.length; n++) {
       tagList[n] = [];
       tagList[n][0] = tagNameList[n];
@@ -96,28 +97,31 @@ Comment.prototype.convertRawText = function(rawText,callback){
   var check = this.checkTagName;
 
   var comm = new Comment();
-  comm.getAllTagNames(function(data){
+  comm.getAllTagNames(function(success,data){
+    //TODO: test for success
+    var tagNameList = [];
 
-  var tagNameList = [];
+    for(var i = 0; i < data.length; i++){
+      tagNameList[i] = data[i].annotationZoneName;
+    }
+    console.log(data);
 
-  for(var i = 0; i < data.length; i++){
-    tagNameList[i] = data[i].annotationZoneName;
-  }
 
-  var renderedText = rawText.replace(/#(\w+)/g, function(x){
-      var comm = new Comment();
-      //console.log(comm.checkTagName(x,tagNameList));
-      if(comm.checkTagName(x,tagNameList)){
-        var ret = "<label class='blueText'> " + x + " </label>";
-        return ret;
-      }
-      else {
-        return x;
-      }
+    var renderedText = rawText.replace(/#(\w+)/g, function(x){
+        var comm = new Comment();
+        console.log("Found tag with name: "+x);
+        if(comm.checkTagName(x,tagNameList)){
+          console.log("Checked tag with name: "+x);
+          var ret = "<label class='blueText'> " + x + " </label>";
+          return ret;
+        }
+        else {
+          return x;
+        }
 
-  });
+    });
 
-  callback(renderedText);
+    callback(renderedText);
   });
   /*var tagArray = [];
   var arrayIndex = 0;
