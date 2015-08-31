@@ -86,31 +86,31 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                 });
         });
 
-        this.init = function() {
+        $scope.init = function() {
             $scope.cuePoints = {
                 points: []
             };
             $scope.annotations = [];
             $scope.API = null;
 
-            console.log('Resource: ' + $scope.resource);
-
+            console.log('Loaded video: ID=' + $scope.videoId + ', SOURCE=' + $scope.videoSource);
             $scope.sources = [{
-                src: 'http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4',
-                //src: $scope.resource.link,
+                src: $scope.videoSource,
                 type: 'video/mp4'
             }];
 
             // get annotations
             var params = {
-                // video_id: $scope.resource._id
-                video_id: '123'
+                video_id: $scope.videoId
             };
-
             socket.emit('annotations:get', params);
         };
 
-        // Initialize controller
-        this.init();
+        $scope.$watch('videoSource', function(oldVal, newVal) {
+            if (oldVal != newVal) {
+                // Initialize controller
+                $scope.init();
+            }
+        });
     }
 ]);

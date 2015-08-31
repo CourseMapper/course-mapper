@@ -1,8 +1,9 @@
 videoAnnotationsModule.directive('vaWidget',
-    function () {
+    function() {
         return {
             scope: {
-                resource: '@'
+                videoSource: '@',
+                videoId: '@'
             },
             templateUrl: '/video-annotations/scripts/directives/va-widget/va-widget.html',
             controller: 'VaWidgetController'
