@@ -4,7 +4,7 @@
     <% include ../admin-lte/mainMenu %>
 
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
+    <div class="content-wrapper" ng-controller="PDFNavigationController">
 
         <section class="content-header">
             <ol class ="breadcrumb">
@@ -23,13 +23,20 @@
                   <div class="box-body with-border">
                     <h3 class="">Slides</h3>
                     <div class="pannel box box-primary slideWrapper">
-
-                      <div id="viewerContainer">
-                          <div id="viewer" class="pdfViewer"></div>
-                      </div>
-                      <div id="annotationZone"></div>
-
-
+                      <div id="viewerWrapper">
+                        <div id="viewerContainer">
+                            <div id="viewer" class="pdfViewer"></div>
+                        </div>
+                        <div id="annotationZone"></div>
+                        <div id="slideNavigationWrapper">
+                          <div id="slideNavigationProgress"></div>
+                          <div id="slideNavigation" class="row notSelectable" ng-cloak>
+                            <div class="col-md-4 text-center"></div>
+                            <div class="col-md-4 text-center"><div class="row"><span class="glyphicon glyphicon-triangle-left iconSlideNav" aria-hidden="true" ng-click="changePageNumber(-1)"></span> <span id="slideNavText" class="fsSlideNav">{{currentPageNumber}}/{{maxPageNumber}}</span><span class="glyphicon glyphicon-triangle-right iconSlideNav" aria-hidden="true" ng-click="changePageNumber(1)"></span></div></div>
+                            <div class="col-md-4 text-right"><span class="glyphicon glyphicon-fullscreen iconSlideNav" aria-hidden="true"></span></div>
+                          </div>
+                        </div>
+                    </div>
                     </div>
                   </div>
                 </div>
@@ -154,7 +161,7 @@
 
                             <div>
                             Comment List:
-                            <div ng-repeat="comment in comments" ng-cloak>
+                            <div id="commentList" ng-repeat="comment in comments" ng-cloak>
                               <div>
                                   <label class='authorLabel' onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
 
