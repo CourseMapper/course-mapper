@@ -93,15 +93,17 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
             $scope.annotations = [];
             $scope.API = null;
 
-            var videoSource = $scope.resource.link;
+            console.log('Resource: ' + $scope.resource);
+
             $scope.sources = [{
-                src: $sce.trustAsResourceUrl(videoSource.src),
+                //src: $sce.trustAsResourceUrl($scope.resource.link),
+                src: $scope.resource,
                 type: 'video/mp4'
             }];
 
             // get annotations
             var params = {
-                video_id: videoSource.id
+                video_id: $scope.resource._id
             };
             socket.emit('annotations:get', params);
         };
