@@ -112,6 +112,8 @@ function cloneSimpleObject(obj){
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
+    $scope.isPlaying = false;
+
     $scope.currentTab = "preview";
     $scope.tabs = {
         'preview':'preview',
@@ -169,8 +171,15 @@ function cloneSimpleObject(obj){
         }
     });
 
+    $scope.playVideo = function(){
+        $scope.isPlaying = true;
+    };
+
+    $scope.stopVideo = function(){
+        $scope.isPlaying = false;
+    };
+
     $scope.$on('onAfterEditCourse',function(events, course){
-        //$scope.course = course;
         $scope.init(true);
     });
 
@@ -209,6 +218,8 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
     $scope.files = [];
+    $scope.filespicture = [];
+    $scope.filesvideo = [];
     $scope.errors = "";
 
     $scope.$on('onAfterInitCourse', function(event, course){
@@ -247,10 +258,14 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             }
         };
 
-        // we only take one file
-        if ($scope.files && $scope.files.length){
-            var file = $scope.files[0];
-            uploadParams.file = file;
+        uploadParams.file = [];
+        // we only take one pdf file
+        if ($scope.filespicture && $scope.filespicture.length){
+            uploadParams.file.push($scope.filespicture[0]);
+        }
+        // we only take one vid file
+        if ($scope.filesvideo && $scope.filesvideo.length){
+            uploadParams.file.push($scope.filesvideo[0]);
         }
 
         Upload.upload(
@@ -265,6 +280,10 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
         }).success(function (data, status, headers, config) {
             $scope.$emit('onAfterEditCourse', data.course);
+
+                $scope.filespicture = [];
+                $scope.filesvideo = [];
+
             $('#editView').modal('hide');
         });
     };
@@ -453,11 +472,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.initiateTopic = function(){
         $scope.pid = $location.search().pid;
-        $scope.manageActionBar();
 
         if($scope.pid) {
             $scope.getReplies($scope.pid);
         }
+
+        $scope.manageActionBar();
     };
 
     $scope.$on('onAfterInitCourse', function(e, course){
@@ -596,6 +616,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.initiateTopic();
     });
 
+    $scope.$on('onAfterCreateNewTopic', function(e, f){
+        $scope.formData.title = "";
+        $scope.formData.content = "";
+    });
+
     $scope.$on('onAfterEditReply', function(e, f){
         var i = _.findIndex($scope.replies, { '_id' : f._id});
         $scope.replies[i].content = f.content;
@@ -636,7 +661,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if($scope.pid){
             ActionBarService.extraActionsMenu = [];
 
-            ActionBarService.extraActionsMenu.unshift({
+            ActionBarService.extraActionsMenu.push({
                 separator: true
             });
 
@@ -649,15 +674,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     '&nbsp;&nbsp; <i class="ionicons ion-reply"></i> &nbsp; REPLY</a>'
                 }
             );
-        }
-        else if(!$scope.pid){
-            $scope.currentTopic = {};
-            ActionBarService.extraActionsMenu = [];
-        }
-    };
 
-    $scope.$on('onAfterInitUser', function(event, user){
-        $scope.$watch('currentTopic', function(oldVal, newVal){
             if($scope.currentTopic && $scope.currentTopic.createdBy &&
                 $scope.currentTopic.createdBy._id == $rootScope.user._id) {
 
@@ -675,6 +692,21 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
                     aTitle: 'DELETE THIS TOPIC AND ITS REPLIES'
                 });
+            }
+
+        }
+        else if(!$scope.pid){
+            $scope.currentTopic = {};
+            ActionBarService.extraActionsMenu = [];
+        }
+    };
+
+    $scope.$on('onAfterInitUser', function(event, user){
+        $scope.$watch('currentTopic', function(oldVal, newVal){
+            if(oldVal !== newVal) {
+                if ($scope.currentTopic && $scope.currentTopic._id) {
+                    //$scope.manageActionBar();
+                }
             }
         });
     });

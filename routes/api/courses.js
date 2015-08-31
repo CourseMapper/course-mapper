@@ -79,7 +79,7 @@ router.post('/course/:courseId', multipartyMiddleware, function(req, res, next){
 
             // parameters
             req.body,
-            req.files.file,
+            req.files,
 
             function (course) {
                 res.status(200).json({result:true, course: course});
