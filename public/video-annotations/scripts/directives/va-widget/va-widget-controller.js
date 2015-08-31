@@ -96,15 +96,17 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
             console.log('Resource: ' + $scope.resource);
 
             $scope.sources = [{
-                //src: $sce.trustAsResourceUrl($scope.resource.link),
-                src: $scope.resource,
+                src: 'http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_320x180.mp4',
+                //src: $scope.resource.link,
                 type: 'video/mp4'
             }];
 
             // get annotations
             var params = {
-                video_id: $scope.resource._id
+                // video_id: $scope.resource._id
+                video_id: '123'
             };
+
             socket.emit('annotations:get', params);
         };
 

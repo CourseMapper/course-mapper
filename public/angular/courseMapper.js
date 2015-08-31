@@ -5,7 +5,7 @@
 var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
-    'relativeDate', 'wysiwyg.module', 'VideoAnnotations']);
+    'relativeDate', 'wysiwyg.module','VideoAnnotations']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
