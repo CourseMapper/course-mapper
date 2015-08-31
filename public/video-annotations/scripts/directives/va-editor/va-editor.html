@@ -1,0 +1,31 @@
+<div id="editor-container">
+    <label for="va-text">Text:</label>
+    <br/>
+    <textarea cols="40" rows="5" id="va-text" type="text" ng-model="annotation.text" />
+    <br/>
+    <label for="va-start">Start:</label>
+    <br/>
+    <input id="va-start" ng-model="annotation.start">
+    <br/>
+    <label for="va-end">End:</label>
+    <br/>
+    <input id="va-end" ng-model="annotation.end">
+    <br/>
+    <div ng-hide="annotation.type==='note'">
+        <label for="va-left">Left:</label>
+        <br/>
+        <input id="va-left" ng-model="annotation.position.left">
+        <br/>
+        <label for="va-top">Top:</label>
+        <br/>
+        <input id="va-top" ng-model="annotation.position.top">
+        <br/>
+    </div>
+    <select ng-model="annotation.type">
+        <option ng-repeat="type in annotationTypes" value="{{type.id}}">{{type.name}}</option>
+    </select>
+    <br/>
+    <button type="submit" ng-click="saveAnnotation()" ng-show="annotation && annotation.text.length > 0">Save</button>
+    <button type="button" ng-click="cancelEdit()" ng-show="annotation">Cancel</button>
+    <button type="button" ng-click="deleteAnnotation()" ng-show="annotation">Delete</button>
+</div>

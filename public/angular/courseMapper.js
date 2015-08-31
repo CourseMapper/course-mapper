@@ -1,9 +1,11 @@
 (function(){"use strict";angular.module("relativeDate",[]).value("now",null).value("relativeDateTranslations",{just_now:"just now",seconds_ago:"{{time}} seconds ago",a_minute_ago:"a minute ago",minutes_ago:"{{time}} minutes ago",an_hour_ago:"an hour ago",hours_ago:"{{time}} hours ago",a_day_ago:"yesterday",days_ago:"{{time}} days ago",a_week_ago:"a week ago",weeks_ago:"{{time}} weeks ago",a_month_ago:"a month ago",months_ago:"{{time}} months ago",a_year_ago:"a year ago",years_ago:"{{time}} years ago",over_a_year_ago:"over a year ago",seconds_from_now:"{{time}} seconds from now",a_minute_from_now:"a minute from now",minutes_from_now:"{{time}} minutes from now",an_hour_from_now:"an hour from now",hours_from_now:"{{time}} hours from now",a_day_from_now:"tomorrow",days_from_now:"{{time}} days from now",a_week_from_now:"a week from now",weeks_from_now:"{{time}} weeks from now",a_month_from_now:"a month from now",months_from_now:"{{time}} months from now",a_year_from_now:"a year from now",years_from_now:"{{time}} years from now",over_a_year_from_now:"over a year from now"}).filter("relativeDate",["$injector","now","relativeDateTranslations",function(a,b,c){var d,e;return d=a.has("$translate")?a.get("$translate"):{instant:function(a,b){return c[a].replace("{{time}}",b.time)}},e=function(a,b){return Math.round(Math.abs(a-b)/1e3)},function(a){var c,f,g,h,i,j,k,l,m;switch(j=b?b:new Date,a instanceof Date||(a=new Date(a)),f=null,h=60,g=60*h,c=24*g,l=7*c,i=30*c,m=365*c,f=e(j,a),f>c&&l>f&&(a=new Date(a.getFullYear(),a.getMonth(),a.getDate(),0,0,0),f=e(j,a)),k=function(b,c){var e;return e="just_now"===b?b:j>=a?""+b+"_ago":""+b+"_from_now",d.instant(e,{time:c})},!1){case!(30>f):return k("just_now");case!(h>f):return k("seconds",f);case!(2*h>f):return k("a_minute");case!(g>f):return k("minutes",Math.floor(f/h));case 1!==Math.floor(f/g):return k("an_hour");case!(c>f):return k("hours",Math.floor(f/g));case!(2*c>f):return k("a_day");case!(l>f):return k("days",Math.floor(f/c));case 1!==Math.floor(f/l):return k("a_week");case!(i>f):return k("weeks",Math.floor(f/l));case 1!==Math.floor(f/i):return k("a_month");case!(m>f):return k("months",Math.floor(f/i));case 1!==Math.floor(f/m):return k("a_year");default:return k("over_a_year")}}}])}).call(this);
 
+// TODO - Inject VA module here ?? DONE ??
+
 var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
-    'relativeDate', 'wysiwyg.module']);
+    'relativeDate', 'wysiwyg.module','VideoAnnotations']);
 
 app.filter('capitalize', function() {
     return function(input, all) {
@@ -1431,7 +1433,74 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
 });;app.service('ActionBarService', function() {
     this.extraActionsMenu = [];
-});;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout, ActionBarService) {
+});;app.directive('movable', function () {
+    return {
+        restrict: 'A',
+        scope: {
+            onMoved: '=',
+            canMove: '@'
+        },
+        link: function (scope, element, attrs) {
+            attrs.$observe('canMove', function (value) {
+                if (value === 'false') {
+                    console.log('Disabling draggable and resizable');
+                    element.draggable({
+                        disabled: true
+                    }).resizable({
+                        disabled: true
+                    });
+                } else {
+                    console.log('Enabling draggable and resizable');
+                    element.draggable({
+                        disabled: false
+                    }).resizable({
+                        disabled: false
+                    });
+                }
+            });
+
+            var getPosition = function (ui) {
+                var position = {
+                    left: Math.round((100 * ui.position.left / element.parent()[0].clientWidth)),
+                    top: Math.round((100 * ui.position.top / element.parent()[0].clientHeight))
+                };
+                console.log(position);
+                return position;
+            };
+            console.log('Initializing draggable and resizable');
+            element
+                .draggable({
+                    containment: 'parent',
+                    cursor: 'move',
+                    stop: function (event, ui) {
+                        if (scope.onMoved) {
+                            scope.onMoved({
+                                position: getPosition(ui)
+                            });
+                        }
+                    }
+                })
+                .resizable({
+                    containment: 'parent',
+                    handles: 'ne, se, sw, nw',
+                    stop: function (event, ui) {
+                        if (scope.onMoved) {
+                            scope.onMoved({
+                                position: getPosition(ui),
+                                size: ui.size
+                            });
+                        }
+                    }
+                });
+
+            // remove event handlers
+            scope.$on('$destroy', function () {
+                element.off('**');
+            });
+        }
+    };
+});
+;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout, ActionBarService) {
     $scope.course = null;
     $scope.user = null;
     $scope.treeNode = null;
@@ -2103,7 +2172,33 @@ app.controller('RightClickMenuController', function($scope, $http, $rootScope) {
             });
 
     }]);
-;app.controller('staticController', function($scope, $http, $rootScope) {
+;app.filter('secondsToDateTime', [function() {
+    return function(seconds) {
+        return new Date(1970, 0, 1).setSeconds(seconds);
+    };
+}]);;app.factory('socket', function ($rootScope) {
+    var socket = io.connect();
+    return {
+        on: function (eventName, callback) {
+            socket.on(eventName, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    callback.apply(socket, args);
+                });
+            });
+        },
+        emit: function (eventName, data, callback) {
+            socket.emit(eventName, data, function () {
+                var args = arguments;
+                $rootScope.$apply(function () {
+                    if (callback) {
+                        callback.apply(socket, args);
+                    }
+                });
+            });
+        }
+    };
+});;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
 ;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout) {

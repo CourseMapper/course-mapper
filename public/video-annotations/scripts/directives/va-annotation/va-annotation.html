@@ -1,0 +1,30 @@
+<article>
+    <header>
+        <div class="timelapse">
+            <span>[{{source.start | secondsToDateTime | date:'HH:mm:ss'}} - {{source.end | secondsToDateTime | date:'HH:mm:ss'}}]</span>
+        </div>
+    </header>
+    <!-- Content -->
+    <section>
+        <h4>{{source.text}}</h4>
+    </section>
+    <section id="meta">
+        <p>Published:
+            <time pubdate datetime="{{source.date_created}}">{{source.date_created | date}}</time>
+        </p>
+        <div class="author">
+            <span>By: {{source.author}}</span>
+        </div>
+    </section>
+    <footer id="comments">
+        <article>
+            <section ng-repeat="comment in source.comments">
+                <p>[{{comment.author}}] {{comment.text}} [<a ng-click="removeComment(comment._id)" type="submit">x</a>]</p>
+            </section>
+        </article>
+        <div id="comment-box">
+            <input placeholder="Write a comment..." type="text" ng-model="commentText">
+            <button type="submit" ng-click="postComment()">post</button>
+        </div>
+    </footer>
+</article>
