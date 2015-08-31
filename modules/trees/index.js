@@ -56,7 +56,7 @@ catalog.prototype.saveResourceFile = function(filetype, file, contentNode, creat
                     resources:Res._id
                 }
             },
-            function(){}); 
+            function(){});
         });
     }
 };
