@@ -8,6 +8,8 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
+    $scope.isPlaying = false;
+
     $scope.currentTab = "preview";
     $scope.tabs = {
         'preview':'preview',
@@ -65,8 +67,15 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
         }
     });
 
+    $scope.playVideo = function(){
+        $scope.isPlaying = true;
+    };
+
+    $scope.stopVideo = function(){
+        $scope.isPlaying = false;
+    };
+
     $scope.$on('onAfterEditCourse',function(events, course){
-        //$scope.course = course;
         $scope.init(true);
     });
 

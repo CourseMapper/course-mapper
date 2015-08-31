@@ -135,7 +135,45 @@ catalog.prototype.addCourse = function(error, params, success){
     });
 };
 
-catalog.prototype.editCourse = function(error, params, file, success){
+catalog.prototype.saveResourceFile = function(error, file, newName, success){
+    var filetypePicture = ['jpg', 'png', 'jpeg'];
+    var filetypeVideo = ['mp4', 'webm'];
+
+    var extension = file.name.split('.');
+    extension = extension[extension.length-1].toLowerCase();
+
+    if(filetypePicture.indexOf(extension) < 0 &&
+        filetypeVideo.indexOf(extension) < 0
+    ){
+        // extension not right
+        error(new Error("File extension not right"));
+    }
+    else {
+
+        var fn = '/img/courses/' + newName + '.' + extension;
+        var dest = appRoot + '/public' + fn;
+        try{
+            handleUpload(file, dest, true);
+
+        } catch (ex){
+            error(new Error("Failed uploading"));
+            return;
+        }
+
+        var ft = "";
+        if(filetypePicture.indexOf(extension) >= 0){
+            ft = 'picture';
+        } else if(filetypeVideo.indexOf(extension) >= 0 ) {
+            ft = 'video';
+        }
+
+        if(success){
+            success(fn, ft);
+        }
+    }
+};
+
+catalog.prototype.editCourse = function(error, params, files, success){
     var self = this;
 
     if(!params.name) {
@@ -157,24 +195,33 @@ catalog.prototype.editCourse = function(error, params, file, success){
                     course.description = params.description;
                     course.courseTags = [];
 
-                    if(file) {
-                        var extension = file.name.split('.');
-                        extension = extension[extension.length-1].toLowerCase();
-                        if(['jpg', 'png', 'jpeg'].indexOf(extension) < 0){
-                            // extension not right
-                            error("Extension not right");
-                            return;
-                        }
-                        else {
-                            var fn = '/img/courses/' + course.slug + '.' + extension;
-                            var dest = appRoot + '/public' + fn;
-                            handleUpload(file, dest, true);
-                            course.picture = fn;
-                        }
-                    }
-
                     // save the update
                     course.save();
+
+                    if(files) {
+                        if(files.file && files.file.constructor != Array){
+                            var be = [files.file];
+                            files.file = be;
+                        }
+
+                        for (var i in files.file) {
+                            var f = files.file[i];
+                            self.saveResourceFile(
+                                error,
+                                f,
+                                course.id,
+                                function(fn, ft){
+                                    if(ft == 'picture'){
+                                        course.picture = fn;
+                                        course.save();
+                                    } else if(ft == 'video'){
+                                        course.video = fn;
+                                        course.save();
+                                    }
+                                }
+                            );
+                        }
+                    }
 
                     // they giving us the tags in array of slug string.
                     if(params.tagSlugs){
@@ -200,10 +247,10 @@ catalog.prototype.editCourse = function(error, params, file, success){
                     success(course);
                 }
                 else
-                    error("You did not create this course");
+                    error(new Error("You did not create this course"));
             }
             else
-                error("Course not found");
+                error(new Error("Course not found"));
         }
     );
 };
