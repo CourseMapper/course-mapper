@@ -20,6 +20,15 @@ var annotationZonesAreLoaded = false;
 var toDrawAnnotationZoneData = [];
 
 
+function commentsLoaded() {
+  $("#commentList .annotationZoneReference").click(function(){
+    console.log("TEST:" + $(this));
+    switchRegexFilter("renderedText",$(this).html());
+  });
+};
+
+
+
 /*$(document).ready(function(){
   console.log("Init");
   pdfIsLoaded = false;
@@ -181,5 +190,18 @@ function authorLabelClick(element){
   filterInput.trigger('input');
 
 
+
+};
+
+function switchRegexFilter(attribute,value){
+  var filterInput = $('#filterValueText');
+
+  if (filterInput.val().length == 0){
+    filterInput.val(attribute + ':' + value + '');
+  }
+  else {
+    filterInput.val('');
+  }
+  filterInput.trigger('input');
 
 };

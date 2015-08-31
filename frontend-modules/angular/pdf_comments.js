@@ -21,6 +21,7 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
 
           $timeout(function(){
             $scope.$apply();
+            commentsLoaded();
           });
         };
       });

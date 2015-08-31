@@ -1783,6 +1783,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
           $timeout(function(){
             $scope.$apply();
+            commentsLoaded();
           });
         };
       });

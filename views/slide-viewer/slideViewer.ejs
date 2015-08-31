@@ -161,7 +161,7 @@
 
                             <div>
                             Comment List:
-                            <div ng-repeat="comment in comments" ng-cloak>
+                            <div id="commentList" ng-repeat="comment in comments" ng-cloak>
                               <div>
                                   <label class='authorLabel' onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
 
