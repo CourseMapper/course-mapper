@@ -51,6 +51,14 @@ module.exports = function (grunt) {
             libsJS: {
                 src: 'frontend-modules/libs/*.js',
                 dest: 'public/admin-lte/js/libs.js'
+            },
+            va: {
+                src: [
+                    'public/video-annotations/scripts/*.js',
+                    'public/video-annotations/scripts/**/*.js',
+                    'public/video-annotations/scripts/**/**/*.js'
+                ],
+                dest: 'public/video-annotations/va.js'
             }
         },
 
@@ -60,9 +68,12 @@ module.exports = function (grunt) {
                     'frontend-modules/angular/*.js',
                     'frontend-modules/angular/**/*.js',
                     'frontend-modules/angular-admin/*.js',
-                    'frontend-modules/libs/*.js'
+                    'frontend-modules/libs/*.js',
+                    'public/video-annotations/scripts/*.js',
+                    'public/video-annotations/scripts/**/*.js',
+                    'public/video-annotations/scripts/**/**/*.js'
                 ],
-                tasks: ['concat:dist', 'concat:js', 'concat:libsJS'],
+                tasks: ['concat:dist', 'concat:js', 'concat:libsJS', 'concat:va'],
                 options: {
                     spawn: false
                 }
@@ -97,10 +108,13 @@ module.exports = function (grunt) {
     });
 
     // the default task (running "grunt" in console)
-    grunt.registerTask('default', ['bowercopy', 'concat:dist', 'concat:js', 'concat:libsJS']);
+    grunt.registerTask('default', ['bowercopy',
+        'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va']
+    );
+
     grunt.registerTask('production', [
-        'bowercopy', 'concat:dist',
-        'concat:js', 'concat:libsJS',
+        'bowercopy',
+        'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va',
         'ngAnnotate:cmscripts',
         'uglify:courseMapper', 'uglify:courseMapperAdmin'
     ]);
