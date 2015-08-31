@@ -112,6 +112,8 @@ function cloneSimpleObject(obj){
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
+    $scope.isPlaying = false;
+
     $scope.currentTab = "preview";
     $scope.tabs = {
         'preview':'preview',
@@ -169,8 +171,15 @@ function cloneSimpleObject(obj){
         }
     });
 
+    $scope.playVideo = function(){
+        $scope.isPlaying = true;
+    };
+
+    $scope.stopVideo = function(){
+        $scope.isPlaying = false;
+    };
+
     $scope.$on('onAfterEditCourse',function(events, course){
-        //$scope.course = course;
         $scope.init(true);
     });
 
@@ -209,6 +218,8 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
     $scope.files = [];
+    $scope.filespicture = [];
+    $scope.filesvideo = [];
     $scope.errors = "";
 
     $scope.$on('onAfterInitCourse', function(event, course){
@@ -247,10 +258,14 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             }
         };
 
-        // we only take one file
-        if ($scope.files && $scope.files.length){
-            var file = $scope.files[0];
-            uploadParams.file = file;
+        uploadParams.file = [];
+        // we only take one pdf file
+        if ($scope.filespicture && $scope.filespicture.length){
+            uploadParams.file.push($scope.filespicture[0]);
+        }
+        // we only take one vid file
+        if ($scope.filesvideo && $scope.filesvideo.length){
+            uploadParams.file.push($scope.filesvideo[0]);
         }
 
         Upload.upload(
@@ -265,6 +280,10 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
         }).success(function (data, status, headers, config) {
             $scope.$emit('onAfterEditCourse', data.course);
+
+                $scope.filespicture = [];
+                $scope.filesvideo = [];
+
             $('#editView').modal('hide');
         });
     };
@@ -1818,8 +1837,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.$watch("filtersRaw",function(newValue,oldValue){
       $scope.filters = getCurrentFilters($scope.filtersRaw);
-      console.log("FILTERSCOPE CHANGED");
-      console.log($scope.filters);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
       updateScope($scope.commentGetUrl);
     });

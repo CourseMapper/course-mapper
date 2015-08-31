@@ -4,6 +4,8 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
     $scope.files = [];
+    $scope.filespicture = [];
+    $scope.filesvideo = [];
     $scope.errors = "";
 
     $scope.$on('onAfterInitCourse', function(event, course){
@@ -42,10 +44,14 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             }
         };
 
-        // we only take one file
-        if ($scope.files && $scope.files.length){
-            var file = $scope.files[0];
-            uploadParams.file = file;
+        uploadParams.file = [];
+        // we only take one pdf file
+        if ($scope.filespicture && $scope.filespicture.length){
+            uploadParams.file.push($scope.filespicture[0]);
+        }
+        // we only take one vid file
+        if ($scope.filesvideo && $scope.filesvideo.length){
+            uploadParams.file.push($scope.filesvideo[0]);
         }
 
         Upload.upload(
@@ -60,6 +66,10 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
         }).success(function (data, status, headers, config) {
             $scope.$emit('onAfterEditCourse', data.course);
+
+                $scope.filespicture = [];
+                $scope.filesvideo = [];
+
             $('#editView').modal('hide');
         });
     };

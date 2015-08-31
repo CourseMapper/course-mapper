@@ -27,6 +27,11 @@
                     {{course.description}}
                 </p>
             </div>
+
+            <div class="" ng-show="course.video">
+                <a class="cursor videoButton" ng-click="playVideo()" aria-label="play intro video" title="Play Intro Video">
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -74,3 +79,9 @@
     </div>
 </div>
 <!-- analytics-->
+
+<div class="videoPlayerWrapper" ng-show="course.video && isPlaying" ng-click="stopVideo()">
+<div class="videoPlayerContainer" ng-click="$event.stopPropagation()">
+    <video src="{{course.video}}" id="videoPlayer"></video>
+    </div>
+</div>
