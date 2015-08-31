@@ -37,7 +37,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                 "type": "embedded-note",
                 "text": "",
                 "author": "Anonymous", //TODO - get author
-                "video_id": $scope.resource._id
+                "video_id": $scope.videoId
             };
             $scope.selectedAnnotation = defaultAnnotation;
         };
@@ -54,6 +54,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
         };
 
         socket.on('annotations:updated', function(annotations) {
+            console.log('Loaded annotations: ' + annotations.length);
+
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];
@@ -86,30 +88,27 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                 });
         });
 
-        $scope.init = function() {
+        $scope.init = function(videoId, videoSource) {
+            $scope.sources = [{
+                src: videoSource,
+                type: 'video/mp4'
+            }];
+
             $scope.cuePoints = {
                 points: []
             };
             $scope.annotations = [];
-            $scope.API = null;
 
-            console.log('Loaded video: ID=' + $scope.videoId + ', SOURCE=' + $scope.videoSource);
-            $scope.sources = [{
-                src: $scope.videoSource,
-                type: 'video/mp4'
-            }];
-
-            // get annotations
-            var params = {
-                video_id: $scope.videoId
-            };
-            socket.emit('annotations:get', params);
+            // Trigger initial annotations update.
+            socket.emit('annotations:get', {
+                video_id: videoId
+            });
         };
 
+        // Initialize scope when the video-source is set.
         $scope.$watch('videoSource', function(oldVal, newVal) {
-            if (oldVal != newVal) {
-                // Initialize controller
-                $scope.init();
+            if (oldVal !== newVal) {
+                $scope.init($scope.videoId, $scope.videoSource);
             }
         });
     }
