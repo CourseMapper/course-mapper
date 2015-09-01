@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prestart": "gulp &", 
+    "prestart": "gulp &",
+    "postinstall": "grunt production",
     "start": "grunt watch | DEBUG=cm:* nodemon ./bin/www"
   },
   "dependencies": {
