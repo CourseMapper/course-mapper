@@ -31,7 +31,8 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
   });
 };
 
-function submitSingleTag(tagList, err, restList, mainCallback, done) {
+//TODO: Unify the two following functions
+function submitSingleTag(tagList, pageNumber, err, restList, mainCallback, done) {
   //console.log(tagList);
   var annotationZonePDF = new AnnotationZonesPDF({
     annotationZoneName: tagList[0],
@@ -43,7 +44,8 @@ function submitSingleTag(tagList, err, restList, mainCallback, done) {
       X: tagList[2].split(";")[0],
       Y: tagList[2].split(";")[1]
     },
-    color: tagList[3]
+    color: tagList[3],
+    pdfPageNumber: pageNumber
   });
 
   console.log("Added Tag with name: " + tagList[0]);
@@ -57,12 +59,12 @@ function submitSingleTag(tagList, err, restList, mainCallback, done) {
           //errorCallback(err);
       } else {
           // call success callback
-          done(err, restList, mainCallback);
+          done(err, restList, pageNumber, mainCallback);
       }
   });
 };
 
-function submitSingleTagLast(tagList, mainCallback) {
+function submitSingleTagLast(tagList,pageNumber , mainCallback) {
   //console.log(tagList);
   var annotationZonePDF = new AnnotationZonesPDF({
     annotationZoneName: tagList[0],
@@ -74,7 +76,8 @@ function submitSingleTagLast(tagList, mainCallback) {
       X: tagList[2].split(";")[0],
       Y: tagList[2].split(";")[1]
     },
-    color: tagList[3]
+    color: tagList[3],
+    pdfPageNumber: pageNumber
   });
 
   console.log("Added Tag with name: " + tagList[0]);
@@ -97,15 +100,15 @@ function submitSingleTagLast(tagList, mainCallback) {
 
 var permArray;
 
-AnnZones.prototype.submitTagList = function(err,tagList, callback){
+AnnZones.prototype.submitTagList = function(err,tagList, pageNumber, callback){
   if(tagList.length!=0) {
     if(tagList.length>1){
       //console.log(tagList[0]);
       var restList = tagList.slice(1,(tagList.length));
-      submitSingleTag(tagList[0],err, restList, callback, this.submitTagList);
+      submitSingleTag(tagList[0],pageNumber,err, restList, callback, this.submitTagList);
     }
     else {
-      submitSingleTagLast(tagList[0],callback);
+      submitSingleTagLast(tagList[0],pageNumber,callback);
     }
   }
   else {

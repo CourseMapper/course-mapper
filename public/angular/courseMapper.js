@@ -1853,6 +1853,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     $scope.ascending = "true";
     $scope.filters = '{}';
     $scope.filtersRaw = '';
+    //$scope.pageFilter;
 
 
     $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
@@ -1879,34 +1880,38 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     function getCurrentFilters(filtersRaw){
       var finalFilters;
-      if($scope.filtersRaw.length == 0)
+      /*if($scope.filtersRaw.length == 0)
         finalFilters='{}';
-      else {
+      else {*/
         var filterStrings = $scope.filtersRaw.split(';');
         finalFilters = '{';
-        for(var i=0; i < filterStrings.length; i++){
-          var temp = filterStrings[i].split(',');
-          if(temp.length != 1)
-            finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
-          else
-          {
-            temp = filterStrings[i].split(':');
-            if(typeof temp[1] != 'undefined') {
-              if(temp[1].charAt(0) == "#")
-                finalFilters = finalFilters + '"' + temp[0] + '":{"regex_hash": "' + temp[1].substring(1) + '"}';
-              else {
-                finalFilters = finalFilters + '"' + temp[0] + '":{"regex": "' + temp[1].substring(1) + '"}';
+        if(filterStrings.length > 1) {
+          for(var i=0; i < filterStrings.length; i++){
+            var temp = filterStrings[i].split(',');
+            if(temp.length != 1)
+              finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
+            else
+            {
+              temp = filterStrings[i].split(':');
+              if(typeof temp[1] != 'undefined') {
+                if(temp[1].charAt(0) == "#")
+                  finalFilters = finalFilters + '"' + temp[0] + '":{"regex_hash": "' + temp[1].substring(1) + '"}';
+                else {
+                  finalFilters = finalFilters + '"' + temp[0] + '":{"regex": "' + temp[1].substring(1) + '"}';
+                }
               }
             }
-          }
 
 
-          if(i != filterStrings.length-1)
+            //if(i != filterStrings.length-1)
             finalFilters = finalFilters + ',';
+          }
         }
+        if(!isNaN($scope.currentPageNumber))
+          finalFilters = finalFilters + '"pdfPageNumber":"' + $scope.currentPageNumber + '"';
         finalFilters = finalFilters + '}';
 
-      }
+      //}
       console.log("Final Filters: " + finalFilters);
       return finalFilters;
     }
@@ -1928,6 +1933,14 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       console.log("commentGetUrl: " + $scope.commentGetUrl);
       updateScope($scope.commentGetUrl);
     });
+
+    $scope.$watch("currentPageNumber",function(newValue,oldValue){
+      $scope.filters = getCurrentFilters($scope.filtersRaw);
+      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+      console.log("commentGetUrl: " + $scope.commentGetUrl);
+      updateScope($scope.commentGetUrl);
+    });
+
 
 
 

@@ -10,13 +10,14 @@ function Comment(){
 Comment.prototype.submitAnnotation = function(err, params, done){
   var temp = this.convertRawText;
 
-  this.submitAllTags(err,params.tagNames,params.tagRelPos,params.tagRelCoord,params.tagColor,function(){
+  this.submitAllTags(err,params.tagNames,params.tagRelPos,params.tagRelCoord,params.tagColor,params.pageNumber,function(){
     temp(params.rawText,function(renderedText){
       var annotationsPDF = new AnnotationsPDF({
         rawText: params.rawText,
         renderedText: renderedText,
         author: params.author,
-        originSlide: params.originSlide
+        //pdfId: x,
+        pdfPageNumber: params.pageNumber
       });
 
       //console.log(this.convertRawText(params.rawText));
@@ -40,7 +41,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
   });
 };
 
-Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,callback){
+Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber,callback){
   var annZone = new AnnZones();
   var tagNameList = tagNames.split(",");
   var tagRelPosList = tagRelPos.split(",");
@@ -63,7 +64,7 @@ Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,ta
 
     }
 
-    annZone.submitTagList(err,tagList,callback);
+    annZone.submitTagList(err,tagList,pageNumber,callback);
   }
   else
     console.log("Error: Tag string-lists differ");
