@@ -17,12 +17,18 @@ var userSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
+    facebook: {
+        type: mongoose.Schema.Types.Mixed
+    },
+    displayName:{
+        type: String
+    },
     salt: { type: String, required: true, default: uuid.v1 },
     password: {type: String, required: true},
     email: {
         type: String,
-        required: true,
         trim: true,
+        required: true,
         validate: [validator.isEmail, 'invalid email']
     },
     role: { type: String, required: true, default: "user"},
