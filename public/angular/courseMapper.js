@@ -1076,7 +1076,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     }
 });
-;app.directive('facebookButton',
+;app.directive('errorBlock',
+    function () {
+        return {
+            restrict: 'E',
+            scope: {
+                messages: '='
+            },
+            template: '<div class="errors">' +
+                      '<div class="alert alert-danger" role="alert" ng-repeat="m in messages">{{m}}</div>' +
+                      '</div>'
+        };
+    });;app.directive('facebookButton',
     function () {
         return {
             restrict: 'E',
@@ -2099,6 +2110,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 });
 ;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies) {
     $scope.rememberMe = false;
+    $scope.loginData = {};
+    $scope.errors = [];
 
     $http.get('/api/accounts').success(function(data) {
         if(data.result) {
@@ -2109,14 +2122,48 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         }
     });
 
-    if($cookies.rememberMe)
+    if($cookies.rememberMe) {
         $scope.rememberMe = $cookies.rememberMe;
+    }
 
     $scope.$watch('rememberMe', function(newVal, oldVal){
         if(newVal !== oldVal){
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
+
+    $scope.login = function(isValid){
+        if(isValid){
+            $scope.loginData.rememberMe = $scope.rememberMe;
+            var d = transformRequest($scope.loginData);
+            $http({
+                method: 'POST',
+                url: '/api/accounts/login',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(
+                function success(data) {
+                    if(data.result) {
+                        $scope.user = data.user;
+                        $rootScope.user = data.user;
+
+                        $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+
+                        window.location = '/accounts';
+                    }
+                }).error(
+                function error(data) {
+                    if(data.errors){
+                        $scope.errors = data.errors;
+                    }
+                }
+            );
+        }
+    }
+
 });;app.controller('ActionBarController', function($scope, ActionBarService, $sce, $compile) {
     $scope.extraActionsMenu = [];
 

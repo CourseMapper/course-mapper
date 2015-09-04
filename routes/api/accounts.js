@@ -65,15 +65,58 @@ router.get('/accounts/facebook/callback',
     }
 );
 
-router.post('/accounts/login', passport.authenticate('local'),
+router.post('/accounts/login',
+    function(req, res, next){
+        passport.authenticate('local', function(err, user, info) {
+            if (err) {
+                // if error happens
+                return next(err);
+            }
+
+            if (!user) {
+
+                return res.status(401).json({
+                    result: false,
+                    errors: ['Wrong username or password']
+                });
+
+            }
+
+            // if everything is OK
+            req.logIn(user, function(err) {
+                if (err) {
+                    req.session.messages = "Error";
+                    return next(err);
+                }
+
+                // remember me box is checked
+                if (req.body.rememberMe) {
+                    req.session.cookie.maxAge = config.get('session.maxAge');
+                    req.session._garbage = Date();
+                    req.session.touch();
+                } else {
+                    // it means when the browser is closed, the cookie will expire
+                    req.session.cookie.expires = false;
+                }
+
+                // set the message and redirect
+                req.session.messages = "Login successfully";
+                res.status(200).json({
+                    result: true,
+                    user: req.user
+                });
+            });
+        })(req, res, next);
+    }
+    /*,
     function(req, res) {
         // If this function gets called, authentication was successful.
         // 'req.user' contains the authenticated user.
         res.status(200).json({
             result: true,
-            username: req.user.username
+            user: req.user
         });
-    }
+    }*/
 );
 
 router.get('/accounts/:username', function(req, res, next) {
