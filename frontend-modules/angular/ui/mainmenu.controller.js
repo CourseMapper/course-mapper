@@ -2,10 +2,12 @@ app.controller('MainMenuController', function($scope, $http, $rootScope, $cookie
     $scope.rememberMe = false;
 
     $http.get('/api/accounts').success(function(data) {
-        $scope.user = data;
-        $rootScope.user = data;
+        if(data.result) {
+            $scope.user = data.user;
+            $rootScope.user = data.user;
 
-        $rootScope.$broadcast('onAfterInitUser', data);
+            $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+        }
     });
 
     if($cookies.rememberMe)

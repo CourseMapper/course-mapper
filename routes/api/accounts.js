@@ -8,6 +8,7 @@ var Mongoose = require('mongoose');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
+var Users = require(appRoot + '/modules/accounts/users.js');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var router = express.Router();
 
@@ -37,6 +38,33 @@ router.get('/accounts', function(req, res, next) {
         res.status(401).json({message: 'Not authorized'});
 });
 
+router.get('/accounts/login/facebook',
+    passport.authenticate('facebook', { scope : ['email','public_profile'] })
+);
+
+router.get('/accounts/facebook/callback',
+    passport.authenticate('facebook', {
+        successRedirect : '/accounts',
+        failureRedirect : '/login'
+    }),
+
+    // on succes
+    function(req,res) {
+        // return the token or you would wish otherwise give eg. a succes message
+        res.status(200).json({result:true, tokens: JSON.stringify(req.user.access_token)});
+    },
+
+    // on error; likely to be something FacebookTokenError token invalid or already used token,
+    // these errors occur when the user logs in twice with the same token
+    function(err,req,res,next) {
+        // You could put your own behavior in here, fx: you could force auth again...
+        // res.redirect('/auth/facebook/');
+        if(err) {
+            res.status(400).json({result: false, errors: [err.message]});
+        }
+    }
+);
+
 router.post('/accounts/login', passport.authenticate('local'),
     function(req, res) {
         // If this function gets called, authentication was successful.
@@ -49,8 +77,24 @@ router.post('/accounts/login', passport.authenticate('local'),
 );
 
 router.get('/accounts/:username', function(req, res, next) {
-    if(req.session.passport.user)
-        res.status(200).json(req.session.passport.user);
+    if(req.session.passport.user){
+        Users.findOne({username: req.session.passport.user.username}, function(err, doc){
+            if(err)
+                res.status(500).json({result: false, errors: [err.message]});
+            else
+                res.status(200).json({
+                    result:(doc)?true:false, user: {
+                        username: doc.username,
+                        displayName: doc.displayName,
+                        email: doc.email,
+                        role: doc.role,
+                        _id: doc._id,
+                        dateAdded: doc.dateAdded,
+                        dateUpdated: doc.dateUpdated
+                    }
+                });
+        });
+    }
     else
         res.status(401).json({message: 'Not authorized'});
 });
@@ -79,6 +123,26 @@ router.put('/accounts/:userId/changePassword', function(req, res, next){
                     }
                 );
             }
+        }
+    }
+});
+
+router.put('/accounts/:userId', function(req, res, next){
+    if(req.session.passport.user){
+        if(req.session.passport.user._id == req.params.userId){
+            req.body.userId = Mongoose.Types.ObjectId(req.params.userId);
+
+            var account = new Account();
+            account.editAccount(
+                function error(err) {
+                    res.status(500).json({result: false, errors: [err]});
+                },
+                req.body,
+                function success(r) {
+                    res.status(200).json({result: true});
+                }
+            );
+
         }
     }
 });

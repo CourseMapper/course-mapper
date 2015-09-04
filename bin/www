@@ -20,10 +20,13 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
-var io = require('socket.io').listen(server);
 
-// TODO - Refactor this code and move the injection
-require('../routes-socket/video-annotations.js')(io);
+/**
+ * socket.io server initializer, and semi dynamic router
+ */
+var io = require('socket.io').listen(server);
+var multiRouterSocket = require('../libs/core/multiRouterSocket.js');
+new multiRouterSocket(io, __dirname + '/../routes-socket').populateRoutes();
 
 /**
  * Listen on provided port, on all network interfaces.
