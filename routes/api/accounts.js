@@ -111,11 +111,12 @@ router.post('/accounts/login',
 
 router.get('/accounts/:username', function(req, res, next) {
     if(req.session.passport.user){
-        Account.getUser(
+        var account = new Account();
+        account.getUser(
             function(err){
                 res.status(500).json({result: false, errors: [err.message]});
             },
-            {username: req.session.passport.user},
+            {username: req.session.passport.user.username},
             function(doc){
                 if(doc) {
                     res.status(200).json({

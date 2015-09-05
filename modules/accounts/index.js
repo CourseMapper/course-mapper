@@ -12,7 +12,7 @@ function hash(passwd, salt) {
 }
 
 function account(){
-};
+}
 
 /**
  * just a demo code to create an admin user
@@ -250,7 +250,7 @@ account.prototype.handleRegisterPost = function(req, res, next) {
 
 account.prototype.getUser = function(error, params, success){
     User.findOne(params)
-        .select('-password -salt -activationCode -__v -isActivated')
+        .select('-password -salt -activationCode -__v -isActivated -dateUpdated')
         .exec(function(err, doc){
             if(err)
                 error(err);
