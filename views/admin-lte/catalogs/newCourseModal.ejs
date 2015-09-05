@@ -13,30 +13,35 @@
                 </div>
 
                 <div class="box-body no-border">
-                    <form class="" role="form" ng-submit="saveCourse()">
+                    <form name="newCourseForm" ng-submit="saveCourse(newCourseForm.$valid)" novalidate>
                         <fieldset>
-                            <div class="control-group">
-                                <label class="control-label" for="course">Course Name</label>
+                            <div class="control-group" >
+                                <label class="control-label" for="course">Course Name </label>
 
-                                <p class="help-block">Course name can contain any letters or numbers</p>
+                                <p class="help-block">Course name can contain any letters or numbers, minimum 3 characters</p>
 
-                                <div class="controls">
+                                <div class="controls" ng-class="{ 'has-error' : newCourseForm.course.$invalid && !newCourseForm.$pristine }">
                                     <input type="text" id="course" name="course" placeholder="" class="form-control"
-                                           ng-model="course.name">
+                                           ng-model="course.name"
+                                           required ng-required="true"
+                                           ng-minlength="3">
+                                    <p ng-show="newCourseForm.course.$invalid && !newCourseForm.$pristine" class="help-block">Course name is required.</p>
                                 </div>
                             </div>
 
                             <div class="control-group">
                                 <p></p>
-                                <label class="control-label" for="description">Description</label>
+                                <label class="control-label" for="description">Description </label>
 
                                 <p class="help-block">Description about this course</p>
 
-                                <div class="controls">
+                                <div class="controls"  ng-class="{ 'has-error' : newCourseForm.description.$invalid && !newCourseForm.$pristine }">
                                 <textarea type="description" id="description" name="description" placeholder=""
-                                          class="form-control" ng-model="course.description">
+                                          class="form-control" ng-model="course.description"
+                                          required ng-required="true"
+                                          ng-minlength="6">
                                 </textarea>
-
+                                <p ng-show="newCourseForm.description.$invalid && !newCourseForm.$pristine" class="help-block">Please fill in a little bit of description about this course.</p>
                                 </div>
                             </div>
 
@@ -61,10 +66,10 @@
                                 <br class="clear">
 
                                 <div class="box-footer">
-                                    <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                     <!-- Button -->
                                     <div class="controls">
-                                        <button class="btn btn-lg btn-primary btn-block">Create New Course</button>
+                                        <button name="submitButton" class="btn btn-primary btn-block" ng-click="newCourseForm.$pristine=false">Create New Course</button>
                                     </div>
                                 </div>
                             </div>
