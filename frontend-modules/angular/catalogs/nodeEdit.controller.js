@@ -5,6 +5,9 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
     $scope.filesvideo = [];
     $scope.currentEditNode = false;
 
+    $scope.isLoading = false;
+    $scope.errors = [];
+
     $scope.init = function(){
     };
 
@@ -15,6 +18,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
 
         $scope.currentEditNode = $scope.currentNodeAction.parent;
+        $scope.currentEditNodeOriginal = cloneSimpleObject($scope.currentNodeAction.parent);
         $scope.formData.type = $scope.currentNodeAction.type;
 
         if(treeNode){
@@ -74,10 +78,15 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
      * save edit sub topic node
      * and saving edit of content node
      */
-    $scope.saveEditNode = function(){
+    $scope.saveEditNode = function(isValid){
+        if(!isValid)
+            return;
+
         var updateValue = {
             name: $scope.currentEditNode.name
         };
+
+        $scope.isLoading = true;
 
         var d = transformRequest(updateValue);
         $http({
@@ -89,18 +98,17 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             }
         })
             .success(function(data) {
-                console.log(data);
+                $scope.isLoading = false;
                 if(data.result) {
                     $rootScope.$broadcast('onAfterEditNode', data.treeNode);
 
                     $('#editSubTopicModal').modal('hide');
                     $('#editContentNodeModal').modal('hide');
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
                 }
+            })
+            .error(function(data){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
             });
     };
 
@@ -171,5 +179,9 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                 }
 
             });
+    };
+
+    $scope.cancel = function(){
+        $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });

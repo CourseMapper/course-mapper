@@ -4,6 +4,7 @@ app.controller('LoginPageController', function($scope, $http, $rootScope, $cooki
     $scope.errors = [];
     $scope.user = null;
     $scope.referer = false;
+    $scope.isLoading = false;
 
     authService.loginCheck(function(user){
         $scope.user = user;
@@ -24,17 +25,20 @@ app.controller('LoginPageController', function($scope, $http, $rootScope, $cooki
 
     $scope.login = function(isValid){
         if(isValid){
+            $scope.isLoading = true;
             authService.login($scope.loginData,
                 function(user){
                     $scope.user = user;
                     if(!$scope.referer) {
                         window.location = '/accounts';
                     }
+                    $scope.isLoading = false;
                 },
                 function error(data) {
                     if(data.errors){
                         $scope.errors = data.errors;
                     }
+                    $scope.isLoading = false;
                 }
             );
         }

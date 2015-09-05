@@ -39,9 +39,11 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
                 if(refreshPicture && $scope.course.picture)
                     $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
 
-                $timeout(function(){
-                    $scope.$broadcast('onAfterInitCourse', $scope.course);
-                });
+                if(!refreshPicture) {
+                    $timeout(function () {
+                        $scope.$broadcast('onAfterInitCourse', $scope.course);
+                    });
+                }
             }
         });
 

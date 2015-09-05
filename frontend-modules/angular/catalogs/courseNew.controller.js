@@ -1,6 +1,8 @@
 
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
     $scope.submitted = false;
+    $scope.isLoading = false;
+    $scope.errors = [];
 
     $scope.course = {
         name: null,
@@ -24,6 +26,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $scope.course.category = $scope.$parent.category._id;
 
+            $scope.isLoading = true;
             var d = transformRequest($scope.course);
             $http({
                 method: 'POST',
@@ -38,12 +41,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if (data.result) {
                         $scope.$emit('onAfterCreateNewCourse');
                         window.location.href = '/course/' + data.course.slug + '/#/cid/' + data.course._id + '?new=1';
-                    } else {
-                        if (data.result != null && !data.result) {
-                            $scope.errors = data.errors;
-                            console.log(data.errors);
-                        }
                     }
+
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
                 });
         }
     };

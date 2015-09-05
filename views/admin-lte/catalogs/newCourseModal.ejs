@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="box-body no-border">
-                    <form name="newCourseForm" ng-submit="saveCourse(newCourseForm.$valid)" novalidate>
+                    <form ng-submit="saveCourse(newCourseForm.$valid)" name="newCourseForm"  novalidate>
                         <fieldset>
                             <div class="control-group" >
                                 <label class="control-label" for="course">Course Name </label>
@@ -61,7 +61,6 @@
 
                             <div class="control-group">
                                 <p class="help-block"></p>
-
                                 <p class="help-block"></p>
                                 <br class="clear">
 
@@ -69,7 +68,10 @@
                                     <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                     <!-- Button -->
                                     <div class="controls">
-                                        <button name="submitButton" class="btn btn-primary btn-block" ng-click="newCourseForm.$pristine=false">Create New Course</button>
+                                        <button name="submitButton" class="btn btn-primary btn-block"
+                                                ng-click="newCourseForm.$pristine=false">
+                                            Create New Course
+                                            <spinner show="isLoading"></spinner></button>
                                     </div>
                                 </div>
                             </div>
