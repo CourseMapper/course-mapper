@@ -1,6 +1,5 @@
 var User = require('./users.js');
 var Course = require('../catalogs/courses.js');
-var UserCourse = require('../catalogs/userCourses.js');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
@@ -13,7 +12,7 @@ function hash(passwd, salt) {
 }
 
 function account(){
-}
+};
 
 /**
  * just a demo code to create an admin user
@@ -247,6 +246,17 @@ account.prototype.handleRegisterPost = function(req, res, next) {
             // todo: implement redirect to previous screen.
         }
     );
+};
+
+account.prototype.getUser = function(error, params, success){
+    User.findOne(params)
+        .select('-password -salt -activationCode -__v -isActivated')
+        .exec(function(err, doc){
+            if(err)
+                error(err);
+            else
+                success(doc);
+        });
 };
 
 module.exports = account;

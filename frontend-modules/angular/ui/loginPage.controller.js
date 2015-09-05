@@ -1,4 +1,4 @@
-app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService) {
+app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -7,6 +7,9 @@ app.controller('MainMenuController', function($scope, $http, $rootScope, $cookie
 
     authService.loginCheck(function(user){
         $scope.user = user;
+        if($scope.user){
+            window.location = '/accounts';
+        }
     });
 
     if($cookies.rememberMe) {

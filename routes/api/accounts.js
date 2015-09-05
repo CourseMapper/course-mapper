@@ -8,7 +8,6 @@ var Mongoose = require('mongoose');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
-var Users = require(appRoot + '/modules/accounts/users.js');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var router = express.Router();
 
@@ -108,38 +107,30 @@ router.post('/accounts/login',
             });
         })(req, res, next);
     }
-    /*,
-    function(req, res) {
-        // If this function gets called, authentication was successful.
-        // 'req.user' contains the authenticated user.
-        res.status(200).json({
-            result: true,
-            user: req.user
-        });
-    }*/
 );
 
 router.get('/accounts/:username', function(req, res, next) {
     if(req.session.passport.user){
-        Users.findOne({username: req.session.passport.user.username}, function(err, doc){
-            if(err)
+        Account.getUser(
+            function(err){
                 res.status(500).json({result: false, errors: [err.message]});
-            else
-                res.status(200).json({
-                    result:(doc)?true:false, user: {
-                        username: doc.username,
-                        displayName: doc.displayName,
-                        email: doc.email,
-                        role: doc.role,
-                        _id: doc._id,
-                        dateAdded: doc.dateAdded,
-                        dateUpdated: doc.dateUpdated
-                    }
-                });
-        });
+            },
+            {username: req.session.passport.user},
+            function(doc){
+                if(doc) {
+                    res.status(200).json({
+                        result: true, user: doc
+                    });
+                } else {
+                    res.status(404).json({
+                        result: false, errors: ["User not found"]
+                    });
+                }
+            }
+        );
     }
     else
-        res.status(401).json({message: 'Not authorized'});
+        res.status(401).json({result: false, errors: ['Not authorized']});
 });
 
 /**
@@ -151,7 +142,7 @@ router.put('/accounts/:userId/changePassword', function(req, res, next){
             req.body.userId = Mongoose.Types.ObjectId(req.params.userId);
 
             if(!req.body.password || !req.body.passwordConfirm) {
-                res.status(500).json({result: false, errors:["parameter not complete"]});
+                res.status(400).json({result: false, errors:["parameter not complete"]});
                 next();
             }
             else {

@@ -1595,7 +1595,52 @@ app.directive('script', function($parse, $rootScope, $compile) {
                 }) ;
         };
 
-    });;app.factory('socket', function ($rootScope) {
+    });;app.factory('authService', [
+    '$rootScope', '$http',
+
+    function($rootScope, $http) {
+        return {
+
+            loginCheck : function(successCallback){
+                $http.get('/api/accounts').success(function(data) {
+                    if(data.result) {
+                        $rootScope.user = data.user;
+
+                        $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+
+                        successCallback($rootScope.user);
+                    }
+                });
+            },
+
+            login: function(loginData, successCallback, errorCallback){
+                var d = transformRequest(loginData);
+                $http({
+                    method: 'POST',
+                    url: '/api/accounts/login',
+                    data: d,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(
+                    function success(data) {
+                        if(data.result) {
+                            $rootScope.user = data.user;
+
+                            $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+
+                            successCallback($rootScope.user);
+                        }
+                    }).error(
+                    function (data) {
+                        errorCallback(data);
+                    }
+                );
+            }
+        }
+    }
+]);;app.factory('socket', function ($rootScope) {
     var socket = io.connect();
     return {
         on: function (eventName, callback) {
@@ -2108,17 +2153,17 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     };
 
 });
-;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies) {
+;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
+    $scope.user = null;
+    $scope.referer = false;
 
-    $http.get('/api/accounts').success(function(data) {
-        if(data.result) {
-            $scope.user = data.user;
-            $rootScope.user = data.user;
-
-            $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+    authService.loginCheck(function(user){
+        $scope.user = user;
+        if($scope.user){
+            window.location = '/accounts';
         }
     });
 
@@ -2134,27 +2179,52 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     $scope.login = function(isValid){
         if(isValid){
-            $scope.loginData.rememberMe = $scope.rememberMe;
-            var d = transformRequest($scope.loginData);
-            $http({
-                method: 'POST',
-                url: '/api/accounts/login',
-                data: d,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-                .success(
-                function success(data) {
-                    if(data.result) {
-                        $scope.user = data.user;
-                        $rootScope.user = data.user;
-
-                        $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
-
+            authService.login($scope.loginData,
+                function(user){
+                    $scope.user = user;
+                    if(!$scope.referer) {
                         window.location = '/accounts';
                     }
-                }).error(
+                },
+                function error(data) {
+                    if(data.errors){
+                        $scope.errors = data.errors;
+                    }
+                }
+            );
+        }
+    }
+
+});;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService) {
+    $scope.rememberMe = false;
+    $scope.loginData = {};
+    $scope.errors = [];
+    $scope.user = null;
+    $scope.referer = false;
+
+    authService.loginCheck(function(user){
+        $scope.user = user;
+    });
+
+    if($cookies.rememberMe) {
+        $scope.rememberMe = $cookies.rememberMe;
+    }
+
+    $scope.$watch('rememberMe', function(newVal, oldVal){
+        if(newVal !== oldVal){
+            $cookies.rememberMe = $scope.rememberMe;
+        }
+    });
+
+    $scope.login = function(isValid){
+        if(isValid){
+            authService.login($scope.loginData,
+                function(user){
+                    $scope.user = user;
+                    if(!$scope.referer) {
+                        window.location = '/accounts';
+                    }
+                },
                 function error(data) {
                     if(data.errors){
                         $scope.errors = data.errors;
