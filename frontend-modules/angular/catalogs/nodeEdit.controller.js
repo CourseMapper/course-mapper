@@ -123,7 +123,10 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
     /**
      * save add content node
      */
-    $scope.saveContentNode = function(){
+    $scope.saveContentNode = function(isValid){
+        if(!isValid)
+            return;
+
         // use saveEditNode for editing the content node.
         if($scope.currentNodeAction.mode == 'edit'){
             $scope.saveEditNode();
@@ -179,14 +182,16 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
 
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
                 }
 
+                $scope.addContentNodeForm.$setPristine();
+                $scope.isLoading = false;
+            })
+            .error(function(data){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
             });
+
     };
 
     $scope.cancel = function(){

@@ -28,9 +28,8 @@
                                            ng-model="currentEditNode.name"
                                            required ng-required="true"
                                             >
-
                                     <p ng-show="editSubTopicForm.name.$invalid && !editSubTopicForm.$pristine"
-                                       class="help-block">Subtopic Name is required.</p>
+                                       class="help-block">{{currentNodeAction.typeText}} Name is required.</p>
                                 </div>
                             </div>
                             <div class="control-group">

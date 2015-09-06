@@ -803,6 +803,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if(res.result){
                         //todo: go to map view
                         console.log("node deleted");
+                        $location.path('/cid/' + $scope.courseId + '?tab=map');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errors = data.errors;
@@ -849,9 +850,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentNodeAction.mode = "edit";
         $scope.currentNodeAction.type = "contentNode";
         $scope.currentNodeAction.typeText = "Content Node";
+        $scope.currentNodeAction.parent = $scope.treeNode;
 
         $scope.nodeModaltitle = "Edit " + $scope.currentNodeAction.typeText;
-        //$scope.nodeModaltitle += " " + $scope.treeNode.name;
 
         $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
     };
@@ -1044,7 +1045,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * save add content node
      */
-    $scope.saveContentNode = function(){
+    $scope.saveContentNode = function(isValid){
+        if(!isValid)
+            return;
+
         // use saveEditNode for editing the content node.
         if($scope.currentNodeAction.mode == 'edit'){
             $scope.saveEditNode();
@@ -1100,14 +1104,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
 
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
                 }
 
+                $scope.addContentNodeForm.$setPristine();
+                $scope.isLoading = false;
+            })
+            .error(function(data){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
             });
+
     };
 
     $scope.cancel = function(){

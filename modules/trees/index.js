@@ -66,7 +66,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     // check for at least 1 resource either it s a pdf or a video
     if (params.type == 'contentNode') {
         if (!files.file) {
-            error(new Error('need at least 1 resource'));
+            error(helper.createError('need at least 1 resource', 400));
             return;
         } else if (files.file.constructor != Array) {
             // make it an array if it s just 1 object. (we allow multiple upload on some types of node)

@@ -9,9 +9,10 @@
             </i>
         </span>
 
-        <a ng-show="data.type == 'contentNode'"
+        <a ng-show="data.type == 'contentNode' && !data.isDeleted"
            ng-href="{{getContentNodeLink(data)}}"> {{data.name}} </a>
         <span ng-show="data.type != 'contentNode'" > {{data.name}} </span>
+        <span ng-show="data.type == 'contentNode' && data.isDeleted == true" > {{data.name}} </span>
 
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
@@ -26,7 +27,7 @@
                 <a class="cursor" data-toggle="modal" data-target="#addContentNodeModal"
                    ng-click="setMode('add', 'contentNode', data)">
                     <i class="ionicons ion-android-add"></i>
-                    <i class="ionicons ion-android-document"></i>
+                    <i class="ionicons ion-document"></i>
                     Add Content Node</a>
             </li>
             <li class="separator"></li>
@@ -37,7 +38,7 @@
         </ul>
 
         <!-- contentnode menu-->
-        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode'">
+        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode' && !data.isDeleted">
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>
@@ -66,11 +67,11 @@
 
             <ul class="dropdown-menu dropdown-course">
                 <li>
-                    <a class="" data-toggle="modal" data-target="#addSubTopicModal"
+                    <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
                        ng-click="setMode('add', 'subTopic')">
                         <i class="ionicons ion-android-add"></i>
                         <i class="ionicons ion-android-folder"></i>
-                        Add A Sub Topic</a>
+                        Add Sub Topic</a>
                 </li>
             </ul>
         </div>
