@@ -962,7 +962,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * save add sub topic node
      */
-    $scope.saveNode = function(){
+    $scope.saveNode = function(isValid){
+        if(!isValid)
+            return;
+
+        $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
@@ -973,26 +977,28 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
 
-                    if($scope.formData.parent)
-                        delete $scope.formData.parent;
-
                     // cleaining up formData
+                    if($scope.formData.parent) {
+                        delete $scope.formData.parent;
+                    }
                     $scope.formData.name = "";
 
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
+                    $scope.isLoading = false;
+
+                    $scope.addSubTopicForm.$setPristine();
                 }
-            });
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            })
+        ;
     };
 
     /**
@@ -1025,6 +1031,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     $('#editSubTopicModal').modal('hide');
                     $('#editContentNodeModal').modal('hide');
+
+                    $scope.editSubTopicForm.$setPristine();
                 }
             })
             .error(function(data){

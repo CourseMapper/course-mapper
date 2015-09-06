@@ -1,5 +1,5 @@
 <!-- Main content -->
-<section class="content" ng-controller="NodeEditController" >
+<section class="content" ng-controller="NodeEditController">
     <div class="row row-centered">
         <div class="col-xs-12 col-md-5 col-centered">
             <div class="box no-border" ng-init="init()">
@@ -13,28 +13,39 @@
                 </div>
 
                 <div class="box-body no-border">
-                    <form class="" role="form" ng-submit="saveNode()">
+                    <form role="form" ng-submit="saveNode(addSubTopicForm.$valid)" name="addSubTopicForm"
+                          novalidate>
                         <fieldset>
                             <div class="control-group">
                                 <label class="control-label" for="name">{{currentNodeAction.typeText}} name</label>
-                                <p class="help-block">{{currentNodeAction.typeText}} name can contain any letters or numbers</p>
-                                <div class="controls">
+
+                                <p class="help-block">{{currentNodeAction.typeText}} name can contain any letters or
+                                    numbers</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : addSubTopicForm.name.$invalid && !addSubTopicForm.$pristine }">
                                     <input type="text" id="name" name="name" placeholder="" class="form-control"
-                                           ng-model="formData.name">
+                                           ng-model="formData.name"
+                                           required ng-required="true"
+                                            >
+
+                                    <p ng-show="addSubTopicForm.name.$invalid && !addSubTopicForm.$pristine"
+                                       class="help-block">Subtopic Name is required.</p>
                                 </div>
                             </div>
 
                             <div class="control-group">
                                 <p class="help-block"></p>
-                                <p class="help-block"></p>
-                                <br class="clear">
 
                                 <div class="box-footer">
-                                    <span class="help-block" ng-show="errors">{{ errors }}</span>
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                     <!-- Button -->
                                     <div class="controls">
-                                        <button class="btn btn-md btn-primary">Save</button>
-                                        <button type="button" class="btn btn-md btn-primary"
+                                        <button class="btn btn-primary" ng-click="addSubTopicForm.$setDirty()">Save
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+
+                                        <button type="button" class="btn btn-warning"
                                                 data-dismiss="modal" aria-label="Close"
                                                 ng-click="cancel()">
                                             <span aria-hidden="true">Cancel</span>
