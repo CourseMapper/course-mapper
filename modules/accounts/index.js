@@ -4,6 +4,7 @@ var UserCourse = require('../catalogs/userCourses.js');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
+var debug = require('debug')('cm:server');
 
 var crypto = require('crypto');
 
@@ -195,6 +196,36 @@ account.prototype.changePassword = function(error, params, success){
                 }
             });
     }
+};
+
+account.prototype.editAccount = function(error, params, success){
+    User.findOne({_id: params.userId})
+        .exec(function(err, doc){
+            if(err){
+                error(err);
+            }
+
+            if(doc){
+                if(params.password) {
+                    doc.setPassword(params.password);
+                }
+                if(params.displayName){
+                    doc.displayName = params.displayName;
+                    debug('edit displayname');
+                }
+
+                doc.save(function(err){
+                    if(err)
+                        error(err);
+
+                    success(doc);
+                });
+
+            } else {
+                error (new Error("old password is not correct"));
+            }
+
+        });
 };
 
 /**

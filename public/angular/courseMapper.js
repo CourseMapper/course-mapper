@@ -1076,7 +1076,19 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     }
 });
-;
+;app.directive('facebookButton',
+    function () {
+        return {
+            restrict: 'E',
+            terminal: true,
+            template:
+                '<div class="control-group">' +
+                    '<a href="/api/accounts/login/facebook">' +
+                    '<img src="/admin-lte/images/fb.png">' +
+                    '</a>' +
+                '</div>'
+    };
+});;
 app.directive('onFinishRender', function ($timeout) {
     return {
         restrict: 'A',
@@ -2124,10 +2136,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     $scope.rememberMe = false;
 
     $http.get('/api/accounts').success(function(data) {
-        $scope.user = data;
-        $rootScope.user = data;
+        if(data.result) {
+            $scope.user = data.user;
+            $rootScope.user = data.user;
 
-        $rootScope.$broadcast('onAfterInitUser', data);
+            $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+        }
     });
 
     if($cookies.rememberMe)
@@ -2159,33 +2173,40 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     $scope.$on('onAfterInitUser', function(event, user){
         $scope.user = user;
+        $scope.formData.displayName = $scope.user.displayName;
     });
 
     $scope.saveEditUser = function(){
-        if($scope.formData.password == $scope.formData.passwordConfirm){
-            var d = transformRequest($scope.formData);
-            $http({
-                method: 'PUT',
-                url: '/api/accounts/' + $scope.user._id + '/changePassword',
-                data: d, // pass in data as strings
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+        if($scope.user.displayName)
+            $scope.formData.displayName = $scope.user.displayName;
+
+        if($scope.formData.password ) {
+            if ($scope.formData.password != $scope.formData.passwordConfirm) {
+
+            }
+        }
+
+        var d = transformRequest($scope.formData);
+        $http({
+            method: 'PUT',
+            url: '/api/accounts/' + $scope.user._id,
+            data: d, // pass in data as strings
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function(data) {
+                if(data.result) {
+                    $scope.$emit('init');
+                    $('#editAccountModal').modal('hide');
                 }
             })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('init');
-                        $('#editAccountModal').modal('hide');
-                    }
-                })
-                .error(function(data){
-                    if(!data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
-                });
-        }
+            .error(function(data){
+                if(!data.result){
+                    $scope.errors = data.errors;
+                    console.log(data.errors);
+                }
+            });
     };
 
     $scope.cancel = function(){
