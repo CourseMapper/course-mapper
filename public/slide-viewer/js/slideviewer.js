@@ -13,7 +13,7 @@
     });
 };
 */
-
+console.log("LOADED RESET");
 var pdfIsLoaded = false;
 var annotationZonesAreLoaded = false;
 
@@ -49,10 +49,11 @@ function commentsLoaded(){
 */
 
 function tagListLoaded(tagList) {
-
+  console.log("RUN TAGLISTLOADED");
   for(var i = 0; i < tagList.length; i++) {
     toDrawAnnotationZoneData[i] = [tagList[i].name, tagList[i].relPosX, tagList[i].relPosY, tagList[i].relWidth, tagList[i].relHeight, tagList[i].color];
   }
+  console.log("ANNZONES LOADED");
   annotationZonesAreLoaded = true;
   drawAnnZonesWhenPDFAndDBDone();
 };

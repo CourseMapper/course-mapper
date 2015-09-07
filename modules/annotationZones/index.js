@@ -45,6 +45,7 @@ function submitSingleTag(tagList, pageNumber, err, restList, mainCallback, done)
       Y: tagList[2].split(";")[1]
     },
     color: tagList[3],
+    pdfId : 1, //TODO: Adapt later
     pdfPageNumber: pageNumber
   });
 
@@ -77,6 +78,7 @@ function submitSingleTagLast(tagList,pageNumber , mainCallback) {
       Y: tagList[2].split(";")[1]
     },
     color: tagList[3],
+    pdfId : 1, //TODO: Adapt later
     pdfPageNumber: pageNumber
   });
 
@@ -161,6 +163,17 @@ AnnZones.prototype.annotationZoneNameExists = async(function(name) {
 
 AnnZones.prototype.getAllAnnotationZones = function(callback) {
   AnnotationZonesPDF.find({},function (err, data) {
+    if(err) {
+      console.log(err);
+    }
+    else {
+      callback(0, data);
+    }
+  });
+};
+
+AnnZones.prototype.getSpecificAnnotationZones = function(id, page, callback) {
+  AnnotationZonesPDF.find({pdfId : id, pdfPageNumber : page},function (err, data) {
     if(err) {
       console.log(err);
     }

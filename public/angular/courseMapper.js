@@ -1823,14 +1823,23 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       console.log("GOT CALLED");
       if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
         $scope.currentPageNumber = $scope.currentPageNumber + value;
-        changeSlide($scope.currentPageNumber);
+        $timeout(function(){
+          $scope.$apply();
+          pdfIsLoaded = false;
+          changeSlide($scope.currentPageNumber);
+        });
+
     }
+
+
 });
 ;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {
 
 
-    $http.get('/slide-viewer/disAnnZones').success(function (data) {
-        console.log('TAGS UPDATED');
+
+    $scope.refreshTags = function() {
+      $http.get('/slide-viewer/disAnnZones/1/'+$scope.currentPageNumber).success(function (data) {
+        console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -1845,7 +1854,20 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         });
         */
 
+      });
+    };
+
+    $scope.$watch("currentPageNumber",function(newValue,oldValue){
+      console.log("LOADED RESET");
+      $(".slideRect").remove();
+
+      annotationZonesAreLoaded = false;
+
+      toDrawAnnotationZoneData = [];
+      $scope.refreshTags();
     });
+
+    //$scope.refreshTags();
 });
 ;app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
 

@@ -16,7 +16,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
         rawText: params.rawText,
         renderedText: renderedText,
         author: params.author,
-        //pdfId: x,
+        pdfId: 1, //TODO: Adapt later
         pdfPageNumber: params.pageNumber
       });
 
