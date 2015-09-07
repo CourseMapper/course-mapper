@@ -3,7 +3,7 @@
   "facebookAuth": {
     "clientID": "1490134417947948",
     "clientSecret": "9c239c9b196756f1a31744b42eca49ae",
-    "callbackURL": "http://localhost:3000/api/accounts/facebook/callback"
-  },
+    "callbackURL": "http://course-mapper.herokuapp.com/api/accounts/facebook/callback"
+  }
 }
 
