@@ -16,6 +16,9 @@ var cmLibraries = {
             if (typeof(params[nKey]) == 'undefined' || typeof(params[nKey]) === null) {
                 errors.push(nKey);
             }
+            else if (params[nKey] == "") {
+                errors.push(nKey);
+            }
         }
 
         if (errors.length > 0) {

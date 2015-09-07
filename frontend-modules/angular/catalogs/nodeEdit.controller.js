@@ -69,7 +69,6 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     $scope.formData.name = "";
 
                     $scope.isLoading = false;
-
                     $scope.addSubTopicForm.$setPristine();
                 }
             })

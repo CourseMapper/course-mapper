@@ -991,7 +991,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $scope.formData.name = "";
 
                     $scope.isLoading = false;
-
                     $scope.addSubTopicForm.$setPristine();
                 }
             })
@@ -1168,7 +1167,17 @@ app.directive('script', function($parse, $rootScope, $compile) {
             }
         }
     };
-});;app.directive('movable', function () {
+});;app.directive('cancel',
+    function () {
+        return {
+            restrict: 'E',
+            template: '<button type="button" class="btn btn-warning"' +
+            'data-dismiss="modal" aria-label="Close"' +
+            'ng-click="cancel()">' +
+            '<span aria-hidden="true">Cancel</span>' +
+            '</button>'
+        };
+    });;app.directive('movable', function () {
     return {
         restrict: 'A',
         scope: {
@@ -1299,6 +1308,9 @@ app.directive('spinner', Spinner);
 
     $scope.pid = false;
 
+    $scope.isLoading = false;
+    $scope.errors = [];
+
     $scope.menu = [
         ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
         [ 'font-size' ],
@@ -1339,9 +1351,13 @@ app.directive('spinner', Spinner);
         }
     });
 
-    $scope.saveNewPost = function(){
+    $scope.saveNewPost = function(isValid){
+        if(!isValid)
+            return;
+
         console.log('saving');
 
+        $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
@@ -1359,16 +1375,21 @@ app.directive('spinner', Spinner);
                     $timeout(function(){$scope.$apply()});
 
                     $('#addNewTopicModal').modal('hide');
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
                 }
-            }) ;
+
+                $scope.addTopicForm.$setPristine();
+                $scope.isLoading = false;
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
     };
 
-    $scope.saveEditPost = function(){
+    $scope.saveEditPost = function(isValid){
+        if(!isValid)
+            return;
+
         console.log('saving edit post');
 
         var d = transformRequest($scope.currentTopic);
@@ -1390,13 +1411,15 @@ app.directive('spinner', Spinner);
                     var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
                     $scope.topics[i].discussion = data.post;
                     $timeout(function(){$scope.$apply()});
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+
+                    $scope.editTopicForm.$setPristine();
+                    $scope.isLoading = false;
                 }
-            }) ;
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
     };
 
     $scope.editReply = function(re){
@@ -1571,129 +1594,155 @@ app.directive('spinner', Spinner);
 
     $scope.cancel = function(){
         $scope.currentTopic = $scope.originalCurrentTopic;
+        $scope.editTopicForm.$setPristine();
+        $scope.addTopicForm.$setPristine();
+        $scope.errors = [];
     };
 
-});;app.
-    controller('ReplyController', function($scope, $http, $timeout) {
-        $scope.formData = {
-            title: " ",
-            content: ""
-        };
+});;app.controller('ReplyController', function ($scope, $http, $timeout) {
+    $scope.isLoading = false;
+    $scope.errors = [];
 
-        $scope.formNewData = {
-            title: " ",
-            content: ""
-        };
+    $scope.formData = {
+        title: " ",
+        content: ""
+    };
 
-        $scope.menu = [
-            ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-            [ 'font-size' ],
-            ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-            ['left-justify', 'center-justify', 'right-justify'],
-            ['code', 'quote', 'paragraph']
-        ];
+    $scope.formNewData = {
+        title: " ",
+        content: ""
+    };
 
-        $scope.$on('onEditReplyClicked', function(e, post){
-            $scope.formData.content = post.content;
-            $scope.formData.postId = post._id;
-        });
+    $scope.menu = [
+        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+        ['font-size'],
+        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
+        ['left-justify', 'center-justify', 'right-justify'],
+        ['code', 'quote', 'paragraph']
+    ];
 
-        $scope.saveNewReply = function(){
-            console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
-            $scope.formNewData.parentPost = $scope.$parent.currentReplyingTo;
+    $scope.$on('onEditReplyClicked', function (e, post) {
+        $scope.formData.content = post.content;
+        $scope.formData.postId = post._id;
+    });
 
-            var d = transformRequest($scope.formNewData);
-            $http({
-                method: 'POST',
-                url: '/api/discussion/replies/',
-                data: d,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+    $scope.saveNewReply = function (isValid) {
+        if (!isValid)
+            return;
+
+        console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
+        $scope.formNewData.parentPost = $scope.$parent.currentReplyingTo;
+
+        var d = transformRequest($scope.formNewData);
+        $http({
+            method: 'POST',
+            url: '/api/discussion/replies/',
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                console.log(data);
+                if (data.result) {
+                    $scope.$emit('onAfterCreateReply', data.post);
+
+                    $('#addNewReplyModal').modal('hide');
+
+                    $scope.formNewData.content = "";
+
+                    $timeout(function () {
+                        $scope.$apply()
+                    });
+
+                    $scope.addNewReplyForm.$setPristine();
+                    $scope.isLoading = false;
+                    $scope.errors = [];
                 }
             })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('onAfterCreateReply', data.post);
+            .error(function (data) {
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
+    };
 
-                        $('#addNewReplyModal').modal('hide');
+    $scope.cancel = function () {
+        $scope.formData.content = "";
+        $scope.formNewData.content = "";
+        if ($scope.addNewReplyForm)
+            $scope.addNewReplyForm.$setPristine();
+        if ($scope.editReplyForm)
+            $scope.editReplyForm.$setPristine();
+        $scope.errors = [];
 
-                        $scope.formNewData.content = "";
+        /*$timeout(function () {
+         $scope.$apply()
+         });*/
+    };
 
-                        $timeout(function(){$scope.$apply()});
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
-                    }
-                }) ;
-        };
+    $scope.saveEditReply = function (isValid) {
+        if (!isValid)
+            return;
 
-        $scope.cancel = function(){
-            $scope.formData.content = "";
-            $scope.formNewData.content = "";
+        console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
 
-            $timeout(function(){$scope.$apply()});
-        };
+        var d = transformRequest($scope.formData);
+        $http({
+            method: 'PUT',
+            url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                console.log(data);
+                if (data.result) {
+                    $scope.$emit('onAfterEditReply', data.post);
 
-        $scope.saveEditReply = function(){
-            console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
-
-            var d = transformRequest($scope.formData);
-            $http({
-                method: 'PUT',
-                url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
-                data: d,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    $scope.formData.content = "";
+                    $timeout(function () {
+                        $scope.$apply()
+                    });
+                    $('#editReplyModal').modal('hide');
                 }
+
+                $scope.editReplyForm.$setPristine();
+                $scope.isLoading = false;
             })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('onAfterEditReply', data.post);
+            .error(function (data) {
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
+    };
 
-                        $scope.formData.content = "";
-                        $timeout(function(){$scope.$apply()});
+    /**
+     * deleting root topic
+     * @param postId
+     */
+    $scope.deletePost = function (postId) {
+        $http({
+            method: 'DELETE',
+            url: '/api/discussion/' + postId,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                console.log(data);
+                if (data.result) {
+                    $scope.$emit('onAfterDeletePost', postId);
 
-                        $('#editReplyModal').modal('hide');
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                } else {
+                    if (data.result != null && !data.result) {
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
                     }
-                }) ;
-        };
-
-        /**
-         * deleting root topic
-         * @param postId
-         */
-        $scope.deletePost = function(postId){
-            $http({
-                method: 'DELETE',
-                url: '/api/discussion/' + postId,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('onAfterDeletePost', postId);
+            });
+    };
 
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
-                    }
-                }) ;
-        };
-
-    });;app.factory('authService', [
+});;app.factory('authService', [
     '$rootScope', '$http',
 
     function($rootScope, $http) {

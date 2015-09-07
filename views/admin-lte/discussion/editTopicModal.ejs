@@ -10,22 +10,27 @@
                             <h3 class="box-title">Edit Topic</h3>
 
                             <div class="box-tools pull-right">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span
                                         aria-hidden="true">&times;</span></button>
                             </div>
                         </div>
                         <div class="box-body">
-                            <form class="" role="form" ng-submit="saveEditPost()">
+                            <form name="editTopicForm" role="form" ng-submit="saveEditPost(editTopicForm.$valid)" novalidate>
                                 <fieldset>
                                     <div class="control-group">
                                         <label class="control-label" for="title">Title</label>
 
                                         <p class="help-block">Title can contain any letters or numbers</p>
 
-                                        <div class="controls">
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : editTopicForm.title.$invalid && !editTopicForm.$pristine }">
                                             <input type="text" id="title" name="title" placeholder=""
                                                    class="form-control"
-                                                   ng-model="currentTopic.title">
+                                                   ng-model="currentTopic.title"
+                                                   required ng-required="true">
+
+                                            <p ng-show="editTopicForm.title.$invalid && !editTopicForm.$pristine"
+                                               class="help-block">Topic must contains title</p>
                                         </div>
                                     </div>
                                     <br>
@@ -47,13 +52,16 @@
 
                                     <div class="control-group">
                                         <br class="clear">
-                                        <span class="help-block" ng-show="errors">{{ errors }}</span>
+                                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                         <!-- Button -->
                                         <div class="controls">
-                                            <button class="btn btn-md btn-primary">Save</button>
-                                            <button type="button" class="btn btn-md btn-primary"
+                                            <button class="btn btn-primary" ng-click="editTopicForm.$setDirty()">Save
+                                                <spinner show="isLoading"></spinner>
+                                            </button>
+                                            <button type="button" class="btn btn-warning"
                                                     data-dismiss="modal" aria-label="Close"
                                                     ng-click="cancel()">
+
                                                 <span aria-hidden="true">Cancel</span>
                                             </button>
                                         </div>
