@@ -7503,7 +7503,8 @@ Selection = (function() {
       return [this.doc.root, 0];
     }
     ref = this.doc.findLeafAt(index, true), leaf = ref[0], offset = ref[1];
-    return this._decodePosition(leaf.node, offset);
+      if(leaf != null && typeof(leaf) != 'undefined')
+        return this._decodePosition(leaf.node, offset);
   };
 
   Selection.prototype._positionToIndex = function(node, offset) {
@@ -7830,9 +7831,7 @@ Wrapper = (function() {
   };
 
   Wrapper.prototype.on = function(eventName, listener) {
-      if(this.node == null || typeof(this.node) == 'undefined'){
-          return;
-      }
+    if(this.node != null && typeof(this.node) != 'undefined')
     this.node.addEventListener(eventName, (function(_this) {
       return function(event) {
         var arg, propagate;

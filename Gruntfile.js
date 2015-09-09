@@ -28,14 +28,14 @@ module.exports = function (grunt) {
                     'angular/angular-cookies.min.js': 'angular-cookies/angular-cookies.min.js',
                     'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map'
                 }
-            },
+            }/*,
 
             folders: {
                 files: {
-                    'quill': 'quill/dist/*',
-                    'angular-quill': 'angular-quill/*'
+                    'quill': 'quill/dist/!*',
+                    'angular-quill': 'angular-quill/!*'
                 }
-            }
+            }*/
         },
 
         concat: {
@@ -114,7 +114,8 @@ module.exports = function (grunt) {
 
     // the default task (running "grunt" in console)
     grunt.registerTask('default', [
-            'bowercopy:scripts','bowercopy:folders',
+            'bowercopy:scripts',
+        //'bowercopy:folders',
         'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va']
     );
 

@@ -26,6 +26,8 @@
 
                 },
                 link: function (scope, element, attrs, ngModel) {
+                    var inputId = '';
+                    if(attrs.id) inputId = '#' + attrs.id;
 
                     var updateModel = function updateModel(value) {
                             scope.$apply(function () {
@@ -34,7 +36,7 @@
                         },
                         options = {
                             modules: {
-                                'toolbar': {container: '.toolbar'},
+                                'toolbar': {container: inputId + ' .toolbar'},
                                 'image-tooltip': false,
                                 'link-tooltip': false
                             },
@@ -50,6 +52,10 @@
 
                         editor = new Quill(element.children()[1], options);
 
+                        $(inputId + ' .editor').click(function(){
+                            editor.focus()
+                        });
+
                         ngModel.$render();
 
                         editor.on('text-change', function (delta, source) {
@@ -61,12 +67,11 @@
                             $('#' + editId).toggleClass('focus', hasFocus);
                             // Hack for inability to scroll on mobile
                             if (/mobile/i.test(navigator.userAgent)) {
-                                $(editor).css('height', quill.root.scrollHeight + 30)   // 30 for padding
+                                $(editor).css('height', quill.root.scrollHeight + 30);   // 30 for padding
                             }
                         });
 
                     });
-
 
                     ngModel.$render = function () {
                         if (angular.isDefined(editor)) {
@@ -74,7 +79,6 @@
                                 editor.setHTML(ngModel.$viewValue || '');
                             });
                         }
-
                     };
 
                 }

@@ -1601,12 +1601,12 @@ app.directive('spinner', Spinner);
     $scope.isLoading = false;
     $scope.errors = [];
 
-    $scope.formData = {
+    $scope.EditFormData = {
         title: " ",
         content: ""
     };
 
-    $scope.formNewData = {
+    $scope.AddFormData = {
         title: " ",
         content: ""
     };
@@ -1620,8 +1620,8 @@ app.directive('spinner', Spinner);
     ];
 
     $scope.$on('onEditReplyClicked', function (e, post) {
-        $scope.formData.content = post.content;
-        $scope.formData.postId = post._id;
+        $scope.EditFormData.content = post.content;
+        $scope.EditFormData.postId = post._id;
     });
 
     $scope.saveNewReply = function (isValid) {
@@ -1629,9 +1629,11 @@ app.directive('spinner', Spinner);
             return;
 
         console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
-        $scope.formNewData.parentPost = $scope.$parent.currentReplyingTo;
+        $scope.AddFormData.parentPost = $scope.$parent.currentReplyingTo;
 
-        var d = transformRequest($scope.formNewData);
+        $scope.isLoading = true;
+
+        var d = transformRequest($scope.AddFormData);
         $http({
             method: 'POST',
             url: '/api/discussion/replies/',
@@ -1647,7 +1649,7 @@ app.directive('spinner', Spinner);
 
                     $('#addNewReplyModal').modal('hide');
 
-                    $scope.formNewData.content = "";
+                    $scope.AddFormData.content = "";
 
                     $timeout(function () {
                         $scope.$apply()
@@ -1665,17 +1667,15 @@ app.directive('spinner', Spinner);
     };
 
     $scope.cancel = function () {
-        $scope.formData.content = "";
-        $scope.formNewData.content = "";
+        $scope.EditFormData.content = "";
+        $scope.AddFormData.content = "";
         if ($scope.addNewReplyForm)
             $scope.addNewReplyForm.$setPristine();
+
         if ($scope.editReplyForm)
             $scope.editReplyForm.$setPristine();
-        $scope.errors = [];
 
-        /*$timeout(function () {
-         $scope.$apply()
-         });*/
+        $scope.errors = [];
     };
 
     $scope.saveEditReply = function (isValid) {
@@ -1684,7 +1684,9 @@ app.directive('spinner', Spinner);
 
         console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
 
-        var d = transformRequest($scope.formData);
+        //$scope.isLoading = true;
+
+        var d = transformRequest($scope.EditFormData);
         $http({
             method: 'PUT',
             url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
@@ -1698,7 +1700,7 @@ app.directive('spinner', Spinner);
                 if (data.result) {
                     $scope.$emit('onAfterEditReply', data.post);
 
-                    $scope.formData.content = "";
+                    $scope.EditFormData.content = "";
                     $timeout(function () {
                         $scope.$apply()
                     });

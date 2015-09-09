@@ -22,7 +22,7 @@ catalog.prototype.getCourse = function (error, params, success) {
                 if (doc)
                     success(doc);
                 else
-                    helper.createError404('Course');
+                    error(helper.createError404('Course'));
             }
         });
 };

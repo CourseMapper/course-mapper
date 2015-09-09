@@ -3,6 +3,8 @@ var Posts = require('./models/posts.js');
 var Discussion = require('./models/courseDiscussions.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
+var appRoot = require('app-root-path');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 
 function courseDiscussion(){
 }
@@ -115,11 +117,27 @@ courseDiscussion.prototype.getReplies = function(error, parentId, success){
 };
 
 courseDiscussion.prototype.editPost = function(error, params, success){
-    Posts.findOneAndUpdate(
-        {
-            _id: params.postId,
-            createdBy: params.userId
-        },
+    Posts.findOne({
+        _id: params.postId,
+        createdBy: params.userId
+    }).exec(function(err, doc){
+        if(err){
+            error(err);
+
+        } else if(doc){
+            doc.title = params.title;
+            doc.content = params.content;
+            doc.save(function(){
+                success(doc);
+            });
+
+        } else {
+            error(helper.createError404('Post'));
+        }
+    });
+
+    /*Posts.findOneAndUpdate(
+        ,
         {
             $set: {
                 title: params.title,
@@ -132,7 +150,7 @@ courseDiscussion.prototype.editPost = function(error, params, success){
                 error(err);
             else
                 success(doc);
-        });
+        });*/
 };
 
 courseDiscussion.prototype.deletePost = function(error, params, success){
