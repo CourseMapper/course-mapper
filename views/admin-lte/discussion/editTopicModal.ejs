@@ -35,18 +35,9 @@
                                     </div>
                                     <br>
 
-                                    <div class="control-group">
-                                        <label class="control-label">Content</label>
-
+                                    <div class="control-group"> 
                                         <div class="controls">
-                                            <wysiwyg textarea-id="Content"
-                                                     textarea-class="form-control"
-                                                     textarea-height="180px"
-                                                     textarea-name="Content"
-                                                     textarea-required
-                                                     ng-model="currentTopic.content"
-                                                     textarea-menu="menu">
-                                            </wysiwyg>
+                                            <div id="editTopicContent" name="content" ng-model="currentTopic.content" quill></div>
                                         </div>
                                     </div>
 
