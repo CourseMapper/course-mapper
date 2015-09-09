@@ -518,6 +518,7 @@ ul.dropdown-menu.course{
     top: 0px;
     position: absolute;
     overflow: hidden;
+    background-color: #ecf0f5;
 }
 
 #courseTabs .tree-container{
@@ -699,4 +700,4 @@ a.videoButton:hover{
 }
 a.cursor {
     cursor: pointer;
-}
+} 
