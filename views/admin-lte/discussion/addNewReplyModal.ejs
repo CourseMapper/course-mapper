@@ -20,17 +20,8 @@
                                   novalidate>
                                 <fieldset>
                                     <div class="control-group">
-                                        <label class="control-label">Content</label>
-
                                         <div class="controls">
-                                            <wysiwyg textarea-id="Content"
-                                                     textarea-class="form-control"
-                                                     textarea-height="180px"
-                                                     textarea-name="Content"
-                                                     textarea-required
-                                                     ng-model="formNewData.content"
-                                                     textarea-menu="menu">
-                                            </wysiwyg>
+                                            <div ng-model="formNewData.content" quill ></div>
                                         </div>
                                     </div>
 

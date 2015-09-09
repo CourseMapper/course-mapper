@@ -700,4 +700,18 @@ a.videoButton:hover{
 }
 a.cursor {
     cursor: pointer;
-} 
+}
+
+.quill-wrapper{
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 5px #ccc;
+    /*min-height: 220px;*/
+}
+.ql-toolbar{
+    border-bottom: 1px solid #ccc;
+}
+.ql-container{
+    min-height: 200px;
+    max-height: 400px!important;
+}

@@ -7830,6 +7830,9 @@ Wrapper = (function() {
   };
 
   Wrapper.prototype.on = function(eventName, listener) {
+      if(this.node == null || typeof(this.node) == 'undefined'){
+          return;
+      }
     this.node.addEventListener(eventName, (function(_this) {
       return function(event) {
         var arg, propagate;

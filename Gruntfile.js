@@ -32,7 +32,8 @@ module.exports = function (grunt) {
 
             folders: {
                 files: {
-                    'quill': 'quill/dist/*'
+                    'quill': 'quill/dist/*',
+                    'angular-quill': 'angular-quill/*'
                 }
             }
         },
