@@ -1684,7 +1684,7 @@ app.directive('spinner', Spinner);
 
         console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
 
-        //$scope.isLoading = true;
+        $scope.isLoading = true;
 
         var d = transformRequest($scope.EditFormData);
         $http({

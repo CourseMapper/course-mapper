@@ -85,7 +85,7 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
 
         console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
 
-        //$scope.isLoading = true;
+        $scope.isLoading = true;
 
         var d = transformRequest($scope.EditFormData);
         $http({
