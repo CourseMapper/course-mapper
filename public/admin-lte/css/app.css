@@ -715,3 +715,12 @@ a.cursor {
     min-height: 200px;
     max-height: 400px!important;
 }
+.content-header.action-header >.breadcrumb>li>a{
+    color:white;
+}
+#LinksList .posts-list h4{
+    float: left;
+}
+.open-new-tab {
+    float: right;
+}

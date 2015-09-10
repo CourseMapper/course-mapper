@@ -3,6 +3,8 @@ var Posts = require('../discussion/models/posts.js');
 var Links = require('./models/links.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
+var appRoot = require('app-root-path');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 
 function NodeLinks(){
 }
@@ -16,6 +18,9 @@ function NodeLinks(){
  * @param success
  */
 NodeLinks.prototype.getNodeLinks = function(error, nodeId, success){
+    if(!nodeId)
+        return error(helper.createError(msg, 400));
+
     Links.find({
         contentNode: nodeId,
         isDeleted: false
@@ -24,26 +29,33 @@ NodeLinks.prototype.getNodeLinks = function(error, nodeId, success){
         .populate('link')
         .populate('createdBy', 'username')
         .exec(function(err, docs) {
-            if (!err){
-                success(docs);
-            } else {
+            if (err){
                 error(err);
+            } else {
+                success(docs);
             }
         });
 };
 
 NodeLinks.prototype.getNodeLink = function(error, pId, success){
+    if(!pId)
+        return error(helper.createError(msg, 400));
+
     Links.findOne({
         _id: pId
     })
         .sort({dateAdded: -1})
         .populate('link')
         .populate('createdBy', 'username')
-        .exec(function(err, docs) {
-            if (!err){
-                success(docs);
-            } else {
+        .exec(function(err, doc) {
+            if (err) {
                 error(err);
+            } else {
+                if(!doc){
+                    helper.createError404('Course')
+                } else {
+                    success(doc);
+                }
             }
         });
 };

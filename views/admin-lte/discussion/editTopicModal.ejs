@@ -35,7 +35,7 @@
                                     </div>
                                     <br>
 
-                                    <div class="control-group"> 
+                                    <div class="control-group">
                                         <div class="controls">
                                             <div id="editTopicContent" name="content" ng-model="currentTopic.content" quill></div>
                                         </div>
@@ -49,12 +49,7 @@
                                             <button class="btn btn-primary" ng-click="editTopicForm.$setDirty()">Save
                                                 <spinner show="isLoading"></spinner>
                                             </button>
-                                            <button type="button" class="btn btn-warning"
-                                                    data-dismiss="modal" aria-label="Close"
-                                                    ng-click="cancel()">
-
-                                                <span aria-hidden="true">Cancel</span>
-                                            </button>
+                                            <cancel></cancel>
                                         </div>
                                     </div>
                                 </fieldset>

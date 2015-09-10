@@ -9,3 +9,11 @@ app.directive('cancel',
             '</button>'
         };
     });
+
+app.directive('modalClose',
+    function () {
+        return {
+            restrict: 'E',
+            template: '<div class="box-tools pull-right"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+        };
+    });

@@ -1175,6 +1175,14 @@ app.directive('script', function($parse, $rootScope, $compile) {
             '<span aria-hidden="true">Cancel</span>' +
             '</button>'
         };
+    });
+
+app.directive('modalClose',
+    function () {
+        return {
+            restrict: 'E',
+            template: '<div class="box-tools pull-right"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+        };
     });;app.directive('movable', function () {
     return {
         restrict: 'A',
@@ -1841,6 +1849,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         $scope.pid = false;
         $scope.currentLinkUrl = "";
         $scope.links = [];
+        $scope.errors = [];
+        $scope.isLoading = false;
 
         $scope.initiateLink = function(){
             $scope.pid = $location.search().pid;
@@ -1867,8 +1877,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             $scope.course = course;
         });
 
-        $scope.saveNewPost = function(){
+        $scope.saveNewPost = function(isValid){
+            if(!isValid)
+                return;
+
             console.log('saving bookmark');
+
+            $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
             $http({
@@ -1886,18 +1901,27 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         $scope.links.unshift(data.post);
                         $timeout(function(){$scope.$apply()});
 
-                        $('#addNewLinksModal').modal('hide');
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                        $scope.formData = {};
+                        $scope.AddLinkForm.$setPristine();
+
+                        $('#AddLinksModal').modal('hide');
                     }
-                }) ;
+
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
+                });
         };
 
-        $scope.saveEditPost = function(){
+        $scope.saveEditPost = function(isValid){
+            if(!isValid)
+                return;
+
             console.log('saving edit bookmark');
+
+            $scope.isLoading = true;
 
             var d = transformRequest($scope.currentLink);
             $http({
@@ -1913,17 +1937,19 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
-                        $('#editLinksModal').modal('hide');
+                        $('#EditLinksModal').modal('hide');
 
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
                     }
+
+                    $scope.AddLinkForm.$setPristine();
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
                 });
         };
 
@@ -1997,7 +2023,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                     ActionBarService.extraActionsMenu.push({
                         'html':
                         '<a style="cursor: pointer;"' +
-                        ' data-toggle="modal" data-target="#editLinksModal"' +
+                        ' data-toggle="modal" data-target="#EditLinksModal"' +
                         ' title="Edit">' +
                         '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
                     });
@@ -2024,6 +2050,10 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
+            if($scope.AddLinkForm)
+            $scope.AddLinkForm.$setPristine();
+            if($scope.EditLinkForm)
+            $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {

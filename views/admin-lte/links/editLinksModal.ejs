@@ -1,4 +1,3 @@
-
 <!-- course edit form -->
 <div class="row">
     <div class="modal" id="editLinksModal" tabindex="-1" role="dialog"
@@ -16,22 +15,29 @@
                             </div>
                         </div>
                         <div class="box-body">
-                            <form class="" role="form" ng-submit="saveEditPost()">
+                            <form name="EditLinksForm" role="form" ng-submit="saveEditPost()">
                                 <fieldset>
                                     <div class="control-group">
                                         <label class="control-label" for="title">Title</label>
+
                                         <p class="help-block">Title can contain any letters or numbers</p>
+
                                         <div class="controls">
-                                            <input type="text" id="title" name="title" placeholder="" class="form-control"
+                                            <input type="text" id="title" name="title" placeholder=""
+                                                   class="form-control"
                                                    ng-model="currentLink.title">
                                         </div>
                                     </div>
                                     <br>
+
                                     <div class="control-group">
                                         <label class="control-label">Link</label>
+
                                         <p class="help-block">Link must start with http:// or https://</p>
+
                                         <div class="controls">
-                                            <input type="text" id="link" name="link" placeholder="http://" class="form-control"
+                                            <input type="text" id="link" name="link" placeholder="http://"
+                                                   class="form-control"
                                                    ng-model="currentLink.content">
                                         </div>
                                     </div>
@@ -41,12 +47,8 @@
                                         <span class="help-block" ng-show="errors">{{ errors }}</span>
                                         <!-- Button -->
                                         <div class="controls">
-                                            <button class="btn btn-md btn-primary">Save</button>
-                                            <button type="button" class="btn btn-md btn-primary"
-                                                    data-dismiss="modal" aria-label="Close"
-                                                    ng-click="cancel()">
-                                                <span aria-hidden="true">Cancel</span>
-                                            </button>
+                                            <button class="btn btn-primary">Save</button>
+                                            <cancel></cancel>
                                         </div>
                                     </div>
                                 </fieldset>
