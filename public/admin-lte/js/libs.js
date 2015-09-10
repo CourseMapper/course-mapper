@@ -37,7 +37,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 
 function cloneSimpleObject(obj){
     return JSON.parse(JSON.stringify(obj));
-};;/**
+};/**
  * parse url parameter / query parameter in the url
  * @param url string
  * @returns {} dictionary

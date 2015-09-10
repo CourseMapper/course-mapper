@@ -18,9 +18,14 @@
                 <ul class="posts">
                     <li class="post" ng-repeat="bookmark in links" ng-class="(pid==bookmark.link._id)?'active':''"
                         ng-hide="bookmark.isDeleted">
-                        <h4><a ng-href="#/cid/{{course._id}}/nid/{{contentNode._id}}?tab=links&pid={{bookmark.link._id}}">
-                            {{bookmark.link.title}}
-                        </a></h4>
+                        <h4>
+                            <a ng-href="#/cid/{{course._id}}/nid/{{contentNode._id}}?tab=links&pid={{bookmark.link._id}}">
+                                {{bookmark.link.title}}
+                            </a></h4>
+
+                        <a class="btn btn-primary btn-xs open-new-tab" title="Open in a New Tab" href="{{currentLink.content}}" target="_blank">
+                            <i class="fa fa-external-link"></i></a>
+                        <br class="clear">
                         <span class="posted-at">
                             Posted <strong>{{bookmark.link.dateAdded | relativeDate}}</strong>
                             By <strong>{{bookmark.createdBy.username}}</strong>
@@ -39,14 +44,6 @@
 
                 <div ng-show="currentLink" class="currentTopic">
                     <div class="box box-solid">
-                        <div class="box-header with-border">
-                            <h4>{{currentLink.title}}</h4>
-                            <span class="posted-at">
-                                Posted <strong>{{currentLink.dateAdded | relativeDate}}</strong>
-                            By <strong>{{currentLink.createdBy.username}}</strong>
-                                <br>{{currentLink.content}}
-                            </span>
-                        </div>
                         <div class="box-body">
                             <a class="btn btn-primary" href="{{currentLink.content}}" target="_blank">open in a new tab</a>
                             <iframe ng-src="{{currentLinkUrl}}" class="link" frameborder="0"></iframe>
@@ -58,7 +55,9 @@
         </div>
     </div>
 
-    <% include addNewLinksModal %>
-    <% include editLinksModal %>
+    <% var operation = 'Add'; var actionMethodName = 'saveNewPost'; var variableContainer = 'formData'; %>
+    <% include linksModal %>
+    <% var operation = 'Edit'; var actionMethodName = 'saveEditPost'; var variableContainer = 'currentLink'; %>
+    <% include linksModal %>
 
 </div>

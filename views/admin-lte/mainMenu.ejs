@@ -12,7 +12,7 @@
         </div>
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
-            <ul class="nav navbar-nav" >
+            <ul class="nav navbar-nav">
                 <!-- Messages: style can be found in dropdown.less-->
                 <li class="dropdown tasks-menu" ng-cloak ng-hide="user">
                     <a style="cursor: pointer" class="dropdown-toggle" data-toggle="dropdown">
@@ -20,27 +20,13 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <form class="form-signin" action="/accounts/login" method="post">
-                                <h3 class="form-signin-heading">Please log in</h3>
-                                <label for="inputUsername" class="sr-only">Username</label>
-                                <input name="username" type="text" id="inputUsername" class="form-control"
-                                       placeholder="Username" required autofocus>
-                                <label for="inputPassword" class="sr-only">Password</label>
-                                <input name="password" type="password" id="inputPassword" class="form-control"
-                                       placeholder="Password" required>
-
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" value="yes" name="rememberMe" ng-model="rememberMe" ng-checked="rememberMe"> Remember me
-                                    </label>
-                                </div>
-                                <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
-                            </form>
-
+                            <div class="box-body no-border">
+                                <% include formLogin %>
+                            </div>
                         </li>
                         <li>
                             <form class="form-signin">
-                            <facebook-button></facebook-button>
+                                <facebook-button></facebook-button>
                             </form>
                         </li>
                     </ul>

@@ -2,6 +2,7 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var Controller = require(appRoot + '/modules/links/links.controller.js');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
 var router = express.Router();
 var mongoose = require('mongoose');
@@ -10,13 +11,21 @@ var mongoose = require('mongoose');
  * return all posts
  */
 router.get('/:nodeId', function(req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    //todo: check user auth / enrollement
+
+    if(!helper.checkRequiredParams(req.params, ['nodeId'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
     var cat = new Controller();
     cat.getNodeLinks(
         function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+            helper.resReturn(err, res);
         },
         // parameters
         mongoose.Types.ObjectId(req.params.nodeId)
@@ -34,13 +43,18 @@ router.get('/:nodeId', function(req, res, next) {
  * get all posts/replies under a post
  */
 router.get('/:postId/posts', function(req, res, next) {
-    var cat = new CourseDiscussionController();
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+    if(!helper.checkRequiredParams(req.params, ['postId'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
+    var cat = new Controller();
     cat.getReplies(
         function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+            helper.resReturn(err, res);
         },
         // parameters
         mongoose.Types.ObjectId(req.params.postId)
@@ -57,27 +71,35 @@ router.get('/:postId/posts', function(req, res, next) {
  * create a new topic under a course
  */
 router.post('/:nodeId', function(req, res, next){
-    var cat = new Controller();
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
 
     // todo: check for enrollment
     {
         //
     }
 
+    if(!helper.checkRequiredParams(req.body, ['title', 'content'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
+    if(!helper.checkRequiredParams(req.params, ['nodeId'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
+    var cat = new Controller();
+
     cat.addPost(
         function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+            helper.resReturn(err, res);
         },
         {
             title: req.body.title,
             content: req.body.content,
             createdBy: mongoose.Types.ObjectId(req.user._id),
             nodeId: mongoose.Types.ObjectId(req.params.nodeId)
-            //params.parentPost
-            //params.parentPath
         },
         function(post){
             res.status(200).json({
@@ -87,16 +109,30 @@ router.post('/:nodeId', function(req, res, next){
     );
 });
 
+/**
+ * update a link
+ */
 router.put('/:postId', function(req, res, next){
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     // todo: auth
+
+
+    if(!helper.checkRequiredParams(req.body, ['title', 'content'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
+    if(!helper.checkRequiredParams(req.params, ['postId'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
 
     var cat = new Controller();
     cat.editPost(
         function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+            helper.resReturn(err, res);
         },
         {
             title: req.body.title,
@@ -113,13 +149,19 @@ router.put('/:postId', function(req, res, next){
 });
 
 router.delete('/:postId', function(req, res, next){
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    if(!helper.checkRequiredParams(req.params, ['postId'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
     var cat = new Controller();
     cat.deletePost(
         function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+            helper.resReturn(err, res);
         },
         {
             postId: mongoose.Types.ObjectId(req.params.postId),
@@ -134,13 +176,19 @@ router.delete('/:postId', function(req, res, next){
 });
 
 router.delete('/:nodeId/link/:postId', function(req, res, next){
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    if(!helper.checkRequiredParams(req.params, ['postId', 'nodeId'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
     var cat = new Controller();
     cat.deletePost(
         function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+            helper.resReturn(err, res);
         },
         {
             postId: mongoose.Types.ObjectId(req.params.postId),

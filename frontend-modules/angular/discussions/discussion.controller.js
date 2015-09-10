@@ -8,6 +8,9 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
     $scope.pid = false;
 
+    $scope.isLoading = false;
+    $scope.errors = [];
+
     $scope.menu = [
         ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
         [ 'font-size' ],
@@ -48,9 +51,13 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
         }
     });
 
-    $scope.saveNewPost = function(){
+    $scope.saveNewPost = function(isValid){
+        if(!isValid)
+            return;
+
         console.log('saving');
 
+        $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
@@ -68,16 +75,21 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
                     $timeout(function(){$scope.$apply()});
 
                     $('#addNewTopicModal').modal('hide');
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
                 }
-            }) ;
+
+                $scope.addTopicForm.$setPristine();
+                $scope.isLoading = false;
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
     };
 
-    $scope.saveEditPost = function(){
+    $scope.saveEditPost = function(isValid){
+        if(!isValid)
+            return;
+
         console.log('saving edit post');
 
         var d = transformRequest($scope.currentTopic);
@@ -99,13 +111,15 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
                     var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
                     $scope.topics[i].discussion = data.post;
                     $timeout(function(){$scope.$apply()});
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+
+                    $scope.editTopicForm.$setPristine();
+                    $scope.isLoading = false;
                 }
-            }) ;
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
     };
 
     $scope.editReply = function(re){
@@ -280,6 +294,9 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
     $scope.cancel = function(){
         $scope.currentTopic = $scope.originalCurrentTopic;
+        $scope.editTopicForm.$setPristine();
+        $scope.addTopicForm.$setPristine();
+        $scope.errors = [];
     };
 
 });

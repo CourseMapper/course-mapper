@@ -88,7 +88,7 @@
                                                data-toggle="modal" data-target="#editReplyModal"
                                                title="Edit"
                                                ng-click="editReply(re)"
-                                               class="btn btn-warning btn-xs"
+                                               class="btn btn-primary btn-xs"
                                                     >EDIT</a>
                                         </div>
                                         <div class="deleteReplyButton">
@@ -109,8 +109,11 @@
     </div>
 
     <% include addNewTopicModal %>
-    <% include addNewReplyModal %>
     <% include editTopicModal %>
-    <% include editReplyModal %>
+
+    <% var formName= 'addNewReply'; var formTitle = 'Add'; var actionMethod = 'saveNewReply'; %>
+    <% include replyModal %>
+    <% var formName= 'editReply'; var formTitle = 'Edit'; var actionMethod = 'saveEditReply';  %>
+    <% include replyModal %>
 
 </div>

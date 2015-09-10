@@ -8,6 +8,8 @@ app.
         $scope.pid = false;
         $scope.currentLinkUrl = "";
         $scope.links = [];
+        $scope.errors = [];
+        $scope.isLoading = false;
 
         $scope.initiateLink = function(){
             $scope.pid = $location.search().pid;
@@ -34,8 +36,13 @@ app.
             $scope.course = course;
         });
 
-        $scope.saveNewPost = function(){
+        $scope.saveNewPost = function(isValid){
+            if(!isValid)
+                return;
+
             console.log('saving bookmark');
+
+            $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
             $http({
@@ -53,18 +60,27 @@ app.
                         $scope.links.unshift(data.post);
                         $timeout(function(){$scope.$apply()});
 
-                        $('#addNewLinksModal').modal('hide');
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                        $scope.formData = {};
+                        $scope.AddLinkForm.$setPristine();
+
+                        $('#AddLinksModal').modal('hide');
                     }
-                }) ;
+
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
+                });
         };
 
-        $scope.saveEditPost = function(){
+        $scope.saveEditPost = function(isValid){
+            if(!isValid)
+                return;
+
             console.log('saving edit bookmark');
+
+            $scope.isLoading = true;
 
             var d = transformRequest($scope.currentLink);
             $http({
@@ -80,17 +96,19 @@ app.
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
-                        $('#editLinksModal').modal('hide');
+                        $('#EditLinksModal').modal('hide');
 
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
                     }
+
+                    $scope.AddLinkForm.$setPristine();
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
                 });
         };
 
@@ -164,7 +182,7 @@ app.
                     ActionBarService.extraActionsMenu.push({
                         'html':
                         '<a style="cursor: pointer;"' +
-                        ' data-toggle="modal" data-target="#editLinksModal"' +
+                        ' data-toggle="modal" data-target="#EditLinksModal"' +
                         ' title="Edit">' +
                         '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
                     });
@@ -191,6 +209,10 @@ app.
 
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
+            if($scope.AddLinkForm)
+            $scope.AddLinkForm.$setPristine();
+            if($scope.EditLinkForm)
+            $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {

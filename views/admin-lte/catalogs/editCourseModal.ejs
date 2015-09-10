@@ -13,16 +13,21 @@
                 </div>
 
                 <div class="box-body no-border">
-                    <form class="" role="form" ng-submit="saveCourse()">
+                    <form role="form" ng-submit="saveCourse(editCourseForm.$valid)" name="editCourseForm" novalidate>
                         <fieldset>
                             <div class="control-group">
                                 <label class="control-label" for="course">Course Name</label>
 
                                 <p class="help-block">Course name can contain any letters or numbers</p>
 
-                                <div class="controls">
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : editCourseForm.course.$invalid && !editCourseForm.$pristine }">
                                     <input type="text" id="course" name="course" placeholder="" class="form-control"
-                                           ng-model="courseEdit.name">
+                                           ng-model="courseEdit.name" required ng-required="true"
+                                           ng-minlength="3">
+
+                                    <p ng-show="editCourseForm.course.$invalid && !editCourseForm.$pristine"
+                                       class="help-block">Course name is required.</p>
                                 </div>
                             </div>
 
@@ -32,10 +37,17 @@
 
                                 <p class="help-block">Description about this course</p>
 
-                                <div class="controls">
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : editCourseForm.description.$invalid && !editCourseForm.$pristine }">
                                 <textarea type="description" id="description" name="description" placeholder=""
-                                          class="form-control" ng-model="courseEdit.description">
+                                          class="form-control" ng-model="courseEdit.description" required
+                                          ng-required="true"
+                                          ng-minlength="6">
                                 </textarea>
+
+                                    <p ng-show="editCourseForm.description.$invalid && !editCourseForm.$pristine"
+                                       class="help-block">Please fill in a little bit of description about this
+                                        course.</p>
 
                                 </div>
                             </div>
@@ -76,7 +88,9 @@
                                 <div class="control-group">
                                     <p></p>
                                     <label class="control-label" for="video">Upload Intro Video</label>
+
                                     <p class="help-block"></p>
+
                                     <div class="controls">
                                         <div class="btn btn-sm btn-default"
                                              ngf-select accept="video/*" ngf-accept="'video/*'"
@@ -95,11 +109,13 @@
                                 <br class="clear">
 
                                 <div class="box-footer">
-                                    <span class="help-block" ng-show="errors">{{ errors }}</span>
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                     <!-- Button -->
                                     <div class="controls">
-                                        <button class="btn btn-md btn-primary">Save Edit</button>
-                                        <button type="button" class="btn btn-md btn-primary"
+                                        <button class="btn btn-md btn-primary" ng-click="editCourseForm.$pristine=false">Save Edit
+                                            <spinner show="isLoading"></spinner></button>
+
+                                        <button type="button" class="btn btn btn-warning"
                                                 data-dismiss="modal" aria-label="Close" ng-click="cancel()">
                                             <span aria-hidden="true">Cancel</span>
                                         </button>

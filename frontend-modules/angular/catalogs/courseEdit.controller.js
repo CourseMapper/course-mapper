@@ -6,7 +6,9 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.files = [];
     $scope.filespicture = [];
     $scope.filesvideo = [];
-    $scope.errors = "";
+
+    $scope.isLoading = false;
+    $scope.errors = [];
 
     $scope.$on('onAfterInitCourse', function(event, course){
         $scope.init();
@@ -25,10 +27,6 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             }
         }
     };
-
-    /*$scope.loadTags = function(query) {
-        return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
-    };*/
 
     $scope.saveCourse = function() {
         if($scope.tagsRaw) {
@@ -54,24 +52,32 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             uploadParams.file.push($scope.filesvideo[0]);
         }
 
+        $scope.isLoading = true;
         Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
-                if(!evt.config.file)
-                    return;
+            if(!evt.config.file)
+                return;
 
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
 
-        }).success(function (data, status, headers, config) {
-            $scope.$emit('onAfterEditCourse', data.course);
+        })
+            .success(function (data) {
+                $scope.$emit('onAfterEditCourse', data.course);
 
                 $scope.filespicture = [];
                 $scope.filesvideo = [];
 
-            $('#editView').modal('hide');
-        });
+                $scope.isLoading = false;
+                $('#editView').modal('hide');
+            })
+
+            .error(function(){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
+            });
     };
 
     $scope.cancel = function(){

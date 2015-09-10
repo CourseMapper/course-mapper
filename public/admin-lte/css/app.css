@@ -518,6 +518,7 @@ ul.dropdown-menu.course{
     top: 0px;
     position: absolute;
     overflow: hidden;
+    background-color: #ecf0f5;
 }
 
 #courseTabs .tree-container{
@@ -699,4 +700,30 @@ a.videoButton:hover{
 }
 a.cursor {
     cursor: pointer;
+}
+
+.quill-wrapper{
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0px 0px 5px #ccc;
+    /*min-height: 220px;*/
+}
+.ql-toolbar{
+    border-bottom: 1px solid #ccc;
+}
+.ql-container{
+    min-height: 200px;
+    max-height: 400px!important;
+}
+.content-header.action-header >.breadcrumb>li>a{
+    color:white;
+}
+#LinksList .posts-list h4{
+    float: left;
+}
+.open-new-tab {
+    float: right;
+}
+.course-picture{
+    width: 100%;
 }

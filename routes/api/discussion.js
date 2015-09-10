@@ -2,6 +2,7 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var CourseDiscussionController = require(appRoot + '/modules/discussion/courseDiscussion.controller.js');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
 var router = express.Router();
 var mongoose = require('mongoose');
@@ -9,10 +10,10 @@ var mongoose = require('mongoose');
 /**
  * return all posts
  */
-router.get('/discussions/:courseId', function(req, res, next) {
+router.get('/discussions/:courseId', function (req, res, next) {
     var cat = new CourseDiscussionController();
     cat.getCourseDiscussions(
-        function(err){
+        function (err) {
             res.status(500).json({
                 result: false,
                 errors: err
@@ -21,9 +22,9 @@ router.get('/discussions/:courseId', function(req, res, next) {
         // parameters
         mongoose.Types.ObjectId(req.params.courseId)
         ,
-        function(posts){
+        function (posts) {
             res.status(200).json({
-                result:true, posts: posts
+                result: true, posts: posts
             });
         }
     );
@@ -33,10 +34,10 @@ router.get('/discussions/:courseId', function(req, res, next) {
 /**
  * get all posts/replies under a post
  */
-router.get('/discussion/:postId/posts', function(req, res, next) {
+router.get('/discussion/:postId/posts', function (req, res, next) {
     var cat = new CourseDiscussionController();
     cat.getReplies(
-        function(err){
+        function (err) {
             res.status(500).json({
                 result: false,
                 errors: err
@@ -45,9 +46,9 @@ router.get('/discussion/:postId/posts', function(req, res, next) {
         // parameters
         mongoose.Types.ObjectId(req.params.postId)
         ,
-        function(posts){
+        function (posts) {
             res.status(200).json({
-                result:true, posts: posts
+                result: true, posts: posts
             });
         }
     );
@@ -56,7 +57,7 @@ router.get('/discussion/:postId/posts', function(req, res, next) {
 /**
  * create a new topic under a course
  */
-router.post('/discussions/:courseId', function(req, res, next){
+router.post('/discussions/:courseId', function (req, res, next) {
     var cat = new CourseDiscussionController();
 
     // todo: check for enrollment
@@ -64,12 +65,13 @@ router.post('/discussions/:courseId', function(req, res, next){
         //
     }
 
+    if(!helper.checkRequiredParams(req.body, ['title', 'content'], function (err) {
+        helper.resReturn(err, res);
+    }))return;
+
     cat.addPost(
-        function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+        function (err) {
+            helper.resReturn(err, res);
         },
         {
             title: req.body.title,
@@ -79,9 +81,9 @@ router.post('/discussions/:courseId', function(req, res, next){
             //params.parentPost
             //params.parentPath
         },
-        function(post){
+        function (post) {
             res.status(200).json({
-                result:true, post: post
+                result: true, post: post
             });
         }
     );
@@ -90,20 +92,23 @@ router.post('/discussions/:courseId', function(req, res, next){
 /**
  * create a new reply under a post
  */
-router.post('/discussion/replies', function(req, res, next){
-    var cat = new CourseDiscussionController();
+router.post('/discussion/replies', function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    if(!helper.checkRequiredParams(req.body, ['content'], function (err) {
+        helper.resReturn(err, res);
+    }))return;
 
     // todo: check for enrollment
     {
         //
     }
 
+    var cat = new CourseDiscussionController();
     cat.addPost(
-        function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+        function (err) {
+            helper.resReturn(err, res)
         },
         {
             title: " ",
@@ -112,24 +117,33 @@ router.post('/discussion/replies', function(req, res, next){
             parentPost: mongoose.Types.ObjectId(req.body.parentPost)
             //params.parentPath: []
         },
-        function(post){
+        function (post) {
             res.status(200).json({
-                result:true, post: post
+                result: true, post: post
             });
         }
     );
 });
 
-router.put('/discussion/:postId', function(req, res, next){
-    // todo: auth
+/**
+ * edit any type of post (topic or reply)
+ */
+router.put('/discussion/:postId', function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    if(!helper.checkRequiredParams(req.body, ['title', 'content'], function (err) {
+        helper.resReturn(err, res);
+    }))return;
+
+    if(!helper.checkRequiredParams(req.params, ['postId'], function (err) {
+        helper.resReturn(err, res);
+    }))return;
 
     var cat = new CourseDiscussionController();
     cat.editPost(
-        function(err){
-            res.status(500).json({
-                result: false,
-                errors: err
-            });
+        function (err) {
+            helper.resReturn(err, res)
         },
         {
             title: req.body.title,
@@ -137,18 +151,18 @@ router.put('/discussion/:postId', function(req, res, next){
             postId: mongoose.Types.ObjectId(req.params.postId),
             userId: mongoose.Types.ObjectId(req.user._id)
         },
-        function(post){
+        function (post) {
             res.status(200).json({
-                result:true, post: post
+                result: true, post: post
             });
         }
     );
 });
 
-router.delete('/discussion/:postId', function(req, res, next){
+router.delete('/discussion/:postId', function (req, res, next) {
     var cat = new CourseDiscussionController();
     cat.deletePost(
-        function(err){
+        function (err) {
             res.status(500).json({
                 result: false,
                 errors: err
@@ -158,18 +172,18 @@ router.delete('/discussion/:postId', function(req, res, next){
             postId: mongoose.Types.ObjectId(req.params.postId),
             userId: mongoose.Types.ObjectId(req.user._id)
         },
-        function(post){
+        function (post) {
             res.status(200).json({
-                result:true, post: post
+                result: true, post: post
             });
         }
     );
 });
 
-router.delete('/discussions/:courseId/topic/:postId', function(req, res, next){
+router.delete('/discussions/:courseId/topic/:postId', function (req, res, next) {
     var cat = new CourseDiscussionController();
     cat.deletePost(
-        function(err){
+        function (err) {
             res.status(500).json({
                 result: false,
                 errors: err
@@ -180,9 +194,9 @@ router.delete('/discussions/:courseId/topic/:postId', function(req, res, next){
             courseId: mongoose.Types.ObjectId(req.params.courseId),
             userId: mongoose.Types.ObjectId(req.user._id)
         },
-        function(post){
+        function (post) {
             res.status(200).json({
-                result:true, post: post
+                result: true, post: post
             });
         }
     );

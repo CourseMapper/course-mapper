@@ -1,9 +1,7 @@
-// TODO - Inject VA module here ?? DONE ??
-
 var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
-    'relativeDate', 'wysiwyg.module','VideoAnnotations']);
+    'relativeDate', 'wysiwyg.module', 'angular-quill','VideoAnnotations']);
 
 
 ;app.config(['$routeProvider', '$locationProvider',
@@ -92,9 +90,11 @@ var app = angular.module('courseMapper', [
                 if(refreshPicture && $scope.course.picture)
                     $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
 
-                $timeout(function(){
-                    $scope.$broadcast('onAfterInitCourse', $scope.course);
-                });
+                if(!refreshPicture) {
+                    $timeout(function () {
+                        $scope.$broadcast('onAfterInitCourse', $scope.course);
+                    });
+                }
             }
         });
 
@@ -169,7 +169,9 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.files = [];
     $scope.filespicture = [];
     $scope.filesvideo = [];
-    $scope.errors = "";
+
+    $scope.isLoading = false;
+    $scope.errors = [];
 
     $scope.$on('onAfterInitCourse', function(event, course){
         $scope.init();
@@ -188,10 +190,6 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             }
         }
     };
-
-    /*$scope.loadTags = function(query) {
-        return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
-    };*/
 
     $scope.saveCourse = function() {
         if($scope.tagsRaw) {
@@ -217,24 +215,32 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             uploadParams.file.push($scope.filesvideo[0]);
         }
 
+        $scope.isLoading = true;
         Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
-                if(!evt.config.file)
-                    return;
+            if(!evt.config.file)
+                return;
 
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
 
-        }).success(function (data, status, headers, config) {
-            $scope.$emit('onAfterEditCourse', data.course);
+        })
+            .success(function (data) {
+                $scope.$emit('onAfterEditCourse', data.course);
 
                 $scope.filespicture = [];
                 $scope.filesvideo = [];
 
-            $('#editView').modal('hide');
-        });
+                $scope.isLoading = false;
+                $('#editView').modal('hide');
+            })
+
+            .error(function(){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
+            });
     };
 
     $scope.cancel = function(){
@@ -243,6 +249,10 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 });
 ;
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
+    $scope.submitted = false;
+    $scope.isLoading = false;
+    $scope.errors = [];
+
     $scope.course = {
         name: null,
         category: null,
@@ -250,39 +260,45 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.tagsRaw = null;
-    $scope.errorName = "";
+    $scope.errors = [];
 
     $scope.loadTags = function(query) {
         return $http.get('/api/category/' + $scope.category._id + '/courseTags?query=' + query);
     };
 
-    $scope.saveCourse = function() {
-        if($scope.tagsRaw) {
-            $scope.course.tags = JSON.stringify($scope.tagsRaw);
-        }
-        $scope.course.category = $scope.$parent.category._id;
+    $scope.saveCourse = function(isValid) {
+        if (isValid) {
 
-        var d = transformRequest($scope.course);
-        $http({
-            method: 'POST',
-            url: '/api/courses',
-            data: d,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+            if ($scope.tagsRaw) {
+                $scope.course.tags = JSON.stringify($scope.tagsRaw);
             }
-        })
-            .success(function(data) {
-                console.log(data);
-                if(data.result) {
-                    $scope.$emit('onAfterCreateNewCourse');
-                    window.location.href = '/course/' + data.course.slug + '/#/cid/' + data.course._id + '?new=1';
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+
+            $scope.course.category = $scope.$parent.category._id;
+
+            $scope.isLoading = true;
+            var d = transformRequest($scope.course);
+            $http({
+                method: 'POST',
+                url: '/api/courses',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            }) ;
+            })
+                .success(function (data) {
+                    console.log(data);
+                    if (data.result) {
+                        $scope.$emit('onAfterCreateNewCourse');
+                        window.location.href = '/course/' + data.course.slug + '/#/cid/' + data.course._id + '?new=1';
+                    }
+
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
+                });
+        }
     };
 });
 ;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce ) {
@@ -785,6 +801,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if(res.result){
                         //todo: go to map view
                         console.log("node deleted");
+                        $location.path('/cid/' + $scope.courseId + '?tab=map');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errors = data.errors;
@@ -831,9 +848,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentNodeAction.mode = "edit";
         $scope.currentNodeAction.type = "contentNode";
         $scope.currentNodeAction.typeText = "Content Node";
+        $scope.currentNodeAction.parent = $scope.treeNode;
 
         $scope.nodeModaltitle = "Edit " + $scope.currentNodeAction.typeText;
-        //$scope.nodeModaltitle += " " + $scope.treeNode.name;
 
         $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
     };
@@ -908,6 +925,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.filesvideo = [];
     $scope.currentEditNode = false;
 
+    $scope.isLoading = false;
+    $scope.errors = [];
+
     $scope.init = function(){
     };
 
@@ -918,6 +938,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
 
         $scope.currentEditNode = $scope.currentNodeAction.parent;
+        $scope.currentEditNodeOriginal = cloneSimpleObject($scope.currentNodeAction.parent);
         $scope.formData.type = $scope.currentNodeAction.type;
 
         if(treeNode){
@@ -940,7 +961,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * save add sub topic node
      */
-    $scope.saveNode = function(){
+    $scope.saveNode = function(isValid){
+        if(!isValid)
+            return;
+
+        $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
@@ -951,36 +976,42 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
 
-                    if($scope.formData.parent)
-                        delete $scope.formData.parent;
-
                     // cleaining up formData
+                    if($scope.formData.parent) {
+                        delete $scope.formData.parent;
+                    }
                     $scope.formData.name = "";
 
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
+                    $scope.isLoading = false;
+                    $scope.addSubTopicForm.$setPristine();
                 }
-            });
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            })
+        ;
     };
 
     /**
      * save edit sub topic node
      * and saving edit of content node
      */
-    $scope.saveEditNode = function(){
+    $scope.saveEditNode = function(isValid){
+        if(!isValid)
+            return;
+
         var updateValue = {
             name: $scope.currentEditNode.name
         };
+
+        $scope.isLoading = true;
 
         var d = transformRequest(updateValue);
         $http({
@@ -992,25 +1023,29 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         })
             .success(function(data) {
-                console.log(data);
+                $scope.isLoading = false;
                 if(data.result) {
                     $rootScope.$broadcast('onAfterEditNode', data.treeNode);
 
                     $('#editSubTopicModal').modal('hide');
                     $('#editContentNodeModal').modal('hide');
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
+
+                    $scope.editSubTopicForm.$setPristine();
                 }
+            })
+            .error(function(data){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
             });
     };
 
     /**
      * save add content node
      */
-    $scope.saveContentNode = function(){
+    $scope.saveContentNode = function(isValid){
+        if(!isValid)
+            return;
+
         // use saveEditNode for editing the content node.
         if($scope.currentNodeAction.mode == 'edit'){
             $scope.saveEditNode();
@@ -1066,17 +1101,34 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
 
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
                 }
 
+                $scope.addContentNodeForm.$setPristine();
+                $scope.isLoading = false;
+            })
+            .error(function(data){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
             });
+
+    };
+
+    $scope.cancel = function(){
+        $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });
-;app.directive('facebookButton',
+;app.directive('errorBlock',
+    function () {
+        return {
+            restrict: 'E',
+            scope: {
+                messages: '='
+            },
+            template: '<div class="errors">' +
+                      '<div class="alert alert-danger" role="alert" ng-repeat="m in messages">{{m}}</div>' +
+                      '</div>'
+        };
+    });;app.directive('facebookButton',
     function () {
         return {
             restrict: 'E',
@@ -1113,7 +1165,25 @@ app.directive('script', function($parse, $rootScope, $compile) {
             }
         }
     };
-});;app.directive('movable', function () {
+});;app.directive('cancel',
+    function () {
+        return {
+            restrict: 'E',
+            template: '<button type="button" class="btn btn-warning"' +
+            'data-dismiss="modal" aria-label="Close"' +
+            'ng-click="cancel()">' +
+            '<span aria-hidden="true">Cancel</span>' +
+            '</button>'
+        };
+    });
+
+app.directive('modalClose',
+    function () {
+        return {
+            restrict: 'E',
+            template: '<div class="box-tools pull-right"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+        };
+    });;app.directive('movable', function () {
     return {
         restrict: 'A',
         scope: {
@@ -1180,6 +1250,60 @@ app.directive('script', function($parse, $rootScope, $compile) {
         }
     };
 });
+;function Spinner($timeout) {
+    return {
+        restrict: 'E',
+        template: '<i class="fa fa-cog fa-spin"></i>',
+        scope: {
+            show: '=',
+            delay: '@'
+        },
+        link: function(scope, elem, attrs) {
+            var showTimer;
+
+            //This is where all the magic happens!
+            // Whenever the scope variable updates we simply
+            // show if it evaluates to 'true' and hide if 'false'
+            scope.$watch('show', function(newVal){
+                newVal ? showSpinner() : hideSpinner();
+            });
+
+            function showSpinner() {
+                //If showing is already in progress just wait
+                if (showTimer) return;
+
+                //Set up a timeout based on our configured delay to show
+                // the element (our spinner)
+                showTimer = $timeout(showElement.bind(this, true), getDelay());
+            }
+
+            function hideSpinner() {
+                //This is important. If the timer is in progress
+                // we need to cancel it to ensure everything stays
+                // in sync.
+                if (showTimer) {
+                    $timeout.cancel(showTimer);
+                }
+
+                showTimer = null;
+
+                showElement(false);
+            }
+
+            function showElement(show) {
+                show ? elem.css({display:''}) : elem.css({display:'none'});
+            }
+
+            function getDelay() {
+                var delay = parseInt(scope.delay);
+
+                return isNaN(delay) ? 200 : delay;
+            }
+        }
+    };
+}
+
+app.directive('spinner', Spinner);
 ;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
     $scope.formData = {};
     $scope.course = {};
@@ -1189,6 +1313,9 @@ app.directive('script', function($parse, $rootScope, $compile) {
     $scope.originalCurrentTopic = {};
 
     $scope.pid = false;
+
+    $scope.isLoading = false;
+    $scope.errors = [];
 
     $scope.menu = [
         ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
@@ -1230,9 +1357,13 @@ app.directive('script', function($parse, $rootScope, $compile) {
         }
     });
 
-    $scope.saveNewPost = function(){
+    $scope.saveNewPost = function(isValid){
+        if(!isValid)
+            return;
+
         console.log('saving');
 
+        $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
@@ -1250,16 +1381,21 @@ app.directive('script', function($parse, $rootScope, $compile) {
                     $timeout(function(){$scope.$apply()});
 
                     $('#addNewTopicModal').modal('hide');
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
                 }
-            }) ;
+
+                $scope.addTopicForm.$setPristine();
+                $scope.isLoading = false;
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
     };
 
-    $scope.saveEditPost = function(){
+    $scope.saveEditPost = function(isValid){
+        if(!isValid)
+            return;
+
         console.log('saving edit post');
 
         var d = transformRequest($scope.currentTopic);
@@ -1281,13 +1417,15 @@ app.directive('script', function($parse, $rootScope, $compile) {
                     var i = _.findIndex($scope.topics, { 'discussion': {'_id' : data.post._id}});
                     $scope.topics[i].discussion = data.post;
                     $timeout(function(){$scope.$apply()});
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+
+                    $scope.editTopicForm.$setPristine();
+                    $scope.isLoading = false;
                 }
-            }) ;
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
     };
 
     $scope.editReply = function(re){
@@ -1462,129 +1600,202 @@ app.directive('script', function($parse, $rootScope, $compile) {
 
     $scope.cancel = function(){
         $scope.currentTopic = $scope.originalCurrentTopic;
+        $scope.editTopicForm.$setPristine();
+        $scope.addTopicForm.$setPristine();
+        $scope.errors = [];
     };
 
-});;app.
-    controller('ReplyController', function($scope, $http, $timeout) {
-        $scope.formData = {
-            title: " ",
-            content: ""
-        };
+});;app.controller('ReplyController', function ($scope, $http, $timeout) {
+    $scope.isLoading = false;
+    $scope.errors = [];
 
-        $scope.formNewData = {
-            title: " ",
-            content: ""
-        };
+    $scope.EditFormData = {
+        title: " ",
+        content: ""
+    };
 
-        $scope.menu = [
-            ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-            [ 'font-size' ],
-            ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-            ['left-justify', 'center-justify', 'right-justify'],
-            ['code', 'quote', 'paragraph']
-        ];
+    $scope.AddFormData = {
+        title: " ",
+        content: ""
+    };
 
-        $scope.$on('onEditReplyClicked', function(e, post){
-            $scope.formData.content = post.content;
-            $scope.formData.postId = post._id;
-        });
+    $scope.menu = [
+        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
+        ['font-size'],
+        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
+        ['left-justify', 'center-justify', 'right-justify'],
+        ['code', 'quote', 'paragraph']
+    ];
 
-        $scope.saveNewReply = function(){
-            console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
-            $scope.formNewData.parentPost = $scope.$parent.currentReplyingTo;
+    $scope.$on('onEditReplyClicked', function (e, post) {
+        $scope.EditFormData.content = post.content;
+        $scope.EditFormData.postId = post._id;
+    });
 
-            var d = transformRequest($scope.formNewData);
-            $http({
-                method: 'POST',
-                url: '/api/discussion/replies/',
-                data: d,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+    $scope.saveNewReply = function (isValid) {
+        if (!isValid)
+            return;
+
+        console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
+        $scope.AddFormData.parentPost = $scope.$parent.currentReplyingTo;
+
+        $scope.isLoading = true;
+
+        var d = transformRequest($scope.AddFormData);
+        $http({
+            method: 'POST',
+            url: '/api/discussion/replies/',
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                console.log(data);
+                if (data.result) {
+                    $scope.$emit('onAfterCreateReply', data.post);
+
+                    $('#addNewReplyModal').modal('hide');
+
+                    $scope.AddFormData.content = "";
+
+                    $timeout(function () {
+                        $scope.$apply()
+                    });
+
+                    $scope.addNewReplyForm.$setPristine();
+                    $scope.isLoading = false;
+                    $scope.errors = [];
                 }
             })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('onAfterCreateReply', data.post);
+            .error(function (data) {
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
+    };
 
-                        $('#addNewReplyModal').modal('hide');
+    $scope.cancel = function () {
+        $scope.EditFormData.content = "";
+        $scope.AddFormData.content = "";
+        if ($scope.addNewReplyForm)
+            $scope.addNewReplyForm.$setPristine();
 
-                        $scope.formNewData.content = "";
+        if ($scope.editReplyForm)
+            $scope.editReplyForm.$setPristine();
 
-                        $timeout(function(){$scope.$apply()});
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
-                    }
-                }) ;
-        };
+        $scope.errors = [];
+    };
 
-        $scope.cancel = function(){
-            $scope.formData.content = "";
-            $scope.formNewData.content = "";
+    $scope.saveEditReply = function (isValid) {
+        if (!isValid)
+            return;
 
-            $timeout(function(){$scope.$apply()});
-        };
+        console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
 
-        $scope.saveEditReply = function(){
-            console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
+        $scope.isLoading = true;
 
-            var d = transformRequest($scope.formData);
-            $http({
-                method: 'PUT',
-                url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
-                data: d,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+        var d = transformRequest($scope.EditFormData);
+        $http({
+            method: 'PUT',
+            url: '/api/discussion/' + $scope.$parent.currentEditPost._id,
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                console.log(data);
+                if (data.result) {
+                    $scope.$emit('onAfterEditReply', data.post);
+
+                    $scope.EditFormData.content = "";
+                    $timeout(function () {
+                        $scope.$apply()
+                    });
+                    $('#editReplyModal').modal('hide');
                 }
+
+                $scope.editReplyForm.$setPristine();
+                $scope.isLoading = false;
             })
-                .success(function(data) {
-                    console.log(data);
-                    if(data.result) {
-                        $scope.$emit('onAfterEditReply', data.post);
+            .error(function (data) {
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            });
+    };
 
-                        $scope.formData.content = "";
-                        $timeout(function(){$scope.$apply()});
+    /**
+     * deleting root topic
+     * @param postId
+     */
+    $scope.deletePost = function (postId) {
+        $http({
+            method: 'DELETE',
+            url: '/api/discussion/' + postId,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                console.log(data);
+                if (data.result) {
+                    $scope.$emit('onAfterDeletePost', postId);
 
-                        $('#editReplyModal').modal('hide');
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                } else {
+                    if (data.result != null && !data.result) {
+                        $scope.errorName = data.errors;
+                        console.log(data.errors);
                     }
-                }) ;
-        };
-
-        /**
-         * deleting root topic
-         * @param postId
-         */
-        $scope.deletePost = function(postId){
-            $http({
-                method: 'DELETE',
-                url: '/api/discussion/' + postId,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            })
-                .success(function(data) {
-                    console.log(data);
+            });
+    };
+
+});;app.factory('authService', [
+    '$rootScope', '$http',
+
+    function($rootScope, $http) {
+        return {
+
+            loginCheck : function(successCallback){
+                $http.get('/api/accounts').success(function(data) {
                     if(data.result) {
-                        $scope.$emit('onAfterDeletePost', postId);
+                        $rootScope.user = data.user;
 
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                        $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+
+                        successCallback($rootScope.user);
                     }
-                }) ;
-        };
+                });
+            },
 
-    });;app.factory('socket', function ($rootScope) {
+            login: function(loginData, successCallback, errorCallback){
+                var d = transformRequest(loginData);
+                $http({
+                    method: 'POST',
+                    url: '/api/accounts/login',
+                    data: d,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(
+                    function success(data) {
+                        if(data.result) {
+                            $rootScope.user = data.user;
+
+                            $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+
+                            successCallback($rootScope.user);
+                        }
+                    }).error(
+                    function (data) {
+                        errorCallback(data);
+                    }
+                );
+            }
+        }
+    }
+]);;app.factory('socket', function ($rootScope) {
     var socket = io.connect();
     return {
         on: function (eventName, callback) {
@@ -1638,6 +1849,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         $scope.pid = false;
         $scope.currentLinkUrl = "";
         $scope.links = [];
+        $scope.errors = [];
+        $scope.isLoading = false;
 
         $scope.initiateLink = function(){
             $scope.pid = $location.search().pid;
@@ -1664,8 +1877,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             $scope.course = course;
         });
 
-        $scope.saveNewPost = function(){
+        $scope.saveNewPost = function(isValid){
+            if(!isValid)
+                return;
+
             console.log('saving bookmark');
+
+            $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
             $http({
@@ -1683,18 +1901,27 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         $scope.links.unshift(data.post);
                         $timeout(function(){$scope.$apply()});
 
-                        $('#addNewLinksModal').modal('hide');
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                        $scope.formData = {};
+                        $scope.AddLinkForm.$setPristine();
+
+                        $('#AddLinksModal').modal('hide');
                     }
-                }) ;
+
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
+                });
         };
 
-        $scope.saveEditPost = function(){
+        $scope.saveEditPost = function(isValid){
+            if(!isValid)
+                return;
+
             console.log('saving edit bookmark');
+
+            $scope.isLoading = true;
 
             var d = transformRequest($scope.currentLink);
             $http({
@@ -1710,17 +1937,19 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
-                        $('#editLinksModal').modal('hide');
+                        $('#EditLinksModal').modal('hide');
 
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
                     }
+
+                    $scope.AddLinkForm.$setPristine();
+                    $scope.isLoading = false;
+                })
+                .error(function(data){
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
                 });
         };
 
@@ -1794,7 +2023,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                     ActionBarService.extraActionsMenu.push({
                         'html':
                         '<a style="cursor: pointer;"' +
-                        ' data-toggle="modal" data-target="#editLinksModal"' +
+                        ' data-toggle="modal" data-target="#EditLinksModal"' +
                         ' title="Edit">' +
                         '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
                     });
@@ -1821,6 +2050,10 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
+            if($scope.AddLinkForm)
+            $scope.AddLinkForm.$setPristine();
+            if($scope.EditLinkForm)
+            $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {
@@ -2097,26 +2330,95 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     };
 
 });
-;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies) {
+;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService) {
     $scope.rememberMe = false;
+    $scope.loginData = {};
+    $scope.errors = [];
+    $scope.user = null;
+    $scope.referer = false;
+    $scope.isLoading = false;
 
-    $http.get('/api/accounts').success(function(data) {
-        if(data.result) {
-            $scope.user = data.user;
-            $rootScope.user = data.user;
-
-            $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+    authService.loginCheck(function(user){
+        $scope.user = user;
+        if($scope.user){
+            window.location = '/accounts';
         }
     });
 
-    if($cookies.rememberMe)
+    if($cookies.rememberMe) {
         $scope.rememberMe = $cookies.rememberMe;
+    }
 
     $scope.$watch('rememberMe', function(newVal, oldVal){
         if(newVal !== oldVal){
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
+
+    $scope.login = function(isValid){
+        if(isValid){
+            $scope.isLoading = true;
+            authService.login($scope.loginData,
+                function(user){
+                    $scope.user = user;
+                    if(!$scope.referer) {
+                        window.location = '/accounts';
+                    }
+                    $scope.isLoading = false;
+                },
+                function error(data) {
+                    if(data.errors){
+                        $scope.errors = data.errors;
+                    }
+                    $scope.isLoading = false;
+                }
+            );
+        }
+    }
+
+});;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService) {
+    $scope.rememberMe = false;
+    $scope.loginData = {};
+    $scope.errors = [];
+    $scope.user = null;
+    $scope.referer = false;
+    $scope.isLoading = false;
+
+    authService.loginCheck(function(user){
+        $scope.user = user;
+    });
+
+    if($cookies.rememberMe) {
+        $scope.rememberMe = $cookies.rememberMe;
+    }
+
+    $scope.$watch('rememberMe', function(newVal, oldVal){
+        if(newVal !== oldVal){
+            $cookies.rememberMe = $scope.rememberMe;
+        }
+    });
+
+    $scope.login = function(isValid){
+        if(isValid){
+            $scope.isLoading = true;
+            authService.login($scope.loginData,
+                function(user){
+                    $scope.user = user;
+                    if(!$scope.referer) {
+                        window.location = '/accounts';
+                    }
+                    $scope.isLoading = false;
+                },
+                function error(data) {
+                    if(data.errors){
+                        $scope.errors = data.errors;
+                        $scope.isLoading = false;
+                    }
+                }
+            );
+        }
+    }
+
 });;app.controller('ActionBarController', function($scope, ActionBarService, $sce, $compile) {
     $scope.extraActionsMenu = [];
 

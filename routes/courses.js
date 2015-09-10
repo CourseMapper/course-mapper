@@ -2,6 +2,7 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var router = express.Router();
@@ -69,6 +70,11 @@ router.get('/course/:courseId/tree', function(req, res, next) {
  * full page for displaying course detail page
  */
 router.get('/course/:slug', function(req, res, next) {
+    if(!helper.checkRequiredParams(req.params, ['slug'], function(err){
+            helper.resReturn(err, res);
+        }
+    )) return;
+
     var params = {
         slug: req.params.slug
     };
@@ -76,7 +82,7 @@ router.get('/course/:slug', function(req, res, next) {
     var c = new Course();
     c.getCourse(
         function(err){
-            res.send(500);
+            helper.resReturn(err, res);
         },
 
         params,

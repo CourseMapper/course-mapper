@@ -5,6 +5,9 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
     $scope.filesvideo = [];
     $scope.currentEditNode = false;
 
+    $scope.isLoading = false;
+    $scope.errors = [];
+
     $scope.init = function(){
     };
 
@@ -15,6 +18,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
 
         $scope.currentEditNode = $scope.currentNodeAction.parent;
+        $scope.currentEditNodeOriginal = cloneSimpleObject($scope.currentNodeAction.parent);
         $scope.formData.type = $scope.currentNodeAction.type;
 
         if(treeNode){
@@ -37,7 +41,11 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
     /**
      * save add sub topic node
      */
-    $scope.saveNode = function(){
+    $scope.saveNode = function(isValid){
+        if(!isValid)
+            return;
+
+        $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
             method: 'POST',
@@ -48,36 +56,42 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
 
-                    if($scope.formData.parent)
-                        delete $scope.formData.parent;
-
                     // cleaining up formData
+                    if($scope.formData.parent) {
+                        delete $scope.formData.parent;
+                    }
                     $scope.formData.name = "";
 
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
+                    $scope.isLoading = false;
+                    $scope.addSubTopicForm.$setPristine();
                 }
-            });
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+            })
+        ;
     };
 
     /**
      * save edit sub topic node
      * and saving edit of content node
      */
-    $scope.saveEditNode = function(){
+    $scope.saveEditNode = function(isValid){
+        if(!isValid)
+            return;
+
         var updateValue = {
             name: $scope.currentEditNode.name
         };
+
+        $scope.isLoading = true;
 
         var d = transformRequest(updateValue);
         $http({
@@ -89,25 +103,29 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             }
         })
             .success(function(data) {
-                console.log(data);
+                $scope.isLoading = false;
                 if(data.result) {
                     $rootScope.$broadcast('onAfterEditNode', data.treeNode);
 
                     $('#editSubTopicModal').modal('hide');
                     $('#editContentNodeModal').modal('hide');
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
+
+                    $scope.editSubTopicForm.$setPristine();
                 }
+            })
+            .error(function(data){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
             });
     };
 
     /**
      * save add content node
      */
-    $scope.saveContentNode = function(){
+    $scope.saveContentNode = function(isValid){
+        if(!isValid)
+            return;
+
         // use saveEditNode for editing the content node.
         if($scope.currentNodeAction.mode == 'edit'){
             $scope.saveEditNode();
@@ -163,13 +181,19 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
 
-                } else {
-                    if( !data.result){
-                        $scope.errors = data.errors;
-                        console.log(data.errors);
-                    }
                 }
 
+                $scope.addContentNodeForm.$setPristine();
+                $scope.isLoading = false;
+            })
+            .error(function(data){
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
             });
+
+    };
+
+    $scope.cancel = function(){
+        $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });

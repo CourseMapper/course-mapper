@@ -11,12 +11,10 @@ module.exports = function (grunt) {
     grunt.initConfig({
         bowercopy: {
             options: {
-                srcPrefix: 'bower_components'
+                srcPrefix: 'bower_components',
+                destPrefix: 'public'
             },
             scripts: {
-                options: {
-                    destPrefix: 'public'
-                },
                 files: {
                     'angular/angular.min.js': 'angular/angular.min.js',
                     'angular/angular.min.js.map': 'angular/angular.min.js.map',
@@ -30,7 +28,14 @@ module.exports = function (grunt) {
                     'angular/angular-cookies.min.js': 'angular-cookies/angular-cookies.min.js',
                     'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map'
                 }
-            }
+            }/*,
+
+            folders: {
+                files: {
+                    'quill': 'quill/dist/!*',
+                    'angular-quill': 'angular-quill/!*'
+                }
+            }*/
         },
 
         concat: {
@@ -108,7 +113,9 @@ module.exports = function (grunt) {
     });
 
     // the default task (running "grunt" in console)
-    grunt.registerTask('default', ['bowercopy',
+    grunt.registerTask('default', [
+            'bowercopy:scripts',
+        //'bowercopy:folders',
         'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va']
     );
 

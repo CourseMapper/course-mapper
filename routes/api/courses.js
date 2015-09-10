@@ -3,6 +3,7 @@ var config = require('config');
 var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var Account = require(appRoot + '/modules/accounts');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var multiparty = require('connect-multiparty');
@@ -54,77 +55,63 @@ router.post('/courses', function(req, res, next){
  */
 router.post('/course/:courseId', multipartyMiddleware, function(req, res, next){
     if (!req.user) {
-        res.status(401).send('Unauthorized');
+        return res.status(401).send('Unauthorized');
     }
-    else {
-        var catalog = new Course();
-        req.body.userId = req.user._id;
-        req.body.courseId = req.params.courseId;
 
-        // format the tags data structure
-        if(req.body.tags) {
-            // because the data is in {text:the-tag} format. let's just get the values.
-            var tagSlugs = [];
-            var tTags = JSON.parse(req.body.tags);
-            for (var i in tTags) {
-                tagSlugs.push(tTags[i]['text']);
-            }
-            req.body.tagSlugs = tagSlugs;
+    var catalog = new Course();
+    req.body.userId = req.user._id;
+    req.body.courseId = req.params.courseId;
+
+    // format the tags data structure
+    if(req.body.tags) {
+        // because the data is in {text:the-tag} format. let's just get the values.
+        var tagSlugs = [];
+        var tTags = JSON.parse(req.body.tags);
+        for (var i in tTags) {
+            tagSlugs.push(tTags[i]['text']);
         }
-
-        catalog.editCourse(
-            function (err) {
-                res.status(200).json({result:false, errors: [err.message]});
-            },
-
-            // parameters
-            req.body,
-            req.files,
-
-            function (course) {
-                res.status(200).json({result:true, course: course});
-            }
-        );
+        req.body.tagSlugs = tagSlugs;
     }
+
+    catalog.editCourse(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+
+        // parameters
+        req.body,
+        req.files,
+
+        function (course) {
+            res.status(200).json({result:true, course: course});
+        }
+    );
 });
 
 router.get('/courses', function(req, res, next) {
     var cat = new Course();
     cat.getCourses(
         function(err){
-            res.status(500);
+            helper.resReturn(err, res);
         },
         {
             // parameters
         },
         function(courses){
-            res.status(200).json({courses: courses});
-        }
-    );
-});
-
-router.get('/course/:courseId/map', function(req, res, next) {
-    res.status(200).json({result:true, treeNodes: []});
-    return;
-    var cat = new Course();
-    cat.getCourse(
-        function(err){
-            res.status(500);
-        },
-        {
-            _id: req.params.courseId
-        },
-        function(course){
-            res.status(200).json({result:true, course: course});
+            res.status(200).json({result: true, courses: courses});
         }
     );
 });
 
 router.get('/course/:courseId', function(req, res, next) {
+    if (!helper.checkRequiredParams(req.params, ['courseId'], function(err){
+            helper.resReturn(err, res);
+        })) return;
+
     var cat = new Course();
     cat.getCourse(
         function(err){
-            res.status(500);
+            helper.resReturn(err, res);
         },
         {
             _id: req.params.courseId
@@ -140,11 +127,8 @@ router.get('/course/:courseId', function(req, res, next) {
  * enrolling user into a course
  */
 router.put('/course/:courseId/enroll', function(req, res, next) {
-    if(!req.params.courseId)
-        res.status(500).send('parameter not complete');
-
     if (!req.user)
-        res.status(401).send('Unauthorized');
+        return res.status(401).send('Unauthorized');
 
     var catalog = new Course();
     catalog.enroll(

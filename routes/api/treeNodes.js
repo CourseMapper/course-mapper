@@ -2,6 +2,7 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var Tree = require(appRoot + '/modules/trees/index.js');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var mongoose = require('mongoose');
@@ -14,7 +15,7 @@ var router = express.Router();
  * POST
  * create node, and allow upload
  */
-router.post('/treeNodes', multipartyMiddleware, function(req, res, next){
+router.post('/treeNodes', multipartyMiddleware, function (req, res, next) {
     // check for user logins
     if (!req.user) {
         res.status(401).send('Unauthorized');
@@ -32,10 +33,7 @@ router.post('/treeNodes', multipartyMiddleware, function(req, res, next){
 
     tr.addTreeNode(
         function (err) {
-            res.status(200).json({
-                result: false,
-                errors: [err.message]
-            });
+            helper.resReturn(err, res);
         },
 
         // parameters
@@ -56,21 +54,18 @@ router.post('/treeNodes', multipartyMiddleware, function(req, res, next){
 /**
  * get all tree nodes based on course id
  */
-router.get('/treeNodes/course/:courseId', function(req, res, next) {
+router.get('/treeNodes/course/:courseId', function (req, res, next) {
     var tr = new Tree();
 
     tr.getTreeNodes(
         function (err) {
-            res.status(200).json({
-                result: false,
-                errors: [err.message]
-            });
+            helper.resReturn(err, res);
         },
         {
             courseId: mongoose.Types.ObjectId(req.params.courseId)
         },
-        function(treeNodes){
-            res.status(200).json({result:true, treeNodes: treeNodes});
+        function (treeNodes) {
+            res.status(200).json({result: true, treeNodes: treeNodes});
         }
     );
 });
@@ -79,21 +74,18 @@ router.get('/treeNodes/course/:courseId', function(req, res, next) {
 /**
  * get all tree nodes based on course id
  */
-router.get('/treeNode/:nodeId', function(req, res, next) {
+router.get('/treeNode/:nodeId', function (req, res, next) {
     var tr = new Tree();
 
     tr.getTreeNode(
         function (err) {
-            res.status(200).json({
-                result: false,
-                errors: [err.message]
-            });
+            helper.resReturn(err, res);
         },
         {
             _id: mongoose.Types.ObjectId(req.params.nodeId)
         },
-        function(treeNode){
-            res.status(200).json({result:true, treeNode: treeNode});
+        function (treeNode) {
+            res.status(200).json({result: true, treeNode: treeNode});
         }
     );
 });
@@ -101,7 +93,7 @@ router.get('/treeNode/:nodeId', function(req, res, next) {
 /**
  * update node.positionFromRoot value
  */
-router.put('/treeNodes/:nodeId/positionFromRoot', function(req, res, next) {
+router.put('/treeNodes/:nodeId/positionFromRoot', function (req, res, next) {
     // check for user rights
     if (!req.user) {
         res.status(401).send('Unauthorized');
@@ -117,7 +109,7 @@ router.put('/treeNodes/:nodeId/positionFromRoot', function(req, res, next) {
     var tr = new Tree();
 
     tr.updateNodePosition(
-        function(err){
+        function (err) {
             res.status(500).json(err);
         },
         {
@@ -128,7 +120,7 @@ router.put('/treeNodes/:nodeId/positionFromRoot', function(req, res, next) {
             x: req.body.x,
             y: req.body.y
         },
-        function(tn){
+        function (tn) {
             res.status(200).json({treeNode: tn});
         }
     );
@@ -137,7 +129,7 @@ router.put('/treeNodes/:nodeId/positionFromRoot', function(req, res, next) {
 /**
  * update node name value
  */
-router.put('/treeNodes/:nodeId', function(req, res, next) {
+router.put('/treeNodes/:nodeId', function (req, res, next) {
     // check for user rights
     if (!req.user) {
         res.status(401).send('Unauthorized');
@@ -153,16 +145,16 @@ router.put('/treeNodes/:nodeId', function(req, res, next) {
     var tr = new Tree();
 
     tr.updateNode(
-        function(err){
-            res.status(500).json({result: false, errors: err.message});
+        function (err) {
+            helper.resReturn(err, res);
         },
         {
             _id: mongoose.Types.ObjectId(req.params.nodeId)
         }
         ,
         req.body,
-        function(tn){
-            res.status(200).json({result:((tn)?true:false), treeNode: tn});
+        function (tn) {
+            res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
         }
     );
 });
@@ -170,7 +162,7 @@ router.put('/treeNodes/:nodeId', function(req, res, next) {
 /**
  * delete a node (setting isDeleted to true)
  */
-router.delete('/treeNodes/:nodeId', function(req, res, next) {
+router.delete('/treeNodes/:nodeId', function (req, res, next) {
     // check for user rights
     if (!req.user) {
         res.status(401).send('Unauthorized');
@@ -187,7 +179,7 @@ router.delete('/treeNodes/:nodeId', function(req, res, next) {
 
     tr.deleteNode(
         function (err) {
-            res.status(500).json({result: false, errors: [err.message]});
+            helper.resReturn(err, res);
         },
         {
             _id: mongoose.Types.ObjectId(req.params.nodeId)

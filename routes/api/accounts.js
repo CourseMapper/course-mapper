@@ -8,7 +8,6 @@ var Mongoose = require('mongoose');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
-var Users = require(appRoot + '/modules/accounts/users.js');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var router = express.Router();
 
@@ -65,38 +64,74 @@ router.get('/accounts/facebook/callback',
     }
 );
 
-router.post('/accounts/login', passport.authenticate('local'),
-    function(req, res) {
-        // If this function gets called, authentication was successful.
-        // 'req.user' contains the authenticated user.
-        res.status(200).json({
-            result: true,
-            username: req.user.username
-        });
+router.post('/accounts/login',
+    function(req, res, next){
+        passport.authenticate('local', function(err, user, info) {
+            if (err) {
+                // if error happens
+                return next(err);
+            }
+
+            if (!user) {
+
+                return res.status(401).json({
+                    result: false,
+                    errors: ['Wrong username or password']
+                });
+
+            }
+
+            // if everything is OK
+            req.logIn(user, function(err) {
+                if (err) {
+                    req.session.messages = "Error";
+                    return next(err);
+                }
+
+                // remember me box is checked
+                if (req.body.rememberMe) {
+                    req.session.cookie.maxAge = config.get('session.maxAge');
+                    req.session._garbage = Date();
+                    req.session.touch();
+                } else {
+                    // it means when the browser is closed, the cookie will expire
+                    req.session.cookie.expires = false;
+                }
+
+                // set the message and redirect
+                req.session.messages = "Login successfully";
+                res.status(200).json({
+                    result: true,
+                    user: req.user
+                });
+            });
+        })(req, res, next);
     }
 );
 
 router.get('/accounts/:username', function(req, res, next) {
     if(req.session.passport.user){
-        Users.findOne({username: req.session.passport.user.username}, function(err, doc){
-            if(err)
+        var account = new Account();
+        account.getUser(
+            function(err){
                 res.status(500).json({result: false, errors: [err.message]});
-            else
-                res.status(200).json({
-                    result:(doc)?true:false, user: {
-                        username: doc.username,
-                        displayName: doc.displayName,
-                        email: doc.email,
-                        role: doc.role,
-                        _id: doc._id,
-                        dateAdded: doc.dateAdded,
-                        dateUpdated: doc.dateUpdated
-                    }
-                });
-        });
+            },
+            {username: req.session.passport.user.username},
+            function(doc){
+                if(doc) {
+                    res.status(200).json({
+                        result: true, user: doc
+                    });
+                } else {
+                    res.status(404).json({
+                        result: false, errors: ["User not found"]
+                    });
+                }
+            }
+        );
     }
     else
-        res.status(401).json({message: 'Not authorized'});
+        res.status(401).json({result: false, errors: ['Not authorized']});
 });
 
 /**
@@ -108,7 +143,7 @@ router.put('/accounts/:userId/changePassword', function(req, res, next){
             req.body.userId = Mongoose.Types.ObjectId(req.params.userId);
 
             if(!req.body.password || !req.body.passwordConfirm) {
-                res.status(500).json({result: false, errors:["parameter not complete"]});
+                res.status(400).json({result: false, errors:["parameter not complete"]});
                 next();
             }
             else {

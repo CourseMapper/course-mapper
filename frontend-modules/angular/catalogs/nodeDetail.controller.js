@@ -36,6 +36,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
                     if(res.result){
                         //todo: go to map view
                         console.log("node deleted");
+                        $location.path('/cid/' + $scope.courseId + '?tab=map');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errors = data.errors;
@@ -82,9 +83,9 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         $scope.currentNodeAction.mode = "edit";
         $scope.currentNodeAction.type = "contentNode";
         $scope.currentNodeAction.typeText = "Content Node";
+        $scope.currentNodeAction.parent = $scope.treeNode;
 
         $scope.nodeModaltitle = "Edit " + $scope.currentNodeAction.typeText;
-        //$scope.nodeModaltitle += " " + $scope.treeNode.name;
 
         $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
     };
