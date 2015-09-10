@@ -39,14 +39,14 @@
                                         <p class="help-block">Link must start with http:// or https://</p>
 
                                         <div class="controls"
-                                             ng-class="{ 'has-error' : <%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine && <%= variableContainer %>.content.length >= 4}">
+                                             ng-class="{ 'has-error' : (<%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine )}">
 
                                         <input type="url" id="link" name="content" placeholder="http://"
                                                    class="form-control"
                                                    ng-model="<%= variableContainer %>.content"
                                                ng-required="true" required>
 
-                                            <p ng-show="<%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine && <%= variableContainer %>.content.length >= 4"
+                                            <p ng-show="<%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine "
                                                class="help-block">A link must contain a URL</p>
                                         </div>
                                     </div>
