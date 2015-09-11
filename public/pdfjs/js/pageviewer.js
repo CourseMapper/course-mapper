@@ -62,6 +62,7 @@ PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
     SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
     pdfPageView.update(SCALE,0);
     currentCanvasHeight=parseInt(rootDivDom.height());
+    console.log("PDF LOADED");
     pdfIsLoaded = true;
     drawAnnZonesWhenPDFAndDBDone();
     return pdfPageView.draw();
@@ -72,10 +73,18 @@ function changeSlide(newSlideNumber){
 
   PAGE_TO_VIEW = newSlideNumber;
 
+  /*HIER MUSS DIE 36 MIT DER MAX NUMBER ERSETZT WERDEN.*/
+  $("#slideNavigationCurrentProgress").width(((newSlideNumber/36)*100)+"%");
+
+
   PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
     pdfDocument.getPage(PAGE_TO_VIEW).then(function (pdfPage) {
       pdfPageView.setPdfPage(pdfPage);
       pdfPageView.draw();
+      console.log("PDF LOADED");
+      pdfIsLoaded = true;
+      drawAnnZonesWhenPDFAndDBDone();
+
     });
   });
 }

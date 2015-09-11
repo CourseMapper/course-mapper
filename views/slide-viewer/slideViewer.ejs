@@ -29,11 +29,18 @@
                         </div>
                         <div id="annotationZone"></div>
                         <div id="slideNavigationWrapper">
-                          <div id="slideNavigationProgress"></div>
+                          <div id="slideNavigationProgress">
+                            <div id="slideNavigationCurrentProgress"></div>
+                          </div>
                           <div id="slideNavigation" class="row notSelectable" ng-cloak>
                             <div class="col-md-4 text-center"></div>
-                            <div class="col-md-4 text-center"><div class="row"><span class="glyphicon glyphicon-triangle-left iconSlideNav" aria-hidden="true" ng-click="changePageNumber(-1)"></span> <span id="slideNavText" class="fsSlideNav">{{currentPageNumber}}/{{maxPageNumber}}</span><span class="glyphicon glyphicon-triangle-right iconSlideNav" aria-hidden="true" ng-click="changePageNumber(1)"></span></div></div>
-                            <div class="col-md-4 text-right"><span class="glyphicon glyphicon-fullscreen iconSlideNav" aria-hidden="true"></span></div>
+                              <div class="col-md-4 text-center"><div class="row">
+                                <span class="glyphicon glyphicon-triangle-left iconSlideNav" aria-hidden="true" ng-click="changePageNumber(-1)"></span>
+                                <span id="slideNavText" class="fsSlideNav">{{currentPageNumber}}/{{maxPageNumber}}</span>
+                                <span class="glyphicon glyphicon-triangle-right iconSlideNav" aria-hidden="true" ng-click="changePageNumber(1)"></span>
+                              </div>
+                            </div>
+                            <div class="col-md-4 text-right"><span id="btn-fullscreen" class="glyphicon glyphicon-fullscreen iconSlideNav" aria-hidden="true"></span></div>
                           </div>
                         </div>
                     </div>
@@ -70,7 +77,8 @@
                              </div>
                              <div class="control-group">
                                <div class="controls">
-                                 <input type="hidden" class="form-control" id="author" name="author" placeholder="author" value= <%=currentUser.username%> >
+                                 <input type="hidden" class="form-control" id="author" name="author" value= <%=currentUser.username%> >
+                                 <input type="hidden" class="form-control" id="pageNumber" name="pageNumber" value= {{currentPageNumber}} >
                                </div>
                              </div>
                              <div class="control-group">
@@ -126,7 +134,8 @@
                           </div>
                           Filter by:
                           <div >
-                            <input id="filterValueText" ng-model="filtersRaw"></input>
+                            <input type="hidden" id="filterValueText" ng-model="filtersRaw"></input>
+                            <input type="hidden" id="pageFilter" ng-model="pageFilter" value = "{{currentPageNumber}}"></input>
                           </div>
                         </div>
                         <!--<div>
@@ -194,6 +203,12 @@
 
 
 <script src="/slide-viewer/js/slideviewer.js"></script>
+<script src="/slide-viewer/js/jquery.fullscreen-min.js"></script>
+<script>
+  $( "#btn-fullscreen" ).click(function() {
+    $("#viewerWrapper").toggleFullScreen();
+  });
+</script>
 
 
 <script src="/jquery/jquery-ui.min.js"></script>

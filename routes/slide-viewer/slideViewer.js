@@ -183,6 +183,28 @@ router.get('/disAnnZones/', function(req, res, next){
   });
 });
 
+router.get('/disAnnZones/:pdfId/:pdfPageNumber', function(req, res, next){
+  var annZone = new AnnZones();
+
+
+  annZone.getSpecificAnnotationZones(req.params.pdfId, req.params.pdfPageNumber, function(err, data) {
+    var modifiedData = new Array(data.length);
+    for(var i=0; i<data.length; i++){
+      modifiedData[i] = {
+        name: data[i].annotationZoneName,
+        relPosX: data[i].relativeCoordinates.X,
+        relPosY: data[i].relativeCoordinates.Y,
+        relWidth: data[i].relativeDimensions.X,
+        relHeight: data[i].relativeDimensions.Y,
+        color: data[i].color
+      };
+    }
+    //console.log(modifiedData);
+    res.status(200).json({result:true, annZones: modifiedData});
+
+  });
+});
+
 
 
 

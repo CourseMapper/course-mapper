@@ -20,10 +20,17 @@ var annotationPDFSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    dateOfCreation: { type: Date },
+    dateOfCreation: {
+      type: Date
+    },
     //votes: {},
     //isDeleted: {},
-    originSlide: { type: Number }
+    pdfId: {
+      type: Number
+    },
+    pdfPageNumber: {
+      type: Number
+    }
 });
 
 annotationPDFSchema.pre('save', function(next){
