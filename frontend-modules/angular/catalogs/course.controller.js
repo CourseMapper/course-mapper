@@ -1,5 +1,6 @@
 app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
     $scope.course = null;
+    $scope.videoSources = false;
     $scope.enrolled = false;
     $scope.loc = $location.absUrl() ;
     $scope.courseId = $routeParams.courseId;
@@ -36,8 +37,17 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http, 
             if(res.result) {
                 $scope.course = res.course;
 
-                if(refreshPicture && $scope.course.picture)
-                    $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+                if(refreshPicture) {
+                    if($scope.course.picture)
+                        $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+                }
+
+                if($scope.course.video){
+                    $scope.videoSources = [{
+                        src: $scope.course.video,
+                        type: 'video/mp4'
+                    }];
+                }
 
                 if(!refreshPicture) {
                     $timeout(function () {
