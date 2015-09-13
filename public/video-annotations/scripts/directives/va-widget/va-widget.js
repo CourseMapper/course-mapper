@@ -1,6 +1,7 @@
 videoAnnotationsModule.directive('vaWidget',
     function() {
         return {
+            restruct: 'A',
             scope: {
                 videoSource: '@',
                 videoId: '@'

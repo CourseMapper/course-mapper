@@ -13,7 +13,7 @@
     });
 };
 */
-console.log("LOADED RESET");
+//console.log("LOADED RESET");
 var pdfIsLoaded = false;
 var annotationZonesAreLoaded = false;
 
@@ -27,10 +27,10 @@ function commentsLoaded(){
   //  return;
   //commentsFullyLoaded = true;
   if($("#commentList .annotationZoneReference").not('.hasOnClick').length != 0) {
-    console.log("ADDED CLICK FUNCTION");
-    console.log($("#commentList .annotationZoneReference").length);
+    //console.log("ADDED CLICK FUNCTION");
+    //console.log($("#commentList .annotationZoneReference").length);
     $("#commentList .annotationZoneReference").not('.hasOnClick').click(function(){
-      console.log("TEST:");
+      //console.log("TEST:");
       switchRegexFilter("renderedText",$(this).html());
     });
     $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
@@ -49,11 +49,11 @@ function commentsLoaded(){
 */
 
 function tagListLoaded(tagList) {
-  console.log("RUN TAGLISTLOADED");
+  //console.log("RUN TAGLISTLOADED");
   for(var i = 0; i < tagList.length; i++) {
     toDrawAnnotationZoneData[i] = [tagList[i].name, tagList[i].relPosX, tagList[i].relPosY, tagList[i].relWidth, tagList[i].relHeight, tagList[i].color];
   }
-  console.log("ANNZONES LOADED");
+  //console.log("ANNZONES LOADED");
   annotationZonesAreLoaded = true;
   drawAnnZonesWhenPDFAndDBDone();
 };
@@ -65,11 +65,11 @@ function tagListLoaded(tagList) {
 };*/
 
 function drawAnnZonesWhenPDFAndDBDone() {
-  console.log(annotationZonesAreLoaded);
-  console.log(pdfIsLoaded);
+  //console.log(annotationZonesAreLoaded);
+  //console.log(pdfIsLoaded);
   if(annotationZonesAreLoaded && pdfIsLoaded) {
     for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
-      console.log("createAnnotationZones");
+      //console.log("createAnnotationZones");
       loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0])
     }
   }
@@ -95,12 +95,12 @@ function addAnnotationZoneElement(element) {
 };
 
 function commentOnSubmit() {
-  console.log("IT WOKRS");
+  //console.log("IT WOKRS");
 
   annotationList = $("#annotationZoneSubmitList div");
 
   for(var i = 0; i < annotationList.length; i++) {
-    console.log("added tag");
+    //console.log("added tag");
     //TODO: Adapt to next rectangle iteration
     var elementId = $("#annotationZoneSubmitList #rectangleId").eq(i).val();
     var element = $("#"+elementId);
@@ -113,7 +113,7 @@ function commentOnSubmit() {
     var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
     if(name == "") {
-      console.log("Error encountered while extracting annotation zone during submission.");
+      //console.log("Error encountered while extracting annotation zone during submission.");
       return false;
     }
     else {
@@ -123,7 +123,7 @@ function commentOnSubmit() {
 
 
   //TODO: Check integrity of the input
-  console.log("got here");
+  //console.log("got here");
   return true;
 };
 

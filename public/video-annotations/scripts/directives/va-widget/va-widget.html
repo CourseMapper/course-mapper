@@ -20,10 +20,10 @@
                  can-move="{{selectedAnnotation == item}}"
                  on-moved="item.reposition"
                  ng-repeat="item in annotations | filter:{type: 'embedded-note'}"
-                 class="inline-va-annotation" 
-                 ng-show="item.showing" 
+                 class="inline-va-annotation"
+                 ng-show="item.showing"
                  ng-style="{
-                    top: item.position.top + '%', 
+                    top: item.position.top + '%',
                     left: item.position.left + '%',
                     width: item.size.width + 'px',
                     height: item.size.height + 'px'}">
@@ -50,7 +50,7 @@
     <section ng-show="selectedAnnotation == null && annotations.length > 0" class="annotations-viewer">
         <label for="search-box">Search:</label>
         <input id="search-box" ng-model="query">
-   
+
         <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation"
                           ng-class="{showing: annotation.showing, completed: annotation.completed}"
                           ng-click="seekPosition(annotation)"></video-annotation>

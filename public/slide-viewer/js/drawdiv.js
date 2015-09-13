@@ -42,11 +42,11 @@ var bRadius = "4";
 
 
 function absToViewTop(relToView,canvas){
-	console.log(rootDivDom.offset().top);
+	//console.log(rootDivDom.offset().top);
 	return rootDivDom.offset().top+parseInt(relToView,10);
 }
 function absToViewLeft(relToView,canvas){
-	console.log("CHECK: "+ relToView);
+	//console.log("CHECK: "+ relToView);
 	return rootDivDom.offset().left+parseInt(relToView,10);
 }
 
@@ -344,7 +344,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 
 
 
-console.log("test: "+rootDivDom.height());
+//console.log("test: "+rootDivDom.height());
 initRects();
 
 window.onresize = function(){
