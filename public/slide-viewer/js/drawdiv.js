@@ -114,7 +114,7 @@ function mouseDown(e){
 		//creating Div with default values
 		element = $('<div/>', {
 			id: rectPrefix+divCounter,
-			position: 'absolute',
+			position: 'relative',
 			class: 'slideRect debug',
 			opacity: opacityFactorHighlight
 		});
@@ -350,7 +350,11 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	}
 
 
-
+	//tagspan element
+			spanElement = $('<input/>', {
+				id: rectSpanPrefix+divCounter,
+				class: 'slideRectSpan'
+			});
 
 
 	//tagspan element
