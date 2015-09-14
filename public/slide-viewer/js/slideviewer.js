@@ -87,17 +87,29 @@ function addAnnotationZoneElement(element) {
 
   var htmlTemplate = $("#annotationZoneSubmitTemplate").html();
   var elementField = "<input id='rectangleId' type='hidden' value='" + element.attr('id') + "'>";
-  annotationHtmlString = "<div>" + elementField + htmlTemplate + "</div>";
+  var nameInputField = '<input id="annotationZoneSubmitName" ng-model="storedAnnZones[\'' + element.attr('id') +  '\']" placeholder="Enter annotation zone name">';
+  //var nameInputField = '<input id="annotationZoneSubmitName" placeholder="Enter annotation zone name">';
 
+  annotationHtmlString = "<div>" + elementField + nameInputField + htmlTemplate + "</div>";
 
-  $("#annotationZoneSubmitList").append(annotationHtmlString);
+  var element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(annotationHtmlString);
+
+  $("#annotationZoneSubmitList").append(element);
 
 };
 
 function commentOnSubmit() {
   //console.log("IT WOKRS");
 
+
+  $("#tagNames").val("");
+  $("#tagRelPos").val("");
+  $("#tagRelCoord").val("");
+  $("#tagColor").val("");
+
   annotationList = $("#annotationZoneSubmitList div");
+
+  console.log(annotationList);
 
   for(var i = 0; i < annotationList.length; i++) {
     //console.log("added tag");
@@ -215,7 +227,6 @@ function switchRegexFilter(attribute,value){
     filterInput.val('');
   }
   filterInput.trigger('input');
-
 };
 
 function createMovableAnnZone() {

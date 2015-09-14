@@ -319,7 +319,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		spanElement = $('<span/>', {
 			id: rectSpanPrefix+divCounter
 		});
-		spanElement.text("TEXT");
+		if(!canMove)
+			spanElement.text(tagname);
+		else
+			spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
 		element.append(spanElement);
 	//transition //CHECK IF THIS LINES ARE CORRECT
 	element.prop("-moz-transition", "opacity 0.1s linear");

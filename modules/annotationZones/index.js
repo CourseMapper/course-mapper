@@ -103,6 +103,8 @@ function submitSingleTagLast(tagList,pageNumber , mainCallback) {
 var permArray;
 
 AnnZones.prototype.submitTagList = function(err,tagList, pageNumber, callback){
+  //console.log("Received tagList of lenght: " + tagList.length);
+  //console.log(tagList);
   if(tagList.length!=0) {
     if(tagList.length>1){
       //console.log(tagList[0]);

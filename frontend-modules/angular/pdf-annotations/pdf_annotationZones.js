@@ -1,5 +1,11 @@
 app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
+    $scope.storedAnnZones = [];
+
+    $scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
+      console.log($scope.storedAnnZones);
+    });
+
 
 
     $scope.refreshTags = function() {
