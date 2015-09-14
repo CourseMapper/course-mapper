@@ -294,10 +294,11 @@ function alwaysRescaleRects(){
 	max_width_rect_abs=currentCanvasHeight*max_width_rect_rel;
 }
 
-function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
+function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove){
 	//creating Div with default values
 	element = $('<div/>', {
 		movable: "",
+		"can-move": canMove,
 		id: rectPrefix+divCounter,
 		position: 'absolute',
 		class: 'slideRect debug',
@@ -338,11 +339,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 
 	element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
 
-	console.log(element);
-
 	element.appendTo('#annotationZone');
 	divCounter=divCounter+1;
 
+	return element;
 
 
 }
