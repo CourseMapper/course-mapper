@@ -17,6 +17,7 @@ var startYRel;
 
 var opacityFactor ="0.125";
 var opacityFactorHighlight ="0.5";
+var opacityFactorCreate = "0.75"
 
 //Random Values
 var tagFontSize = 1;
@@ -333,15 +334,22 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	element.offset({top: absToViewLeft(attrRelTop, this)});
 	element.css('height',  currCanHeight*relHeight);
 	element.css('width',   currCanWidth*relWidth);
-	element.css('opacity', opacityFactor)
+	if(canMove){
+		element.css('opacity', opacityFactorCreate);
+		element.css('border',' 1px dashed white');
 
-	element.hover(function(){
-		$(this).stop().fadeTo("fast", opacityFactorHighlight);
-		$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
-	}, function(){
-		$(this).stop().fadeTo("fast",opacityFactor);
-		$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
-	});
+	}else{
+		element.css('opacity', opacityFactor);
+		element.hover(function(){
+			$(this).stop().fadeTo("fast", opacityFactorHighlight);
+			//$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
+		}, function(){
+			$(this).stop().fadeTo("fast",opacityFactor);
+			//$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
+		});
+	}
+
+
 
 
 
