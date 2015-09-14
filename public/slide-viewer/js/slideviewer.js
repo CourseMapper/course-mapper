@@ -70,7 +70,7 @@ function drawAnnZonesWhenPDFAndDBDone() {
   if(annotationZonesAreLoaded && pdfIsLoaded) {
     for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
       //console.log("createAnnotationZones");
-      loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0])
+      loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0], false)
     }
   }
 };
@@ -216,4 +216,9 @@ function switchRegexFilter(attribute,value){
   }
   filterInput.trigger('input');
 
+};
+
+function createMovableAnnZone() {
+  var element = loadRect(0, 0, 0.3, 0.3, "Red", "NoNameYet", true);
+  addAnnotationZoneElement(element);
 };
