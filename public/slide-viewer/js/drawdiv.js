@@ -65,10 +65,10 @@ function setCurrentTagColor(tTagColor){
 }
 
 function initRects() {
-	rootDivDom.bind('mousedown', mouseDown);
-	rootDivDom.bind('mouseup', mouseUp);
-	rootDivDom.bind('mousemove', mouseMove);
-	rootDivDom.bind('mouseleave', mouseLeave);
+	//rootDivDom.bind('mousedown', mouseDown);
+	//rootDivDom.bind('mouseup', mouseUp);
+	//rootDivDom.bind('mousemove', mouseMove);
+	//rootDivDom.bind('mouseleave', mouseLeave);
 }
 function appendClickEventOnRect(){
 	$(".slideRect").each(function(){

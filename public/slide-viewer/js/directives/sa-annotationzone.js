@@ -2,13 +2,13 @@ angular.module('SlideViewerAnnotationZones', [])
 .directive('saAnnotationzone',
     function() {
         return {
-            restrict: 'E',
+            restrict: 'A',
             scope: {
-                videoSource: '@',
-                videoId: '@'
+                videoSource: '=',
+                videoId: '='
             },
             templateUrl: '/slide-viewer/js/directives/sa-annotationzone.html',
-            controller: 'sa-annotationzone-controller'
+            //controller: 'sa-annotationzone-controller'
         };
     }
 );
