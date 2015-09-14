@@ -8,7 +8,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 
 /**
- * return all posts
+ * return all posts of a course
  */
 router.get('/discussions/:courseId', function (req, res, next) {
     var cat = new CourseDiscussionController();
