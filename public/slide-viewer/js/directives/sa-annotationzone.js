@@ -4,10 +4,9 @@ angular.module('SlideViewerAnnotationZones', [])
         return {
             restrict: 'A',
             scope: {
-                videoSource: '=',
-                videoId: '='
+                name: '=',
             },
-            transclude: true,
+            replace:true,
             templateUrl: '/slide-viewer/js/directives/sa-annotationzone.html',
             //controller: 'sa-annotationzone-controller'
         };
