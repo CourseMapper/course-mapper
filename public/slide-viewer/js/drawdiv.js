@@ -7,6 +7,7 @@
 var rootDivId ='annotationZone';
 var rootDivDom = $('#annotationZone');
 var rectPrefix = "rect-";
+var rectSpanPrefix = "rectspan-";
 var divCounter = 0;
 var drag = false;
 
@@ -298,6 +299,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 	//creating Div with default values
 	element = $('<div/>', {
 		movable: "",
+		"can-move": "true",
 		id: rectPrefix+divCounter,
 		position: 'absolute',
 		class: 'slideRect debug',
@@ -313,8 +315,12 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 	//tag
 	element.attr("data-tagName","#"+tagname);
 
-
-
+//tagspan element
+		spanElement = $('<span/>', {
+			id: rectSpanPrefix+divCounter
+		});
+		spanElement.text("TEXT");
+		element.append(spanElement);
 	//transition //CHECK IF THIS LINES ARE CORRECT
 	element.prop("-moz-transition", "opacity 0.1s linear");
 	element.prop("-ms-transition", "opacity 0.1s linear");
