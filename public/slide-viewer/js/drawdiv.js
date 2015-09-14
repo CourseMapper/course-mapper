@@ -17,6 +17,7 @@ var startYRel;
 
 var opacityFactor ="0.125";
 var opacityFactorHighlight ="0.5";
+var opacityFactorCreate = "0.75"
 
 //Random Values
 var tagFontSize = 1;
@@ -113,7 +114,7 @@ function mouseDown(e){
 		//creating Div with default values
 		element = $('<div/>', {
 			id: rectPrefix+divCounter,
-			position: 'absolute',
+			position: 'relative',
 			class: 'slideRect debug',
 			opacity: opacityFactorHighlight
 		});
@@ -296,7 +297,23 @@ function alwaysRescaleRects(){
 }
 
 function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove){
-	//creating Div with default values
+
+	switch(color) {
+    case "Red":
+				color ="#CC0000";
+        break;
+		case "Blue":
+				color ="#1E90FF";
+      	break;
+			case "Green":
+	        color ="#00FF00";
+	        break;
+    default:
+        color = "Black";
+		}
+
+		//creating Div with default values
+
 	element = $('<div/>', {
 		movable: "",
 		"can-move": canMove,
@@ -310,7 +327,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 //CHANGE LATER
 	element.css({
 		position: 'absolute',
-		backgroundColor: getCurrentTagColor(),
+		backgroundColor: color,
 
 	});
 
@@ -336,16 +353,27 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	//element.attr("ng-style", "{left: " + absToViewLeft(attrRelLeft, this) + ",top: " + absToViewLeft(attrRelTop, this) + ",height: " + currCanHeight*relHeight + ",width: " + currCanWidth*relWidth+"}");
 	element.css('height',  currCanHeight*relHeight);
 	element.css('width',   currCanWidth*relWidth);
-	element.css('opacity', opacityFactor)
+	if(canMove){
+		element.css('opacity', opacityFactorCreate);
+		element.css('border',' 1px dashed white');
 
-	element.hover(function(){
-		$(this).stop().fadeTo("fast", opacityFactorHighlight);
-		$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
-	}, function(){
-		$(this).stop().fadeTo("fast",opacityFactor);
-		$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
-	});
+	}else{
+		element.css('opacity', opacityFactor);
+		element.hover(function(){
+			$(this).stop().fadeTo("fast", opacityFactorHighlight);
+			//$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
+		}, function(){
+			$(this).stop().fadeTo("fast",opacityFactor);
+			//$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
+		});
+	}
 
+
+	//tagspan element
+			spanElement = $('<input/>', {
+				id: rectSpanPrefix+divCounter,
+				class: 'slideRectSpan'
+			});
 
 
 	//tagspan element
