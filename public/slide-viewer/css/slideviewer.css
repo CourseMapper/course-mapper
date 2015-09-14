@@ -17,6 +17,19 @@
   height: 100%;
   position: absolute;
 }
+.slideRectSpan{
+  color: white;
+  font-weight: bold;
+  padding-left: 2pt;
+  padding-right: 2pt;
+  margin-left: 2px;
+}
+
+.slideRect{
+}
+
+.slideRect:hover{
+}
 
 #viewerContainer{
 }

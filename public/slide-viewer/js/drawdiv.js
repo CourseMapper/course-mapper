@@ -35,7 +35,7 @@ var min_width_rect_abs=50;
 var max_width_rect_abs=300;
 
 var currentTagName="";
-var currentTagColor="";
+var currentTagColor="#1E90FF";
 
 var bWidth ="3";
 var bRadius = "4";
@@ -302,14 +302,14 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		"can-move": canMove,
 		id: rectPrefix+divCounter,
 		position: 'absolute',
-		class: 'slideRect debug',
+		class: 'slideRect ',
 		opacity: opacityFactorHighlight
 	});
 //CHANGE LATER
 	element.css({
 		position: 'absolute',
 		backgroundColor: getCurrentTagColor(),
-		borderRadius: bWidth+"px solid #C1E0FF",
+
 	});
 
 	//tag
@@ -332,7 +332,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
 
 
-
 	var currCanWidth = rootDivDom.width();
 
 	var attrRelLeft = relLeft*currCanWidth;
@@ -344,6 +343,25 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	element.css('height',  currCanHeight*relHeight);
 	element.css('width',   currCanWidth*relWidth);
 	element.css('opacity', opacityFactor)
+
+	element.hover(function(){
+		$(this).stop().fadeTo("fast", opacityFactorHighlight);
+		$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
+	}, function(){
+		$(this).stop().fadeTo("fast",opacityFactor);
+		$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
+	});
+
+
+
+	//tagspan element
+			spanElement = $('<span/>', {
+				id: rectSpanPrefix+divCounter,
+				class: 'slideRectSpan'
+			});
+			spanElement.text("TEXT");
+			element.append(spanElement);
+
 
 	element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
 
