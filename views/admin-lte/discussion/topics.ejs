@@ -15,24 +15,32 @@
                 </ul>
             </div>
 
+            <!--Posts List-->
             <div class="posts-list" ng-show="topics.length > 0">
                 <ul class="posts">
-                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''" ng-hide="topic.isDeleted">
-                        <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
-                            {{topic.discussion.title}}
-                        </a></h4>
-                        <span class="posted-at">
-                            Posted <strong>{{topic.discussion.dateAdded | relativeDate}}</strong>
-                            By <strong>{{topic.createdBy.username}}</strong>
-                        </span>
+                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''"
+                        ng-hide="topic.isDeleted">
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <voting vote-type="discussion" vote-type-id="{{topic._id}}" vote-value=""></voting>
+                            </div>
+                            <div class="col-xs-11">
+                                <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
+                                    {{topic.discussion.title}}
+                                </a></h4>
+                                <span class="posted-at">
+                                    Posted <strong>{{topic.discussion.dateAdded | relativeDate}}</strong>
+                                    By <strong>{{topic.createdBy.username}}</strong>
+                                </span>
+                            </div>
+                        </div>
+
                     </li>
                 </ul>
             </div>
 
         </div>
         <div class="col-md-6" id="topicContents">
-            <!--<h5>Topic Description</h5>-->
-
             <div ng-hide="pid || topics.length == 0">
                 <h4>Please pick one from the existing topics</h4>
             </div>
@@ -41,12 +49,17 @@
 
                 <div ng-show="currentTopic" class="currentTopic">
                     <div class="box box-solid">
-                        <div class="box-header with-border">
-                            <h4>{{currentTopic.title}}</h4>
-                            <span class="posted-at">
-                                Posted <strong>{{currentTopic.dateAdded | relativeDate}}</strong>
-                            By <strong>{{currentTopic.createdBy.username}}</strong>
+                        <div class="box-header with-border row">
+                            <!--<div class="col-xs-1">
+                                <voting vote-type="discussion" vote-type-id="{{currentTopic._id}}"></voting>s
+                            </div>-->
+                            <div class="col-xs-11">
+                                <h4>{{currentTopic.title}}</h4>
+                                <span class="posted-at">
+                                    Posted <strong>{{currentTopic.dateAdded | relativeDate}}</strong>
+                                By <strong>{{currentTopic.createdBy.username}}</strong>
                             </span>
+                            </div>
                         </div>
                         <div class="box-body">
                             <p class="topicContent" ng-bind-html="currentTopic.content | unsafe">
@@ -113,7 +126,7 @@
 
     <% var formName= 'addNewReply'; var formTitle = 'Add'; var actionMethod = 'saveNewReply'; %>
     <% include replyModal %>
-    <% var formName= 'editReply'; var formTitle = 'Edit'; var actionMethod = 'saveEditReply';  %>
+    <% var formName= 'editReply'; var formTitle = 'Edit'; var actionMethod = 'saveEditReply'; %>
     <% include replyModal %>
 
 </div>
