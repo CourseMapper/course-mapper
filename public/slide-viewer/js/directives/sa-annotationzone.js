@@ -7,6 +7,7 @@ angular.module('SlideViewerAnnotationZones', [])
                 videoSource: '=',
                 videoId: '='
             },
+            transclude: true,
             templateUrl: '/slide-viewer/js/directives/sa-annotationzone.html',
             //controller: 'sa-annotationzone-controller'
         };
