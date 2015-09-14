@@ -1,5 +1,7 @@
 
-<!--add statics files from public/my-course/-->
+<!--add statics files from public/my-course/
+	My Summary widget 
+
 <script src="/my-course/data.js"></script>
 <script src="/my-course/options.js"></script>
 
@@ -11,3 +13,9 @@
     var context = document.getElementById('activityChart').getContext('2d');
     var myRadarChart = new Chart(context).Radar(radarData, radarChartOptions);
 </script>
+-->
+<div width="250" height="250" ng-controller="RadarSummaryController">
+	<canvas id="radar" class="chart chart-radar"
+	  chart-data="data" chart-labels="labels">
+	</canvas> 
+</div>

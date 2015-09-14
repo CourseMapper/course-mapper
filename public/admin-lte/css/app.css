@@ -727,3 +727,7 @@ a.cursor {
 .course-picture{
     width: 100%;
 }
+
+li.active .voting .vote-total{
+    padding:4px;
+}
