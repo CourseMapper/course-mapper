@@ -35,7 +35,7 @@ var min_width_rect_abs=50;
 var max_width_rect_abs=300;
 
 var currentTagName="";
-var currentTagColor="";
+var currentTagColor="#1E90FF";
 
 var bWidth ="3";
 var bRadius = "4";
@@ -302,31 +302,25 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		"can-move": canMove,
 		id: rectPrefix+divCounter,
 		position: 'absolute',
-		class: 'slideRect debug',
+		class: 'slideRect ',
 		opacity: opacityFactorHighlight
 	});
 //CHANGE LATER
 	element.css({
 		position: 'absolute',
 		backgroundColor: getCurrentTagColor(),
-		borderRadius: bWidth+"px solid #C1E0FF",
+
 	});
 
 	//tag
 	element.attr("data-tagName","#"+tagname);
 
-//tagspan element
-		spanElement = $('<span/>', {
-			id: rectSpanPrefix+divCounter
-		});
-		spanElement.text("TEXT");
-		element.append(spanElement);
+
 	//transition //CHECK IF THIS LINES ARE CORRECT
 	element.prop("-moz-transition", "opacity 0.1s linear");
 	element.prop("-ms-transition", "opacity 0.1s linear");
 	element.prop("-o-transition", "opacity 0.1s linear");
 	element.prop("transition", "opacity 0.1s linear");
-
 
 
 
@@ -341,6 +335,23 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	element.css('height',  currCanHeight*relHeight);
 	element.css('width',   currCanWidth*relWidth);
 	element.css('opacity', opacityFactor)
+
+	element.hover(function(){
+		$(this).stop().fadeTo("fast", opacityFactorHighlight);
+	}, function(){
+		$(this).stop().fadeTo("fast",opacityFactor);
+	});
+
+
+
+	//tagspan element
+			spanElement = $('<span/>', {
+				id: rectSpanPrefix+divCounter,
+				class: 'slideRectSpan'
+			});
+			spanElement.text("TEXT");
+			element.append(spanElement);
+
 
 	element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
 

@@ -17,6 +17,22 @@
   height: 100%;
   position: absolute;
 }
+.slideRectSpan{
+  color: black;
+}
+
+.slideRect{
+}
+.hovered{
+  opacity:1.0 !important;
+  transition: all 2.0s linear;
+ -webkit-transition: all 0.3s linear;
+ -moz-transition: all 0.3s linear;
+ -ms-transition: all 0.3s linear;
+ -o-transition: all 0.3s linear;
+}
+.slideRect:hover{
+}
 
 #viewerContainer{
 }
