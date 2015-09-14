@@ -297,7 +297,23 @@ function alwaysRescaleRects(){
 }
 
 function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove){
-	//creating Div with default values
+
+	switch(color) {
+    case "Red":
+				color ="#CC0000";
+        break;
+		case "Blue":
+				color ="#1E90FF";
+      	break;
+			case "Green":
+	        color ="#00FF00";
+	        break;
+    default:
+        color = "Black";
+		}
+
+		//creating Div with default values
+
 	element = $('<div/>', {
 		movable: "",
 		"can-move": canMove,
@@ -309,7 +325,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 //CHANGE LATER
 	element.css({
 		position: 'absolute',
-		backgroundColor: getCurrentTagColor(),
+		backgroundColor: color,
 
 	});
 
