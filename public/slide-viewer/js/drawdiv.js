@@ -315,15 +315,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	//tag
 	element.attr("data-tagName","#"+tagname);
 
-//tagspan element
-		spanElement = $('<span/>', {
-			id: rectSpanPrefix+divCounter
-		});
-		if(!canMove)
-			spanElement.text(tagname);
-		else
-			spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
-		element.append(spanElement);
 	//transition //CHECK IF THIS LINES ARE CORRECT
 	element.prop("-moz-transition", "opacity 0.1s linear");
 	element.prop("-ms-transition", "opacity 0.1s linear");
@@ -359,7 +350,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 				id: rectSpanPrefix+divCounter,
 				class: 'slideRectSpan'
 			});
-			spanElement.text("TEXT");
+			if(!canMove)
+				spanElement.text(tagname);
+			else
+				spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
 			element.append(spanElement);
 
 
