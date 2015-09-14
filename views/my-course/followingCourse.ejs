@@ -1,11 +1,13 @@
-<script type="application/javascript" ng-src="/my-course/data.js"></script>
-<script type="application/javascript" ng-src="/my-course/options.js"></script>
+<div class="box-body no-padding" style="width:250px; height:250px" ng-controller="CatListController">
+	<table class="table table-stripped">
+		<tbody>
+			<tr>
+				<th style="width: 35px">{{title}}</th>
+			</tr>
+			<tr ng-repeat="cat in categories">
+				<td> {{cat.name}} </td>
+			</tr>
+		</tbody>
+	</table>
+</div>
 
-
-        <div style="width:250px; height:250px">
-            <ul>
-                <li ng-repeat="cat in categories">
-                    {{cat.name}}
-                </li>
-            </ul>
-        </div>

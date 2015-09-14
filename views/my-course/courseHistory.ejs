@@ -1,5 +1,5 @@
 
-<!--add statics files from public/my-course/-->
+<!--add statics files from public/my-course/
 <script src="/my-course/data.js"></script>
 <script src="/my-course/options.js"></script>
 
@@ -13,3 +13,11 @@
     //var skillsChart = new Chart(context).Doughnut(pieData);
     var myLineChart = new Chart(context).Line(lineData, lineChartOptions);
 </script>
+
+-->
+
+<div class="box-body no-padding" ng-controller="BarProgressController">
+	<canvas style="width:500px; height:150px" id="bar" class="chart chart-bar" chart-data="data" chart-labels="labels" chart-legend="true" chart-series="series" chart-click="onClick"></canvas> 
+	{{title}}
+</div>
+
