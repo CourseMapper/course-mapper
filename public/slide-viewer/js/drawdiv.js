@@ -338,8 +338,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
 	element.hover(function(){
 		$(this).stop().fadeTo("fast", opacityFactorHighlight);
+		$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
 	}, function(){
 		$(this).stop().fadeTo("fast",opacityFactor);
+		$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
 	});
 
 
