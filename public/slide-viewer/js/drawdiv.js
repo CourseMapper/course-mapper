@@ -297,6 +297,7 @@ function alwaysRescaleRects(){
 function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 	//creating Div with default values
 	element = $('<div/>', {
+		movable: "",
 		id: rectPrefix+divCounter,
 		position: 'absolute',
 		class: 'slideRect debug',
@@ -334,6 +335,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname){
 	element.css('height',  currCanHeight*relHeight);
 	element.css('width',   currCanWidth*relWidth);
 	element.css('opacity', opacityFactor)
+
+	element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
+
+	console.log(element);
 
 	element.appendTo('#annotationZone');
 	divCounter=divCounter+1;

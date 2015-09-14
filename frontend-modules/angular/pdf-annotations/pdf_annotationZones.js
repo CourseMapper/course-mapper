@@ -1,4 +1,4 @@
-app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {
+app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
 
 
@@ -31,6 +31,12 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
     });
+
+    $scope.compileMovableAnnotationZone = function(element) {
+      return angular.element(
+        $injector.get('$compile')(element)($scope)
+      );
+    };
 
     //$scope.refreshTags();
 });

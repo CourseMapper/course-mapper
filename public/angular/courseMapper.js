@@ -2086,7 +2086,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
 
 });
-;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout) {
+;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
 
 
@@ -2119,6 +2119,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
     });
+
+    $scope.compileMovableAnnotationZone = function(element) {
+      return angular.element(
+        $injector.get('$compile')(element)($scope)
+      );
+    };
 
     //$scope.refreshTags();
 });
