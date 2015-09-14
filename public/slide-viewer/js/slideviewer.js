@@ -89,8 +89,10 @@ function addAnnotationZoneElement(element) {
   var elementField = "<input id='rectangleId' type='hidden' value='" + element.attr('id') + "'>";
   var nameInputField = '<input id="annotationZoneSubmitName" ng-model="storedAnnZones[\'' + element.attr('id') +  '\']" placeholder="Enter annotation zone name">';
   //var nameInputField = '<input id="annotationZoneSubmitName" placeholder="Enter annotation zone name">';
+  var colorSelectField = '<select id="annotationZoneSubmitColor"  ng-model="storedAnnZoneColors[\'' + element.attr('id') +  '\']"><option>Red</option><option value="1E90FF">Blue</option><option>Green</option></select>';
 
-  annotationHtmlString = "<div>" + elementField + nameInputField + htmlTemplate + "</div>";
+
+  annotationHtmlString = "<div>" + elementField + nameInputField + colorSelectField + htmlTemplate + "</div>";
 
   var element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(annotationHtmlString);
 
