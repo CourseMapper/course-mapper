@@ -297,21 +297,24 @@ function alwaysRescaleRects(){
 }
 
 function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove){
-
-	switch(color) {
-    case "Red":
-				color ="#CC0000";
-        break;
-		case "Blue":
-				color ="#1E90FF";
-      	break;
-			case "Green":
-	        color ="#00FF00";
+	//if(!canMove){
+		switch(color) {
+	    case "Red":
+					color ="#CC0000";
 	        break;
-    default:
-        color = "Black";
-		}
-
+			case "Blue":
+					color ="#1E90FF";
+	      	break;
+				case "Green":
+		        color ="#00FF00";
+		        break;
+	    default:
+	        color = "Black";
+			}
+		//}
+		//else {
+			//color = "{{storedAnnZoneColors['"+ rectPrefix+divCounter +"']}}";
+		//}
 		//creating Div with default values
 
 	element = $('<div/>', {
@@ -322,7 +325,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		position: 'absolute',
 		class: 'slideRect ',
 		opacity: opacityFactorHighlight,
-
+		//"ng-style": "{backgroundColor: " + color +"}",
 	});
 //CHANGE LATER
 	element.css({
