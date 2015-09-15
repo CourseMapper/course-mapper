@@ -328,7 +328,11 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		element.css({
 			position: 'absolute',
 			backgroundColor: color,
-
+			'-webkit-transition': 'background 0.1s linear',
+			'-moz-transition': 'background 0.1s linear',
+			'-ms-transition': 'background 0.1s linear',
+			'-o-transition': 'background 0.1s linear',
+			'transition': 'background 0.1s linear'
 		});
 
 	//tag
