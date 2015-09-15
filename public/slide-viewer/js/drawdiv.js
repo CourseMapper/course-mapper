@@ -332,7 +332,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		});
 
 	//tag
-	element.attr("data-tagName","#"+tagname);
+	element.attr("data-tagName", tagname);
 
 	//transition //CHECK IF THIS LINES ARE CORRECT
 	element.prop("-moz-transition", "opacity 0.1s linear");

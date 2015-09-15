@@ -26,6 +26,7 @@ function commentsLoaded(){
   //if(commentsFullyLoaded)
   //  return;
   //commentsFullyLoaded = true;
+  var element = $("#commentList .annotationZoneReference").not('.hasOnClick');
   if($("#commentList .annotationZoneReference").not('.hasOnClick').length != 0) {
     //console.log("ADDED CLICK FUNCTION");
     //console.log($("#commentList .annotationZoneReference").length);
@@ -34,6 +35,18 @@ function commentsLoaded(){
       switchRegexFilter("renderedText",$(this).html());
     });
     $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
+
+    element.hover(function(){
+      var rectId = $(this).html();
+
+      console.log("FOUND " + $("#annotationZone [data-tagName='"+rectId+"']").length + " instances of " + "#annotationZone [data-tagName='"+rectId+"']");
+			$("#annotationZone [data-tagName='"+rectId+"']").stop().fadeTo("fast", opacityFactorHighlight);
+			//$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
+		}, function(){
+      var rectId = $(this).html();
+      $("#annotationZone [data-tagName='"+rectId+"']").stop().fadeTo("fast",opacityFactor);
+			//$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
+		});
 
   }
 };
