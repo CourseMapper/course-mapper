@@ -442,7 +442,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	});
 	colorPickerInput.on("change", function () {
 		console.log("#"+rectPrefix+divCounter);
-	element.css("backgroundColor", "#"+$(this).val());
+		$(this).parent().parent().parent().css("backgroundColor", "#"+$(this).val());
 		console.log($(this).val());
 	});
 
