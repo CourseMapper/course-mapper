@@ -372,6 +372,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 			id: "slideRectWrapper-"+divCounter,
 			class: 'slideRectWrapper'
 	});
+	wrapperElement.css("padding-top","2pt");
 
 	//tagspan element
 	spanElement = $('<span/>', {
@@ -379,6 +380,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		class: 'slideRectSpan'
 	});
 	spanElement.css('float', 'left');
+	spanElement.css("margin-right","2pt");
+
 
 	//inputElement
 	inputElement = $('<input type="text"/>');
@@ -406,10 +409,15 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	wrapperElement.append(spanElement);
 
 	removeElement = $('<button/>', {
-		class:"btn btn-default",
+		class:"btn btn-white btn-link",
 		onclick:"removeAnnotationZone('"+rectPrefix+divCounter+"');",
 		text: "X",
 	});
+	removeElement.css({
+		float:"right",
+		"margin-top": "-34px",
+
+	})
 
 
 	if(!canMove){
@@ -446,7 +454,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		console.log($(this).val());
 	});
 
-
+		colorPickerInput.parent().css('width','40px');
 		element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
 			divCounter=divCounter+1;
 	return element;
