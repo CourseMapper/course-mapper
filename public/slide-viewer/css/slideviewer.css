@@ -27,6 +27,13 @@
 
 .slideRect{
 }
+.btn-white{
+     color: #FFF;
+    }
+    
+.btn-white:hover{
+   color: #FFF;
+}
 
 .slideRect:hover{
 }
