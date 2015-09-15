@@ -3,6 +3,7 @@ var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
 var AnnZones = require('../annotationZones/index');
+var validator = require('validator');
 
 function Comment(){
 }
@@ -11,9 +12,10 @@ Comment.prototype.submitAnnotation = function(err, params, done){
   var temp = this.convertRawText;
 
   this.submitAllTags(err,params.tagNames,params.tagRelPos,params.tagRelCoord,params.tagColor,params.pageNumber,function(){
-    temp(params.rawText,function(renderedText){
+    var htmlEscapedRawText = validator.escape(params.rawText);
+    temp(htmlEscapedRawText,function(renderedText){
       var annotationsPDF = new AnnotationsPDF({
-        rawText: params.rawText,
+        rawText: htmlEscapedRawText,
         renderedText: renderedText,
         author: params.author,
         pdfId: 1, //TODO: Adapt later
@@ -81,7 +83,7 @@ Comment.prototype.checkTagName = function(tagName,tagNameList){
     if(tagName == tagNameList[i])
       return i;
   }
-  return 0;
+  return -1;
 
 }
 
@@ -113,7 +115,7 @@ Comment.prototype.convertRawText = function(rawText,callback){
     var renderedText = rawText.replace(/#(\w+)/g, function(x){
         var comm = new Comment();
         console.log("Found tag with name: "+x);
-        if(comm.checkTagName(x,tagNameList)){
+        if(comm.checkTagName(x,tagNameList) != -1){
           console.log("Checked tag with name: "+x);
 
           var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[comm.checkTagName(x,tagNameList)] + "'>" + x + "</label>";

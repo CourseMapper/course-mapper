@@ -139,9 +139,8 @@
                               <option value="false">descending</option>
                             </select>
                           </div>
-                          Filter by:
-                          <div >
-                            <input type="" id="filterValueText" ng-model="filtersRaw"></input>
+                          <div type="">
+                            <input style="display:none;" id="filterValueText" ng-model="filtersRaw"></input>
                             <!--<input type="hidden" id="pageFilter" ng-model="pageFilter" value = "{{currentPageNumber}}"></input>-->
                           </div>
                         </div>
@@ -164,7 +163,7 @@
 
                         </div>-->
                         <div >
-                            <div id="annZoneList" ng-controller="AnnotationZoneListController">
+                            <div id="annZoneList" style="display:none;" ng-controller="AnnotationZoneListController">
                               Annotation Zone List:
                               <div id="annotationZoneList" ng-repeat="annZone in annZones" ng-cloak>
                                 <div class="{{annZone.name}}">
@@ -174,21 +173,20 @@
                                   </script>
                                 </div>
                               </div>
-
+                            </div>
                             <div>
-                            Comment List:
-                            <div id="commentList" ng-repeat="comment in comments" ng-cloak>
-                              <div>
+                              Comment List:
+                              <div id="commentList" ng-repeat="comment in comments" ng-cloak>
+                                <div>
                                   <label class='authorLabel' onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
 
                                   <div class="commentText" ng-bind-html="comment.html">
                                   </div>
                                   <br>
                                 </div>
-
                               </div>
                           </div>
-                        </div>
+
                         <div>
                         </div>
                       </div>

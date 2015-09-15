@@ -441,9 +441,9 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		inlineDropdown					: true
 	});
 	colorPickerInput.on("change", function () {
-		console.log("#"+rectPrefix+divCounter);
+		//console.log("#"+rectPrefix+divCounter);
 		$(this).parent().parent().parent().css("backgroundColor", "#"+$(this).val());
-		console.log($(this).val());
+		//console.log($(this).val());
 	});
 
 

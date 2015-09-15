@@ -38,9 +38,7 @@ function commentsLoaded(){
 
     element.hover(function(){
       var rectId = $(this).html();
-
-      console.log("FOUND " + $("#annotationZone [data-tagName='"+rectId+"']").length + " instances of " + "#annotationZone [data-tagName='"+rectId+"']");
-			$("#annotationZone [data-tagName='"+rectId+"']").stop().fadeTo("fast", opacityFactorHighlight);
+      $("#annotationZone [data-tagName='"+rectId+"']").stop().fadeTo("fast", opacityFactorHighlight);
 			//$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
 		}, function(){
       var rectId = $(this).html();
@@ -93,7 +91,7 @@ function removeAnnotationZone(id) {
 
   var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
 
-  console.log("Will remove " +  annotationInList.length + " elements with id " + id);
+  //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
 
   annotationInList.parent().remove();
   element.remove();
@@ -127,7 +125,7 @@ function addAnnotationZoneElement(element) {
 };
 
 function commentOnSubmit() {
-  console.log("IT WOKRS");
+  //console.log("IT WOKRS");
 
 
   $("#tagNames").val("");
@@ -137,7 +135,7 @@ function commentOnSubmit() {
 
   annotationList = $("#annotationZoneSubmitList div");
 
-  console.log(annotationList);
+  //console.log(annotationList);
 
   for(var i = 0; i < annotationList.length; i++) {
     //console.log("added tag");
@@ -150,10 +148,10 @@ function commentOnSubmit() {
   	var relHeight = element.height()/rootDivDom.height();
 
     var name = element.find(".slideRectInput").val();
-    console.log("Name found: "+element.find(".slideRectInput").length);
+    //console.log("Name found: "+element.find(".slideRectInput").length);
     //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
     var color = element.find(".pick-a-color").val();
-    console.log("Color found: "+color);
+    //console.log("Color found: "+color);
     //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
     if(name == "") {
