@@ -2295,9 +2295,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         finalFilters='{}';
       else {*/
         var filterStrings = $scope.filtersRaw.split(';');
+        console.log("FOUND RAW FILTERS: " + $scope.filtersRaw);
         finalFilters = '{';
-        if(filterStrings.length > 1) {
+        if(filterStrings.length >= 1) if(filterStrings[0]!=""){
+
           for(var i=0; i < filterStrings.length; i++){
+            console.log("APPLIED A FILTER");
             var temp = filterStrings[i].split(',');
             if(temp.length != 1)
               finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
@@ -2339,6 +2342,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     });
 
     $scope.$watch("filtersRaw",function(newValue,oldValue){
+      console.log("NOTICED FILTERS CHANGE");
       $scope.filters = getCurrentFilters($scope.filtersRaw);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
       console.log("commentGetUrl: " + $scope.commentGetUrl);

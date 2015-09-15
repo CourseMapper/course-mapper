@@ -79,9 +79,9 @@ Comment.prototype.checkTagName = function(tagName,tagNameList){
 //    return annZone.annotationZoneNameExists(tagName);
   for(var i = 0; i < tagNameList.length; i++){
     if(tagName == tagNameList[i])
-      return true;
+      return i;
   }
-  return false;
+  return 0;
 
 }
 
@@ -101,9 +101,11 @@ Comment.prototype.convertRawText = function(rawText,callback){
   comm.getAllTagNames(function(success,data){
     //TODO: test for success
     var tagNameList = [];
+    var tagColorList = [];
 
     for(var i = 0; i < data.length; i++){
       tagNameList[i] = data[i].annotationZoneName;
+      tagColorList[i] = data[i].color;
     }
     console.log(data);
 
@@ -113,7 +115,8 @@ Comment.prototype.convertRawText = function(rawText,callback){
         console.log("Found tag with name: "+x);
         if(comm.checkTagName(x,tagNameList)){
           console.log("Checked tag with name: "+x);
-          var ret = "<label class='annotationZoneReference'>" + x + "</label>";
+
+          var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[comm.checkTagName(x,tagNameList)] + "'>" + x + "</label>";
           return ret;
         }
         else {
