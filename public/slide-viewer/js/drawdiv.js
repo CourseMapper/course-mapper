@@ -313,21 +313,20 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		}
 
 		//creating Div with default values
+		element = $('<div/>', {
+			movable: "",
+			"can-move": canMove,
+			id: rectPrefix+divCounter,
+			position: 'absolute',
+			class: 'slideRect',
+			opacity: opacityFactorHighlight
+		});
 
-	element = $('<div/>', {
-		movable: "",
-		"can-move": canMove,
-		id: rectPrefix+divCounter,
-		position: 'absolute',
-		class: 'slideRect ',
-		opacity: opacityFactorHighlight
-	});
-//CHANGE LATER
-	element.css({
-		position: 'absolute',
-		backgroundColor: color,
+		element.css({
+			position: 'absolute',
+			backgroundColor: color,
 
-	});
+		});
 
 	//tag
 	element.attr("data-tagName","#"+tagname);
@@ -353,7 +352,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	if(canMove){
 		element.css('opacity', opacityFactorCreate);
 		element.css('border',' 1px dashed white');
-
 	}else{
 		element.css('opacity', opacityFactor);
 		element.hover(function(){
@@ -365,31 +363,79 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		});
 	}
 
+	//Wrapper
+	wrapperElement=$('<div/>',{
+			id: "slideRectWrapper-"+divCounter,
+			class: 'slideRectWrapper'
+	});
 
 	//tagspan element
-			spanElement = $('<input/>', {
-				id: rectSpanPrefix+divCounter,
-				class: 'slideRectSpan'
-			});
+	spanElement = $('<span/>', {
+		id: rectSpanPrefix+divCounter,
+		class: 'slideRectSpan'
+	});
+	spanElement.css('float', 'left');
 
+	//inputElement
+	inputElement = $('<input type="text"/>');
+	inputElement.attr(	"id", "rectInputField-"+divCounter);
+	inputElement.addClass("slideRectInput");
 
-	//tagspan element
-			spanElement = $('<span/>', {
-				id: rectSpanPrefix+divCounter,
-				class: 'slideRectSpan'
-			});
-			if(!canMove)
-				spanElement.text(tagname);
-			else
-				spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
-			element.append(spanElement);
+	inputElement.css({
+			'color' : 'black',
+			'width' : '10pt',
+			'min-width': '10pt',
+			'max-width': '90pt',
+			'transition': 'width 0.25s',
+			'border': '0'
+	});
+	inputElement.attr('data-autosize-input','{ "space": 20 }');
+	inputElement.autosizeInput();
+	//inputElement.css("backgroundColor",color);
 
+//colorPicker ELement
+	colorPickerInput = $('<input type="text" />');
+	colorPickerInput.attr(	"id", "colorPickerInput-"+divCounter);
+	colorPickerInput.addClass('pick-a-color form-control');
+	colorPickerInput.css('float', 'left');
 
-	element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
+	wrapperElement.append(spanElement);
+	if(!canMove){
+			spanElement.text(tagname);
+	}
+	else{
+		spanElement.text("#");
+		spanElement.append(inputElement);
+
+		wrapperElement.append(colorPickerInput);
+		//spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
+	}
+
+	element.append(wrapperElement);
+
 
 	element.appendTo('#annotationZone');
-	divCounter=divCounter+1;
 
+	colorPickerInput.pickAColor({
+		showSpectrum            : false,
+		showSavedColors         : false,
+		saveColorsPerElement    : true,
+		fadeMenuToggle          : true,
+		showAdvanced						: false,
+		showBasicColors         : false,
+		showHexInput            : false,
+		allowBlank							: false,
+		inlineDropdown					: true
+	});
+	colorPickerInput.on("change", function () {
+		console.log("#"+rectPrefix+divCounter);
+	element.css("backgroundColor", "#"+$(this).val());
+		console.log($(this).val());
+	});
+
+
+		element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
+			divCounter=divCounter+1;
 	return element;
 
 
