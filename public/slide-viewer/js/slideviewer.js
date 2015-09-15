@@ -75,13 +75,23 @@ function drawAnnZonesWhenPDFAndDBDone() {
   }
 };
 
-function removeAnnotationZone(childElement) {
-  var element = $(childElement).parent();
+function removeAnnotationZone(id) {
+  var element = $("#annotationZone #"+id);
+
+  var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
+
+  console.log("Will remove " +  annotationInList.length + " elements with id " + id);
+
+  annotationInList.parent().remove();
+  element.remove();
+
+  /*var element = $(childElement).parent();
   var rectId = element.find("#rectangleId").val();
   var rectElement = $("#"+rectId);
   rectElement.remove();
-  element.remove();
-}
+  element.remove();*/
+
+};
 
 function addAnnotationZoneElement(element) {
 
@@ -93,7 +103,9 @@ function addAnnotationZoneElement(element) {
   var colorSelectField = '<select id="annotationZoneSubmitColor"><option selected value="Red">Red</option><option value="Blue">Blue</option><option value="Green">Green</option></select>';
 
 
-  annotationHtmlString = "<div>" + elementField + nameInputField + colorSelectField + htmlTemplate + "</div>";
+  //annotationHtmlString = "<div>" + elementField + nameInputField + colorSelectField + htmlTemplate + "</div>";
+  annotationHtmlString = "<div>" + elementField + "</div>";
+
 
   var element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(annotationHtmlString);
 
@@ -102,7 +114,7 @@ function addAnnotationZoneElement(element) {
 };
 
 function commentOnSubmit() {
-  //console.log("IT WOKRS");
+  console.log("IT WOKRS");
 
 
   $("#tagNames").val("");
@@ -124,8 +136,12 @@ function commentOnSubmit() {
   	var relWidth = element.width()/rootDivDom.width();
   	var relHeight = element.height()/rootDivDom.height();
 
-    var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
-    var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
+    var name = element.find(".slideRectInput").val();
+    console.log("Name found: "+element.find(".slideRectInput").length);
+    //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
+    var color = element.find(".pick-a-color").val();
+    console.log("Color found: "+color);
+    //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
     if(name == "") {
       //console.log("Error encountered while extracting annotation zone during submission.");
@@ -233,6 +249,6 @@ function switchRegexFilter(attribute,value){
 };
 
 function createMovableAnnZone() {
-  var element = loadRect(0, 0, 0.3, 0.3, "Red", "NoNameYet", true);
+  var element = loadRect(0, 0, 0.3, 0.3, "000000", "NoNameYet", true);
   addAnnotationZoneElement(element);
 };

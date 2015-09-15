@@ -309,7 +309,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		        color ="#00FF00";
 		        break;
 	    default:
-	        color = "Black";
+	        color = "#"+color;
 			}
 		//}
 		//else {
@@ -404,6 +404,14 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 	colorPickerInput.css('float', 'left');
 
 	wrapperElement.append(spanElement);
+
+	removeElement = $('<button/>', {
+		class:"btn btn-default",
+		onclick:"removeAnnotationZone('"+rectPrefix+divCounter+"');",
+		text: "X",
+	});
+
+
 	if(!canMove){
 			spanElement.text(tagname);
 	}
@@ -412,6 +420,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 		spanElement.append(inputElement);
 
 		wrapperElement.append(colorPickerInput);
+		wrapperElement.append(removeElement);
 		//spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
 	}
 
