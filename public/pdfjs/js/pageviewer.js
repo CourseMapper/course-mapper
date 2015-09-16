@@ -61,7 +61,7 @@ $(document).ready(function(){
       pdfPageView.setPdfPage(pdfPage);
       SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
       pdfPageView.update(SCALE,0);
-      currentCanvasHeight=parseInt(rootDivDom.height());
+      currentCanvasHeight=parseInt($('#annotationZone').height());
       console.log("PDF LOADED");
       pdfIsLoaded = true;
       drawAnnZonesWhenPDFAndDBDone();
