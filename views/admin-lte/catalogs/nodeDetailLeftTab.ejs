@@ -2,9 +2,14 @@
     <li class="active">
         <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=preview"
            data-toggle="tab" data-target="#preview">
-            <i class="fa fa-file-pdf-o"></i>
-            <i class="fa fa-file-video-o"></i><br>
+            <i class="fa fa-file-video-o"></i>
             <span>Home</span></a></li>
+
+    <li ng-show="enrolled || isOwner">
+        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=pdf"
+           data-toggle="tab" data-target="#pdf">
+            <i class="fa fa-file-pdf-o"></i>
+            <span>Pdf</span></a></li>
 
     <li ng-show="enrolled || isOwner">
         <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=links"

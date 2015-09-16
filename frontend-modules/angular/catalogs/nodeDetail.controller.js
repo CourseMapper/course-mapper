@@ -15,6 +15,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     $scope.currentTab = "preview";
     $scope.tabs = {
         'preview':'Preview',
+        'pdf':'Pdf',
         'analytics':'Analytics',
         'updates':'Updates',
         'links':'Links'

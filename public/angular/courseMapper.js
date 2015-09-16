@@ -788,6 +788,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.currentTab = "preview";
     $scope.tabs = {
         'preview':'Preview',
+        'pdf':'Pdf',
         'analytics':'Analytics',
         'updates':'Updates',
         'links':'Links'
