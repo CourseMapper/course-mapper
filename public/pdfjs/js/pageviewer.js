@@ -37,12 +37,13 @@ var SCALE = 1.0;
 
 var pdfPageView;
 
-var container = document.getElementById('viewerContainer');
+var container;
 
 // Loading document.
 PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
   $(document).ready(function(){
     console.log("Started loading pdf");
+      container =  document.getElementById('viewerContainer');
     angular.element(document.querySelector('[ng-controller="PDFNavigationController"]')).scope().maxPageNumber = pdfDocument.numPages;
   });
   // Document loaded, retrieving the page.
