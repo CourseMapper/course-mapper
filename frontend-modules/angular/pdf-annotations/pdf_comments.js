@@ -1,5 +1,13 @@
 app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
 
+    $scope.currentUser = "";
+    $rootScope.$watch('user', function(){
+          if($rootScope.user) {
+              $scope.currentUser = $rootScope.user;
+          }
+      });
+
+
     $scope.orderType = "author";
     $scope.ascending = "true";
     $scope.filters = '{}';

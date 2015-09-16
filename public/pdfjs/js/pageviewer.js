@@ -31,7 +31,7 @@ if (!PDFJS.PDFViewer || !PDFJS.getDocument) {
 // PDFJS.cMapUrl = '../../external/bcmaps/';
 // PDFJS.cMapPacked = true;
 
-var DEFAULT_URL = '../../../slide-viewer/ressources/00_Orga.pdf';
+var DEFAULT_URL = 'http://localhost:3000/slide-viewer/ressources/00_Orga.pdf';
 var PAGE_TO_VIEW = 1;
 var SCALE = 1.0;
 

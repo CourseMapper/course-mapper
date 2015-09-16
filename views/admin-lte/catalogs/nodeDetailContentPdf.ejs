@@ -5,15 +5,6 @@
     <section>
       <div class="content-wrapper" ng-controller="PDFNavigationController">
 
-          <section class="content-header">
-              <ol class ="breadcrumb">
-                  <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-                  <li class ="active"> Slides ></li>
-              </ol>
-              <h1>
-                  Slides
-              </h1>
-          </section>
           <section class="content" ng-controller="CommentListController">
             <div class="row">
               <div class= "col-sm-12 col-md-12">
@@ -62,15 +53,15 @@
                           <form action='/slide-viewer/submitComment' method="POST" onsubmit="return commentOnSubmit()">
                             <fieldset>
                               <div class="control-group">
-                                 <label for="rawText">Commenting as <%=currentUser.username%></label>
+                                 <label for="rawText">Commenting as {{currentUser.username}}</label>
                                  <div class="controls">
                                    <textarea class="form-control" id="rawText" name="rawText" placeholder="rawText"></textarea>
                                  </div>
                                </div>
                                <div class="control-group">
                                  <div class="controls">
-                                   <input type="hidden" class="form-control" id="author" name="author" value= <%=currentUser.username%> >
-                                   <input type="hidden" class="form-control" id="pageNumber" name="pageNumber" value= {{currentPageNumber}} >
+                                   <input type="hidden" class="form-control" id="author" name="author" value= "{{currentUser.username}}" >
+                                   <input type="hidden" class="form-control" id="pageNumber" name="pageNumber" value= "{{currentPageNumber}}" >
                                  </div>
                                </div>
                                <div class="control-group">
@@ -202,7 +193,6 @@
 
 
 
-<link rel="stylesheet" href="/pdfjs/build/components/pdf_viewer.css">
 
 
 <!-- for legacy browsers -->
