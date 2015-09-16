@@ -37,38 +37,39 @@ var SCALE = 1.0;
 
 var pdfPageView;
 
-var container;
 
 // Loading document.
-PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
-  $(document).ready(function(){
+$(document).ready(function(){
+  PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
+    var container;
     console.log("Started loading pdf");
-      container =  document.getElementById('viewerContainer');
+    container =  document.getElementById('viewerContainer');
     angular.element(document.querySelector('[ng-controller="PDFNavigationController"]')).scope().maxPageNumber = pdfDocument.numPages;
-  });
-  // Document loaded, retrieving the page.
-  return pdfDocument.getPage(PAGE_TO_VIEW).then(function (pdfPage) {
-    // Creating the page view with default parameters.
-    pdfPageView = new PDFJS.PDFPageView({
-      container: container,
-      id: PAGE_TO_VIEW,
-      scale: SCALE,
-      defaultViewport: pdfPage.getViewport(SCALE),
-      // We can enable text/annotations layers, if needed
-      textLayerFactory: new PDFJS.DefaultTextLayerFactory(),
-      annotationsLayerFactory: new PDFJS.DefaultAnnotationsLayerFactory()
+    // Document loaded, retrieving the page.
+    return pdfDocument.getPage(PAGE_TO_VIEW).then(function (pdfPage) {
+      // Creating the page view with default parameters.
+      pdfPageView = new PDFJS.PDFPageView({
+        container: container,
+        id: PAGE_TO_VIEW,
+        scale: SCALE,
+        defaultViewport: pdfPage.getViewport(SCALE),
+        // We can enable text/annotations layers, if needed
+        textLayerFactory: new PDFJS.DefaultTextLayerFactory(),
+        annotationsLayerFactory: new PDFJS.DefaultAnnotationsLayerFactory()
+      });
+      // Associates the actual page with the view, and drawing it
+      pdfPageView.setPdfPage(pdfPage);
+      SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
+      pdfPageView.update(SCALE,0);
+      currentCanvasHeight=parseInt(rootDivDom.height());
+      console.log("PDF LOADED");
+      pdfIsLoaded = true;
+      drawAnnZonesWhenPDFAndDBDone();
+      return pdfPageView.draw();
     });
-    // Associates the actual page with the view, and drawing it
-    pdfPageView.setPdfPage(pdfPage);
-    SCALE = SCALE * $("#viewerContainer").width() / pdfPageView.width;
-    pdfPageView.update(SCALE,0);
-    currentCanvasHeight=parseInt(rootDivDom.height());
-    console.log("PDF LOADED");
-    pdfIsLoaded = true;
-    drawAnnZonesWhenPDFAndDBDone();
-    return pdfPageView.draw();
   });
 });
+
 
 function changeSlide(newSlideNumber){
 
