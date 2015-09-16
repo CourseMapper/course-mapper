@@ -79,10 +79,11 @@ function drawAnnZonesWhenPDFAndDBDone() {
   //console.log(annotationZonesAreLoaded);
   //console.log(pdfIsLoaded);
   if(annotationZonesAreLoaded && pdfIsLoaded) {
-    for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
-      //console.log("createAnnotationZones");
-      loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0], false)
-    }
+      for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
+        //console.log("createAnnotationZones");
+        loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0], false)
+      }
+
   }
 };
 
@@ -142,10 +143,10 @@ function commentOnSubmit() {
     //TODO: Adapt to next rectangle iteration
     var elementId = $("#annotationZoneSubmitList #rectangleId").eq(i).val();
     var element = $("#"+elementId);
-    var relPosX = element.position().left/rootDivDom.width();
-  	var relPosY = element.position().top/ rootDivDom.height();
-  	var relWidth = element.width()/rootDivDom.width();
-  	var relHeight = element.height()/rootDivDom.height();
+    var relPosX = element.position().left/$('#annotationZone').width();
+  	var relPosY = element.position().top/ $('#annotationZone').height();
+  	var relWidth = element.width()/$('#annotationZone').width();
+  	var relHeight = element.height()/$('#annotationZone').height();
 
     var name = element.find(".slideRectInput").val();
     //console.log("Name found: "+element.find(".slideRectInput").length);

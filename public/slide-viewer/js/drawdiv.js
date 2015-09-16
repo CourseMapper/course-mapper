@@ -4,7 +4,6 @@
  */
 //settings
 var rootDivId = 'annotationZone';
-var rootDivDom;
 var currentCanvasHeight = 0;
 var min_height_rect_rel = 0.06;
 var max_height_rect_rel = 0.55;
@@ -64,10 +63,10 @@ function setCurrentTagColor(tTagColor) {
 }
 
 function initRects() {
-    //rootDivDom.bind('mousedown', mouseDown);
-    //rootDivDom.bind('mouseup', mouseUp);
-    //rootDivDom.bind('mousemove', mouseMove);
-    //rootDivDom.bind('mouseleave', mouseLeave);
+    //$('#annotationZone').bind('mousedown', mouseDown);
+    //$('#annotationZone').bind('mouseup', mouseUp);
+    //$('#annotationZone').bind('mousemove', mouseMove);
+    //$('#annotationZone').bind('mouseleave', mouseLeave);
 }
 function appendClickEventOnRect() {
     $(".slideRect").each(function () {
@@ -87,21 +86,21 @@ function mouseDown(e) {
     if (e.which != 3) {
 
 
-        if (e.pageX - rootDivDom.offset().left > (min_width_rect_abs / 2)) {
-            if (e.pageX - rootDivDom.offset().left < parseInt(rootDivDom.width()) - (min_width_rect_abs / 2)) {
-                startXRel = e.pageX - rootDivDom.offset().left - (min_width_rect_abs / 2);
+        if (e.pageX - $('#annotationZone').offset().left > (min_width_rect_abs / 2)) {
+            if (e.pageX - $('#annotationZone').offset().left < parseInt($('#annotationZone').width()) - (min_width_rect_abs / 2)) {
+                startXRel = e.pageX - $('#annotationZone').offset().left - (min_width_rect_abs / 2);
             } else {
-                startXRel = parseInt(rootDivDom.width()) - min_width_rect_abs;
+                startXRel = parseInt($('#annotationZone').width()) - min_width_rect_abs;
 
             }
         } else {
             startXRel = 0;
         }
-        if (e.pageY - rootDivDom.offset().top > (min_height_rect_abs / 2)) {
-            if (e.pageY - rootDivDom.offset().top < parseInt(rootDivDom.height()) - (min_height_rect_abs / 2)) {
-                startYRel = e.pageY - rootDivDom.offset().top - (min_height_rect_abs / 2);
+        if (e.pageY - $('#annotationZone').offset().top > (min_height_rect_abs / 2)) {
+            if (e.pageY - $('#annotationZone').offset().top < parseInt($('#annotationZone').height()) - (min_height_rect_abs / 2)) {
+                startYRel = e.pageY - $('#annotationZone').offset().top - (min_height_rect_abs / 2);
             } else {
-                startYRel = parseInt(rootDivDom.height()) - min_height_rect_abs;
+                startYRel = parseInt($('#annotationZone').height()) - min_height_rect_abs;
             }
         } else {
             startYRel = 0;
@@ -171,8 +170,8 @@ function mouseUp(e) {
 
 function mouseMove(e) {
     if (drag) {
-        var currentX = e.pageX - rootDivDom.offset().left;
-        var currentY = e.pageY - rootDivDom.offset().top;
+        var currentX = e.pageX - $('#annotationZone').offset().left;
+        var currentY = e.pageY - $('#annotationZone').offset().top;
         var divWidth = currentX - startXRel;
         var divHeight = currentY - startYRel;
         var relSaveX = 0;
@@ -182,24 +181,24 @@ function mouseMove(e) {
         if (currentX - startXRel < 0) {
             if ((max_width_rect_abs - min_width_rect_abs) < Math.abs(currentX - startXRel)) {
                 relSaveX = startXRel - (max_width_rect_abs - min_width_rect_abs);
-                element.offset({left: rootDivDom.offset().left + relSaveX});
+                element.offset({left: $('#annotationZone').offset().left + relSaveX});
                 //elementTag.style.left = this.offsetLeft + relSaveX +tagOffsetLeft+ 'px';
                 divWidth = max_width_rect_abs;
             } else {
                 relSaveX = currentX;
-                element.offset({left: rootDivDom.offset().left + relSaveX});
+                element.offset({left: $('#annotationZone').offset().left + relSaveX});
                 //elementTag.style.left = this.offsetLeft + relSaveX +tagOffsetLeft+ 'px';
                 divWidth = Math.abs(currentX - startXRel) + min_width_rect_abs;
             }
         } else {
             if ((currentX - startXRel) < min_width_rect_abs) {
                 relSaveX = startXRel;
-                element.offset({left: rootDivDom.offset().left + relSaveX});
+                element.offset({left: $('#annotationZone').offset().left + relSaveX});
                 //elementTag.style.left =this.offsetLeft+relSaveX +tagOffsetLeft+ 'px';
                 divWidth = min_width_rect_abs;
             } else {
                 relSaveX = startXRel;
-                element.offset({left: rootDivDom.offset().left + relSaveX});
+                element.offset({left: $('#annotationZone').offset().left + relSaveX});
                 //elementTag.style.left = this.offsetLeft+relSaveX+tagOffsetLeft + 'px';
                 if ((currentX - startXRel) > max_width_rect_abs) {
                     divWidth = max_width_rect_abs;
@@ -214,12 +213,12 @@ function mouseMove(e) {
         if (currentY - startYRel < 0) {
             if ((max_height_rect_abs - min_height_rect_abs) < Math.abs(currentY - startYRel)) {
                 relSaveY = startYRel - (max_height_rect_abs - min_height_rect_abs);
-                element.offset({top: rootDivDom.offset().top + relSaveY});
+                element.offset({top: $('#annotationZone').offset().top + relSaveY});
                 //elementTag.style.top = this.offsetTop + relSaveY -tagOffsetTop + 'px';
                 divHeight = max_height_rect_abs;
             } else {
                 relSaveY = currentY;
-                element.offset({top: rootDivDom.offset().top + relSaveY});
+                element.offset({top: $('#annotationZone').offset().top + relSaveY});
                 //elementTag.style.top = this.offsetTop + relSaveY -tagOffsetTop + 'px';
 
                 divHeight = Math.abs(currentY - startYRel) + min_height_rect_abs;
@@ -227,13 +226,13 @@ function mouseMove(e) {
         } else {
             if ((currentY - startYRel) < min_height_rect_abs) {
                 relSaveY = startYRel;
-                element.offset({top: startYRel + rootDivDom.offset().top});
+                element.offset({top: startYRel + $('#annotationZone').offset().top});
                 //elementTag.style.top =this.offsetTop+ relSaveY -tagOffsetTop + 'px';
                 divHeight = min_height_rect_abs;
             } else {
                 relSaveY = startYRel;
 
-                element.offset({top: rootDivDom.offset().top + relSaveY});
+                element.offset({top: $('#annotationZone').offset().top + relSaveY});
                 //elementTag.style.top = this.offsetTop+relSaveY-tagOffsetTop + 'px';
                 if ((currentY - startYRel) > max_height_rect_abs) {
                     divHeight = max_height_rect_abs;
@@ -260,10 +259,10 @@ function mouseLeave(e) {
 
 function rescalingRects(rectClassName, tagClassName) {
     var allElements = $("." + rectClassName);
-    var scalingFactor = parseInt(rootDivDom.height()) / currentCanvasHeight;
-    //console.log("height "+ rootDivDom.height() + " currentCanvasHeight"+ currentCanvasHeight)
+    var scalingFactor = parseInt($('#annotationZone').height()) / currentCanvasHeight;
+    //console.log("height "+ $('#annotationZone').height() + " currentCanvasHeight"+ currentCanvasHeight)
     /*var allElementsTag = $("."+tagClassName);
-     tagFontSize = parseInt(rootDivDom.height())*tagFontSizeFactor;*/
+     tagFontSize = parseInt($('#annotationZone').height())*tagFontSizeFactor;*/
     tagOffsetTop = tagFontSize + 4;
     //console.log("Scaling factor: "+scalingFactor);
 
@@ -277,12 +276,12 @@ function rescalingRects(rectClassName, tagClassName) {
         $(allElements[i]).css('height', Math.round(parseInt($(allElements[i]).css('height')) * scalingFactor));
         $(allElements[i]).css('width', Math.round(parseInt($(allElements[i]).css('width')) * scalingFactor));
     }
-    currentCanvasHeight = parseInt(rootDivDom.height());
+    currentCanvasHeight = parseInt($('#annotationZone').height());
 }
 
 function alwaysRescaleRects() {
     rescalingRects("slideRect", "slideRectTag");
-    currentCanvasHeight = parseInt(rootDivDom.height());
+    currentCanvasHeight = parseInt($('#annotationZone').height());
 
     //tagFontSize = currentCanvasHeight*tagFontSizeFactor;
     //tagOffsetTop = tagFontSize+4;
@@ -342,10 +341,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     element.prop("transition", "opacity 0.1s linear");
 
 
-    var currCanWidth = rootDivDom.width();
+    var currCanWidth = $('#annotationZone').width();
 
     var attrRelLeft = relLeft * currCanWidth;
-    var currCanHeight = rootDivDom.height();
+    var currCanHeight = $('#annotationZone').height();
     var attrRelTop = relTop * currCanHeight;
     element.attr("data-relstartcoord", (attrRelLeft + ";" + attrRelTop));
     element.offset({left: absToViewLeft(attrRelLeft, this)});
@@ -465,9 +464,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
 $(document).ready(function () {
     //settings
-    rootDivDom = $('#annotationZone');
 
-//console.log("test: "+rootDivDom.height());
+//console.log("test: "+$('#annotationZone').height());
     initRects();
 
     window.onresize = function () {
