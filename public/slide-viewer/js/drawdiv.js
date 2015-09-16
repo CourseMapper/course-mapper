@@ -42,11 +42,11 @@ var bRadius = "4";
 
 function absToViewTop(relToView, canvas) {
     //console.log(rootDivDom.offset().top);
-    return rootDivDom.offset().top + parseInt(relToView, 10);
+    return $('#annotationZone').offset().top + parseInt(relToView, 10);
 }
 function absToViewLeft(relToView, canvas) {
     //console.log("CHECK: "+ relToView);
-    return rootDivDom.offset().left + parseInt(relToView, 10);
+    return $('#annotationZone').offset().left + parseInt(relToView, 10);
 }
 
 function getCurrentTagName() {
