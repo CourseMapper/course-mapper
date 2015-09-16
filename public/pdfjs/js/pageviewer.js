@@ -24,14 +24,14 @@ if (!PDFJS.PDFViewer || !PDFJS.getDocument) {
 // pdf.js's one, or the pdf.js is executed via eval(), the workerSrc property
 // shall be specified.
 //
-// PDFJS.workerSrc = '../../build/pdf.worker.js';
+// PDFJS.workerSrc = 'pdfjs/build/pdf.worker.js';
 
 // Some PDFs need external cmaps.
 //
 // PDFJS.cMapUrl = '../../external/bcmaps/';
 // PDFJS.cMapPacked = true;
 
-var DEFAULT_URL = 'http://localhost:3000/slide-viewer/ressources/00_Orga.pdf';
+var DEFAULT_URL = '/slide-viewer/ressources/00_Orga.pdf';
 var PAGE_TO_VIEW = 1;
 var SCALE = 1.0;
 
@@ -42,7 +42,7 @@ var container = document.getElementById('viewerContainer');
 // Loading document.
 PDFJS.getDocument(DEFAULT_URL).then(function (pdfDocument) {
   $(document).ready(function(){
-    console.log("got here");
+    console.log("Started loading pdf");
     angular.element(document.querySelector('[ng-controller="PDFNavigationController"]')).scope().maxPageNumber = pdfDocument.numPages;
   });
   // Document loaded, retrieving the page.

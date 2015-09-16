@@ -2197,7 +2197,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     $scope.maxPageNumber = 30;
 
     $scope.changePageNumber = function(value){
-      console.log("GOT CALLED");
+      //console.log("GOT CALLED");
       if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
         $scope.currentPageNumber = $scope.currentPageNumber + value;
         $timeout(function(){
@@ -2223,7 +2223,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/1/'+$scope.currentPageNumber).success(function (data) {
-        console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
+        //console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -2242,7 +2242,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     };
 
     $scope.$watch("currentPageNumber",function(newValue,oldValue){
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -2281,8 +2281,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     function updateScope(url){
       $http.get(url).success(function (data) {
-        console.log('COMMENTS UPDATED');
-        console.log("url: " + url);
+        //console.log('COMMENTS UPDATED');
+        //console.log("url: " + url);
 
         $scope.comments = data.comments;
 
@@ -2304,12 +2304,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         finalFilters='{}';
       else {*/
         var filterStrings = $scope.filtersRaw.split(';');
-        console.log("FOUND RAW FILTERS: " + $scope.filtersRaw);
+        //console.log("FOUND RAW FILTERS: " + $scope.filtersRaw);
         finalFilters = '{';
         if(filterStrings.length >= 1) if(filterStrings[0]!=""){
 
           for(var i=0; i < filterStrings.length; i++){
-            console.log("APPLIED A FILTER");
+            //console.log("APPLIED A FILTER");
             var temp = filterStrings[i].split(',');
             if(temp.length != 1)
               finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
@@ -2335,7 +2335,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         finalFilters = finalFilters + '}';
 
       //}
-      console.log("Final Filters: " + finalFilters);
+      //console.log("Final Filters: " + finalFilters);
       return finalFilters;
     }
 
@@ -2351,17 +2351,17 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     });
 
     $scope.$watch("filtersRaw",function(newValue,oldValue){
-      console.log("NOTICED FILTERS CHANGE");
+      //console.log("NOTICED FILTERS CHANGE");
       $scope.filters = getCurrentFilters($scope.filtersRaw);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      console.log("commentGetUrl: " + $scope.commentGetUrl);
+      //console.log("commentGetUrl: " + $scope.commentGetUrl);
       updateScope($scope.commentGetUrl);
     });
 
     $scope.$watch("currentPageNumber",function(newValue,oldValue){
       $scope.filters = getCurrentFilters($scope.filtersRaw);
       $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      console.log("commentGetUrl: " + $scope.commentGetUrl);
+      //console.log("commentGetUrl: " + $scope.commentGetUrl);
       updateScope($scope.commentGetUrl);
     });
 

@@ -3,7 +3,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.maxPageNumber = 30;
 
     $scope.changePageNumber = function(value){
-      console.log("GOT CALLED");
+      //console.log("GOT CALLED");
       if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
         $scope.currentPageNumber = $scope.currentPageNumber + value;
         $timeout(function(){

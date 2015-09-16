@@ -11,7 +11,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/1/'+$scope.currentPageNumber).success(function (data) {
-        console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
+        //console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -30,7 +30,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };
 
     $scope.$watch("currentPageNumber",function(newValue,oldValue){
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
