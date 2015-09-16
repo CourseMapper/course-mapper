@@ -169,7 +169,7 @@
                                     {{annZone.name}}
                                     {{annZone.color}}
 
-                                    </script>
+
                                   </div>
                                 </div>
                               </div>
@@ -202,3 +202,26 @@
     </section>
 </div>
     </div>
+
+<script src="/slide-viewer/js/slideviewer.js"></script>
+<script src="/slide-viewer/js/jquery.fullscreen-min.js"></script>
+<script>
+  $( "#btn-fullscreen" ).click(function() {
+    $("#viewerWrapper").toggleFullScreen();
+  });
+</script>
+
+
+
+<link rel="stylesheet" href="/pdfjs/build/components/pdf_viewer.css">
+
+
+<!-- for legacy browsers -->
+<script src="/pdfjs/build/components/compatibility.js"></script>
+<script src="/pdfjs/build/pdf.js"></script>
+<script src="/pdfjs/build/components/pdf_viewer.js"></script>
+<script src="/slide-viewer/js/autosize.input.min.js"></script>
+<script src="/pdfjs/js/pageviewer.js"></script>
+<script src="/slide-viewer/js/drawdiv.js"></script>
+<script src="/slide-viewer/js/tinycolor-0.9.15.min.js"></script>
+<script src="/slide-viewer/js/pick-a-color-1.2.3.min.js"></script>
