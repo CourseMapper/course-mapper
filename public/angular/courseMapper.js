@@ -848,6 +848,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         if(q.tab){
             defaultPath = q.tab;
+        } else {
+            if($scope.isVideoExist && $scope.isPdfExist){
+                jQuery('#video').addClass('active');
+                jQuery('li.video').addClass('active');
+            } else if($scope.isPdfExist){
+                jQuery('#pdf').addClass('active');
+                jQuery('li.pdf').addClass('active');
+            } else {
+                jQuery('#video').addClass('active');
+                jQuery('li.video').addClass('active');
+            }
         }
 
         $scope.currentTab = defaultPath;
@@ -889,18 +900,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     }
                 }
 
-                if($scope.isVideoExist && $scope.isPdfExist){
-                    jQuery('#video').addClass('active');
-                    jQuery('li.video').addClass('active');
-                } else if($scope.isPdfExist){
-                    jQuery('#pdf').addClass('active');
-                    jQuery('li.pdf').addClass('active');
-                } else {
-                    jQuery('#video').addClass('active');
-                    jQuery('li.video').addClass('active');
-                }
-
-                $scope.manageActionBar();
+                $scope.changeTab();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
