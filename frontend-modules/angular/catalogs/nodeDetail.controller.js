@@ -8,13 +8,17 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     $scope.nodeId = $routeParams.nodeId;
     $scope.isOwner = false;
     $scope.isNodeOwner = false;
+    $scope.isVideoExist = false;
+    $scope.isPdfExist = false;
+    $scope.videoFile = false;
+    $scope.pdfFile = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
-    $scope.currentTab = "preview";
+    $scope.currentTab = "video";
     $scope.tabs = {
-        'preview':'Preview',
+        'video':'Video',
         'pdf':'Pdf',
         'analytics':'Analytics',
         'updates':'Updates',
@@ -49,7 +53,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     };
 
     $scope.manageActionBar = function(){
-        if($scope.currentTab == 'preview' && $scope.treeNode) {
+        if(($scope.currentTab == 'video' || $scope.currentTab == 'pdf') && $scope.treeNode) {
             if (
                 $scope.treeNode.createdBy == $rootScope.user._id) {
 
@@ -66,7 +70,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     };
 
     $scope.changeTab = function(){
-        var defaultPath = "preview";
+        var defaultPath = "video";
         var q = $location.search();
 
         if(q.tab){
@@ -99,6 +103,28 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
                 if ($scope.treeNode.createdBy == $rootScope.user._id) {
                     $scope.isNodeOwner = true;
                     $scope.setEditMode();
+                }
+
+                for(var i = 0;i < $scope.treeNode.resources.length; i++){
+                    var content = $scope.treeNode.resources[i];
+                    if(content['type'] == 'mp4' || content['type'] == 'video'){
+                        $scope.isVideoExist = true;
+                        $scope.videoFile = content;
+                    } else if(content['type'] == 'pdf'){
+                        $scope.pdfFile = content;
+                        $scope.isPdfExist = true;
+                    }
+                }
+
+                if($scope.isVideoExist && $scope.isPdfExist){
+                    jQuery('#video').addClass('active');
+                    jQuery('li.video').addClass('active');
+                } else if($scope.isPdfExist){
+                    jQuery('#pdf').addClass('active');
+                    jQuery('li.pdf').addClass('active');
+                } else {
+                    jQuery('#video').addClass('active');
+                    jQuery('li.video').addClass('active');
                 }
 
                 $scope.manageActionBar();

@@ -1,190 +1,218 @@
-<link rel="stylesheet" type="text/css" href="/jquery-ui/themes/black-tie/jquery-ui.css">
-
 <div class="col-xs-12 col-md-8">
-<div class="container">
-    <section>
-      <div class="content-wrapper" ng-controller="PDFNavigationController">
+    <div class="container" ng-controller="PDFNavigationController">
 
-          <section class="content" ng-controller="CommentListController">
+        <section class="content-wrapper content" ng-controller="CommentListController">
             <div class="row">
-              <div class= "col-sm-12 col-md-12">
-                <div class="col-sm-7 col-md-7">
-                  <div class="box">
-                    <div class="box-body with-border">
-                      <h3 class="">Slides</h3>
-                      <div class="pannel box box-primary slideWrapper">
+                <div class="col-sm-12 col-md-12">
+                    <div class="col-sm-7 col-md-7">
+                        <div class="box">
+                            <div class="box-body with-border">
+                                <h3 class="">Slides</h3>
 
-                        <div id="viewerWrapper">
+                                <div class="pannel box box-primary slideWrapper">
 
-                          <div id="viewerContainer">
-                              <div id="viewer" class="pdfViewer"></div>
-                          </div>
-                          <div id="annotationZone">
-                            <!--<div movable style="background-color:yellow;height:100px;width:100px;" ></div>-->
-                          </div>
-                          <div id="slideNavigationWrapper">
-                            <div id="slideNavigationProgress">
-                              <div id="slideNavigationCurrentProgress"></div>
-                            </div>
-                            <div id="slideNavigation" class="row notSelectable" ng-cloak>
-                              <div class="col-md-4 text-center"></div>
-                                <div class="col-md-4 text-center"><div class="row">
-                                  <span class="glyphicon glyphicon-triangle-left iconSlideNav" aria-hidden="true" ng-click="changePageNumber(-1)"></span>
-                                  <span id="slideNavText" class="fsSlideNav">{{currentPageNumber}}/{{maxPageNumber}}</span>
-                                  <span class="glyphicon glyphicon-triangle-right iconSlideNav" aria-hidden="true" ng-click="changePageNumber(1)"></span>
-                                </div>
-                              </div>
-                              <div class="col-md-4 text-right"><span id="btn-fullscreen" class="glyphicon glyphicon-fullscreen iconSlideNav" aria-hidden="true"></span></div>
-                            </div>
-                          </div>
-                      </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-5 col-md-5">
-                  <div class="box">
-                    <div class="box-body with-border">
-                      <h3 class="">Comments</h3>
-                      <div class="pannel box box-primary">
-                        <div class= "annotation-wrapper">
-                          <div id="showComments">
-                          </div>
-                          <form action='/slide-viewer/submitComment' method="POST" onsubmit="return commentOnSubmit()">
-                            <fieldset>
-                              <div class="control-group">
-                                 <label for="rawText">Commenting as {{currentUser.username}}</label>
-                                 <div class="controls">
-                                   <textarea class="form-control" id="rawText" name="rawText" placeholder="rawText"></textarea>
-                                 </div>
-                               </div>
-                               <div class="control-group">
-                                 <div class="controls">
-                                   <input type="hidden" class="form-control" id="author" name="author" value= "{{currentUser.username}}" >
-                                   <input type="hidden" class="form-control" id="pageNumber" name="pageNumber" value= "{{currentPageNumber}}" >
-                                 </div>
-                               </div>
-                               <div class="control-group">
-                                 <div class="controls">
-                                   <input class="form-control" id="tagNames" name="tagNames" placeholder="tagNames" type="hidden">
-                                   <input class="form-control" id="tagRelPos" name="tagRelPos" placeholder="tagRelPos" type="hidden">
-                                   <input class="form-control" id="tagRelCoord" name="tagRelCoord" placeholder="tagRelCoord" type="hidden">
-                                   <input class="form-control" id="tagColor" name="tagColor" placeholder="tagColor" type="hidden">
+                                    <div id="viewerWrapper">
 
-                                 </div>
-                               </div>
-                               <!--Used as Template for annotation zone items -->
-                               <div id="annotationZoneSubmitTemplate" style="visibility: hidden;">
-                                 <button class="btn btn-default" onclick="removeAnnotationZone(this);">Remove</button>
-                               </div>
-                               <!-- Will be filled when annotation zones are created -->
-                               <div id="annotationZoneSubmitList">
-                               </div>
-
-
-                               <div class="control-group">
-                                 <div class="controls">
-
-
-
-                                   <button type="submit" class="btn btn-default">Submit</button>
-                                 </div>
-                               </div>
-                             </fieldset>
-
-                          </form>
-                          <div id="annotationZoneSubmitListMovables">
-                            <button class="btn btn-default" onclick="createMovableAnnZone();">Add Annotation Zone</button>
-                          </div>
-
-                          <!--<button class="btn btn-default" onclick="addAnnotationZoneData('test',1,2,3,4,'Red');">CREATE TEST ANNOTATION ZONE</button>-->
-
-                          <div class="controls">
-                            <!--<button class="btn btn-default" onclick="displayComments();">Show comments</button>
-                            <div >
-                              <button class="btn btn-default" ng-click="loadComments('renderedText','true','{}')">Show comments Angular</button>
-                              <button class="btn btn-default" ng-click="loadComments('renderedText','false','{}')">Show comments Angular2</button>
-                            </div>-->
-                            Sort by:
-                            <div >
-
-                              <select id="orderTypeSelect" ng-model="orderType">
-                                <option value="author">author</option>
-                                <option value="dateOfCreation">dateOfCreation</option>
-                                <option value="rawText">rawText</option>
-                              </select>
-                              <select id="orderAscendingSelect" ng-model="ascending">
-                                <option value="true">ascending</option>
-                                <option value="false">descending</option>
-                              </select>
-                            </div>
-                            <div type="">
-                              <input style="display:none;" id="filterValueText" ng-model="filtersRaw"></input>
-                              <!--<input type="hidden" id="pageFilter" ng-model="pageFilter" value = "{{currentPageNumber}}"></input>-->
-                            </div>
-                          </div>
-                          <!--<div>
-
-                            <form action='/slide-viewer/submitTag' method="POST">
-                              <fieldset>
-                                <div class="control-group">
-                                   <div class="controls">
-                                     <input class="form-control" id="annotationZoneName" name="annotationZoneName" placeholder="annotationZoneName"></textarea>
-                                   </div>
-                                 </div>
-                               </fieldset>
-                               <div class="control-group">
-                                 <div class="controls">
-                                   <button type="submit" class="btn btn-default">Submit</button>
-                                 </div>
-                               </div>
-                            </form>
-
-                          </div>-->
-                          <div >
-                              <div id="annZoneList" style="display:none;" ng-controller="AnnotationZoneListController">
-                                Annotation Zone List:
-                                <div id="annotationZoneList" ng-repeat="annZone in annZones" ng-cloak>
-                                  <div class="{{annZone.name}}">
-                                    {{annZone.name}}
-                                    {{annZone.color}}
-
-
-                                  </div>
-                                </div>
-                              </div>
-                              <div>
-                                Comment List:
-                                <div id="commentList" ng-repeat="comment in comments" ng-cloak>
-                                  <div>
-                                    <label class='authorLabel' onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
-
-                                    <div class="commentText" ng-bind-html="comment.html">
+                                        <div id="viewerContainer">
+                                            <div id="viewer" class="pdfViewer"></div>
+                                        </div>
+                                        <div id="annotationZone">
+                                            <!--<div movable style="background-color:yellow;height:100px;width:100px;" ></div>-->
+                                        </div>
+                                        <div id="slideNavigationWrapper">
+                                            <div id="slideNavigationProgress">
+                                                <div id="slideNavigationCurrentProgress"></div>
+                                            </div>
+                                            <div id="slideNavigation" class="row notSelectable" ng-cloak>
+                                                <div class="col-md-4 text-center"></div>
+                                                <div class="col-md-4 text-center">
+                                                    <div class="row">
+                                                                <span class="glyphicon glyphicon-triangle-left iconSlideNav"
+                                                                      aria-hidden="true"
+                                                                      ng-click="changePageNumber(-1)"></span>
+                                                        <span id="slideNavText" class="fsSlideNav">{{currentPageNumber}}/{{maxPageNumber}}</span>
+                                                                <span class="glyphicon glyphicon-triangle-right iconSlideNav"
+                                                                      aria-hidden="true"
+                                                                      ng-click="changePageNumber(1)"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 text-right"><span id="btn-fullscreen"
+                                                                                       class="glyphicon glyphicon-fullscreen iconSlideNav"
+                                                                                       aria-hidden="true"></span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <br>
-                                  </div>
                                 </div>
                             </div>
-
-                          <div>
-                          </div>
                         </div>
-                      </div>
                     </div>
-                  </div>
+                    <div class="col-sm-5 col-md-5">
+                        <div class="box">
+                            <div class="box-body with-border">
+                                <h3 class="">Comments</h3>
+
+                                <div class="pannel box box-primary">
+                                    <div class="annotation-wrapper">
+                                        <div id="showComments">
+                                        </div>
+                                        <form action='/slide-viewer/submitComment' method="POST"
+                                              onsubmit="return commentOnSubmit()">
+                                            <fieldset>
+                                                <div class="control-group">
+                                                    <label for="rawText">Commenting as
+                                                        {{currentUser.username}}</label>
+
+                                                    <div class="controls">
+                                                                <textarea class="form-control" id="rawText"
+                                                                          name="rawText"
+                                                                          placeholder="rawText"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <input type="hidden" class="form-control" id="author"
+                                                               name="author" value="{{currentUser.username}}">
+                                                        <input type="hidden" class="form-control"
+                                                               id="pageNumber" name="pageNumber"
+                                                               value="{{currentPageNumber}}">
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <input class="form-control" id="tagNames"
+                                                               name="tagNames" placeholder="tagNames"
+                                                               type="hidden">
+                                                        <input class="form-control" id="tagRelPos"
+                                                               name="tagRelPos" placeholder="tagRelPos"
+                                                               type="hidden">
+                                                        <input class="form-control" id="tagRelCoord"
+                                                               name="tagRelCoord" placeholder="tagRelCoord"
+                                                               type="hidden">
+                                                        <input class="form-control" id="tagColor"
+                                                               name="tagColor" placeholder="tagColor"
+                                                               type="hidden">
+
+                                                    </div>
+                                                </div>
+                                                <!--Used as Template for annotation zone items -->
+                                                <div id="annotationZoneSubmitTemplate"
+                                                     style="visibility: hidden;">
+                                                    <button class="btn btn-default"
+                                                            onclick="removeAnnotationZone(this);">Remove
+                                                    </button>
+                                                </div>
+                                                <!-- Will be filled when annotation zones are created -->
+                                                <div id="annotationZoneSubmitList">
+                                                </div>
+
+
+                                                <div class="control-group">
+                                                    <div class="controls">
+
+
+                                                        <button type="submit" class="btn btn-default">Submit
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+
+                                        </form>
+                                        <div id="annotationZoneSubmitListMovables">
+                                            <button class="btn btn-default" onclick="createMovableAnnZone();">
+                                                Add Annotation Zone
+                                            </button>
+                                        </div>
+
+                                        <!--<button class="btn btn-default" onclick="addAnnotationZoneData('test',1,2,3,4,'Red');">CREATE TEST ANNOTATION ZONE</button>-->
+
+                                        <div class="controls">
+                                            <!--<button class="btn btn-default" onclick="displayComments();">Show comments</button>
+                                            <div >
+                                              <button class="btn btn-default" ng-click="loadComments('renderedText','true','{}')">Show comments Angular</button>
+                                              <button class="btn btn-default" ng-click="loadComments('renderedText','false','{}')">Show comments Angular2</button>
+                                            </div>-->
+                                            Sort by:
+                                            <div>
+
+                                                <select id="orderTypeSelect" ng-model="orderType">
+                                                    <option value="author">author</option>
+                                                    <option value="dateOfCreation">dateOfCreation</option>
+                                                    <option value="rawText">rawText</option>
+                                                </select>
+                                                <select id="orderAscendingSelect" ng-model="ascending">
+                                                    <option value="true">ascending</option>
+                                                    <option value="false">descending</option>
+                                                </select>
+                                            </div>
+                                            <div type="">
+                                                <input style="display:none;" id="filterValueText"
+                                                       ng-model="filtersRaw"/>
+                                                <!--<input type="hidden" id="pageFilter" ng-model="pageFilter" value = "{{currentPageNumber}}"></input>-->
+                                            </div>
+                                        </div>
+                                        <!--<div>
+
+                                          <form action='/slide-viewer/submitTag' method="POST">
+                                            <fieldset>
+                                              <div class="control-group">
+                                                 <div class="controls">
+                                                   <input class="form-control" id="annotationZoneName" name="annotationZoneName" placeholder="annotationZoneName"></textarea>
+                                                 </div>
+                                               </div>
+                                             </fieldset>
+                                             <div class="control-group">
+                                               <div class="controls">
+                                                 <button type="submit" class="btn btn-default">Submit</button>
+                                               </div>
+                                             </div>
+                                          </form>
+
+                                        </div>-->
+                                        <div>
+                                            <div id="annZoneList" style="display:none;"
+                                                 ng-controller="AnnotationZoneListController">
+                                                Annotation Zone List:
+                                                <div id="annotationZoneList" ng-repeat="annZone in annZones"
+                                                     ng-cloak>
+                                                    <div class="{{annZone.name}}">
+                                                        {{annZone.name}}
+                                                        {{annZone.color}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                Comment List:
+                                                <div id="commentList" ng-repeat="comment in comments" ng-cloak>
+                                                    <div>
+                                                        <label class='authorLabel'
+                                                               onclick='authorLabelClick($(this))'>{{comment.author}}</label><label>({{comment.date}}</label>
+
+                                                        <div class="commentText" ng-bind-html="comment.html">
+                                                        </div>
+                                                        <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </section>
+        </section>
 
 
-      </div>
-    </section>
-</div>
     </div>
+</div>
 
 <script>
-  $( "#btn-fullscreen" ).click(function() {
-    $("#viewerWrapper").toggleFullScreen();
-  });
+    $("#btn-fullscreen").click(function () {
+        $("#viewerWrapper").toggleFullScreen();
+    });
 </script>
