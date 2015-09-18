@@ -106,8 +106,9 @@ router.get('/disComm', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
+        _id:  data[i]._id,
         author: data[i].author,
-        date: data[i].dateOfCreation.toTimeString(),
+        date: data[i].dateOfCreation,
         slide: data[i].originSlide,
         html: data[i].renderedText
       };
@@ -150,8 +151,9 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
+        _id:  data[i]._id,
         author: data[i].author,
-        date: data[i].dateOfCreation.toTimeString(),
+        date: data[i].dateOfCreation,
         slide: data[i].originSlide,
         html: data[i].renderedText
       };

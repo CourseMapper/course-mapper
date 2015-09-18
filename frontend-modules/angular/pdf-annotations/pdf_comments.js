@@ -27,7 +27,7 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
 
         for(var i in $scope.comments){
           var cmnt = $scope.comments[i];
-          cmnt.html = $sce.trustAsHtml(cmnt.html);
+          //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
           $timeout(function(){
             $scope.$apply();

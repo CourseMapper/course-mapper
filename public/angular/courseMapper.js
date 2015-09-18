@@ -1162,6 +1162,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             scope: {
                 postedBy: '@',
                 postedDate: '@',
+                showControl: '=',
                 postContent: '=',
                 isPostOwner: '=',
                 isDeleted: '=',
@@ -2342,7 +2343,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
         for(var i in $scope.comments){
           var cmnt = $scope.comments[i];
-          cmnt.html = $sce.trustAsHtml(cmnt.html);
+          //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
           $timeout(function(){
             $scope.$apply();
