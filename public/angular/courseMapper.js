@@ -2337,10 +2337,19 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         {
           updateScope($scope.commentGetUrl);
           $scope[resultVarName] = data;
+
+          var comment = $scope.comment;
+
+          comment.rawText = '',
+          comment.tagNames = '',
+          comment.tagRelPos = '',
+          comment.tagRelCoord = '',
+          comment.tagColor = ''
+
         })
         .error(function (data, status, headers, config)
         {
-          $scope[resultVarName] = "SUBMIT ERROR";
+          console.log("SUBMIT ERROR");
         });
     };
 
