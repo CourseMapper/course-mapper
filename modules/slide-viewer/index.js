@@ -160,7 +160,7 @@ Comment.prototype.handleSubmitPost = function(req, res, next) {
         req.body,
         function done(annotationsPDF) {
             // todo: implement flash
-            return res.redirect('/slide-viewer/');
+            return true;//res.redirect('/slide-viewer/');
             // todo: implement redirect to previous screen.
         }
     );
