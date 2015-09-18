@@ -2,13 +2,13 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
 
     $scope.comment = {};
 
-    $scope.submitData = function (comment, resultVarName)
+    $scope.submitComment = function (comment, resultVarName)
     {
       commentOnSubmit();
       var config = {
         params: {
           rawText: comment.rawText,
-          author: $scope.currentUser,
+          author: $scope.currentUser.username,
           pageNumber: $scope.currentPageNumber,
           tagNames: comment.tagNames,
           tagRelPos: comment.tagRelPos,

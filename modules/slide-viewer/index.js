@@ -157,10 +157,10 @@ Comment.prototype.handleSubmitPost = function(req, res, next) {
         function error(err){
             return next(err);
         },
-        req.body,
+        req.query,
         function done(annotationsPDF) {
             // todo: implement flash
-            return true;//res.redirect('/slide-viewer/');
+            return res.send(200);
             // todo: implement redirect to previous screen.
         }
     );
