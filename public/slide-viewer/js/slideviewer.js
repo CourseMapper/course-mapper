@@ -264,3 +264,13 @@ function createMovableAnnZone() {
   var element = loadRect(0, 0, 0.3, 0.3, "000000", "NoNameYet", true);
   addAnnotationZoneElement(element);
 };
+
+
+function switchCommentSubmissionDisplay() {
+  var div = $("#commentSubmissionDiv");
+  if(div.is(':visible'))
+    div.hide();
+  else {
+    div.show();
+  }
+}
