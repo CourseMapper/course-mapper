@@ -2335,6 +2335,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       $http.post("/slide-viewer/submitComment/", null, config)
         .success(function (data, status, headers, config)
         {
+          updateScope($scope.commentGetUrl);
           $scope[resultVarName] = data;
         })
         .error(function (data, status, headers, config)

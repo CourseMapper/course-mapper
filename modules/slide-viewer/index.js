@@ -45,32 +45,36 @@ Comment.prototype.submitAnnotation = function(err, params, done){
 
 Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber,callback){
   var annZone = new AnnZones();
-  var tagNameList = tagNames.split(",");
-  var tagRelPosList = tagRelPos.split(",");
-  var tagRelCoordList = tagRelCoord.split(",");
-  var tagColorList = tagColor.split(",");
-
-
-  if(tagNames.length == 0){
+  if(typeof tagNames == 'undefined')
     callback();
-  }
-  else if((tagNameList.length == tagRelPosList.length) && (tagRelCoordList.length == tagRelPosList.length) && (tagRelCoordList.length == tagColorList.length)) {
-    var tagList = [];
-    console.log(tagNameList.length);
-    for(var n=0; n<tagNameList.length; n++) {
-      tagList[n] = [];
-      tagList[n][0] = tagNameList[n];
-      tagList[n][1] = tagRelPosList[n];
-      tagList[n][2] = tagRelCoordList[n];
-      tagList[n][3] = tagColorList[n];
+  else {
+    var tagNameList = tagNames.split(",");
+    var tagRelPosList = tagRelPos.split(",");
+    var tagRelCoordList = tagRelCoord.split(",");
+    var tagColorList = tagColor.split(",");
 
+
+    if(tagNames.length == 0){
+      callback();
     }
+    else if((tagNameList.length == tagRelPosList.length) && (tagRelCoordList.length == tagRelPosList.length) && (tagRelCoordList.length == tagColorList.length)) {
+      var tagList = [];
+      console.log(tagNameList.length);
+      for(var n=0; n<tagNameList.length; n++) {
+        tagList[n] = [];
+        tagList[n][0] = tagNameList[n];
+        tagList[n][1] = tagRelPosList[n];
+        tagList[n][2] = tagRelCoordList[n];
+        tagList[n][3] = tagColorList[n];
 
-    annZone.submitTagList(err,tagList,pageNumber,callback);
+      }
+
+      annZone.submitTagList(err,tagList,pageNumber,callback);
+    }
+    else
+      console.log("Error: Tag string-lists differ");
+
   }
-  else
-    console.log("Error: Tag string-lists differ");
-
 }
 
 
@@ -160,7 +164,7 @@ Comment.prototype.handleSubmitPost = function(req, res, next) {
         req.query,
         function done(annotationsPDF) {
             // todo: implement flash
-            return res.send(200);
+            return res.status(200).send(annotationsPDF);
             // todo: implement redirect to previous screen.
         }
     );

@@ -20,6 +20,7 @@ app.controller('CommentListController', function($scope, $http, $rootScope, $sce
       $http.post("/slide-viewer/submitComment/", null, config)
         .success(function (data, status, headers, config)
         {
+          updateScope($scope.commentGetUrl);
           $scope[resultVarName] = data;
         })
         .error(function (data, status, headers, config)
