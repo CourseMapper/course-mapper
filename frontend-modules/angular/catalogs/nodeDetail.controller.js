@@ -82,6 +82,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             } else if($scope.isPdfExist){
                 jQuery('#pdf').addClass('active');
                 jQuery('li.pdf').addClass('active');
+                defaultPath = 'pdf';
             } else {
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
