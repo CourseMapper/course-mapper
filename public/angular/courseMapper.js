@@ -2316,6 +2316,35 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 });
 ;app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
 
+    $scope.comment = {};
+
+    $scope.submitData = function (comment, resultVarName)
+    {
+      commentOnSubmit();
+      var config = {
+        params: {
+          rawText: comment.rawText,
+          author: $scope.currentUser,
+          pageNumber: $scope.currentPageNumber,
+          tagNames: comment.tagNames,
+          tagRelPos: comment.tagRelPos,
+          tagRelCoord: comment.tagRelCoord,
+          tagColor: comment.tagColor
+        }
+      };
+
+      $http.post("/slide-viewer/submitComment/", null, config)
+        .success(function (data, status, headers, config)
+        {
+          $scope[resultVarName] = data;
+        })
+        .error(function (data, status, headers, config)
+        {
+          $scope[resultVarName] = "SUBMIT ERROR";
+        });
+    };
+
+
     $scope.currentUser = "";
     $rootScope.$watch('user', function(){
           if($rootScope.user) {
