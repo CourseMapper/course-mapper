@@ -10,11 +10,11 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         bowercopy: {
-            options: {
-                srcPrefix: 'bower_components',
-                destPrefix: 'public'
-            },
             scripts: {
+                options: {
+                    srcPrefix: 'bower_components',
+                    destPrefix: 'public'
+                },
                 files: {
                     'angular/angular.min.js': 'angular/angular.min.js',
                     'angular/angular.min.js.map': 'angular/angular.min.js.map',
@@ -28,7 +28,17 @@ module.exports = function (grunt) {
                     'angular/angular-cookies.min.js': 'angular-cookies/angular-cookies.min.js',
                     'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map'
                 }
-            }/*,
+            },
+            views: {
+                options: {
+                    srcPrefix: 'frontend-modules/angular'
+                },
+                files: {
+                    'public/angular/views': 'views/**/*.html'
+                }
+            }
+
+            /*,
 
             folders: {
                 files: {
@@ -72,13 +82,15 @@ module.exports = function (grunt) {
                 files: [
                     'frontend-modules/angular/*.js',
                     'frontend-modules/angular/**/*.js',
+                    'frontend-modules/angular/views/*.html',
+                    'frontend-modules/angular/views/**/*.html',
                     'frontend-modules/angular-admin/*.js',
                     'frontend-modules/libs/*.js',
                     'public/video-annotations/scripts/*.js',
                     'public/video-annotations/scripts/**/*.js',
                     'public/video-annotations/scripts/**/**/*.js'
                 ],
-                tasks: ['concat:dist', 'concat:js', 'concat:libsJS', 'concat:va'],
+                tasks: ['bowercopy:views', 'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va'],
                 options: {
                     spawn: false
                 }
@@ -114,7 +126,8 @@ module.exports = function (grunt) {
 
     // the default task (running "grunt" in console)
     grunt.registerTask('default', [
-            'bowercopy:scripts',
+        'bowercopy:scripts',
+        'bowercopy:views',
         //'bowercopy:folders',
         'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va']
     );

@@ -1,0 +1,29 @@
+<div class="box box-solid">
+    <div class="box-body">
+      <span class="posted-at">
+      Posted <strong>{{postedDate | relativeDate}}</strong>
+      By <strong>{{postedBy}}</strong>
+      </span>
+        <p class="reply" ng-bind-html="postContent | unsafe"></p>
+    </div>
+    <div class="box-footer">
+        <div class="replyControl"
+             ng-show="isPostOwner && !isDeleted"
+                >
+            <div class="editReplyButton">
+                <a ng-show="isPostOwner" style="cursor: pointer;"
+                   data-toggle="modal" data-target="#editReplyModal"
+                   title="Edit"
+                   ng-click="editAction()"
+                   class="btn btn-primary btn-xs"
+                        >EDIT</a>
+            </div>
+            <div class="deleteReplyButton">
+                <a style="cursor: pointer;" ng-show="isPostOwner"
+                   ng-click="deleteAction()"
+                   title="delete"
+                   class="btn btn-danger btn-xs">DELETE</a>
+            </div>
+        </div>
+    </div>
+</div>

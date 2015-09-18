@@ -1152,7 +1152,35 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });
-;app.directive('errorBlock',
+;app.directive('comment',
+    function ($compile) {
+        return {
+            restrict: 'E',
+
+            terminal: true,
+
+            scope: {
+                postedBy: '@',
+                postedDate: '@',
+                postContent: '=',
+                isPostOwner: '=',
+                isDeleted: '=',
+                postId:'@',
+                editAction: '&',
+                deleteAction: '&'
+            },
+
+            templateUrl: '/angular/views/discussion.reply.html'/*,
+
+            controller: function ($scope, $compile, $http, $attrs) {
+
+            },
+
+            link: function(scope, element, attrs) {
+                $compile(element.contents())(scope.$new());
+            }*/
+        };
+    });;app.directive('errorBlock',
     function () {
         return {
             restrict: 'E',

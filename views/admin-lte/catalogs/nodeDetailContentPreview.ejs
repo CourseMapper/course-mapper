@@ -1,6 +1,6 @@
 <link rel="stylesheet" type="text/css" href="/jquery-ui/themes/black-tie/jquery-ui.css">
 <div class="col-xs-12 col-md-8">
-    <div class="container" ng-show="!isVideoExist && !isPdfExist">
+    <div class="container" ng-cloak="isVideoExist" ng-show="!isVideoExist && !isPdfExist">
         There is no resources here.
     </div>
     <div class="container" ng-show="isVideoExist">

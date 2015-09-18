@@ -22,7 +22,7 @@ li.post:hover {
     background: #ecf0f5;
 }
 p.topicContent{
-    font-size: 15px;
+    padding-left:15px;
 }
 span.posted-at{
     padding-top: -10px;
