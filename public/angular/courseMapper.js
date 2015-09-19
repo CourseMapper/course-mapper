@@ -2458,13 +2458,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         //todo: {id: 'relevance', name: 'Relevance'}
     ];
 
-    $scope.submitData = function (comment, resultVarName)
+    $scope.submitComment = function (comment, resultVarName)
     {
       commentOnSubmit();
       var config = {
         params: {
           rawText: comment.rawText,
-          author: $scope.currentUser,
+          author: $scope.currentUser.username,
           pageNumber: $scope.currentPageNumber,
           tagNames: comment.tagNames,
           tagRelPos: comment.tagRelPos,
@@ -2476,14 +2476,23 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       $http.post("/slide-viewer/submitComment/", null, config)
         .success(function (data, status, headers, config)
         {
+          updateScope($scope.commentGetUrl);
           $scope[resultVarName] = data;
+
+          var comment = $scope.comment;
+
+          comment.rawText = '',
+          comment.tagNames = '',
+          comment.tagRelPos = '',
+          comment.tagRelCoord = '',
+          comment.tagColor = ''
+
         })
         .error(function (data, status, headers, config)
         {
-          $scope[resultVarName] = "SUBMIT ERROR";
+          console.log("SUBMIT ERROR");
         });
     };
-
 
     $scope.currentUser = "";
     $rootScope.$watch('user', function(){
@@ -2494,9 +2503,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     //$scope.pageFilter;
 
-
-    $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-
+    $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
 
     function updateScope(url){
       $http.get(url).success(function (data) {
@@ -2607,41 +2614,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             updateScope($scope.commentGetUrl);
         }
     });
-
-
-
-
-
-    /*$http.get('/slide-viewer/disComm').success(function (data) {
-        console.log(data);
-        $scope.comments = data.comments;
-
-        for(var i in $scope.comments){
-            var cmnt = $scope.comments[i];
-            cmnt.html = $sce.trustAsHtml(cmnt.html);
-        }
-
-
-        $scope.loadComments = function (orderType, ascending, filters) {
-          //var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/' + filters;
-          var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/{"author":"Kaet"}';
-          console.log(url);
-          $http.get(url).success(function (data) {
-              console.log(data);
-              $scope.comments = data.comments;
-
-              for(var i in $scope.comments){
-                  var cmnt = $scope.comments[i];
-                  cmnt.html = $sce.trustAsHtml(cmnt.html);
-              }
-
-          });
-
-
-
-
-        };
-    });*/
 
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
