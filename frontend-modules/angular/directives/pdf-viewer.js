@@ -7,7 +7,7 @@ app.directive('pdfViewer',
 
             scope: {
                 source: '@',
-                currentPageNumber: '@',
+                currentPageNumber: '=',
                 showControl: '='
             },
 
@@ -34,6 +34,8 @@ app.directive('pdfViewer',
 
                             console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
+
+                            scope.calculateSlideNavigationProgress(scope.currentPageNumber);
 
                             // this will apply totalpage to the html
                             $timeout(function () {
@@ -74,6 +76,13 @@ app.directive('pdfViewer',
                     }
                 });
 
+                scope.calculateSlideNavigationProgress = function(newSlideNumber){
+                    if(scope.totalPage > 0) {
+                        var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
+                        progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
+                    }
+                };
+
             }, /*end link*/
 
             controller: function ($scope, $compile, $http, $attrs) {
@@ -98,8 +107,7 @@ app.directive('pdfViewer',
                 $scope.changeSlide = function (newSlideNumber) {
                     $scope.pageToView = newSlideNumber;
 
-                    /*HIER MUSS DIE 36 MIT DER MAX NUMBER ERSETZT WERDEN.*/
-                    $("#slideNavigationCurrentProgress").width(((newSlideNumber / $scope.totalPage) * 100) + "%");
+                    $scope.calculateSlideNavigationProgress(newSlideNumber);
 
                     PDFJS.getDocument($scope.source).then(function (pdfDocument) {
                         pdfDocument.getPage($scope.pageToView).then(function (pdfPage) {
