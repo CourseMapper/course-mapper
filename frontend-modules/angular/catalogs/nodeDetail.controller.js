@@ -17,6 +17,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
     $scope.currentTab = "video";
+    $scope.defaultPath = "video";
     $scope.tabs = {
         'video':'Video',
         'pdf':'Pdf',
@@ -70,11 +71,10 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     };
 
     $scope.changeTab = function(){
-        var defaultPath = "video";
         var q = $location.search();
 
         if(q.tab){
-            defaultPath = q.tab;
+            $scope.defaultPath = q.tab;
         } else {
             if($scope.isVideoExist && $scope.isPdfExist){
                 jQuery('#video').addClass('active');
@@ -82,14 +82,14 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             } else if($scope.isPdfExist){
                 jQuery('#pdf').addClass('active');
                 jQuery('li.pdf').addClass('active');
-                defaultPath = 'pdf';
+                $scope.defaultPath = 'pdf';
             } else {
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
             }
         }
 
-        $scope.currentTab = defaultPath;
+        $scope.currentTab = $scope.defaultPath;
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
         $scope.manageActionBar();

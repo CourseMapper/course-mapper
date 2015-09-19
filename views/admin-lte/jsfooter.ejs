@@ -41,6 +41,16 @@
 <script src="/slide-viewer/js/directives/sa-annotationzone.js"></script>
 <script src="/video-annotations/va.js"></script>
 
+<% if(typeof(isInNodeDetailPage) != 'undefined' && isInNodeDetailPage){ %>
+<!-- slide-viewer stuff -->
+<script src="/slide-viewer/js/slideviewer.js"></script>
+<script src="/slide-viewer/js/jquery.fullscreen-min.js"></script>
+<!-- for legacy browsers -->
+<script src="/pdfjs/build/components/compatibility.js"></script>
+<script src="/pdfjs/build/pdf.js"></script>
+<script src="/pdfjs/build/components/pdf_viewer.js"></script>
+<% } %>
+
 <script src="/angular/courseMapper.js"></script>
 
 <!-- AdminLTE App -->
@@ -53,11 +63,10 @@
 <script src="/slide-viewer/js/jquery.fullscreen-min.js"></script>
 <!-- for legacy browsers -->
 <script src="/pdfjs/build/components/compatibility.js"></script>
-
 <script src="/pdfjs/build/pdf.js"></script>
 <script src="/pdfjs/build/components/pdf_viewer.js"></script>
 <script src="/slide-viewer/js/autosize.input.min.js"></script>
-<script src="/pdfjs/js/pageviewer.js"></script>
+<!--<script src="/pdfjs/js/pageviewer.js"></script>-->
 <script src="/slide-viewer/js/drawdiv.js"></script>
 <script src="/slide-viewer/js/tinycolor-0.9.15.min.js"></script>
 <script src="/slide-viewer/js/pick-a-color-1.2.3.min.js"></script>
