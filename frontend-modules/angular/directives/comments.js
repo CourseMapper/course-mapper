@@ -17,14 +17,6 @@ app.directive('comment',
                 deleteAction: '&'
             },
 
-            templateUrl: '/angular/views/discussion.reply.html'/*,
-
-            controller: function ($scope, $compile, $http, $attrs) {
-
-            },
-
-            link: function(scope, element, attrs) {
-                $compile(element.contents())(scope.$new());
-            }*/
+            templateUrl: '/angular/views/discussion.reply.html'
         };
     });

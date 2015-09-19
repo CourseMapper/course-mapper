@@ -1,38 +1,15 @@
-<div class="row" ng-controller="PDFNavigationController">
+<div class="row">
 
     <div class="col-xs-11" ng-controller="CommentListController">
         <div class="slide-container col-sm-8 col-md-8">
             <div id="viewerWrapper">
 
-                <pdf-viewer source="{{pdfFile.link}}"></pdf-viewer>
+                <pdf-viewer source="{{pdfFile.link}}" current-page-number="1"></pdf-viewer>
 
                 <div id="annotationZone">
                     <!--<div movable style="background-color:yellow;height:100px;width:100px;" ></div>-->
                 </div>
-                <div id="slideNavigationWrapper">
-                    <div id="slideNavigationProgress">
-                        <div id="slideNavigationCurrentProgress"></div>
-                    </div>
-                    <div id="slideNavigation" class="row notSelectable" ng-cloak>
-                        <div class="col-md-4 text-center"></div>
-                        <div class="col-md-4 text-center">
-                            <div class="row">
-                                                            <span class="glyphicon glyphicon-triangle-left iconSlideNav"
-                                                                  aria-hidden="true"
-                                                                  ng-click="changePageNumber(-1)"></span>
-                                    <span id="slideNavText"
-                                          class="fsSlideNav">{{currentPageNumber}}/{{maxPageNumber}}</span>
-                                                            <span class="glyphicon glyphicon-triangle-right iconSlideNav"
-                                                                  aria-hidden="true"
-                                                                  ng-click="changePageNumber(1)"></span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-right"><span id="btn-fullscreen"
-                                                               class="glyphicon glyphicon-fullscreen iconSlideNav"
-                                                               aria-hidden="true"></span>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
         <div class="posts-list col-sm-4 col-md-4">
@@ -202,4 +179,5 @@
     $("#btn-fullscreen").click(function () {
         $("#viewerWrapper").toggleFullScreen();
     });
+
 </script>
