@@ -855,6 +855,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             } else if($scope.isPdfExist){
                 jQuery('#pdf').addClass('active');
                 jQuery('li.pdf').addClass('active');
+                defaultPath = 'pdf';
             } else {
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
@@ -1162,6 +1163,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             scope: {
                 postedBy: '@',
                 postedDate: '@',
+                showControl: '=',
                 postContent: '=',
                 isPostOwner: '=',
                 isDeleted: '=',
@@ -2318,6 +2320,21 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     $scope.comment = {};
 
     $scope.submitComment = function (comment, resultVarName)
+    $scope.orderType = false;
+    $scope.orderBy = false;
+    $scope.ascending = "true";
+    $scope.filters = '{}';
+    $scope.filtersRaw = '';
+
+    $scope.orderingOptions = [
+        {id: 'dateOfCreation.descending', name: 'Newest First'},
+        {id: 'dateOfCreation.ascending', name: 'Oldest First'},
+        {id: 'author.descending', name: 'Author (descending)'},
+        {id: 'author.ascending', name: 'Author (ascending)'}
+        //todo: {id: 'relevance', name: 'Relevance'}
+    ];
+
+    $scope.submitData = function (comment, resultVarName)
     {
       commentOnSubmit();
       var config = {
@@ -2361,11 +2378,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
           }
       });
 
-
-    $scope.orderType = "author";
-    $scope.ascending = "true";
-    $scope.filters = '{}';
-    $scope.filtersRaw = '';
     //$scope.pageFilter;
 
 
@@ -2381,7 +2393,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
         for(var i in $scope.comments){
           var cmnt = $scope.comments[i];
-          cmnt.html = $sce.trustAsHtml(cmnt.html);
+          //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
           $timeout(function(){
             $scope.$apply();
@@ -2432,30 +2444,54 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       return finalFilters;
     }
 
+    $scope.parseOrderType = function(orderType){
+        var orderSplit = orderType.split('.');
+        $scope.orderBy = orderSplit[0];
+        if(orderSplit[1]) {
+            $scope.ascending = (orderSplit[1] == 'ascending') ? true : false;
+        } else
+            $scope.ascending = false;
+    };
+
+    $scope.getComment = function(orderType){
+        $scope.parseOrderType(orderType);
+
+        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+        updateScope($scope.commentGetUrl);
+    };
+
+    $scope.init = function(){
+        $scope.getComment($scope.orderingOptions[0].id);
+    };
+
+    $scope.init();
 
     $scope.$watch("orderType",function(newValue,oldValue){
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      updateScope($scope.commentGetUrl);
-    });
-
-    $scope.$watch("ascending",function(newValue,oldValue){
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      updateScope($scope.commentGetUrl);
+        if(newValue !== oldValue) {
+            $scope.orderType = newValue;
+            $scope.getComment(newValue.id);
+        }
     });
 
     $scope.$watch("filtersRaw",function(newValue,oldValue){
-      //console.log("NOTICED FILTERS CHANGE");
-      $scope.filters = getCurrentFilters($scope.filtersRaw);
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      //console.log("commentGetUrl: " + $scope.commentGetUrl);
-      updateScope($scope.commentGetUrl);
+        if(newValue !== oldValue) {
+            $scope.parseOrderType($scope.orderType.id);
+            //console.log("NOTICED FILTERS CHANGE");
+            $scope.filters = getCurrentFilters($scope.filtersRaw);
+            $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+            //console.log("commentGetUrl: " + $scope.commentGetUrl);
+            updateScope($scope.commentGetUrl);
+        }
     });
 
     $scope.$watch("currentPageNumber",function(newValue,oldValue){
-      $scope.filters = getCurrentFilters($scope.filtersRaw);
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      //console.log("commentGetUrl: " + $scope.commentGetUrl);
-      updateScope($scope.commentGetUrl);
+        if(newValue !== oldValue) {
+            $scope.parseOrderType($scope.orderType.id);
+            $scope.filters = getCurrentFilters($scope.filtersRaw);
+            $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+            //console.log("commentGetUrl: " + $scope.commentGetUrl);
+            updateScope($scope.commentGetUrl);
+        }
     });
 
 

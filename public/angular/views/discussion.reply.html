@@ -6,7 +6,7 @@
       </span>
         <p class="reply" ng-bind-html="postContent | unsafe"></p>
     </div>
-    <div class="box-footer">
+    <div class="box-footer" ng-show="showControl">
         <div class="replyControl"
              ng-show="isPostOwner && !isDeleted"
                 >

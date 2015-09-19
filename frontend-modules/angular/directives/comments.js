@@ -8,6 +8,7 @@ app.directive('comment',
             scope: {
                 postedBy: '@',
                 postedDate: '@',
+                showControl: '=',
                 postContent: '=',
                 isPostOwner: '=',
                 isDeleted: '=',
