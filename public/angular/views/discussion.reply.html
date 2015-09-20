@@ -2,7 +2,12 @@
     <div class="box-body">
       <span class="posted-at">
       Posted <strong>{{postedDate | relativeDate}}</strong>
-      By <strong>{{postedBy}}</strong>
+      By <strong>
+          <a class="cursor"
+                ng-show="authorClickable"
+                ng-click="authorClickAction()">{{postedBy}}</a>
+          <span ng-hide="authorClickable">{{postedBy}}</span>
+         </strong>
       </span>
         <p class="reply" ng-bind-html="postContent | unsafe"></p>
     </div>

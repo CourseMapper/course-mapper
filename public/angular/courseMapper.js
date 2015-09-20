@@ -1154,7 +1154,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     }
 });
 ;app.directive('comment',
-    function ($compile) {
+    function ($compile, $timeout) {
         return {
             restrict: 'E',
 
@@ -1164,15 +1164,25 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 postedBy: '@',
                 postedDate: '@',
                 showControl: '=',
+                authorClickAction: '&',
+                authorClickable: '=',
                 postContent: '=',
                 isPostOwner: '=',
                 isDeleted: '=',
-                postId:'@',
+                postId: '@',
                 editAction: '&',
                 deleteAction: '&'
             },
 
-            templateUrl: '/angular/views/discussion.reply.html'
+            templateUrl: '/angular/views/discussion.reply.html'/*,
+
+            link: function (scope, element, attrs) {
+                $timeout(function () {
+                    scope.$apply();
+                });
+
+                $compile(element.contents())(scope.$new());
+            }*/
         };
     });;app.directive('errorBlock',
     function () {
@@ -1308,7 +1318,7 @@ app.directive('modalClose',
     };
 });
 ;app.directive('pdfViewer',
-    function ($compile, $timeout) {
+    function ($compile, $timeout, $rootScope) {
         return {
             restrict: 'E',
 
@@ -1425,6 +1435,8 @@ app.directive('modalClose',
 
                             console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
+
+                            $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
 
                             /* todo: move this somewhere else
                             drawAnnZonesWhenPDFAndDBDone();
@@ -2448,7 +2460,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     $scope.orderBy = false;
     $scope.ascending = "true";
     $scope.filters = '{}';
-    $scope.filtersRaw = '';
+    $scope.filtersRaw = {};
+    $scope.currentPageNumber = 1;
+
+
+    $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+        $scope.currentPageNumber = newSlideNumber;
+    });
 
     $scope.orderingOptions = [
         {id: 'dateOfCreation.descending', name: 'Newest First'},
@@ -2505,6 +2523,49 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
 
+    $scope.switchRegexFilter = function(value){
+        $scope.filtersRaw['renderedText'] = {'regex': value};
+
+        $scope.$broadcast('onFiltersRawChange');
+    };
+
+    $scope.switchRegexHashFilter = function(value){
+        $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
+        console.log($scope.filtersRaw);
+
+        $scope.$broadcast('onFiltersRawChange');
+    };
+
+    $scope.authorLabelClick = function(authorName){
+        $scope.filtersRaw['author'] = authorName;
+
+        $scope.$broadcast('onFiltersRawChange');
+    };
+
+    $scope.commentsLoaded = function(){
+        var element = $("#commentList .annotationZoneReference").not('.hasOnClick');
+        if($("#commentList .annotationZoneReference").not('.hasOnClick').length != 0) {
+            //console.log("ADDED CLICK FUNCTION");
+            //console.log($("#commentList .annotationZoneReference").length);
+            $("#commentList .annotationZoneReference").not('.hasOnClick').click(function(){
+                $scope.switchRegexHashFilter($(this).html());
+            });
+
+            $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
+
+            element.hover(function(){
+                var rectId = $(this).html();
+                $("#annotationZone [data-tagName='"+rectId+"']").stop().fadeTo("fast", opacityFactorHighlight);
+                //$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
+            }, function(){
+                var rectId = $(this).html();
+                $("#annotationZone [data-tagName='"+rectId+"']").stop().fadeTo("fast",opacityFactor);
+                //$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
+            });
+
+        }
+    };
+
     function updateScope(url){
       $http.get(url).success(function (data) {
         //console.log('COMMENTS UPDATED');
@@ -2517,18 +2578,20 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
           //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
           $timeout(function(){
-            $scope.$apply();
-            commentsLoaded();
+              $scope.$apply();
+              $scope.commentsLoaded();
           });
         };
       });
     };
 
-    function getCurrentFilters(filtersRaw){
-      var finalFilters;
-      /*if($scope.filtersRaw.length == 0)
-        finalFilters='{}';
-      else {*/
+    function getCurrentFilters(){
+        /*
+        refactored by using array of filtersRaw. will be converted with JSON.stringify.
+        regex_has and regex is replaced by using scope.switchregex... function
+
+        var finalFilters;
+
         var filterStrings = $scope.filtersRaw.split(';');
         //console.log("FOUND RAW FILTERS: " + $scope.filtersRaw);
         finalFilters = '{';
@@ -2555,13 +2618,15 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             //if(i != filterStrings.length-1)
             finalFilters = finalFilters + ',';
           }
-        }
-        if(!isNaN($scope.currentPageNumber))
-          finalFilters = finalFilters + '"pdfPageNumber":"' + $scope.currentPageNumber + '"';
-        finalFilters = finalFilters + '}';
+        }*/
 
-      //}
-      //console.log("Final Filters: " + finalFilters);
+        if(!isNaN($scope.currentPageNumber)){
+            $scope.filtersRaw['pdfPageNumber'] = $scope.currentPageNumber;
+        }
+
+      var finalFilters = JSON.stringify($scope.filtersRaw);
+
+      console.log("Final Filters: " + finalFilters);
       return finalFilters;
     }
 
@@ -2585,6 +2650,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         $scope.getComment($scope.orderingOptions[0].id);
     };
 
+    /**
+     * get comments on page load
+     */
     $scope.init();
 
     $scope.$watch("orderType",function(newValue,oldValue){
@@ -2603,6 +2671,15 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
             updateScope($scope.commentGetUrl);
         }
+    });
+
+    $scope.$on('onFiltersRawChange', function(){
+        $scope.parseOrderType($scope.orderType.id);
+        //console.log("NOTICED FILTERS CHANGE");
+        $scope.filters = getCurrentFilters($scope.filtersRaw);
+        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+        //console.log("commentGetUrl: " + $scope.commentGetUrl);
+        updateScope($scope.commentGetUrl);
     });
 
     $scope.$watch("currentPageNumber",function(newValue,oldValue){

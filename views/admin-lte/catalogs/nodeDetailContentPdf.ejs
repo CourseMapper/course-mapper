@@ -107,11 +107,6 @@
                                         class="form-control">
                                 </select>
                             </div>
-
-                            <div>
-                                <input style="display:none;" id="filterValueText"
-                                       ng-model="filtersRaw"/>
-                            </div>
                         </div>
 
                     </div>
@@ -127,6 +122,8 @@
                                          post-content="comment.html"
                                          is-post-owner="comment.author==$root.user.username"
                                          show-control="false"
+                                         author-clickable="true"
+                                         author-click-action="authorLabelClick(comment.author)"
                                         ></comment>
                             </div>
                         </div>

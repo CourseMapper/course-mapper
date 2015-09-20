@@ -195,13 +195,14 @@ function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
 
 };
 
-
+/*
+used by displayComments only, which is not being called anywhere
 function displayCommentsIntern(filter, order){
 
     var url = "/slide-viewer/disComm";
     var urlFilterOrder = url + "/" + order + "/" + filter;
 
-    /*$.ajax( {
+    /!*$.ajax( {
       "url": urlFilterOrder,
       //"async": false,
       "dataType": "html",
@@ -212,9 +213,11 @@ function displayCommentsIntern(filter, order){
         });
       }
 
-    } );*/
-};
+    } );*!/
+};*/
 
+/*
+not being called anywhere
 function displayComments(){
 
   var fType = $("#filterTypeSelect").val();
@@ -230,8 +233,10 @@ function displayComments(){
   filter = JSON.parse(filter);
   order = JSON.parse(order);
   displayCommentsIntern(JSON.stringify(filter),JSON.stringify(order));
-};
+};*/
 
+/*
+already moved to controller
 function authorLabelClick(element){
   var filterInput = $('#filterValueText');
   var authorName = element.text();
@@ -246,8 +251,10 @@ function authorLabelClick(element){
 
 
 
-};
+};*/
 
+/*
+moved to controller
 function switchRegexFilter(attribute,value){
   var filterInput = $('#filterValueText');
 
@@ -258,7 +265,7 @@ function switchRegexFilter(attribute,value){
     filterInput.val('');
   }
   filterInput.trigger('input');
-};
+};*/
 
 function createMovableAnnZone() {
   var element = loadRect(0, 0, 0.3, 0.3, "000000", "NoNameYet", true);

@@ -2,7 +2,9 @@
     border-style: solid;
     border-color: #ff0000;
 }
-
+.hasOnClick{
+    cursor: pointer;
+}
 .blueText{
     color: blue;
 }

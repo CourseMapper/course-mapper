@@ -1,5 +1,5 @@
 app.directive('comment',
-    function ($compile) {
+    function ($compile, $timeout) {
         return {
             restrict: 'E',
 
@@ -9,14 +9,24 @@ app.directive('comment',
                 postedBy: '@',
                 postedDate: '@',
                 showControl: '=',
+                authorClickAction: '&',
+                authorClickable: '=',
                 postContent: '=',
                 isPostOwner: '=',
                 isDeleted: '=',
-                postId:'@',
+                postId: '@',
                 editAction: '&',
                 deleteAction: '&'
             },
 
-            templateUrl: '/angular/views/discussion.reply.html'
+            templateUrl: '/angular/views/discussion.reply.html'/*,
+
+            link: function (scope, element, attrs) {
+                $timeout(function () {
+                    scope.$apply();
+                });
+
+                $compile(element.contents())(scope.$new());
+            }*/
         };
     });

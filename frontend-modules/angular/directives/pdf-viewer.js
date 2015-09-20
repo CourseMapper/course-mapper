@@ -1,5 +1,5 @@
 app.directive('pdfViewer',
-    function ($compile, $timeout) {
+    function ($compile, $timeout, $rootScope) {
         return {
             restrict: 'E',
 
@@ -116,6 +116,8 @@ app.directive('pdfViewer',
 
                             console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
+
+                            $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
 
                             /* todo: move this somewhere else
                             drawAnnZonesWhenPDFAndDBDone();
