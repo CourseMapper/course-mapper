@@ -2463,9 +2463,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     $scope.filtersRaw = {};
     $scope.currentPageNumber = 1;
 
-
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
         $scope.currentPageNumber = newSlideNumber;
+        $scope.getComment($scope.orderType.id);
     });
 
     $scope.orderingOptions = [
@@ -2642,6 +2642,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     $scope.getComment = function(orderType){
         $scope.parseOrderType(orderType);
 
+        $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
         updateScope($scope.commentGetUrl);
     };
