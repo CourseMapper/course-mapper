@@ -29,6 +29,18 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       });
     };
 
+    $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+        //console.log("LOADED RESET");
+        $(".slideRect").remove();
+
+        annotationZonesAreLoaded = false;
+
+        toDrawAnnotationZoneData = [];
+        $scope.refreshTags();
+    });
+
+    /*
+    use onPdfPageChange event instead
     $scope.$watch("currentPageNumber",function(newValue,oldValue){
       //console.log("LOADED RESET");
       $(".slideRect").remove();
@@ -37,7 +49,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
-    });
+    });*/
 
     $scope.compileMovableAnnotationZone = function(element) {
       return angular.element(

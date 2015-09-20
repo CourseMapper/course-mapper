@@ -1,3 +1,5 @@
+/*
+moved to directive
 app.controller('PDFNavigationController', function($scope, $http, $rootScope, $sce, $timeout) {
     $scope.currentPageNumber = 1;
     $scope.maxPageNumber = 30;
@@ -15,4 +17,4 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     }
 
 
-});
+});*/

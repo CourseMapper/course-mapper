@@ -1383,7 +1383,7 @@ app.directive('modalClose',
                                 console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
-
+                                $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
                                 /*
                                  todo: move this somewhere else
                                  currentCanvasHeight = parseInt($('#annotationZone').height());
@@ -2385,7 +2385,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             return $sce.trustAsResourceUrl(url);
         };
 
-    });;app.controller('PDFNavigationController', function($scope, $http, $rootScope, $sce, $timeout) {
+    });;/*
+moved to directive
+app.controller('PDFNavigationController', function($scope, $http, $rootScope, $sce, $timeout) {
     $scope.currentPageNumber = 1;
     $scope.maxPageNumber = 30;
 
@@ -2402,7 +2404,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     }
 
 
-});
+});*/
 ;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
     $scope.storedAnnZones = [];
@@ -2434,6 +2436,18 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       });
     };
 
+    $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+        //console.log("LOADED RESET");
+        $(".slideRect").remove();
+
+        annotationZonesAreLoaded = false;
+
+        toDrawAnnotationZoneData = [];
+        $scope.refreshTags();
+    });
+
+    /*
+    use onPdfPageChange event instead
     $scope.$watch("currentPageNumber",function(newValue,oldValue){
       //console.log("LOADED RESET");
       $(".slideRect").remove();
@@ -2442,7 +2456,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
-    });
+    });*/
 
     $scope.compileMovableAnnotationZone = function(element) {
       return angular.element(

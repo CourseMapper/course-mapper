@@ -64,7 +64,7 @@ app.directive('pdfViewer',
                                 console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
-
+                                $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
                                 /*
                                  todo: move this somewhere else
                                  currentCanvasHeight = parseInt($('#annotationZone').height());

@@ -78,7 +78,7 @@ function tagListLoaded(tagList) {
 function drawAnnZonesWhenPDFAndDBDone() {
   //console.log(annotationZonesAreLoaded);
   //console.log(pdfIsLoaded);
-  if(annotationZonesAreLoaded && pdfIsLoaded) {
+  if(annotationZonesAreLoaded) {
       for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
         //console.log("createAnnotationZones");
         loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0], false)
