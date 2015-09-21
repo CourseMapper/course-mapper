@@ -149,6 +149,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 $scope.comment.tagRelCoord = '';
                 $scope.comment.tagColor = '';
 
+                console.log("SUBMISSION SUCCESSFUL");
+                $scope.$broadcast('reloadTags');
+
             })
             .error(function (data, status, headers, config) {
                 console.log("SUBMIT ERROR");

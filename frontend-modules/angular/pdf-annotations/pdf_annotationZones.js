@@ -30,10 +30,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };
 
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
-      $scope.reloadTags();
+      $scope.$emit('reloadTags');
     });
 
-    $scope.reloadTags = function() {
+    $scope.$on('reloadTags', function(event) {
       console.log("LOADED RESET");
       $(".slideRect").remove();
 
@@ -41,7 +41,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
-    };
+    });
 
     /*
     use onPdfPageChange event instead

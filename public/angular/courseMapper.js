@@ -2437,10 +2437,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
-      $scope.reloadTags();
+      $scope.$emit('reloadTags');
     });
 
-    $scope.reloadTags = function() {
+    $scope.$on('reloadTags', function(event) {
       console.log("LOADED RESET");
       $(".slideRect").remove();
 
@@ -2448,7 +2448,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
-    };
+    });
 
     /*
     use onPdfPageChange event instead
@@ -2620,6 +2620,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 $scope.comment.tagRelPos = '';
                 $scope.comment.tagRelCoord = '';
                 $scope.comment.tagColor = '';
+
+                console.log("SUBMISSION SUCCESSFUL");
+                $scope.$broadcast('reloadTags');
 
             })
             .error(function (data, status, headers, config) {
