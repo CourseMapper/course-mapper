@@ -14,7 +14,7 @@ var cookieParser = require('cookie-parser')(config.get('session.secret'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
+//app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
@@ -39,7 +39,7 @@ var multiRouterSocket = require('./libs/core/multiRouterSocket.js');
 new multiRouterSocket(io, __dirname + '/routes-socket').populateRoutes();
 
 var db = require('./libs/core/database.js');
-require('./libs/core/session.js')(app, db, io, cookieParser);
+require('./libs/core/session.js')(app, db, io);
 
 // auto create and use routes
 var multiRouter = require('./libs/core/multiRouter.js');

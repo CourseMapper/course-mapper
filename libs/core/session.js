@@ -27,22 +27,28 @@ function onAuthorizeSuccess(data, accept) {
 }
 
 function onAuthorizeFail(data, message, error, accept) {
-    if (error)
+    if (error) {
         throw new Error(message);
+    }
     console.log('failed connection to socket.io:', message);
     // We use this callback to log all of our failed connections.
     accept(null, false);
     // OR
     // If you use socket.io@1.X the callback looks different
     // If you don't want to accept the connection
-    if (error)
+    if (error) {
         accept(new Error(message));
+    }
     // this error will be sent to the user as a special error-package
     // see: http://socket.io/docs/client-api/#socket > error-object
 }
 
-function session(app, db, io, cookieParser) {
-    var params = {
+function session(app, db, io) {
+    var sessionStore = new mongoStore({
+        mongooseConnection: db.connection
+    });
+
+    app.use(expressSession({
         saveUninitialized: true, // saved new sessions
         resave: false, // do not automatically write to the session store
         secret: config.get('session.secret'),
@@ -50,13 +56,8 @@ function session(app, db, io, cookieParser) {
             httpOnly: true,
             maxAge: config.get('session.maxAge')
         },
-        store: new mongoStore({
-            mongooseConnection: db.connection
-        })
-    };
-
-    //use express-session
-    app.use(expressSession(params));
+        store: sessionStore
+    }));
 
     //use passport as session authenticator
     app.use(passport.initialize());
@@ -65,10 +66,10 @@ function session(app, db, io, cookieParser) {
 
     //With Socket.io >= 1.0
     io.use(passportSocketIo.authorize({
-        cookieParser: cookieParser, // the same middleware you register in express
-        key: 'express.sid', // the name of the cookie where express/connect stores its session_id
+        cookieParser: require('cookie-parser'), // the same middleware you register in express
+        key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
         secret: config.get('session.secret'), // the session_secret to parse the cookie
-        store: params.store, // we NEED to use a sessionstore. no memorystore please
+        store: sessionStore, // we NEED to use a sessionstore. no memorystore please
         success: onAuthorizeSuccess, // *optional* callback on success - read more below
         fail: onAuthorizeFail // *optional* callback on fail/error - read more below
     }));
@@ -196,6 +197,8 @@ function session(app, db, io, cookieParser) {
     passport.deserializeUser(function(sessionUser, done) {
         done(null, sessionUser);
     });
+
+
 }
 
 module.exports = session;
