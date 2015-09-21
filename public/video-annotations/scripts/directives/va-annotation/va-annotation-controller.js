@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 videoAnnotationsModule.controller('VaController', ['$scope', 'socket',
     function($scope, socket) {
 

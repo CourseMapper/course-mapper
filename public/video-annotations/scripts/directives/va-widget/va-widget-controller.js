@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$sce',
     function($scope, socket, $sce) {
 
@@ -19,6 +22,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
         };
 
         $scope.createAnnotation = function() {
+            console.log('USR : ' + socket.usr);
+
             // get current playback time
             var startTime = Math.floor($scope.API.currentTime / 1000);
             var endTime = startTime + 5;
@@ -36,14 +41,12 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                 },
                 "type": "embedded-note",
                 "text": "",
-                "author": "Anonymous", //TODO - get author
                 "video_id": $scope.videoId
             };
             $scope.selectedAnnotation = defaultAnnotation;
         };
 
         $scope.seekPosition = function(annotation) {
-            console.log(annotation);
             // add .001 to seek time in order to show inline annotations
             $scope.API.seekTime(annotation.start + 0.001);
             $scope.API.pause();
@@ -54,8 +57,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
         };
 
         socket.on('annotations:updated', function(annotations) {
-            console.log('Loaded annotations: ' + annotations.length);
-
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];

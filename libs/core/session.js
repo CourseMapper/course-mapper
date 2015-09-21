@@ -8,7 +8,6 @@ var config = require('config');
 var expressSession = require('express-session');
 var mongoStore = require('connect-mongo')(expressSession);
 var passport = require('passport');
-var passportSocketIo = require('passport.socketio');
 var localStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var appRoot = require('app-root-path');
@@ -16,39 +15,12 @@ var User = require(appRoot + '/modules/accounts/users.js');
 var flash = require('flash');
 var debug = require('debug')('cm:server');
 
-function onAuthorizeSuccess(data, accept) {
-    console.log('successful connection to socket.io');
-    // The accept-callback still allows us to decide whether to
-    // accept the connection or not.
-    accept(null, true);
-    // OR
-    // If you use socket.io@1.X the callback looks different
-    accept();
-}
-
-function onAuthorizeFail(data, message, error, accept) {
-    if (error) {
-        throw new Error(message);
-    }
-    console.log('failed connection to socket.io:', message);
-    // We use this callback to log all of our failed connections.
-    accept(null, false);
-    // OR
-    // If you use socket.io@1.X the callback looks different
-    // If you don't want to accept the connection
-    if (error) {
-        accept(new Error(message));
-    }
-    // this error will be sent to the user as a special error-package
-    // see: http://socket.io/docs/client-api/#socket > error-object
-}
-
 function session(app, db, io) {
     var sessionStore = new mongoStore({
         mongooseConnection: db.connection
     });
 
-    app.use(expressSession({
+    var sessionMiddleware = expressSession({
         saveUninitialized: true, // saved new sessions
         resave: false, // do not automatically write to the session store
         secret: config.get('session.secret'),
@@ -57,22 +29,17 @@ function session(app, db, io) {
             maxAge: config.get('session.maxAge')
         },
         store: sessionStore
-    }));
+    });
 
-    //use passport as session authenticator
+    app.use(sessionMiddleware);
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(flash());
 
-    //With Socket.io >= 1.0
-    io.use(passportSocketIo.authorize({
-        cookieParser: require('cookie-parser'), // the same middleware you register in express
-        key: 'connect.sid', // the name of the cookie where express/connect stores its session_id
-        secret: config.get('session.secret'), // the session_secret to parse the cookie
-        store: sessionStore, // we NEED to use a sessionstore. no memorystore please
-        success: onAuthorizeSuccess, // *optional* callback on success - read more below
-        fail: onAuthorizeFail // *optional* callback on fail/error - read more below
-    }));
+    // Use session for Socket.IO
+    io.use(function(socket, next) {
+            sessionMiddleware(socket.request, {}, next);
+        });
 
     /**
      * use local strategy, this matching the sent data to our db

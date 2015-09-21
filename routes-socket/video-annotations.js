@@ -1,27 +1,30 @@
-var _ = require('lodash'),
-    async = require('asyncawait/async'),
+/*jslint node: true */
+'use strict';
+
+var async = require('asyncawait/async'),
     await = require('asyncawait/await'),
     VideoAnnotation = require('../modules/annotations/models/video-annotation');
 
-module.exports = function (io) {
-    io.sockets.on('connection', function (socket) {
+module.exports = function(io) {
+    io.sockets.on('connection', function(socket) {
+        var user = socket.request.session.passport.user;
 
-        var getAnnotationsAsync = async(function (videoId) {
-            return await(VideoAnnotation.find({
+        var getAnnotationsAsync = async(function(videoId) {
+            return await (VideoAnnotation.find({
                 video_id: videoId
             }).sort('start').exec());
         });
 
-        socket.on('annotations:get', async(function (params) {
+        socket.on('annotations:get', async(function(params) {
             var videoId = params.video_id;
-            var annotations = await(getAnnotationsAsync(videoId));
+            var annotations = await (getAnnotationsAsync(videoId));
             // return annotations only to requester
             socket.emit('annotations:updated', annotations);
         }));
 
-        socket.on('annotations:save', async(function (params) {
+        socket.on('annotations:save', async(function(params) {
             // find annotation model from DB
-            var annotation = await(VideoAnnotation.findById(params.annotation._id).exec());
+            var annotation = await (VideoAnnotation.findById(params.annotation._id).exec());
 
             // update annotation properties
             if (annotation) {
@@ -35,25 +38,27 @@ module.exports = function (io) {
                 annotation.type = model.type;
 
                 // save to DB
-                await(annotation.save());
+                await (annotation.save());
             } else {
-                // create new model in DB
-                annotation = await(VideoAnnotation.create(params.annotation));
+                //  set the author and
+                // create new model in DB 
+                params.annotation.author = user.username;
+                annotation = await (VideoAnnotation.create(params.annotation));
             }
 
             var videoId = annotation.video_id;
-            var annotations = await(getAnnotationsAsync(videoId));
+            var annotations = await (getAnnotationsAsync(videoId));
 
             // notify all users about changes
             io.sockets.emit('annotations:updated', annotations);
         }));
 
-        socket.on('annotations:delete', async(function (params) {
+        socket.on('annotations:delete', async(function(params) {
             try {
                 var annotationId = params.id;
 
                 // find annotation in db
-                var annotation = await(VideoAnnotation.findById(annotationId).exec());
+                var annotation = await (VideoAnnotation.findById(annotationId).exec());
                 if (!annotation) {
                     return;
                 }
@@ -61,8 +66,8 @@ module.exports = function (io) {
                 var videoId = annotation.video_id;
 
                 // remove annotation from db
-                await(annotation.remove());
-                var annotations = await(getAnnotationsAsync(videoId));
+                await (annotation.remove());
+                var annotations = await (getAnnotationsAsync(videoId));
 
                 // notify all users about changes
                 io.sockets.emit('annotations:updated', annotations);
@@ -71,25 +76,25 @@ module.exports = function (io) {
             }
         }));
 
-        socket.on('comments:post', async(function (params) {
+        socket.on('comments:post', async(function(params) {
             try {
                 var annotationId = params.annotation_id;
 
                 // find annotation in db
-                var annotation = await(VideoAnnotation.findById(annotationId).exec());
+                var annotation = await (VideoAnnotation.findById(annotationId).exec());
                 if (!annotation) {
                     return;
                 }
 
                 var comment = {
                     text: params.text,
-                    author: socket.user || 'Guest'
+                    author: user.username || 'Unknown'
                 };
 
                 annotation.comments.push(comment);
 
                 // Save annotation
-                await(annotation.save());
+                await (annotation.save());
 
                 // Notify users that the annotation
                 // comments have been updated
@@ -100,12 +105,12 @@ module.exports = function (io) {
             }
         }));
 
-        socket.on('comments:remove', async(function (params) {
+        socket.on('comments:remove', async(function(params) {
             try {
                 var annotationId = params.annotation_id;
                 var commentId = params.comment_id;
 
-                var annotation = await(VideoAnnotation.findById(annotationId).exec());
+                var annotation = await (VideoAnnotation.findById(annotationId).exec());
                 if (!annotation) {
                     return;
                 }
@@ -118,7 +123,7 @@ module.exports = function (io) {
                 }
 
                 // Save annotation
-                await(annotation.save());
+                await (annotation.save());
 
                 var eventName = annotationId + ':comments:updated';
                 io.sockets.emit(eventName, {

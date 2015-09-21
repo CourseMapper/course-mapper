@@ -1191,24 +1191,25 @@ app.directive('modalClose',
             restrict: 'E',
             template: '<div class="box-tools pull-right"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
         };
-    });;app.directive('movable', function () {
+    });;/*jslint node: true */
+'use strict';
+
+app.directive('movable', function() {
     return {
         restrict: 'A',
         scope: {
             onMoved: '=',
             canMove: '@'
         },
-        link: function (scope, element, attrs) {
-            attrs.$observe('canMove', function (value) {
+        link: function(scope, element, attrs) {
+            attrs.$observe('canMove', function(value) {
                 if (value === 'false') {
-                    console.log('Disabling draggable and resizable');
                     element.draggable({
                         disabled: true
                     }).resizable({
                         disabled: true
                     });
                 } else {
-                    console.log('Enabling draggable and resizable');
                     element.draggable({
                         disabled: false
                     }).resizable({
@@ -1217,20 +1218,18 @@ app.directive('modalClose',
                 }
             });
 
-            var getPosition = function (ui) {
+            var getPosition = function(ui) {
                 var position = {
                     left: Math.round((100 * ui.position.left / element.parent()[0].clientWidth)),
                     top: Math.round((100 * ui.position.top / element.parent()[0].clientHeight))
                 };
-                console.log(position);
                 return position;
             };
-            console.log('Initializing draggable and resizable');
             element
                 .draggable({
                     containment: 'parent',
                     cursor: 'move',
-                    stop: function (event, ui) {
+                    stop: function(event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
                                 position: getPosition(ui)
@@ -1241,7 +1240,7 @@ app.directive('modalClose',
                 .resizable({
                     containment: 'parent',
                     handles: 'ne, se, sw, nw',
-                    stop: function (event, ui) {
+                    stop: function(event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
                                 position: getPosition(ui),
@@ -1252,7 +1251,7 @@ app.directive('modalClose',
                 });
 
             // remove event handlers
-            scope.$on('$destroy', function () {
+            scope.$on('$destroy', function() {
                 element.off('**');
             });
         }

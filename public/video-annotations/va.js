@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 var videoAnnotationsModule = angular.module('VideoAnnotations', [
     'ngSanitize',
     'ngRoute',
@@ -6,7 +9,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
     'com.2fdevs.videogular.plugins.overlayplay',
     'info.vietnamcode.nampnq.videogular.plugins.youtube'
 ]);
-;videoAnnotationsModule.controller('VaController', ['$scope', 'socket',
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.controller('VaController', ['$scope', 'socket',
     function($scope, socket) {
 
         this.init = function() {
@@ -49,7 +55,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         this.init();
     }
 ]);
-;videoAnnotationsModule.directive('videoAnnotation', function() {
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.directive('videoAnnotation', function() {
     return {
         scope: {
             source: '='
@@ -58,7 +67,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         controller: 'VaController'
     };
 });
-;videoAnnotationsModule.controller('VaEditorController', ['$scope', 'socket',
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.controller('VaEditorController', ['$scope', 'socket',
     function($scope, socket) {
 
         $scope.annotationTypes = [{
@@ -91,7 +103,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         };
     }
 ]);
-;videoAnnotationsModule.directive('vaEditor', function() {
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.directive('vaEditor', function() {
     return {
         scope: {
             annotation: '='
@@ -100,7 +115,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         controller: 'VaEditorController'
     };
 });
-;videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$sce',
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$sce',
     function($scope, socket, $sce) {
 
         var onLeave = function onLeave(currentTime, timeLapse, params) {
@@ -121,6 +139,8 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         };
 
         $scope.createAnnotation = function() {
+            console.log('USR : ' + socket.usr);
+
             // get current playback time
             var startTime = Math.floor($scope.API.currentTime / 1000);
             var endTime = startTime + 5;
@@ -138,14 +158,12 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
                 },
                 "type": "embedded-note",
                 "text": "",
-                "author": "Anonymous", //TODO - get author
                 "video_id": $scope.videoId
             };
             $scope.selectedAnnotation = defaultAnnotation;
         };
 
         $scope.seekPosition = function(annotation) {
-            console.log(annotation);
             // add .001 to seek time in order to show inline annotations
             $scope.API.seekTime(annotation.start + 0.001);
             $scope.API.pause();
@@ -156,8 +174,6 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         };
 
         socket.on('annotations:updated', function(annotations) {
-            console.log('Loaded annotations: ' + annotations.length);
-
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];
@@ -215,7 +231,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         });
     }
 ]);
-;videoAnnotationsModule.directive('vaWidget',
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.directive('vaWidget',
     function() {
         return {
             restruct: 'A',
