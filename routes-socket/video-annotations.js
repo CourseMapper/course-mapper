@@ -18,6 +18,7 @@ module.exports = function(io) {
         socket.on('annotations:get', async(function(params) {
             var videoId = params.video_id;
             var annotations = await (getAnnotationsAsync(videoId));
+
             // return annotations only to requester
             socket.emit('annotations:updated', annotations);
         }));
@@ -28,6 +29,11 @@ module.exports = function(io) {
 
             // update annotation properties
             if (annotation) {
+                // Do not allow other users, except the author to
+                // modify the annotation
+                if (annotation.author !== user.username) {
+                    return;
+                }
                 var model = params.annotation;
 
                 annotation.start = model.start;
@@ -99,7 +105,9 @@ module.exports = function(io) {
                 // Notify users that the annotation
                 // comments have been updated
                 var eventName = annotationId + ':comments:updated';
-                io.sockets.emit(eventName, annotation);
+                io.sockets.emit(eventName, {
+                    comments: annotation.comments
+                });
             } catch (e) {
                 console.log(e);
             }
@@ -117,8 +125,11 @@ module.exports = function(io) {
 
                 for (var i = 0; i < annotation.comments.length; i++) {
                     if (annotation.comments[i]._id.toString() === commentId) {
-                        console.log('removing comment', commentId);
-                        annotation.comments[i].remove();
+                        if (annotation.comments[i].author === user.username) {
+                            console.log('removing comment', commentId);
+                            annotation.comments[i].remove();
+                            break;
+                        }
                     }
                 }
 

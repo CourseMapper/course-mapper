@@ -1,8 +1,9 @@
 /*jslint node: true */
 'use strict';
 
-videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$sce',
-    function($scope, socket, $sce) {
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
+    function($scope, socket, rootScope) {
+        var currentUser = rootScope.user;
 
         var onLeave = function onLeave(currentTime, timeLapse, params) {
             params.completed = false;
@@ -22,8 +23,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
         };
 
         $scope.createAnnotation = function() {
-            console.log('USR : ' + socket.usr);
-
             // get current playback time
             var startTime = Math.floor($scope.API.currentTime / 1000);
             var endTime = startTime + 5;
@@ -83,6 +82,12 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                             annotation.size = params.size;
                         }
                     };
+
+
+
+                    _.forEach(annotation.comments, function(comment) {
+                        comment.isAuthor = (comment.author === currentUser.username);
+                    });
 
                     $scope.annotations.push(annotation);
                     $scope.cuePoints.points.push(cuePoint);

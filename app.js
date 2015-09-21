@@ -59,7 +59,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stack trace
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res) {
+    app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('admin-lte/error', {
             message: err.message,
@@ -70,7 +70,7 @@ if (app.get('env') === 'development') {
 
 // production error handler
 // no stack traces leaked to user
-app.use(function(err, req, res) {
+app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
