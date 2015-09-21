@@ -13,7 +13,8 @@ CatRating.prototype.init = function(params){
 
 CatRating.prototype.run = async ( function(){
     var self = this;
-    self.result = '';
+    var result = await ();
+    self.result = result;
 } );
 
 CatRating.prototype.render = function(){

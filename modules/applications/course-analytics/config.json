@@ -9,6 +9,14 @@
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },
+    {
+      "name": "Home Widget - Count SubNodes",
+      "location": "category-homepage",
+      "description": "Widget that show the number of sub-nodes available inside one node",
+      "entryPoint": "/course-analytics/category-home-countSubNodes.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
    {
       "name": "Top Contributors analytics",
       "location": "course-analytics",

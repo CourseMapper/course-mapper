@@ -1,5 +1,6 @@
 var appRoot = require('app-root-path');
 //var mongoose = require('mongoose');
+var moment = require ('moment');
 var Categories = require(appRoot + '/modules/catalogs/categories.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
@@ -23,7 +24,7 @@ CatCreatedDate.prototype.run = async ( function(){
 
 
 CatCreatedDate.prototype.render = function(){
-    //TODO: change with moment-angular js for better date formatting
+    //TODO: change with moment js for better date formatting
     var date = new Date(this.result.dateAdded);
     var d = date.getDay();
     var m = date.getMonth()+1;
