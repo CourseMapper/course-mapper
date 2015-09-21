@@ -2437,14 +2437,18 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
-        //console.log("LOADED RESET");
-        $(".slideRect").remove();
-
-        annotationZonesAreLoaded = false;
-
-        toDrawAnnotationZoneData = [];
-        $scope.refreshTags();
+      $scope.reloadTags();
     });
+
+    $scope.reloadTags = function() {
+      console.log("LOADED RESET");
+      $(".slideRect").remove();
+
+      annotationZonesAreLoaded = false;
+
+      toDrawAnnotationZoneData = [];
+      $scope.refreshTags();
+    };
 
     /*
     use onPdfPageChange event instead
