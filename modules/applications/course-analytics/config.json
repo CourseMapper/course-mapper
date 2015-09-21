@@ -1,6 +1,14 @@
 {
   "name": "Course Analytics",
   "widgets":[
+    {
+      "name": "Home Widget - Category Date Created",
+      "location": "category-homepage",
+      "description": "Widget that show the created date of each node in the homepage",
+      "entryPoint": "/course-analytics/category-home-createdDate.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
    {
       "name": "Top Contributors analytics",
       "location": "course-analytics",
