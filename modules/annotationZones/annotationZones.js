@@ -26,18 +26,17 @@ var annotationZonesPDFSchema = new mongoose.Schema({
     //  required: true
     },
     color: {
-      type: String,
-    //  required: true
+      type: String
     },
     pdfId: {
-      type: Number
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
     },
     pdfPageNumber: {
-      type: Number
+      type: Number,
+      required: true
     }
-    //annotationId: {}
 });
-
 
 var AnnotationZonesPDF = mongoose.model('annotationZonesPDF', annotationZonesPDFSchema);
 

@@ -10,7 +10,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
     $scope.refreshTags = function() {
-      $http.get('/slide-viewer/disAnnZones/1/'+$scope.currentPageNumber).success(function (data) {
+      $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
         //console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 

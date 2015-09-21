@@ -22,7 +22,7 @@ app.directive('pdfViewer',
                 //var DEFAULT_URL = '/slide-viewer/ressources/00_Orga.pdf';
                 scope.pageToView = 1;
                 scope.scale = 1.0;
-                scope.totalPage = 0;
+                scope.totalPage = 1;
 
                 scope.container = element[0].getElementsByClassName('viewerContainer');
                 scope.container = scope.container[0];

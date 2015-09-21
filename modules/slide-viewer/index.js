@@ -11,7 +11,17 @@ function Comment(){
 Comment.prototype.submitAnnotation = function(err, params, done){
   var temp = this.convertRawText;
 
-  this.submitAllTags(err,params.tagNames,params.tagRelPos,params.tagRelCoord,params.tagColor,params.pageNumber,function(){
+  this.submitAllTags(
+      err,
+
+      params.tagNames,
+      params.tagRelPos,
+      params.tagRelCoord,
+      params.tagColor,
+      params.pageNumber,
+      mongoose.Types.ObjectId(params.pdfId)
+
+      ,function(){
     var htmlEscapedRawText = validator.escape(params.rawText);
     temp(htmlEscapedRawText,function(renderedText){
       var annotationsPDF = new AnnotationsPDF({
@@ -43,7 +53,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
   });
 };
 
-Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber,callback){
+Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber, pdfId,callback){
   var annZone = new AnnZones();
   if(typeof tagNames == 'undefined')
     callback();
@@ -69,7 +79,7 @@ Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,ta
 
       }
 
-      annZone.submitTagList(err,tagList,pageNumber,callback);
+      annZone.submitTagList(err,tagList,pageNumber, pdfId,callback);
     }
     else
       console.log("Error: Tag string-lists differ");

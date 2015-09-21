@@ -124,7 +124,7 @@ function addAnnotationZoneElement(element) {
   $("#annotationZoneSubmitList").append(element);
 
 };
-
+/* moved to commentlistcontroller
 function commentOnSubmit() {
   //console.log("IT WOKRS");
 
@@ -170,6 +170,7 @@ function commentOnSubmit() {
   return true;
 };
 
+ moved to commentlistcontroller
 function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
   var oldText;
   oldText = $("#tagNames").val();
@@ -193,7 +194,7 @@ function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
   }
   $("#tagColor").val(oldText + "" + color);
 
-};
+};*/
 
 /*
 used by displayComments only, which is not being called anywhere
