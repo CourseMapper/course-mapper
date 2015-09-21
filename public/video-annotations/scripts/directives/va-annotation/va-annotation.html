@@ -17,7 +17,7 @@
         </div>
     </section>
     <footer id="comments">
-        <a ng-click="toggle = !toggle">show comments</a>
+        <a ng-click="toggle = !toggle">{{!toggle ? 'show comments' : 'hide comments'}}</a>
         <article ng-show="toggle">
             <div id="comment-box">
                 <input placeholder="Write a comment..." type="text" ng-model="commentText">
