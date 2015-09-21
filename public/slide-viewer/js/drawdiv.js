@@ -347,8 +347,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     var currCanHeight = $('#annotationZone').height();
     var attrRelTop = relTop * currCanHeight;
     element.attr("data-relstartcoord", (attrRelLeft + ";" + attrRelTop));
-    element.offset({left: absToViewLeft(attrRelLeft, this)});
-    element.offset({top: absToViewLeft(attrRelTop, this)});
+    element.css({left: (attrRelLeft)});
+    element.css({top: (attrRelTop)});
     //element.attr("ng-style", "{left: " + absToViewLeft(attrRelLeft, this) + ",top: " + absToViewLeft(attrRelTop, this) + ",height: " + currCanHeight*relHeight + ",width: " + currCanWidth*relWidth+"}");
     element.css('height', currCanHeight * relHeight);
     element.css('width', currCanWidth * relWidth);
