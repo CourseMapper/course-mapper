@@ -1,4 +1,4 @@
-/*jslint node: true */
+/*jslint node: true*/
 'use strict';
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
@@ -73,7 +73,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                         onComplete: onComplete,
                         params: annotation
                     };
-
+                    annotation.isAuthor = (annotation.author === currentUser.username);
                     annotation.reposition = function(params) {
                         if (params.position) {
                             annotation.position = params.position;
@@ -82,8 +82,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                             annotation.size = params.size;
                         }
                     };
-
-
 
                     _.forEach(annotation.comments, function(comment) {
                         comment.isAuthor = (comment.author === currentUser.username);
