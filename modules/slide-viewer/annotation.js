@@ -2,11 +2,12 @@ var mongoose = require('mongoose');
 
 
 var annotationPDFSchema = new mongoose.Schema({
-    /*parentId: {
-        type: Number,
-        unique: true,
-        required: true
-    },*/
+    parentId: {
+        type: Number
+    },
+    hasParent: {
+        type: Boolean
+    },
     //createdMarkups: {},
     rawText: {
         type: String,
