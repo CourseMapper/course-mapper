@@ -40,7 +40,7 @@
     <select ng-model="selectedAnnotation"
             id="editor-select"
             ng-change="seekPosition(selectedAnnotation)"
-            ng-options="ann as ann.text | limitTo:25 for ann in annotations"
+            ng-options="ann as ann.text | limitTo:25 for ann in annotations | filter:{isAuthor: true}"
             ng-show="annotations.length > 0">
     </select>
 

@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 var videoAnnotationsModule = angular.module('VideoAnnotations', [
     'ngSanitize',
     'ngRoute',
@@ -6,8 +9,20 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
     'com.2fdevs.videogular.plugins.overlayplay',
     'info.vietnamcode.nampnq.videogular.plugins.youtube'
 ]);
-;videoAnnotationsModule.controller('VaController', ['$scope', 'socket',
-    function($scope, socket) {
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootScope',
+    function($scope, socket, rootScope) {
+
+        // Get the user from the root scope
+        var currentUser = rootScope.user;
+
+        function markAuthoredComments(comments) {
+            _.forEach(comments, function(comment) {
+                comment.isAuthor = (comment.author === currentUser.username);
+            });
+        }
 
         this.init = function() {
             $scope.commentText = '';
@@ -16,6 +31,7 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
             var eventName = annotationId + ':comments:updated';
 
             socket.on(eventName, function(params) {
+                markAuthoredComments(params.comments);
                 $scope.source.comments = params.comments;
             });
         };
@@ -49,7 +65,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         this.init();
     }
 ]);
-;videoAnnotationsModule.directive('videoAnnotation', function() {
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.directive('videoAnnotation', function() {
     return {
         scope: {
             source: '='
@@ -58,7 +77,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         controller: 'VaController'
     };
 });
-;videoAnnotationsModule.controller('VaEditorController', ['$scope', 'socket',
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.controller('VaEditorController', ['$scope', 'socket',
     function($scope, socket) {
 
         $scope.annotationTypes = [{
@@ -91,7 +113,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         };
     }
 ]);
-;videoAnnotationsModule.directive('vaEditor', function() {
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.directive('vaEditor', function() {
     return {
         scope: {
             annotation: '='
@@ -100,8 +125,12 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         controller: 'VaEditorController'
     };
 });
-;videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$sce',
-    function($scope, socket, $sce) {
+;/*jslint node: true*/
+'use strict';
+
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
+    function($scope, socket, rootScope) {
+        var currentUser = rootScope.user;
 
         var onLeave = function onLeave(currentTime, timeLapse, params) {
             params.completed = false;
@@ -138,14 +167,12 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
                 },
                 "type": "embedded-note",
                 "text": "",
-                "author": "Anonymous", //TODO - get author
                 "video_id": $scope.videoId
             };
             $scope.selectedAnnotation = defaultAnnotation;
         };
 
         $scope.seekPosition = function(annotation) {
-            console.log(annotation);
             // add .001 to seek time in order to show inline annotations
             $scope.API.seekTime(annotation.start + 0.001);
             $scope.API.pause();
@@ -156,8 +183,6 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         };
 
         socket.on('annotations:updated', function(annotations) {
-            console.log('Loaded annotations: ' + annotations.length);
-
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];
@@ -175,7 +200,7 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
                         onComplete: onComplete,
                         params: annotation
                     };
-
+                    annotation.isAuthor = (annotation.author === currentUser.username);
                     annotation.reposition = function(params) {
                         if (params.position) {
                             annotation.position = params.position;
@@ -184,6 +209,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
                             annotation.size = params.size;
                         }
                     };
+
+                    _.forEach(annotation.comments, function(comment) {
+                        comment.isAuthor = (comment.author === currentUser.username);
+                    });
 
                     $scope.annotations.push(annotation);
                     $scope.cuePoints.points.push(cuePoint);
@@ -215,7 +244,10 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
         });
     }
 ]);
-;videoAnnotationsModule.directive('vaWidget',
+;/*jslint node: true */
+'use strict';
+
+videoAnnotationsModule.directive('vaWidget',
     function() {
         return {
             restruct: 'A',

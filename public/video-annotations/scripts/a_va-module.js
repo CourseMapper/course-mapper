@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 var videoAnnotationsModule = angular.module('VideoAnnotations', [
     'ngSanitize',
     'ngRoute',
