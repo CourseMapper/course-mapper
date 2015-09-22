@@ -9,9 +9,20 @@
     color: blue;
 }
 
-.annotationZoneReference{
-    ;
+.slideRectWrapper{
+    min-width: 100px;
+    width:80%;
+    max-width: 200px;
+    background-color: "green";
+
+
 }
+
+.btn.btn-default.color-dropdown.dropdown-toggle.no-hex{
+  padding: 1px;
+}
+
+
 #viewerWrapper{
     position: relative;
     top: 0px;
@@ -37,7 +48,7 @@
 .btn-white{
      color: #FFF;
     }
-    
+
 .btn-white:hover{
    color: #FFF;
 }

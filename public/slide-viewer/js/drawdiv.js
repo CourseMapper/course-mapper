@@ -349,16 +349,24 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     //element.attr("ng-style", "{left: " + absToViewLeft(attrRelLeft, this) + ",top: " + absToViewLeft(attrRelTop, this) + ",height: " + currCanHeight*relHeight + ",width: " + currCanWidth*relWidth+"}");
     element.css('height', currCanHeight * relHeight);
     element.css('width', currCanWidth * relWidth);
-    element.click(function () {
-      if($('#commentSubmissionDiv').css('display')!='none'){
-        $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
-        $('#rawText').focus();
-      }
-    });
+
     if (canMove) {
+      //Need to be redone again.
+      element.click(function () {
+        if($('#commentSubmissionDiv').css('display')!='none' ){
+            $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
+            $('#rawText').focus();
+        }
+      });
         element.css('opacity', opacityFactorCreate);
         element.css('border', ' 1px dashed white');
     } else {
+      element.click(function () {
+        if($('#commentSubmissionDiv').css('display')!='none' ){
+            $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
+            $('#rawText').focus();
+        }
+      });
         element.css('opacity', opacityFactor);
         element.hover(function () {
             $(this).stop().fadeTo("fast", opacityFactorHighlight);
@@ -374,7 +382,14 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         id: "slideRectWrapper-" + divCounter,
         class: 'slideRectWrapper'
     });
-    wrapperElement.css("padding-top", "2pt");
+    wrapperElement.css({
+      "border-radius": "3px 3px 0px 0px",
+      "padding-bottom": "1px",
+      "padding-top": "1px",
+      "backgroundColor":"grey",
+
+    });
+
 
     //tagspan element
     spanElement = $('<span/>', {
@@ -417,7 +432,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     });
     removeElement.css({
         float: "right",
-        "margin-top": "-34px",
+        "margin-top": "-30px",
 
     })
 
@@ -428,9 +443,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     else {
         spanElement.text("#");
         spanElement.append(inputElement);
-
+        wrapperElement.css("margin-top","-27px");
         wrapperElement.append(colorPickerInput);
         wrapperElement.append(removeElement);
+
         //spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
     }
 
