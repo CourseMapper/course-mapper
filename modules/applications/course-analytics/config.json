@@ -54,22 +54,6 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "Category Name",
-      "location": "category-homepage",
-      "description": "Name of the course",
-      "entryPoint": "/course-analytics/category-name.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
-    },
-    {
-      "name": "Category Rating",
-      "location": "category-homepage",
-      "description": "Rating of the category",
-      "entryPoint": "/course-analytics/category-rating.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
-    },
-    {
       "name": "Course Listing Date Created",
       "location": "course-listing",
       "description": "Date of the course created",
