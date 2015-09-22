@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 videoAnnotationsModule.directive('vaEditor', function() {
     return {
         scope: {

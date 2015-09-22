@@ -1,3 +1,6 @@
+/*jslint node: true */
+'use strict';
+
 videoAnnotationsModule.directive('videoAnnotation', function() {
     return {
         scope: {
