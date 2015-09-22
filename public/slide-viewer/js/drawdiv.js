@@ -84,14 +84,11 @@ function appendClickEventOnRect() {
 
 function mouseDown(e) {
     if (e.which != 3) {
-
-
         if (e.pageX - $('#annotationZone').offset().left > (min_width_rect_abs / 2)) {
             if (e.pageX - $('#annotationZone').offset().left < parseInt($('#annotationZone').width()) - (min_width_rect_abs / 2)) {
                 startXRel = e.pageX - $('#annotationZone').offset().left - (min_width_rect_abs / 2);
             } else {
                 startXRel = parseInt($('#annotationZone').width()) - min_width_rect_abs;
-
             }
         } else {
             startXRel = 0;
@@ -352,6 +349,12 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     //element.attr("ng-style", "{left: " + absToViewLeft(attrRelLeft, this) + ",top: " + absToViewLeft(attrRelTop, this) + ",height: " + currCanHeight*relHeight + ",width: " + currCanWidth*relWidth+"}");
     element.css('height', currCanHeight * relHeight);
     element.css('width', currCanWidth * relWidth);
+    element.click(function () {
+      if($('#commentSubmissionDiv').css('display')!='none'){
+        $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
+        $('#rawText').focus();
+      }
+    });
     if (canMove) {
         element.css('opacity', opacityFactorCreate);
         element.css('border', ' 1px dashed white');
