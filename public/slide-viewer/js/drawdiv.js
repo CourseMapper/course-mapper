@@ -387,6 +387,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
       "padding-bottom": "1px",
       "padding-top": "1px",
       "backgroundColor":"grey",
+      "opacity":"1"
 
     });
 
