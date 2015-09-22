@@ -69,7 +69,7 @@ function initRects() {
     //$('#annotationZone').bind('mouseleave', mouseLeave);
 }
 function appendClickEventOnRect() {
-    $(".slideRect").each(function () {
+    /*$(".slideRect").each(function () {
         $(this).click(function () {
             var text = $(".activeTextArea").val();
             if (text.slice(-1) == " ") {
@@ -80,6 +80,7 @@ function appendClickEventOnRect() {
 
         });
     });
+    */
 }
 
 function mouseDown(e) {
@@ -352,21 +353,21 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
     if (canMove) {
       //Need to be redone again.
-      element.click(function () {
+      /*element.click(function () {
         if($('#commentSubmissionDiv').css('display')!='none' ){
             $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
             $('#rawText').focus();
         }
-      });
+      });*/
         element.css('opacity', opacityFactorCreate);
         element.css('border', ' 1px dashed white');
     } else {
-      element.click(function () {
+      /*element.click(function () {
         if($('#commentSubmissionDiv').css('display')!='none' ){
             $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
             $('#rawText').focus();
         }
-      });
+      });*/
         element.css('opacity', opacityFactor);
         element.hover(function () {
             $(this).stop().fadeTo("fast", opacityFactorHighlight);
