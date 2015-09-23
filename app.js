@@ -34,12 +34,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Create HTTP and IO servers
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
+var db = require('./libs/core/database.js');
+require('./libs/core/session.js')(app, db, io);
 
 var multiRouterSocket = require('./libs/core/multiRouterSocket.js');
 new multiRouterSocket(io, __dirname + '/routes-socket').populateRoutes();
-
-var db = require('./libs/core/database.js');
-require('./libs/core/session.js')(app, db, io);
 
 // auto create and use routes
 var multiRouter = require('./libs/core/multiRouter.js');
@@ -51,10 +50,6 @@ app.use(function(req, res, next) {
     err.status = 404;
     next(err);
 });
-
-/////
-// error handlers
-/////
 
 // development error handler
 // will print stack trace
