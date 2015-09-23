@@ -351,23 +351,56 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     element.css('height', currCanHeight * relHeight);
     element.css('width', currCanWidth * relWidth);
 
+    //clickAreaElement
+    caElement =  $('<div/>', {
+      id: "caRect-" + divCounter,
+      class: 'caRect'
+  });
+  caElement.css({
+    "width": "100%",
+    "height": "100%"
+
+  });
+
+  var left  = 0,
+      top   = 0;
+  var mousemovedbool =false
+
+  $(caElement).on({
+      mousedown: function(e) {
+          left  = e.pageX;
+          top   = e.pageY;
+      },
+      mouseup: function(e) {
+          if (left != e.pageX || top != e.pageY) {
+              mousemovedbool=true;
+          }else{
+            mousemovedbool=false;
+          }
+      }
+  });
     if (canMove) {
+
       //Need to be redone again.
-      /*element.click(function () {
-        if($('#commentSubmissionDiv').css('display')!='none' ){
-            $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
+      caElement.click(function () {
+        //check if commentbox is displayed and mouse wasnt move during mousedown event
+        if($('#commentSubmissionDiv').css('display')!='none' && mousemovedbool==false){
+        //check if entered string is neither empty nor whitespaced
+          if(/\S/.test($(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val())){
+            $('#rawText').val($('#rawText').val() +   " #"+ $(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val()+" ");
             $('#rawText').focus();
+          }
         }
-      });*/
+      });
         element.css('opacity', opacityFactorCreate);
         element.css('border', ' 1px dashed white');
     } else {
-      /*element.click(function () {
+      caElement.click(function () {
         if($('#commentSubmissionDiv').css('display')!='none' ){
-            $('#rawText').val($('#rawText').val() +   " "+ $(this).attr("data-tagName")+" ");
+            $('#rawText').val($('#rawText').val() +   " "+ $(this).parent().attr("data-tagName")+" ");
             $('#rawText').focus();
         }
-      });*/
+      });
         element.css('opacity', opacityFactor);
         element.hover(function () {
             $(this).stop().fadeTo("fast", opacityFactorHighlight);
@@ -378,18 +411,16 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         });
     }
 
+
+
     //Wrapper
     wrapperElement = $('<div/>', {
         id: "slideRectWrapper-" + divCounter,
         class: 'slideRectWrapper'
     });
     wrapperElement.css({
-      "border-radius": "3px 3px 0px 0px",
       "padding-bottom": "1px",
       "padding-top": "1px",
-      "backgroundColor":"grey",
-      "opacity":"1"
-
     });
 
 
@@ -445,15 +476,17 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     else {
         spanElement.text("#");
         spanElement.append(inputElement);
-        wrapperElement.css("margin-top","-27px");
         wrapperElement.append(colorPickerInput);
         wrapperElement.append(removeElement);
 
         //spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
     }
+    caElement.append(wrapperElement);
+    element.append(caElement);
 
-    element.append(wrapperElement);
-
+    inputElement.click(function(e) {
+        e.stopPropagation();
+    });
 
     element.appendTo('#annotationZone');
 
