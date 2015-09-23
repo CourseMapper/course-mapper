@@ -16,6 +16,8 @@ Comment.prototype.submitAnnotation = function(err, params, done){
     annZones[0] = params.annotationZones;
   else
     annZones = params.annotationZones;
+
+  //console.log(err(""));
   this.submitAllTagsObject(err,annZones,params.pdfId,function(completed){
     if(completed){
       var htmlEscapedRawText = validator.escape(params.rawText);
@@ -24,7 +26,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
           rawText: htmlEscapedRawText,
           renderedText: renderedText,
           author: params.author,
-          pdfId: 1,//params.pdfId,
+          pdfId: params.pdfId,
           pdfPageNumber: params.pageNumber
         });
 
@@ -88,7 +90,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
 Comment.prototype.submitAllTagsObject = function(err,tags,pdfId,callback){
   var annZone = new AnnZones();
   if(typeof tags == 'undefined')
-    callback(false);
+    callback(true);
   else {
     if(tags.length == 0){
       callback(true);
@@ -181,7 +183,7 @@ Comment.prototype.handleSubmitPost = function(req, res, next) {
     //console.log(req);
     this.submitAnnotation(
         function error(err){
-            return res.status(400).send({result:false, error: err});
+            return res.status(200).send({result:false, error: err});
         },
         req.query,
         function done(annotationsPDF) {
