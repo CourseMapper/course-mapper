@@ -11,49 +11,47 @@ function Comment(){
 Comment.prototype.submitAnnotation = function(err, params, done){
   var temp = this.convertRawText;
 
-  this.submitAllTags(
-      err,
+  var annZones = [];
+  if(params.numOfAnnotationZones==1)
+    annZones[0] = params.annotationZones;
+  else
+    annZones = params.annotationZones;
+  this.submitAllTagsObject(err,annZones,params.pdfId,function(completed){
+    if(completed){
+      var htmlEscapedRawText = validator.escape(params.rawText);
+      temp(htmlEscapedRawText,function(renderedText){
+        var annotationsPDF = new AnnotationsPDF({
+          rawText: htmlEscapedRawText,
+          renderedText: renderedText,
+          author: params.author,
+          pdfId: 1,//params.pdfId,
+          pdfPageNumber: params.pageNumber
+        });
 
-      params.tagNames,
-      params.tagRelPos,
-      params.tagRelCoord,
-      params.tagColor,
-      params.pageNumber,
-      mongoose.Types.ObjectId(params.pdfId)
-
-      ,function(){
-    var htmlEscapedRawText = validator.escape(params.rawText);
-    temp(htmlEscapedRawText,function(renderedText){
-      var annotationsPDF = new AnnotationsPDF({
-        rawText: htmlEscapedRawText,
-        renderedText: renderedText,
-        author: params.author,
-        pdfId: 1, //TODO: Adapt later
-        pdfPageNumber: params.pageNumber
-      });
-
-      //console.log(this.convertRawText(params.rawText));
+        //console.log(this.convertRawText(params.rawText));
 
 
-      // save it to db
-      annotationsPDF.save(function (err) {
-          if (err) {
-              console.log('annotation submitting error1');
-              // call error callback
-              console.log(err);
-              //errorCallback(err);
-          } else {
-              // call success callback
+        // save it to db
+        annotationsPDF.save(function (errBool) {
+            if (errBool) {
+                err("Server Error: Unable to store annotation");
+                //errorCallback(err);
+            } else {
+                // call success callback
 
-              done(annotationsPDF);
+                done(annotationsPDF);
 
-          }
-      });
-    });
+            }
+          });
+        });
+      }
+      else{
+        err("Server Error: Unable to story one or more annotation zones");
+      }
   });
 };
 
-Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber, pdfId,callback){
+/*Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber,callback){
   var annZone = new AnnZones();
   if(typeof tagNames == 'undefined')
     callback();
@@ -79,11 +77,25 @@ Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,ta
 
       }
 
-      annZone.submitTagList(err,tagList,pageNumber, pdfId,callback);
+      annZone.submitTagList(err,tagList,pageNumber,callback);
     }
     else
       console.log("Error: Tag string-lists differ");
 
+  }
+}*/
+
+Comment.prototype.submitAllTagsObject = function(err,tags,pdfId,callback){
+  var annZone = new AnnZones();
+  if(typeof tags == 'undefined')
+    callback(false);
+  else {
+    if(tags.length == 0){
+      callback(true);
+    }
+    else{
+      annZone.submitTagObjectList(err,tags,pdfId,callback);
+    }
   }
 }
 
@@ -169,12 +181,12 @@ Comment.prototype.handleSubmitPost = function(req, res, next) {
     //console.log(req);
     this.submitAnnotation(
         function error(err){
-            return next(err);
+            return res.status(400).send({result:false, error: err});
         },
         req.query,
         function done(annotationsPDF) {
             // todo: implement flash
-            return res.status(200).send(annotationsPDF);
+            return res.status(200).send({result: true, annotationsPDF: annotationsPDF});
             // todo: implement redirect to previous screen.
         }
     );

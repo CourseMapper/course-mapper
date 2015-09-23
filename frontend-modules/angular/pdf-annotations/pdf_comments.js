@@ -82,17 +82,17 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
         var zone = {
             annotationZoneName: name,
-            relativeDimensions: {
-                X: relWidth,
-                Y: relHeight
-            },
             relativeCoordinates: {
                 X: relPosX,
                 Y: relPosY
             },
+            relativeDimensions: {
+                X: relWidth,
+                Y: relHeight
+            },
             color: color,
-            pdfPageNumber: pdfPageNumber,
-            pdfId: pdfId
+            pdfId: pdfId,
+            pdfPageNumber: pdfPageNumber
         };
 
         /*var oldText;
@@ -119,6 +119,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $("#tagColor").val(oldText + "" + color);*/
 
         $scope.annotationZones.push(zone);
+        //$scope.annotationZones[$scope.annotationZones.length]=zone;
+
     };
 
     $scope.submitComment = function (resultVarName) {
@@ -134,6 +136,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 tagRelCoord: $scope.comment.tagRelCoord,
                 tagColor: $scope.comment.tagColor,
                 annotationZones: $scope.annotationZones,
+                numOfAnnotationZones: $scope.annotationZones.length,
                 pdfId: $scope.pdfFile._id
             }
         };
