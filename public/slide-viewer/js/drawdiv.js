@@ -411,7 +411,14 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         });
     }
 
-
+    //debuggingTextElement
+    debuggingTextElement = $('<span/>'), {
+      id: "debuggingTextElement"+divCounter,
+      class: "debuggingTextElement"
+    }
+    debuggingTextElement.css('color', 'red');
+    debuggingTextElement.css('font-size','8pt');
+    //debuggingTextElement.text("blabla");
 
     //Wrapper
     wrapperElement = $('<div/>', {
@@ -481,6 +488,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
         //spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
     }
+    wrapperElement.append(debuggingTextElement);
     caElement.append(wrapperElement);
     element.append(caElement);
 
