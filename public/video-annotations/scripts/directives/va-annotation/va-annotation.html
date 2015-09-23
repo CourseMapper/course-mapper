@@ -1,14 +1,12 @@
 <article>
-    <header>
-        <div class="timelapse">
-            <span>[{{source.start | secondsToDateTime | date:'HH:mm:ss'}} - {{source.end | secondsToDateTime | date:'HH:mm:ss'}}]</span>
-        </div>
-    </header>
     <!-- Content -->
     <section>
         <h4>{{source.text}}</h4>
     </section>
     <section id="meta">
+        <div class="timelapse">
+            <span>[{{source.start | secondsToDateTime | date:'HH:mm:ss'}} - {{source.end | secondsToDateTime | date:'HH:mm:ss'}}]</span>
+        </div>
         <p>Published:
             <time pubdate datetime="{{source.date_created}}">{{source.date_created | date}}</time>
         </p>
