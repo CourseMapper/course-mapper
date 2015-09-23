@@ -4,14 +4,14 @@ var Categories = require(appRoot + '/modules/catalogs/categories.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
-function CatStats(){
+function CatCountSubNodes(){
 }
 
-CatStats.prototype.init = function(params){
+CatCountSubNodes.prototype.init = function(params){
     this.slug = params.slug;
 };
 
-CatStats.prototype.run = async ( function(){
+CatCountSubNodes.prototype.run = async ( function(){
     var self = this;
 
     var result = await( Categories.findOne({
@@ -22,8 +22,11 @@ CatStats.prototype.run = async ( function(){
 } );
 
 
-CatStats.prototype.render = function(){
-    return '<h4>' + this.result.name + '</h4>';
+CatCountSubNodes.prototype.render = function(){
+    var countSubNodes = this.result.subCategories.length;
+
+
+    return '<div class="countSubNodes" style="font-size:80%"> SubNodes: ' + countSubNodes + '</div>' ;
 };
 
-module.exports = CatStats;
+module.exports = CatCountSubNodes;

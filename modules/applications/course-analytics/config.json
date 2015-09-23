@@ -1,6 +1,22 @@
 {
   "name": "Course Analytics",
   "widgets":[
+    {
+      "name": "Home Widget - Category Date Created",
+      "location": "category-homepage",
+      "description": "Widget that show the created date of each node in the homepage",
+      "entryPoint": "/course-analytics/category-home-createdDate.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Home Widget - Count SubNodes",
+      "location": "category-homepage",
+      "description": "Widget that show the number of sub-nodes available inside one node",
+      "entryPoint": "/course-analytics/category-home-countSubNodes.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
    {
       "name": "Top Contributors analytics",
       "location": "course-analytics",
@@ -36,22 +52,6 @@
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "Category Name",
-      "location": "category-homepage",
-      "description": "Name of the course",
-      "entryPoint": "/course-analytics/category-name.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
-    },
-    {
-      "name": "Category Rating",
-      "location": "category-homepage",
-      "description": "Rating of the category",
-      "entryPoint": "/course-analytics/category-rating.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
     },
     {
       "name": "Course Listing Date Created",
