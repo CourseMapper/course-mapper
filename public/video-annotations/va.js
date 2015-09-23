@@ -26,7 +26,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
 
         this.init = function() {
             $scope.commentText = '';
-
+            $scope.isAuthor = ($scope.source.author === currentUser.username);
             var annotationId = $scope.source._id;
             var eventName = annotationId + ':comments:updated';
 
@@ -34,6 +34,14 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
                 markAuthoredComments(params.comments);
                 $scope.source.comments = params.comments;
             });
+        };
+
+        $scope.deleteAnnotation = function() {
+            var params = {
+                id: $scope.source._id
+            };
+            socket.emit('annotations:delete', params);
+            $scope.annotation = null;
         };
 
         $scope.postComment = function() {
@@ -101,14 +109,6 @@ videoAnnotationsModule.controller('VaEditorController', ['$scope', 'socket',
         };
 
         $scope.cancelEdit = function() {
-            $scope.annotation = null;
-        };
-
-        $scope.deleteAnnotation = function() {
-            var params = {
-                id: $scope.annotation._id
-            };
-            socket.emit('annotations:delete', params);
             $scope.annotation = null;
         };
     }

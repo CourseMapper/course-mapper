@@ -24,13 +24,5 @@ videoAnnotationsModule.controller('VaEditorController', ['$scope', 'socket',
         $scope.cancelEdit = function() {
             $scope.annotation = null;
         };
-
-        $scope.deleteAnnotation = function() {
-            var params = {
-                id: $scope.annotation._id
-            };
-            socket.emit('annotations:delete', params);
-            $scope.annotation = null;
-        };
     }
 ]);

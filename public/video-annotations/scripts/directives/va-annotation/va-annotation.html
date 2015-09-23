@@ -1,31 +1,51 @@
-<article>
-    <!-- Content -->
-    <section>
-        <h4>{{source.text}}</h4>
-    </section>
-    <section id="meta">
-        <div class="timelapse">
-            <span>[{{source.start | secondsToDateTime | date:'HH:mm:ss'}} - {{source.end | secondsToDateTime | date:'HH:mm:ss'}}]</span>
-        </div>
-        <p>Published:
-            <time pubdate datetime="{{source.date_created}}">{{source.date_created | date}}</time>
-        </p>
-        <div class="author">
-            <span>By: {{source.author}}</span>
-        </div>
-    </section>
-    <footer id="comments">
-        <a ng-click="toggle = !toggle">{{!toggle ? 'show comments' : 'hide comments'}}</a>
-        <article ng-show="toggle">
-            <div id="comment-box">
-                <input placeholder="Write a comment..." type="text" ng-model="commentText">
-                <button type="submit" ng-click="postComment()">post</button>
+<div class="box box-solid">
+    <div class="box-body">
+        <span class="posted-at">
+      Posted <strong>{{source.date_created | relativeDate}}</strong>
+      By <strong>
+          <a class="cursor"
+                ng-show="authorClickable"
+                ng-click="authorClickAction()">{{source.author}}</a>
+          <span>{{source.author}}</span>
+        </strong>
+        </span>
+        <p class="reply">{{source.text}}</p>
+    </div>
+    <div class="box-footer">
+        <div ng-show="source.isAuthor" class="replyControl">
+            <div class="editReplyButton">
+                <a style="cursor: pointer;" data-toggle="modal" data-target="#editReplyModal" title="Edit" ng-click="editAction()" class="btn btn-primary btn-xs">EDIT</a>
             </div>
-            <section ng-repeat="comment in source.comments.slice().reverse()">
-                <p>[{{comment.author}}] {{comment.text}}
-                    <a ng-show="comment.isAuthor" ng-click="removeComment(comment._id)" type="submit">[x]</a>
-                </p>
-            </section>
-        </article>
-    </footer>
-</article>
+            <div class="deleteReplyButton">
+                <a style="cursor: pointer;" ng-click="deleteAnnotation()" title="delete" class="btn btn-danger btn-xs">DELETE</a>
+            </div>
+        </div>
+        <div id="comments">
+            <a ng-click="toggle = !toggle">{{!toggle ? 'show comments' : 'hide comments'}}</a>
+            <article ng-show="toggle">
+                <div id="comment-box">
+                    <input placeholder="Write a comment..." type="text" ng-model="commentText">
+                    <button type="submit" ng-click="postComment()">post</button>
+                </div>
+                <section ng-repeat="comment in source.comments.slice().reverse()">
+                    <div class="box box-solid">
+                        <div class="box-body">
+                            <span class="posted-at">
+      Posted <strong>{{comment.date_created | relativeDate}}</strong>
+      By <strong>
+          <span>{{comment.author}}</span>
+                            </strong>
+                            </span>
+                            <p class="reply">{{comment.text}}</p>
+                        </div>
+                        <div class="box-footer">
+                            <div class="replyControl">
+                                <a style="cursor: pointer;" ng-show="comment.isAuthor" ng-click="removeComment(comment._id)" title="delete" class="btn btn-danger btn-xs">DELETE</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </article>
+        </div>
+    </div>
+</div>

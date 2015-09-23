@@ -27,7 +27,8 @@
             </div>
         </videogular>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-6 replies">
+        <button type="button" ng-click="createAnnotation()">Add annotation</button>
         <label for="search-box">Search:</label>
         <input id="search-box" ng-model="query">
         <section ng-show="annotations.length > 0" class="annotations-viewer">
@@ -36,7 +37,6 @@
     </div>
 </div>
 <div class="row">
-    <button type="button" ng-click="createAnnotation()">Add annotation</button>
     <br/>
     <label for="editor-select">Edit annotation:</label>
     <select ng-model="selectedAnnotation" id="editor-select" ng-change="seekPosition(selectedAnnotation)" ng-options="ann as ann.text | limitTo:25 for ann in annotations | filter:{isAuthor: true}" ng-show="annotations.length > 0">
