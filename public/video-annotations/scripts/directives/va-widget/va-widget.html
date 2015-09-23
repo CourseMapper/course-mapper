@@ -1,4 +1,4 @@
-<div class="col-sm-8">
+<div class="col-sm-6">
     <videogular vg-player-ready="onPlayerReady($API)" vg-cue-points="cuePoints">
         <vg-media vg-src="sources"></vg-media>
         <vg-controls>
@@ -25,16 +25,15 @@
                  ng-style="{
                     top: item.position.top + '%',
                     left: item.position.left + '%',
-                    width: item.size.width + 'px',
-                    height: item.size.height + 'px'}">
+                    width: item.size.width + '%',
+                    height: item.size.height + '%'}">
                 <span>{{item.text}}</span>
             </div>
         </div>
     </videogular>
 </div>
-<div class="col-sm-4">
+<div class="col-sm-6">
     <button type="button" ng-click="createAnnotation()">Add annotation</button>
-
     <br/>
     <label for="editor-select">Edit annotation:</label>
     <select ng-model="selectedAnnotation"
@@ -45,11 +44,12 @@
     </select>
 
     <va-editor ng-show="selectedAnnotation != null" annotation="selectedAnnotation"></va-editor>
-
     <br/>
+
+    <label for="search-box">Search:</label>
+    <input id="search-box" ng-model="query">
     <section ng-show="selectedAnnotation == null && annotations.length > 0" class="annotations-viewer">
-        <label for="search-box">Search:</label>
-        <input id="search-box" ng-model="query">
+     
 
         <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation"
                           ng-class="{showing: annotation.showing, completed: annotation.completed}"

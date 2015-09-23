@@ -1241,10 +1241,15 @@ app.directive('movable', function() {
                     containment: 'parent',
                     handles: 'ne, se, sw, nw',
                     stop: function(event, ui) {
+                        // get relative size to the container elemenet
+                        var size = {};
+                        size.width = Math.round((100 * ui.size.width / element.parent()[0].clientWidth));
+                        size.height = Math.round((100 * ui.size.height / element.parent()[0].clientHeight));
+
                         if (scope.onMoved) {
                             scope.onMoved({
                                 position: getPosition(ui),
-                                size: ui.size
+                                size: size
                             });
                         }
                     }
@@ -2840,7 +2845,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 var wdg = $scope.installedWidgets[i];
 
                 // loop to load the js (if exist)
-                $ocLazyLoad.load('/' + wdg.application + '/' + wdg.application + '.js');
+                if(wdg.widgetJavascript)
+                    $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetJavascript );
             }
         });
 
