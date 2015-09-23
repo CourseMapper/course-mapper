@@ -781,13 +781,19 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.nodeId = $routeParams.nodeId;
     $scope.isOwner = false;
     $scope.isNodeOwner = false;
+    $scope.isVideoExist = false;
+    $scope.isPdfExist = false;
+    $scope.videoFile = false;
+    $scope.pdfFile = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
-    $scope.currentTab = "preview";
+    $scope.currentTab = "video";
+    $scope.defaultPath = "video";
     $scope.tabs = {
-        'preview':'Preview',
+        'video':'Video',
+        'pdf':'Pdf',
         'analytics':'Analytics',
         'updates':'Updates',
         'links':'Links'
@@ -821,7 +827,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.manageActionBar = function(){
-        if($scope.currentTab == 'preview' && $scope.treeNode) {
+        if(($scope.currentTab == 'video' || $scope.currentTab == 'pdf') && $scope.treeNode) {
             if (
                 $scope.treeNode.createdBy == $rootScope.user._id) {
 
@@ -838,14 +844,25 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.changeTab = function(){
-        var defaultPath = "preview";
         var q = $location.search();
 
         if(q.tab){
-            defaultPath = q.tab;
+            $scope.defaultPath = q.tab;
+        } else {
+            if($scope.isVideoExist && $scope.isPdfExist){
+                jQuery('#video').addClass('active');
+                jQuery('li.video').addClass('active');
+            } else if($scope.isPdfExist){
+                jQuery('#pdf').addClass('active');
+                jQuery('li.pdf').addClass('active');
+                $scope.defaultPath = 'pdf';
+            } else {
+                jQuery('#video').addClass('active');
+                jQuery('li.video').addClass('active');
+            }
         }
 
-        $scope.currentTab = defaultPath;
+        $scope.currentTab = $scope.defaultPath;
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
         $scope.manageActionBar();
@@ -873,7 +890,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $scope.setEditMode();
                 }
 
-                $scope.manageActionBar();
+                for(var i = 0;i < $scope.treeNode.resources.length; i++){
+                    var content = $scope.treeNode.resources[i];
+                    if(content['type'] == 'mp4' || content['type'] == 'video'){
+                        $scope.isVideoExist = true;
+                        $scope.videoFile = content;
+                    } else if(content['type'] == 'pdf'){
+                        $scope.pdfFile = content;
+                        $scope.isPdfExist = true;
+                    }
+                }
+
+                $scope.changeTab();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
@@ -1125,7 +1153,38 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });
-;app.directive('errorBlock',
+;app.directive('comment',
+    function ($compile, $timeout) {
+        return {
+            restrict: 'E',
+
+            terminal: true,
+
+            scope: {
+                postedBy: '@',
+                postedDate: '@',
+                showControl: '=',
+                authorClickAction: '&',
+                authorClickable: '=',
+                postContent: '=',
+                isPostOwner: '=',
+                isDeleted: '=',
+                postId: '@',
+                editAction: '&',
+                deleteAction: '&'
+            },
+
+            templateUrl: '/angular/views/discussion.reply.html'/*,
+
+            link: function (scope, element, attrs) {
+                $timeout(function () {
+                    scope.$apply();
+                });
+
+                $compile(element.contents())(scope.$new());
+            }*/
+        };
+    });;app.directive('errorBlock',
     function () {
         return {
             restrict: 'E',
@@ -1262,7 +1321,142 @@ app.directive('movable', function() {
         }
     };
 });
-;function Spinner($timeout) {
+;app.directive('pdfViewer',
+    function ($compile, $timeout, $rootScope) {
+        return {
+            restrict: 'E',
+
+            terminal: true,
+
+            scope: {
+                source: '@',
+                currentPageNumber: '=',
+                showControl: '='
+            },
+
+            templateUrl: '/angular/views/pdf-viewer.html',
+
+            link: function (scope, element, attrs) {
+                if (!PDFJS.PDFViewer || !PDFJS.getDocument) {
+                    alert('Please build the library and components using\n' +
+                    '  `node make generic components`');
+                }
+
+                //var DEFAULT_URL = '/slide-viewer/ressources/00_Orga.pdf';
+                scope.pageToView = 1;
+                scope.scale = 1.0;
+                scope.totalPage = 1;
+
+                scope.container = element[0].getElementsByClassName('viewerContainer');
+                scope.container = scope.container[0];
+
+                attrs.$observe('source', function (pdfFilePath) {
+                    console.log(pdfFilePath);
+                    if (pdfFilePath) {
+                        PDFJS.getDocument(pdfFilePath).then(function (pdfDocument) {
+
+                            console.log("Started loading pdf");
+                            scope.totalPage = pdfDocument.numPages;
+
+                            scope.calculateSlideNavigationProgress(scope.currentPageNumber);
+
+                            // this will apply totalpage to the html
+                            $timeout(function () {
+                                scope.$apply();
+                            });
+
+                            // Document loaded, retrieving the page.
+                            return pdfDocument.getPage(scope.pageToView).then(function (pdfPage) {
+                                // Creating the page view with default parameters.
+                                scope.pdfPageView = new PDFJS.PDFPageView({
+                                    container: scope.container,
+                                    id: scope.pageToView,
+                                    scale: scope.scale,
+                                    defaultViewport: pdfPage.getViewport(scope.scale),
+
+                                    // We can enable text/annotations layers, if needed
+                                    textLayerFactory: new PDFJS.DefaultTextLayerFactory(),
+                                    annotationsLayerFactory: new PDFJS.DefaultAnnotationsLayerFactory()
+                                });
+
+                                // Associates the actual page with the view, and drawing it
+                                scope.pdfPageView.setPdfPage(pdfPage);
+                                scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
+
+                                scope.pdfPageView.update(scope.scale, 0);
+                                console.log("PDF LOADED");
+
+                                scope.pdfIsLoaded = true;
+                                $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
+                                /*
+                                 todo: move this somewhere else
+                                 currentCanvasHeight = parseInt($('#annotationZone').height());
+                                 drawAnnZonesWhenPDFAndDBDone();*/
+
+                                return scope.pdfPageView.draw();
+                            });
+                        });
+                    }
+                });
+
+                scope.calculateSlideNavigationProgress = function(newSlideNumber){
+                    if(scope.totalPage > 0) {
+                        var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
+                        progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
+                    }
+                };
+
+            }, /*end link*/
+
+            controller: function ($scope, $compile, $http, $attrs) {
+                $scope.currentPageNumber = 1;
+                $scope.pdfIsLoaded = false;
+                $scope.totalPage = 0;
+
+                $scope.changePageNumber = function (value) {
+                    //console.log("GOT CALLED");
+                    if (($scope.currentPageNumber + value) <= $scope.totalPage && ($scope.currentPageNumber + value) >= 1)
+                        $scope.currentPageNumber = $scope.currentPageNumber + value;
+
+                    $timeout(function () {
+                        $scope.$apply();
+                        $scope.pdfIsLoaded = false;
+
+                        $scope.changeSlide($scope.currentPageNumber);
+                    });
+
+                };
+
+                $scope.changeSlide = function (newSlideNumber) {
+                    $scope.pageToView = newSlideNumber;
+
+                    $scope.calculateSlideNavigationProgress(newSlideNumber);
+
+                    PDFJS.getDocument($scope.source).then(function (pdfDocument) {
+                        pdfDocument.getPage($scope.pageToView).then(function (pdfPage) {
+                            $scope.pdfPageView.setPdfPage(pdfPage);
+                            $scope.pdfPageView.draw();
+
+                            console.log("PDF LOADED");
+                            $scope.pdfIsLoaded = true;
+
+                            $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
+
+                            /* todo: move this somewhere else
+                            drawAnnZonesWhenPDFAndDBDone();
+                             */
+                        });
+                    });
+                };
+
+                $( window ).resize(function() {
+                    $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
+                    $scope.pdfPageView.update($scope.scale,0);
+                    $scope.pdfPageView.draw();
+                });
+            }
+        };
+    });;function Spinner($timeout) {
     return {
         restrict: 'E',
         template: '<i class="fa fa-cog fa-spin"></i>',
@@ -2200,12 +2394,14 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             return $sce.trustAsResourceUrl(url);
         };
 
-    });;app.controller('PDFNavigationController', function($scope, $http, $rootScope, $sce, $timeout) {
+    });;/*
+moved to directive
+app.controller('PDFNavigationController', function($scope, $http, $rootScope, $sce, $timeout) {
     $scope.currentPageNumber = 1;
     $scope.maxPageNumber = 30;
 
     $scope.changePageNumber = function(value){
-      console.log("GOT CALLED");
+      //console.log("GOT CALLED");
       if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
         $scope.currentPageNumber = $scope.currentPageNumber + value;
         $timeout(function(){
@@ -2217,7 +2413,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
     }
 
 
-});
+});*/
 ;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
     $scope.storedAnnZones = [];
@@ -2230,8 +2426,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
 
     $scope.refreshTags = function() {
-      $http.get('/slide-viewer/disAnnZones/1/'+$scope.currentPageNumber).success(function (data) {
-        console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
+      $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
+        //console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -2249,7 +2445,11 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       });
     };
 
-    $scope.$watch("currentPageNumber",function(newValue,oldValue){
+    $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+      $scope.$emit('reloadTags');
+    });
+
+    $scope.$on('reloadTags', function(event) {
       console.log("LOADED RESET");
       $(".slideRect").remove();
 
@@ -2259,6 +2459,18 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
       $scope.refreshTags();
     });
 
+    /*
+    use onPdfPageChange event instead
+    $scope.$watch("currentPageNumber",function(newValue,oldValue){
+      //console.log("LOADED RESET");
+      $(".slideRect").remove();
+
+      annotationZonesAreLoaded = false;
+
+      toDrawAnnotationZoneData = [];
+      $scope.refreshTags();
+    });*/
+
     $scope.compileMovableAnnotationZone = function(element) {
       return angular.element(
         $injector.get('$compile')(element)($scope)
@@ -2267,138 +2479,350 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
     //$scope.refreshTags();
 });
-;app.controller('CommentListController', function($scope, $http, $rootScope, $sce, $timeout) {
+;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout) {
 
-    $scope.orderType = "author";
+    $scope.comment = {};
+
+    $scope.orderType = false;
+    $scope.orderBy = false;
     $scope.ascending = "true";
     $scope.filters = '{}';
-    $scope.filtersRaw = '';
-    //$scope.pageFilter;
+    $scope.filtersRaw = {};
+    $scope.currentPageNumber = 1;
+    $scope.annotationZones = [];
+
+    // zones
+    $scope.tagNames = [];
+    $scope.tagRelPos = [];
+    $scope.tagRelCoord = [];
+    $scope.tagColor = [];
+
+    $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
+        $scope.currentPageNumber = newSlideNumber;
+        $scope.getComment($scope.orderType.id);
+    });
+
+    $scope.orderingOptions = [
+        {id: 'dateOfCreation.descending', name: 'Newest First'},
+        {id: 'dateOfCreation.ascending', name: 'Oldest First'},
+        {id: 'author.descending', name: 'Author (descending)'},
+        {id: 'author.ascending', name: 'Author (ascending)'}
+        //todo: {id: 'relevance', name: 'Relevance'}
+    ];
 
 
-    $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+    $scope.populateAnnotationZone = function () {
+        $scope.annotationZones = [];
 
+        // look for zones that are inside wrapper of the annotation zones
+        var annotationList = $("#annotationZoneSubmitList div");
 
-    function updateScope(url){
-      $http.get(url).success(function (data) {
-        console.log('COMMENTS UPDATED');
-        console.log("url: " + url);
+        //console.log(annotationList);
 
-        $scope.comments = data.comments;
+        for (var i = 0; i < annotationList.length; i++) {
+            //console.log("added tag");
+            //TODO: Adapt to next rectangle iteration
+            var elementId = $("#annotationZoneSubmitList #rectangleId").eq(i).val();
+            var element = $("#" + elementId);
+            var relPosX = element.position().left / $('#annotationZone').width();
+            var relPosY = element.position().top / $('#annotationZone').height();
+            var relWidth = element.width() / $('#annotationZone').width();
+            var relHeight = element.height() / $('#annotationZone').height();
 
-        for(var i in $scope.comments){
-          var cmnt = $scope.comments[i];
-          cmnt.html = $sce.trustAsHtml(cmnt.html);
+            var name = element.find(".slideRectInput").val();
+            //console.log("Name found: "+element.find(".slideRectInput").length);
+            //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
+            var color = element.find(".pick-a-color").val();
+            //console.log("Color found: "+color);
+            //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
-          $timeout(function(){
-            $scope.$apply();
-            commentsLoaded();
-          });
-        };
-      });
+            if (name == "") {
+                //console.log("Error encountered while extracting annotation zone during submission.");
+                return false;
+            }
+            else {
+                $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, $scope.currentPageNumber );
+            }
+        }
+
+        $scope.comment.tagNames = $scope.tagNames.join(',');
+        $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
+        $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
+        $scope.comment.tagColor = $scope.tagColor.join(',');
+
+        //TODO: Check integrity of the input
+        //console.log("got here");
+        return true;
     };
 
-    function getCurrentFilters(filtersRaw){
-      var finalFilters;
-      /*if($scope.filtersRaw.length == 0)
-        finalFilters='{}';
-      else {*/
-        var filterStrings = $scope.filtersRaw.split(';');
-        console.log("FOUND RAW FILTERS: " + $scope.filtersRaw);
-        finalFilters = '{';
-        if(filterStrings.length >= 1) if(filterStrings[0]!=""){
+    $scope.addAnnotationZoneData = function (name, relPosX, relPosY, relWidth, relHeight, color, pdfId, pdfPageNumber) {
+        $scope.tagNames.push(name);
+        $scope.tagRelPos.push(relPosX + ";" + relPosY);
+        $scope.tagRelCoord.push(relWidth + ";" + relHeight);
+        $scope.tagColor.push(color);
 
-          for(var i=0; i < filterStrings.length; i++){
-            console.log("APPLIED A FILTER");
-            var temp = filterStrings[i].split(',');
-            if(temp.length != 1)
-              finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
-            else
-            {
-              temp = filterStrings[i].split(':');
-              if(typeof temp[1] != 'undefined') {
-                if(temp[1].charAt(0) == "#")
-                  finalFilters = finalFilters + '"' + temp[0] + '":{"regex_hash": "' + temp[1].substring(1) + '"}';
-                else {
-                  finalFilters = finalFilters + '"' + temp[0] + '":{"regex": "' + temp[1].substring(1) + '"}';
-                }
-              }
-            }
+        var zone = {
+            annotationZoneName: name,
+            relativeCoordinates: {
+                X: relPosX,
+                Y: relPosY
+            },
+            relativeDimensions: {
+                X: relWidth,
+                Y: relHeight
+            },
+            color: color,
+            pdfId: pdfId,
+            pdfPageNumber: pdfPageNumber
+        };
 
-
-            //if(i != filterStrings.length-1)
-            finalFilters = finalFilters + ',';
-          }
+        /*var oldText;
+        oldText = $("#tagNames").val();
+        if (oldText.length != 0) {
+            oldText = oldText + ",";
         }
-        if(!isNaN($scope.currentPageNumber))
-          finalFilters = finalFilters + '"pdfPageNumber":"' + $scope.currentPageNumber + '"';
-        finalFilters = finalFilters + '}';
 
-      //}
-      console.log("Final Filters: " + finalFilters);
-      return finalFilters;
+        $("#tagNames").val(oldText + "" + name);
+        oldText = $("#tagRelPos").val();
+        if (oldText.length != 0) {
+            oldText = oldText + ",";
+        }
+        $("#tagRelPos").val(oldText + "" + relPosX + ";" + relPosY);
+        oldText = $("#tagRelCoord").val();
+        if (oldText.length != 0) {
+            oldText = oldText + ",";
+        }
+        $("#tagRelCoord").val(oldText + "" + relWidth + ";" + relHeight);
+        oldText = $("#tagColor").val();
+        if (oldText.length != 0) {
+            oldText = oldText + ",";
+        }
+        $("#tagColor").val(oldText + "" + color);*/
+
+        $scope.annotationZones.push(zone);
+        //$scope.annotationZones[$scope.annotationZones.length]=zone;
+
+    };
+
+    $scope.submitComment = function (resultVarName) {
+        $scope.populateAnnotationZone();
+
+        var config = {
+            params: {
+                rawText: $scope.comment.rawText,
+                author: $scope.currentUser.username,
+                pageNumber: $scope.currentPageNumber,
+                tagNames: $scope.comment.tagNames,
+                tagRelPos: $scope.comment.tagRelPos,
+                tagRelCoord: $scope.comment.tagRelCoord,
+                tagColor: $scope.comment.tagColor,
+                annotationZones: $scope.annotationZones,
+                numOfAnnotationZones: $scope.annotationZones.length,
+                pdfId: $scope.pdfFile._id
+            }
+        };
+
+        $http.post("/slide-viewer/submitComment/", null, config)
+            .success(function (data, status, headers, config) {
+                updateScope($scope.commentGetUrl);
+                //$scope.savedZones = data.annotationZones;
+
+                $scope.comment.rawText = '';
+                $scope.comment.tagNames = '';
+                $scope.comment.tagRelPos = '';
+                $scope.comment.tagRelCoord = '';
+                $scope.comment.tagColor = '';
+
+                console.log("SUBMISSION SUCCESSFUL");
+                $scope.$broadcast('reloadTags');
+
+            })
+            .error(function (data, status, headers, config) {
+                console.log("SUBMIT ERROR");
+            });
+    };
+
+    $scope.currentUser = "";
+    $rootScope.$watch('user', function () {
+        if ($rootScope.user) {
+            $scope.currentUser = $rootScope.user;
+        }
+    });
+
+    //$scope.pageFilter;
+
+    $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+
+    $scope.switchRegexFilter = function (value) {
+        $scope.filtersRaw['renderedText'] = {'regex': value};
+
+        $scope.$broadcast('onFiltersRawChange');
+    };
+
+    $scope.switchRegexHashFilter = function (value) {
+        $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
+        console.log($scope.filtersRaw);
+
+        $scope.$broadcast('onFiltersRawChange');
+    };
+
+    $scope.authorLabelClick = function (authorName) {
+        $scope.filtersRaw['author'] = authorName;
+
+        $scope.$broadcast('onFiltersRawChange');
+    };
+
+    $scope.commentsLoaded = function () {
+        var element = $("#commentList .annotationZoneReference").not('.hasOnClick');
+        if ($("#commentList .annotationZoneReference").not('.hasOnClick').length != 0) {
+            //console.log("ADDED CLICK FUNCTION");
+            //console.log($("#commentList .annotationZoneReference").length);
+            $("#commentList .annotationZoneReference").not('.hasOnClick').click(function () {
+                $scope.switchRegexHashFilter($(this).html());
+            });
+
+            $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
+
+            element.hover(function () {
+                var rectId = $(this).html();
+                $("#annotationZone [data-tagName='" + rectId + "']").stop().fadeTo("fast", opacityFactorHighlight);
+                //$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
+            }, function () {
+                var rectId = $(this).html();
+                $("#annotationZone [data-tagName='" + rectId + "']").stop().fadeTo("fast", opacityFactor);
+                //$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
+            });
+
+        }
+    };
+
+    function updateScope(url) {
+        $http.get(url).success(function (data) {
+            //console.log('COMMENTS UPDATED');
+            //console.log("url: " + url);
+
+            $scope.comments = data.comments;
+
+            for (var i in $scope.comments) {
+                var cmnt = $scope.comments[i];
+                //cmnt.html = $sce.trustAsHtml(cmnt.html);
+
+                $timeout(function () {
+                    $scope.$apply();
+                    $scope.commentsLoaded();
+                });
+            }
+            ;
+        });
+    };
+
+    function getCurrentFilters() {
+        /*
+         refactored by using array of filtersRaw. will be converted with JSON.stringify.
+         regex_has and regex is replaced by using scope.switchregex... function
+
+         var finalFilters;
+
+         var filterStrings = $scope.filtersRaw.split(';');
+         //console.log("FOUND RAW FILTERS: " + $scope.filtersRaw);
+         finalFilters = '{';
+         if(filterStrings.length >= 1) if(filterStrings[0]!=""){
+
+         for(var i=0; i < filterStrings.length; i++){
+         //console.log("APPLIED A FILTER");
+         var temp = filterStrings[i].split(',');
+         if(temp.length != 1)
+         finalFilters = finalFilters + '"' + temp[0] + '":"' + temp[1] + '"';
+         else
+         {
+         temp = filterStrings[i].split(':');
+         if(typeof temp[1] != 'undefined') {
+         if(temp[1].charAt(0) == "#")
+         finalFilters = finalFilters + '"' + temp[0] + '":{"regex_hash": "' + temp[1].substring(1) + '"}';
+         else {
+         finalFilters = finalFilters + '"' + temp[0] + '":{"regex": "' + temp[1].substring(1) + '"}';
+         }
+         }
+         }
+
+
+         //if(i != filterStrings.length-1)
+         finalFilters = finalFilters + ',';
+         }
+         }*/
+
+        if (!isNaN($scope.currentPageNumber)) {
+            $scope.filtersRaw['pdfPageNumber'] = $scope.currentPageNumber;
+        }
+
+        var finalFilters = JSON.stringify($scope.filtersRaw);
+
+        console.log("Final Filters: " + finalFilters);
+        return finalFilters;
     }
 
+    $scope.parseOrderType = function (orderType) {
+        var orderSplit = orderType.split('.');
+        $scope.orderBy = orderSplit[0];
+        if (orderSplit[1]) {
+            $scope.ascending = (orderSplit[1] == 'ascending') ? true : false;
+        } else
+            $scope.ascending = false;
+    };
 
-    $scope.$watch("orderType",function(newValue,oldValue){
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      updateScope($scope.commentGetUrl);
-    });
+    $scope.getComment = function (orderType) {
+        $scope.parseOrderType(orderType);
 
-    $scope.$watch("ascending",function(newValue,oldValue){
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      updateScope($scope.commentGetUrl);
-    });
+        $scope.filters = getCurrentFilters($scope.filtersRaw);
+        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+        updateScope($scope.commentGetUrl);
+    };
 
-    $scope.$watch("filtersRaw",function(newValue,oldValue){
-      console.log("NOTICED FILTERS CHANGE");
-      $scope.filters = getCurrentFilters($scope.filtersRaw);
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      console.log("commentGetUrl: " + $scope.commentGetUrl);
-      updateScope($scope.commentGetUrl);
-    });
+    $scope.init = function () {
+        $scope.getComment($scope.orderingOptions[0].id);
+    };
 
-    $scope.$watch("currentPageNumber",function(newValue,oldValue){
-      $scope.filters = getCurrentFilters($scope.filtersRaw);
-      $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"'+ $scope.orderType + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-      console.log("commentGetUrl: " + $scope.commentGetUrl);
-      updateScope($scope.commentGetUrl);
-    });
+    /**
+     * get comments on page load
+     */
+    $scope.init();
 
-
-
-
-
-    /*$http.get('/slide-viewer/disComm').success(function (data) {
-        console.log(data);
-        $scope.comments = data.comments;
-
-        for(var i in $scope.comments){
-            var cmnt = $scope.comments[i];
-            cmnt.html = $sce.trustAsHtml(cmnt.html);
+    $scope.$watch("orderType", function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+            $scope.orderType = newValue;
+            $scope.getComment(newValue.id);
         }
+    });
 
+    $scope.$watch("filtersRaw", function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+            $scope.parseOrderType($scope.orderType.id);
+            //console.log("NOTICED FILTERS CHANGE");
+            $scope.filters = getCurrentFilters($scope.filtersRaw);
+            $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+            //console.log("commentGetUrl: " + $scope.commentGetUrl);
+            updateScope($scope.commentGetUrl);
+        }
+    });
 
-        $scope.loadComments = function (orderType, ascending, filters) {
-          //var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/' + filters;
-          var url = '/slide-viewer/disComm/{"type":"'+ orderType + '","ascending":"' + ascending + '"}/{"author":"Kaet"}';
-          console.log(url);
-          $http.get(url).success(function (data) {
-              console.log(data);
-              $scope.comments = data.comments;
+    $scope.$on('onFiltersRawChange', function () {
+        $scope.parseOrderType($scope.orderType.id);
+        //console.log("NOTICED FILTERS CHANGE");
+        $scope.filters = getCurrentFilters($scope.filtersRaw);
+        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+        //console.log("commentGetUrl: " + $scope.commentGetUrl);
+        updateScope($scope.commentGetUrl);
+    });
 
-              for(var i in $scope.comments){
-                  var cmnt = $scope.comments[i];
-                  cmnt.html = $sce.trustAsHtml(cmnt.html);
-              }
-
-          });
-
-
-
-
-        };
-    });*/
+    $scope.$watch("currentPageNumber", function (newValue, oldValue) {
+        if (newValue !== oldValue) {
+            $scope.parseOrderType($scope.orderType.id);
+            $scope.filters = getCurrentFilters($scope.filtersRaw);
+            $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+            //console.log("commentGetUrl: " + $scope.commentGetUrl);
+            updateScope($scope.commentGetUrl);
+        }
+    });
 
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {

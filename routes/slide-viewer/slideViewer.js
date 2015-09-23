@@ -5,6 +5,7 @@ var SlideViewer = require(appRoot + '/modules/slide-viewer');
 var SlideAnnotationZones = require(appRoot + '/modules/annotationZones');
 var Comment = require(appRoot + '/modules/slide-viewer/index');
 var AnnZones = require(appRoot + '/modules/annotationZones/index');
+var mongoose = require('mongoose');
 
 var Comment = require(appRoot + '/modules/slide-viewer');
 
@@ -106,8 +107,9 @@ router.get('/disComm', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
+        _id:  data[i]._id,
         author: data[i].author,
-        date: data[i].dateOfCreation.toTimeString(),
+        date: data[i].dateOfCreation,
         slide: data[i].originSlide,
         html: data[i].renderedText
       };
@@ -150,8 +152,9 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
+        _id:  data[i]._id,
         author: data[i].author,
-        date: data[i].dateOfCreation.toTimeString(),
+        date: data[i].dateOfCreation,
         slide: data[i].originSlide,
         html: data[i].renderedText
       };
@@ -186,8 +189,8 @@ router.get('/disAnnZones/', function(req, res, next){
 router.get('/disAnnZones/:pdfId/:pdfPageNumber', function(req, res, next){
   var annZone = new AnnZones();
 
-
-  annZone.getSpecificAnnotationZones(req.params.pdfId, req.params.pdfPageNumber, function(err, data) {
+  var pdfId = mongoose.Types.ObjectId(req.params.pdfId);
+  annZone.getSpecificAnnotationZones(pdfId, req.params.pdfPageNumber, function(err, data) {
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {

@@ -590,7 +590,7 @@ a.videoButton:hover{
     background: #3C8DBC !important;
 }
 .red {
-    background: cadetblue !important;
+    background: #446CB3 !important;
 }
 
 .content-header.red>.breadcrumb>li+li:before{
@@ -730,4 +730,13 @@ a.cursor {
 
 li.active .voting .vote-total{
     padding:4px;
+}
+
+/*
+commenting
+*/
+#commentList{margin-top: 20px;}
+.nopadding {
+    padding: 0 !important;
+    margin: 0 !important;
 }

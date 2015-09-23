@@ -1,0 +1,126 @@
+<div class="row">
+
+    <div class="col-xs-11" ng-controller="CommentListController">
+
+        <div class="slide-container col-sm-8 col-md-8">
+            <div id="viewerWrapper">
+
+                <pdf-viewer source="{{pdfFile.link}}" current-page-number="1"></pdf-viewer>
+
+                <div id="annotationZone">
+                    <!--<div movable style="background-color:yellow;height:100px;width:100px;" ></div>-->
+                </div>
+
+            </div>
+        </div>
+        <div class="posts-list col-sm-4 col-md-4">
+
+            <div class="annotation-wrapper">
+
+                <button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>
+                <div id="commentSubmissionDiv" style="display:none;">
+                    <form name="commentForm" ng-submit="submitComment()">
+                        <fieldset>
+                            <div class="control-group">
+                                <label for="rawText">Commenting as {{currentUser.username}}</label>
+
+                                <div class="controls">
+                                    <textarea class="form-control" id="rawText" name="rawText"
+                                              ng-model="comment.rawText" placeholder="rawText"></textarea>
+                                </div>
+                            </div>
+
+                            <!--Used as Template for annotation zone items -->
+                            <div id="annotationZoneSubmitTemplate" style="visibility: hidden;">
+                                <button class="btn btn-default" onclick="removeAnnotationZone(this);">Remove</button>
+                            </div>
+                            <!-- Will be filled when annotation zones are created -->
+                            <div id="annotationZoneSubmitList">
+                            </div>
+
+
+                            <div class="control-group">
+                                <div class="controls">
+
+
+                                    <button class="btn btn-primary"> Add Comment
+                                        <spinner show="isLoading"></spinner>
+                                    </button>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                    </form>
+                </div>
+                <div id="annotationZoneSubmitListMovables">
+                    <button class="btn btn-default" onclick="createMovableAnnZone();">
+                        Add Annotation Zone
+                    </button>
+                </div>
+
+            </div>
+
+
+            <div>
+                <div id="annZoneList" style="display:none;"
+                     ng-controller="AnnotationZoneListController">
+                    Annotation Zone List:
+                    <div id="annotationZoneList" ng-repeat="annZone in annZones"
+                         ng-cloak>
+                        <div class="{{annZone.name}}">
+                            {{annZone.name}}
+                            {{annZone.color}}
+                        </div>
+                    </div>
+                </div>
+                <div class="commentZoneList">
+                    <h4>Comments</h4>
+
+                    <div class="row">
+
+                        <div class="controls ">
+                            <div class="col-xs-2">Sort by:</div>
+                            <div class="col-xs-5 nopadding">
+                                <select id="orderTypeSelect"
+                                        ng-model="orderType"
+                                        ng-init="orderType = orderType || orderingOptions[0]"
+                                        ng-options="item as item.name for item in orderingOptions"
+                                        class="form-control">
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="commentList" class="row">
+                        <div class="replies" ng-repeat="comment in comments" ng-cloak>
+                            <div class="col-xs-1">
+                                <voting vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>
+                            </div>
+                            <div class="col-xs-11">
+                                <comment posted-by="{{comment.author}}"
+                                         post-id="{{comment._id}}"
+                                         posted-date="{{comment.date}}"
+                                         post-content="comment.html"
+                                         is-post-owner="comment.author==$root.user.username"
+                                         show-control="false"
+                                         author-clickable="true"
+                                         author-click-action="authorLabelClick(comment.author)"
+                                        ></comment>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $("#btn-fullscreen").click(function () {
+        $("#viewerWrapper").toggleFullScreen();
+    });
+
+</script>
