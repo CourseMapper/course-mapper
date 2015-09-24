@@ -15,9 +15,8 @@
                 </vg-volume>
                 <vg-fullscreen-button></vg-fullscreen-button>
             </vg-controls>
-            <!-- <vg-overlay-play></vg-overlay-play> -->
             <div id="inline-va-container">
-                <div movable can-move="{{selectedAnnotation == item}}" on-moved="item.reposition" ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation" ng-show="item.showing" ng-style="{
+                <div movable can-move="{{item.isEditMode===true}}" on-moved="item.reposition" ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation" ng-show="item.showing" ng-style="{
                     top: item.position.top + '%',
                     left: item.position.left + '%',
                     width: item.size.width + '%',
@@ -28,19 +27,11 @@
         </videogular>
     </div>
     <div class="col-sm-6 replies">
-        <button type="button" ng-click="createAnnotation()">Add annotation</button>
+        <button class="btn btn-primary btn-xs" ng-click="createAnnotation()">Add annotation</button>
         <label for="search-box">Search:</label>
         <input id="search-box" ng-model="query">
         <section ng-show="annotations.length > 0" class="annotations-viewer">
             <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation" ng-class="{showing: annotation.showing, completed: annotation.completed}" ng-click="seekPosition(annotation)"></video-annotation>
         </section>
     </div>
-</div>
-<div class="row">
-    <br/>
-    <label for="editor-select">Edit annotation:</label>
-    <select ng-model="selectedAnnotation" id="editor-select" ng-change="seekPosition(selectedAnnotation)" ng-options="ann as ann.text | limitTo:25 for ann in annotations | filter:{isAuthor: true}" ng-show="annotations.length > 0">
-    </select>
-    <va-editor ng-show="selectedAnnotation != null" annotation="selectedAnnotation"></va-editor>
-    <br/>
 </div>

@@ -28,6 +28,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             var endTime = startTime + 5;
 
             var defaultAnnotation = {
+                "isEditMode": true,
                 "start": startTime,
                 "end": endTime,
                 "position": {
@@ -35,14 +36,14 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                     "left": "20"
                 },
                 "size": {
-                    "height": "100",
-                    "width": "200"
+                    "height": "20",
+                    "width": "30"
                 },
                 "type": "embedded-note",
                 "text": "",
                 "video_id": $scope.videoId
             };
-            $scope.selectedAnnotation = defaultAnnotation;
+            $scope.annotations.unshift(defaultAnnotation);
         };
 
         $scope.seekPosition = function(annotation) {

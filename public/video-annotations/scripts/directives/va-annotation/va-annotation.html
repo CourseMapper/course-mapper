@@ -1,5 +1,5 @@
 <div class="box box-solid">
-    <div class="box-body">
+    <div class="box-body" ng-show="!source.isEditMode">
         <span class="posted-at">
       Posted <strong>{{source.date_created | relativeDate}}</strong>
       By <strong>
@@ -11,13 +11,33 @@
         </span>
         <p class="reply">{{source.text}}</p>
     </div>
+    <div class="box-body" ng-show="source.isEditMode">
+        <textarea cols="60" rows="3" id="va-text" type="text" ng-model="source.text" />
+        <br/>
+        <select ng-model="source.type">
+            <option ng-selected="type.id===source.type" ng-repeat="type in annotationTypes" value="{{type.id}}">{{type.name}}</option>
+        </select>
+        <br/>
+        <label for="va-start">Start:</label>
+        <input id="va-start" ng-model="source.start">
+        <label for="va-end">End:</label>
+        <input id="va-end" ng-model="source.end">
+    </div>
     <div class="box-footer">
-        <div ng-show="source.isAuthor" class="replyControl">
+        <div ng-show="source.isAuthor && !source.isEditMode" class="replyControl">
             <div class="editReplyButton">
-                <a style="cursor: pointer;" data-toggle="modal" data-target="#editReplyModal" title="Edit" ng-click="editAction()" class="btn btn-primary btn-xs">EDIT</a>
+                <a ng-click="editAnnotation()" class="btn btn-primary btn-xs">EDIT</a>
             </div>
             <div class="deleteReplyButton">
-                <a style="cursor: pointer;" ng-click="deleteAnnotation()" title="delete" class="btn btn-danger btn-xs">DELETE</a>
+                <a ng-click="deleteAnnotation()" class="btn btn-danger btn-xs">DELETE</a>
+            </div>
+        </div>
+        <div class="replyControl" ng-show="source.isEditMode">
+            <div class="editReplyButton">
+                <a class="btn btn-primary btn-xs" ng-click="saveAnnotation()">SAVE</a>
+            </div>
+            <div class="deleteReplyButton">
+                <a ng-click="source.isEditMode=false" class="btn btn-danger btn-xs">CLOSE</a>
             </div>
         </div>
         <div id="comments">
@@ -31,10 +51,8 @@
                     <div class="box box-solid">
                         <div class="box-body">
                             <span class="posted-at">
-      Posted <strong>{{comment.date_created | relativeDate}}</strong>
-      By <strong>
-          <span>{{comment.author}}</span>
-                            </strong>
+                              Posted <strong>{{comment.date_created | relativeDate}}</strong>
+                              By <strong><span>{{comment.author}}</span></strong>
                             </span>
                             <p class="reply">{{comment.text}}</p>
                         </div>
