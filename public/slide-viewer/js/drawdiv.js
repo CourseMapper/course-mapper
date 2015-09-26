@@ -472,7 +472,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     nColorPickerInput.attr("id", "colorPickerInput-" + divCounter);
     nColorPickerInput.addClass("slideRectColorPicker");
 
-
   /*  colorPickerWrapper = $('<div/>');
     colorPickerWrapper.css("backgroundColor", "white");
     colorPickerWrapper.css("padding","0px");

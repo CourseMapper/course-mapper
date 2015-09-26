@@ -54,10 +54,14 @@
   margin: 0 5px 5px 0;
 }
 
-.simplecolorpicker.icon,
-.simplecolorpicker span.color {
+.simplecolorpicker.icon{
   display: inline-block;
 
+  cursor: pointer;
+  border: 2px solid white;
+}
+.simplecolorpicker span.color {
+  display: inline-block;
   cursor: pointer;
   border: 1px solid transparent;
 }
