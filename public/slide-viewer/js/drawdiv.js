@@ -458,15 +458,15 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     //inputElement.css("backgroundColor",color);
 
 //colorPicker ELement
-    colorPickerInput = $('<input type="text" />');
+    /*colorPickerInput = $('<input type="text" />');
     colorPickerInput.attr("id", "colorPickerInput-" + divCounter);
     colorPickerInput.addClass('pick-a-color form-control');
     colorPickerInput.css('float', 'left');
-
+*/
     nColorPickerInput = $('<select/>');
-    nColorPickerInput.attr("name","colorpicker-picker-longlist")
+    nColorPickerInput.attr("name","colorpicker-change-background-color")
     nColorPickerInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
-
+    nColorPickerInput.attr("id", "nColorPickerInput-" + divCounter);
 
     wrapperElement.append(spanElement);
 
@@ -488,7 +488,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     else {
         spanElement.text("#");
         spanElement.append(inputElement);
-        wrapperElement.append(colorPickerInput);
+        //wrapperElement.append(colorPickerInput);
         wrapperElement.append(nColorPickerInput);
         wrapperElement.append(removeElement);
 
@@ -504,7 +504,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
     element.appendTo('#annotationZone');
 
-    colorPickerInput.pickAColor({
+    /*colorPickerInput.pickAColor({
         showSpectrum: false,
         showSavedColors: false,
         saveColorsPerElement: true,
@@ -514,24 +514,35 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         showHexInput: false,
         allowBlank: false,
         inlineDropdown: true
-    });
-    colorPickerInput.on("change", function () {
+    });*/
+    /*colorPickerInput.on("change", function () {
         //console.log("#"+rectPrefix+divCounter);
         $(this).parent().parent().parent().css("backgroundColor", "#" + $(this).val());
         //console.log($(this).val());
-    });
+    });*/
 
-    colorPickerInput.parent().css('width', '40px');
+    //colorPickerInput.parent().css('width', '40px');
+
+    //colorpicker Stuff
     element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
     divCounter = divCounter + 1;
 
-    $('select[name="colorpicker-picker-longlist"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+    $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
 
-  $('#destroy').on('click', function() {
-    $('select').simplecolorpicker('destroy');
-  });
-  // By default, activate simplecolorpicker plugin on HTML selects
-  $('#init').trigger('click');
+    $('#destroy').on('click', function() {
+      $('select').simplecolorpicker('destroy');
+    });
+    // By default, activate simplecolorpicker plugin on HTML selects
+    $('#init').trigger('click');
+
+    nColorPickerInput.on('change', function() {
+        $(this).parent().parent().parent().css('background-color', $(this).val());
+      });
+
+
+
+
+
     return element;
 
 
