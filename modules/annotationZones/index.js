@@ -177,6 +177,8 @@ function validateTagObject(currentTag,oldTagList) {
   var ret = true;
   if(!(currentTag.annotationZoneName.length >= 4))
     return false;
+  if(!(currentTag.annotationZoneName.length < 10))
+    return false;
   ret &= (currentTag.annotationZoneName[0] == '#');
   ret &= validator.isAlpha(currentTag.annotationZoneName.substring(1));
   ret &= nameIsAvailable(currentTag.annotationZoneName,oldTagList);
