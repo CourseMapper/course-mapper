@@ -26,14 +26,43 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
 
         this.init = function() {
             $scope.commentText = '';
-
-            var annotationId = $scope.source._id;
-            var eventName = annotationId + ':comments:updated';
-
-            socket.on(eventName, function(params) {
+            $scope.isAuthor = ($scope.source.author === currentUser.username);
+            $scope.annotationTypes = [{
+                id: 'embedded-note',
+                name: 'Embedded Note'
+            }, {
+                id: 'note',
+                name: 'Note'
+            }];
+            // Listen for changes in comments
+            socket.on($scope.source._id + ':comments:updated', function(params) {
                 markAuthoredComments(params.comments);
                 $scope.source.comments = params.comments;
             });
+        };
+
+        $scope.editAnnotation = function() {
+            $scope.source.isEditMode = true;
+        };
+
+        $scope.saveAnnotation = function() {
+            var annotation = $scope.source;
+
+            if (!annotation.text) return;
+            if (annotation.start < 0) return;
+            if (annotation.end < annotation.start) return;
+
+            socket.emit('annotations:save', {
+                annotation: annotation
+            });
+            $scope.source.isEditMode = false;
+        };
+
+        $scope.deleteAnnotation = function() {
+            var params = {
+                id: $scope.source._id
+            };
+            socket.emit('annotations:delete', params);
         };
 
         $scope.postComment = function() {
@@ -77,54 +106,6 @@ videoAnnotationsModule.directive('videoAnnotation', function() {
         controller: 'VaController'
     };
 });
-;/*jslint node: true */
-'use strict';
-
-videoAnnotationsModule.controller('VaEditorController', ['$scope', 'socket',
-    function($scope, socket) {
-
-        $scope.annotationTypes = [{
-            id: 'embedded-note',
-            name: 'Embedded Note'
-        }, {
-            id: 'note',
-            name: 'Note'
-        }];
-
-        $scope.saveAnnotation = function() {
-            var annotation = $scope.annotation;
-            var params = {
-                annotation: annotation
-            };
-            socket.emit('annotations:save', params);
-            $scope.annotation = null;
-        };
-
-        $scope.cancelEdit = function() {
-            $scope.annotation = null;
-        };
-
-        $scope.deleteAnnotation = function() {
-            var params = {
-                id: $scope.annotation._id
-            };
-            socket.emit('annotations:delete', params);
-            $scope.annotation = null;
-        };
-    }
-]);
-;/*jslint node: true */
-'use strict';
-
-videoAnnotationsModule.directive('vaEditor', function() {
-    return {
-        scope: {
-            annotation: '='
-        },
-        templateUrl: '/video-annotations/scripts/directives/va-editor/va-editor.html',
-        controller: 'VaEditorController'
-    };
-});
 ;/*jslint node: true*/
 'use strict';
 
@@ -155,6 +136,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             var endTime = startTime + 5;
 
             var defaultAnnotation = {
+                "isEditMode": true,
                 "start": startTime,
                 "end": endTime,
                 "position": {
@@ -162,14 +144,14 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                     "left": "20"
                 },
                 "size": {
-                    "height": "100",
-                    "width": "200"
+                    "height": "20",
+                    "width": "30"
                 },
                 "type": "embedded-note",
                 "text": "",
                 "video_id": $scope.videoId
             };
-            $scope.selectedAnnotation = defaultAnnotation;
+            $scope.annotations.unshift(defaultAnnotation);
         };
 
         $scope.seekPosition = function(annotation) {
