@@ -147,17 +147,21 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 updateScope($scope.commentGetUrl);
                 //$scope.savedZones = data.annotationZones;
 
-                $scope.comment.rawText = '';
-                $scope.comment.tagNames = '';
-                $scope.comment.tagRelPos = '';
-                $scope.comment.tagRelCoord = '';
-                $scope.comment.tagColor = '';
+
 
                 if(data.result == false){
                   displayCommentSubmissionResponse(data.error);
                 }
                 else {
                   displayCommentSubmissionResponse("Comment submission successful!");
+
+                  $scope.comment.rawText = '';
+                  $scope.comment.tagNames = '';
+                  $scope.comment.tagRelPos = '';
+                  $scope.comment.tagRelCoord = '';
+                  $scope.comment.tagColor = '';
+
+                  $("#annotationZoneSubmitList div").remove();
                 }
 
 

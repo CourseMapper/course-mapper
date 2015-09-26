@@ -137,7 +137,7 @@ Comment.prototype.convertRawText = function(rawText,callback){
       tagNameList[i] = data[i].annotationZoneName;
       tagColorList[i] = data[i].color;
     }
-    console.log(data);
+    //console.log(data);
 
 
     var renderedText = rawText.replace(/#(\w+)/g, function(x){
