@@ -398,6 +398,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
       caElement.click(function () {
         if($('#commentSubmissionDiv').css('display')!='none' ){
             $('#rawText').val($('#rawText').val() +   " "+ $(this).parent().attr("data-tagName")+" ");
+            $('#rawText').trigger('change');
             $('#rawText').focus();
         }
       });
