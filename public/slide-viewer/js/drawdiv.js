@@ -412,10 +412,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     }
 
     //debuggingTextElement
-    debuggingTextElement = $('<span/>'), {
+    debuggingTextElement = $('<span/>', {
       id: "debuggingTextElement"+divCounter,
       class: "debuggingTextElement"
-    }
+    });
     debuggingTextElement.css('color', 'red');
     debuggingTextElement.css('font-size','8pt');
     //debuggingTextElement.text("blabla");
@@ -443,7 +443,9 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     //inputElement
     inputElement = $('<input type="text"/>');
     inputElement.attr("id", "rectInputField-" + divCounter);
+    inputElement.attr("ng-model", "tagNames['rectInputField-" + divCounter + "']");
     inputElement.addClass("slideRectInput");
+    inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
 
     inputElement.css({
         'color': 'black',

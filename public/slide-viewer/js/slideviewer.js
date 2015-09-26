@@ -93,6 +93,8 @@ function removeAnnotationZone(id) {
   var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
 
   //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
+  var inputId = element.find(".slideRectInput").attr("id");
+  delete angular.element($("#annZoneList")).scope().tagNames[inputId];
 
   annotationInList.parent().remove();
   element.remove();
@@ -281,4 +283,8 @@ function switchCommentSubmissionDisplay() {
   else {
     div.show();
   }
+}
+
+function displayDebug() {
+  console.log("TAGNAMELIST: "+ angular.element($("#annZoneList")).scope().tagNames);
 }
