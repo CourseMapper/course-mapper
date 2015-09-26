@@ -388,6 +388,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         //check if entered string is neither empty nor whitespaced
           if(/\S/.test($(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val())){
             $('#rawText').val($('#rawText').val() +   " #"+ $(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val()+" ");
+            $('#rawText').trigger('change');
             $('#rawText').focus();
           }
         }
