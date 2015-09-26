@@ -1,5 +1,9 @@
-videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$sce',
-    function($scope, socket, $sce) {
+/*jslint node: true*/
+'use strict';
+
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
+    function($scope, socket, rootScope) {
+        var currentUser = rootScope.user;
 
         var onLeave = function onLeave(currentTime, timeLapse, params) {
             params.completed = false;
@@ -24,6 +28,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
             var endTime = startTime + 5;
 
             var defaultAnnotation = {
+                "isEditMode": true,
                 "start": startTime,
                 "end": endTime,
                 "position": {
@@ -31,19 +36,17 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                     "left": "20"
                 },
                 "size": {
-                    "height": "100",
-                    "width": "200"
+                    "height": "20",
+                    "width": "30"
                 },
                 "type": "embedded-note",
                 "text": "",
-                "author": "Anonymous", //TODO - get author
                 "video_id": $scope.videoId
             };
-            $scope.selectedAnnotation = defaultAnnotation;
+            $scope.annotations.unshift(defaultAnnotation);
         };
 
         $scope.seekPosition = function(annotation) {
-            console.log(annotation);
             // add .001 to seek time in order to show inline annotations
             $scope.API.seekTime(annotation.start + 0.001);
             $scope.API.pause();
@@ -54,8 +57,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
         };
 
         socket.on('annotations:updated', function(annotations) {
-            console.log('Loaded annotations: ' + annotations.length);
-
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];
@@ -73,7 +74,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                         onComplete: onComplete,
                         params: annotation
                     };
-
+                    annotation.isAuthor = (annotation.author === currentUser.username);
                     annotation.reposition = function(params) {
                         if (params.position) {
                             annotation.position = params.position;
@@ -82,6 +83,10 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$s
                             annotation.size = params.size;
                         }
                     };
+
+                    _.forEach(annotation.comments, function(comment) {
+                        comment.isAuthor = (comment.author === currentUser.username);
+                    });
 
                     $scope.annotations.push(annotation);
                     $scope.cuePoints.points.push(cuePoint);

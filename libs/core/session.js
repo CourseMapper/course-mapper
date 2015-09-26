@@ -1,53 +1,69 @@
+/*jslint node: true */
+'use strict';
+
 /**
  *  creates session, and deal with it
  */
-
 var config = require('config');
 var expressSession = require('express-session');
 var mongoStore = require('connect-mongo')(expressSession);
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy
+var FacebookStrategy = require('passport-facebook').Strategy;
 var appRoot = require('app-root-path');
 var User = require(appRoot + '/modules/accounts/users.js');
 var flash = require('flash');
 var debug = require('debug')('cm:server');
 
-function session(app, db){
-    var params = {
+function session(app, db, io) {
+    var sessionStore = new mongoStore({
+        mongooseConnection: db.connection
+    });
+
+    var sessionMiddleware = expressSession({
         saveUninitialized: true, // saved new sessions
         resave: false, // do not automatically write to the session store
         secret: config.get('session.secret'),
-        cookie : {
+        cookie: {
             httpOnly: true,
             maxAge: config.get('session.maxAge')
         },
-        store: new mongoStore({ mongooseConnection: db.connection })
-    };
+        store: sessionStore
+    });
 
-    //use express-session
-    app.use(expressSession(params));
-
-    //use passport as session authenticator
+    app.use(sessionMiddleware);
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(flash());
 
+    // Use session for Socket.IO
+    io.use(function(socket, next) {
+       sessionMiddleware(socket.request, {}, next);
+   });
+
     /**
      * use local strategy, this matching the sent data to our db
-      */
+     */
     passport.use(new localStrategy(function(username, password, done) {
-        User.findOne({ username : username},function(err,user){
+        User.findOne({
+            username: username
+        }, function(err, user) {
             // mongo error
-            if(err) { return done(err); }
-
-            // cannot found user
-            if(!user){
-                return done(null, false, { message: 'Incorrect username.' });
+            if (err) {
+                return done(err);
             }
 
-            if(config.get('signUp.needActivation') && !user.isActivated){
-                return done(null, false, { message: 'Your username is not activated yet.' });
+            // cannot found user
+            if (!user) {
+                return done(null, false, {
+                    message: 'Incorrect username.'
+                });
+            }
+
+            if (config.get('signUp.needActivation') && !user.isActivated) {
+                return done(null, false, {
+                    message: 'Your username is not activated yet.'
+                });
             }
 
             // username found, password matched
@@ -55,18 +71,22 @@ function session(app, db){
                 return done(null, user);
             }
 
-            return done(null, false, { message: 'Incorrect password.' });
+            return done(null, false, {
+                message: 'Incorrect password.'
+            });
         });
     }));
 
     // facebook will send back the token and profile
-    var facebookSession = function (token, refreshToken, profile, done) {
+    var facebookSession = function(token, refreshToken, profile, done) {
 
         // asynchronous
         process.nextTick(function() {
 
             // find the user in the database based on their facebook id
-            User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
+            User.findOne({
+                'facebook.id': profile.id
+            }, function(err, user) {
 
                 // if there is an error, stop everything and return that
                 // ie an error connecting to the database
@@ -86,15 +106,15 @@ function session(app, db){
                     newUser.username = 'fb_' + newUser.facebook.id;
                     newUser.facebook.token = token; // we will save the token that facebook provides to the user
                     newUser.facebook.displayName = profile.displayName; // we will save the token that facebook provides to the user
-                    if(newUser.facebook.name){
+                    if (newUser.facebook.name) {
                         newUser.facebook.name = "";
-                        if(profile.name.givenName)
+                        if (profile.name.givenName)
                             newUser.facebook.name = profile.name.givenName;
-                        if(profile.name.familyName)
+                        if (profile.name.familyName)
                             newUser.facebook.name += " " + profile.name.familyName;
                     }
 
-                    if(profile.emails && profile.emails.length > 0) {
+                    if (profile.emails && profile.emails.length > 0) {
                         newUser.facebook.email = profile.emails[0].value; // facebook can return multiple emails so we'll take the first
                         newUser.email = newUser.facebook.email; // facebook can return multiple emails so we'll take the first
                     } else {
@@ -123,10 +143,10 @@ function session(app, db){
      */
     passport.use(new FacebookStrategy({
         // pull in our app id and secret from our auth.js file
-        clientID : config.get('facebookAuth.clientID'),
-        clientSecret : config.get('facebookAuth.clientSecret'),
-        callbackURL : config.get('facebookAuth.callbackURL'),
-        profileFields : ['id', 'emails', 'name']
+        clientID: config.get('facebookAuth.clientID'),
+        clientSecret: config.get('facebookAuth.clientSecret'),
+        callbackURL: config.get('facebookAuth.callbackURL'),
+        profileFields: ['id', 'emails', 'name']
     }, facebookSession));
 
     passport.serializeUser(function(user, done) {
@@ -144,6 +164,8 @@ function session(app, db){
     passport.deserializeUser(function(sessionUser, done) {
         done(null, sessionUser);
     });
+
+
 }
 
 module.exports = session;

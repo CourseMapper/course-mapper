@@ -1,4 +1,6 @@
+/*jslint node: true */
 'use strict';
+
 module.exports = function (grunt) {
     // load all grunt tasks
     grunt.loadNpmTasks('grunt-bowercopy');
