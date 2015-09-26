@@ -254,6 +254,9 @@ function mouseLeave(e) {
     }
 }
 
+function setCurrentCanvasHeight(value){
+  currentCanvasHeight = value;
+}
 
 function rescalingRects(rectClassName, tagClassName) {
     var allElements = $("." + rectClassName);

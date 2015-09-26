@@ -66,14 +66,16 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };
 
     $scope.$watch("tagNames", function (newValue, oldValue) {
-      for(var key in newValue) {
-        console.log(newValue[key]);
-        var response = checkTagName(newValue[key]);
-        if(response.length != 0) {
-          //TODO: failure
-        }
-        else {
-          //TODO:success
+      if(typeof $scope.annZones != "undefined") {
+        for(var key in newValue) {
+          console.log(newValue[key]);
+          var response = checkTagName(newValue[key]);
+          if(response.length != 0) {
+            //TODO: failure
+          }
+          else {
+            //TODO:success
+          }
         }
       }
     },true);

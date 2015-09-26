@@ -1455,10 +1455,8 @@ app.directive('movable', function() {
                     $scope.pdfPageView.draw();
                 });
 
-                $scope.$on('Onpdfpageloaded',function(){
-                  //var currentCanvasHeight = parseInt($('#annotationZone').height());
-                  //drawAnnZonesWhenPDFAndDBDone();
-                  ;
+                $scope.$on('onPdfPageChange',function(){
+                  setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
                 });
             }
         };
@@ -2489,14 +2487,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.$watch("tagNames", function (newValue, oldValue) {
-      for(var key in newValue) {
-        console.log(newValue[key]);
-        var response = checkTagName(newValue[key]);
-        if(response.length != 0) {
-          //TODO: failure
-        }
-        else {
-          //TODO:success
+      if(typeof $scope.annZones != "undefined") {
+        for(var key in newValue) {
+          console.log(newValue[key]);
+          var response = checkTagName(newValue[key]);
+          if(response.length != 0) {
+            //TODO: failure
+          }
+          else {
+            //TODO:success
+          }
         }
       }
     },true);

@@ -132,10 +132,8 @@ app.directive('pdfViewer',
                     $scope.pdfPageView.draw();
                 });
 
-                $scope.$on('Onpdfpageloaded',function(){
-                  //var currentCanvasHeight = parseInt($('#annotationZone').height());
-                  //drawAnnZonesWhenPDFAndDBDone();
-                  ;
+                $scope.$on('onPdfPageChange',function(){
+                  setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
                 });
             }
         };
