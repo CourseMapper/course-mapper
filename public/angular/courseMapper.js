@@ -1454,9 +1454,16 @@ app.directive('movable', function() {
                     $scope.pdfPageView.update($scope.scale,0);
                     $scope.pdfPageView.draw();
                 });
+
+                $scope.$on('Onpdfpageloaded',function(){
+                  //var currentCanvasHeight = parseInt($('#annotationZone').height());
+                  //drawAnnZonesWhenPDFAndDBDone();
+                  ;
+                });
             }
         };
-    });;function Spinner($timeout) {
+    });
+;function Spinner($timeout) {
     return {
         restrict: 'E',
         template: '<i class="fa fa-cog fa-spin"></i>',
