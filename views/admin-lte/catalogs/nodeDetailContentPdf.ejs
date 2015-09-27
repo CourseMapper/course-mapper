@@ -57,26 +57,19 @@
                       </button>
                   </div>
                   <label id="commentSubmissionResponse" style="display: none;"></label>
-                  <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags">
-                    <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
-                      The annotation zone with the name "{{item.name}}" has thrown following error: {{item.text}}
-                    </div>
-                  </div>
+
                 </div>
 
             </div>
 
 
             <div>
-                <div id="annZoneList" style="display:none;"
+                <div id="annZoneList" style=""
                      ng-controller="AnnotationZoneListController">
-                    Annotation Zone List:
-                    <div id="annotationZoneList" ng-repeat="annZone in annZones"
-                         ng-cloak>
-                        <div class="{{annZone.name}}">
-                            {{annZone.name}}
-                            {{annZone.color}}
-                        </div>
+                    <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags">
+                      <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
+                        The annotation zone with the name "{{item.name}}" has thrown following error: {{item.text}}
+                      </div>
                     </div>
                 </div>
                 <div class="commentZoneList">
