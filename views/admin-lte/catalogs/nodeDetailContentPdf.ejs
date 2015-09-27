@@ -17,45 +17,41 @@
 
             <div class="annotation-wrapper">
 
-                <button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>
-                <div id="commentSubmissionDiv" style="display:none;">
+                <!--<button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>-->
+
+                <div id="commentSubmissionDiv" ng-show="writeCommentMode">
                     <form name="commentForm" ng-submit="submitComment()">
                         <fieldset>
                             <div class="control-group">
-                                <label for="rawText">Commenting as {{currentUser.username}}</label>
+                                <!--<label for="rawText">Commenting as {{currentUser.username}}</label>-->
 
-                                <div class="controls">
-                                    <textarea class="form-control" id="rawText" name="rawText"
-                                              ng-model="comment.rawText" placeholder="rawText"></textarea>
-                                </div>
+                                    <div id="rawText" name="rawText"
+                                         ng-model="comment.rawText"
+                                         quill type="pdf-comment">
+                                    </div>
                             </div>
 
-                            <!--Used as Template for annotation zone items -->
-                            <div id="annotationZoneSubmitTemplate" style="visibility: hidden;">
-                                <button class="btn btn-default" onclick="removeAnnotationZone(this);">Remove</button>
-                            </div>
                             <!-- Will be filled when annotation zones are created -->
                             <div id="annotationZoneSubmitList">
                             </div>
 
-
                             <div class="control-group">
                                 <div class="controls">
-
-
+                                    <br class="clear">
                                     <button class="btn btn-primary"> Add Comment
                                         <spinner show="isLoading"></spinner>
                                     </button>
                                 </div>
+
+                                <!--<div id="annotationZoneSubmitListMovables">
+                                    <button class="btn btn-default" onclick="createMovableAnnZone();">
+                                        Add Annotation Zone
+                                    </button>
+                                </div>-->
                             </div>
                         </fieldset>
 
                     </form>
-                </div>
-                <div id="annotationZoneSubmitListMovables">
-                    <button class="btn btn-default" onclick="createMovableAnnZone();">
-                        Add Annotation Zone
-                    </button>
                 </div>
 
             </div>
@@ -102,7 +98,10 @@
                                          posted-date="{{comment.date}}"
                                          post-content="comment.html"
                                          is-post-owner="comment.author==$root.user.username"
-                                         show-control="false"
+                                         show-control="true"
+                                         show-reply-button="true"
+                                         show-delete-button="false"
+                                         show-edit-button="false"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                         ></comment>

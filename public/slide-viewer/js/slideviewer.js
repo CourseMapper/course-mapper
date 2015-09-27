@@ -14,7 +14,7 @@
 };
 */
 //console.log("LOADED RESET");
-var pdfIsLoaded = false;
+//var pdfIsLoaded = false; // moved to controller
 var annotationZonesAreLoaded = false;
 
 var toDrawAnnotationZoneData = [];
@@ -274,6 +274,8 @@ function createMovableAnnZone() {
 };
 
 
+/*
+moved to controller, and used model
 function switchCommentSubmissionDisplay() {
   var div = $("#commentSubmissionDiv");
   if(div.is(':visible'))
@@ -282,3 +284,4 @@ function switchCommentSubmissionDisplay() {
     div.show();
   }
 }
+*/

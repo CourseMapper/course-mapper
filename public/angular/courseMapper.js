@@ -2485,7 +2485,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     //$scope.refreshTags();
 });
-;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout) {
+;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
     $scope.comment = {};
 
@@ -2502,6 +2502,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.tagRelPos = [];
     $scope.tagRelCoord = [];
     $scope.tagColor = [];
+
+    $scope.writeCommentMode = false;
 
     $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
         $scope.currentPageNumber = newSlideNumber;
@@ -2610,7 +2612,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     };
 
-    $scope.submitComment = function (resultVarName) {
+    $scope.submitComment = function () {
         $scope.populateAnnotationZone();
 
         var config = {
@@ -2630,7 +2632,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
         $http.post("/slide-viewer/submitComment/", null, config)
             .success(function (data, status, headers, config) {
-                updateScope($scope.commentGetUrl);
+                $scope.updateScope($scope.commentGetUrl);
                 //$scope.savedZones = data.annotationZones;
 
                 $scope.comment.rawText = '';
@@ -2642,9 +2644,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 console.log("SUBMISSION SUCCESSFUL");
                 $scope.$broadcast('reloadTags');
 
+                $scope.writeCommentMode = false;
             })
             .error(function (data, status, headers, config) {
                 console.log("SUBMIT ERROR");
+                $scope.writeCommentMode = false;
             });
     };
 
@@ -2702,7 +2706,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     };
 
-    function updateScope(url) {
+    $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
             //console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
@@ -2781,17 +2785,22 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
         $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-        updateScope($scope.commentGetUrl);
+        $scope.updateScope($scope.commentGetUrl);
+    };
+
+    $scope.manageActionBar = function(){
+        if($scope.currentTab == 'pdf') {
+            ActionBarService.extraActionsMenu.push({
+                clickAction: $scope.switchCommentSubmissionDisplay,
+                title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
+                aTitle: 'Write a comment on this slide'
+            });
+        }
     };
 
     $scope.init = function () {
         $scope.getComment($scope.orderingOptions[0].id);
     };
-
-    /**
-     * get comments on page load
-     */
-    $scope.init();
 
     $scope.$watch("orderType", function (newValue, oldValue) {
         if (newValue !== oldValue) {
@@ -2807,7 +2816,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.filters = getCurrentFilters($scope.filtersRaw);
             $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
-            updateScope($scope.commentGetUrl);
+            $scope.updateScope($scope.commentGetUrl);
         }
     });
 
@@ -2817,7 +2826,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
         //console.log("commentGetUrl: " + $scope.commentGetUrl);
-        updateScope($scope.commentGetUrl);
+        $scope.updateScope($scope.commentGetUrl);
     });
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
@@ -2826,10 +2835,30 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.filters = getCurrentFilters($scope.filtersRaw);
             $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
-            updateScope($scope.commentGetUrl);
+            $scope.updateScope($scope.commentGetUrl);
         }
     });
 
+    $scope.annotationZoneAction = function(){
+        // in slideviewer.js
+        createMovableAnnZone();
+    };
+
+    $scope.switchCommentSubmissionDisplay = function() {
+        $scope.writeCommentMode = true;
+    }
+
+    $scope.$on('onAfterInitTreeNode', function(event, treeNode){
+        /**
+         * get comments on page load
+         */
+        $scope.init();
+
+        /**
+         * add some action to the menu
+         */
+        $scope.manageActionBar();
+    });
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
