@@ -110,10 +110,16 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     function changeValidationDisplay (key, success, text) {
       if(success){
         console.log("VAL SUCCESS ON " + key);
+        $("#"+key).find(".validationIcon").addClass("glyphicon");
+        $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
+        $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
         //TODO: success
       }
       else {
         console.log("VAL ERROR ON " + key + ": "+text);
+        $("#"+key).find(".validationIcon").addClass("glyphicon");
+        $("#"+key).find(".validationIcon").removeClass("glyphicon-ok-sign");
+        $("#"+key).find(".validationIcon").addClass("glyphicon-remove-sign");
         //TODO: failure
       }
     }
