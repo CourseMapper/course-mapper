@@ -180,7 +180,7 @@ function validateTagObject(currentTag,oldTagList) {
   if(!(currentTag.annotationZoneName.length < 10))
     return false;
   ret &= (currentTag.annotationZoneName[0] == '#');
-  ret &= validator.isAlpha(currentTag.annotationZoneName.substring(1));
+  ret &= validator.isAlphanumeric(currentTag.annotationZoneName.substring(1));
   ret &= nameIsAvailable(currentTag.annotationZoneName,oldTagList);
 
   ret &= validator.isFloat(currentTag.relativeCoordinates.X);
