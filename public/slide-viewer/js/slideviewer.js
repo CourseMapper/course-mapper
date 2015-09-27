@@ -78,11 +78,12 @@ function tagListLoaded(tagList) {
 function drawAnnZonesWhenPDFAndDBDone() {
   //console.log(annotationZonesAreLoaded);
   //console.log(pdfIsLoaded);
-  if(annotationZonesAreLoaded && pdfIsLoaded) {
-    for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
-      //console.log("createAnnotationZones");
-      loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0], false)
-    }
+  if(annotationZonesAreLoaded) {
+      for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
+        //console.log("createAnnotationZones");
+        loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0], false)
+      }
+
   }
 };
 
@@ -123,7 +124,7 @@ function addAnnotationZoneElement(element) {
   $("#annotationZoneSubmitList").append(element);
 
 };
-
+/* moved to commentlistcontroller
 function commentOnSubmit() {
   //console.log("IT WOKRS");
 
@@ -142,10 +143,10 @@ function commentOnSubmit() {
     //TODO: Adapt to next rectangle iteration
     var elementId = $("#annotationZoneSubmitList #rectangleId").eq(i).val();
     var element = $("#"+elementId);
-    var relPosX = element.position().left/rootDivDom.width();
-  	var relPosY = element.position().top/ rootDivDom.height();
-  	var relWidth = element.width()/rootDivDom.width();
-  	var relHeight = element.height()/rootDivDom.height();
+    var relPosX = element.position().left/$('#annotationZone').width();
+  	var relPosY = element.position().top/ $('#annotationZone').height();
+  	var relWidth = element.width()/$('#annotationZone').width();
+  	var relHeight = element.height()/$('#annotationZone').height();
 
     var name = element.find(".slideRectInput").val();
     //console.log("Name found: "+element.find(".slideRectInput").length);
@@ -169,6 +170,7 @@ function commentOnSubmit() {
   return true;
 };
 
+ moved to commentlistcontroller
 function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
   var oldText;
   oldText = $("#tagNames").val();
@@ -192,15 +194,16 @@ function addAnnotationZoneData(name,relPosX,relPosY,relWidth,relHeight,color) {
   }
   $("#tagColor").val(oldText + "" + color);
 
-};
+};*/
 
-
+/*
+used by displayComments only, which is not being called anywhere
 function displayCommentsIntern(filter, order){
 
     var url = "/slide-viewer/disComm";
     var urlFilterOrder = url + "/" + order + "/" + filter;
 
-    /*$.ajax( {
+    /!*$.ajax( {
       "url": urlFilterOrder,
       //"async": false,
       "dataType": "html",
@@ -211,9 +214,11 @@ function displayCommentsIntern(filter, order){
         });
       }
 
-    } );*/
-};
+    } );*!/
+};*/
 
+/*
+not being called anywhere
 function displayComments(){
 
   var fType = $("#filterTypeSelect").val();
@@ -229,8 +234,10 @@ function displayComments(){
   filter = JSON.parse(filter);
   order = JSON.parse(order);
   displayCommentsIntern(JSON.stringify(filter),JSON.stringify(order));
-};
+};*/
 
+/*
+already moved to controller
 function authorLabelClick(element){
   var filterInput = $('#filterValueText');
   var authorName = element.text();
@@ -245,8 +252,10 @@ function authorLabelClick(element){
 
 
 
-};
+};*/
 
+/*
+moved to controller
 function switchRegexFilter(attribute,value){
   var filterInput = $('#filterValueText');
 
@@ -257,9 +266,19 @@ function switchRegexFilter(attribute,value){
     filterInput.val('');
   }
   filterInput.trigger('input');
-};
+};*/
 
 function createMovableAnnZone() {
   var element = loadRect(0, 0, 0.3, 0.3, "000000", "NoNameYet", true);
   addAnnotationZoneElement(element);
 };
+
+
+function switchCommentSubmissionDisplay() {
+  var div = $("#commentSubmissionDiv");
+  if(div.is(':visible'))
+    div.hide();
+  else {
+    div.show();
+  }
+}

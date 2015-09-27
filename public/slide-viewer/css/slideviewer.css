@@ -2,20 +2,35 @@
     border-style: solid;
     border-color: #ff0000;
 }
-
+.hasOnClick{
+    cursor: pointer;
+}
 .blueText{
     color: blue;
 }
 
-.annotationZoneReference{
-    ;
+.slideRectWrapper{
+
+
+
 }
 
+.btn.btn-default.color-dropdown.dropdown-toggle.no-hex{
+  padding: 1px;
+}
+
+
+#viewerWrapper{
+    position: relative;
+    top: 0px;
+    left:0px;
+}
 #annotationZone{
-  top: 0px;
-  width: 100%;
-  height: 100%;
-  position: absolute;
+    bottom: 45px;
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0px;
 }
 .slideRectSpan{
   color: white;
@@ -30,7 +45,7 @@
 .btn-white{
      color: #FFF;
     }
-    
+
 .btn-white:hover{
    color: #FFF;
 }
@@ -61,19 +76,23 @@
     color: #fff
 }
 
-#slideNavigationProgress{
+#slideNavigationProgress,
+.slideNavigationProgress{
   width: 100%;
   height: 4pt;
   background-color: #191919;
 }
 
-#slideNavigationCurrentProgress{
+#slideNavigationCurrentProgress,
+.slideNavigationCurrentProgress
+{
   width:0%;
   height: 100%;
   background-color: yellow;
 }
 
-#slideNavigation{
+#slideNavigation,
+.slideNavigation{
   background-color: black;
   margin-right: 0px;
   margin-left: 0px;
@@ -81,9 +100,6 @@
   padding-bottom: 1%;
   width: 100%;
 }
-
-
-
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;

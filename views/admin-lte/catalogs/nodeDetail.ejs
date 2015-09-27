@@ -3,7 +3,7 @@
     <ol class="breadcrumb">
         <li class="home"><a href="#/cid/{{course._id}}?tab=map&center={{nodeId}}"> &leftarrow;Back &nbsp;&nbsp; {{course.name}}</a></li>
         <li>Map</li>
-        <li class="home">Content Node : <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=preview">{{treeNode.name}}</a></li>
+        <li class="home">Content Node : <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a></li>
         <li class="active">{{tabs[currentTab]}}</li>
     </ol>
     <!-- breadcrumb 2nd row -->
@@ -32,10 +32,11 @@
                 <!-- end tab menu -->
 
                 <div class="tab-content">
-                    <div class="tab-pane active" id="preview">
-                        <div class="col-xs-12 col-md-8">
-                            <% include nodeDetailContentPreview %>
-                        </div>
+                    <div class="tab-pane" id="video">
+                        <% include nodeDetailContentPreview %>
+                    </div>
+                    <div class="tab-pane" id="pdf">
+                        <% include nodeDetailContentPdf %>
                     </div>
                     <div class="tab-pane" id="updates">
                         <% include nodeDetailContentUpdates %>

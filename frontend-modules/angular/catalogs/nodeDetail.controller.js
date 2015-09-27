@@ -8,13 +8,19 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     $scope.nodeId = $routeParams.nodeId;
     $scope.isOwner = false;
     $scope.isNodeOwner = false;
+    $scope.isVideoExist = false;
+    $scope.isPdfExist = false;
+    $scope.videoFile = false;
+    $scope.pdfFile = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
-    $scope.currentTab = "preview";
+    $scope.currentTab = "video";
+    $scope.defaultPath = "video";
     $scope.tabs = {
-        'preview':'Preview',
+        'video':'Video',
+        'pdf':'Pdf',
         'analytics':'Analytics',
         'updates':'Updates',
         'links':'Links'
@@ -48,7 +54,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     };
 
     $scope.manageActionBar = function(){
-        if($scope.currentTab == 'preview' && $scope.treeNode) {
+        if(($scope.currentTab == 'video' || $scope.currentTab == 'pdf') && $scope.treeNode) {
             if (
                 $scope.treeNode.createdBy == $rootScope.user._id) {
 
@@ -65,14 +71,25 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     };
 
     $scope.changeTab = function(){
-        var defaultPath = "preview";
         var q = $location.search();
 
         if(q.tab){
-            defaultPath = q.tab;
+            $scope.defaultPath = q.tab;
+        } else {
+            if($scope.isVideoExist && $scope.isPdfExist){
+                jQuery('#video').addClass('active');
+                jQuery('li.video').addClass('active');
+            } else if($scope.isPdfExist){
+                jQuery('#pdf').addClass('active');
+                jQuery('li.pdf').addClass('active');
+                $scope.defaultPath = 'pdf';
+            } else {
+                jQuery('#video').addClass('active');
+                jQuery('li.video').addClass('active');
+            }
         }
 
-        $scope.currentTab = defaultPath;
+        $scope.currentTab = $scope.defaultPath;
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
         $scope.manageActionBar();
@@ -100,7 +117,18 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
                     $scope.setEditMode();
                 }
 
-                $scope.manageActionBar();
+                for(var i = 0;i < $scope.treeNode.resources.length; i++){
+                    var content = $scope.treeNode.resources[i];
+                    if(content['type'] == 'mp4' || content['type'] == 'video'){
+                        $scope.isVideoExist = true;
+                        $scope.videoFile = content;
+                    } else if(content['type'] == 'pdf'){
+                        $scope.pdfFile = content;
+                        $scope.isPdfExist = true;
+                    }
+                }
+
+                $scope.changeTab();
 
                 $timeout(function(){
                     $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);

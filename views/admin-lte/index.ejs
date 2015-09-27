@@ -288,7 +288,8 @@
         //Set the min-height of the content and sidebar based on the
         //the height of the document.
         $(".carousel").css('max-height', window_height - neg );
-        $(".content-wrapper").css('max-height', window_height - neg - neg2).css('min-height','');
+        $(".content-wrapper").css('max-height', window_height - neg - neg2);
+        $(".content-wrapper").css('min-height', window_height - neg - neg2);
     });
 </script>
 <% include footer %>

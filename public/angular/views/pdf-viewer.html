@@ -1,0 +1,32 @@
+<div class="viewerContainer">
+    <div class="pdfViewer"></div>
+</div>
+
+<!-- pdf pagination -->
+<div class="slideNavigationWrapper">
+    <div class="slideNavigationProgress">
+        <div class="slideNavigationCurrentProgress"></div>
+    </div>
+    <div id="slideNavigation" class="row notSelectable" ng-cloak>
+        <div class="col-md-4 text-center"></div>
+        <div class="col-md-4 text-center">
+            <div class="row">
+            <a class="glyphicon glyphicon-triangle-left iconSlideNav cursor"
+                  aria-hidden="true"
+                  ng-hide="currentPageNumber == 1"
+                  ng-click="changePageNumber(-1)"></a>
+            <span id="slideNavText"
+                  class="fsSlideNav">{{currentPageNumber}}/{{totalPage}}</span>
+            <a class="glyphicon glyphicon-triangle-right iconSlideNav cursor"
+                  aria-hidden="true"
+                  ng-hide="currentPageNumber == totalPage"
+                  ng-click="changePageNumber(1)"></a>
+            </div>
+        </div>
+        <div class="col-md-4 text-right">
+            <a id="btn-fullscreen"
+                class="glyphicon glyphicon-fullscreen iconSlideNav cursor"
+                aria-hidden="true"></a>
+        </div>
+    </div>
+</div>

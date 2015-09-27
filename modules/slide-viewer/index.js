@@ -11,66 +11,92 @@ function Comment(){
 Comment.prototype.submitAnnotation = function(err, params, done){
   var temp = this.convertRawText;
 
-  this.submitAllTags(err,params.tagNames,params.tagRelPos,params.tagRelCoord,params.tagColor,params.pageNumber,function(){
-    var htmlEscapedRawText = validator.escape(params.rawText);
-    temp(htmlEscapedRawText,function(renderedText){
-      var annotationsPDF = new AnnotationsPDF({
-        rawText: htmlEscapedRawText,
-        renderedText: renderedText,
-        author: params.author,
-        pdfId: 1, //TODO: Adapt later
-        pdfPageNumber: params.pageNumber
-      });
+  var annZones = [];
+  if(params.numOfAnnotationZones==1)
+    annZones[0] = params.annotationZones;
+  else
+    annZones = params.annotationZones;
+  this.submitAllTagsObject(err,annZones,params.pdfId,function(completed){
+    if(completed){
+      var htmlEscapedRawText = validator.escape(params.rawText);
+      temp(htmlEscapedRawText,function(renderedText){
+        var annotationsPDF = new AnnotationsPDF({
+          rawText: htmlEscapedRawText,
+          renderedText: renderedText,
+          author: params.author,
+          pdfId: 1,//params.pdfId,
+          pdfPageNumber: params.pageNumber
+        });
 
-      //console.log(this.convertRawText(params.rawText));
+        //console.log(this.convertRawText(params.rawText));
 
 
-      // save it to db
-      annotationsPDF.save(function (err) {
-          if (err) {
-              console.log('annotation submitting error1');
-              // call error callback
-              console.log(err);
-              //errorCallback(err);
-          } else {
-              // call success callback
+        // save it to db
+        annotationsPDF.save(function (errBool) {
+            if (errBool) {
+                err("Server Error: Unable to store annotation");
+                //errorCallback(err);
+            } else {
+                // call success callback
 
-              done(annotationsPDF);
+                done(annotationsPDF);
 
-          }
-      });
-    });
+            }
+          });
+        });
+      }
+      else{
+        err("Server Error: Unable to story one or more annotation zones");
+      }
   });
 };
 
-Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber,callback){
+/*Comment.prototype.submitAllTags = function(err,tagNames,tagRelPos,tagRelCoord,tagColor,pageNumber,callback){
   var annZone = new AnnZones();
-  var tagNameList = tagNames.split(",");
-  var tagRelPosList = tagRelPos.split(",");
-  var tagRelCoordList = tagRelCoord.split(",");
-  var tagColorList = tagColor.split(",");
-
-
-  if(tagNames.length == 0){
+  if(typeof tagNames == 'undefined')
     callback();
-  }
-  else if((tagNameList.length == tagRelPosList.length) && (tagRelCoordList.length == tagRelPosList.length) && (tagRelCoordList.length == tagColorList.length)) {
-    var tagList = [];
-    console.log(tagNameList.length);
-    for(var n=0; n<tagNameList.length; n++) {
-      tagList[n] = [];
-      tagList[n][0] = tagNameList[n];
-      tagList[n][1] = tagRelPosList[n];
-      tagList[n][2] = tagRelCoordList[n];
-      tagList[n][3] = tagColorList[n];
+  else {
+    var tagNameList = tagNames.split(",");
+    var tagRelPosList = tagRelPos.split(",");
+    var tagRelCoordList = tagRelCoord.split(",");
+    var tagColorList = tagColor.split(",");
 
+
+    if(tagNames.length == 0){
+      callback();
     }
+    else if((tagNameList.length == tagRelPosList.length) && (tagRelCoordList.length == tagRelPosList.length) && (tagRelCoordList.length == tagColorList.length)) {
+      var tagList = [];
+      console.log(tagNameList.length);
+      for(var n=0; n<tagNameList.length; n++) {
+        tagList[n] = [];
+        tagList[n][0] = tagNameList[n];
+        tagList[n][1] = tagRelPosList[n];
+        tagList[n][2] = tagRelCoordList[n];
+        tagList[n][3] = tagColorList[n];
 
-    annZone.submitTagList(err,tagList,pageNumber,callback);
+      }
+
+      annZone.submitTagList(err,tagList,pageNumber,callback);
+    }
+    else
+      console.log("Error: Tag string-lists differ");
+
   }
-  else
-    console.log("Error: Tag string-lists differ");
+}*/
 
+Comment.prototype.submitAllTagsObject = function(err,tags,pdfId,callback){
+  var annZone = new AnnZones();
+  if(typeof tags == 'undefined')
+    callback(false);
+  else {
+    if(tags.length == 0){
+      callback(true);
+    }
+    else{
+      annZone.submitTagObjectList(err,tags,pdfId,callback);
+    }
+  }
 }
 
 
@@ -155,12 +181,12 @@ Comment.prototype.handleSubmitPost = function(req, res, next) {
     //console.log(req);
     this.submitAnnotation(
         function error(err){
-            return next(err);
+            return res.status(400).send({result:false, error: err});
         },
-        req.body,
+        req.query,
         function done(annotationsPDF) {
             // todo: implement flash
-            return res.redirect('/slide-viewer/');
+            return res.status(200).send({result: true, annotationsPDF: annotationsPDF});
             // todo: implement redirect to previous screen.
         }
     );

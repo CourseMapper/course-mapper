@@ -15,14 +15,43 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
 
         this.init = function() {
             $scope.commentText = '';
-
-            var annotationId = $scope.source._id;
-            var eventName = annotationId + ':comments:updated';
-
-            socket.on(eventName, function(params) {
+            $scope.isAuthor = ($scope.source.author === currentUser.username);
+            $scope.annotationTypes = [{
+                id: 'embedded-note',
+                name: 'Embedded Note'
+            }, {
+                id: 'note',
+                name: 'Note'
+            }];
+            // Listen for changes in comments
+            socket.on($scope.source._id + ':comments:updated', function(params) {
                 markAuthoredComments(params.comments);
                 $scope.source.comments = params.comments;
             });
+        };
+
+        $scope.editAnnotation = function() {
+            $scope.source.isEditMode = true;
+        };
+
+        $scope.saveAnnotation = function() {
+            var annotation = $scope.source;
+
+            if (!annotation.text) return;
+            if (annotation.start < 0) return;
+            if (annotation.end < annotation.start) return;
+
+            socket.emit('annotations:save', {
+                annotation: annotation
+            });
+            $scope.source.isEditMode = false;
+        };
+
+        $scope.deleteAnnotation = function() {
+            var params = {
+                id: $scope.source._id
+            };
+            socket.emit('annotations:delete', params);
         };
 
         $scope.postComment = function() {

@@ -1,10 +1,15 @@
 <ul class="nav nav-tabs tabs-hide hidden-xs">
-    <li class="active">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=preview"
-           data-toggle="tab" data-target="#preview">
+    <li ng-show="(enrolled || isOwner) && isVideoExist" class="video">
+        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=video"
+           data-toggle="tab" data-target="#video">
+            <i class="fa fa-file-video-o"></i>
+            <span>Video</span></a></li>
+
+    <li ng-show="(enrolled || isOwner) && isPdfExist" class="pdf">
+        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=pdf"
+           data-toggle="tab" data-target="#pdf">
             <i class="fa fa-file-pdf-o"></i>
-            <i class="fa fa-file-video-o"></i><br>
-            <span>Home</span></a></li>
+            <span>Pdf</span></a></li>
 
     <li ng-show="enrolled || isOwner">
         <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=links"
