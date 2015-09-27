@@ -175,7 +175,7 @@ function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
 
 function validateTagObject(currentTag,oldTagList) {
   var ret = true;
-  if(!(currentTag.annotationZoneName.length >= 4))
+  if(!(currentTag.annotationZoneName.length >= 3))
     return false;
   if(!(currentTag.annotationZoneName.length < 10))
     return false;

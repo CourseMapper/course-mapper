@@ -69,28 +69,53 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       if(typeof $scope.annZones != "undefined") {
         for(var key in newValue) {
           console.log(newValue[key]);
-          var response = checkTagName(newValue[key]);
+          var response = $rootScope.checkTagName(newValue[key]);
           if(response.length != 0) {
-            //TODO: failure
+            changeValidationDisplay(key, false, response)
           }
           else {
-            //TODO:success
+            changeValidationDisplay(key, true, response)
           }
         }
       }
     },true);
 
-    function checkTagName(tagName) {
-      if(!(tagName.length >= 4)) {
-          return "Annotation zone name is too short (>3 characters)";
+    $rootScope.checkTagName = function (tagName) {
+      if(!(/^[a-zA-Z0-9]*$/.test(tagName))) {
+        return "Annotation zone contains illegal characters (only alphanumeric allowed)";
+      }
+      if(!(tagName.length >= 3)) {
+        return "Annotation zone name is too short (>=3 characters)";
       }
       if(!(tagName.length < 10)) {
-          return "Annotation zone name is too long (<10 characters)";
+        return "Annotation zone name is too long (<10 characters)";
       }
-      //TODO: check if already exists
+      if(inOldTagList(tagName)) {
+        return "Annotation zone name is already taken (unique over entire document)";
+      }
 
       return "";
     }
 
-    //$scope.refreshTags();
+    function inOldTagList(tagName) {
+      console.log($scope.annZones);
+      for(var key in $scope.annZones) {
+        if($scope.annZones[key].name == "#"+tagName) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function changeValidationDisplay (key, success, text) {
+      if(success){
+        console.log("VAL SUCCESS ON " + key);
+        //TODO: success
+      }
+      else {
+        console.log("VAL ERROR ON " + key + ": "+text);
+        //TODO: failure
+      }
+    }
+
 });

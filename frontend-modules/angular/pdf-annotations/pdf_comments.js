@@ -60,6 +60,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 //console.log("Error encountered while extracting annotation zone during submission.");
                 return false;
             }
+            else if($rootScope.checkTagName(name) != "") {
+                console.log("TAGNAME NOT ACCEPTABLE");
+                return false;
+            }
             else {
                 $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, $scope.currentPageNumber );
             }
@@ -125,7 +129,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.submitComment = function (resultVarName) {
-        $scope.populateAnnotationZone();
+        var annZoneCheckResult = $scope.populateAnnotationZone();
+        if(!annZoneCheckResult) {
+          displayCommentSubmissionResponse("Client Error: Some of the attached annotation zones are invalid");
+          return false;
+        }
 
         var config = {
             params: {
