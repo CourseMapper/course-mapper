@@ -15,10 +15,33 @@
 
 }
 
+ .btn.btn-white.btn-link{
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-right: 6px;
+  padding-left: 6px;
+}
+
 .btn.btn-default.color-dropdown.dropdown-toggle.no-hex{
   padding: 1px;
 }
 
+.slideRect > .ui-resizable-handle.ui-resizable-ne{
+  height: 0px;
+  width: 0px;
+}
+.slideRect > .ui-resizable-handle.ui-resizable-nw{
+  height: 0px;
+  width: 0px;
+}
+.slideRect > .ui-resizable-handle.ui-resizable-sw{
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle{
+  background-color: white;
+}
 
 #viewerWrapper{
     position: relative;

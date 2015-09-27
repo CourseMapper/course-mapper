@@ -2594,7 +2594,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             var name = element.find(".slideRectInput").val();
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
-            var color = element.find(".pick-a-color").val();
+            var color = element.find(".slideRectColorPicker").val().substring(1);
             //console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
@@ -2727,7 +2727,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       var label = $("#commentSubmissionResponse");
       label.text(text);
       label.show();
-      label.fadeOut(2000);
+      label.fadeOut(5000);
     };
 
     $scope.currentUser = "";
