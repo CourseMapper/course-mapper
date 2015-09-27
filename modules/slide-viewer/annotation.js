@@ -27,7 +27,8 @@ var annotationPDFSchema = new mongoose.Schema({
     //votes: {},
     //isDeleted: {},
     pdfId: {
-      type: Number
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
     },
     pdfPageNumber: {
       type: Number

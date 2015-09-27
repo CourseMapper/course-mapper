@@ -43,30 +43,24 @@
                                     </button>
                                 </div>
 
-                                <!--<div id="annotationZoneSubmitListMovables">
-                                    <button class="btn btn-default" onclick="createMovableAnnZone();">
-                                        Add Annotation Zone
-                                    </button>
-                                </div>-->
-                            </div>
-                        </fieldset>
-
                     </form>
+                </div>
+                <div id="annotationZoneSubmitListMovables">
+                    <button class="btn btn-default" onclick="createMovableAnnZone();">
+                        Add Annotation Zone
+                    </button>
                 </div>
 
             </div>
 
 
             <div>
-                <div id="annZoneList" style="display:none;"
+                <div id="annZoneList" style=""
                      ng-controller="AnnotationZoneListController">
-                    Annotation Zone List:
-                    <div id="annotationZoneList" ng-repeat="annZone in annZones"
-                         ng-cloak>
-                        <div class="{{annZone.name}}">
-                            {{annZone.name}}
-                            {{annZone.color}}
-                        </div>
+                    <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags">
+                      <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
+                        The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
+                      </div>
                     </div>
                 </div>
                 <div class="commentZoneList">

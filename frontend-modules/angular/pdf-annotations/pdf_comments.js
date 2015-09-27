@@ -53,12 +53,16 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             var name = element.find(".slideRectInput").val();
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
-            var color = element.find(".pick-a-color").val();
-            //console.log("Color found: "+color);
+            var color = element.find(".slideRectColorPicker").val().substring(1);
+            console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
             if (name == "") {
                 //console.log("Error encountered while extracting annotation zone during submission.");
+                return false;
+            }
+            else if($rootScope.checkTagName(name) != "") {
+                console.log("TAGNAME NOT ACCEPTABLE");
                 return false;
             }
             else {
@@ -125,8 +129,15 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     };
 
-    $scope.submitComment = function () {
-        $scope.populateAnnotationZone();
+    $scope.submitComment = function (resultVarName) {
+        var annZoneCheckResult = $scope.populateAnnotationZone();
+        if(!annZoneCheckResult) {
+          displayCommentSubmissionResponse("Client Error: Some of the attached annotation zones are invalid");
+          return false;
+        }
+
+        $rootScope.clearTagNameErrors();
+
 
         var config = {
             params: {
@@ -148,21 +159,35 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 $scope.updateScope($scope.commentGetUrl);
                 //$scope.savedZones = data.annotationZones;
 
-                $scope.comment.rawText = '';
-                $scope.comment.tagNames = '';
-                $scope.comment.tagRelPos = '';
-                $scope.comment.tagRelCoord = '';
-                $scope.comment.tagColor = '';
+                if(data.result == false){
+                  displayCommentSubmissionResponse(data.error);
+                }
+                else {
+                  displayCommentSubmissionResponse("Comment submission successful!");
 
-                console.log("SUBMISSION SUCCESSFUL");
+                  $scope.comment.rawText = '';
+                  $scope.comment.tagNames = '';
+                  $scope.comment.tagRelPos = '';
+                  $scope.comment.tagRelCoord = '';
+                  $scope.comment.tagColor = '';
+
+                  $("#annotationZoneSubmitList div").remove();
+                }
+
+
                 $scope.$broadcast('reloadTags');
 
-                $scope.writeCommentMode = false;
             })
             .error(function (data, status, headers, config) {
-                console.log("SUBMIT ERROR");
-                $scope.writeCommentMode = false;
+                displayCommentSubmissionResponse("Error: Unexpected Server Response!");
             });
+    };
+
+    function displayCommentSubmissionResponse(text) {
+      var label = $("#commentSubmissionResponse");
+      label.text(text);
+      label.show();
+      label.fadeOut(5000);
     };
 
     $scope.currentUser = "";
@@ -277,7 +302,12 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         if (!isNaN($scope.currentPageNumber)) {
             $scope.filtersRaw['pdfPageNumber'] = $scope.currentPageNumber;
         }
+        if (!(typeof ($scope.pdfFile._id) == "undefined")) {
+          $scope.filtersRaw['pdfId'] = $scope.pdfFile._id;
+        }
 
+
+        console.log($scope.filtersRaw);
         var finalFilters = JSON.stringify($scope.filtersRaw);
 
         console.log("Final Filters: " + finalFilters);
@@ -333,14 +363,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         }
     });
 
-    $scope.$on('onFiltersRawChange', function () {
+    /*$scope.$on('onFiltersRawChange', function () {
         $scope.parseOrderType($scope.orderType.id);
         //console.log("NOTICED FILTERS CHANGE");
         $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
         //console.log("commentGetUrl: " + $scope.commentGetUrl);
         $scope.updateScope($scope.commentGetUrl);
-    });
+    });*/
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
         if (newValue !== oldValue) {

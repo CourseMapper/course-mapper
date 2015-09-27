@@ -254,6 +254,9 @@ function mouseLeave(e) {
     }
 }
 
+function setCurrentCanvasHeight(value){
+  currentCanvasHeight = value;
+}
 
 function rescalingRects(rectClassName, tagClassName) {
     var allElements = $("." + rectClassName);
@@ -312,12 +315,15 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     //creating Div with default values
     element = $('<div/>', {
         movable: "",
+        //"on-moved" : "annZoneMov["+rectPrefix + divCounter+"].reposition",
+        //"ng-style" : "{top: annZoneMov["+rectPrefix + divCounter+"].position.top + '%', left: annZoneMov["+rectPrefix + divCounter+"].position.left + '%', width: annZoneMov["+rectPrefix + divCounter+"].size.width + '%', height: annZoneMov["+rectPrefix + divCounter+"].size.height + '%'}",
         "can-move": canMove,
         id: rectPrefix + divCounter,
         position: 'absolute',
         class: 'slideRect',
         opacity: opacityFactorHighlight
     });
+
 
     element.css({
         position: 'absolute',
@@ -388,6 +394,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         //check if entered string is neither empty nor whitespaced
           if(/\S/.test($(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val())){
             $('#rawText').val($('#rawText').val() +   " #"+ $(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val()+" ");
+            $('#rawText').trigger('change');
             $('#rawText').focus();
           }
         }
@@ -398,27 +405,26 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
       caElement.click(function () {
         if($('#commentSubmissionDiv').css('display')!='none' ){
             $('#rawText').val($('#rawText').val() +   " "+ $(this).parent().attr("data-tagName")+" ");
+            $('#rawText').trigger('change');
             $('#rawText').focus();
         }
       });
         element.css('opacity', opacityFactor);
         element.hover(function () {
             $(this).stop().fadeTo("fast", opacityFactorHighlight);
-            //$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
         }, function () {
             $(this).stop().fadeTo("fast", opacityFactor);
-            //$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
         });
     }
 
     //debuggingTextElement
-    debuggingTextElement = $('<span/>'), {
+    debuggingTextElement = $('<span/>', {
       id: "debuggingTextElement"+divCounter,
       class: "debuggingTextElement"
-    }
+    });
+
     debuggingTextElement.css('color', 'red');
     debuggingTextElement.css('font-size','8pt');
-    //debuggingTextElement.text("blabla");
 
     //Wrapper
     wrapperElement = $('<div/>', {
@@ -431,107 +437,111 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     });
 
 
-    //tagspan element
     spanElement = $('<span/>', {
         id: rectSpanPrefix + divCounter,
         class: 'slideRectSpan'
     });
-    spanElement.css('float', 'left');
+
     spanElement.css("margin-right", "2pt");
 
-
     //inputElement
-    inputElement = $('<input type="text"/>');
-    inputElement.attr("id", "rectInputField-" + divCounter);
-    inputElement.addClass("slideRectInput");
+    if(canMove) {
+      inputElement = $('<input type="text"/>');
+      inputElement.attr("id", "rectInputField-" + divCounter);
+      inputElement.attr("ng-model", "tagNames['" + rectPrefix + divCounter + "']");
+      inputElement.addClass("slideRectInput");
+      inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
 
     inputElement.css({
         'color': 'black',
-        'width': '10pt',
-        'min-width': '10pt',
-        'max-width': '90pt',
         'transition': 'width 0.25s',
         'border': '0'
     });
-    inputElement.attr('data-autosize-input', '{ "space": 20 }');
-    inputElement.autosizeInput();
-    //inputElement.css("backgroundColor",color);
+	}
 
-//colorPicker ELement
-    colorPickerInput = $('<input type="text" />');
-    colorPickerInput.attr("id", "colorPickerInput-" + divCounter);
-    colorPickerInput.addClass('pick-a-color form-control');
-    colorPickerInput.css('float', 'left');
 
-    wrapperElement.append(spanElement);
+    nColorPickerInput = $('<select/>');
+    nColorPickerInput.attr("name","colorpicker-change-background-color");
+    nColorPickerInput.attr("value","#ac725e");
+    nColorPickerInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
+    nColorPickerInput.attr("id", "colorPickerInput-" + divCounter);
+    nColorPickerInput.addClass("slideRectColorPicker");
 
     removeElement = $('<button/>', {
         class: "btn btn-white btn-link",
         onclick: "removeAnnotationZone('" + rectPrefix + divCounter + "');",
         text: "X",
     });
+
     removeElement.css({
         float: "right",
-        "margin-top": "-30px",
+    });
 
-    })
+    checkIconElement = $('<span/>');
+    checkIconElement.addClass("validationIcon");
+    checkIconElement.attr("aria-hidden","true");
+    checkIconElement.attr("id","validationIcon-"+divCounter);
+    checkIconElement.css({
+      color: "white"
+    });
 
+    //Add Class for wrong validation
+    // glyphicon glyphicon-remove-sign
+
+    //Add Class for right validation
+    //glyphicon glyphicon-ok-sign
 
     if (!canMove) {
+        wrapperElement.append(spanElement);
         spanElement.text(tagname);
     }
     else {
         spanElement.text("#");
         spanElement.append(inputElement);
-        wrapperElement.append(colorPickerInput);
+        wrapperElement.append(nColorPickerInput);
+        wrapperElement.css({"margin-left":"-20px"});
+        wrapperElement.append(spanElement);
+        wrapperElement.append(checkIconElement);
         wrapperElement.append(removeElement);
 
-        //spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
+        inputElement.click(function(e) {
+            e.stopPropagation();
+        });
     }
     wrapperElement.append(debuggingTextElement);
     caElement.append(wrapperElement);
     element.append(caElement);
 
-    inputElement.click(function(e) {
-        e.stopPropagation();
-    });
+
 
     element.appendTo('#annotationZone');
 
-    colorPickerInput.pickAColor({
-        showSpectrum: false,
-        showSavedColors: false,
-        saveColorsPerElement: true,
-        fadeMenuToggle: true,
-        showAdvanced: false,
-        showBasicColors: false,
-        showHexInput: false,
-        allowBlank: false,
-        inlineDropdown: true
-    });
-    colorPickerInput.on("change", function () {
-        //console.log("#"+rectPrefix+divCounter);
-        $(this).parent().parent().parent().css("backgroundColor", "#" + $(this).val());
-        //console.log($(this).val());
-    });
-
-    colorPickerInput.parent().css('width', '40px');
+    //colorpicker Stuff
     element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
     divCounter = divCounter + 1;
+
+    $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+
+    $('#destroy').on('click', function() {
+      $('select').simplecolorpicker('destroy');
+    });
+    // By default, activate simplecolorpicker plugin on HTML selects
+    $('#init').trigger('click');
+
+    nColorPickerInput.on('change', function() {
+        $(this).parent().parent().parent().css('background-color', $(this).val());
+        $(this).attr("value",$(this).val());
+
+      });
+
+
     return element;
-
-
 }
 
-
 $(document).ready(function () {
-    //settings
+  initRects();
 
-//console.log("test: "+$('#annotationZone').height());
-    initRects();
-
-    window.onresize = function () {
-        alwaysRescaleRects();
-    }
-
+  window.onresize = function () {
+      alwaysRescaleRects();
+  }
 });

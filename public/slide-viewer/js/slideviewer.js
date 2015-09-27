@@ -93,6 +93,8 @@ function removeAnnotationZone(id) {
   var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
 
   //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
+  var inputId = element.find(".slideRectInput").attr("id");
+  delete angular.element($("#annZoneList")).scope().tagNames[inputId];
 
   annotationInList.parent().remove();
   element.remove();
@@ -269,7 +271,7 @@ function switchRegexFilter(attribute,value){
 };*/
 
 function createMovableAnnZone() {
-  var element = loadRect(0, 0, 0.3, 0.3, "000000", "NoNameYet", true);
+  var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "NoNameYet", true);
   addAnnotationZoneElement(element);
 };
 
@@ -285,3 +287,7 @@ function switchCommentSubmissionDisplay() {
   }
 }
 */
+
+function displayDebug() {
+  console.log("TAGNAMELIST: "+ angular.element($("#annZoneList")).scope().tagNames);
+}
