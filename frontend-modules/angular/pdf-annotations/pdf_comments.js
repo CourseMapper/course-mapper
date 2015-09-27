@@ -135,6 +135,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           return false;
         }
 
+        $rootScope.clearTagNameErrors();
+
+
         var config = {
             params: {
                 rawText: $scope.comment.rawText,
@@ -163,18 +166,19 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 else {
                   displayCommentSubmissionResponse("Comment submission successful!");
 
+
                   $scope.comment.rawText = '';
                   $scope.comment.tagNames = '';
                   $scope.comment.tagRelPos = '';
                   $scope.comment.tagRelCoord = '';
                   $scope.comment.tagColor = '';
-                  $rootScope.clearTagNameErrors();
 
                   $("#annotationZoneSubmitList div").remove();
                 }
 
 
                 $scope.$broadcast('reloadTags');
+
 
             })
             .error(function (data, status, headers, config) {

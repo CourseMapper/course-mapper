@@ -2497,15 +2497,20 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.$watch("tagNames", function (newValue, oldValue) {
-      if(typeof $scope.annZones != "undefined") {
-        for(var key in newValue) {
-          console.log(newValue[key]);
-          var response = $rootScope.checkTagName(newValue[key]);
-          if(response.length != 0) {
-            changeValidationDisplay(key, newValue[key], false, response)
-          }
-          else {
-            changeValidationDisplay(key, newValue[key], true, response)
+      if(newValue != oldValue) {
+        //console.log("IAM ANGRY");
+        //console.log(newValue);
+        //console.log(oldValue);
+        if(typeof $scope.annZones != "undefined") {
+          for(var key in newValue) {
+            //console.log(newValue[key]);
+            var response = $rootScope.checkTagName(newValue[key]);
+            if(response.length != 0) {
+              changeValidationDisplay(key, newValue[key], false, response)
+            }
+            else {
+              changeValidationDisplay(key, newValue[key], true, response)
+            }
           }
         }
       }
@@ -2540,7 +2545,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     function changeValidationDisplay (key, name, success, text) {
       if(success){
-        console.log("VAL SUCCESS ON " + key);
+        //console.log("VAL SUCCESS ON " + key);
         $("#"+key).find(".validationIcon").addClass("glyphicon");
         $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
         $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
@@ -2551,13 +2556,13 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         //TODO: success
       }
       else {
-        console.log("VAL ERROR ON " + key + ": "+text);
+        //console.log("VAL ERROR ON " + key + ": "+text);
         $("#"+key).find(".validationIcon").addClass("glyphicon");
         $("#"+key).find(".validationIcon").removeClass("glyphicon-ok-sign");
         $("#"+key).find(".validationIcon").addClass("glyphicon-remove-sign");
         $scope.tagNameErrors[key] = {name : name, text : text};
-        console.log($scope.tagNameErrors);
-        console.log($scope.tagNameErrors[key]);
+        //console.log($scope.tagNameErrors);
+        //console.log($scope.tagNameErrors[key]);
         $timeout(function(){
           $scope.$apply($scope.tagNameErrors);
         });
@@ -2566,10 +2571,13 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     }
 
     $rootScope.clearTagNameErrors = function () {
-      for(var key in $scope.tagNameErrors) {
-        if($scope.tagNameErrors.hasOwnProperty(key))
-          delete $scope.tagNameErrors[key];
-      }
+      /*for(var key in $scope.tagNameErrors) {
+        delete $scope.tagNameErrors[key];
+        //console.log($scope.tagNameErrors[key]);
+      }*/
+      $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
+      $scope.tagNames = JSON.parse(JSON.stringify({}));
+
       $timeout(function(){
         $scope.$apply($scope.tagNameErrors);
       });
@@ -2713,6 +2721,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
           return false;
         }
 
+        $rootScope.clearTagNameErrors();
+
+
         var config = {
             params: {
                 rawText: $scope.comment.rawText,
@@ -2741,18 +2752,19 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 else {
                   displayCommentSubmissionResponse("Comment submission successful!");
 
+
                   $scope.comment.rawText = '';
                   $scope.comment.tagNames = '';
                   $scope.comment.tagRelPos = '';
                   $scope.comment.tagRelCoord = '';
                   $scope.comment.tagColor = '';
-                  $rootScope.clearTagNameErrors();
 
                   $("#annotationZoneSubmitList div").remove();
                 }
 
 
                 $scope.$broadcast('reloadTags');
+
 
             })
             .error(function (data, status, headers, config) {

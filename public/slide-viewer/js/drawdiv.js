@@ -445,22 +445,24 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     spanElement.css("margin-right", "2pt");
 
     //inputElement
-    inputElement = $('<input type="text"/>');
-    inputElement.attr("id", "rectInputField-" + divCounter);
-    inputElement.attr("ng-model", "tagNames['" + rectPrefix + divCounter + "']");
-    inputElement.addClass("slideRectInput");
-    inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
+    if(canMove) {
+      inputElement = $('<input type="text"/>');
+      inputElement.attr("id", "rectInputField-" + divCounter);
+      inputElement.attr("ng-model", "tagNames['" + rectPrefix + divCounter + "']");
+      inputElement.addClass("slideRectInput");
+      inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
 
-    inputElement.css({
-        'color': 'black',
-        'width': '10pt',
-        'min-width': '10pt',
-        'max-width': '90pt',
-        'transition': 'width 0.25s',
-        'border': '0'
-    });
-    inputElement.attr('data-autosize-input', '{ "space": 20 }');
-    inputElement.autosizeInput();
+      inputElement.css({
+          'color': 'black',
+          'width': '10pt',
+          'min-width': '10pt',
+          'max-width': '90pt',
+          'transition': 'width 0.25s',
+          'border': '0'
+      });
+      inputElement.attr('data-autosize-input', '{ "space": 20 }');
+      inputElement.autosizeInput();
+    }
 
     nColorPickerInput = $('<select/>');
     nColorPickerInput.attr("name","colorpicker-change-background-color");
@@ -505,14 +507,16 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         wrapperElement.append(spanElement);
         wrapperElement.append(checkIconElement);
         wrapperElement.append(removeElement);
+
+        inputElement.click(function(e) {
+            e.stopPropagation();
+        });
     }
     wrapperElement.append(debuggingTextElement);
     caElement.append(wrapperElement);
     element.append(caElement);
 
-    inputElement.click(function(e) {
-        e.stopPropagation();
-    });
+
 
     element.appendTo('#annotationZone');
 
