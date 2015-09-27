@@ -123,6 +123,8 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
     };
 
     $scope.editReply = function(re){
+        $('#editReplyModal').modal('show');
+
         $scope.currentEditPost = re;
         $scope.$broadcast('onEditReplyClicked', re);
     };

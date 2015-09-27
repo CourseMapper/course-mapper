@@ -1164,6 +1164,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 postedBy: '@',
                 postedDate: '@',
                 showControl: '=',
+                showReplyButton: '=',
+                showEditButton: '=',
+                showDeleteButton: '=',
                 authorClickAction: '&',
                 authorClickable: '=',
                 postContent: '=',
@@ -1171,7 +1174,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 isDeleted: '=',
                 postId: '@',
                 editAction: '&',
-                deleteAction: '&'
+                deleteAction: '&',
+                replyAction: '&'
             },
 
             templateUrl: '/angular/views/discussion.reply.html'/*,
@@ -1758,6 +1762,8 @@ app.directive('spinner', Spinner);
     };
 
     $scope.editReply = function(re){
+        $('#editReplyModal').modal('show');
+
         $scope.currentEditPost = re;
         $scope.$broadcast('onEditReplyClicked', re);
     };
