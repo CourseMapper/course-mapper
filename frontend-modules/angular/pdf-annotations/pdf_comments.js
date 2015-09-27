@@ -53,7 +53,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
             var color = element.find(".slideRectColorPicker").val().substring(1);
-            //console.log("Color found: "+color);
+            console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
             if (name == "") {
@@ -168,6 +168,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                   $scope.comment.tagRelPos = '';
                   $scope.comment.tagRelCoord = '';
                   $scope.comment.tagColor = '';
+                  $rootScope.clearTagNameErrors();
 
                   $("#annotationZoneSubmitList div").remove();
                 }

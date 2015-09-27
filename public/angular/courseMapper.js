@@ -2556,6 +2556,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       }
     }
 
+    $rootScope.clearTagNameErrors = function () {
+      for(var key in $scope.tagNameErrors) {
+        if($scope.tagNameErrors.hasOwnProperty(key))
+          delete $scope.tagNameErrors[key];
+      }
+      $timeout(function(){
+        $scope.$apply($scope.tagNameErrors);
+      });
+    };
+
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout) {
 
@@ -2612,7 +2622,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
             var color = element.find(".slideRectColorPicker").val().substring(1);
-            //console.log("Color found: "+color);
+            console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
             if (name == "") {
@@ -2727,6 +2737,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                   $scope.comment.tagRelPos = '';
                   $scope.comment.tagRelCoord = '';
                   $scope.comment.tagColor = '';
+                  $rootScope.clearTagNameErrors();
 
                   $("#annotationZoneSubmitList div").remove();
                 }

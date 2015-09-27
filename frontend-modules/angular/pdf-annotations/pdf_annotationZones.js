@@ -135,4 +135,14 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       }
     }
 
+    $rootScope.clearTagNameErrors = function () {
+      for(var key in $scope.tagNameErrors) {
+        if($scope.tagNameErrors.hasOwnProperty(key))
+          delete $scope.tagNameErrors[key];
+      }
+      $timeout(function(){
+        $scope.$apply($scope.tagNameErrors);
+      });
+    };
+
 });
