@@ -315,12 +315,15 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     //creating Div with default values
     element = $('<div/>', {
         movable: "",
+        //"on-moved" : "annZoneMov["+rectPrefix + divCounter+"].reposition",
+        //"ng-style" : "{top: annZoneMov["+rectPrefix + divCounter+"].position.top + '%', left: annZoneMov["+rectPrefix + divCounter+"].position.left + '%', width: annZoneMov["+rectPrefix + divCounter+"].size.width + '%', height: annZoneMov["+rectPrefix + divCounter+"].size.height + '%'}",
         "can-move": canMove,
         id: rectPrefix + divCounter,
         position: 'absolute',
         class: 'slideRect',
         opacity: opacityFactorHighlight
     });
+
 
     element.css({
         position: 'absolute',

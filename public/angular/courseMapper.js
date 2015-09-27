@@ -2425,12 +2425,21 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.storedAnnZoneColors = [];
     $scope.tagNames = "";
     $scope.tagNameErrors = {};
+    //$scope.annZoneMov = [];
+
 
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
       console.log($scope.storedAnnZones);
     });*/
 
-
+    /*$scope.annZoneMov.reposition = function(params) {
+        if (params.position) {
+            annZoneMov.position = params.position;
+        }
+        if (params.size) {
+            annZoneMov.size = params.size;
+        }
+    };*/
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
