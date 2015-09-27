@@ -406,10 +406,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         element.css('opacity', opacityFactor);
         element.hover(function () {
             $(this).stop().fadeTo("fast", opacityFactorHighlight);
-            //$(this).find(".slideRectSpan").stop().fadeTo("fast",1.0); //can be deleted because parent inherit its opacity
         }, function () {
             $(this).stop().fadeTo("fast", opacityFactor);
-            //$(this).find(".slideRectSpan").stop().fadeTo("fast",opacityFactor);//can be deleted because parent inherit its opacity
         });
     }
 
@@ -418,9 +416,9 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
       id: "debuggingTextElement"+divCounter,
       class: "debuggingTextElement"
     });
+
     debuggingTextElement.css('color', 'red');
     debuggingTextElement.css('font-size','8pt');
-    //debuggingTextElement.text("blabla");
 
     //Wrapper
     wrapperElement = $('<div/>', {
@@ -433,14 +431,12 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     });
 
 
-    //tagspan element
     spanElement = $('<span/>', {
         id: rectSpanPrefix + divCounter,
         class: 'slideRectSpan'
     });
-    //spanElement.css('float', 'left');
-    spanElement.css("margin-right", "2pt");
 
+    spanElement.css("margin-right", "2pt");
 
     //inputElement
     inputElement = $('<input type="text"/>');
@@ -459,56 +455,49 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     });
     inputElement.attr('data-autosize-input', '{ "space": 20 }');
     inputElement.autosizeInput();
-    //inputElement.css("backgroundColor",color);
 
-//colorPicker ELement
-    /*colorPickerInput = $('<input type="text" />');
-    colorPickerInput.attr("id", "colorPickerInput-" + divCounter);
-    colorPickerInput.addClass('pick-a-color form-control');
-    colorPickerInput.css('float', 'left');
-*/
     nColorPickerInput = $('<select/>');
     nColorPickerInput.attr("name","colorpicker-change-background-color");
     nColorPickerInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
     nColorPickerInput.attr("id", "colorPickerInput-" + divCounter);
     nColorPickerInput.addClass("slideRectColorPicker");
 
-  /*  colorPickerWrapper = $('<div/>');
-    colorPickerWrapper.css("backgroundColor", "white");
-    colorPickerWrapper.css("padding","0px");
-    colorPickerWrapper.css("z-index","-1");
-    colorPickerWrapper.css("position","absolute")
-    colorPickerWrapper.addClass("simplecolorpicker icon");
-*/
-
-
     removeElement = $('<button/>', {
         class: "btn btn-white btn-link",
         onclick: "removeAnnotationZone('" + rectPrefix + divCounter + "');",
         text: "X",
     });
+
     removeElement.css({
         float: "right",
+    });
 
-    })
+    checkIconElement = $('<span/>');
+    checkIconElement.addClass("validationIcon");
+    checkIconElement.attr("aria-hidden","true");
+    checkIconElement.attr("id","validationIcon-"+divCounter);
+    checkIconElement.css({
+      color: "white"
+    });
 
+    //Add Class for wrong validation
+    // glyphicon glyphicon-remove-sign
+
+    //Add Class for right validation
+    //glyphicon glyphicon-ok-sign
 
     if (!canMove) {
-          wrapperElement.append(spanElement);
+        wrapperElement.append(spanElement);
         spanElement.text(tagname);
     }
     else {
         spanElement.text("#");
         spanElement.append(inputElement);
         wrapperElement.append(nColorPickerInput);
-        wrapperElement.css({"margin-left":"-19.6px"});
+        wrapperElement.css({"margin-left":"-20px"});
         wrapperElement.append(spanElement);
-        //wrapperElement.append(colorPickerInput);
-        //colorPickerWrapper.append(nColorPickerInput);
-
+        wrapperElement.append(checkIconElement);
         wrapperElement.append(removeElement);
-
-        //spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");
     }
     wrapperElement.append(debuggingTextElement);
     caElement.append(wrapperElement);
@@ -519,25 +508,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     });
 
     element.appendTo('#annotationZone');
-
-    /*colorPickerInput.pickAColor({
-        showSpectrum: false,
-        showSavedColors: false,
-        saveColorsPerElement: true,
-        fadeMenuToggle: true,
-        showAdvanced: false,
-        showBasicColors: false,
-        showHexInput: false,
-        allowBlank: false,
-        inlineDropdown: true
-    });*/
-    /*colorPickerInput.on("change", function () {
-        //console.log("#"+rectPrefix+divCounter);
-        $(this).parent().parent().parent().css("backgroundColor", "#" + $(this).val());
-        //console.log($(this).val());
-    });*/
-
-    //colorPickerInput.parent().css('width', '40px');
 
     //colorpicker Stuff
     element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
@@ -555,24 +525,13 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         $(this).parent().parent().parent().css('background-color', $(this).val());
       });
 
-
-
-
-
     return element;
-
-
 }
 
-
 $(document).ready(function () {
-    //settings
+  initRects();
 
-//console.log("test: "+$('#annotationZone').height());
-    initRects();
-
-    window.onresize = function () {
-        alwaysRescaleRects();
-    }
-
+  window.onresize = function () {
+      alwaysRescaleRects();
+  }
 });
