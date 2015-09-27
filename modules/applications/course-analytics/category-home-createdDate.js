@@ -24,8 +24,7 @@ CatCreatedDate.prototype.run = async ( function(){
 
 
 CatCreatedDate.prototype.render = function(){
-    //TODO: change with moment js for better date formatting
-    //var date = new Date(this.result.dateAdded);
+
     var momentDate = moment(this.result.dateAdded).format('MMMM Do YYYY');
 
 

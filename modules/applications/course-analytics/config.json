@@ -56,16 +56,8 @@
     {
       "name": "Course Listing Date Created",
       "location": "course-listing",
-      "description": "Date of the course created",
-      "entryPoint": "/course-analytics/course-listing.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
-    },
-    {
-      "name": "Course Listing Rating",
-      "location": "course-listing",
-      "description": "Star rating of the course",
-      "entryPoint": "/course-analytics/course-listing-rating.js",
+      "description": "Widget that show the created date of a course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-createdDate.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },
