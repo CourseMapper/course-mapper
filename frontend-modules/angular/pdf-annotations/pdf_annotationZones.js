@@ -3,6 +3,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
     $scope.tagNames = "";
+    $scope.tagNameErrors = {};
 
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
       console.log($scope.storedAnnZones);
@@ -71,10 +72,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           console.log(newValue[key]);
           var response = $rootScope.checkTagName(newValue[key]);
           if(response.length != 0) {
-            changeValidationDisplay(key, false, response)
+            changeValidationDisplay(key, newValue[key], false, response)
           }
           else {
-            changeValidationDisplay(key, true, response)
+            changeValidationDisplay(key, newValue[key], true, response)
           }
         }
       }
@@ -107,12 +108,16 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       return false;
     }
 
-    function changeValidationDisplay (key, success, text) {
+    function changeValidationDisplay (key, name, success, text) {
       if(success){
         console.log("VAL SUCCESS ON " + key);
         $("#"+key).find(".validationIcon").addClass("glyphicon");
         $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
         $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
+        delete $scope.tagNameErrors[key];
+        $timeout(function(){
+          $scope.$apply($scope.tagNameErrors);
+        });
         //TODO: success
       }
       else {
@@ -120,6 +125,12 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         $("#"+key).find(".validationIcon").addClass("glyphicon");
         $("#"+key).find(".validationIcon").removeClass("glyphicon-ok-sign");
         $("#"+key).find(".validationIcon").addClass("glyphicon-remove-sign");
+        $scope.tagNameErrors[key] = {name : name, text : text};
+        console.log($scope.tagNameErrors);
+        console.log($scope.tagNameErrors[key]);
+        $timeout(function(){
+          $scope.$apply($scope.tagNameErrors);
+        });
         //TODO: failure
       }
     }
