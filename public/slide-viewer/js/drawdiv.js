@@ -452,17 +452,13 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
       inputElement.addClass("slideRectInput");
       inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
 
-      inputElement.css({
-          'color': 'black',
-          'width': '10pt',
-          'min-width': '10pt',
-          'max-width': '90pt',
-          'transition': 'width 0.25s',
-          'border': '0'
-      });
-      inputElement.attr('data-autosize-input', '{ "space": 20 }');
-      inputElement.autosizeInput();
-    }
+    inputElement.css({
+        'color': 'black',
+        'transition': 'width 0.25s',
+        'border': '0'
+    });
+	}
+
 
     nColorPickerInput = $('<select/>');
     nColorPickerInput.attr("name","colorpicker-change-background-color");
