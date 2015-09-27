@@ -1458,9 +1458,14 @@ app.directive('movable', function() {
                     $scope.pdfPageView.update($scope.scale,0);
                     $scope.pdfPageView.draw();
                 });
+
+                $scope.$on('onPdfPageChange',function(){
+                  setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
+                });
             }
         };
-    });;function Spinner($timeout) {
+    });
+;function Spinner($timeout) {
     return {
         restrict: 'E',
         template: '<i class="fa fa-cog fa-spin"></i>',
@@ -2424,12 +2429,23 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
+    $scope.tagNames = "";
+    $scope.tagNameErrors = {};
+    //$scope.annZoneMov = [];
+
 
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
       console.log($scope.storedAnnZones);
     });*/
 
-
+    /*$scope.annZoneMov.reposition = function(params) {
+        if (params.position) {
+            annZoneMov.position = params.position;
+        }
+        if (params.size) {
+            annZoneMov.size = params.size;
+        }
+    };*/
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
@@ -2450,6 +2466,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
       });
     };
+
+
+
 
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
       $scope.$emit('reloadTags');
@@ -2483,7 +2502,93 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       );
     };
 
-    //$scope.refreshTags();
+    $scope.$watch("tagNames", function (newValue, oldValue) {
+      if(newValue != oldValue) {
+        //console.log("IAM ANGRY");
+        //console.log(newValue);
+        //console.log(oldValue);
+        if(typeof $scope.annZones != "undefined") {
+          for(var key in newValue) {
+            //console.log(newValue[key]);
+            var response = $rootScope.checkTagName(newValue[key]);
+            if(response.length != 0) {
+              changeValidationDisplay(key, newValue[key], false, response)
+            }
+            else {
+              changeValidationDisplay(key, newValue[key], true, response)
+            }
+          }
+        }
+      }
+    },true);
+
+    $rootScope.checkTagName = function (tagName) {
+      if(!(/^[a-zA-Z0-9]*$/.test(tagName))) {
+        return "Annotation zone contains illegal characters (only alphanumeric allowed)";
+      }
+      if(!(tagName.length >= 3)) {
+        return "Annotation zone name is too short (>=3 characters)";
+      }
+      if(!(tagName.length < 10)) {
+        return "Annotation zone name is too long (<10 characters)";
+      }
+      if(inOldTagList(tagName)) {
+        return "Annotation zone name is already taken (unique over entire document)";
+      }
+
+      return "";
+    }
+
+    function inOldTagList(tagName) {
+      console.log($scope.annZones);
+      for(var key in $scope.annZones) {
+        if($scope.annZones[key].name == "#"+tagName) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function changeValidationDisplay (key, name, success, text) {
+      if(success){
+        //console.log("VAL SUCCESS ON " + key);
+        $("#"+key).find(".validationIcon").addClass("glyphicon");
+        $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
+        $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
+        delete $scope.tagNameErrors[key];
+        $timeout(function(){
+          $scope.$apply($scope.tagNameErrors);
+        });
+        //TODO: success
+      }
+      else {
+        //console.log("VAL ERROR ON " + key + ": "+text);
+        $("#"+key).find(".validationIcon").addClass("glyphicon");
+        $("#"+key).find(".validationIcon").removeClass("glyphicon-ok-sign");
+        $("#"+key).find(".validationIcon").addClass("glyphicon-remove-sign");
+        $scope.tagNameErrors[key] = {name : name, text : text};
+        //console.log($scope.tagNameErrors);
+        //console.log($scope.tagNameErrors[key]);
+        $timeout(function(){
+          $scope.$apply($scope.tagNameErrors);
+        });
+        //TODO: failure
+      }
+    }
+
+    $rootScope.clearTagNameErrors = function () {
+      /*for(var key in $scope.tagNameErrors) {
+        delete $scope.tagNameErrors[key];
+        //console.log($scope.tagNameErrors[key]);
+      }*/
+      $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
+      $scope.tagNames = JSON.parse(JSON.stringify({}));
+
+      $timeout(function(){
+        $scope.$apply($scope.tagNameErrors);
+      });
+    };
+
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
@@ -2540,12 +2645,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             var name = element.find(".slideRectInput").val();
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
-            var color = element.find(".pick-a-color").val();
-            //console.log("Color found: "+color);
+            var color = element.find(".slideRectColorPicker").val().substring(1);
+            console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
             if (name == "") {
                 //console.log("Error encountered while extracting annotation zone during submission.");
+                return false;
+            }
+            else if($rootScope.checkTagName(name) != "") {
+                console.log("TAGNAME NOT ACCEPTABLE");
                 return false;
             }
             else {
@@ -2612,8 +2721,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     };
 
-    $scope.submitComment = function () {
-        $scope.populateAnnotationZone();
+    $scope.submitComment = function (resultVarName) {
+        var annZoneCheckResult = $scope.populateAnnotationZone();
+        if(!annZoneCheckResult) {
+          displayCommentSubmissionResponse("Client Error: Some of the attached annotation zones are invalid");
+          return false;
+        }
+
+        $rootScope.clearTagNameErrors();
+
 
         var config = {
             params: {
@@ -2635,21 +2751,35 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 $scope.updateScope($scope.commentGetUrl);
                 //$scope.savedZones = data.annotationZones;
 
-                $scope.comment.rawText = '';
-                $scope.comment.tagNames = '';
-                $scope.comment.tagRelPos = '';
-                $scope.comment.tagRelCoord = '';
-                $scope.comment.tagColor = '';
+                if(data.result == false){
+                  displayCommentSubmissionResponse(data.error);
+                }
+                else {
+                  displayCommentSubmissionResponse("Comment submission successful!");
 
-                console.log("SUBMISSION SUCCESSFUL");
+                  $scope.comment.rawText = '';
+                  $scope.comment.tagNames = '';
+                  $scope.comment.tagRelPos = '';
+                  $scope.comment.tagRelCoord = '';
+                  $scope.comment.tagColor = '';
+
+                  $("#annotationZoneSubmitList div").remove();
+                }
+
+
                 $scope.$broadcast('reloadTags');
 
-                $scope.writeCommentMode = false;
             })
             .error(function (data, status, headers, config) {
-                console.log("SUBMIT ERROR");
-                $scope.writeCommentMode = false;
+                displayCommentSubmissionResponse("Error: Unexpected Server Response!");
             });
+    };
+
+    function displayCommentSubmissionResponse(text) {
+      var label = $("#commentSubmissionResponse");
+      label.text(text);
+      label.show();
+      label.fadeOut(5000);
     };
 
     $scope.currentUser = "";
@@ -2764,7 +2894,12 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         if (!isNaN($scope.currentPageNumber)) {
             $scope.filtersRaw['pdfPageNumber'] = $scope.currentPageNumber;
         }
+        if (!(typeof ($scope.pdfFile._id) == "undefined")) {
+          $scope.filtersRaw['pdfId'] = $scope.pdfFile._id;
+        }
 
+
+        console.log($scope.filtersRaw);
         var finalFilters = JSON.stringify($scope.filtersRaw);
 
         console.log("Final Filters: " + finalFilters);
@@ -2820,14 +2955,14 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     });
 
-    $scope.$on('onFiltersRawChange', function () {
+    /*$scope.$on('onFiltersRawChange', function () {
         $scope.parseOrderType($scope.orderType.id);
         //console.log("NOTICED FILTERS CHANGE");
         $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
         //console.log("commentGetUrl: " + $scope.commentGetUrl);
         $scope.updateScope($scope.commentGetUrl);
-    });
+    });*/
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
         if (newValue !== oldValue) {
