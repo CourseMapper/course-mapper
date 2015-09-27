@@ -3,7 +3,6 @@
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
     function($scope, socket, rootScope) {
-        var currentUser = rootScope.user;
 
         var onLeave = function onLeave(currentTime, timeLapse, params) {
             params.completed = false;
@@ -61,6 +60,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             $scope.annotations = [];
             $scope.cuePoints.points = [];
             $scope.selectedAnnotation = null;
+
+            var currentUser = rootScope.user;
 
             _.sortBy(annotations, 'start')
                 .forEach(function(annotation) {
