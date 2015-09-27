@@ -438,7 +438,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         id: rectSpanPrefix + divCounter,
         class: 'slideRectSpan'
     });
-    spanElement.css('float', 'left');
+    //spanElement.css('float', 'left');
     spanElement.css("margin-right", "2pt");
 
 
@@ -480,7 +480,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     colorPickerWrapper.css("position","absolute")
     colorPickerWrapper.addClass("simplecolorpicker icon");
 */
-    wrapperElement.append(spanElement);
+
 
     removeElement = $('<button/>', {
         class: "btn btn-white btn-link",
@@ -489,20 +489,23 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     });
     removeElement.css({
         float: "right",
-        "margin-top": "-30px",
 
     })
 
 
     if (!canMove) {
+          wrapperElement.append(spanElement);
         spanElement.text(tagname);
     }
     else {
         spanElement.text("#");
         spanElement.append(inputElement);
+        wrapperElement.append(nColorPickerInput);
+        wrapperElement.css({"margin-left":"-19.6px"});
+        wrapperElement.append(spanElement);
         //wrapperElement.append(colorPickerInput);
         //colorPickerWrapper.append(nColorPickerInput);
-        wrapperElement.append(nColorPickerInput);
+
         wrapperElement.append(removeElement);
 
         //spanElement.text("#{{storedAnnZones['"+ rectPrefix+divCounter +"']}}");

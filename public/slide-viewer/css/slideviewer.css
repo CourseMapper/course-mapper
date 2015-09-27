@@ -19,6 +19,23 @@
   padding: 1px;
 }
 
+.slideRect > .ui-resizable-handle.ui-resizable-ne{
+  height: 0px;
+  width: 0px;
+}
+.slideRect > .ui-resizable-handle.ui-resizable-nw{
+  height: 0px;
+  width: 0px;
+}
+.slideRect > .ui-resizable-handle.ui-resizable-sw{
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle{
+  background-color: white;
+}
+
 #viewerWrapper{
     position: relative;
     top: 0px;
