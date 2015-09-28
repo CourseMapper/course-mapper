@@ -1,4 +1,4 @@
-app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -16,14 +16,6 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $
         var onafter = 'onAfterGetWidgets' + $scope.location;
         $scope.$on(onafter, function (event, installedWidgets) {
             $scope.installedWidgets = installedWidgets;
-
-            for(var i in $scope.installedWidgets){
-                var wdg = $scope.installedWidgets[i];
-
-                // loop to load the js (if exist)
-                if(wdg.widgetJavascript)
-                    $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetJavascript );
-            }
         });
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;

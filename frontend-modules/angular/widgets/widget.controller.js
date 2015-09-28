@@ -1,6 +1,7 @@
-app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
+app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
+    $scope.widgetsTemp = [];
 
     $scope.initWidgetButton = function(id){
         $.AdminLTE.boxWidget.activate();
@@ -28,9 +29,6 @@ app.controller('widgetController', function($scope, $http, $rootScope, $timeout)
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
-            //for(var i in $scope.widgets){
-            //    grid.remove_widget();
-            //}
 
             $scope.getWidgets();
         });
@@ -60,9 +58,25 @@ app.controller('widgetController', function($scope, $http, $rootScope, $timeout)
             id = $scope.course._id;
 
         $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
-            $scope.widgets = data.widgets;
+            $scope.widgetsTemp = data.widgets;
 
-            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgets);
+            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgetTemps);
+
+            for(var i in $scope.widgetsTemp){
+                var wdg = $scope.widgetsTemp[i];
+
+                // loop to load the js (if exist)
+                if(wdg.widgetId.widgetJavascript) {
+                    (function(wdg) {
+                        $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetId.widgetJavascript).then(function() {
+                            $scope.widgets.push(wdg);
+                        });
+                    })(wdg);
+
+                } else {
+                    $scope.widgets.push(wdg);
+                }
+            }
         });
     };
 

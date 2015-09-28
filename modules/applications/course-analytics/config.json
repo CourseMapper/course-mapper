@@ -39,7 +39,8 @@
       "name": "Top Contributors",
       "location": "course-preview",
       "description": "List of top contributor for current course",
-      "entryPoint": "/course-analytics/top-contributors",
+      "entryPoint": "/course-analytics/ca-preview-top-contributors",
+      "widgetJavascript": "ca-preview-top-contributors.js",
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -48,7 +49,8 @@
       "name": "Course Statistics",
       "location": "course-preview",
       "description": "Course Statistics data for current course",
-      "entryPoint": "/course-analytics/course-statistics",
+      "entryPoint": "/course-analytics/ca-preview-statistics",
+      "widgetJavascript": "ca-preview-statistics.js",
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -56,23 +58,15 @@
     {
       "name": "Course Listing Date Created",
       "location": "course-listing",
-      "description": "Date of the course created",
-      "entryPoint": "/course-analytics/course-listing.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
-    },
-    {
-      "name": "Course Listing Rating",
-      "location": "course-listing",
-      "description": "Star rating of the course",
-      "entryPoint": "/course-analytics/course-listing-rating.js",
+      "description": "Widget that show the created date of a course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-createdDate.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },
     {
       "name": "node topic",
       "location": "node-icon-analytics",
-      "description": "bbb bbb",
+      "description": "analytic icons in node topic",
       "entryPoint": "/course-analytics/icon-analytics.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
