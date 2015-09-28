@@ -15,17 +15,18 @@
       "name": "My Summary",
       "location": "user-profile",
       "description": "Radar Graph to show summary of your learning process",
-      "entryPoint": "/my-course/my-summary",
+      "entryPoint": "/my-course/my-activity-summary",
       "widgetJavascript": "my-summary.js",
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "My CourseProgress",
+      "name": "My Course History Progress",
       "location": "user-profile",
-      "description": "Line Graph to show history progress of one particular course",
+      "description": "Line graph to show history progress of my following course",
       "entryPoint": "/my-course/my-course-progress",
+      "widgetJavascript": "my-course-history-progress.js",
       "width": 7,
       "height":1,
       "icon":"/img/appPlaceholder.png"
