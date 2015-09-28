@@ -67,11 +67,12 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
 
                 // loop to load the js (if exist)
                 if(wdg.widgetId.widgetJavascript) {
-                    $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetId.widgetJavascript).then(
-                        function(){
+                    (function(wdg) {
+                        $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetId.widgetJavascript).then(function() {
                             $scope.widgets.push(wdg);
-                        }
-                    );
+                        });
+                    })(wdg);
+
                 } else {
                     $scope.widgets.push(wdg);
                 }
