@@ -16,8 +16,8 @@ router.get('/course-statistics', function(req, res, next) {
     res.render('course-analytics/courseStatistics');
 });
 
-router.get('/top-contributors', function(req, res, next) {
-    res.render('course-analytics/topContributors');
+router.get('/ca-top-contributors', function(req, res, next) {
+    res.render('course-analytics/ca-top-contributors');
 });
 
 

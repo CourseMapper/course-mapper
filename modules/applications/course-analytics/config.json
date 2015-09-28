@@ -39,7 +39,8 @@
       "name": "Top Contributors",
       "location": "course-preview",
       "description": "List of top contributor for current course",
-      "entryPoint": "/course-analytics/top-contributors",
+      "entryPoint": "/course-analytics/ca-top-contributors",
+      "widgetJavascript": "ca-top-contributors.js",
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
