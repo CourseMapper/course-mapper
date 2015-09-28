@@ -62,6 +62,7 @@
                     $timeout(function () {
 
                         scope.editor = new Quill(element.children()[1], scope.options);
+                        scope.editor.quillId = inputId;
 
                         $(inputId + ' .editor').click(function(){
                             scope.editor.focus()
