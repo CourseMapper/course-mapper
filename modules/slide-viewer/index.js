@@ -20,7 +20,8 @@ Comment.prototype.submitAnnotation = function(err, params, done){
   //console.log(err(""));
   this.submitAllTagsObject(err,annZones,params.pdfId,function(completed){
     if(completed){
-      var htmlEscapedRawText = validator.escape(params.rawText);
+      //var htmlEscapedRawText = validator.escape(params.rawText);//TODO: Put back in when whitelisting is complete
+      var htmlEscapedRawText = params.rawText;
       temp(htmlEscapedRawText,function(renderedText){
         var annotationsPDF = new AnnotationsPDF({
           rawText: htmlEscapedRawText,

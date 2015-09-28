@@ -108,6 +108,7 @@ app.directive('pdfViewer',
                 };
 
                 $scope.changeSlide = function (newSlideNumber) {
+                    $rootScope.clearTagNameErrors();
                     $scope.pdfIsLoaded = false;
 
                     $scope.pageToView = newSlideNumber;

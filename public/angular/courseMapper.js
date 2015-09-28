@@ -1435,6 +1435,7 @@ app.directive('movable', function() {
                 };
 
                 $scope.changeSlide = function (newSlideNumber) {
+                    $rootScope.clearTagNameErrors();
                     $scope.pdfIsLoaded = false;
 
                     $scope.pageToView = newSlideNumber;
