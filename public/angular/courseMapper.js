@@ -1505,9 +1505,14 @@ app.directive('movable', function() {
                     }
                 });
 
-                $scope.$on('$routeUpdate', function(){
+                $scope.$on('$routeUpdate', function(next, current){
                     if(!$location.search().slidePage) {
                         $scope.setHistoryStack($scope.currentPageNumber);
+                    } else {
+                        var sp = parseInt($location.search().slidePage);
+                        if(sp > 0 && sp != $scope.currentPageNumber && sp <= $scope.totalPage){
+                            $scope.changePageNumberBasedOnUrl();
+                        }
                     }
                 });
             }
