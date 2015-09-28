@@ -36,7 +36,6 @@
                             <div id="annZoneList"
                                  ng-controller="AnnotationZoneListController">
                                 <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
-                                    <br class="clear">
                                     <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
                                     </div>
