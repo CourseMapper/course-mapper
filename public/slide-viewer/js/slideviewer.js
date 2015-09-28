@@ -14,7 +14,7 @@
 };
 */
 //console.log("LOADED RESET");
-var pdfIsLoaded = false;
+//var pdfIsLoaded = false; // moved to controller
 var annotationZonesAreLoaded = false;
 
 var toDrawAnnotationZoneData = [];
@@ -93,6 +93,8 @@ function removeAnnotationZone(id) {
   var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
 
   //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
+  var inputId = element.find(".slideRectInput").attr("id");
+  delete angular.element($("#annZoneList")).scope().tagNames[inputId];
 
   annotationInList.parent().remove();
   element.remove();
@@ -269,11 +271,13 @@ function switchRegexFilter(attribute,value){
 };*/
 
 function createMovableAnnZone() {
-  var element = loadRect(0, 0, 0.3, 0.3, "000000", "NoNameYet", true);
+  var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "NoNameYet", true);
   addAnnotationZoneElement(element);
 };
 
 
+/*
+moved to controller, and used model
 function switchCommentSubmissionDisplay() {
   var div = $("#commentSubmissionDiv");
   if(div.is(':visible'))
@@ -281,4 +285,9 @@ function switchCommentSubmissionDisplay() {
   else {
     div.show();
   }
+}
+*/
+
+function displayDebug() {
+  console.log("TAGNAMELIST: "+ angular.element($("#annZoneList")).scope().tagNames);
 }

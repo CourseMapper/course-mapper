@@ -13,21 +13,28 @@
     </div>
     <div class="box-footer" ng-show="showControl">
         <div class="replyControl"
-             ng-show="isPostOwner && !isDeleted"
-                >
+             ng-show="!isDeleted" >
+            <div class="replyButton">
+                <a ng-show="showReplyButton"
+                   title="Reply"
+                   ng-click="replyAction()"
+                   class="btn btn-primary btn-xs cursor"
+                        >REPLY</a>
+            </div>
+
             <div class="editReplyButton">
-                <a ng-show="isPostOwner" style="cursor: pointer;"
-                   data-toggle="modal" data-target="#editReplyModal"
+                <a ng-show="isPostOwner && showEditButton"
                    title="Edit"
                    ng-click="editAction()"
                    class="btn btn-primary btn-xs"
                         >EDIT</a>
             </div>
+
             <div class="deleteReplyButton">
-                <a style="cursor: pointer;" ng-show="isPostOwner"
+                <a ng-show="isPostOwner && showDeleteButton"
                    ng-click="deleteAction()"
                    title="delete"
-                   class="btn btn-danger btn-xs">DELETE</a>
+                   class="cursor btn btn-danger btn-xs">DELETE</a>
             </div>
         </div>
     </div>

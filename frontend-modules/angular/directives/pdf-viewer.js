@@ -131,6 +131,10 @@ app.directive('pdfViewer',
                     $scope.pdfPageView.update($scope.scale,0);
                     $scope.pdfPageView.draw();
                 });
+
+                $scope.$on('onPdfPageChange',function(){
+                  setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
+                });
             }
         };
     });
