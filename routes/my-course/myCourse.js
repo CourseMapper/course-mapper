@@ -35,12 +35,6 @@ router.get('/my-course-progress', function(req, res, next) {
     res.render('my-course/courseHistory');
 });
 
-/**
- * example of an entry point route
- */
-router.get('/journey', function(req, res, next) {
-    res.render('my-course/journey' );
-});
 
 
 module.exports = router;
