@@ -57,11 +57,13 @@
                                     <div class="box-header with-border">
                                         <a href="/course/{{c.slug}}/#/cid/{{c._id}}" class="box-title">{{c.name}}</a>
                                     </div>
-                                    <div class="box-body">
+                                    <div class="box-body course-list" style="height: 140px;">
                                         <div class="courses-analytics" ng-bind-html="widgets[c._id]">
                                         </div>
-                                        <a class="btn btn-primary" href="/course/{{c.slug}}/#/cid/{{c._id}}"><i
-                                                class=""></i> Go to course</a>
+
+                                    </div>
+                                    <div class="box-footer">
+                                        <a class="btn btn-primary" href="/course/{{c.slug}}/#/cid/{{c._id}}"><i class=""></i> Go to course</a>
                                     </div>
                                 </div>
                             </div>
