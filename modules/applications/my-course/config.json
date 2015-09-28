@@ -16,6 +16,7 @@
       "location": "user-profile",
       "description": "Radar Graph to show summary of your learning process",
       "entryPoint": "/my-course/my-summary",
+      "widgetJavascript": "my-summary.js",
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -26,24 +27,6 @@
       "description": "Line Graph to show history progress of one particular course",
       "entryPoint": "/my-course/my-course-progress",
       "width": 7,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "My Progress",
-      "location": "course-preview",
-      "description": "show your overal progress on this particular course",
-      "entryPoint": "/my-course/journey",
-      "width": 12,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "Contributor",
-      "location": "course-preview",
-      "description": "show contributor of this course",
-      "entryPoint": "/my-course/journey",
-      "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     }
