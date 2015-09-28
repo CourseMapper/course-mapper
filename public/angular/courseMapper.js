@@ -3097,9 +3097,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     }
 
 });
-;app.controller('widgetController', function($scope, $http, $rootScope, $timeout) {
+;app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
+    $scope.widgetsTemp = [];
 
     $scope.initWidgetButton = function(id){
         $.AdminLTE.boxWidget.activate();
@@ -3127,9 +3128,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
-            //for(var i in $scope.widgets){
-            //    grid.remove_widget();
-            //}
 
             $scope.getWidgets();
         });
@@ -3159,9 +3157,24 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             id = $scope.course._id;
 
         $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
-            $scope.widgets = data.widgets;
+            $scope.widgetsTemp = data.widgets;
 
-            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgets);
+            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgetTemps);
+
+            for(var i in $scope.widgetsTemp){
+                var wdg = $scope.widgetsTemp[i];
+
+                // loop to load the js (if exist)
+                if(wdg.widgetId.widgetJavascript) {
+                    $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetId.widgetJavascript).then(
+                        function(){
+                            $scope.widgets.push(wdg);
+                        }
+                    );
+                } else {
+                    $scope.widgets.push(wdg);
+                }
+            }
         });
     };
 
@@ -3246,7 +3259,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     }
 });
-;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -3264,14 +3277,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         var onafter = 'onAfterGetWidgets' + $scope.location;
         $scope.$on(onafter, function (event, installedWidgets) {
             $scope.installedWidgets = installedWidgets;
-
-            for(var i in $scope.installedWidgets){
-                var wdg = $scope.installedWidgets[i];
-
-                // loop to load the js (if exist)
-                if(wdg.widgetId.widgetJavascript)
-                    $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetId.widgetJavascript );
-            }
         });
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
