@@ -12,12 +12,12 @@ var router = express.Router();
 /**
  * entry point route for course-analytics
  */
-router.get('/course-statistics', function(req, res, next) {
-    res.render('course-analytics/courseStatistics');
+router.get('/ca-preview-statistics', function(req, res, next) {
+    res.render('course-analytics/ca-preview-statistics');
 });
 
-router.get('/ca-top-contributors', function(req, res, next) {
-    res.render('course-analytics/ca-top-contributors');
+router.get('/ca-preview-top-contributors', function(req, res, next) {
+    res.render('course-analytics/ca-preview-top-contributors');
 });
 
 

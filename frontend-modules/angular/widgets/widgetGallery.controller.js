@@ -21,8 +21,8 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, $
                 var wdg = $scope.installedWidgets[i];
 
                 // loop to load the js (if exist)
-                if(wdg.widgetJavascript)
-                    $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetJavascript );
+                if(wdg.widgetId.widgetJavascript)
+                    $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetId.widgetJavascript );
             }
         });
 

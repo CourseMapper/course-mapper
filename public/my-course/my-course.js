@@ -38,12 +38,6 @@ angular.module('MyCourseApp', ['chart.js'])
 		];
 	}, 3000);
 }])
-.controller('CatListController', function($scope, $http) {
-	$scope.title = "List of Categories";
-	$http.get('/api/categories').success(function (data) {
-	    $scope.categories = data.categories;
-	});
-})
 .controller('RadarSummaryController', function($scope){
 	$scope.title = "My Course Summary";
 	$scope.labels = ["Video Watched", "PDF Read", "Course Follow", "Likes", "Comments"];
