@@ -394,7 +394,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         //check if entered string is neither empty nor whitespaced
           if(/\S/.test($(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val())){
             for(i=0; i<Quill.editors.length; i++){
-              if(Quill.editors[i]!="undefined"){
+              if(Quill.editors[i].quillId=='#rawText'){
                 Quill.editors[i].insertText(Quill.editors[i].getLength()-1, " #"+ $(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val()+" ", true);
                 Quill.editors[i].focus();
               }
@@ -409,7 +409,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
       caElement.click(function () {
         if($('#commentSubmissionDiv').css('display')!='none' ){
           for(i=0; i<Quill.editors.length; i++){
-            if(Quill.editors[i]!="undefined"){
+              if(Quill.editors[i].quillId=='#rawText'){
               Quill.editors[i].insertText(Quill.editors[i].getLength()-1, " "+ $(this).parent().attr("data-tagName")+" ", true);
               Quill.editors[i].focus();
             }
