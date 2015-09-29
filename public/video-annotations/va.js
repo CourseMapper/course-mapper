@@ -146,6 +146,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
             var defaultAnnotation = {
                 "isEditMode": true,
+                "isDefault": true,
                 "start": startTime,
                 "end": endTime,
                 "position": {
@@ -178,8 +179,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             $scope.cuePoints.points = [];
             $scope.selectedAnnotation = null;
 
-            var currentUser = rootScope.user;
-
             _.sortBy(annotations, 'start')
                 .forEach(function(annotation) {
                     var cuePoint = {
@@ -192,8 +191,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                         onComplete: onComplete,
                         params: annotation
                     };
-                    console.log(cuePoint.timeLapse.start)
-                    console.log(cuePoint.timeLapse.end)
                     $scope.cuePoints.points.push(cuePoint);
 
                     annotation.isAuthor = checkIsAuthor(annotation);

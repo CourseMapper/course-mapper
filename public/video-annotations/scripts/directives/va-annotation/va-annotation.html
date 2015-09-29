@@ -36,7 +36,7 @@
             <div class="editReplyButton">
                 <a class="btn btn-primary btn-xs" ng-click="saveAnnotation()">SAVE</a>
             </div>
-            <div class="deleteReplyButton">
+            <div class="deleteReplyButton" ng-hide="source.isDefault">
                 <a ng-click="closeAnnotation()" class="btn btn-danger btn-xs">CLOSE</a>
             </div>
         </div>
