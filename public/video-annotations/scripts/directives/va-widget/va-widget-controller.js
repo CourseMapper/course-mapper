@@ -30,11 +30,12 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             // default offset seconds for the end of
             // the annotation
             var startTime = new Date($scope.API.currentTime);
-            var endTime = new Date($scope.API.currentTime + 5 * 1000);
+            var endTime = new Date($scope.API.currentTime + (5 * 1000));
 
             var defaultAnnotation = {
                 "isEditMode": true,
                 "isDefault": true,
+                "isAuthor": true,
                 "start": startTime,
                 "end": endTime,
                 "position": {
@@ -53,7 +54,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
 
         $scope.seekPosition = function(annotation) {
-            $scope.API.seekTime(new Date(annotation.start).getTime() + 0.001);
+            $scope.API.seekTime(new Date(annotation.start).getTime());
             $scope.API.pause();
         };
 
@@ -71,7 +72,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                 .forEach(function(annotation) {
                     var cuePoint = {
                         timeLapse: {
-                            start: new Date(annotation.start).getTime() / 1000,
+                            start: (new Date(annotation.start).getTime() - 0.001) / 1000,
                             end: new Date(annotation.end).getTime() / 1000
                         },
                         onLeave: onLeave,
