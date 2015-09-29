@@ -45,6 +45,10 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             $scope.source.isEditMode = true;
         };
 
+        $scope.closeAnnotation = function() {
+            $scope.source.isEditMode = false;
+        };
+
         $scope.saveAnnotation = function() {
             var annotation = $scope.source;
 
@@ -111,29 +115,34 @@ videoAnnotationsModule.directive('videoAnnotation', function() {
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
     function($scope, socket, rootScope) {
-        var currentUser = rootScope.user;
 
-        var onLeave = function onLeave(currentTime, timeLapse, params) {
+        var onLeave = function(currentTime, timeLapse, params) {
             params.completed = false;
             params.showing = false;
         };
 
-        var onComplete = function onComplete(currentTime, timeLapse, params) {
+        var onComplete = function(currentTime, timeLapse, params) {
             params.completed = true;
             params.showing = false;
         };
 
-        var onUpdate = function onUpdate(currentTime, timeLapse, params) {
+        var onUpdate = function(currentTime, timeLapse, params) {
             if (!params.showing) {
                 params.completed = false;
                 params.showing = true;
             }
         };
 
+        var checkIsAuthor = function(item) {
+            return (item.author === rootScope.user.username);
+        };
+
         $scope.createAnnotation = function() {
-            // get current playback time
-            var startTime = Math.floor($scope.API.currentTime / 1000);
-            var endTime = startTime + 5;
+            // get current playback time and add
+            // default offset seconds for the end of
+            // the annotation
+            var startTime = new Date($scope.API.currentTime);
+            var endTime = new Date($scope.API.currentTime + 5 * 1000);
 
             var defaultAnnotation = {
                 "isEditMode": true,
@@ -155,8 +164,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
 
         $scope.seekPosition = function(annotation) {
-            // add .001 to seek time in order to show inline annotations
-            $scope.API.seekTime(annotation.start + 0.001);
+            $scope.API.seekTime(new Date(annotation.start).getTime() + 0.001);
             $scope.API.pause();
         };
 
@@ -174,15 +182,19 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                 .forEach(function(annotation) {
                     var cuePoint = {
                         timeLapse: {
-                            start: annotation.start,
-                            end: annotation.end
+                            start: new Date(annotation.start).getTime() / 1000,
+                            end: new Date(annotation.end).getTime() / 1000
                         },
                         onLeave: onLeave,
                         onUpdate: onUpdate,
                         onComplete: onComplete,
                         params: annotation
                     };
-                    annotation.isAuthor = (annotation.author === currentUser.username);
+                    console.log(cuePoint.timeLapse.start)
+                    console.log(cuePoint.timeLapse.end)
+                    $scope.cuePoints.points.push(cuePoint);
+
+                    annotation.isAuthor = checkIsAuthor(annotation);
                     annotation.reposition = function(params) {
                         if (params.position) {
                             annotation.position = params.position;
@@ -191,13 +203,12 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                             annotation.size = params.size;
                         }
                     };
-
-                    _.forEach(annotation.comments, function(comment) {
-                        comment.isAuthor = (comment.author === currentUser.username);
-                    });
-
                     $scope.annotations.push(annotation);
-                    $scope.cuePoints.points.push(cuePoint);
+
+                    // find current user comments
+                    _.forEach(annotation.comments, function(c) {
+                        c.isAuthor = checkIsAuthor(c);
+                    });
                 });
         });
 

@@ -38,8 +38,8 @@ function session(app, db, io) {
 
     // Use session for Socket.IO
     io.use(function(socket, next) {
-       sessionMiddleware(socket.request, {}, next);
-   });
+        sessionMiddleware(socket.request, {}, next);
+    });
 
     /**
      * use local strategy, this matching the sent data to our db
@@ -164,8 +164,6 @@ function session(app, db, io) {
     passport.deserializeUser(function(sessionUser, done) {
         done(null, sessionUser);
     });
-
-
 }
 
 module.exports = session;

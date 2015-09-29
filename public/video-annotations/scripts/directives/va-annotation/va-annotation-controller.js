@@ -34,6 +34,10 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             $scope.source.isEditMode = true;
         };
 
+        $scope.closeAnnotation = function() {
+            $scope.source.isEditMode = false;
+        };
+
         $scope.saveAnnotation = function() {
             var annotation = $scope.source;
 
