@@ -17,24 +17,14 @@
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },
-   {
-      "name": "Top Contributors analytics",
-      "location": "course-analytics",
-      "description": "List of top contributor for current course",
-      "entryPoint": "/course-analytics/top-contributors",
-      "width": 4,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-   },
-   {
-      "name": "Course Statistics analytics",
-      "location": "course-analytics",
-      "description": "Course Statistics data for current course",
-      "entryPoint": "/course-analytics/course-statistics",
-      "width": 4,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-   },
+    {
+      "name": "Course Listing Date Created",
+      "location": "course-listing",
+      "description": "Widget that show the created date of a course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-createdDate.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
     {
       "name": "Top Contributors",
       "location": "course-preview",
@@ -56,12 +46,24 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "Course Listing Date Created",
-      "location": "course-listing",
-      "description": "Widget that show the created date of a course in the course-listing page",
-      "entryPoint": "/course-analytics/course-list-createdDate.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
+      "name": "Top Contributors analytics",
+      "location": "course-analytics",
+      "description": "List of top contributor for current course",
+      "entryPoint": "/course-analytics/ca-top-contributors",
+      "widgetJavascript": "ca-top-contributors.js",
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Course Statistics analytics",
+      "location": "course-analytics",
+      "description": "Course Statistics data for current course",
+      "entryPoint": "/course-analytics/ca-statistics",
+      "widgetJavascript": "ca-statistics.js",
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
     },
     {
       "name": "node topic",
