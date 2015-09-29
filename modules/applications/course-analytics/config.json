@@ -30,7 +30,7 @@
       "location": "course-preview",
       "description": "List of top contributor for current course",
       "entryPoint": "/course-analytics/ca-preview-top-contributors",
-      "widgetJavascript": "ca-preview-top-contributors.js",
+      "widgetJavascript": ["ca-preview-top-contributors.js"],
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -40,7 +40,7 @@
       "location": "course-preview",
       "description": "Course Statistics data for current course",
       "entryPoint": "/course-analytics/ca-preview-statistics",
-      "widgetJavascript": "ca-preview-statistics.js",
+      "widgetJavascript": ["ca-preview-statistics.js"],
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -50,7 +50,7 @@
       "location": "course-analytics",
       "description": "List of top contributor for current course",
       "entryPoint": "/course-analytics/ca-top-contributors",
-      "widgetJavascript": "ca-top-contributors.js",
+      "widgetJavascript": ["ca-top-contributors.js"],
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -60,8 +60,18 @@
       "location": "course-analytics",
       "description": "Course Statistics data for current course",
       "entryPoint": "/course-analytics/ca-statistics",
-      "widgetJavascript": "ca-statistics.js",
+      "widgetJavascript": ["ca-statistics.js"],
       "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "History analytics",
+      "location": "course-analytics",
+      "description": "Bar graph to show history analytics for current course",
+      "entryPoint": "/course-analytics/ca-history-analytics",
+      "widgetJavascript": [ "../chartjs/Chart.min.js", "../chartjs/angular-chart.min.js", "ca-history-analytics.js" ],
+      "width": 7,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     },

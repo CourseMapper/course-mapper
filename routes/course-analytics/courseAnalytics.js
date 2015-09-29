@@ -28,6 +28,10 @@ router.get('/ca-preview-statistics', function(req, res, next) {
     res.render('course-analytics/preview-statistics');
 });
 
+router.get('/ca-history-analytics', function(req, res, next) {
+    res.render('course-analytics/history-analytics');
+});
+
 
 
 module.exports = router;

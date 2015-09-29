@@ -6,7 +6,7 @@
       "location": "user-profile",
       "description": "Will list all your following courses",
       "entryPoint": "/my-course/my-following-courses",
-      "widgetJavascript": "my-following-courses.js",
+      "widgetJavascript": ["my-following-courses.js"],
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -16,7 +16,7 @@
       "location": "user-profile",
       "description": "Radar Graph to show summary of your learning process",
       "entryPoint": "/my-course/my-activity-summary",
-      "widgetJavascript": "my-summary.js",
+      "widgetJavascript": ["../chartjs/Chart.min.js", "../chartjs/angular-chart.min.js","my-summary.js"],
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
@@ -26,7 +26,7 @@
       "location": "user-profile",
       "description": "Bar graph to show history progress of my following course",
       "entryPoint": "/my-course/my-course-progress",
-      "widgetJavascript": "my-course-history-progress.js",
+      "widgetJavascript": ["../chartjs/Chart.min.js", "../chartjs/angular-chart.min.js","my-course-history-progress.js"],
       "width": 7,
       "height":1,
       "icon":"/img/appPlaceholder.png"

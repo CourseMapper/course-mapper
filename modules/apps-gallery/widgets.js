@@ -7,7 +7,7 @@ var widgetSchema = new mongoose.Schema({
     location: {type: String},
     description: {type: String},
     entryPoint: {type: String, required: true},
-    widgetJavascript: {type: String},
+    widgetJavascript: {type: mongoose.Schema.Types.Mixed},
     width: {type: Number},
     height: {type: Number},
     icon: {type: String},

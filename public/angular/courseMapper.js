@@ -3293,6 +3293,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$watch('location', function(newVal, oldVal) {
+        if($scope.location == '')
+            return;
+
         var onafter = 'onAfterInstall' + $scope.location;
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
@@ -3302,8 +3305,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.getWidgets();
         });
 
-        var onafter = 'onAfterUninstall' + $scope.location;
-        $scope.$on( onafter, function(event, newWidget){
+        var onafter2 = 'onAfterUninstall' + $scope.location;
+        $scope.$on( onafter2, function(event, newWidget){
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
@@ -3311,15 +3314,34 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.getWidgets();
         });
 
-        var onafterW = 'OnAfterWidgetLoaded' + $scope.location;
+        /*var onafterW = 'OnAfterWidgetLoaded' + $scope.location;
         $scope.$on(onafterW, function(){
             //$scope.initiateDraggableGrid($scope.location);
             //$scope.populateWidgets($scope.location);
-        });
+        });*/
     });
+
+    $scope.lazyLoad = function(wdg, currentIndex, widgetJsArray, fileToLoad){
+        (function(wdg) {
+            var jsfn = '/' + wdg.application + '/' + fileToLoad;
+
+            $ocLazyLoad.load(jsfn).then(function() {
+                // the last one has been loaded
+                var l = wdg.widgetId.widgetJavascript.length - 1;
+                if(fileToLoad == wdg.widgetId.widgetJavascript[l]){
+                    // only push to main widgets array when it is the last js to load
+                    $scope.widgets.push(wdg);
+                } else {
+                    var nextFile = widgetJsArray[currentIndex++];
+                    $scope.lazyLoad(wdg, currentIndex, widgetJsArray, nextFile);
+                }
+            });
+        })(wdg);
+    };
 
     $scope.getWidgets = function(){
         var id = "";
+
         if($scope.location == 'user-profile')
             id = $rootScope.user._id;
 
@@ -3328,19 +3350,22 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
         $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
             $scope.widgetsTemp = data.widgets;
+            $scope.widgets = [];
 
-            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgetTemps);
+            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgetsTemp);
 
             for(var i in $scope.widgetsTemp){
                 var wdg = $scope.widgetsTemp[i];
 
                 // loop to load the js (if exist)
                 if(wdg.widgetId.widgetJavascript) {
-                    (function(wdg) {
-                        $ocLazyLoad.load('/' + wdg.application + '/' + wdg.widgetId.widgetJavascript).then(function() {
-                            $scope.widgets.push(wdg);
-                        });
-                    })(wdg);
+                    //if(wdg.widgetId.widgetJavascript.type() == 'Array'){
+                    //for(var j = 0; j < wdg.widgetId.widgetJavascript.length; j++)
+                    //var loading = true;
+
+
+                    $scope.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0]);
+                    //}
 
                 } else {
                     $scope.widgets.push(wdg);
@@ -3424,11 +3449,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         });
     };
 
-    $scope.populateWidgets = function(){
+    /*$scope.populateWidgets = function(){
         for(var i in $scope.widgets){
             $scope.addWidget($scope.widgets[i].widgetId._id);
         }
-    }
+    }*/
 });
 ;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
     $scope.location = "";
