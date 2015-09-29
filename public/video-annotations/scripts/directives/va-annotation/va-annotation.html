@@ -3,21 +3,26 @@
         <span class="posted-at">
       Posted <strong>{{source.date_created | relativeDate}}</strong>
       By <strong>
-          <a class="cursor"
-                ng-show="authorClickable"
-                ng-click="authorClickAction()">{{source.author}}</a>
-          <span>{{source.author}}</span>
+            <a class="cursor"
+               ng-show="authorClickable"
+               ng-click="authorClickAction()">{{source.author}}</a>
+            <span>{{source.author}}</span>
         </strong>
         </span>
+
         <p class="reply">{{source.text}}</p>
     </div>
     <div class="box-body" ng-show="source.isEditMode">
-        <textarea cols="60" rows="3" id="va-text" type="text" ng-model="source.text" />
+        <textarea cols="60" rows="3" id="va-text" type="text" ng-model="source.text"/>
         <br/>
         <select ng-model="source.type">
-            <option ng-selected="type.id===source.type" ng-repeat="type in annotationTypes" value="{{type.id}}">{{type.name}}</option>
+            <option ng-selected="type.id===source.type" ng-repeat="type in annotationTypes" value="{{type.id}}">
+                {{type.name}}
+            </option>
         </select>
         <br/>
+
+        <!--<timepicker time="{{source.start}}"></timepicker>-->
         <label for="va-start">Start:</label>
         <input id="va-start" ng-model="source.start">
         <label for="va-end">End:</label>
@@ -54,11 +59,13 @@
                               Posted <strong>{{comment.date_created | relativeDate}}</strong>
                               By <strong><span>{{comment.author}}</span></strong>
                             </span>
+
                             <p class="reply">{{comment.text}}</p>
                         </div>
                         <div class="box-footer">
                             <div class="replyControl">
-                                <a style="cursor: pointer;" ng-show="comment.isAuthor" ng-click="removeComment(comment._id)" title="delete" class="btn btn-danger btn-xs">DELETE</a>
+                                <a style="cursor: pointer;" ng-show="comment.isAuthor"
+                                   ng-click="removeComment(comment._id)" title="delete" class="btn btn-danger btn-xs">DELETE</a>
                             </div>
                         </div>
                     </div>

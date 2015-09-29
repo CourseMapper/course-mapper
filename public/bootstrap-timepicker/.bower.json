@@ -1,0 +1,31 @@
+{
+  "name": "bootstrap-timepicker",
+  "version": "0.5.1",
+  "description": "A timepicker component for Twitter Bootstrap",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jdewit/bootstrap-timepicker"
+  },
+  "main": [
+    "js/bootstrap-timepicker.js",
+    "less/bootstrap-timepicker.less"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.0",
+    "jquery": "~2.0"
+  },
+  "devDependencies": {
+    "autotype": "https://raw.github.com/mmonteleone/jquery.autotype/master/jquery.autotype.js"
+  },
+  "homepage": "https://github.com/jdewit/bootstrap-timepicker",
+  "_release": "0.5.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.5.1",
+    "commit": "36f4790eebd11c36f936a796d6e5fbd7b1528696"
+  },
+  "_source": "git://github.com/jdewit/bootstrap-timepicker.git",
+  "_target": "~0.5.1",
+  "_originalSource": "bootstrap-timepicker",
+  "_direct": true
+}
