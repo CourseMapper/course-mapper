@@ -17,63 +17,56 @@
 
             <div class="annotation-wrapper">
 
-                <button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>
-                <div id="commentSubmissionDiv" style="display:none;">
+                <!--<button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>-->
+
+                <div id="commentSubmissionDiv" ng-show="writeCommentMode">
                     <form name="commentForm" ng-submit="submitComment()">
                         <fieldset>
                             <div class="control-group">
-                                <label for="rawText">Commenting as {{currentUser.username}}</label>
-
-                                <div class="controls">
-                                    <textarea class="form-control" id="rawText" name="rawText"
-                                              ng-model="comment.rawText" placeholder="rawText"></textarea>
-                                </div>
+                                    <div id="rawText" name="rawText"
+                                         ng-model="comment.rawText"
+                                         quill type="pdf-comment">
+                                    </div>
                             </div>
 
-                            <!--Used as Template for annotation zone items -->
-                            <div id="annotationZoneSubmitTemplate" style="visibility: hidden;">
-                                <button class="btn btn-default" onclick="removeAnnotationZone(this);">Remove</button>
-                            </div>
                             <!-- Will be filled when annotation zones are created -->
                             <div id="annotationZoneSubmitList">
                             </div>
 
+                            <div id="annZoneList"
+                                 ng-controller="AnnotationZoneListController">
+                                <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
+                                    <br class="clear">
+                                    <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
+                                        The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="control-group">
                                 <div class="controls">
-
-
+                                    <br class="clear">
                                     <button class="btn btn-primary"> Add Comment
                                         <spinner show="isLoading"></spinner>
                                     </button>
+
+                                    <button type="button" class="btn btn-warning" ng-click="writeCommentMode=false">Cancel</button>
                                 </div>
                             </div>
-                        </fieldset>
 
+                        </fieldset>
                     </form>
                 </div>
-                <div id="annotationZoneSubmitListMovables">
+
+                <!--<div id="annotationZoneSubmitListMovables">
                     <button class="btn btn-default" onclick="createMovableAnnZone();">
                         Add Annotation Zone
                     </button>
-                </div>
+                </div>-->
 
             </div>
 
-
-            <div>
-                <div id="annZoneList" style="display:none;"
-                     ng-controller="AnnotationZoneListController">
-                    Annotation Zone List:
-                    <div id="annotationZoneList" ng-repeat="annZone in annZones"
-                         ng-cloak>
-                        <div class="{{annZone.name}}">
-                            {{annZone.name}}
-                            {{annZone.color}}
-                        </div>
-                    </div>
-                </div>
-                <div class="commentZoneList">
+            <div class="commentZoneList">
                     <h4>Comments</h4>
 
                     <div class="row">
@@ -102,7 +95,10 @@
                                          posted-date="{{comment.date}}"
                                          post-content="comment.html"
                                          is-post-owner="comment.author==$root.user.username"
-                                         show-control="false"
+                                         show-control="true"
+                                         show-reply-button="true"
+                                         show-delete-button="false"
+                                         show-edit-button="false"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                         ></comment>
@@ -110,8 +106,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
 
         </div>
     </div>

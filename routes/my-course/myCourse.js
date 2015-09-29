@@ -19,28 +19,18 @@ var router = express.Router();
  * example of an entry point route
  */
 router.get('/my-following-courses', function(req, res, next) {
-    res.render('my-course/followingCourse');
+    res.render('my-course/following-course');
 });
 
 //routes to my-activity-summary
 router.get('/my-activity-summary', function(req, res, next) {
-    res.render('my-course/activitySummary');
-});
-
-router.get('/my-summary', function(req, res, next) {
-    res.render('my-course/activitySummary');
+    res.render('my-course/activity-summary');
 });
 
 router.get('/my-course-progress', function(req, res, next) {
-    res.render('my-course/courseHistory');
+    res.render('my-course/course-history');
 });
 
-/**
- * example of an entry point route
- */
-router.get('/journey', function(req, res, next) {
-    res.render('my-course/journey' );
-});
 
 
 module.exports = router;

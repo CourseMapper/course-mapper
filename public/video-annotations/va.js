@@ -178,6 +178,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             $scope.cuePoints.points = [];
             $scope.selectedAnnotation = null;
 
+            var currentUser = rootScope.user;
+
             _.sortBy(annotations, 'start')
                 .forEach(function(annotation) {
                     var cuePoint = {

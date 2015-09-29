@@ -14,11 +14,49 @@
 
 
 }
+#tagErrorList{
+  font-size: 9pt;
+  font-weight: bold;
+  color:red;
+}
+
+.slideRectSpan > .slideRectInput{
+  width:80%;
+  max-width: 50px;
+  min-width: 10px;
+
+}
+.slideRect{
+  min-width: 126px;
+  min-height: 26px;
+}
+ .btn.btn-white.btn-link{
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-right: 6px;
+  padding-left: 6px;
+}
 
 .btn.btn-default.color-dropdown.dropdown-toggle.no-hex{
   padding: 1px;
 }
 
+.slideRect > .ui-resizable-handle.ui-resizable-ne{
+  height: 0px;
+  width: 0px;
+}
+.slideRect > .ui-resizable-handle.ui-resizable-nw{
+  height: 0px;
+  width: 0px;
+}
+.slideRect > .ui-resizable-handle.ui-resizable-sw{
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle{
+  background-color: white;
+}
 
 #viewerWrapper{
     position: relative;
