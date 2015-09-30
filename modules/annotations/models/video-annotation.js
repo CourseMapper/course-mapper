@@ -31,8 +31,8 @@ var VideoAnnotationSchema = new mongoose.Schema({
     date_modified: {type: Date},
     author: {type: String, required: true},
     text: {type: String, required: true},
-    start: {type: Date, required: true},
-    end: {type: Date, required: true},
+    start: {type: Number, required: true},
+    end: {type: Number, required: true},
     type: {type: String, enum: ['embedded-note', 'note'], required: true},
     position: {
         top: {type: String},

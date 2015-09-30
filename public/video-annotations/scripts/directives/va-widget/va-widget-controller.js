@@ -29,8 +29,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             // get current playback time and add
             // default offset seconds for the end of
             // the annotation
-            var startTime = new Date($scope.API.currentTime);
-            var endTime = new Date($scope.API.currentTime + (5 * 1000));
+            var startTime = $scope.API.currentTime;
+            var endTime = $scope.API.currentTime + (5 * 1000);
 
             var defaultAnnotation = {
                 "isEditMode": true,
@@ -39,8 +39,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                 "start": startTime,
                 "end": endTime,
                 "position": {
-                    "top": "20",
-                    "left": "20"
+                    "top": "10",
+                    "left": "10"
                 },
                 "size": {
                     "height": "20",
@@ -54,8 +54,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
 
         $scope.seekPosition = function (annotation) {
-            console.log(new Date(annotation.start).getTime() / 1000);
-            $scope.API.seekTime(new Date(annotation.start).getTime() / 1000);
+            $scope.API.seekTime(annotation.start / 1000);
             $scope.API.pause();
         };
 
