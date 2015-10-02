@@ -166,6 +166,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                   displayCommentSubmissionResponse("Comment submission successful!");
 
                   $scope.comment.rawText = '';
+                  $scope.setQuillSelection();
                   $scope.comment.tagNames = '';
                   $scope.comment.tagRelPos = '';
                   $scope.comment.tagRelCoord = '';
@@ -174,13 +175,20 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                   $("#annotationZoneSubmitList div").remove();
                 }
 
-
                 $scope.$broadcast('reloadTags');
 
             })
             .error(function (data, status, headers, config) {
                 displayCommentSubmissionResponse("Error: Unexpected Server Response!");
             });
+    };
+
+    $scope.setQuillSelection = function(){
+        for(var i = 0; i < Quill.editors.length; i++){
+            if(Quill.editors[i].quillId == '#rawText'){
+                Quill.editors[i].setSelection(0,0);
+            }
+        }
     };
 
     function displayCommentSubmissionResponse(text) {
