@@ -260,7 +260,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                     $scope.commentsLoaded();
                 });
             }
-            ;
         });
     };
 

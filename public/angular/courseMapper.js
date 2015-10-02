@@ -2852,7 +2852,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                     $scope.commentsLoaded();
                 });
             }
-            ;
         });
     };
 
