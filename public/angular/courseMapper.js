@@ -850,6 +850,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if(q.tab){
             $scope.defaultPath = q.tab;
         } else {
+
+            jQuery('#video').removeClass('active');
+            jQuery('li.video').removeClass('active');
+
+            jQuery('#pdf').removeClass('active');
+            jQuery('li.pdf').removeClass('active');
+
             if($scope.isVideoExist && $scope.isPdfExist){
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
@@ -3010,11 +3017,13 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.manageActionBar = function(){
         if($scope.currentTab == 'pdf') {
+            /*
+                commented because we want to use own toolbar
             ActionBarService.extraActionsMenu.push({
                 clickAction: $scope.switchCommentSubmissionDisplay,
                 title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
                 aTitle: 'Write a comment on this slide'
-            });
+            });*/
         }
     };
 

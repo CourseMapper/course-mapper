@@ -77,6 +77,13 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         if(q.tab){
             $scope.defaultPath = q.tab;
         } else {
+
+            jQuery('#video').removeClass('active');
+            jQuery('li.video').removeClass('active');
+
+            jQuery('#pdf').removeClass('active');
+            jQuery('li.pdf').removeClass('active');
+
             if($scope.isVideoExist && $scope.isPdfExist){
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
