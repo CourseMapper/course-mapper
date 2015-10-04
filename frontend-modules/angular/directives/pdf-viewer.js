@@ -1,5 +1,5 @@
 app.directive('pdfViewer',
-    function ($compile, $timeout, $rootScope) {
+    function ($compile, $timeout, $rootScope, $location, $routeParams) {
         return {
             restrict: 'E',
 
@@ -19,7 +19,6 @@ app.directive('pdfViewer',
                     '  `node make generic components`');
                 }
 
-                //var DEFAULT_URL = '/slide-viewer/ressources/00_Orga.pdf';
                 scope.pageToView = 1;
                 scope.scale = 1.0;
                 scope.totalPage = 1;
@@ -27,10 +26,21 @@ app.directive('pdfViewer',
                 scope.container = element[0].getElementsByClassName('viewerContainer');
                 scope.container = scope.container[0];
 
+                scope.calculateSlideNavigationProgress = function (newSlideNumber) {
+                    if (scope.totalPage > 0) {
+                        var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
+                        progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
+                    }
+                };
+
                 attrs.$observe('source', function (pdfFilePath) {
                     console.log(pdfFilePath);
                     if (pdfFilePath) {
                         PDFJS.getDocument(pdfFilePath).then(function (pdfDocument) {
+
+                            if (attrs.currentPageNumber) {
+                                scope.pageToView = parseInt(attrs.currentPageNumber);
+                            }
 
                             console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
@@ -65,6 +75,7 @@ app.directive('pdfViewer',
 
                                 scope.pdfIsLoaded = true;
                                 $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
+
                                 /*
                                  todo: move this somewhere else
                                  currentCanvasHeight = parseInt($('#annotationZone').height());
@@ -76,16 +87,9 @@ app.directive('pdfViewer',
                     }
                 });
 
-                scope.calculateSlideNavigationProgress = function(newSlideNumber){
-                    if(scope.totalPage > 0) {
-                        var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
-                        progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
-                    }
-                };
-
             }, /*end link*/
 
-            controller: function ($scope, $compile, $http, $attrs) {
+            controller: function ($scope, $compile, $http, $attrs, $location, $routeParams) {
                 $scope.currentPageNumber = 1;
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
@@ -97,7 +101,6 @@ app.directive('pdfViewer',
 
                     $timeout(function () {
                         $scope.$apply();
-                        $scope.pdfIsLoaded = false;
 
                         $scope.changeSlide($scope.currentPageNumber);
                     });
@@ -105,6 +108,9 @@ app.directive('pdfViewer',
                 };
 
                 $scope.changeSlide = function (newSlideNumber) {
+                    $rootScope.clearTagNameErrors();
+                    $scope.pdfIsLoaded = false;
+
                     $scope.pageToView = newSlideNumber;
 
                     $scope.calculateSlideNavigationProgress(newSlideNumber);
@@ -120,20 +126,68 @@ app.directive('pdfViewer',
                             $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
 
                             /* todo: move this somewhere else
-                            drawAnnZonesWhenPDFAndDBDone();
+                             drawAnnZonesWhenPDFAndDBDone();
                              */
                         });
                     });
                 };
 
-                $( window ).resize(function() {
+                $scope.setHistoryStack = function (pageNumber) {
+                    var q = $location.search();
+
+                    var pageNumFromUrl = -1;
+                    if (q.slidePage) {
+                        pageNumFromUrl = parseInt(q.slidePage);
+                    }
+
+                    if (pageNumber != pageNumFromUrl) {
+                        // set the search path of the angular url
+                        $location.search('slidePage', pageNumber);
+                    }
+                };
+
+                $scope.changePageNumberBasedOnUrl = function () {
+                    var q = $location.search();
+
+                    if (q.slidePage) {
+                        var pageNumFromUrl = parseInt(q.slidePage);
+
+                        if ($scope.currentPageNumber != pageNumFromUrl && pageNumFromUrl > 0 && pageNumFromUrl <= $scope.totalPage) {
+                            // we are back from somewhere we read it from the url.
+                            $scope.currentPageNumber = pageNumFromUrl;
+                            $scope.changeSlide($scope.currentPageNumber);
+                        }
+                    }
+                };
+
+                $(window).resize(function () {
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
-                    $scope.pdfPageView.update($scope.scale,0);
+                    $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw();
                 });
 
-                $scope.$on('onPdfPageChange',function(){
-                  setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
+                $scope.$on('onPdfPageChange', function (event, pageNumber) {
+                    setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
+
+                    $scope.setHistoryStack(pageNumber);
+                });
+
+                // onload
+                $scope.$watch('totalPage', function(newVal, oldVal){
+                    if(oldVal !== newVal){
+                        $scope.changePageNumberBasedOnUrl();
+                    }
+                });
+
+                $scope.$on('$routeUpdate', function(next, current){
+                    if(!$location.search().slidePage) {
+                        $scope.setHistoryStack($scope.currentPageNumber);
+                    } else {
+                        var sp = parseInt($location.search().slidePage);
+                        if(sp > 0 && sp != $scope.currentPageNumber && sp <= $scope.totalPage){
+                            $scope.changePageNumberBasedOnUrl();
+                        }
+                    }
                 });
             }
         };

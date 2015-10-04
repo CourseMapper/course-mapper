@@ -36,7 +36,6 @@
                             <div id="annZoneList"
                                  ng-controller="AnnotationZoneListController">
                                 <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
-                                    <br class="clear">
                                     <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
                                     </div>
@@ -56,6 +55,7 @@
 
                         </fieldset>
                     </form>
+
                 </div>
 
                 <!--<div id="annotationZoneSubmitListMovables">
@@ -63,7 +63,7 @@
                         Add Annotation Zone
                     </button>
                 </div>-->
-
+                <label id="commentSubmissionResponse"></label>
             </div>
 
             <div class="commentZoneList">
@@ -96,7 +96,7 @@
                                          post-content="comment.html"
                                          is-post-owner="comment.author==$root.user.username"
                                          show-control="true"
-                                         show-reply-button="true"
+                                         show-reply-button="false"
                                          show-delete-button="false"
                                          show-edit-button="false"
                                          author-clickable="true"
@@ -108,6 +108,7 @@
                 </div>
 
         </div>
+
     </div>
 
 </div>
@@ -116,5 +117,4 @@
     $("#btn-fullscreen").click(function () {
         $("#viewerWrapper").toggleFullScreen();
     });
-
 </script>
