@@ -67,7 +67,7 @@ router.get('/course/addContentNode', function (req, res, next) {
  * partial for edit content node modal
  */
 router.get('/course/editContentNode', function (req, res, next) {
-    res.render(config.get('theme') + '/catalogs/editSubTopicModal');
+    res.render(config.get('theme') + '/catalogs/editContentNodeModal');
 });
 
 router.get('/course/:courseId/tree', function (req, res, next) {

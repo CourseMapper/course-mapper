@@ -42,7 +42,8 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
                     if(res.result){
                         //todo: go to map view
                         console.log("node deleted");
-                        $location.path('/cid/' + $scope.courseId + '?tab=map');
+                        $location.path('/cid/' + $scope.courseId);
+                        $location.search('tab', 'map');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errors = data.errors;
@@ -107,25 +108,31 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
     };
 
+    $scope.parseResources = function(){
+        for(var i = 0;i < $scope.treeNode.resources.length; i++){
+            var content = $scope.treeNode.resources[i];
+            if(content['type'] == 'mp4' || content['type'] == 'video'){
+                $scope.isVideoExist = true;
+                $scope.videoFile = content;
+                $scope.treeNode.videoFile = content;
+            } else if(content['type'] == 'pdf'){
+                $scope.pdfFile = content;
+                $scope.treeNode.pdfFile = content;
+                $scope.isPdfExist = true;
+            }
+        }
+    };
+
     $scope.initNode = function(){
         $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
             if(res.result) {
                 $scope.treeNode = res.treeNode;
 
+                $scope.parseResources();
+
                 if ($scope.treeNode.createdBy == $rootScope.user._id) {
                     $scope.isNodeOwner = true;
                     $scope.setEditMode();
-                }
-
-                for(var i = 0;i < $scope.treeNode.resources.length; i++){
-                    var content = $scope.treeNode.resources[i];
-                    if(content['type'] == 'mp4' || content['type'] == 'video'){
-                        $scope.isVideoExist = true;
-                        $scope.videoFile = content;
-                    } else if(content['type'] == 'pdf'){
-                        $scope.pdfFile = content;
-                        $scope.isPdfExist = true;
-                    }
                 }
 
                 $scope.changeTab();
@@ -136,6 +143,10 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             }
         });
     };
+
+    $scope.$on('onAfterEditContentNode', function(event, oldTreeNode){
+        $scope.initNode();
+    });
 
     $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){

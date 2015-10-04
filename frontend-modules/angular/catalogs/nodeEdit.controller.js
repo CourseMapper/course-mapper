@@ -81,7 +81,6 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
 
     /**
      * save edit sub topic node
-     * and saving edit of content node
      */
     $scope.saveEditNode = function(isValid){
         if(!isValid)
@@ -121,15 +120,14 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
 
     /**
      * save add content node
+     * save edit content node
      */
     $scope.saveContentNode = function(isValid){
         if(!isValid)
             return;
 
-        // use saveEditNode for editing the content node.
         if($scope.currentNodeAction.mode == 'edit'){
-            $scope.saveEditNode();
-            return;
+            $scope.formData = $scope.currentEditNode;
         }
 
         var uploadParams = {
@@ -147,6 +145,8 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
             uploadParams.file.push($scope.filesvideo[0]);
         }
 
+        $scope.isLoading = true;
+
         Upload.upload(
             uploadParams
 
@@ -155,7 +155,14 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     return;
 
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                if(Array.isArray(evt.config.file) && evt.config.file.length > 0){
+                    for(var i in evt.config.file){
+                        var fle = evt.config.file[i];
+                        console.log('progress: ' + progressPercentage + '% ' + fle.name);
+                    }
+                } else {
+                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                }
 
             }).success(function (data, status, headers, config) {
                 console.log(data);
@@ -167,13 +174,15 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                         var resTemp = $scope.parseNgFile(f);
                         data.treeNode['resources'].push(resTemp);
                     }
+                }
 
+                if($scope.addContentNodeForm) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
 
-                    // cleaining up formData
+                    // cleaning up formData
                     $scope.formData.name = "";
                     $scope.filespdf = [];
                     $scope.filesvideo = [];
@@ -181,9 +190,14 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
 
+                    $scope.addContentNodeForm.$setPristine();
+                } else if($scope.editContentNodeForm){
+                    $rootScope.$broadcast('onAfterEditContentNode', data.treeNode);
+
+                    $('#editContentNodeModal').modal('hide');
+                    $scope.editContentNodeForm.$setPristine();
                 }
 
-                $scope.addContentNodeForm.$setPristine();
                 $scope.isLoading = false;
             })
             .error(function(data){
