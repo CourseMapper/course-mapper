@@ -31,7 +31,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         //todo: {id: 'relevance', name: 'Relevance'}
     ];
 
-
     $scope.populateAnnotationZone = function () {
         $scope.annotationZones = [];
 
@@ -138,7 +137,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
         $rootScope.clearTagNameErrors();
 
-
         var config = {
             params: {
                 rawText: $scope.comment.rawText,
@@ -174,9 +172,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                   $("#annotationZoneSubmitList div").remove();
                 }
 
-
                 $scope.$broadcast('reloadTags');
 
+                $scope.writeCommentMode = false;
             })
             .error(function (data, status, headers, config) {
                 displayCommentSubmissionResponse("Error: Unexpected Server Response!");
@@ -342,7 +340,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.init = function () {
-        $scope.getComment($scope.orderingOptions[0].id);
+        //$scope.getComment($scope.orderingOptions[0].id); // commented, because it will get called once pdf get loaded
     };
 
     $scope.$watch("orderType", function (newValue, oldValue) {
@@ -389,7 +387,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.switchCommentSubmissionDisplay = function() {
         $scope.writeCommentMode = true;
-    }
+    };
 
     $scope.$on('onAfterInitTreeNode', function(event, treeNode){
         /**
@@ -400,6 +398,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         /**
          * add some action to the menu
          */
+        $scope.manageActionBar();
+    });
+
+    $scope.$on('$routeUpdate', function(){
         $scope.manageActionBar();
     });
 });
