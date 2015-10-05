@@ -275,7 +275,7 @@ function rescalingRects(rectClassName, tagClassName) {
           //coordAttr[0]=$(allElements[i]).position().top;
           startYAttr=parseInt($(allElements[i]).css("top"))* scalingFactor;
           startXAttr=parseInt($(allElements[i]).css("left"))* scalingFactor;
-          console.log("top " + parseInt($(allElements[i]).css("top"))+ " scaling "+ scalingFactor)
+          
         }
         else{
             coordAttr = $(allElements[i]).attr("data-relstartcoord").split(";");
