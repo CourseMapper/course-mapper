@@ -815,7 +815,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if(res.result){
                         //todo: go to map view
                         console.log("node deleted");
-                        $location.path('/cid/' + $scope.courseId + '?tab=map');
+                        $location.path('/cid/' + $scope.courseId);
+                        $location.search('tab', 'map');
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errors = data.errors;
@@ -849,6 +850,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if(q.tab){
             $scope.defaultPath = q.tab;
         } else {
+
+            jQuery('#video').removeClass('active');
+            jQuery('li.video').removeClass('active');
+
+            jQuery('#pdf').removeClass('active');
+            jQuery('li.pdf').removeClass('active');
+
             if($scope.isVideoExist && $scope.isPdfExist){
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
@@ -880,25 +888,31 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
     };
 
+    $scope.parseResources = function(){
+        for(var i = 0;i < $scope.treeNode.resources.length; i++){
+            var content = $scope.treeNode.resources[i];
+            if(content['type'] == 'mp4' || content['type'] == 'video'){
+                $scope.isVideoExist = true;
+                $scope.videoFile = content;
+                $scope.treeNode.videoFile = content;
+            } else if(content['type'] == 'pdf'){
+                $scope.pdfFile = content;
+                $scope.treeNode.pdfFile = content;
+                $scope.isPdfExist = true;
+            }
+        }
+    };
+
     $scope.initNode = function(){
         $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
             if(res.result) {
                 $scope.treeNode = res.treeNode;
 
+                $scope.parseResources();
+
                 if ($scope.treeNode.createdBy == $rootScope.user._id) {
                     $scope.isNodeOwner = true;
                     $scope.setEditMode();
-                }
-
-                for(var i = 0;i < $scope.treeNode.resources.length; i++){
-                    var content = $scope.treeNode.resources[i];
-                    if(content['type'] == 'mp4' || content['type'] == 'video'){
-                        $scope.isVideoExist = true;
-                        $scope.videoFile = content;
-                    } else if(content['type'] == 'pdf'){
-                        $scope.pdfFile = content;
-                        $scope.isPdfExist = true;
-                    }
                 }
 
                 $scope.changeTab();
@@ -909,6 +923,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         });
     };
+
+    $scope.$on('onAfterEditContentNode', function(event, oldTreeNode){
+        $scope.initNode();
+    });
 
     $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
@@ -1037,7 +1055,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     /**
      * save edit sub topic node
-     * and saving edit of content node
      */
     $scope.saveEditNode = function(isValid){
         if(!isValid)
@@ -1077,15 +1094,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     /**
      * save add content node
+     * save edit content node
      */
     $scope.saveContentNode = function(isValid){
         if(!isValid)
             return;
 
-        // use saveEditNode for editing the content node.
         if($scope.currentNodeAction.mode == 'edit'){
-            $scope.saveEditNode();
-            return;
+            $scope.formData = $scope.currentEditNode;
         }
 
         var uploadParams = {
@@ -1103,6 +1119,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             uploadParams.file.push($scope.filesvideo[0]);
         }
 
+        $scope.isLoading = true;
+
         Upload.upload(
             uploadParams
 
@@ -1111,7 +1129,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     return;
 
                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                if(Array.isArray(evt.config.file) && evt.config.file.length > 0){
+                    for(var i in evt.config.file){
+                        var fle = evt.config.file[i];
+                        console.log('progress: ' + progressPercentage + '% ' + fle.name);
+                    }
+                } else {
+                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+                }
 
             }).success(function (data, status, headers, config) {
                 console.log(data);
@@ -1123,13 +1148,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         var resTemp = $scope.parseNgFile(f);
                         data.treeNode['resources'].push(resTemp);
                     }
+                }
 
+                if($scope.addContentNodeForm) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
 
-                    // cleaining up formData
+                    // cleaning up formData
                     $scope.formData.name = "";
                     $scope.filespdf = [];
                     $scope.filesvideo = [];
@@ -1137,9 +1164,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
 
+                    $scope.addContentNodeForm.$setPristine();
+                } else if($scope.editContentNodeForm){
+                    $rootScope.$broadcast('onAfterEditContentNode', data.treeNode);
+
+                    $('#editContentNodeModal').modal('hide');
+                    $scope.editContentNodeForm.$setPristine();
                 }
 
-                $scope.addContentNodeForm.$setPristine();
                 $scope.isLoading = false;
             })
             .error(function(data){
@@ -2810,6 +2842,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                   displayCommentSubmissionResponse("Comment submission successful!");
 
                   $scope.comment.rawText = '';
+                  $scope.setQuillSelection();
                   $scope.comment.tagNames = '';
                   $scope.comment.tagRelPos = '';
                   $scope.comment.tagRelCoord = '';
@@ -2825,6 +2858,14 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             .error(function (data, status, headers, config) {
                 displayCommentSubmissionResponse("Error: Unexpected Server Response!");
             });
+    };
+
+    $scope.setQuillSelection = function(){
+        for(var i = 0; i < Quill.editors.length; i++){
+            if(Quill.editors[i].quillId == '#rawText'){
+                Quill.editors[i].setSelection(0,0);
+            }
+        }
     };
 
     function displayCommentSubmissionResponse(text) {
@@ -2852,14 +2893,22 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.switchRegexHashFilter = function (value) {
-        $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
+        console.log("switchRegexHashFilter CALLED");
+        if( $scope.filtersRaw['renderedText'] == {'regex_hash': value.substring(1)} )
+          delete $scope.filtersRaw['renderedText'];
+        else
+          $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
         console.log($scope.filtersRaw);
 
         $scope.$broadcast('onFiltersRawChange');
     };
 
     $scope.authorLabelClick = function (authorName) {
-        $scope.filtersRaw['author'] = authorName;
+        console.log("AUTHORLABELCLICK CALLED");
+        if($scope.filtersRaw['author'] == authorName)
+          delete $scope.filtersRaw['author'];
+        else
+          $scope.filtersRaw['author'] = authorName;
 
         $scope.$broadcast('onFiltersRawChange');
     };
@@ -2870,7 +2919,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("ADDED CLICK FUNCTION");
             //console.log($("#commentList .annotationZoneReference").length);
             $("#commentList .annotationZoneReference").not('.hasOnClick').click(function () {
-                $scope.switchRegexHashFilter($(this).html());
+              console.log("switchRegexHashFilter CALLED");
+              $scope.switchRegexHashFilter($(this).html());
             });
 
             $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
@@ -2899,12 +2949,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
-                $timeout(function () {
-                    $scope.$apply();
-                    $scope.commentsLoaded();
-                });
+
+
             }
-            ;
+
+
+            $timeout(function () {
+                $scope.$apply();
+                $scope.commentsLoaded();
+            });
+
         });
     };
 
@@ -2977,6 +3031,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.manageActionBar = function(){
         if($scope.currentTab == 'pdf') {
+
+                //commented because we want to use own toolbar
             ActionBarService.extraActionsMenu.push({
                 clickAction: $scope.switchCommentSubmissionDisplay,
                 title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
@@ -2996,7 +3052,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     });
 
-    $scope.$watch("filtersRaw", function (newValue, oldValue) {
+    /*$scope.$watch("filtersRaw", function (newValue, oldValue) {
         if (newValue !== oldValue) {
             $scope.parseOrderType($scope.orderType.id);
             //console.log("NOTICED FILTERS CHANGE");
@@ -3005,16 +3061,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
             $scope.updateScope($scope.commentGetUrl);
         }
-    });
+    });*/
 
-    /*$scope.$on('onFiltersRawChange', function () {
+    $scope.$on('onFiltersRawChange', function () {
         $scope.parseOrderType($scope.orderType.id);
         //console.log("NOTICED FILTERS CHANGE");
         $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
         //console.log("commentGetUrl: " + $scope.commentGetUrl);
         $scope.updateScope($scope.commentGetUrl);
-    });*/
+    });
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
         if (newValue !== oldValue) {
@@ -3370,11 +3426,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.getWidgets();
         });
 
-        /*var onafterW = 'OnAfterWidgetLoaded' + $scope.location;
-        $scope.$on(onafterW, function(){
-            //$scope.initiateDraggableGrid($scope.location);
-            //$scope.populateWidgets($scope.location);
-        });*/
     });
 
     $scope.lazyLoad = function(wdg, currentIndex, widgetJsArray, fileToLoad){

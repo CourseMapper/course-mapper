@@ -1,0 +1,112 @@
+<!-- Main content -->
+<section class="content" ng-controller="NodeEditController">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-5 col-centered">
+            <div class="box no-border" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{nodeModaltitle}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form name="editContentNodeForm" role="form" ng-submit="saveContentNode(editContentNodeForm.$valid)"
+                          novalidate>
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="name">{{currentNodeAction.typeText}} name</label>
+
+                                <p class="help-block">{{currentNodeAction.typeText}} name can contain any letters or
+                                    numbers</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : editContentNodeForm.name.$invalid && !editContentNodeForm.$pristine }">
+                                    <input type="text" id="name" name="name" placeholder="" class="form-control"
+                                           ng-model="currentEditNode.name"
+                                           required ng-required="true"
+                                            >
+
+                                    <p ng-show="editContentNodeForm.name.$invalid && !editContentNodeForm.$pristine"
+                                       class="help-block">Content Node Name is required.</p>
+                                </div>
+                            </div>
+                            <br>
+
+                            <div class="col-md-6" id="pdf" ng-hide="currentEditNode.pdfFile">
+                                <div class="control-group">
+                                    <label class="control-label" for="pdf">Upload PDF</label>
+
+                                    <div class="controls">
+                                        <div class="btn btn-sm btn-default"
+                                             ngf-select accept="application/pdf" ngf-accept="'application/pdf'"
+                                             ng-model="filespdf" ngf-multiple="false" ngf-max-size='100000000'><i
+                                                class="fa fa-file-pdf-o"></i> &nbsp; Select a pdf file
+                                        </div>
+                                        &nbsp; <span ng-repeat="f in filespdf">{{f.name}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="pdf2" ng-show="currentEditNode.pdfFile">
+                                <div class="control-group">
+                                    <label class="control-label">You have uploaded a pdf</label>
+
+                                    <div class="controls">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="video" ng-hide="currentEditNode.videoFile">
+                                <div class="control-group">
+                                    <label class="control-label" for="video">Upload Video</label>
+
+                                    <div class="controls">
+                                        <div class="btn btn-sm btn-default"
+                                             ngf-select accept="video/*" ngf-accept="'video/*'"
+                                             ng-model="filesvideo" ngf-multiple="false" ngf-max-size='100000000'><i
+                                                class="fa fa-file-video-o"></i> &nbsp; Select a video file
+                                        </div>
+                                        &nbsp; <span ng-repeat="f in filesvideo">{{f.name}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="video2" ng-show="currentEditNode.videoFile">
+                                <div class="control-group">
+                                    <label class="control-label">You have uploaded a video</label>
+
+                                    <div class="controls">
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p class="help-block"></p>
+
+                                <p class="help-block"></p>
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-primary" ng-click="editContentNodeForm.$setDirty()">Save
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+                                        <button type="button" class="btn btn-warning"
+                                                data-dismiss="modal" aria-label="Close"
+                                                ng-click="cancel()">
+                                            <span aria-hidden="true">Cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <!-- ./CourseEditController-->
+        </div>
+    </div>
+</section>

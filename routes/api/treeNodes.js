@@ -14,6 +14,7 @@ var router = express.Router();
 /**
  * POST
  * create node, and allow upload
+ * edit node, because multipart form data can use POST
  */
 router.post('/treeNodes', multipartyMiddleware, function (req, res, next) {
     // check for user logins
@@ -29,7 +30,16 @@ router.post('/treeNodes', multipartyMiddleware, function (req, res, next) {
     }
 
     var tr = new Tree();
+
     req.body.userId = req.user._id;
+    req.body.createdBy = mongoose.Types.ObjectId(req.body.userId);
+    req.body.courseId = mongoose.Types.ObjectId(req.body.courseId);
+
+    if(req.body._id)
+        req.body._id = mongoose.Types.ObjectId(req.body._id);
+
+    if (req.body.parent)
+        req.body.parent = mongoose.Types.ObjectId(req.body.parent);
 
     tr.addTreeNode(
         function (err) {

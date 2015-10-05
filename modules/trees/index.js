@@ -56,90 +56,142 @@ catalog.prototype.saveResourceFile = function (filetype, file, contentNode, crea
 catalog.prototype.addTreeNode = function (error, params, files, success) {
     var self = this;
 
-    //options for new node
-    var node = {
-        positionFromRoot: {x: 40, y: 60},
-        type: params.type,
-        name: params.name
-    };
-
     // check for at least 1 resource either it s a pdf or a video
-    if (params.type == 'contentNode') {
+    if (params.type == 'contentNode' && !params._id) {
         if (!files.file) {
             error(helper.createError('need at least 1 resource', 400));
             return;
-        } else if (files.file.constructor != Array) {
-            // make it an array if it s just 1 object. (we allow multiple upload on some types of node)
-            var be = [files.file];
-            files.file = be;
         }
     }
 
-    if (!helper.checkRequiredParams(params, ['userId', 'courseId'], function (errs) {
+    if (files.file && files.file.constructor != Array) {
+        // make it an array if it s just 1 object. (we allow multiple upload on some types of node)
+        var be = [files.file];
+        files.file = be;
+    }
+
+    if (!helper.checkRequiredParams(params, ['userId', 'createdBy'], function (errs) {
             error(errs)
         })) {
         return;
     }
 
-    node.createdBy = mongoose.Types.ObjectId(params.userId);
-    node.courseId = mongoose.Types.ObjectId(params.courseId);
+    //options for new node
+    var node = {
+        type: params.type,
+        name: params.name,
+        createdBy: params.createdBy,
+        courseId: params.courseId
+    };
 
     if (params.parent)
-        node.parent = mongoose.Types.ObjectId(params.parent);
+        node.parent = params.parent;
 
-    var tn = new TreeNodes(node);
+    function insertNodeToParent(node, tn, success){
+        if (node.parent) {
+            TreeNodes.findOne({_id: node.parent}, function (err, doc) {
+                if (doc) {
+                    doc.childrens.push(tn._id);
+                    doc.save();
+                    debug('success saving this node as children');
 
-    tn.save(
-        function (err) {
+                    // because we have a parent, lets alter its position, relative to its parent
+                    tn.positionFromRoot = {
+                        x: doc.positionFromRoot.x + 40,
+                        y: doc.positionFromRoot.y + 80
+                    };
+
+                    tn.save();
+                    debug('success altering starting position to its parent');
+
+                    success(tn);
+                }
+            });
+        } else {
+            success(tn);
+        }
+    }
+
+    function attachResourcesToNode(tn, files, self, node) {
+        if (files) {
+            for (var i in files.file) {
+                var f = files.file[i];
+                self.saveResourceFile(
+                    ['pdf', 'mp4', 'webm'], f,
+                    tn,
+                    node.createdBy,
+                    node.courseId
+                );
+            }
+        }
+
+        debug('success attaching files');
+    }
+
+    function cbAfterSave(tn, files, self, node, params, success){
+        // process files
+        attachResourcesToNode(tn, files, self, node);
+
+        // put this object as the parent's child,
+        insertNodeToParent(node, tn, success);
+
+        if (params.type == 'contentNode') {
+            Plugin.doAction('onAfterContentNodeCreated', tn);
+        } else {
+            Plugin.doAction('onAfterSubTopicCreated', tn);
+        }
+
+        debug('success creating node');
+    }
+
+    // this is edit mode
+    if(params._id){
+        node._id = params._id;
+        TreeNodes.findOne({_id: node._id, createdBy: params.createdBy}, function (err, tn){
+            if(err){
+                error(err);
+            } else {
+                if(tn){
+                    tn.name = node.name;
+                    tn.save(function(err){
+                        if (err) {
+                            debug('failed adding Tree Node');
+                            error(err);
+                        } else {
+                            attachResourcesToNode(tn, files, self, node);
+
+                            success(tn);
+
+                            if (params.type == 'contentNode') {
+                                Plugin.doAction('onAfterContentNodeEdited', tn);
+                            } else {
+                                Plugin.doAction('onAfterSubTopicEdited', tn);
+                            }
+                        }
+                    });
+                } else {
+                    // 404 cant find node
+                    error(helper.createError404('Content Node'));
+                }
+            }
+        });
+    }
+    else {
+        ///
+        // saving new node
+        ///
+        node.positionFromRoot = {x: 40, y: 60};
+
+        var tn = new TreeNodes(node);
+        tn.save(function(err){
             if (err) {
                 debug('failed adding Tree Node');
                 error(err);
             } else {
-                if (files) {
-                    for (var i in files.file) {
-                        var f = files.file[i];
-                        self.saveResourceFile(
-                            ['pdf', 'mp4', 'webm'], f,
-                            tn,
-                            node.createdBy,
-                            node.courseId
-                        );
-                    }
-                }
-
-                if (params.type == 'contentNode') {
-                    Plugin.doAction('onAfterContentNodeCreated', tn);
-                } else {
-                    Plugin.doAction('onAfterSubTopicCreated', tn);
-                }
-
-                debug('success added node');
-
-                // put this object as the parent's child,
-                if (node.parent) {
-                    TreeNodes.findOne({_id: node.parent}, function (err, doc) {
-                        if (doc) {
-                            doc.childrens.push(tn._id);
-                            doc.save();
-                            debug('success saving this node as children');
-
-                            // because we have a parent, lets alter its position, relative to its parent
-                            tn.positionFromRoot = {
-                                x: doc.positionFromRoot.x + 40,
-                                y: doc.positionFromRoot.y + 80
-                            };
-
-                            tn.save();
-                            debug('success altering starting position to its parent');
-
-                            success(tn);
-                        }
-                    });
-                } else {
-                    success(tn);
-                }
+                cbAfterSave(tn, files, self, node, params, success);
             }
         });
+    }
 };
 
 catalog.prototype.getTreeNode = function (error, params, success) {

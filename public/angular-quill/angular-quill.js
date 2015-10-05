@@ -45,7 +45,7 @@
                         });
                     };
 
-                    scope.options = {
+                    var options = {
                         modules: {
                             'toolbar': {container: inputId + ' .toolbar'},
                             'image-tooltip': false,
@@ -57,15 +57,24 @@
                     scope.extraOptions = attrs.quill ?
                         scope.$eval(attrs.quill) : {};
 
-                    angular.extend(scope.options, scope.extraOptions);
+                    angular.extend(options, scope.extraOptions);
 
                     $timeout(function () {
 
-                        scope.editor = new Quill(element.children()[1], scope.options);
+                        scope.editor = new Quill(element.children()[1], options);
                         scope.editor.quillId = inputId;
 
                         $(inputId + ' .editor').click(function(){
-                            scope.editor.focus()
+                            for(var i = 0; i < Quill.editors.length; i++){
+                                if(Quill.editors[i].quillId == inputId){
+                                    var edtr = Quill.editors[i];
+                                    if(edtr.getLength() > 0){
+                                        edtr.setSelection(edtr.getLength() - 1, edtr.getLength() );
+                                    }
+                                    else
+                                        edtr.focus();
+                                }
+                            }
                         });
 
                         ngModel.$render();

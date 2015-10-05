@@ -45,11 +45,6 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
             $scope.getWidgets();
         });
 
-        /*var onafterW = 'OnAfterWidgetLoaded' + $scope.location;
-        $scope.$on(onafterW, function(){
-            //$scope.initiateDraggableGrid($scope.location);
-            //$scope.populateWidgets($scope.location);
-        });*/
     });
 
     $scope.lazyLoad = function(wdg, currentIndex, widgetJsArray, fileToLoad){
