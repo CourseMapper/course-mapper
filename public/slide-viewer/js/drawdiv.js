@@ -275,15 +275,13 @@ function rescalingRects(rectClassName, tagClassName) {
           //coordAttr[0]=$(allElements[i]).position().top;
           startYAttr=parseInt($(allElements[i]).css("top"))* scalingFactor;
           startXAttr=parseInt($(allElements[i]).css("left"))* scalingFactor;
-          
+
         }
         else{
             coordAttr = $(allElements[i]).attr("data-relstartcoord").split(";");
             startXAttr = coordAttr[0] * scalingFactor;
             startYAttr = coordAttr[1] * scalingFactor;
         }
-
-
 
         $(allElements[i]).attr("data-relstartcoord", startXAttr + ";" + startYAttr);
         $(allElements[i]).css('left', Math.round(startXAttr));
