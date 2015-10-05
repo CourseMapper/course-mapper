@@ -22,7 +22,7 @@
     text-align: center;
 }
 
-.ui-resizable-handle {
+.inline-va-annotation > .ui-resizable-handle {
     background: #0000ff;
     border: 1px solid #FFF;
     width: 9px;
@@ -31,7 +31,7 @@
     z-index: 100;
 }
 
-.ui-resizable-se {
+.inline-va-annotation > .ui-resizable-se {
     right: -5px;
     bottom: -5px;
 }
