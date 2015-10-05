@@ -206,14 +206,22 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.switchRegexHashFilter = function (value) {
-        $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
+        console.log("switchRegexHashFilter CALLED");
+        if( $scope.filtersRaw['renderedText'] == {'regex_hash': value.substring(1)} )
+          delete $scope.filtersRaw['renderedText'];
+        else
+          $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
         console.log($scope.filtersRaw);
 
         $scope.$broadcast('onFiltersRawChange');
     };
 
     $scope.authorLabelClick = function (authorName) {
-        $scope.filtersRaw['author'] = authorName;
+        console.log("AUTHORLABELCLICK CALLED");
+        if($scope.filtersRaw['author'] == authorName)
+          delete $scope.filtersRaw['author'];
+        else
+          $scope.filtersRaw['author'] = authorName;
 
         $scope.$broadcast('onFiltersRawChange');
     };
@@ -224,7 +232,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             //console.log("ADDED CLICK FUNCTION");
             //console.log($("#commentList .annotationZoneReference").length);
             $("#commentList .annotationZoneReference").not('.hasOnClick').click(function () {
-                $scope.switchRegexHashFilter($(this).html());
+              console.log("switchRegexHashFilter CALLED");
+              $scope.switchRegexHashFilter($(this).html());
             });
 
             $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
@@ -253,12 +262,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
-                $timeout(function () {
-                    $scope.$apply();
-                    $scope.commentsLoaded();
-                });
+
             }
-            ;
+
+            $timeout(function () {
+                $scope.$apply();
+                $scope.commentsLoaded();
+            });
+
         });
     };
 
@@ -350,7 +361,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         }
     });
 
-    $scope.$watch("filtersRaw", function (newValue, oldValue) {
+    /*$scope.$watch("filtersRaw", function (newValue, oldValue) {
         if (newValue !== oldValue) {
             $scope.parseOrderType($scope.orderType.id);
             //console.log("NOTICED FILTERS CHANGE");
@@ -359,16 +370,16 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
             $scope.updateScope($scope.commentGetUrl);
         }
-    });
+    });*/
 
-    /*$scope.$on('onFiltersRawChange', function () {
+    $scope.$on('onFiltersRawChange', function () {
         $scope.parseOrderType($scope.orderType.id);
         //console.log("NOTICED FILTERS CHANGE");
         $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
         //console.log("commentGetUrl: " + $scope.commentGetUrl);
         $scope.updateScope($scope.commentGetUrl);
-    });*/
+    });
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
         if (newValue !== oldValue) {
