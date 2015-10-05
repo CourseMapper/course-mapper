@@ -338,17 +338,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.manageActionBar = function(){
-        if($scope.currentTab == 'pdf') {
-            /*
-                commented because we want to use own toolbar
-            ActionBarService.extraActionsMenu.push({
-                clickAction: $scope.switchCommentSubmissionDisplay,
-                title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
-                aTitle: 'Write a comment on this slide'
-            });*/
-        }
-    };
-
+            if($scope.currentTab == 'pdf') {
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.switchCommentSubmissionDisplay,
+                    title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
+                    aTitle: 'Write a comment on this slide'
+                });
+            }
+        };
     $scope.init = function () {
         //$scope.getComment($scope.orderingOptions[0].id); // commented, because it will get called once pdf get loaded
     };
