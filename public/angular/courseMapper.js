@@ -1289,15 +1289,15 @@ app.directive('modalClose',
     });;/*jslint node: true */
 'use strict';
 
-app.directive('movable', function() {
+app.directive('movable', function () {
     return {
         restrict: 'A',
         scope: {
             onMoved: '=',
             canMove: '@'
         },
-        link: function(scope, element, attrs) {
-            attrs.$observe('canMove', function(value) {
+        link: function (scope, element, attrs) {
+            attrs.$observe('canMove', function (value) {
                 if (value === 'false') {
                     element.draggable({
                         disabled: true
@@ -1313,7 +1313,7 @@ app.directive('movable', function() {
                 }
             });
 
-            var getPosition = function(ui) {
+            var getPosition = function (ui) {
                 var position = {
                     left: Math.round((100 * ui.position.left / element.parent()[0].clientWidth)),
                     top: Math.round((100 * ui.position.top / element.parent()[0].clientHeight))
@@ -1324,7 +1324,7 @@ app.directive('movable', function() {
                 .draggable({
                     containment: 'parent',
                     cursor: 'move',
-                    stop: function(event, ui) {
+                    stop: function (event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
                                 position: getPosition(ui)
@@ -1335,8 +1335,8 @@ app.directive('movable', function() {
                 .resizable({
                     containment: 'parent',
                     handles: 'ne, se, sw, nw',
-                    stop: function(event, ui) {
-                        // get relative size to the container elemenet
+                    stop: function (event, ui) {
+                        // get relative size to the container element
                         var size = {};
                         size.width = Math.round((100 * ui.size.width / element.parent()[0].clientWidth));
                         size.height = Math.round((100 * ui.size.height / element.parent()[0].clientHeight));
@@ -1351,7 +1351,7 @@ app.directive('movable', function() {
                 });
 
             // remove event handlers
-            scope.$on('$destroy', function() {
+            scope.$on('$destroy', function () {
                 element.off('**');
             });
         }
@@ -1605,6 +1605,69 @@ app.directive('movable', function() {
 }
 
 app.directive('spinner', Spinner);
+;/*jslint node: true */
+'use strict';
+
+app.directive('timepicker', function ($timeout) {
+    function msToTime(s) {
+        function addZ(n) {
+            return (n < 10 ? '0' : '') + n;
+        }
+
+        var ms = s % 1000;
+        s = (s - ms) / 1000;
+        var secs = s % 60;
+        s = (s - secs) / 60;
+        var mins = s % 60;
+        var hrs = (s - mins) / 60;
+        return addZ(hrs) + ':' + addZ(mins) + ':' + addZ(secs);
+    }
+
+    function timeToMs(time) {
+        var a = time.split(':'); // split it at the colons
+        // minutes are worth 60 seconds. Hours are worth 60 minutes.
+        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+        return seconds * 1000;
+    }
+
+    return {
+        restrict: 'EA',
+        template: '<div class="input-group bootstrap-timepicker timepicker">' +
+        '<input id="timepicker2" type="text" class="form-control input-small">' +
+        '<span class="input-group-addon">' +
+        '<i class="glyphicon glyphicon-time"></i></span> </div>',
+        require: 'ngModel',
+        link: function (scope, element, attrs, ngModel) {
+            var tp = element.find('input');
+            var value = parseInt(scope.$eval(attrs.ngModel));
+
+            tp.timepicker({
+                minuteStep: 1,
+                template: 'modal',
+                secondStep: 1,
+                appendWidgetTo: 'body',
+                showSeconds: true,
+                showMeridian: false,
+                defaultTime: false
+            });
+
+            tp.timepicker('setTime', msToTime(value));
+
+            tp.on('changeTime.timepicker', function (e) {
+                var time = timeToMs(e.time.value);
+                ngModel.$setViewValue(time);
+                ngModel.$render();
+                $timeout(function () {
+                    scope.$apply();
+                });
+            });
+
+            scope.$on('$destroy', function () {
+                element.off('**');
+            });
+        }
+    };
+});
 ;app.directive('voting',
     function () {
         return {
