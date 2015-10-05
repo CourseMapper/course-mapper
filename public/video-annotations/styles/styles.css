@@ -32,11 +32,12 @@
 }
 
 .ui-resizable-handle {
-    background: #f5dc58;
+    background: #0000ff;
     border: 1px solid #FFF;
     width: 9px;
+    opacity: 0.4;
     height: 9px;
-    z-index: 2;
+    z-index: 100;
 }
 
 .ui-resizable-se {
@@ -45,33 +46,7 @@
 }
 
 video-annotation {
-    display: block;
     cursor: pointer;
-    font-family: Calibri, Helvetica, Arial, serif;
-}
-
-video-annotation header {
-    font-size: 8pt;
-}
-
-video-annotation article {
-    padding: 10px;
-}
-
-video-annotation #meta {
-    position: relative;
-    border-top: 1px #696969 solid;
-    border-bottom: 1px #696969 solid;
-}
-
-video-annotation #meta .author {
-    right: 0;
-    top: 0;
-    position: absolute;
-}
-
-video-annotation:hover {
-    background-color: #EEEEEE;
 }
 
 video-annotation.showing {
@@ -79,7 +54,7 @@ video-annotation.showing {
 }
 
 video-annotation.completed {
-    opacity: 0.3;
+    opacity: 0.35;
 }
 
 .animable {

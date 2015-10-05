@@ -68,7 +68,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             $scope.cuePoints.points = [];
             $scope.selectedAnnotation = null;
 
-            _.sortBy(annotations, 'start')
+            _.sortByAll(annotations, ['start', 'end'])
                 .forEach(function (annotation) {
                     var cuePoint = {
                         timeLapse: {

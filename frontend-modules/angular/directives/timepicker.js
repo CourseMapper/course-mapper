@@ -48,16 +48,12 @@ app.directive('timepicker', function ($timeout) {
 
             tp.on('changeTime.timepicker', function (e) {
                 var time = timeToMs(e.time.value);
-                console.log('SETTING MODEL VALUE: ', time);
-
                 ngModel.$setViewValue(time);
                 ngModel.$render();
                 $timeout(function () {
                     scope.$apply();
-                    console.log('NEW VALUE: ' + scope.$eval(attrs.ngModel));
                 });
             });
-
 
             scope.$on('$destroy', function () {
                 element.off('**');
