@@ -51,10 +51,8 @@ module.exports = function(io) {
                 params.annotation.author = user.username;
                 annotation = await (VideoAnnotation.create(params.annotation));
             }
-
             var videoId = annotation.video_id;
             var annotations = await (getAnnotationsAsync(videoId));
-
             // notify all users about changes
             io.sockets.emit('annotations:updated', annotations);
         }));

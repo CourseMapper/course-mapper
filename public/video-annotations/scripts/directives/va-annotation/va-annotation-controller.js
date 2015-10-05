@@ -3,19 +3,15 @@
 
 videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootScope',
     function($scope, socket, rootScope) {
-
-        // Get the user from the root scope
-        var currentUser = rootScope.user;
-
         function markAuthoredComments(comments) {
             _.forEach(comments, function(comment) {
-                comment.isAuthor = (comment.author === currentUser.username);
+                comment.isAuthor = (comment.author === rootScope.user.username);
             });
         }
 
         this.init = function() {
             $scope.commentText = '';
-            $scope.isAuthor = ($scope.source.author === currentUser.username);
+            $scope.isAuthor = ($scope.source.author === rootScope.user.username);
             $scope.annotationTypes = [{
                 id: 'embedded-note',
                 name: 'Embedded Note'
@@ -32,6 +28,10 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
 
         $scope.editAnnotation = function() {
             $scope.source.isEditMode = true;
+        };
+
+        $scope.closeAnnotation = function() {
+            $scope.source.isEditMode = false;
         };
 
         $scope.saveAnnotation = function() {
