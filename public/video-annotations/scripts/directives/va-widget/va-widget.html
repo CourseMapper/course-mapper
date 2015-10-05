@@ -16,11 +16,11 @@
                 <vg-fullscreen-button></vg-fullscreen-button>
             </vg-controls>
             <div id="inline-va-container">
-                <div movable 
-                     can-move="{{item.isEditMode===true}}" 
-                     on-moved="item.reposition" 
-                     ng-repeat="item in annotations | filter:{type: 'embedded-note'}" 
-                     class="inline-va-annotation" 
+                <div movable
+                     can-move="{{item.isEditMode===true}}"
+                     on-moved="item.reposition"
+                     ng-repeat="item in annotations | filter:{type: 'embedded-note'}"
+                     class="inline-va-annotation"
                      ng-show="item.showing"
                      ng-style="{
                         top: item.position.top + '%',
@@ -37,7 +37,9 @@
         <label for="search-box">Search:</label>
         <input id="search-box" ng-model="query">
         <section ng-show="annotations.length > 0" class="annotations-viewer">
-            <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation" ng-class="{showing: annotation.showing, completed: annotation.completed}" ng-click="seekPosition(annotation)"></video-annotation>
+            <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation"
+                              ng-class="{showing: annotation.showing, completed: annotation.completed}"
+                              ng-click="seekPosition(annotation)"></video-annotation>
         </section>
     </div>
 </div>

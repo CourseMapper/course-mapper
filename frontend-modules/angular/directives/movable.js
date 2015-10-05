@@ -1,15 +1,15 @@
 /*jslint node: true */
 'use strict';
 
-app.directive('movable', function() {
+app.directive('movable', function () {
     return {
         restrict: 'A',
         scope: {
             onMoved: '=',
             canMove: '@'
         },
-        link: function(scope, element, attrs) {
-            attrs.$observe('canMove', function(value) {
+        link: function (scope, element, attrs) {
+            attrs.$observe('canMove', function (value) {
                 if (value === 'false') {
                     element.draggable({
                         disabled: true
@@ -25,7 +25,7 @@ app.directive('movable', function() {
                 }
             });
 
-            var getPosition = function(ui) {
+            var getPosition = function (ui) {
                 var position = {
                     left: Math.round((100 * ui.position.left / element.parent()[0].clientWidth)),
                     top: Math.round((100 * ui.position.top / element.parent()[0].clientHeight))
@@ -36,7 +36,7 @@ app.directive('movable', function() {
                 .draggable({
                     containment: 'parent',
                     cursor: 'move',
-                    stop: function(event, ui) {
+                    stop: function (event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
                                 position: getPosition(ui)
@@ -47,8 +47,8 @@ app.directive('movable', function() {
                 .resizable({
                     containment: 'parent',
                     handles: 'ne, se, sw, nw',
-                    stop: function(event, ui) {
-                        // get relative size to the container elemenet
+                    stop: function (event, ui) {
+                        // get relative size to the container element
                         var size = {};
                         size.width = Math.round((100 * ui.size.width / element.parent()[0].clientWidth));
                         size.height = Math.round((100 * ui.size.height / element.parent()[0].clientHeight));
@@ -63,7 +63,7 @@ app.directive('movable', function() {
                 });
 
             // remove event handlers
-            scope.$on('$destroy', function() {
+            scope.$on('$destroy', function () {
                 element.off('**');
             });
         }

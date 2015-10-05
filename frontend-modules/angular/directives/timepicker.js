@@ -1,7 +1,7 @@
 /*jslint node: true */
 'use strict';
 
-app.directive('timepicker', function () {
+app.directive('timepicker', function ($timeout) {
     function msToTime(s) {
         function addZ(n) {
             return (n < 10 ? '0' : '') + n;
@@ -16,17 +16,24 @@ app.directive('timepicker', function () {
         return addZ(hrs) + ':' + addZ(mins) + ':' + addZ(secs);
     }
 
+    function timeToMs(time) {
+        var a = time.split(':'); // split it at the colons
+        // minutes are worth 60 seconds. Hours are worth 60 minutes.
+        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+        return seconds * 1000;
+    }
+
     return {
         restrict: 'EA',
-        scope: {
-            time: '=?'
-        },
         template: '<div class="input-group bootstrap-timepicker timepicker">' +
         '<input id="timepicker2" type="text" class="form-control input-small">' +
         '<span class="input-group-addon">' +
         '<i class="glyphicon glyphicon-time"></i></span> </div>',
-        link: function (scope, element, attrs) {
+        require: 'ngModel',
+        link: function (scope, element, attrs, ngModel) {
             var tp = element.find('input');
+            var value = parseInt(scope.$eval(attrs.ngModel));
+
             tp.timepicker({
                 minuteStep: 1,
                 template: 'modal',
@@ -37,17 +44,21 @@ app.directive('timepicker', function () {
                 defaultTime: false
             });
 
-            scope.time = scope.time || {};
-            if (attrs.time)
-                scope.time = attrs.time;
+            tp.timepicker('setTime', msToTime(value));
 
-            attrs.$observe('time', function (value) {
-                var time = msToTime(value);
-                console.log('### TIME: ' + time);
-                tp.timepicker('setTime', time);
+            tp.on('changeTime.timepicker', function (e) {
+                var time = timeToMs(e.time.value);
+                console.log('SETTING MODEL VALUE: ', time);
+
+                ngModel.$setViewValue(time);
+                ngModel.$render();
+                $timeout(function () {
+                    scope.$apply();
+                    console.log('NEW VALUE: ' + scope.$eval(attrs.ngModel));
+                });
             });
 
-            // remove event handlers
+
             scope.$on('$destroy', function () {
                 element.off('**');
             });

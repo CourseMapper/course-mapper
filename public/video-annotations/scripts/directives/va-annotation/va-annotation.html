@@ -22,14 +22,11 @@
         </select>
         <br/>
 
-        <timepicker time="source.start"></timepicker>
-        <br/>
-
-        <!--<label for="va-start">Start:</label>-->
-        <!--<input id="va-start" ng-model="source.start">-->
-
+        <label for="va-start">Start:</label>
+        <timepicker id="va-start" ng-model="source.start"></timepicker>
         <label for="va-end">End:</label>
-        <input id="va-end" ng-model="source.end">
+        <timepicker id="va-end" ng-model="source.end"></timepicker>
+        <br/>
     </div>
     <div class="box-footer">
         <div ng-show="source.isAuthor && !source.isEditMode" class="replyControl">
