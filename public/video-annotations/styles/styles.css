@@ -8,7 +8,7 @@
 }
 
 .inline-va-annotation {
-    position: absolute;
+    position: absolute !important;
     display: table;
     background: #9D9D9D;
     color: #FFFFFF;
@@ -21,10 +21,10 @@
 }
 
 .inline-va-annotation > .ui-resizable-handle {
-    background: #0000ff;
+    background: #3c8dbc;
     border: 1px solid #FFF;
     width: 9px;
-    opacity: 0.4;
+    opacity: 0.7;
     height: 9px;
     z-index: 100;
 }
