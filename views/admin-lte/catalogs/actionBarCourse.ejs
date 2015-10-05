@@ -1,8 +1,8 @@
 <script type="text/ng-template" id="actionBar-course-preview">
     <ul class="">
         <li ng-hide="isOwner">
-            <a ng-hide="user" class="" href="/accounts/login?ref={{followUrl|base64Encode:true}}">Please
-                login to enroll to this course</a>
+            <span ng-hide="user">Please
+                login to enroll to this course</span>
 
             <i ng-show="loading" class="fa fa-refresh fa-spin"></i>
             <a ng-show="user && !enrolled" ng-click="enroll()" style="cursor: pointer"><strong>Enroll here to

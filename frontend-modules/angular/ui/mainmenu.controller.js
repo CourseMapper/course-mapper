@@ -26,9 +26,9 @@ app.controller('MainMenuController', function($scope, $http, $rootScope, $cookie
             authService.login($scope.loginData,
                 function(user){
                     $scope.user = user;
-                    if(!$scope.referer) {
+                    /*if(!$scope.referer) {
                         window.location = '/accounts';
-                    }
+                    }*/
                     $scope.isLoading = false;
                 },
                 function error(data) {

@@ -93,7 +93,6 @@ app.directive('voting',
                         }
                     })
                         .success(function (data) {
-                            console.log(data);
                             if (data.result) {
                                 if (val == 'up') { 
                                     $scope.voteValue = 1;

@@ -1763,7 +1763,6 @@ app.directive('timepicker', function ($timeout) {
                         }
                     })
                         .success(function (data) {
-                            console.log(data);
                             if (data.result) {
                                 if (val == 'up') { 
                                     $scope.voteValue = 1;
@@ -2375,8 +2374,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             if(!isValid)
                 return;
 
-            console.log('saving bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
@@ -2389,7 +2386,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewLink', data.post);
                         $scope.links.unshift(data.post);
@@ -2413,8 +2410,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             if(!isValid)
                 return;
 
-            console.log('saving edit bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.currentLink);
@@ -2427,7 +2422,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 }
             })
                 .success(function(data) {
-                    console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
@@ -2459,14 +2453,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                     }
                 })
                     .success(function(data) {
-                        console.log(data);
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
                         } else {
                             if( data.result != null && !data.result){
                                 $scope.errorName = data.errors;
-                                console.log(data.errors);
                             }
                         }
                     }) ;
@@ -2479,7 +2471,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
         $scope.$on('onAfterDeleteLink', function(e, postId){
             var i = _.findIndex($scope.links, { link: { '_id' : postId}});
-            if(i>=0) {
+            if(i >= 0) {
                 //$scope.links[i].isDeleted = true;
                 $scope.links.splice(i, 1);
                 $scope.currentLink = false;
@@ -2545,9 +2537,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
             if($scope.AddLinkForm)
-            $scope.AddLinkForm.$setPristine();
+                $scope.AddLinkForm.$setPristine();
             if($scope.EditLinkForm)
-            $scope.EditLinkForm.$setPristine();
+                $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {
@@ -3365,9 +3357,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             authService.login($scope.loginData,
                 function(user){
                     $scope.user = user;
-                    if(!$scope.referer) {
+                    /*if(!$scope.referer) {
                         window.location = '/accounts';
-                    }
+                    }*/
                     $scope.isLoading = false;
                 },
                 function error(data) {
@@ -3455,14 +3447,12 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.$on('onAfterInitUser', function(event, user){
         $scope.$watch('location', function(newVal, oldVal){
             if($scope.location == 'user-profile'){
-                console.log('onAfterInitUser');
                 $scope.getWidgets();
             }
         });
     });
 
     $scope.$on('onAfterInitCourse', function(event, course){
-        console.log('onAfterInitCourse');
         $scope.course = course;
         $scope.getWidgets();
     });

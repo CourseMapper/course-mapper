@@ -40,8 +40,6 @@ app.
             if(!isValid)
                 return;
 
-            console.log('saving bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
@@ -54,7 +52,7 @@ app.
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewLink', data.post);
                         $scope.links.unshift(data.post);
@@ -78,8 +76,6 @@ app.
             if(!isValid)
                 return;
 
-            console.log('saving edit bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.currentLink);
@@ -92,7 +88,6 @@ app.
                 }
             })
                 .success(function(data) {
-                    console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
@@ -124,14 +119,12 @@ app.
                     }
                 })
                     .success(function(data) {
-                        console.log(data);
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
                         } else {
                             if( data.result != null && !data.result){
                                 $scope.errorName = data.errors;
-                                console.log(data.errors);
                             }
                         }
                     }) ;
@@ -144,7 +137,7 @@ app.
 
         $scope.$on('onAfterDeleteLink', function(e, postId){
             var i = _.findIndex($scope.links, { link: { '_id' : postId}});
-            if(i>=0) {
+            if(i >= 0) {
                 //$scope.links[i].isDeleted = true;
                 $scope.links.splice(i, 1);
                 $scope.currentLink = false;
@@ -210,9 +203,9 @@ app.
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
             if($scope.AddLinkForm)
-            $scope.AddLinkForm.$setPristine();
+                $scope.AddLinkForm.$setPristine();
             if($scope.EditLinkForm)
-            $scope.EditLinkForm.$setPristine();
+                $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {
