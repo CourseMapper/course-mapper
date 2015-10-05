@@ -10,8 +10,6 @@
 .inline-va-annotation {
     position: absolute;
     display: table;
-    cursor: hand;
-    cursor: pointer;
     background: #9D9D9D;
     color: #FFFFFF;
 }
