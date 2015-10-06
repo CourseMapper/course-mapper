@@ -1222,23 +1222,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 $compile(element.contents())(scope.$new());
             }*/
         };
-    });;/*
- takenfrom:http://blog.brunoscopelliti.com/
- */
-app.directive('pwCheck', [function () {
-    return {
-        require: 'ngModel',
-        link: function (scope, elem, attrs, ctrl) {
-            var firstPassword = '#' + attrs.pwCheck;
-            elem.add(firstPassword).on('keyup', function () {
-                scope.$apply(function () {
-                    var v = elem.val()===$(firstPassword).val();
-                    ctrl.$setValidity('pwmatch', v);
-                });
-            });
-        }
-    }
-}]);;app.directive('errorBlock',
+    });;app.directive('errorBlock',
     function () {
         return {
             restrict: 'E',
@@ -1569,7 +1553,27 @@ app.directive('movable', function () {
             }
         };
     });
-;function Spinner($timeout) {
+;/*
+ takenfrom:http://blog.brunoscopelliti.com/
+ */
+app.directive('pwCheck', [function () {
+    return {
+        require: "ngModel",
+        scope: {
+            original: "="
+        },
+        link: function (scope, elem, attrs, ctrl) {
+            var firstPassword = '#' + attrs.pwCheck;
+
+            elem.add(firstPassword).on('keyup', function () {
+                scope.$apply(function () {
+                    var v = elem.val()===$(firstPassword).val();
+                    ctrl.$setValidity('pwmatch', v);
+                });
+            });
+        }
+    };
+}]);;function Spinner($timeout) {
     return {
         restrict: 'E',
         template: '<i class="fa fa-cog fa-spin"></i>',
@@ -2310,9 +2314,11 @@ app.directive('timepicker', function ($timeout) {
                     function success(data) {
                         if(data.result) {
                             //$rootScope.user = data.user;
-                            $rootScope.$broadcast('onAfterUserRegistration', data.result);
+                            $rootScope.$broadcast('onAfterUserRegistration', data.user);
 
-                            successCallback(data.result);
+                            successCallback(data.user);
+                        } else {
+                            errorCallback(data);
                         }
                     }).error(
                     function (data) {
@@ -3321,7 +3327,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
 });
-;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService) {
+;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -3345,6 +3351,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
+
+    $scope.noticeAfterSignUp = function(){
+        var k = $location.search();
+        if(k.referer && k.referer == 'signUp' && k.result && k.result == 'success'){
+            toastr.success('Please login using your new username and password!', 'Sign Up Success');
+        }
+    };
+
+    $scope.noticeAfterSignUp();
 
     $scope.login = function(isValid){
         if(isValid){
@@ -3437,9 +3452,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         if(isValid){
             $scope.isLoading = true;
             authService.signUp($scope.loginData,
-                function(){
+                function(user){
                     $scope.isLoading = false;
-                    window.location = '/accounts/login/#?referer=signUp';
+                    window.location = '/accounts/login/#?referer=signUp&result=success';
                 },
                 function error(data) {
                     if(data.errors){

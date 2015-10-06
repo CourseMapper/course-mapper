@@ -47,8 +47,8 @@ account.prototype.signUp = function(err, params, done){
     this.userExist(params.username,
         function isExist(){
             //user is exist, so cannot register now
+            debug("user is exist");
             err(new Error("user is exist"));
-            console.log("user is exist");
         },
         function isNotExist(){
             //user does not exist, so cool, add to our DB
@@ -87,7 +87,7 @@ account.prototype.addUser = function(errorCallback, params, done){
     // save it to db
     user.save(function (err) {
         if (err) {
-            console.log('registration error');
+            debug(err.message);
             // call error callback
             errorCallback(err);
         } else {

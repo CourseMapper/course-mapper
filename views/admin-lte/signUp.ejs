@@ -34,17 +34,17 @@
                                     <div class="control-group">
                                         <!-- Username -->
                                         <label class="control-label" for="username">Username</label>
-
+                                        <p class="help-block">Username can contain any letters or numbers, without
+                                            spaces</p>
                                         <div class="controls"
-                                             ng-class="{ 'has-error' : signUpForm.username.$invalid && !signUpForm.$pristine }">
-                                            <p class="help-block">Username can contain any letters or numbers, without
-                                                spaces</p>
+                                             ng-class="{ 'has-error' : signUpForm.username.$invalid && !signUpForm.username.$pristine }">
+
                                             <input type="text" id="username" name="username"
                                                    class="form-control"
                                                    ng-model="loginData.username"
                                                    required ng-required="true">
 
-                                            <p ng-show="signUpForm.username.$invalid && !signUpForm.$pristine"
+                                            <p ng-show="signUpForm.username.$invalid && !signUpForm.username.$pristine"
                                                class="help-block">Username is
                                                 required.</p>
 
@@ -57,14 +57,14 @@
                                         <label class="control-label" for="email">E-mail</label>
 
                                         <div class="controls"
-                                             ng-class="{ 'has-error' : signUpForm.email.$invalid && !signUpForm.$pristine }">
+                                             ng-class="{ 'has-error' : signUpForm.email.$invalid && !signUpForm.email.$pristine }">
                                             <p class="help-block">Please provide your E-mail</p>
                                             <input type="email" id="email" name="email"
                                                    class="form-control"
                                                    ng-model="loginData.email"
                                                    required ng-required="true">
 
-                                            <p ng-show="signUpForm.email.$invalid && !signUpForm.$pristine"
+                                            <p ng-show="signUpForm.email.$invalid && !signUpForm.email.$pristine"
                                                class="help-block">Email is
                                                 required.</p>
                                         </div>
@@ -74,20 +74,18 @@
                                         <p></p>
                                         <!-- Password-->
                                         <label class="control-label" for="password">Password</label>
-
+                                        <p class="help-block">Password should be at least 4 characters</p>
                                         <div class="controls"
-                                             ng-class="{ 'has-error' : signUpForm.password.$invalid && !signUpForm.$pristine }">
-                                            <p class="help-block">Password should be at least 4 characters</p>
-                                            <input type="password" id="password" name="password"
+                                             ng-class="{ 'has-error' : signUpForm.password.$invalid && !signUpForm.password.$pristine }">
+                                            <input type="password" id="passwordOriginal" name="password"
                                                    class="form-control"
                                                    required ng-required="true"
                                                    ng-model="loginData.password"
                                                    ng-minlength="4"
                                                     >
 
-                                            <p ng-show="signUpForm.password.$invalid && !signUpForm.$pristine"
-                                               class="help-block">Password is
-                                                required.</p>
+                                            <p ng-show="signUpForm.password.$invalid && !signUpForm.password.$pristine"
+                                               class="help-block">Password is invalid.</p>
                                         </div>
                                     </div>
 
@@ -96,25 +94,26 @@
                                         <!-- Password -->
                                         <label class="control-label" for="password_confirm">Password (Confirm)</label>
 
+                                        <p class="help-block">Please confirm your password</p>
                                         <div class="controls"
-                                             ng-class="{ 'has-error' : signUpForm.password_confirm.$invalid && !signUpForm.$pristine }">
-                                            <p class="help-block">Please confirm your password</p>
+                                             ng-class="{ 'has-error' : signUpForm.password_confirm.$invalid && !signUpForm.password_confirm.$pristine }">
                                             <input type="password" id="password_confirm" name="password_confirm"
                                                    placeholder="" class="form-control"
                                                    required ng-required="true"
+                                                   pw-check="passwordOriginal"
                                                    ng-model="loginData.password_confirm"
-                                                   pw-check="password" >
+                                                   original="loginData.password" >
 
-                                            <p ng-show="signUpForm.password_confirm.$invalid && !signUpForm.$pristine"
-                                               class="help-block">Password (confirm) is required.</p>
+                                            <p ng-show="signUpForm.password_confirm.$error.pwmatch && !signUpForm.password_confirm.$pristine"
+                                               class="help-block">The confirmed password is not matching with your password.</p>
                                         </div>
                                     </div>
 
                                     <div class="control-group">
                                         <!-- Button -->
                                         <div class="controls">
+                                            <br class="clear">
                                             <error-block ng-show="errors.length > 0" messages="errors"></error-block>
-                                            <p class="help-block"></p>
                                             <br class="clear">
                                             <button class="btn btn-primary" ng-click="signUpForm.$setDirty()">Register
                                                 <spinner show="isLoading"></spinner>

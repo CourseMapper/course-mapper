@@ -58,9 +58,11 @@ app.factory('authService', [
                     function success(data) {
                         if(data.result) {
                             //$rootScope.user = data.user;
-                            $rootScope.$broadcast('onAfterUserRegistration', data.result);
+                            $rootScope.$broadcast('onAfterUserRegistration', data.user);
 
-                            successCallback(data.result);
+                            successCallback(data.user);
+                        } else {
+                            errorCallback(data);
                         }
                     }).error(
                     function (data) {

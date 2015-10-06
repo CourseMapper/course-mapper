@@ -14,9 +14,9 @@ app.controller('SignUpController', function($scope, $http, $rootScope, $cookies,
         if(isValid){
             $scope.isLoading = true;
             authService.signUp($scope.loginData,
-                function(){
+                function(user){
                     $scope.isLoading = false;
-                    window.location = '/accounts/login/#?referer=signUp';
+                    window.location = '/accounts/login/#?referer=signUp&result=success';
                 },
                 function error(data) {
                     if(data.errors){
