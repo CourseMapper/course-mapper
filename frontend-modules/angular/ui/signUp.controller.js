@@ -1,14 +1,11 @@
 app.controller('SignUpController', function($scope, $http, $rootScope, $cookies, authService) {
-    $scope.rememberMe = false;
+
     $scope.loginData = {};
     $scope.errors = [];
-    $scope.user = null;
-    $scope.referer = false;
     $scope.isLoading = false;
 
     authService.loginCheck(function(user){
-        $scope.user = user;
-        if($scope.user){
+        if(user){
             window.location = '/accounts';
         }
     });
