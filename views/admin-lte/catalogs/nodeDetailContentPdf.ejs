@@ -85,7 +85,7 @@
 
                     </div>
                     <div id="commentList" class="row">
-                        Search: <input id="searchInput"></input>
+                        Search: <input id="searchInput" ng-model="rawSearchTerm"></input>
                         <div class="replies" ng-repeat="comment in comments" ng-cloak>
                             <div class="col-xs-1">
                                 <voting vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>

@@ -249,6 +249,13 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
       }
     }
 
+    if(typeof filters["rawText"] != 'undefined') {
+      if(typeof filters["rawText"]["regex"] != 'undefined'){
+        filters["rawText"] = new RegExp(filters["rawText"]["regex"],'i');
+        console.log("found tag request");
+      }
+    }
+
 
     AnnotationsPDF.find(filters, function (err, data) {
       if(err) {

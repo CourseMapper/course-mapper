@@ -2751,6 +2751,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.currentPageNumber = 1;
     $scope.annotationZones = [];
 
+    $scope.rawSearchTerm = "";
+
     // zones
     $scope.tagNames = [];
     $scope.tagRelPos = [];
@@ -2949,18 +2951,24 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
 
-    $scope.switchRegexFilter = function (value) {
-        $scope.filtersRaw['renderedText'] = {'regex': value};
+    $scope.setRegexFilter = function (value) {
+        if(typeof $scope.filtersRaw['rawText'] == 'undefined') {
+          $scope.filtersRaw['rawText'] = {'regex': value};
+        }
+        else
+          $scope.filtersRaw['rawText'].regex = value;
 
         $scope.$broadcast('onFiltersRawChange');
     };
 
     $scope.switchRegexHashFilter = function (value) {
         console.log("switchRegexHashFilter CALLED");
-        if( $scope.filtersRaw['renderedText'] == {'regex_hash': value.substring(1)} )
-          delete $scope.filtersRaw['renderedText'];
-        else
+        if( typeof $scope.filtersRaw['renderedText'] == 'undefined')
           $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
+        else if( $scope.filtersRaw['renderedText'].regex_hash != value.substring(1) )
+          $scope.filtersRaw['renderedText'].regex_hash = value.substring(1);
+        else
+          delete $scope.filtersRaw['renderedText'];
         console.log($scope.filtersRaw);
 
         $scope.$broadcast('onFiltersRawChange');
@@ -3144,6 +3152,14 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.updateScope($scope.commentGetUrl);
         }
     });
+
+    $scope.$watch("rawSearchTerm", function (newValue, oldValue) {
+      if(newValue != oldValue) {
+        $scope.setRegexFilter(newValue);
+      }
+    });
+
+
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
