@@ -10,11 +10,11 @@
         <!-- Main content -->
         <section class="content">
             <div class="row row-centered">
-                <div class="col-xs-12 col-md-6  ">
+                <div class="col-xs-12 col-md-6">
                     <div class="box no-border">
                         <div class="box-body no-border">
                             <div class="control-group">
-                                <p class="help-block">User your facebook account to login</p>
+                                <p class="help-block">Use your facebook account to login</p>
                                 <a href="/api/accounts/login/facebook">
                                     <img src="/admin-lte/images/fb.png">
                                 </a>
@@ -23,15 +23,16 @@
                     </div>
                 </div>
 
-                <div class="col-xs-12 col-md-6 col-centered">
+                <div class="col-xs-12 col-md-6 col-centered" ng-controller="SignUpController">
                     <div class="box no-border">
                         <div class="box-body no-border">
-                            <form action='/accounts/signUp' method="POST">
+                            <form name="signUpForm" ng-submit="signUp(signUpForm.$valid)" novalidate>
                                 <fieldset>
                                     <div id="legend">
-                                        <h1>User Register Form</h1>
+                                        <h2>User Registration Form</h2>
                                     </div>
-                                    <div class="control-group">
+                                    <div class="control-group"
+                                         ng-class="{ 'has-error' : signUpForm.username.$invalid && !signUpForm.username.$pristine }">
                                         <!-- Username -->
                                         <label class="control-label" for="username">Username</label>
 
@@ -39,25 +40,37 @@
                                             <p class="help-block">Username can contain any letters or numbers, without
                                                 spaces</p>
                                             <input type="text" id="username" name="username" placeholder=""
-                                                   class="form-control">
+                                                   class="form-control"
+                                                   ng-model="loginData.username"
+                                                   required ng-required="true">
 
+                                            <p ng-show="signUpForm.username.$invalid && !signUpForm.username.$pristine"
+                                               class="help-block">Username is
+                                                required.</p>
                                         </div>
                                     </div>
 
-                                    <div class="control-group">
+                                    <div class="control-group"
+                                         ng-class="{ 'has-error' : signUpForm.email.$invalid && !signUpForm.email.$pristine }">
                                         <p></p>
                                         <!-- E-mail -->
                                         <label class="control-label" for="email">E-mail</label>
 
                                         <div class="controls">
                                             <p class="help-block">Please provide your E-mail</p>
-                                            <input type="text" id="email" name="email" placeholder=""
-                                                   class="form-control">
+                                            <input type="email" id="email" name="email" placeholder=""
+                                                   class="form-control"
+                                                   ng-model="loginData.email"
+                                                   required ng-required="true">
 
+                                            <p ng-show="signUpForm.email.$invalid && !signUpForm.email.$pristine"
+                                               class="help-block">Email is
+                                                required.</p>
                                         </div>
                                     </div>
 
-                                    <div class="control-group">
+                                    <div class="control-group"
+                                         ng-class="{ 'has-error' : signUpForm.password.$invalid && !signUpForm.password.$pristine }">
                                         <p></p>
                                         <!-- Password-->
                                         <label class="control-label" for="password">Password</label>
@@ -65,12 +78,20 @@
                                         <div class="controls">
                                             <p class="help-block">Password should be at least 4 characters</p>
                                             <input type="password" id="password" name="password" placeholder=""
-                                                   class="form-control">
+                                                   class="form-control"
+                                                   required ng-required="true"
+                                                   ng-model="loginData.password"
+                                                   ng-minlength="4"
+                                                    >
 
+                                            <p ng-show="signUpForm.password.$invalid && !signUpForm.password.$pristine"
+                                               class="help-block">Password is
+                                                required.</p>
                                         </div>
                                     </div>
 
-                                    <div class="control-group">
+                                    <div class="control-group"
+                                         ng-class="{ 'has-error' : signUpForm.password_confirm.$invalid && !signUpForm.password_confirm.$pristine }">
                                         <p></p>
                                         <!-- Password -->
                                         <label class="control-label" for="password_confirm">Password (Confirm)</label>
@@ -78,19 +99,27 @@
                                         <div class="controls">
                                             <p class="help-block">Please confirm password</p>
                                             <input type="password" id="password_confirm" name="password_confirm"
-                                                   placeholder="" class="form-control">
+                                                   placeholder="" class="form-control"
+                                                   required ng-required="true"
+                                                   ng-model="loginData.password_confirm"
+                                                   pw-check="password">
 
+                                            <p ng-show="signUpForm.password_confirm.$invalid && !signUpForm.password_confirm.$pristine"
+                                               class="help-block">Password (confirm) is required.</p>
                                         </div>
                                     </div>
 
                                     <div class="control-group">
                                         <!-- Button -->
                                         <div class="controls">
+                                            <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                             <p class="help-block"></p>
 
                                             <p class="help-block"></p>
                                             <br class="clear">
-                                            <button class="btn btn-lg btn-primary btn-block">Register</button>
+                                            <button type="submit" class="btn btn-primary btn-block">Register
+                                                <spinner show="isLoading"></spinner>
+                                            </button>
                                         </div>
                                     </div>
                                 </fieldset>

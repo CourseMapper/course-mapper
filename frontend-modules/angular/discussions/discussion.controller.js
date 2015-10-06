@@ -55,8 +55,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
         if(!isValid)
             return;
 
-        console.log('saving');
-
         $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
@@ -68,7 +66,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
@@ -90,8 +87,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
         if(!isValid)
             return;
 
-        console.log('saving edit post');
-
         var d = transformRequest($scope.currentTopic);
         $http({
             method: 'PUT',
@@ -102,7 +97,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterEditTopic', data.post);
 
@@ -138,14 +132,14 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             }
         })
             .success(function(data) {
-                console.log(data);
+
                 if(data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
                 } else {
                     if( data.result != null && !data.result){
                         $scope.errorName = data.errors;
-                        console.log(data.errors);
+
                     }
                 }
             }) ;
@@ -163,14 +157,14 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterDeleteTopic', postId);
 
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
-                            console.log(data.errors);
+
                         }
                     }
                 }) ;

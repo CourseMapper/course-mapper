@@ -1,7 +1,9 @@
 var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
-    'relativeDate', 'wysiwyg.module', 'angular-quill','VideoAnnotations','SlideViewerAnnotationZones']);
+    'relativeDate', 'wysiwyg.module', 'angular-quill',
+    'VideoAnnotations','SlideViewerAnnotationZones',
+    'ngAnimate', 'toastr']);
 ;app.config(['$routeProvider', '$locationProvider',
 
     function($routeProvider, $locationProvider) {
@@ -1220,7 +1222,23 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 $compile(element.contents())(scope.$new());
             }*/
         };
-    });;app.directive('errorBlock',
+    });;/*
+ takenfrom:http://blog.brunoscopelliti.com/
+ */
+app.directive('pwCheck', [function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, elem, attrs, ctrl) {
+            var firstPassword = '#' + attrs.pwCheck;
+            elem.add(firstPassword).on('keyup', function () {
+                scope.$apply(function () {
+                    var v = elem.val()===$(firstPassword).val();
+                    ctrl.$setValidity('pwmatch', v);
+                });
+            });
+        }
+    }
+}]);;app.directive('errorBlock',
     function () {
         return {
             restrict: 'E',
@@ -1847,8 +1865,6 @@ app.directive('timepicker', function ($timeout) {
         if(!isValid)
             return;
 
-        console.log('saving');
-
         $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
@@ -1860,7 +1876,6 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
@@ -1882,8 +1897,6 @@ app.directive('timepicker', function ($timeout) {
         if(!isValid)
             return;
 
-        console.log('saving edit post');
-
         var d = transformRequest($scope.currentTopic);
         $http({
             method: 'PUT',
@@ -1894,7 +1907,6 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterEditTopic', data.post);
 
@@ -1930,14 +1942,14 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function(data) {
-                console.log(data);
+
                 if(data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
                 } else {
                     if( data.result != null && !data.result){
                         $scope.errorName = data.errors;
-                        console.log(data.errors);
+
                     }
                 }
             }) ;
@@ -1955,14 +1967,14 @@ app.directive('timepicker', function ($timeout) {
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterDeleteTopic', postId);
 
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
-                            console.log(data.errors);
+
                         }
                     }
                 }) ;
@@ -2253,6 +2265,8 @@ app.directive('timepicker', function ($timeout) {
 
                         successCallback($rootScope.user);
                     }
+                }).error(function(data){
+                    //console.log(data);
                 });
             },
 
@@ -2274,6 +2288,31 @@ app.directive('timepicker', function ($timeout) {
                             $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
 
                             successCallback($rootScope.user);
+                        }
+                    }).error(
+                    function (data) {
+                        errorCallback(data);
+                    }
+                );
+            },
+
+            signUp: function(loginData, successCallback, errorCallback){
+                var d = transformRequest(loginData);
+                $http({
+                    method: 'POST',
+                    url: '/api/accounts/signUp',
+                    data: d,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(
+                    function success(data) {
+                        if(data.result) {
+                            //$rootScope.user = data.user;
+                            $rootScope.$broadcast('onAfterUserRegistration', data.result);
+
+                            successCallback(data.result);
                         }
                     }).error(
                     function (data) {
@@ -3204,7 +3243,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        console.log(ngRepeatFinishedEvent);
         $scope.initJSPlumb();
     });
 
@@ -3383,6 +3421,39 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         });
 });;app.service('ActionBarService', function() {
     this.extraActionsMenu = [];
+});;app.controller('SignUpController', function($scope, $http, $rootScope, $cookies, authService) {
+    $scope.rememberMe = false;
+    $scope.loginData = {};
+    $scope.errors = [];
+    $scope.user = null;
+    $scope.referer = false;
+    $scope.isLoading = false;
+
+    authService.loginCheck(function(user){
+        $scope.user = user;
+        if($scope.user){
+            window.location = '/accounts';
+        }
+    });
+
+    $scope.signUp = function(isValid){
+        if(isValid){
+            $scope.isLoading = true;
+            authService.signUp($scope.loginData,
+                function(){
+                    $scope.isLoading = false;
+                    window.location = '/accounts/login/#?referer=signUp';
+                },
+                function error(data) {
+                    if(data.errors){
+                        $scope.errors = data.errors;
+                    }
+                    $scope.isLoading = false;
+                }
+            );
+        }
+    }
+
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
