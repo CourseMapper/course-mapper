@@ -40,6 +40,11 @@
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
                                     </div>
                                 </div>
+
+                                Currently edited annotation zones:
+                                <div ng-repeat="item in tagNamesList">
+                                  {{item}}
+                                </div>
                             </div>
 
                             <div class="control-group">
@@ -55,7 +60,6 @@
 
                         </fieldset>
                     </form>
-
                 </div>
 
                 <!--<div id="annotationZoneSubmitListMovables">
@@ -64,6 +68,8 @@
                     </button>
                 </div>-->
                 <label id="commentSubmissionResponse"></label>
+
+
             </div>
 
             <div class="commentZoneList">

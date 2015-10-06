@@ -2,7 +2,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNames = "";
+    $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
     //$scope.annZoneMov = [];
 
@@ -75,7 +75,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       );
     };
 
-    $scope.$watch("tagNames", function (newValue, oldValue) {
+    $scope.$watch("tagNamesList", function (newValue, oldValue) {
       if(newValue != oldValue) {
         //console.log("IAM ANGRY");
         //console.log(newValue);
@@ -155,7 +155,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         //console.log($scope.tagNameErrors[key]);
       }*/
       $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
-      $scope.tagNames = JSON.parse(JSON.stringify({}));
+      $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
       $timeout(function(){
         $scope.$apply($scope.tagNameErrors);

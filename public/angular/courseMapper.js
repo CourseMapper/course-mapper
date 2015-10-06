@@ -2578,7 +2578,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNames = "";
+    $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
     //$scope.annZoneMov = [];
 
@@ -2651,7 +2651,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       );
     };
 
-    $scope.$watch("tagNames", function (newValue, oldValue) {
+    $scope.$watch("tagNamesList", function (newValue, oldValue) {
       if(newValue != oldValue) {
         //console.log("IAM ANGRY");
         //console.log(newValue);
@@ -2731,7 +2731,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         //console.log($scope.tagNameErrors[key]);
       }*/
       $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
-      $scope.tagNames = JSON.parse(JSON.stringify({}));
+      $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
       $timeout(function(){
         $scope.$apply($scope.tagNameErrors);
