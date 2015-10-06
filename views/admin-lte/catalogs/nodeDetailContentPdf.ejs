@@ -41,10 +41,20 @@
                                     </div>
                                 </div>
 
-                                Currently edited annotation zones:
-                                <div ng-repeat="item in tagNamesList">
-                                  {{item}}
+                                <div>
+                                  <label> Currently edited annotation zones: </label>
+                                  <div ng-repeat="item in tagNamesList">
+                                    #{{item}} : <button type="button" class="btn btn-primary" ng-click="addReference('#'+ item);"> Add reference </button>
+                                  </div>
                                 </div>
+
+                                <div>
+                                  <label> Already existing annotation zones: </label>
+                                  <div ng-repeat="item in annZones">
+                                    {{item.name}} : <button type="button" class="btn btn-primary" ng-click="addReference(item.name);"> Add reference </button>
+                                  </div>
+                                </div>
+
                             </div>
 
                             <div class="control-group">

@@ -2738,6 +2738,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       });
     };
 
+    $scope.timeout = function () {
+      $timeout(function(){
+        $scope.$apply($scope.tagNameErrors);
+      });
+    };
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
@@ -3231,6 +3236,17 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.$on('$routeUpdate', function(){
         $scope.manageActionBar();
     });
+
+    $scope.addReference = function(name) {
+      if($('#commentSubmissionDiv').css('display')!='none' ){
+        for(i=0; i<Quill.editors.length; i++){
+            if(Quill.editors[i].quillId=='#rawText'){
+            Quill.editors[i].insertText(Quill.editors[i].getLength()-1, " "+ name +" ", true);
+            Quill.editors[i].focus();
+          }
+        }
+      }
+    };
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;

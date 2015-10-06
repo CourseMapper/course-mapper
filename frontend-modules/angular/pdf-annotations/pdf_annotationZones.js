@@ -162,4 +162,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       });
     };
 
+    $scope.timeout = function () {
+      $timeout(function(){
+        $scope.$apply($scope.tagNameErrors);
+      });
+    };
 });
