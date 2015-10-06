@@ -11,6 +11,13 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.annotationZones = [];
 
     $scope.rawSearchTerm = "";
+    var baseFilterString = "Currently no filters are active";
+    $scope.activeFilterString = baseFilterString;
+
+    /*var visibleString = "visibility: visible;";
+    var invisibleString = "visibility: hidden;";
+    $scope.removeFiltersVisible = visibleString;
+    */
 
     // zones
     $scope.tagNames = [];
@@ -242,6 +249,45 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
         $scope.$broadcast('onFiltersRawChange');
     };
+
+    $scope.$on('onFiltersRawChange', function () {
+      var temp = "You are currently filtering for posts";
+      var add = "";
+      if ( typeof $scope.filtersRaw['author'] != 'undefined' && $scope.filtersRaw['author'] != "" )
+        add += " authored by '" + $scope.filtersRaw['author'] + "'";
+      if ( typeof $scope.filtersRaw['renderedText'] != 'undefined')
+        if ( typeof $scope.filtersRaw['renderedText'].regex_hash != 'undefined' && $scope.filtersRaw['renderedText'].regex_hash != "" )
+          add += " referencing the annotation zone '" + $scope.filtersRaw['renderedText'].regex_hash + "'";
+      /*if(typeof $scope.filtersRaw['rawText'] != 'undefined')
+        if ( $scope.filtersRaw['rawText'].regex != 'undefined' && $scope.filtersRaw['rawText'].regex != "")
+          temp += " containing the term '" + $scope.filtersRaw['renderedText'].regex_hash + "'";
+        */
+      if(add.length == 0) {
+        $scope.activeFilterString = baseFilterString;
+        //$scope.removeFiltersVisible = invisibleString;
+
+      }
+      else {
+        $scope.activeFilterString = temp + add;
+        //$scope.removeFiltersVisible = visibleString;
+
+      }
+
+      $timeout(function () {
+          $scope.$apply();
+          $scope.commentsLoaded();
+      });
+
+    });
+
+    $scope.removeActiveFilters = function () {
+      if ( typeof $scope.filtersRaw['author'] != 'undefined' && $scope.filtersRaw['author'] != "" )
+        delete $scope.filtersRaw['author'];
+      if ( typeof $scope.filtersRaw['renderedText'] != 'undefined')
+        delete $scope.filtersRaw['renderedText'];
+      $scope.$broadcast('onFiltersRawChange');
+    };
+
 
     $scope.commentsLoaded = function () {
         var element = $("#commentList .annotationZoneReference").not('.hasOnClick');
