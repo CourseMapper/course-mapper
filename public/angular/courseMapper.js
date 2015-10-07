@@ -1812,7 +1812,7 @@ app.directive('timepicker', function ($timeout) {
             }
 
         };
-    });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+    });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
     $scope.formData = {};
     $scope.course = {};
     $scope.currentReplyingTo = false;
@@ -1824,14 +1824,6 @@ app.directive('timepicker', function ($timeout) {
 
     $scope.isLoading = false;
     $scope.errors = [];
-
-    $scope.menu = [
-        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-        [ 'font-size' ],
-        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-        ['left-justify', 'center-justify', 'right-justify'],
-        ['code', 'quote', 'paragraph']
-    ];
 
     $scope.topics = [];
     $scope.replies = [];
@@ -1886,6 +1878,8 @@ app.directive('timepicker', function ($timeout) {
                     $timeout(function(){$scope.$apply()});
 
                     $('#addNewTopicModal').modal('hide');
+
+                    toastr.success('Successfully Saved');
                 }
 
                 $scope.addTopicForm.$setPristine();
@@ -1894,6 +1888,8 @@ app.directive('timepicker', function ($timeout) {
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -1922,11 +1918,15 @@ app.directive('timepicker', function ($timeout) {
 
                     $scope.editTopicForm.$setPristine();
                     $scope.isLoading = false;
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -1950,13 +1950,17 @@ app.directive('timepicker', function ($timeout) {
                 if(data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
+                    toastr.success('Successfully Deleted');
 
-                    }
                 }
-            }) ;
+            })
+
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+
+                toastr.error('Delete Failed');
+            });
     };
 
     $scope.deleteTopic = function(postId){
@@ -1975,13 +1979,16 @@ app.directive('timepicker', function ($timeout) {
                     if(data.result) {
                         $scope.$emit('onAfterDeleteTopic', postId);
 
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-
-                        }
+                        toastr.success('Successfully Deleted');
                     }
-                }) ;
+                })
+
+                .error(function(data){
+                    $scope.errors = data.errors;
+                    $scope.isLoading = false;
+
+                    toastr.error('Delete Failed');
+                });
         }
     };
 
@@ -2378,7 +2385,10 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         return new Date(1970, 0, 1).setSeconds(seconds);
     };
 }]);;app.
-    controller('LinksController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+    controller('LinksController', function($scope, $rootScope, $http, $location,
+                                           $sce, $compile, ActionBarService, $timeout,
+                                           toastr
+    ) {
         $scope.formData = {};
         $scope.course = {};
         $scope.contentNode = {};
@@ -2443,11 +2453,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         $('#AddLinksModal').modal('hide');
                     }
 
+                    toastr.error('Successfully Saved');
                     $scope.isLoading = false;
                 })
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
@@ -2475,6 +2487,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
+
+                        toastr.error('Successfully Saved');
                     }
 
                     $scope.AddLinkForm.$setPristine();
@@ -2483,6 +2497,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
@@ -2501,12 +2516,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
-                        } else {
-                            if( data.result != null && !data.result){
-                                $scope.errorName = data.errors;
-                            }
                         }
-                    }) ;
+                    })
+                    .error(function(data){
+                        $scope.errors = data.errors;
+                        toastr.error('Delete Failed');
+                    });
             }
         };
 

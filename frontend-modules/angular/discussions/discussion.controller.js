@@ -1,4 +1,4 @@
-app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
     $scope.formData = {};
     $scope.course = {};
     $scope.currentReplyingTo = false;
@@ -10,14 +10,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
     $scope.isLoading = false;
     $scope.errors = [];
-
-    $scope.menu = [
-        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-        [ 'font-size' ],
-        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-        ['left-justify', 'center-justify', 'right-justify'],
-        ['code', 'quote', 'paragraph']
-    ];
 
     $scope.topics = [];
     $scope.replies = [];
@@ -72,6 +64,8 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
                     $timeout(function(){$scope.$apply()});
 
                     $('#addNewTopicModal').modal('hide');
+
+                    toastr.success('Successfully Saved');
                 }
 
                 $scope.addTopicForm.$setPristine();
@@ -80,6 +74,8 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -108,11 +104,15 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
                     $scope.editTopicForm.$setPristine();
                     $scope.isLoading = false;
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -136,13 +136,17 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
                 if(data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
+                    toastr.success('Successfully Deleted');
 
-                    }
                 }
-            }) ;
+            })
+
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+
+                toastr.error('Delete Failed');
+            });
     };
 
     $scope.deleteTopic = function(postId){
@@ -161,13 +165,16 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
                     if(data.result) {
                         $scope.$emit('onAfterDeleteTopic', postId);
 
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-
-                        }
+                        toastr.success('Successfully Deleted');
                     }
-                }) ;
+                })
+
+                .error(function(data){
+                    $scope.errors = data.errors;
+                    $scope.isLoading = false;
+
+                    toastr.error('Delete Failed');
+                });
         }
     };
 

@@ -1,5 +1,8 @@
 app.
-    controller('LinksController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+    controller('LinksController', function($scope, $rootScope, $http, $location,
+                                           $sce, $compile, ActionBarService, $timeout,
+                                           toastr
+    ) {
         $scope.formData = {};
         $scope.course = {};
         $scope.contentNode = {};
@@ -64,11 +67,13 @@ app.
                         $('#AddLinksModal').modal('hide');
                     }
 
+                    toastr.error('Successfully Saved');
                     $scope.isLoading = false;
                 })
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
@@ -96,6 +101,8 @@ app.
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
+
+                        toastr.error('Successfully Saved');
                     }
 
                     $scope.AddLinkForm.$setPristine();
@@ -104,6 +111,7 @@ app.
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
@@ -122,12 +130,12 @@ app.
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
-                        } else {
-                            if( data.result != null && !data.result){
-                                $scope.errorName = data.errors;
-                            }
                         }
-                    }) ;
+                    })
+                    .error(function(data){
+                        $scope.errors = data.errors;
+                        toastr.error('Delete Failed');
+                    });
             }
         };
 
