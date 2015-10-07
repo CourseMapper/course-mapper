@@ -13,7 +13,7 @@
         <p class="reply">{{source.text}}</p>
     </div>
     <div class="box-body" ng-show="source.isEditMode">
-        <textarea cols="60" rows="3" id="va-text" type="text" ng-model="source.text"/>
+        <textarea cols="40" rows="3" id="va-text" type="text" ng-model="source.text"/>
         <br/>
         <select ng-model="source.type">
             <option ng-selected="type.id===source.type" ng-repeat="type in annotationTypes" value="{{type.id}}">
@@ -50,7 +50,7 @@
             <article ng-show="toggle">
                 <div id="comment-box">
                     <input placeholder="Write a comment..." type="text" ng-model="commentText">
-                    <button type="submit" ng-click="postComment()">post</button>
+                    <button class="btn btn-primary btn-xs" type="submit" ng-click="postComment()">post</button>
                 </div>
                 <section ng-repeat="comment in source.comments.slice().reverse()">
                     <div class="box box-solid">

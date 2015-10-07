@@ -34,8 +34,7 @@
     </div>
     <div class="col-sm-4 replies">
         <button class="btn btn-primary btn-xs" ng-click="createAnnotation()">Add annotation</button>
-        <label for="search-box">Search:</label>
-        <input id="search-box" ng-model="query">
+        <input id="search-box" placeholder="Search..." ng-model="query">
         <section ng-show="annotations.length > 0" class="annotations-viewer">
             <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation"
                               ng-class="{showing: annotation.showing, completed: annotation.completed}"
