@@ -38,11 +38,7 @@ video-annotation {
     cursor: pointer;
 }
 
-video-annotation.showing {
-    background-color: #C0DEED;
-}
-
-video-annotation.completed {
+video-annotation .completed {
     opacity: 0.35;
 }
 
