@@ -22,7 +22,7 @@ app.directive('voting',
             '</div></a>' +
             '</div>',
 
-            controller: function ($scope, $compile, $http, $attrs) {
+            controller: function ($scope, $compile, $http, $attrs, toastr) {
                 $scope.errors = [];
 
                 if($attrs.voteTotal)
@@ -86,7 +86,6 @@ app.directive('voting',
                     $http({
                         method: 'POST',
                         url: '/api/votes/' + $scope.voteType + '/id/' + $scope.voteTypeId + '/' + val,
-                        //data: d,
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
@@ -106,6 +105,13 @@ app.directive('voting',
                                 if(typeof($scope.voteTotal) == 'undefined')
                                     $scope.voteTotal = 0;
 
+                                if(val == 'reset'){
+                                    toastr.success('Vote Removed');
+                                }
+                                else {
+                                    toastr.success('Successfully Voted');
+                                }
+
                                 $scope.voteDisplay = $scope.voteTotal + $scope.voteValue;
                             }
 
@@ -114,6 +120,8 @@ app.directive('voting',
                         .error(function (data) {
                             $scope.isLoading = false;
                             $scope.errors = data.errors;
+
+                            toastr.error('Voting Failed');
                         });
                 };
             }

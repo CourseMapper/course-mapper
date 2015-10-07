@@ -560,7 +560,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.initJSPlumb = function(){
-        console.log('drawing tree');
         Tree.init(Canvas.w, Canvas.h);
 
         var instance = jsPlumb.getInstance({
@@ -1743,7 +1742,7 @@ app.directive('timepicker', function ($timeout) {
             '</div></a>' +
             '</div>',
 
-            controller: function ($scope, $compile, $http, $attrs) {
+            controller: function ($scope, $compile, $http, $attrs, toastr) {
                 $scope.errors = [];
 
                 if($attrs.voteTotal)
@@ -1807,7 +1806,6 @@ app.directive('timepicker', function ($timeout) {
                     $http({
                         method: 'POST',
                         url: '/api/votes/' + $scope.voteType + '/id/' + $scope.voteTypeId + '/' + val,
-                        //data: d,
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
@@ -1827,6 +1825,13 @@ app.directive('timepicker', function ($timeout) {
                                 if(typeof($scope.voteTotal) == 'undefined')
                                     $scope.voteTotal = 0;
 
+                                if(val == 'reset'){
+                                    toastr.success('Vote Removed');
+                                }
+                                else {
+                                    toastr.success('Successfully Voted');
+                                }
+
                                 $scope.voteDisplay = $scope.voteTotal + $scope.voteValue;
                             }
 
@@ -1835,6 +1840,8 @@ app.directive('timepicker', function ($timeout) {
                         .error(function (data) {
                             $scope.isLoading = false;
                             $scope.errors = data.errors;
+
+                            toastr.error('Voting Failed');
                         });
                 };
             }
