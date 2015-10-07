@@ -6,8 +6,7 @@
                       Posted <strong>{{source.date_created | relativeDate}}</strong>
                       By <strong>{{source.author}}</strong>
                 </span>
-
-                <p>{{source.text}}</p>
+                <p id="annotation-text" ng-click="$parent.seekPosition(source)">{{source.text}}</p>
             </div>
             <voting class="col-xs-1" vote-type="videoAnnotation" vote-type-id="{{source._id}}"></voting>
         </div>

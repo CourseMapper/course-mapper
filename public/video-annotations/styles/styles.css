@@ -36,21 +36,22 @@
 
 video-annotation {
     display: block;
+    opacity: 0.75;
+}
+
+#annotation-text {
     cursor: pointer;
-    opacity: 0.5;
 }
 
 video-annotation.showing {
     opacity: 1.0;
+    -webkit-transition: 0.5s linear all;
+    transition: 0.5s ease-out all;
+    border-left: solid 3px #3c8dbc;
 }
 
 video-annotation.completed {
-    opacity: 0.35;
-}
-
-.animable {
-    -webkit-transition: 0.5s linear all;
-    transition: 0.5s ease-out all;
+    opacity: 0.5;
 }
 
 #search-box {

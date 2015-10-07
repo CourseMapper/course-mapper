@@ -181,7 +181,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
         $scope.seekPosition = function (annotation) {
             $scope.API.seekTime(annotation.start / 1000);
-            $scope.API.pause();
+            //$scope.API.pause();
         };
 
         $scope.onPlayerReady = function (API) {
