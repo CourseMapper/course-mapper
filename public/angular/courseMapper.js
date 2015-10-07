@@ -1,7 +1,9 @@
 var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
-    'relativeDate', 'wysiwyg.module', 'angular-quill','VideoAnnotations','SlideViewerAnnotationZones']);
+    'relativeDate', 'wysiwyg.module', 'angular-quill',
+    'VideoAnnotations','SlideViewerAnnotationZones',
+    'ngAnimate', 'toastr']);
 ;app.config(['$routeProvider', '$locationProvider',
 
     function($routeProvider, $locationProvider) {
@@ -1551,7 +1553,27 @@ app.directive('movable', function () {
             }
         };
     });
-;function Spinner($timeout) {
+;/*
+ takenfrom:http://blog.brunoscopelliti.com/
+ */
+app.directive('pwCheck', [function () {
+    return {
+        require: "ngModel",
+        scope: {
+            original: "="
+        },
+        link: function (scope, elem, attrs, ctrl) {
+            var firstPassword = '#' + attrs.pwCheck;
+
+            elem.add(firstPassword).on('keyup', function () {
+                scope.$apply(function () {
+                    var v = elem.val()===$(firstPassword).val();
+                    ctrl.$setValidity('pwmatch', v);
+                });
+            });
+        }
+    };
+}]);;function Spinner($timeout) {
     return {
         restrict: 'E',
         template: '<i class="fa fa-cog fa-spin"></i>',
@@ -1763,7 +1785,6 @@ app.directive('timepicker', function ($timeout) {
                         }
                     })
                         .success(function (data) {
-                            console.log(data);
                             if (data.result) {
                                 if (val == 'up') { 
                                     $scope.voteValue = 1;
@@ -1848,8 +1869,6 @@ app.directive('timepicker', function ($timeout) {
         if(!isValid)
             return;
 
-        console.log('saving');
-
         $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
@@ -1861,7 +1880,6 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
@@ -1883,8 +1901,6 @@ app.directive('timepicker', function ($timeout) {
         if(!isValid)
             return;
 
-        console.log('saving edit post');
-
         var d = transformRequest($scope.currentTopic);
         $http({
             method: 'PUT',
@@ -1895,7 +1911,6 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterEditTopic', data.post);
 
@@ -1931,14 +1946,14 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function(data) {
-                console.log(data);
+
                 if(data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
                 } else {
                     if( data.result != null && !data.result){
                         $scope.errorName = data.errors;
-                        console.log(data.errors);
+
                     }
                 }
             }) ;
@@ -1956,14 +1971,14 @@ app.directive('timepicker', function ($timeout) {
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterDeleteTopic', postId);
 
                     } else {
                         if( data.result != null && !data.result){
                             $scope.errorName = data.errors;
-                            console.log(data.errors);
+
                         }
                     }
                 }) ;
@@ -2254,6 +2269,8 @@ app.directive('timepicker', function ($timeout) {
 
                         successCallback($rootScope.user);
                     }
+                }).error(function(data){
+                    //console.log(data);
                 });
             },
 
@@ -2275,6 +2292,33 @@ app.directive('timepicker', function ($timeout) {
                             $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
 
                             successCallback($rootScope.user);
+                        }
+                    }).error(
+                    function (data) {
+                        errorCallback(data);
+                    }
+                );
+            },
+
+            signUp: function(loginData, successCallback, errorCallback){
+                var d = transformRequest(loginData);
+                $http({
+                    method: 'POST',
+                    url: '/api/accounts/signUp',
+                    data: d,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(
+                    function success(data) {
+                        if(data.result) {
+                            //$rootScope.user = data.user;
+                            $rootScope.$broadcast('onAfterUserRegistration', data.user);
+
+                            successCallback(data.user);
+                        } else {
+                            errorCallback(data);
                         }
                     }).error(
                     function (data) {
@@ -2375,8 +2419,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             if(!isValid)
                 return;
 
-            console.log('saving bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
@@ -2389,7 +2431,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewLink', data.post);
                         $scope.links.unshift(data.post);
@@ -2413,8 +2455,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             if(!isValid)
                 return;
 
-            console.log('saving edit bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.currentLink);
@@ -2427,7 +2467,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 }
             })
                 .success(function(data) {
-                    console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
@@ -2459,14 +2498,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                     }
                 })
                     .success(function(data) {
-                        console.log(data);
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
                         } else {
                             if( data.result != null && !data.result){
                                 $scope.errorName = data.errors;
-                                console.log(data.errors);
                             }
                         }
                     }) ;
@@ -2479,7 +2516,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
         $scope.$on('onAfterDeleteLink', function(e, postId){
             var i = _.findIndex($scope.links, { link: { '_id' : postId}});
-            if(i>=0) {
+            if(i >= 0) {
                 //$scope.links[i].isDeleted = true;
                 $scope.links.splice(i, 1);
                 $scope.currentLink = false;
@@ -2545,9 +2582,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
             if($scope.AddLinkForm)
-            $scope.AddLinkForm.$setPristine();
+                $scope.AddLinkForm.$setPristine();
             if($scope.EditLinkForm)
-            $scope.EditLinkForm.$setPristine();
+                $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {
@@ -3310,7 +3347,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        console.log(ngRepeatFinishedEvent);
         $scope.initJSPlumb();
     });
 
@@ -3389,7 +3425,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
 });
-;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService) {
+;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -3414,6 +3450,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     });
 
+    $scope.noticeAfterSignUp = function(){
+        var k = $location.search();
+        if(k.referer && k.referer == 'signUp' && k.result && k.result == 'success'){
+            toastr.success('Please login using your new username and password!', 'Sign Up Success');
+        }
+    };
+
+    $scope.noticeAfterSignUp();
+
     $scope.login = function(isValid){
         if(isValid){
             $scope.isLoading = true;
@@ -3435,7 +3480,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     }
 
-});;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService) {
+});;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService, toastr) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -3463,9 +3508,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             authService.login($scope.loginData,
                 function(user){
                     $scope.user = user;
-                    if(!$scope.referer) {
-                        window.location = '/accounts';
-                    }
+                    toastr.success('', "You're now logged in!");
                     $scope.isLoading = false;
                 },
                 function error(data) {
@@ -3489,6 +3532,36 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         });
 });;app.service('ActionBarService', function() {
     this.extraActionsMenu = [];
+});;app.controller('SignUpController', function($scope, $http, $rootScope, $cookies, authService) {
+
+    $scope.loginData = {};
+    $scope.errors = [];
+    $scope.isLoading = false;
+
+    authService.loginCheck(function(user){
+        if(user){
+            window.location = '/accounts';
+        }
+    });
+
+    $scope.signUp = function(isValid){
+        if(isValid){
+            $scope.isLoading = true;
+            authService.signUp($scope.loginData,
+                function(user){
+                    $scope.isLoading = false;
+                    window.location = '/accounts/login/#?referer=signUp&result=success';
+                },
+                function error(data) {
+                    if(data.errors){
+                        $scope.errors = data.errors;
+                    }
+                    $scope.isLoading = false;
+                }
+            );
+        }
+    }
+
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
@@ -3553,14 +3626,12 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.$on('onAfterInitUser', function(event, user){
         $scope.$watch('location', function(newVal, oldVal){
             if($scope.location == 'user-profile'){
-                console.log('onAfterInitUser');
                 $scope.getWidgets();
             }
         });
     });
 
     $scope.$on('onAfterInitCourse', function(event, course){
-        console.log('onAfterInitCourse');
         $scope.course = course;
         $scope.getWidgets();
     });

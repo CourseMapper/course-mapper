@@ -9,17 +9,33 @@ var Mongoose = require('mongoose');
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
+
+var helper = require(appRoot + '/libs/core/generalLibs.js');
+
 var router = express.Router();
 
 router.post('/accounts/signUp', function(req, res, next){
+
+    if(!helper.checkRequiredParams(req.body, ['username', 'email', 'password'], function (err) {
+            helper.resReturn(err, res);
+        }))return;
+
     var account = new Account();
     account.signUp(
         function failedSignUp(err){
-            res.status(500).json(err);
+            helper.resReturn(err, res);
         },
         req.body,
         function successSignUp(user){
-            res.status(201).json({user: user.username});
+            res.status(201).json({
+                result: (user),
+
+                user: {
+                    username: user.username,
+                    email: user.email,
+                    role: user.role
+                }
+            });
         }
     );
 });

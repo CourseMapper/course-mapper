@@ -9,6 +9,7 @@
 <script src="/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
 <script src="/angular/angular.min.js" type="text/javascript"></script>
 <script src="/angular/angular-route.min.js"></script>
+<script src="/angular/angular-animate.min.js"></script>
 <script src="/angular/angular-resource.min.js"></script>
 <script src="/angular/angular-cookies.min.js"></script>
 <script src="/angular/bootstrap-colorpicker-module.js"></script>
@@ -22,6 +23,8 @@
 <script src="/ng-tags-input/ng-tags-input.min.js"></script>
 <script src="/ng-file-upload/ng-file-upload-shim.min.js"></script>
 <script src="/ng-file-upload/ng-file-upload.min.js"></script>
+<script src="/angular-toastr/angular-toastr.min.js"></script>
+<script src="/angular-toastr/angular-toastr.tpls.js"></script>
 <script src="/videogular/videogular.js"></script>
 <script src="/videogular-controls/vg-controls.js"></script>
 <script src="/videogular-angulartics/vg-analytics.js"></script>
@@ -31,22 +34,22 @@
 <script src="/slide-viewer/js/directives/sa-annotationzone.js"></script>
 <script src="/video-annotations/va.js"></script>
 <% if(typeof(isInNodeDetailPage) != 'undefined' && isInNodeDetailPage){ %>
-    <!-- slide-viewer stuff -->
-    <script src="/slide-viewer/js/jquery.fullscreen-min.js"></script>
-    <script src="/slide-viewer/js/slideviewer.js"></script>
-    <!-- for legacy browsers -->
-    <script src="/pdfjs/build/components/compatibility.js"></script>
-    <script src="/pdfjs/build/pdf.js"></script>
-    <script src="/pdfjs/build/components/pdf_viewer.js"></script>
-    <% } %>
-        <script src="/angular/courseMapper.js"></script>
-        <!-- AdminLTE App -->
-        <script src="/admin-lte/js/app.min.js" type="text/javascript"></script>
-        <script src="/admin-lte/js/libs.js" type="text/javascript"></script>
-        <% if(typeof(isInNodeDetailPage) != 'undefined' && isInNodeDetailPage){ %>
-            <script src="/slide-viewer/js/autosize.input.min.js"></script>
-            <script src="/slide-viewer/js/jquery.simplecolorpicker.js"></script>
-            <script src="/slide-viewer/js/drawdiv.js"></script>
-            <!--<script src="/slide-viewer/js/tinycolor-0.9.15.min.js"></script>-->
-            <!--<script src="/slide-viewer/js/pick-a-color-1.2.3.min.js"></script>-->
-            <% } %>
+<!-- slide-viewer stuff -->
+<script src="/slide-viewer/js/jquery.fullscreen-min.js"></script>
+<script src="/slide-viewer/js/slideviewer.js"></script>
+<!-- for legacy browsers -->
+<script src="/pdfjs/build/components/compatibility.js"></script>
+<script src="/pdfjs/build/pdf.js"></script>
+<script src="/pdfjs/build/components/pdf_viewer.js"></script>
+<% } %>
+<script src="/angular/courseMapper.js"></script>
+<!-- AdminLTE App -->
+<script src="/admin-lte/js/app.min.js" type="text/javascript"></script>
+<script src="/admin-lte/js/libs.js" type="text/javascript"></script>
+<% if(typeof(isInNodeDetailPage) != 'undefined' && isInNodeDetailPage){ %>
+<script src="/slide-viewer/js/autosize.input.min.js"></script>
+<script src="/slide-viewer/js/jquery.simplecolorpicker.js"></script>
+<script src="/slide-viewer/js/drawdiv.js"></script>
+<!--<script src="/slide-viewer/js/tinycolor-0.9.15.min.js"></script>-->
+<!--<script src="/slide-viewer/js/pick-a-color-1.2.3.min.js"></script>-->
+<% } %>

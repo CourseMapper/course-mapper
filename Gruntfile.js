@@ -24,11 +24,17 @@ module.exports = function (grunt) {
                     'angular/angular-resource.min.js': 'angular-resource/angular-resource.min.js',
                     'angular/angular-resource.min.js.map': 'angular-resource/angular-resource.min.js.map',
 
+                    'angular/angular-animate.min.js': 'angular-animate/angular-animate.min.js',
+                    'angular/angular-animate.min.js.map': 'angular-animate/angular-animate.min.js.map',
+
                     'angular/angular-route.min.js': 'angular-route/angular-route.min.js',
                     'angular/angular-route.min.js.map': 'angular-route/angular-route.min.js.map',
 
                     'angular/angular-cookies.min.js': 'angular-cookies/angular-cookies.min.js',
-                    'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map'
+                    'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map',
+
+                    'angular-toastr': 'angular-toastr/dist/*'
+
                 }
             },
             views: {
@@ -39,15 +45,6 @@ module.exports = function (grunt) {
                     'public/angular/views': 'views/**/*.html'
                 }
             }
-
-            /*,
-
-            folders: {
-                files: {
-                    'quill': 'quill/dist/!*',
-                    'angular-quill': 'angular-quill/!*'
-                }
-            }*/
         },
 
         concat: {

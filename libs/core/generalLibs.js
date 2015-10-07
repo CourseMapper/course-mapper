@@ -61,15 +61,33 @@ var cmLibraries = {
      * @param err Error Object
      * @param res
      */
-    resReturn: function(err, res){
+    resReturn: function (err, res) {
         var httpCode = 500;
-        if(err.httpCode){
+        if (err.httpCode) {
             httpCode = err.httpCode;
+        }
+
+        var errMsg = [];
+        if (err.errors) {
+            for (var i in err.errors) {
+                var ek = err.errors[i];
+                errMsg.push(i + ':' + ek.message);
+            }
+        } else if(typeof err == 'string'){
+            errMsg.push(err);
+        } else if(err.message){
+            errMsg.push(err.message);
+        } else {
+            try {
+                errMsg.push(JSON.stringify(err));
+            } catch(exc){
+                errMsg.push(exc);
+            }
         }
 
         res.status(httpCode).json({
             result: false,
-            errors: [err.message]
+            errors: errMsg
         });
     }
 };

@@ -11,14 +11,12 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
     $scope.$on('onAfterInitUser', function(event, user){
         $scope.$watch('location', function(newVal, oldVal){
             if($scope.location == 'user-profile'){
-                console.log('onAfterInitUser');
                 $scope.getWidgets();
             }
         });
     });
 
     $scope.$on('onAfterInitCourse', function(event, course){
-        console.log('onAfterInitCourse');
         $scope.course = course;
         $scope.getWidgets();
     });
