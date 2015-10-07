@@ -3238,15 +3238,35 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.addReference = function(name) {
-      if($('#commentSubmissionDiv').css('display')!='none' ){
-        for(i=0; i<Quill.editors.length; i++){
-            if(Quill.editors[i].quillId=='#rawText'){
-            Quill.editors[i].insertText(Quill.editors[i].getLength()-1, " "+ name +" ", true);
-            Quill.editors[i].focus();
-          }
-        }
+      //$rootScope.safeApply(function() {
+      if(typeof $scope.comment.rawText == 'undefined')
+        $scope.comment.rawText = name + ' ';
+      else {
+        var len = $scope.comment.rawText.length;
+        var firstPart = $scope.comment.rawText.substring(0,len-6);
+        var lastPart = $scope.comment.rawText.substring(len-6);
+        $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
       }
+      console.log($scope.comment.rawText);
+      //Quill.editors[i].focus();
+      $timeout(function () {
+          $scope.$apply();
+          $scope.commentsLoaded();
+      });
+      //});
     };
+
+    $rootScope.safeApply = function(fn) {
+            var phase = this.$root.$$phase;
+            if(phase == '$apply' || phase == '$digest') {
+                if(fn && (typeof(fn) === 'function')) {
+                    fn();
+                }
+            } else {
+                this.$apply(fn);
+            }
+    };
+
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
