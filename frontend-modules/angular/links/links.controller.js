@@ -67,7 +67,7 @@ app.
                         $('#AddLinksModal').modal('hide');
                     }
 
-                    toastr.error('Successfully Saved');
+                    toastr.success('Successfully Saved');
                     $scope.isLoading = false;
                 })
                 .error(function(data){
@@ -102,7 +102,7 @@ app.
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
 
-                        toastr.error('Successfully Saved');
+                        toastr.success('Successfully Saved');
                     }
 
                     $scope.AddLinkForm.$setPristine();
@@ -130,6 +130,7 @@ app.
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
+                            toastr.success('Successfully Deleted');
                         }
                     })
                     .error(function(data){

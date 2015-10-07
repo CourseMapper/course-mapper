@@ -20,6 +20,7 @@
                 restrict: 'A',
                 require: "ngModel",
                 replace: true,
+                scope: {},
 
                 templateUrl:
                     function(elem,attrs){
@@ -31,9 +32,7 @@
                         return tmplt;
                     },
 
-                controller: function () {
-
-                },
+                /*controller: function () { },*/
 
                 link: function (scope, element, attrs, ngModel) {
                     var inputId = '';
@@ -65,7 +64,13 @@
                         scope.editor.quillId = inputId;
 
                         $(inputId + ' .editor').click(function(){
-                            for(var i = 0; i < Quill.editors.length; i++){
+                            if(scope.editor.getLength() > 0){
+                                scope.editor.setSelection(scope.editor.getLength() - 1, scope.editor.getLength() );
+                            }
+                            else
+                                scope.editor.focus();
+
+                            /*for(var i = 0; i < Quill.editors.length; i++){
                                 if(Quill.editors[i].quillId == inputId){
                                     var edtr = Quill.editors[i];
                                     if(edtr.getLength() > 0){
@@ -74,7 +79,7 @@
                                     else
                                         edtr.focus();
                                 }
-                            }
+                            }*/
                         });
 
                         ngModel.$render();

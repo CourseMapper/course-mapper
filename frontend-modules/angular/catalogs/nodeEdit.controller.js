@@ -1,4 +1,4 @@
-app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
+app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -70,11 +70,15 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
 
                     $scope.isLoading = false;
                     $scope.addSubTopicForm.$setPristine();
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             })
         ;
     };
@@ -110,11 +114,13 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     $('#editContentNodeModal').modal('hide');
 
                     $scope.editSubTopicForm.$setPristine();
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+                toastr.error('Saving Failed');
             });
     };
 
@@ -198,11 +204,14 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload)
                     $scope.editContentNodeForm.$setPristine();
                 }
 
+                toastr.success('Successfully Saved');
                 $scope.isLoading = false;
             })
             .error(function(data){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+
+                toastr.error('Saving Failed');
             });
 
     };

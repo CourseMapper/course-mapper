@@ -1,5 +1,7 @@
 app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
-    $scope.formData = {};
+    $scope.formData = {
+        content: ''
+    };
     $scope.course = {};
     $scope.currentReplyingTo = false;
     $scope.currentEditPost = {};

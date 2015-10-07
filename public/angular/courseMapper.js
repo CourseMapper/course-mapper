@@ -38,7 +38,20 @@ var app = angular.module('courseMapper', [
             });
 
     }]);
-;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+;app.controller('VideoContentPreviewController', function($scope) {
+    $scope.API = null;
+
+    $scope.onPlayerReady = function (API) {
+        $scope.API = API;
+    };
+
+    $scope.$watch('isPlaying', function(newVal, oldVal){
+        if(!$scope.isPlaying && $scope.API){
+            $scope.API.pause();
+        }
+    });
+
+});;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -1002,7 +1015,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();
     });
-});;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
+});;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -1074,11 +1087,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     $scope.isLoading = false;
                     $scope.addSubTopicForm.$setPristine();
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             })
         ;
     };
@@ -1114,11 +1131,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $('#editContentNodeModal').modal('hide');
 
                     $scope.editSubTopicForm.$setPristine();
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+                toastr.error('Saving Failed');
             });
     };
 
@@ -1202,11 +1221,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $scope.editContentNodeForm.$setPristine();
                 }
 
+                toastr.success('Successfully Saved');
                 $scope.isLoading = false;
             })
             .error(function(data){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+
+                toastr.error('Saving Failed');
             });
 
     };
@@ -1848,7 +1870,9 @@ app.directive('timepicker', function ($timeout) {
 
         };
     });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
-    $scope.formData = {};
+    $scope.formData = {
+        content: ''
+    };
     $scope.course = {};
     $scope.currentReplyingTo = false;
     $scope.currentEditPost = {};
@@ -2486,7 +2510,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         $('#AddLinksModal').modal('hide');
                     }
 
-                    toastr.error('Successfully Saved');
+                    toastr.success('Successfully Saved');
                     $scope.isLoading = false;
                 })
                 .error(function(data){
@@ -2521,7 +2545,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
 
-                        toastr.error('Successfully Saved');
+                        toastr.success('Successfully Saved');
                     }
 
                     $scope.AddLinkForm.$setPristine();
@@ -2549,6 +2573,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
+                            toastr.success('Successfully Deleted');
                         }
                     })
                     .error(function(data){
@@ -3744,7 +3769,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     }*/
 });
-;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -3797,6 +3822,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $('#widgetGallery').modal('hide');
 
             $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
+
+            toastr.success('Widget is installed');
         });
     };
 
@@ -3818,6 +3845,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $('#widgetGallery').modal('hide');
 
             $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
+
+            toastr.success('Widget is uninstalled');
         });
     };
 
