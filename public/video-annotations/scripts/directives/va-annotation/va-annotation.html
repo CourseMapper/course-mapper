@@ -45,6 +45,9 @@
             <div class="deleteReplyButton" ng-hide="source.isDefault">
                 <a ng-click="closeAnnotation()" class="btn btn-danger btn-xs">CLOSE</a>
             </div>
+            <div class="deleteReplyButton" ng-show="source.isDefault">
+                <a ng-click="cancelAnnotation()" class="btn btn-danger btn-xs">CANCEL</a>
+            </div>
         </div>
         <div ng-hide="source.isEditMode" id="comments">
             <a ng-click="toggle = !toggle">{{!toggle ? 'show comments' : 'hide comments'}}</a>

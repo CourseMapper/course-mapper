@@ -1,4 +1,4 @@
-/*jslint node: true*/
+/* jslint node: true */
 'use strict';
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
@@ -12,7 +12,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         var onComplete = function (currentTime, timeLapse, params) {
             params.completed = true;
             params.showing = false;
-            console.log('Completed: ' + params._id);
         };
 
         var onUpdate = function (currentTime, timeLapse, params) {
@@ -27,6 +26,16 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
 
         $scope.createAnnotation = function () {
+            // If the first annotation is the default,
+            // then do not allow adding another one.
+            if ($scope.annotations.length > 0 &&
+                $scope.annotations[0].isDefault) {
+                return;
+            }
+            _.each($scope.annotations, function (a) {
+                a.isEditMode = false;
+            });
+
             // get current playback time and add
             // default offset seconds for the end of
             // the annotation
