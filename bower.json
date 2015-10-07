@@ -44,7 +44,7 @@
   },
   "devDependencies": {},
   "resolutions": {
-    "angular": "1.3.18",
+    "angular": "~1.3.18",
     "videogular": "^1.2.8",
     "bootstrap": "~3.3.5",
     "jquery": ">= 1.9.0"

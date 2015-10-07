@@ -1,16 +1,16 @@
 <div class="box box-solid">
     <div class="box-body" ng-show="!source.isEditMode">
-        <span class="posted-at">
-      Posted <strong>{{source.date_created | relativeDate}}</strong>
-      By <strong>
-            <a class="cursor"
-               ng-show="authorClickable"
-               ng-click="authorClickAction()">{{source.author}}</a>
-            <span>{{source.author}}</span>
-        </strong>
-        </span>
+        <div class="row">
+            <div class="col-xs-10">
+                <span class="posted-at">
+                      Posted <strong>{{source.date_created | relativeDate}}</strong>
+                      By <strong>{{source.author}}</strong>
+                </span>
 
-        <p class="reply">{{source.text}}</p>
+                <p>{{source.text}}</p>
+            </div>
+            <voting class="col-xs-1" vote-type="videoAnnotation" vote-type-id="{{source._id}}"></voting>
+        </div>
     </div>
     <div class="box-body" ng-show="source.isEditMode">
         <textarea cols="40" rows="3" id="va-text" type="text" ng-model="source.text"/>
