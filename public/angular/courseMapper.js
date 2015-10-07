@@ -49,7 +49,8 @@ var app = angular.module('courseMapper', [
     });
 
 });
-;app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+;app.controller('CourseController', function($scope, $rootScope, $filter, $http,
+                                            $location, $routeParams, $timeout, toastr) {
     $scope.course = null;
     $scope.videoSources = false;
     $scope.enrolled = false;
@@ -151,6 +152,7 @@ var app = angular.module('courseMapper', [
 
         }).finally(function(){
             $scope.loading = false;
+            toastr.success('You are now enrolled');
         });
     };
 
@@ -164,12 +166,39 @@ var app = angular.module('courseMapper', [
             }
         }).finally(function(){
             $scope.loading = false;
+            toastr.success('You left the course');
         });
     };
 
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();
     });
+
+    $scope.newCourseNotification = function(){
+        var loc = $location.search();
+        if(loc.new && loc.new == 1){
+            toastr.info('<p>You are now in a newly created course. </p>' +
+            '<p>You can start by customizing this course by uploading introduction picture and video on the edit panel.</p>' +
+            '<p>Collaborate and Annotate on course map and its contents in <i class="ionicons ion-map"></i> <b>Map Tab</b></p>' +
+            '<p>Discuss related topic in <i class="ionicons ion-ios-chatboxes"></i> <b>Discussion Tab.</b></p>' +
+            '<p>Adding widgets on <i class="ionicons ion-stats-bars"></i> <b>Analytics tab</b>.</p>' +
+            '<p>Or wait for your students to enroll in to this course and start collaborating.</p>'
+                , 'New course created'
+                , {
+                    allowHtml: true,
+                    closeButton: true,
+                    autoDismiss: false,
+                    tapToDismiss: false,
+                    toastClass: 'toast wide',
+                    extendedTimeOut: 30000,
+                    timeOut: 30000
+                });
+        }
+
+        //#toast-container>div
+    };
+
+    $scope.newCourseNotification();
 });
 ;
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
@@ -1702,16 +1731,15 @@ app.directive('timepicker', function ($timeout) {
                 voteTotal: '@',
                 voteDisplay: '@'
             },
-
             template: '<div class="voting">' +
             '<a class="cursor" ng-click="sendVote(\'up\')"><div class="btn-up" ng-class="getClassUp()">' +
             '<i class="ionicons ion-ios-arrow-up" ng-hide="(voteValue == 1)"></i>' +
-            '<i class="ionicons ion-chevron-up" ng-show="(voteValue == 1)"></i>' +
+            '<i class="ionicons ion-arrow-up-b" ng-show="(voteValue == 1)"></i>' +
             '</div></a>' +
             '<div class="vote-total">{{voteDisplay}}</div>' +
             '<a class="cursor"><div class="btn-down" ng-class="getClassDown()" ng-click="sendVote(\'down\')">' +
             '<i class="ionicons ion-ios-arrow-down" ng-hide="(voteValue == -1)"></i>' +
-            '<i class="ionicons ion-chevron-down" ng-show="(voteValue == -1)"></i>' +
+            '<i class="ionicons ion-arrow-down-b" ng-show="(voteValue == -1)"></i>' +
             '</div></a>' +
             '</div>',
 
@@ -2116,7 +2144,7 @@ app.directive('timepicker', function ($timeout) {
         $scope.errors = [];
     };
 
-});;app.controller('ReplyController', function ($scope, $http, $timeout) {
+});;app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
     $scope.isLoading = false;
     $scope.errors = [];
 
@@ -2129,14 +2157,6 @@ app.directive('timepicker', function ($timeout) {
         title: " ",
         content: ""
     };
-
-    $scope.menu = [
-        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-        ['font-size'],
-        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-        ['left-justify', 'center-justify', 'right-justify'],
-        ['code', 'quote', 'paragraph']
-    ];
 
     $scope.$on('onEditReplyClicked', function (e, post) {
         $scope.EditFormData.content = post.content;
@@ -2177,11 +2197,14 @@ app.directive('timepicker', function ($timeout) {
                     $scope.addNewReplyForm.$setPristine();
                     $scope.isLoading = false;
                     $scope.errors = [];
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function (data) {
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+                toastr.error('Saving Failed');
             });
     };
 
@@ -2201,8 +2224,6 @@ app.directive('timepicker', function ($timeout) {
         if (!isValid)
             return;
 
-        console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
-
         $scope.isLoading = true;
 
         var d = transformRequest($scope.EditFormData);
@@ -2215,7 +2236,7 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function (data) {
-                console.log(data);
+
                 if (data.result) {
                     $scope.$emit('onAfterEditReply', data.post);
 
@@ -2223,7 +2244,10 @@ app.directive('timepicker', function ($timeout) {
                     $timeout(function () {
                         $scope.$apply()
                     });
+
                     $('#editReplyModal').modal('hide');
+
+                    toastr.success('Successfully Saved');
                 }
 
                 $scope.editReplyForm.$setPristine();
@@ -2232,6 +2256,8 @@ app.directive('timepicker', function ($timeout) {
             .error(function (data) {
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -2248,16 +2274,16 @@ app.directive('timepicker', function ($timeout) {
             }
         })
             .success(function (data) {
-                console.log(data);
+
                 if (data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
-                } else {
-                    if (data.result != null && !data.result) {
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+                    toastr.success('Successfully Deleted');
                 }
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                toastr.error('Delete Failed');
             });
     };
 

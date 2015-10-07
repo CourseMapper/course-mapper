@@ -1,4 +1,4 @@
-app.controller('ReplyController', function ($scope, $http, $timeout) {
+app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
     $scope.isLoading = false;
     $scope.errors = [];
 
@@ -11,14 +11,6 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
         title: " ",
         content: ""
     };
-
-    $scope.menu = [
-        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-        ['font-size'],
-        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-        ['left-justify', 'center-justify', 'right-justify'],
-        ['code', 'quote', 'paragraph']
-    ];
 
     $scope.$on('onEditReplyClicked', function (e, post) {
         $scope.EditFormData.content = post.content;
@@ -59,11 +51,14 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
                     $scope.addNewReplyForm.$setPristine();
                     $scope.isLoading = false;
                     $scope.errors = [];
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function (data) {
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+                toastr.error('Saving Failed');
             });
     };
 
@@ -83,8 +78,6 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
         if (!isValid)
             return;
 
-        console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
-
         $scope.isLoading = true;
 
         var d = transformRequest($scope.EditFormData);
@@ -97,7 +90,7 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
             }
         })
             .success(function (data) {
-                console.log(data);
+
                 if (data.result) {
                     $scope.$emit('onAfterEditReply', data.post);
 
@@ -105,7 +98,10 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
                     $timeout(function () {
                         $scope.$apply()
                     });
+
                     $('#editReplyModal').modal('hide');
+
+                    toastr.success('Successfully Saved');
                 }
 
                 $scope.editReplyForm.$setPristine();
@@ -114,6 +110,8 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
             .error(function (data) {
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -130,16 +128,16 @@ app.controller('ReplyController', function ($scope, $http, $timeout) {
             }
         })
             .success(function (data) {
-                console.log(data);
+
                 if (data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
-                } else {
-                    if (data.result != null && !data.result) {
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+                    toastr.success('Successfully Deleted');
                 }
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                toastr.error('Delete Failed');
             });
     };
 
