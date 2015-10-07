@@ -33,8 +33,12 @@
         </videogular>
     </div>
     <div class="col-xs-4 replies">
-        <button class="btn btn-primary btn-xs" ng-click="createAnnotation()">Add annotation</button>
-        <input id="search-box" placeholder="Search..." ng-model="query">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button class="btn btn-primary btn-md" ng-click="createAnnotation()">Add annotation</button>
+                <input class="form-control" id="search-box" placeholder="Search..." ng-model="query">
+            </div>
+        </div>
         <section ng-show="annotations.length > 0" class="annotations-viewer">
             <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation"
                               ng-class="{showing: annotation.showing, completed: annotation.completed}"

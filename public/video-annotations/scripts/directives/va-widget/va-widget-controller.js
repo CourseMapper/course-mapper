@@ -12,6 +12,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         var onComplete = function (currentTime, timeLapse, params) {
             params.completed = true;
             params.showing = false;
+            console.log('Completed: ' + params._id);
         };
 
         var onUpdate = function (currentTime, timeLapse, params) {

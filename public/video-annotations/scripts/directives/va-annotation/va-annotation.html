@@ -12,19 +12,20 @@
             <voting class="col-xs-1" vote-type="videoAnnotation" vote-type-id="{{source._id}}"></voting>
         </div>
     </div>
-    <div class="box-body" ng-show="source.isEditMode">
-        <textarea cols="40" rows="3" id="va-text" type="text" ng-model="source.text"/>
+    <div class="box-body form-group" ng-show="source.isEditMode">
+        <textarea placeholder="Start annotating..." class="form-control" rows="3" id="va-text" type="text"
+                  ng-model="source.text"></textarea>
         <br/>
-        <select ng-model="source.type">
+        <select class="form-control" ng-model="source.type">
             <option ng-selected="type.id===source.type" ng-repeat="type in annotationTypes" value="{{type.id}}">
                 {{type.name}}
             </option>
         </select>
         <br/>
 
-        <label for="va-start">Start:</label>
+        <label class="control-label" for="va-start">Start:</label>
         <timepicker id="va-start" ng-model="source.start"></timepicker>
-        <label for="va-end">End:</label>
+        <label class="control-label" for="va-end">End:</label>
         <timepicker id="va-end" ng-model="source.end"></timepicker>
         <br/>
     </div>
@@ -45,7 +46,7 @@
                 <a ng-click="closeAnnotation()" class="btn btn-danger btn-xs">CLOSE</a>
             </div>
         </div>
-        <div id="comments">
+        <div ng-hide="source.isEditMode" id="comments">
             <a ng-click="toggle = !toggle">{{!toggle ? 'show comments' : 'hide comments'}}</a>
             <article ng-show="toggle">
                 <div id="comment-box">
