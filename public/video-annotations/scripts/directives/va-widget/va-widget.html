@@ -39,7 +39,7 @@
                 <input class="form-control" id="search-box" placeholder="Search..." ng-model="query">
             </div>
         </div>
-        <section ng-show="annotations.length > 0" class="annotations-viewer">
+        <section id="annotations-view" ng-show="annotations.length > 0">
             <video-annotation ng-repeat="annotation in annotations | filter:query" source="annotation"
                               ng-class="{showing: annotation.showing, completed: annotation.completed}"
                               ng-click="seekPosition(annotation)"></video-annotation>

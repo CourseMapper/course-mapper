@@ -37,6 +37,11 @@
 video-annotation {
     display: block;
     cursor: pointer;
+    opacity: 0.5;
+}
+
+video-annotation.showing {
+    opacity: 1.0;
 }
 
 video-annotation.completed {
@@ -50,5 +55,10 @@ video-annotation.completed {
 
 #search-box {
     margin-top: 10px;
-    margin-bottom: 0px;
+}
+
+#annotations-view {
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
