@@ -50,7 +50,7 @@
             <article ng-show="toggle">
                 <div id="comment-box">
                     <input placeholder="Write a comment..." type="text" ng-model="commentText">
-                    <button class="btn btn-primary btn-xs" type="submit" ng-click="postComment()">post</button>
+                    <button class="btn btn-primary btn-xs" type="submit" ng-click="postComment()">reply</button>
                 </div>
                 <section ng-repeat="comment in source.comments.slice().reverse()">
                     <div class="box box-solid">

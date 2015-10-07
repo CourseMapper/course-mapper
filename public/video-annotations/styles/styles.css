@@ -10,7 +10,7 @@
 .inline-va-annotation {
     position: absolute !important;
     display: table;
-    background: #9D9D9D;
+    background: rgba(0, 0, 0, 0.2);;
     color: #FFFFFF;
 }
 
