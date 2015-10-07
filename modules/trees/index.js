@@ -64,7 +64,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         }
     }
 
-    if (files.file && files.file.constructor != Array) {
+    if (files && files.file && files.file.constructor != Array) {
         // make it an array if it s just 1 object. (we allow multiple upload on some types of node)
         var be = [files.file];
         files.file = be;
