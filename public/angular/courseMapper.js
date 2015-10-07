@@ -1395,7 +1395,7 @@ app.directive('movable', function () {
                 };
 
                 attrs.$observe('source', function (pdfFilePath) {
-                    console.log(pdfFilePath);
+                    //console.log(pdfFilePath);
                     if (pdfFilePath) {
                         PDFJS.getDocument(pdfFilePath).then(function (pdfDocument) {
 
@@ -1403,7 +1403,7 @@ app.directive('movable', function () {
                                 scope.pageToView = parseInt(attrs.currentPageNumber);
                             }
 
-                            console.log("Started loading pdf");
+                            //console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
 
                             scope.calculateSlideNavigationProgress(scope.currentPageNumber);
@@ -1432,7 +1432,7 @@ app.directive('movable', function () {
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                console.log("PDF LOADED");
+                                //console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
                                 $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
@@ -1481,7 +1481,7 @@ app.directive('movable', function () {
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw();
 
-                            console.log("PDF LOADED");
+                            //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
 
                             $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
@@ -2661,7 +2661,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -2726,7 +2726,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     }
 
     function inOldTagList(tagName) {
-      console.log($scope.annZones);
+      //console.log($scope.annZones);
       for(var key in $scope.annZones) {
         if($scope.annZones[key].name == "#"+tagName) {
           return true;
@@ -2845,7 +2845,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
             var color = element.find(".slideRectColorPicker").val().substring(1);
-            console.log("Color found: "+color);
+            //console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
             if (name == "") {
@@ -2853,7 +2853,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 return false;
             }
             else if($rootScope.checkTagName(name) != "") {
-                console.log("TAGNAME NOT ACCEPTABLE");
+                //console.log("TAGNAME NOT ACCEPTABLE");
                 return false;
             }
             else {
@@ -3011,20 +3011,20 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.switchRegexHashFilter = function (value) {
-        console.log("switchRegexHashFilter CALLED");
+        //console.log("switchRegexHashFilter CALLED");
         if( typeof $scope.filtersRaw['renderedText'] == 'undefined')
           $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
         else if( $scope.filtersRaw['renderedText'].regex_hash != value.substring(1) )
           $scope.filtersRaw['renderedText'].regex_hash = value.substring(1);
         else
           delete $scope.filtersRaw['renderedText'];
-        console.log($scope.filtersRaw);
+        //console.log($scope.filtersRaw);
 
         $scope.$broadcast('onFiltersRawChange');
     };
 
     $scope.authorLabelClick = function (authorName) {
-        console.log("AUTHORLABELCLICK CALLED");
+        //console.log("AUTHORLABELCLICK CALLED");
         if($scope.filtersRaw['author'] == authorName)
           delete $scope.filtersRaw['author'];
         else
@@ -3078,7 +3078,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("ADDED CLICK FUNCTION");
             //console.log($("#commentList .annotationZoneReference").length);
             $("#commentList .annotationZoneReference").not('.hasOnClick').click(function () {
-              console.log("switchRegexHashFilter CALLED");
+              //console.log("switchRegexHashFilter CALLED");
               $scope.switchRegexHashFilter($(this).html());
             });
 
@@ -3164,10 +3164,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
 
 
-        console.log($scope.filtersRaw);
+        //console.log($scope.filtersRaw);
         var finalFilters = JSON.stringify($scope.filtersRaw);
 
-        console.log("Final Filters: " + finalFilters);
+        //console.log("Final Filters: " + finalFilters);
         return finalFilters;
     }
 
@@ -3284,7 +3284,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         var lastPart = $scope.comment.rawText.substring(len-6);
         $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
       }
-      console.log($scope.comment.rawText);
+      //console.log($scope.comment.rawText);
       //Quill.editors[i].focus();
       $timeout(function () {
           $scope.$apply();

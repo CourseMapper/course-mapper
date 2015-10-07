@@ -48,7 +48,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     });
 
     $scope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -113,7 +113,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     }
 
     function inOldTagList(tagName) {
-      console.log($scope.annZones);
+      //console.log($scope.annZones);
       for(var key in $scope.annZones) {
         if($scope.annZones[key].name == "#"+tagName) {
           return true;

@@ -62,7 +62,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
             var color = element.find(".slideRectColorPicker").val().substring(1);
-            console.log("Color found: "+color);
+            //console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
             if (name == "") {
@@ -70,7 +70,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 return false;
             }
             else if($rootScope.checkTagName(name) != "") {
-                console.log("TAGNAME NOT ACCEPTABLE");
+                //console.log("TAGNAME NOT ACCEPTABLE");
                 return false;
             }
             else {
@@ -228,20 +228,20 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.switchRegexHashFilter = function (value) {
-        console.log("switchRegexHashFilter CALLED");
+        //console.log("switchRegexHashFilter CALLED");
         if( typeof $scope.filtersRaw['renderedText'] == 'undefined')
           $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
         else if( $scope.filtersRaw['renderedText'].regex_hash != value.substring(1) )
           $scope.filtersRaw['renderedText'].regex_hash = value.substring(1);
         else
           delete $scope.filtersRaw['renderedText'];
-        console.log($scope.filtersRaw);
+        //console.log($scope.filtersRaw);
 
         $scope.$broadcast('onFiltersRawChange');
     };
 
     $scope.authorLabelClick = function (authorName) {
-        console.log("AUTHORLABELCLICK CALLED");
+        //console.log("AUTHORLABELCLICK CALLED");
         if($scope.filtersRaw['author'] == authorName)
           delete $scope.filtersRaw['author'];
         else
@@ -295,7 +295,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             //console.log("ADDED CLICK FUNCTION");
             //console.log($("#commentList .annotationZoneReference").length);
             $("#commentList .annotationZoneReference").not('.hasOnClick').click(function () {
-              console.log("switchRegexHashFilter CALLED");
+              //console.log("switchRegexHashFilter CALLED");
               $scope.switchRegexHashFilter($(this).html());
             });
 
@@ -381,10 +381,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         }
 
 
-        console.log($scope.filtersRaw);
+        //console.log($scope.filtersRaw);
         var finalFilters = JSON.stringify($scope.filtersRaw);
 
-        console.log("Final Filters: " + finalFilters);
+        //console.log("Final Filters: " + finalFilters);
         return finalFilters;
     }
 
@@ -501,7 +501,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         var lastPart = $scope.comment.rawText.substring(len-6);
         $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
       }
-      console.log($scope.comment.rawText);
+      //console.log($scope.comment.rawText);
       //Quill.editors[i].focus();
       $timeout(function () {
           $scope.$apply();
