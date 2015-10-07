@@ -2,7 +2,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNames = "";
+    $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
     //$scope.annZoneMov = [];
 
@@ -48,7 +48,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     });
 
     $scope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -75,7 +75,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       );
     };
 
-    $scope.$watch("tagNames", function (newValue, oldValue) {
+    $scope.$watch("tagNamesList", function (newValue, oldValue) {
       if(newValue != oldValue) {
         //console.log("IAM ANGRY");
         //console.log(newValue);
@@ -113,7 +113,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     }
 
     function inOldTagList(tagName) {
-      console.log($scope.annZones);
+      //console.log($scope.annZones);
       for(var key in $scope.annZones) {
         if($scope.annZones[key].name == "#"+tagName) {
           return true;
@@ -155,11 +155,16 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         //console.log($scope.tagNameErrors[key]);
       }*/
       $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
-      $scope.tagNames = JSON.parse(JSON.stringify({}));
+      $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
       $timeout(function(){
         $scope.$apply($scope.tagNameErrors);
       });
     };
 
+    $scope.timeout = function () {
+      $timeout(function(){
+        $scope.$apply($scope.tagNameErrors);
+      });
+    };
 });
