@@ -81,8 +81,8 @@
 <!-- analytics-->
 
 <div class="videoPlayerWrapper" ng-show="course.video && isPlaying" ng-click="stopVideo()">
-<div class="videoPlayerContainer" ng-click="$event.stopPropagation()">
-    <videogular vg-cue-points="cuePoints">
+<div class="videoPlayerContainer" ng-click="$event.stopPropagation()" ng-controller="VideoContentPreviewController">
+    <videogular vg-cue-points="cuePoints" vg-player-ready="onPlayerReady($API)">
         <vg-media vg-src="videoSources"></vg-media>
         <vg-controls>
             <vg-play-pause-button></vg-play-pause-button>

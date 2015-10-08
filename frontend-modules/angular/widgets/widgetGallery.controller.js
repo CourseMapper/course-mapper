@@ -1,4 +1,4 @@
-app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -51,6 +51,8 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
             $('#widgetGallery').modal('hide');
 
             $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
+
+            toastr.success('Widget is installed');
         });
     };
 
@@ -72,6 +74,8 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
             $('#widgetGallery').modal('hide');
 
             $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
+
+            toastr.success('Widget is uninstalled');
         });
     };
 

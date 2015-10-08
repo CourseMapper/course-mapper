@@ -740,3 +740,12 @@ commenting
     padding: 0 !important;
     margin: 0 !important;
 }
+
+/*
+toastr custom*/
+#toast-container >div.wide{
+    width: 500px!important;
+}
+#toast-container>.toast-info.wide{
+    background-position: 20px 20px;
+}
