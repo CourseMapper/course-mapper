@@ -32,8 +32,6 @@
                         return tmplt;
                     },
 
-                /*controller: function () { },*/
-
                 link: function (scope, element, attrs, ngModel) {
                     var inputId = '';
                     if(attrs.id) inputId = '#' + attrs.id;
@@ -69,17 +67,6 @@
                             }
                             else
                                 scope.editor.focus();
-
-                            /*for(var i = 0; i < Quill.editors.length; i++){
-                                if(Quill.editors[i].quillId == inputId){
-                                    var edtr = Quill.editors[i];
-                                    if(edtr.getLength() > 0){
-                                        edtr.setSelection(edtr.getLength() - 1, edtr.getLength() );
-                                    }
-                                    else
-                                        edtr.focus();
-                                }
-                            }*/
                         });
 
                         ngModel.$render();
