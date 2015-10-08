@@ -566,7 +566,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
                     .success(function(res, status){
-                        console.log(res);
+                        //console.log(res);
                         if(pNode)
                             pNode.positionFromRoot = distanceFromCenter;
                     })
@@ -860,10 +860,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
             })
                 .success(function(res) {
-                    console.log(res);
                     if(res.result){
-                        //todo: go to map view
-                        console.log("node deleted");
                         $location.path('/cid/' + $scope.courseId);
                         $location.search('tab', 'map');
                     } else {

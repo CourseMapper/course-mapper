@@ -92,7 +92,7 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
 
                 $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
                     .success(function(res, status){
-                        console.log(res);
+                        //console.log(res);
                         if(pNode)
                             pNode.positionFromRoot = distanceFromCenter;
                     })

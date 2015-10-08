@@ -30,7 +30,7 @@
                                 </a></h4>
                                 <span class="posted-at">
                                     Posted <strong>{{topic.discussion.dateAdded | relativeDate}}</strong>
-                                    By <strong>{{topic.createdBy.username}}</strong>
+                                    By <strong>{{topic.createdBy.displayName}}</strong>
                                 </span>
                             </div>
                         </div>
@@ -54,7 +54,7 @@
                                 <h4>{{currentTopic.title}}</h4>
                                 <span class="posted-at">
                                     Posted <strong>{{currentTopic.dateAdded | relativeDate}}</strong>
-                                By <strong>{{currentTopic.createdBy.username}}</strong>
+                                By <strong>{{currentTopic.createdBy.displayName}}</strong>
                             </span>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                                 <voting vote-type="discussionReply" vote-type-id="{{re._id}}"></voting>
                             </div>
                             <div class="col-xs-11">
-                                <comment posted-by="{{re.createdBy.username}}"
+                                <comment posted-by="{{re.createdBy.displayName}}"
                                          post-id="{{re._id}}"
                                          posted-date="{{re.dateAdded}}"
                                          post-content="re.content"
