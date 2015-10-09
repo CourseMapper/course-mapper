@@ -3,7 +3,7 @@
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
          data-toggle="dropdown" data-hover="dropdown"
-            ng-class="{'owned': (data.createdBy==user._id)}">
+            ng-class="{'owned': (data.createdBy==user._id), 'deleted': data.isDeleted}">
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
@@ -12,7 +12,9 @@
 
         <a ng-show="data.type == 'contentNode' && !data.isDeleted"
            ng-href="{{getContentNodeLink(data)}}"> {{data.name}} </a>
+
         <span ng-show="data.type != 'contentNode'" > {{data.name}} </span>
+
         <span ng-show="data.type == 'contentNode' && data.isDeleted == true" > {{data.name}} </span>
 
         <!-- subtopic menu-->

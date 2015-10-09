@@ -472,7 +472,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.controller('MapController', function($scope, $http, $rootScope, $timeout, $sce, $location) {
+;app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $sce, $location) {
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
@@ -489,75 +489,76 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
      * @returns {*}
      */
     var found = false;
-    $scope.findNode = function(obj, col, searchKey, searchValue){
-        if(found)
+    $scope.findNode = function (obj, col, searchKey, searchValue) {
+        if (found)
             return found;
 
-        for(var i in obj){
+        for (var i in obj) {
             var tn = obj[i];
 
-            if(tn[searchKey] && tn[searchKey] == searchValue) {
+            if (tn[searchKey] && tn[searchKey] == searchValue) {
                 found = tn;
                 return tn;
             }
-            else if(tn[col] && tn[col].length > 0){
+            else if (tn[col] && tn[col].length > 0) {
                 // search again
                 $scope.findNode(tn[col], col, searchKey, searchValue);
             }
         }
 
-        if(found)
+        if (found)
             return found;
     };
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         $scope.width = jQuery(window).width();
         $scope.height = jQuery(window).height();
-        $scope.center = {x:$scope.width/2, y: ($scope.height/2)-100};
+        $scope.center = {x: $scope.width / 2, y: ($scope.height / 2) - 100};
     });
 
     /**
      * get all categories, recursived on the server
      */
-    $scope.init = function(){
+    $scope.init = function () {
         // add hover to center instantiate on hover
-        $('.center-course').mouseover(function(){
+        $('.center-course').mouseover(function () {
             $(this).find('ul').show();
-        }).mouseout(function(){$(this).find('ul').hide()});
+        }).mouseout(function () {
+            $(this).find('ul').hide()
+        });
 
         // get node data
-        $http.get('/api/treeNodes/course/' + $scope.course._id ).success(function (data) {
-            if(!data.result)
+        $http.get('/api/treeNodes/course/' + $scope.course._id).success(function (data) {
+            if (!data.result)
                 console.log(data.errors);
-            else
-                if(data.treeNodes.length > 0) {
-                    $scope.treeNodes = data.treeNodes;
-                } else {
-                    $scope.initJSPlumb();
-                }
+            else if (data.treeNodes.length > 0) {
+                $scope.treeNodes = data.treeNodes;
+            } else {
+                $scope.initJSPlumb();
+            }
         });
     };
 
-    $scope.$on('onAfterInitCourse', function(event, course){
+    $scope.$on('onAfterInitCourse', function (event, course) {
         $scope.course = course;
         $scope.init();
     });
 
     // initiate draggable jqUI to the topic node
-    $scope.initDraggable = function (jsPlumbInstance){
+    $scope.initDraggable = function (jsPlumbInstance) {
         var w = window.innerWidth;
         var h = window.innerHeight;
 
         // let us drag and drop the cats
         var mapEl = jsPlumb.getSelector(".course-map .w.owned");
-        jsPlumbInstance.draggable(mapEl,{
+        jsPlumbInstance.draggable(mapEl, {
             // update position on drag stop
-            stop: function() {
+            stop: function () {
                 var el = $(this);
                 var pos = el.position();
                 var distanceFromCenter = {
-                    x: pos.left - Canvas.w/2,
-                    y: pos.top - Canvas.h/2
+                    x: pos.left - Canvas.w / 2,
+                    y: pos.top - Canvas.h / 2
                 };
 
                 var nId = el.attr('id').substring(1); // remove 't' from the node id
@@ -565,12 +566,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nId);
 
                 $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
-                    .success(function(res, status){
+                    .success(function (res, status) {
                         //console.log(res);
-                        if(pNode)
+                        if (pNode)
                             pNode.positionFromRoot = distanceFromCenter;
                     })
-                    .error(function(res, status){
+                    .error(function (res, status) {
                         console.log('err');
                         console.log(res);
                     });
@@ -578,14 +579,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     };
 
-    $scope.initJSPlumb = function(){
+    $scope.initJSPlumb = function () {
         Tree.init(Canvas.w, Canvas.h);
 
-        var instance = jsPlumb.getInstance({
+        var instance;
+
+        $scope.instance = instance = jsPlumb.getInstance({
             Endpoint: ["Blank", {radius: 2}],
-            HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2 },
-            PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2 },
-            ConnectionOverlays: [ ],
+            HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+            PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+            ConnectionOverlays: [],
             Container: "course-map"
         });
 
@@ -598,18 +601,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     };
 
-    $scope.interConnect = function(parent, treeNodes, instance){
+    $scope.interConnect = function (parent, treeNodes, instance) {
         // added "t" in id because id cannot start with number
-        for(var i in treeNodes){
+        for (var i in treeNodes) {
             var child = treeNodes[i];
             var childId = 't' + child._id;
 
             // instantiate on hover
-            $('#' + childId).mouseover(function(){
+            $('#' + childId).mouseover(function () {
                 $(this).find('ul').show();
                 $rootScope.$broadcast('onTopicHover', $(this).attr('id'));
 
-            }).mouseout(function(){
+            }).mouseout(function () {
                 $(this).find('ul').hide();
                 $rootScope.$broadcast('onTopicHoverOut', $(this).attr('id'));
             });
@@ -618,27 +621,28 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             var conn = instance.connect({
                 source: parent, target: childId,
                 anchors: [
-                    [ "Perimeter", { shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape") }],
-                    [ "Perimeter", { shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape") }]
-                ]
+                    ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
+                    ["Perimeter", {shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape")}]
+                ],
+                connector: ["Bezier", {curviness: 5}]
             });
 
             $scope.jsPlumbConnections.push(conn);
 
-            if(child.childrens) {
+            if (child.childrens) {
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
     };
 
-    $scope.goToDetail = function(categorySlug){
+    $scope.goToDetail = function (categorySlug) {
         window.location.href = "/courses/#/category/" + categorySlug;
     };
 
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
-    $scope.setMode = function(mode, type, parent){
-        switch(mode){
+    $scope.setMode = function (mode, type, parent) {
+        switch (mode) {
             case 'add':
                 $scope.currentNodeAction.mode = "Add";
                 break;
@@ -647,7 +651,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 break;
         }
 
-        switch(type){
+        switch (type) {
             case 'subTopic':
                 $scope.currentNodeAction.type = "subTopic";
                 $scope.currentNodeAction.typeText = "Sub Topic";
@@ -661,7 +665,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.nodeModaltitle = $scope.currentNodeAction.mode + " " + $scope.currentNodeAction.typeText;
 
-        if(parent) {
+        if (parent) {
             $scope.currentNodeAction.parent = parent;
             $scope.nodeModaltitle += " under " + parent.name;
         }
@@ -671,9 +675,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $rootScope.$broadcast('onAfterSetMode', $scope.$parent.course);
     };
 
-    $scope.$watch(function(){ return $location.search() }, function(newVal, oldVal){
+    $scope.$watch(function () {
+        return $location.search()
+    }, function (newVal, oldVal) {
         var currentTab = $location.search().tab;
-        if(currentTab == 'map'){
+        if (currentTab == 'map') {
             $scope.isCurrentTabIsMap = true;
         }
     }, true);
@@ -682,18 +688,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.isTreeInitiated = true;
     });
 
-    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function(oldVal, newVal){
-        if($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
+    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function (oldVal, newVal) {
+        if ($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
             $scope.initJSPlumb();
         }
     });
 
-    $scope.$on('onAfterCreateNode', function(event, treeNode){
-        if(treeNode.parent) {
+    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+        if (treeNode.parent) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
 
-            if(pNode) {
+            if (pNode) {
                 pNode.childrens.push(treeNode);
             }
         }
@@ -706,23 +712,23 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         // this will reinitiate the model, and thus also jsplumb connection
         $scope.treeNodes = angular.copy($scope.treeNodes);
         $timeout(
-            function(){
+            function () {
                 $scope.$apply();
                 $scope.initJSPlumb();
             });
     });
 
-    $scope.$on('onAfterEditNode', function(event, treeNode){
-        if(treeNode) {
+    $scope.$on('onAfterEditNode', function (event, treeNode) {
+        if (treeNode) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
-            if(pNode) {
+            if (pNode) {
                 pNode.name = treeNode.name;
             }
         }
 
         $timeout(
-            function(){
+            function () {
                 $scope.$apply();
             });
     });
@@ -730,8 +736,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * remove all svg generated by js plumb.
      */
-    $scope.destroyJSPlumb = function(){
-        for(var i in $scope.jsPlumbConnections){
+    $scope.destroyJSPlumb = function () {
+        for (var i in $scope.jsPlumbConnections) {
             var conn = $scope.jsPlumbConnections[i];
             jsPlumb.detach(conn);
         }
@@ -739,8 +745,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.jsPlumbConnections = [];
     };
 
-    $scope.resourceIcon = function(filetype){
-        switch(filetype){
+    $scope.resourceIcon = function (filetype) {
+        switch (filetype) {
             case 'pdf':
                 return 'fa fa-file-pdf-o';
 
@@ -752,46 +758,46 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 
-    $scope.getDataShape = function(nodeType){
-        if(nodeType == 'subTopic')
+    $scope.getDataShape = function (nodeType) {
+        if (nodeType == 'subTopic')
             return 'Ellipse';
 
         return 'Rectangle';
     };
 
-    $scope.$on('onTopicHover', function(event, nodeId){
-        if($scope.isRequesting)
+    $scope.$on('onTopicHover', function (event, nodeId) {
+        if ($scope.isRequesting)
             return;
 
         $scope.isRequesting = true;
         // the nodeId has "t", so we remove them first
         nodeId = nodeId.substring(1);
         $http.get('/api/server-widgets/node-icon-analytics/?nodeId=' + nodeId).success(
-            function(res){
+            function (res) {
                 $scope.isRequesting = false;
-                if(res.result){
+                if (res.result) {
                     $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
                 }
             }
-        ).error(function(){
-            $scope.isRequesting = false;
-        });
+        ).error(function () {
+                $scope.isRequesting = false;
+            });
     });
 
-    $scope.$on('onTopicHoverOut', function(event, slug){
+    $scope.$on('onTopicHoverOut', function (event, slug) {
         $scope.isRequesting = false;
     });
 
-    $scope.getContentNodeLink = function(d){
+    $scope.getContentNodeLink = function (d) {
         return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
     };
 
-    $scope.deleteNode = function(data){
+    $scope.deleteNode = function (data) {
         var msg = '';
-        if(data.type == 'subTopic') {
+        if (data.type == 'subTopic') {
             msg = 'Are you sure you want to delete this sub topic?';
         }
-        else{
+        else {
             msg = 'Are you sure you want to delete this content node?';
         }
 
@@ -803,20 +809,30 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
-                .success(function(res) {
-                    console.log(res);
-                    if(res.result){
+                .success(function (res) {
+                    //console.log(res);
+                    if (res.result) {
                         data.isDeleted = true;
                         data.name = '[DELETED]';
 
-                        $timeout(function(){$scope.$apply()});
+                        // destroy the jsplumb instance and svg rendered
+                        $scope.destroyJSPlumb();
+
+                        // this will reinitiate the model, and thus also jsplumb connection
+                        $scope.treeNodes = angular.copy($scope.treeNodes);
+                        $timeout(
+                            function () {
+                                $scope.$apply();
+                                $scope.initJSPlumb();
+                            });
+ 
                     } else {
-                        if( data.result != null && !data.result){
+                        if (data.result != null && !data.result) {
                             $scope.errors = data.errors;
                             console.log(data.errors);
                         }
                     }
-                }) ;
+                });
         }
     }
 });
