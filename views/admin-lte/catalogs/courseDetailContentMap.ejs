@@ -2,7 +2,8 @@
     <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-         data-toggle="dropdown" data-hover="dropdown">
+         data-toggle="dropdown" data-hover="dropdown"
+            ng-class="{'owned': (data.createdBy==user._id)}">
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">

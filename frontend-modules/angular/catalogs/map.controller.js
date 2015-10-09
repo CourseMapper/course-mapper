@@ -75,7 +75,7 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
         var h = window.innerHeight;
 
         // let us drag and drop the cats
-        var mapEl = jsPlumb.getSelector(".course-map .w");
+        var mapEl = jsPlumb.getSelector(".course-map .w.owned");
         jsPlumbInstance.draggable(mapEl,{
             // update position on drag stop
             stop: function() {
