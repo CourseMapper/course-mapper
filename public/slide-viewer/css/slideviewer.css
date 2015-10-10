@@ -14,6 +14,10 @@
 
 
 }
+input#searchInput{
+  height: 34px;
+}
+
 #tagErrorList{
   font-size: 9pt;
   font-weight: bold;
