@@ -20,7 +20,9 @@
                 restrict: 'A',
                 require: "ngModel",
                 replace: true,
-                scope: {},
+                scope: {
+                    annotationZoneAction: '&'
+                },
 
                 templateUrl:
                     function(elem,attrs){
@@ -35,7 +37,7 @@
                 link: function (scope, element, attrs, ngModel) {
                     var inputId = '';
                     if(attrs.id) inputId = '#' + attrs.id;
-
+ 
                     var updateModel = function updateModel(value) {
                         scope.$apply(function () {
                             ngModel.$setViewValue(value);
