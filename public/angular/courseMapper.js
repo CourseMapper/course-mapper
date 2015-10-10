@@ -2995,6 +2995,47 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     };
 
+    $scope.submitReply = function (resultVarName) {
+      var config = {
+        params: {
+          rawText: $scope.comment.rawText,
+          author: $scope.currentUser.username,
+          authorID: $scope.currentUser._id,
+          pageNumber: $scope.currentPageNumber,
+          tagNames: $scope.comment.tagNames,
+          tagRelPos: $scope.comment.tagRelPos,
+          tagRelCoord: $scope.comment.tagRelCoord,
+          tagColor: $scope.comment.tagColor,
+          annotationZones: $scope.annotationZones,
+          numOfAnnotationZones: $scope.annotationZones.length,
+          pdfId: $scope.pdfFile._id,
+          hasParent: false
+        }
+      };
+
+      $http.post("/slide-viewer/submitComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment submission successful!");
+
+                //TODO: reset everything
+              }
+
+              $scope.$broadcast('reloadTags');
+
+              $scope.writeCommentMode = false;
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+    };
+
     $scope.submitComment = function (resultVarName) {
         var annZoneCheckResult = $scope.populateAnnotationZone();
         if(!annZoneCheckResult) {

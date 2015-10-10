@@ -275,11 +275,9 @@ function switchRegexFilter(attribute,value){
 };*/
 
 function createMovableAnnZone() {
-  console.log("GOT HERE");
   var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "NoNameYet", true);
   addAnnotationZoneElement(element);
 };
-
 
 /*
 moved to controller, and used model
