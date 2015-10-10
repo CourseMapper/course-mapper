@@ -118,7 +118,7 @@ app.directive('pdfViewer',
                     PDFJS.getDocument($scope.source).then(function (pdfDocument) {
                         pdfDocument.getPage($scope.pageToView).then(function (pdfPage) {
                             $scope.pdfPageView.setPdfPage(pdfPage);
-                            $scope.pdfPageView.draw();
+                            $scope.pdfPageView.draw().catch(function(){});
 
                             //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
@@ -163,7 +163,7 @@ app.directive('pdfViewer',
                 $(window).resize(function () {
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                     $scope.pdfPageView.update($scope.scale, 0);
-                    $scope.pdfPageView.draw();
+                    $scope.pdfPageView.draw().catch(function(){});
                 });
 
                 $scope.$on('onPdfPageChange', function (event, pageNumber) {

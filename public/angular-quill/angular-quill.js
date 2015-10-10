@@ -20,7 +20,7 @@
                 restrict: 'A',
                 require: "ngModel",
                 replace: true,
-                scope: {},
+                //scope: {},
 
                 templateUrl:
                     function(elem,attrs){
@@ -98,4 +98,3 @@
             };
         }]);
 })();
-
