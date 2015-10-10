@@ -106,7 +106,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             },
             color: color,
             pdfId: pdfId,
-            pdfPageNumber: pdfPageNumber
+            pdfPageNumber: pdfPageNumber,
+            author: $scope.currentUser.username,
+            authorID: $scope.currentUser._id
         };
 
         /*var oldText;
@@ -150,6 +152,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             params: {
                 rawText: $scope.comment.rawText,
                 author: $scope.currentUser.username,
+                authorID: $scope.currentUser._id,
                 pageNumber: $scope.currentPageNumber,
                 tagNames: $scope.comment.tagNames,
                 tagRelPos: $scope.comment.tagRelPos,
@@ -157,7 +160,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 tagColor: $scope.comment.tagColor,
                 annotationZones: $scope.annotationZones,
                 numOfAnnotationZones: $scope.annotationZones.length,
-                pdfId: $scope.pdfFile._id
+                pdfId: $scope.pdfFile._id,
+                hasParent: false
             }
         };
 

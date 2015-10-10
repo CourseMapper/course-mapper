@@ -9,15 +9,59 @@ function Comment(){
 }
 
 Comment.prototype.submitAnnotation = function(err, params, done){
+  if(typeof params.hasParent == 'undefined') {
+    err("Server Error: Missing hasParent element");
+  }
+  else {
+    params.hasParent = (params.hasParent === "true");
+    if(params.hasParent == false) {
+      this.submitFirstLevelAnnotation(err,params,done);
+    }
+    else {
+      this.submitReplyAnnotation(err,params,done);
+    }
+  }
+};
+
+//TODO: Temporary reply function. Later when replies have more functionality maybe merge with submitFirstLevelAnnotation
+Comment.prototype.submitReplyAnnotation = function(err, params,done){
+  var temp = this.convertRawText;
+
+  var htmlEscapedRawText = validator.escape(params.rawText);
+  temp(htmlEscapedRawText,function(renderedText){
+    var annotationsPDF = new AnnotationsPDF({
+      rawText: htmlEscapedRawText,
+      renderedText: renderedText,
+      author: params.author,
+      authorID: params.authorID,
+      pdfId: params.pdfId,
+      pdfPageNumber: params.pageNumber,
+      hasParent: params.hasParent,
+      parentId: params.parentId
+    });
+
+    // save it to db
+    annotationsPDF.save(function (errBool) {
+      if (errBool) {
+        err("Server Error: Unable to store annotation");
+      } else {
+        // call success callback
+        done(annotationsPDF);
+      }
+    });
+  });
+};
+
+Comment.prototype.submitFirstLevelAnnotation = function(err, params,done){
   var temp = this.convertRawText;
 
   var annZones = [];
+  //Small fix to avoid problems arising from empty annZone lists
   if(params.numOfAnnotationZones==1)
     annZones[0] = params.annotationZones;
   else
     annZones = params.annotationZones;
 
-  //console.log(err(""));
   this.submitAllTagsObject(err,annZones,params.pdfId,function(completed){
     if(completed){
       //var htmlEscapedRawText = validator.escape(params.rawText);//TODO: Put back in when whitelisting is complete
@@ -27,18 +71,18 @@ Comment.prototype.submitAnnotation = function(err, params, done){
           rawText: htmlEscapedRawText,
           renderedText: renderedText,
           author: params.author,
+          authorID: params.authorID,
           pdfId: params.pdfId,
-          pdfPageNumber: params.pageNumber
+          pdfPageNumber: params.pageNumber,
+          hasParent: params.hasParent
         });
 
-        //console.log(this.convertRawText(params.rawText));
 
 
         // save it to db
         annotationsPDF.save(function (errBool) {
             if (errBool) {
                 err("Server Error: Unable to store annotation");
-                //errorCallback(err);
             } else {
                 // call success callback
 

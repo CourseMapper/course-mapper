@@ -21,10 +21,12 @@ var annotationPDFSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    authorID: {
+        type: String
+    },
     dateOfCreation: {
       type: Date
     },
-    //votes: {},
     //isDeleted: {},
     pdfId: {
       type: mongoose.Schema.Types.ObjectId,

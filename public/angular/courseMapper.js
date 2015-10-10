@@ -2962,7 +2962,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             },
             color: color,
             pdfId: pdfId,
-            pdfPageNumber: pdfPageNumber
+            pdfPageNumber: pdfPageNumber,
+            author: $scope.currentUser.username,
+            authorID: $scope.currentUser._id
         };
 
         /*var oldText;
@@ -3006,6 +3008,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             params: {
                 rawText: $scope.comment.rawText,
                 author: $scope.currentUser.username,
+                authorID: $scope.currentUser._id,
                 pageNumber: $scope.currentPageNumber,
                 tagNames: $scope.comment.tagNames,
                 tagRelPos: $scope.comment.tagRelPos,
@@ -3013,7 +3016,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 tagColor: $scope.comment.tagColor,
                 annotationZones: $scope.annotationZones,
                 numOfAnnotationZones: $scope.annotationZones.length,
-                pdfId: $scope.pdfFile._id
+                pdfId: $scope.pdfFile._id,
+                hasParent: false
             }
         };
 
