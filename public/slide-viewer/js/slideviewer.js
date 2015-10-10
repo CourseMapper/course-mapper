@@ -31,7 +31,7 @@ function commentsLoaded(){
     //console.log("ADDED CLICK FUNCTION");
     //console.log($("#commentList .annotationZoneReference").length);
     $("#commentList .annotationZoneReference").not('.hasOnClick').click(function(){
-      //console.log("TEST:");
+      console.log("TEST:");
       switchRegexFilter("renderedText",$(this).html());
     });
     $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
@@ -93,8 +93,12 @@ function removeAnnotationZone(id) {
   var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
 
   //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
-  var inputId = element.find(".slideRectInput").attr("id");
-  delete angular.element($("#annZoneList")).scope().tagNames[inputId];
+  var inputId = element.attr("id");
+  console.log(angular.element($("#annZoneList")).scope().tagNamesList);
+  console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
+  console.log(inputId);
+  delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
+  angular.element($("#annZoneList")).scope().timeout();
 
   annotationInList.parent().remove();
   element.remove();

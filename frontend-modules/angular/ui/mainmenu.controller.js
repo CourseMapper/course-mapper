@@ -1,4 +1,4 @@
-app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService) {
+app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService, toastr) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -26,9 +26,7 @@ app.controller('MainMenuController', function($scope, $http, $rootScope, $cookie
             authService.login($scope.loginData,
                 function(user){
                     $scope.user = user;
-                    if(!$scope.referer) {
-                        window.location = '/accounts';
-                    }
+                    toastr.success('', "You're now logged in!");
                     $scope.isLoading = false;
                 },
                 function error(data) {

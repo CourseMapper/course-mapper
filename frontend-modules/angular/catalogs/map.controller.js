@@ -105,7 +105,6 @@ app.controller('MapController', function($scope, $http, $rootScope, $timeout, $s
     };
 
     $scope.initJSPlumb = function(){
-        console.log('drawing tree');
         Tree.init(Canvas.w, Canvas.h);
 
         var instance = jsPlumb.getInstance({

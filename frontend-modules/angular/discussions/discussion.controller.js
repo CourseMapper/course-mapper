@@ -1,5 +1,7 @@
-app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
-    $scope.formData = {};
+app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
+    $scope.formData = {
+        content: ''
+    };
     $scope.course = {};
     $scope.currentReplyingTo = false;
     $scope.currentEditPost = {};
@@ -10,14 +12,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
     $scope.isLoading = false;
     $scope.errors = [];
-
-    $scope.menu = [
-        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-        [ 'font-size' ],
-        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-        ['left-justify', 'center-justify', 'right-justify'],
-        ['code', 'quote', 'paragraph']
-    ];
 
     $scope.topics = [];
     $scope.replies = [];
@@ -55,8 +49,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
         if(!isValid)
             return;
 
-        console.log('saving');
-
         $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
@@ -68,13 +60,14 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
                     $timeout(function(){$scope.$apply()});
 
                     $('#addNewTopicModal').modal('hide');
+
+                    toastr.success('Successfully Saved');
                 }
 
                 $scope.addTopicForm.$setPristine();
@@ -83,14 +76,14 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
     $scope.saveEditPost = function(isValid){
         if(!isValid)
             return;
-
-        console.log('saving edit post');
 
         var d = transformRequest($scope.currentTopic);
         $http({
@@ -102,7 +95,6 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterEditTopic', data.post);
 
@@ -114,11 +106,15 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
                     $scope.editTopicForm.$setPristine();
                     $scope.isLoading = false;
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -138,17 +134,21 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
             }
         })
             .success(function(data) {
-                console.log(data);
+
                 if(data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+                    toastr.success('Successfully Deleted');
+
                 }
-            }) ;
+            })
+
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+
+                toastr.error('Delete Failed');
+            });
     };
 
     $scope.deleteTopic = function(postId){
@@ -163,17 +163,20 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterDeleteTopic', postId);
 
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                        toastr.success('Successfully Deleted');
                     }
-                }) ;
+                })
+
+                .error(function(data){
+                    $scope.errors = data.errors;
+                    $scope.isLoading = false;
+
+                    toastr.error('Delete Failed');
+                });
         }
     };
 

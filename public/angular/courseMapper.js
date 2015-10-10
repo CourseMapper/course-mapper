@@ -1,7 +1,9 @@
 var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
-    'relativeDate', 'wysiwyg.module', 'angular-quill','VideoAnnotations','SlideViewerAnnotationZones']);
+    'relativeDate', 'wysiwyg.module', 'angular-quill',
+    'VideoAnnotations','SlideViewerAnnotationZones',
+    'ngAnimate', 'toastr']);
 ;app.config(['$routeProvider', '$locationProvider',
 
     function($routeProvider, $locationProvider) {
@@ -36,7 +38,20 @@ var app = angular.module('courseMapper', [
             });
 
     }]);
-;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+;app.controller('VideoContentPreviewController', function($scope) {
+    $scope.API = null;
+
+    $scope.onPlayerReady = function (API) {
+        $scope.API = API;
+    };
+
+    $scope.$watch('isPlaying', function(newVal, oldVal){
+        if(!$scope.isPlaying && $scope.API){
+            $scope.API.pause();
+        }
+    });
+
+});;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -47,7 +62,8 @@ var app = angular.module('courseMapper', [
     });
 
 });
-;app.controller('CourseController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout) {
+;app.controller('CourseController', function($scope, $rootScope, $filter, $http,
+                                            $location, $routeParams, $timeout, toastr) {
     $scope.course = null;
     $scope.videoSources = false;
     $scope.enrolled = false;
@@ -149,6 +165,7 @@ var app = angular.module('courseMapper', [
 
         }).finally(function(){
             $scope.loading = false;
+            toastr.success('You are now enrolled');
         });
     };
 
@@ -162,12 +179,39 @@ var app = angular.module('courseMapper', [
             }
         }).finally(function(){
             $scope.loading = false;
+            toastr.success('You left the course');
         });
     };
 
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();
     });
+
+    $scope.newCourseNotification = function(){
+        var loc = $location.search();
+        if(loc.new && loc.new == 1){
+            toastr.info('<p>You are now in a newly created course. </p>' +
+            '<p>You can start by customizing this course by uploading introduction picture and video on the edit panel.</p>' +
+            '<p>Collaborate and Annotate on course map and its contents in <i class="ionicons ion-map"></i> <b>Map Tab</b></p>' +
+            '<p>Discuss related topic in <i class="ionicons ion-ios-chatboxes"></i> <b>Discussion Tab.</b></p>' +
+            '<p>Adding widgets on <i class="ionicons ion-stats-bars"></i> <b>Analytics tab</b>.</p>' +
+            '<p>Or wait for your students to enroll in to this course and start collaborating.</p>'
+                , 'New course created'
+                , {
+                    allowHtml: true,
+                    closeButton: true,
+                    autoDismiss: false,
+                    tapToDismiss: false,
+                    toastClass: 'toast wide',
+                    extendedTimeOut: 30000,
+                    timeOut: 30000
+                });
+        }
+
+        //#toast-container>div
+    };
+
+    $scope.newCourseNotification();
 });
 ;
 app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
@@ -529,7 +573,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.initJSPlumb = function(){
-        console.log('drawing tree');
         Tree.init(Canvas.w, Canvas.h);
 
         var instance = jsPlumb.getInstance({
@@ -972,7 +1015,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.$on('$routeUpdate', function(){
         $scope.changeTab();
     });
-});;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload) {
+});;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -1044,11 +1087,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     $scope.isLoading = false;
                     $scope.addSubTopicForm.$setPristine();
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             })
         ;
     };
@@ -1084,11 +1131,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $('#editContentNodeModal').modal('hide');
 
                     $scope.editSubTopicForm.$setPristine();
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+                toastr.error('Saving Failed');
             });
     };
 
@@ -1172,11 +1221,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $scope.editContentNodeForm.$setPristine();
                 }
 
+                toastr.success('Successfully Saved');
                 $scope.isLoading = false;
             })
             .error(function(data){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+
+                toastr.error('Saving Failed');
             });
 
     };
@@ -1289,15 +1341,15 @@ app.directive('modalClose',
     });;/*jslint node: true */
 'use strict';
 
-app.directive('movable', function() {
+app.directive('movable', function () {
     return {
         restrict: 'A',
         scope: {
             onMoved: '=',
             canMove: '@'
         },
-        link: function(scope, element, attrs) {
-            attrs.$observe('canMove', function(value) {
+        link: function (scope, element, attrs) {
+            attrs.$observe('canMove', function (value) {
                 if (value === 'false') {
                     element.draggable({
                         disabled: true
@@ -1313,7 +1365,7 @@ app.directive('movable', function() {
                 }
             });
 
-            var getPosition = function(ui) {
+            var getPosition = function (ui) {
                 var position = {
                     left: Math.round((100 * ui.position.left / element.parent()[0].clientWidth)),
                     top: Math.round((100 * ui.position.top / element.parent()[0].clientHeight))
@@ -1324,7 +1376,7 @@ app.directive('movable', function() {
                 .draggable({
                     containment: 'parent',
                     cursor: 'move',
-                    stop: function(event, ui) {
+                    stop: function (event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
                                 position: getPosition(ui)
@@ -1335,8 +1387,8 @@ app.directive('movable', function() {
                 .resizable({
                     containment: 'parent',
                     handles: 'ne, se, sw, nw',
-                    stop: function(event, ui) {
-                        // get relative size to the container elemenet
+                    stop: function (event, ui) {
+                        // get relative size to the container element
                         var size = {};
                         size.width = Math.round((100 * ui.size.width / element.parent()[0].clientWidth));
                         size.height = Math.round((100 * ui.size.height / element.parent()[0].clientHeight));
@@ -1351,7 +1403,7 @@ app.directive('movable', function() {
                 });
 
             // remove event handlers
-            scope.$on('$destroy', function() {
+            scope.$on('$destroy', function () {
                 element.off('**');
             });
         }
@@ -1393,7 +1445,7 @@ app.directive('movable', function() {
                 };
 
                 attrs.$observe('source', function (pdfFilePath) {
-                    console.log(pdfFilePath);
+                    //console.log(pdfFilePath);
                     if (pdfFilePath) {
                         PDFJS.getDocument(pdfFilePath).then(function (pdfDocument) {
 
@@ -1401,7 +1453,7 @@ app.directive('movable', function() {
                                 scope.pageToView = parseInt(attrs.currentPageNumber);
                             }
 
-                            console.log("Started loading pdf");
+                            //console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
 
                             scope.calculateSlideNavigationProgress(scope.currentPageNumber);
@@ -1430,7 +1482,7 @@ app.directive('movable', function() {
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                console.log("PDF LOADED");
+                                //console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
                                 $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
@@ -1479,7 +1531,7 @@ app.directive('movable', function() {
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw().catch(function(){});
 
-                            console.log("PDF LOADED");
+                            //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
 
                             $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
@@ -1551,7 +1603,27 @@ app.directive('movable', function() {
             }
         };
     });
-;function Spinner($timeout) {
+;/*
+ takenfrom:http://blog.brunoscopelliti.com/
+ */
+app.directive('pwCheck', [function () {
+    return {
+        require: "ngModel",
+        scope: {
+            original: "="
+        },
+        link: function (scope, elem, attrs, ctrl) {
+            var firstPassword = '#' + attrs.pwCheck;
+
+            elem.add(firstPassword).on('keyup', function () {
+                scope.$apply(function () {
+                    var v = elem.val()===$(firstPassword).val();
+                    ctrl.$setValidity('pwmatch', v);
+                });
+            });
+        }
+    };
+}]);;function Spinner($timeout) {
     return {
         restrict: 'E',
         template: '<i class="fa fa-cog fa-spin"></i>',
@@ -1605,6 +1677,69 @@ app.directive('movable', function() {
 }
 
 app.directive('spinner', Spinner);
+;/*jslint node: true */
+'use strict';
+
+app.directive('timepicker', function ($timeout) {
+    function msToTime(s) {
+        function addZ(n) {
+            return (n < 10 ? '0' : '') + n;
+        }
+
+        var ms = s % 1000;
+        s = (s - ms) / 1000;
+        var secs = s % 60;
+        s = (s - secs) / 60;
+        var mins = s % 60;
+        var hrs = (s - mins) / 60;
+        return addZ(hrs) + ':' + addZ(mins) + ':' + addZ(secs);
+    }
+
+    function timeToMs(time) {
+        var a = time.split(':'); // split it at the colons
+        // minutes are worth 60 seconds. Hours are worth 60 minutes.
+        var seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]);
+        return seconds * 1000;
+    }
+
+    return {
+        restrict: 'EA',
+        template: '<div class="input-group bootstrap-timepicker timepicker">' +
+        '<input id="timepicker2" type="text" class="form-control input-small">' +
+        '<span class="input-group-addon">' +
+        '<i class="glyphicon glyphicon-time"></i></span> </div>',
+        require: 'ngModel',
+        link: function (scope, element, attrs, ngModel) {
+            var tp = element.find('input');
+            var value = parseInt(scope.$eval(attrs.ngModel));
+
+            tp.timepicker({
+                minuteStep: 1,
+                template: 'modal',
+                secondStep: 1,
+                appendWidgetTo: 'body',
+                showSeconds: true,
+                showMeridian: false,
+                defaultTime: false
+            });
+
+            tp.timepicker('setTime', msToTime(value));
+
+            tp.on('changeTime.timepicker', function (e) {
+                var time = timeToMs(e.time.value);
+                ngModel.$setViewValue(time);
+                ngModel.$render();
+                $timeout(function () {
+                    scope.$apply();
+                });
+            });
+
+            scope.$on('$destroy', function () {
+                element.off('**');
+            });
+        }
+    };
+});
 ;app.directive('voting',
     function () {
         return {
@@ -1617,20 +1752,19 @@ app.directive('spinner', Spinner);
                 voteTotal: '@',
                 voteDisplay: '@'
             },
-
             template: '<div class="voting">' +
             '<a class="cursor" ng-click="sendVote(\'up\')"><div class="btn-up" ng-class="getClassUp()">' +
             '<i class="ionicons ion-ios-arrow-up" ng-hide="(voteValue == 1)"></i>' +
-            '<i class="ionicons ion-chevron-up" ng-show="(voteValue == 1)"></i>' +
+            '<i class="ionicons ion-arrow-up-b" ng-show="(voteValue == 1)"></i>' +
             '</div></a>' +
             '<div class="vote-total">{{voteDisplay}}</div>' +
             '<a class="cursor"><div class="btn-down" ng-class="getClassDown()" ng-click="sendVote(\'down\')">' +
             '<i class="ionicons ion-ios-arrow-down" ng-hide="(voteValue == -1)"></i>' +
-            '<i class="ionicons ion-chevron-down" ng-show="(voteValue == -1)"></i>' +
+            '<i class="ionicons ion-arrow-down-b" ng-show="(voteValue == -1)"></i>' +
             '</div></a>' +
             '</div>',
 
-            controller: function ($scope, $compile, $http, $attrs) {
+            controller: function ($scope, $compile, $http, $attrs, toastr) {
                 $scope.errors = [];
 
                 if($attrs.voteTotal)
@@ -1694,13 +1828,11 @@ app.directive('spinner', Spinner);
                     $http({
                         method: 'POST',
                         url: '/api/votes/' + $scope.voteType + '/id/' + $scope.voteTypeId + '/' + val,
-                        //data: d,
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
                     })
                         .success(function (data) {
-                            console.log(data);
                             if (data.result) {
                                 if (val == 'up') { 
                                     $scope.voteValue = 1;
@@ -1715,6 +1847,13 @@ app.directive('spinner', Spinner);
                                 if(typeof($scope.voteTotal) == 'undefined')
                                     $scope.voteTotal = 0;
 
+                                if(val == 'reset'){
+                                    toastr.success('Vote Removed');
+                                }
+                                else {
+                                    toastr.success('Successfully Voted');
+                                }
+
                                 $scope.voteDisplay = $scope.voteTotal + $scope.voteValue;
                             }
 
@@ -1723,13 +1862,17 @@ app.directive('spinner', Spinner);
                         .error(function (data) {
                             $scope.isLoading = false;
                             $scope.errors = data.errors;
+
+                            toastr.error('Voting Failed');
                         });
                 };
             }
 
         };
-    });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
-    $scope.formData = {};
+    });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
+    $scope.formData = {
+        content: ''
+    };
     $scope.course = {};
     $scope.currentReplyingTo = false;
     $scope.currentEditPost = {};
@@ -1740,14 +1883,6 @@ app.directive('spinner', Spinner);
 
     $scope.isLoading = false;
     $scope.errors = [];
-
-    $scope.menu = [
-        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-        [ 'font-size' ],
-        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-        ['left-justify', 'center-justify', 'right-justify'],
-        ['code', 'quote', 'paragraph']
-    ];
 
     $scope.topics = [];
     $scope.replies = [];
@@ -1785,8 +1920,6 @@ app.directive('spinner', Spinner);
         if(!isValid)
             return;
 
-        console.log('saving');
-
         $scope.isLoading = true;
         var d = transformRequest($scope.formData);
         $http({
@@ -1798,13 +1931,14 @@ app.directive('spinner', Spinner);
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
                     $timeout(function(){$scope.$apply()});
 
                     $('#addNewTopicModal').modal('hide');
+
+                    toastr.success('Successfully Saved');
                 }
 
                 $scope.addTopicForm.$setPristine();
@@ -1813,14 +1947,14 @@ app.directive('spinner', Spinner);
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
     $scope.saveEditPost = function(isValid){
         if(!isValid)
             return;
-
-        console.log('saving edit post');
 
         var d = transformRequest($scope.currentTopic);
         $http({
@@ -1832,7 +1966,6 @@ app.directive('spinner', Spinner);
             }
         })
             .success(function(data) {
-                console.log(data);
                 if(data.result) {
                     $scope.$emit('onAfterEditTopic', data.post);
 
@@ -1844,11 +1977,15 @@ app.directive('spinner', Spinner);
 
                     $scope.editTopicForm.$setPristine();
                     $scope.isLoading = false;
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function(data){
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -1868,17 +2005,21 @@ app.directive('spinner', Spinner);
             }
         })
             .success(function(data) {
-                console.log(data);
+
                 if(data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
-                } else {
-                    if( data.result != null && !data.result){
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+                    toastr.success('Successfully Deleted');
+
                 }
-            }) ;
+            })
+
+            .error(function(data){
+                $scope.errors = data.errors;
+                $scope.isLoading = false;
+
+                toastr.error('Delete Failed');
+            });
     };
 
     $scope.deleteTopic = function(postId){
@@ -1893,17 +2034,20 @@ app.directive('spinner', Spinner);
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterDeleteTopic', postId);
 
-                    } else {
-                        if( data.result != null && !data.result){
-                            $scope.errorName = data.errors;
-                            console.log(data.errors);
-                        }
+                        toastr.success('Successfully Deleted');
                     }
-                }) ;
+                })
+
+                .error(function(data){
+                    $scope.errors = data.errors;
+                    $scope.isLoading = false;
+
+                    toastr.error('Delete Failed');
+                });
         }
     };
 
@@ -2031,7 +2175,7 @@ app.directive('spinner', Spinner);
         $scope.errors = [];
     };
 
-});;app.controller('ReplyController', function ($scope, $http, $timeout) {
+});;app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
     $scope.isLoading = false;
     $scope.errors = [];
 
@@ -2044,14 +2188,6 @@ app.directive('spinner', Spinner);
         title: " ",
         content: ""
     };
-
-    $scope.menu = [
-        ['bold', 'italic', 'underline', 'strikethrough', 'subscript', 'superscript'],
-        ['font-size'],
-        ['ordered-list', 'unordered-list', 'outdent', 'indent'],
-        ['left-justify', 'center-justify', 'right-justify'],
-        ['code', 'quote', 'paragraph']
-    ];
 
     $scope.$on('onEditReplyClicked', function (e, post) {
         $scope.EditFormData.content = post.content;
@@ -2092,11 +2228,14 @@ app.directive('spinner', Spinner);
                     $scope.addNewReplyForm.$setPristine();
                     $scope.isLoading = false;
                     $scope.errors = [];
+
+                    toastr.success('Successfully Saved');
                 }
             })
             .error(function (data) {
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+                toastr.error('Saving Failed');
             });
     };
 
@@ -2116,8 +2255,6 @@ app.directive('spinner', Spinner);
         if (!isValid)
             return;
 
-        console.log('saving edit reply ' + $scope.$parent.currentEditPost._id);
-
         $scope.isLoading = true;
 
         var d = transformRequest($scope.EditFormData);
@@ -2130,7 +2267,7 @@ app.directive('spinner', Spinner);
             }
         })
             .success(function (data) {
-                console.log(data);
+
                 if (data.result) {
                     $scope.$emit('onAfterEditReply', data.post);
 
@@ -2138,7 +2275,10 @@ app.directive('spinner', Spinner);
                     $timeout(function () {
                         $scope.$apply()
                     });
+
                     $('#editReplyModal').modal('hide');
+
+                    toastr.success('Successfully Saved');
                 }
 
                 $scope.editReplyForm.$setPristine();
@@ -2147,6 +2287,8 @@ app.directive('spinner', Spinner);
             .error(function (data) {
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
+
+                toastr.error('Saving Failed');
             });
     };
 
@@ -2163,16 +2305,16 @@ app.directive('spinner', Spinner);
             }
         })
             .success(function (data) {
-                console.log(data);
+
                 if (data.result) {
                     $scope.$emit('onAfterDeletePost', postId);
 
-                } else {
-                    if (data.result != null && !data.result) {
-                        $scope.errorName = data.errors;
-                        console.log(data.errors);
-                    }
+                    toastr.success('Successfully Deleted');
                 }
+            })
+            .error(function(data){
+                $scope.errors = data.errors;
+                toastr.error('Delete Failed');
             });
     };
 
@@ -2191,6 +2333,8 @@ app.directive('spinner', Spinner);
 
                         successCallback($rootScope.user);
                     }
+                }).error(function(data){
+                    //console.log(data);
                 });
             },
 
@@ -2212,6 +2356,33 @@ app.directive('spinner', Spinner);
                             $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
 
                             successCallback($rootScope.user);
+                        }
+                    }).error(
+                    function (data) {
+                        errorCallback(data);
+                    }
+                );
+            },
+
+            signUp: function(loginData, successCallback, errorCallback){
+                var d = transformRequest(loginData);
+                $http({
+                    method: 'POST',
+                    url: '/api/accounts/signUp',
+                    data: d,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                    .success(
+                    function success(data) {
+                        if(data.result) {
+                            //$rootScope.user = data.user;
+                            $rootScope.$broadcast('onAfterUserRegistration', data.user);
+
+                            successCallback(data.user);
+                        } else {
+                            errorCallback(data);
                         }
                     }).error(
                     function (data) {
@@ -2271,7 +2442,10 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         return new Date(1970, 0, 1).setSeconds(seconds);
     };
 }]);;app.
-    controller('LinksController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+    controller('LinksController', function($scope, $rootScope, $http, $location,
+                                           $sce, $compile, ActionBarService, $timeout,
+                                           toastr
+    ) {
         $scope.formData = {};
         $scope.course = {};
         $scope.contentNode = {};
@@ -2312,8 +2486,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
             if(!isValid)
                 return;
 
-            console.log('saving bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
@@ -2326,7 +2498,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewLink', data.post);
                         $scope.links.unshift(data.post);
@@ -2338,19 +2510,19 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         $('#AddLinksModal').modal('hide');
                     }
 
+                    toastr.success('Successfully Saved');
                     $scope.isLoading = false;
                 })
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
         $scope.saveEditPost = function(isValid){
             if(!isValid)
                 return;
-
-            console.log('saving edit bookmark');
 
             $scope.isLoading = true;
 
@@ -2364,7 +2536,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 }
             })
                 .success(function(data) {
-                    console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
@@ -2373,6 +2544,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
+
+                        toastr.success('Successfully Saved');
                     }
 
                     $scope.AddLinkForm.$setPristine();
@@ -2381,6 +2554,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
@@ -2396,17 +2570,16 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
                     }
                 })
                     .success(function(data) {
-                        console.log(data);
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
-                        } else {
-                            if( data.result != null && !data.result){
-                                $scope.errorName = data.errors;
-                                console.log(data.errors);
-                            }
+                            toastr.success('Successfully Deleted');
                         }
-                    }) ;
+                    })
+                    .error(function(data){
+                        $scope.errors = data.errors;
+                        toastr.error('Delete Failed');
+                    });
             }
         };
 
@@ -2416,7 +2589,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
 
         $scope.$on('onAfterDeleteLink', function(e, postId){
             var i = _.findIndex($scope.links, { link: { '_id' : postId}});
-            if(i>=0) {
+            if(i >= 0) {
                 //$scope.links[i].isDeleted = true;
                 $scope.links.splice(i, 1);
                 $scope.currentLink = false;
@@ -2482,9 +2655,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
             if($scope.AddLinkForm)
-            $scope.AddLinkForm.$setPristine();
+                $scope.AddLinkForm.$setPristine();
             if($scope.EditLinkForm)
-            $scope.EditLinkForm.$setPristine();
+                $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {
@@ -2515,7 +2688,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNames = "";
+    $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
     //$scope.annZoneMov = [];
 
@@ -2561,7 +2734,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -2588,7 +2761,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       );
     };
 
-    $scope.$watch("tagNames", function (newValue, oldValue) {
+    $scope.$watch("tagNamesList", function (newValue, oldValue) {
       if(newValue != oldValue) {
         //console.log("IAM ANGRY");
         //console.log(newValue);
@@ -2626,7 +2799,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     }
 
     function inOldTagList(tagName) {
-      console.log($scope.annZones);
+      //console.log($scope.annZones);
       for(var key in $scope.annZones) {
         if($scope.annZones[key].name == "#"+tagName) {
           return true;
@@ -2668,13 +2841,18 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         //console.log($scope.tagNameErrors[key]);
       }*/
       $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
-      $scope.tagNames = JSON.parse(JSON.stringify({}));
+      $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
       $timeout(function(){
         $scope.$apply($scope.tagNameErrors);
       });
     };
 
+    $scope.timeout = function () {
+      $timeout(function(){
+        $scope.$apply($scope.tagNameErrors);
+      });
+    };
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
@@ -2687,6 +2865,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.filtersRaw = {};
     $scope.currentPageNumber = 1;
     $scope.annotationZones = [];
+
+    $scope.rawSearchTerm = "";
+    var baseFilterString = "Currently no filters are active";
+    $scope.activeFilterString = baseFilterString;
+
+    /*var visibleString = "visibility: visible;";
+    var invisibleString = "visibility: hidden;";
+    $scope.removeFiltersVisible = visibleString;
+    */
 
     // zones
     $scope.tagNames = [];
@@ -2731,7 +2918,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("Name found: "+element.find(".slideRectInput").length);
             //var name = $("#annotationZoneSubmitList #annotationZoneSubmitName").eq(i).val();
             var color = element.find(".slideRectColorPicker").val().substring(1);
-            console.log("Color found: "+color);
+            //console.log("Color found: "+color);
             //var color = $("#annotationZoneSubmitList #annotationZoneSubmitColor").eq(i).val();
 
             if (name == "") {
@@ -2739,7 +2926,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 return false;
             }
             else if($rootScope.checkTagName(name) != "") {
-                console.log("TAGNAME NOT ACCEPTABLE");
+                //console.log("TAGNAME NOT ACCEPTABLE");
                 return false;
             }
             else {
@@ -2886,24 +3073,77 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
 
-    $scope.switchRegexFilter = function (value) {
-        $scope.filtersRaw['renderedText'] = {'regex': value};
+    $scope.setRegexFilter = function (value) {
+        if(typeof $scope.filtersRaw['rawText'] == 'undefined') {
+          $scope.filtersRaw['rawText'] = {'regex': value};
+        }
+        else
+          $scope.filtersRaw['rawText'].regex = value;
 
         $scope.$broadcast('onFiltersRawChange');
     };
 
     $scope.switchRegexHashFilter = function (value) {
-        $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
-        console.log($scope.filtersRaw);
+        //console.log("switchRegexHashFilter CALLED");
+        if( typeof $scope.filtersRaw['renderedText'] == 'undefined')
+          $scope.filtersRaw['renderedText'] = {'regex_hash': value.substring(1)};
+        else if( $scope.filtersRaw['renderedText'].regex_hash != value.substring(1) )
+          $scope.filtersRaw['renderedText'].regex_hash = value.substring(1);
+        else
+          delete $scope.filtersRaw['renderedText'];
+        //console.log($scope.filtersRaw);
 
         $scope.$broadcast('onFiltersRawChange');
     };
 
     $scope.authorLabelClick = function (authorName) {
-        $scope.filtersRaw['author'] = authorName;
+        //console.log("AUTHORLABELCLICK CALLED");
+        if($scope.filtersRaw['author'] == authorName)
+          delete $scope.filtersRaw['author'];
+        else
+          $scope.filtersRaw['author'] = authorName;
 
         $scope.$broadcast('onFiltersRawChange');
     };
+
+    $scope.$on('onFiltersRawChange', function () {
+      var temp = "You are currently filtering for posts";
+      var add = "";
+      if ( typeof $scope.filtersRaw['author'] != 'undefined' && $scope.filtersRaw['author'] != "" )
+        add += " authored by '" + $scope.filtersRaw['author'] + "'";
+      if ( typeof $scope.filtersRaw['renderedText'] != 'undefined')
+        if ( typeof $scope.filtersRaw['renderedText'].regex_hash != 'undefined' && $scope.filtersRaw['renderedText'].regex_hash != "" )
+          add += " referencing the annotation zone '" + $scope.filtersRaw['renderedText'].regex_hash + "'";
+      /*if(typeof $scope.filtersRaw['rawText'] != 'undefined')
+        if ( $scope.filtersRaw['rawText'].regex != 'undefined' && $scope.filtersRaw['rawText'].regex != "")
+          temp += " containing the term '" + $scope.filtersRaw['renderedText'].regex_hash + "'";
+        */
+      if(add.length == 0) {
+        $scope.activeFilterString = baseFilterString;
+        //$scope.removeFiltersVisible = invisibleString;
+
+      }
+      else {
+        $scope.activeFilterString = temp + add;
+        //$scope.removeFiltersVisible = visibleString;
+
+      }
+
+      $timeout(function () {
+          $scope.$apply();
+          $scope.commentsLoaded();
+      });
+
+    });
+
+    $scope.removeActiveFilters = function () {
+      if ( typeof $scope.filtersRaw['author'] != 'undefined' && $scope.filtersRaw['author'] != "" )
+        delete $scope.filtersRaw['author'];
+      if ( typeof $scope.filtersRaw['renderedText'] != 'undefined')
+        delete $scope.filtersRaw['renderedText'];
+      $scope.$broadcast('onFiltersRawChange');
+    };
+
 
     $scope.commentsLoaded = function () {
         var element = $("#commentList .annotationZoneReference").not('.hasOnClick');
@@ -2911,7 +3151,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("ADDED CLICK FUNCTION");
             //console.log($("#commentList .annotationZoneReference").length);
             $("#commentList .annotationZoneReference").not('.hasOnClick').click(function () {
-                $scope.switchRegexHashFilter($(this).html());
+              //console.log("switchRegexHashFilter CALLED");
+              $scope.switchRegexHashFilter($(this).html());
             });
 
             $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
@@ -2940,11 +3181,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
-                $timeout(function () {
-                    $scope.$apply();
-                    $scope.commentsLoaded();
-                });
+
+
             }
+
+
+            $timeout(function () {
+                $scope.$apply();
+                $scope.commentsLoaded();
+            });
+
         });
     };
 
@@ -2991,10 +3237,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
 
 
-        console.log($scope.filtersRaw);
+        //console.log($scope.filtersRaw);
         var finalFilters = JSON.stringify($scope.filtersRaw);
 
-        console.log("Final Filters: " + finalFilters);
+        //console.log("Final Filters: " + finalFilters);
         return finalFilters;
     }
 
@@ -3016,14 +3262,17 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.manageActionBar = function(){
-            if($scope.currentTab == 'pdf') {
-                ActionBarService.extraActionsMenu.push({
-                    clickAction: $scope.switchCommentSubmissionDisplay,
-                    title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
-                    aTitle: 'Write a comment on this slide'
-                });
-            }
-        };
+        if($scope.currentTab == 'pdf') {
+
+                //commented because we want to use own toolbar
+            ActionBarService.extraActionsMenu.push({
+                clickAction: $scope.switchCommentSubmissionDisplay,
+                title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
+                aTitle: 'Write a comment on this slide'
+            });
+        }
+    };
+
     $scope.init = function () {
         //$scope.getComment($scope.orderingOptions[0].id); // commented, because it will get called once pdf get loaded
     };
@@ -3035,7 +3284,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     });
 
-    $scope.$watch("filtersRaw", function (newValue, oldValue) {
+    /*$scope.$watch("filtersRaw", function (newValue, oldValue) {
         if (newValue !== oldValue) {
             $scope.parseOrderType($scope.orderType.id);
             //console.log("NOTICED FILTERS CHANGE");
@@ -3044,16 +3293,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
             $scope.updateScope($scope.commentGetUrl);
         }
-    });
+    });*/
 
-    /*$scope.$on('onFiltersRawChange', function () {
+    $scope.$on('onFiltersRawChange', function () {
         $scope.parseOrderType($scope.orderType.id);
         //console.log("NOTICED FILTERS CHANGE");
         $scope.filters = getCurrentFilters($scope.filtersRaw);
         $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
         //console.log("commentGetUrl: " + $scope.commentGetUrl);
         $scope.updateScope($scope.commentGetUrl);
-    });*/
+    });
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
         if (newValue !== oldValue) {
@@ -3064,6 +3313,14 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.updateScope($scope.commentGetUrl);
         }
     });
+
+    $scope.$watch("rawSearchTerm", function (newValue, oldValue) {
+      if(newValue != oldValue) {
+        $scope.setRegexFilter(newValue);
+      }
+    });
+
+
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
@@ -3089,6 +3346,37 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.$on('$routeUpdate', function(){
         $scope.manageActionBar();
     });
+
+    $scope.addReference = function(name) {
+      //$rootScope.safeApply(function() {
+      if(typeof $scope.comment.rawText == 'undefined')
+        $scope.comment.rawText = name + ' ';
+      else {
+        var len = $scope.comment.rawText.length;
+        var firstPart = $scope.comment.rawText.substring(0,len-6);
+        var lastPart = $scope.comment.rawText.substring(len-6);
+        $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+      }
+      //console.log($scope.comment.rawText);
+      //Quill.editors[i].focus();
+      $timeout(function () {
+          $scope.$apply();
+          $scope.commentsLoaded();
+      });
+      //});
+    };
+
+    $rootScope.safeApply = function(fn) {
+            var phase = this.$root.$$phase;
+            if(phase == '$apply' || phase == '$digest') {
+                if(fn && (typeof(fn) === 'function')) {
+                    fn();
+                }
+            } else {
+                this.$apply(fn);
+            }
+    };
+
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
@@ -3132,7 +3420,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        console.log(ngRepeatFinishedEvent);
         $scope.initJSPlumb();
     });
 
@@ -3211,7 +3498,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
 });
-;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService) {
+;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -3236,6 +3523,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     });
 
+    $scope.noticeAfterSignUp = function(){
+        var k = $location.search();
+        if(k.referer && k.referer == 'signUp' && k.result && k.result == 'success'){
+            toastr.success('Please login using your new username and password!', 'Sign Up Success');
+        }
+    };
+
+    $scope.noticeAfterSignUp();
+
     $scope.login = function(isValid){
         if(isValid){
             $scope.isLoading = true;
@@ -3257,7 +3553,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     }
 
-});;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService) {
+});;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService, toastr) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -3285,9 +3581,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             authService.login($scope.loginData,
                 function(user){
                     $scope.user = user;
-                    if(!$scope.referer) {
-                        window.location = '/accounts';
-                    }
+                    toastr.success('', "You're now logged in!");
                     $scope.isLoading = false;
                 },
                 function error(data) {
@@ -3311,6 +3605,36 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         });
 });;app.service('ActionBarService', function() {
     this.extraActionsMenu = [];
+});;app.controller('SignUpController', function($scope, $http, $rootScope, $cookies, authService) {
+
+    $scope.loginData = {};
+    $scope.errors = [];
+    $scope.isLoading = false;
+
+    authService.loginCheck(function(user){
+        if(user){
+            window.location = '/accounts';
+        }
+    });
+
+    $scope.signUp = function(isValid){
+        if(isValid){
+            $scope.isLoading = true;
+            authService.signUp($scope.loginData,
+                function(user){
+                    $scope.isLoading = false;
+                    window.location = '/accounts/login/#?referer=signUp&result=success';
+                },
+                function error(data) {
+                    if(data.errors){
+                        $scope.errors = data.errors;
+                    }
+                    $scope.isLoading = false;
+                }
+            );
+        }
+    }
+
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
@@ -3375,14 +3699,12 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.$on('onAfterInitUser', function(event, user){
         $scope.$watch('location', function(newVal, oldVal){
             if($scope.location == 'user-profile'){
-                console.log('onAfterInitUser');
                 $scope.getWidgets();
             }
         });
     });
 
     $scope.$on('onAfterInitCourse', function(event, course){
-        console.log('onAfterInitCourse');
         $scope.course = course;
         $scope.getWidgets();
     });
@@ -3545,7 +3867,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     }*/
 });
-;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope) {
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -3598,6 +3920,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $('#widgetGallery').modal('hide');
 
             $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
+
+            toastr.success('Widget is installed');
         });
     };
 
@@ -3619,6 +3943,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $('#widgetGallery').modal('hide');
 
             $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
+
+            toastr.success('Widget is uninstalled');
         });
     };
 

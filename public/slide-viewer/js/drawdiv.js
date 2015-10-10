@@ -467,7 +467,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     if(canMove) {
       inputElement = $('<input type="text"/>');
       inputElement.attr("id", "rectInputField-" + divCounter);
-      inputElement.attr("ng-model", "tagNames['" + rectPrefix + divCounter + "']");
+      inputElement.attr("ng-model", "tagNamesList['" + rectPrefix + divCounter + "']");
       inputElement.addClass("slideRectInput");
       inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
 

@@ -1,5 +1,8 @@
 app.
-    controller('LinksController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout) {
+    controller('LinksController', function($scope, $rootScope, $http, $location,
+                                           $sce, $compile, ActionBarService, $timeout,
+                                           toastr
+    ) {
         $scope.formData = {};
         $scope.course = {};
         $scope.contentNode = {};
@@ -40,8 +43,6 @@ app.
             if(!isValid)
                 return;
 
-            console.log('saving bookmark');
-
             $scope.isLoading = true;
 
             var d = transformRequest($scope.formData);
@@ -54,7 +55,7 @@ app.
                 }
             })
                 .success(function(data) {
-                    console.log(data);
+
                     if(data.result) {
                         $scope.$emit('onAfterCreateNewLink', data.post);
                         $scope.links.unshift(data.post);
@@ -66,19 +67,19 @@ app.
                         $('#AddLinksModal').modal('hide');
                     }
 
+                    toastr.success('Successfully Saved');
                     $scope.isLoading = false;
                 })
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
         $scope.saveEditPost = function(isValid){
             if(!isValid)
                 return;
-
-            console.log('saving edit bookmark');
 
             $scope.isLoading = true;
 
@@ -92,7 +93,6 @@ app.
                 }
             })
                 .success(function(data) {
-                    console.log(data);
                     if(data.result) {
                         $scope.$emit('onAfterEditLinks', data.post);
 
@@ -101,6 +101,8 @@ app.
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
                         $scope.links[i].link = data.post;
                         $timeout(function(){$scope.$apply()});
+
+                        toastr.success('Successfully Saved');
                     }
 
                     $scope.AddLinkForm.$setPristine();
@@ -109,6 +111,7 @@ app.
                 .error(function(data){
                     $scope.isLoading = false;
                     $scope.errors = data.errors;
+                    toastr.error('Saving Failed');
                 });
         };
 
@@ -124,17 +127,16 @@ app.
                     }
                 })
                     .success(function(data) {
-                        console.log(data);
                         if(data.result) {
                             $scope.$emit('onAfterDeleteLink', postId);
 
-                        } else {
-                            if( data.result != null && !data.result){
-                                $scope.errorName = data.errors;
-                                console.log(data.errors);
-                            }
+                            toastr.success('Successfully Deleted');
                         }
-                    }) ;
+                    })
+                    .error(function(data){
+                        $scope.errors = data.errors;
+                        toastr.error('Delete Failed');
+                    });
             }
         };
 
@@ -144,7 +146,7 @@ app.
 
         $scope.$on('onAfterDeleteLink', function(e, postId){
             var i = _.findIndex($scope.links, { link: { '_id' : postId}});
-            if(i>=0) {
+            if(i >= 0) {
                 //$scope.links[i].isDeleted = true;
                 $scope.links.splice(i, 1);
                 $scope.currentLink = false;
@@ -210,9 +212,9 @@ app.
         $scope.cancel = function(){
             $scope.currentLink = $scope.originalCurrentLink;
             if($scope.AddLinkForm)
-            $scope.AddLinkForm.$setPristine();
+                $scope.AddLinkForm.$setPristine();
             if($scope.EditLinkForm)
-            $scope.EditLinkForm.$setPristine();
+                $scope.EditLinkForm.$setPristine();
         };
 
         $scope.getSrc = function(url) {

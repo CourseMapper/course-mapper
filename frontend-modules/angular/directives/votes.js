@@ -10,20 +10,19 @@ app.directive('voting',
                 voteTotal: '@',
                 voteDisplay: '@'
             },
-
             template: '<div class="voting">' +
             '<a class="cursor" ng-click="sendVote(\'up\')"><div class="btn-up" ng-class="getClassUp()">' +
             '<i class="ionicons ion-ios-arrow-up" ng-hide="(voteValue == 1)"></i>' +
-            '<i class="ionicons ion-chevron-up" ng-show="(voteValue == 1)"></i>' +
+            '<i class="ionicons ion-arrow-up-b" ng-show="(voteValue == 1)"></i>' +
             '</div></a>' +
             '<div class="vote-total">{{voteDisplay}}</div>' +
             '<a class="cursor"><div class="btn-down" ng-class="getClassDown()" ng-click="sendVote(\'down\')">' +
             '<i class="ionicons ion-ios-arrow-down" ng-hide="(voteValue == -1)"></i>' +
-            '<i class="ionicons ion-chevron-down" ng-show="(voteValue == -1)"></i>' +
+            '<i class="ionicons ion-arrow-down-b" ng-show="(voteValue == -1)"></i>' +
             '</div></a>' +
             '</div>',
 
-            controller: function ($scope, $compile, $http, $attrs) {
+            controller: function ($scope, $compile, $http, $attrs, toastr) {
                 $scope.errors = [];
 
                 if($attrs.voteTotal)
@@ -87,13 +86,11 @@ app.directive('voting',
                     $http({
                         method: 'POST',
                         url: '/api/votes/' + $scope.voteType + '/id/' + $scope.voteTypeId + '/' + val,
-                        //data: d,
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
                     })
                         .success(function (data) {
-                            console.log(data);
                             if (data.result) {
                                 if (val == 'up') { 
                                     $scope.voteValue = 1;
@@ -108,6 +105,13 @@ app.directive('voting',
                                 if(typeof($scope.voteTotal) == 'undefined')
                                     $scope.voteTotal = 0;
 
+                                if(val == 'reset'){
+                                    toastr.success('Vote Removed');
+                                }
+                                else {
+                                    toastr.success('Successfully Voted');
+                                }
+
                                 $scope.voteDisplay = $scope.voteTotal + $scope.voteValue;
                             }
 
@@ -116,6 +120,8 @@ app.directive('voting',
                         .error(function (data) {
                             $scope.isLoading = false;
                             $scope.errors = data.errors;
+
+                            toastr.error('Voting Failed');
                         });
                 };
             }

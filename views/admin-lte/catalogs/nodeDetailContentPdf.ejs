@@ -40,6 +40,21 @@
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
                                     </div>
                                 </div>
+
+                                <div>
+                                  <label> Currently edited annotation zones: </label>
+                                  <div ng-repeat="item in tagNamesList">
+                                    #{{item}} : <button type="button" class="btn btn-primary" ng-click="addReference('#'+ item);"> Add reference </button>
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <label> Already existing annotation zones: </label>
+                                  <div ng-repeat="item in annZones">
+                                    {{item.name}} : <button type="button" class="btn btn-primary" ng-click="addReference(item.name);"> Add reference </button>
+                                  </div>
+                                </div>
+
                             </div>
 
                             <div class="control-group">
@@ -55,7 +70,6 @@
 
                         </fieldset>
                     </form>
-
                 </div>
 
                 <!--<div id="annotationZoneSubmitListMovables">
@@ -64,6 +78,8 @@
                     </button>
                 </div>-->
                 <label id="commentSubmissionResponse"></label>
+
+
             </div>
 
             <div class="commentZoneList">
@@ -85,6 +101,11 @@
 
                     </div>
                     <div id="commentList" class="row">
+                        Search: <input id="searchInput" ng-model="rawSearchTerm"></input>
+                        <div>
+                          <label id="activeFilterLabel" ng-bind="activeFilterString"></label>
+                          <button class="btn btn-white btn-link" ng-click="removeActiveFilters();" style="color:black;">X</button>
+                        </div>
                         <div class="replies" ng-repeat="comment in comments" ng-cloak>
                             <div class="col-xs-1">
                                 <voting vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>
@@ -96,9 +117,9 @@
                                          post-content="comment.html"
                                          is-post-owner="comment.author==$root.user.username"
                                          show-control="true"
-                                         show-reply-button="false"
-                                         show-delete-button="false"
-                                         show-edit-button="false"
+                                         show-reply-button="true"
+                                         show-delete-button="true"
+                                         show-edit-button="true"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                         ></comment>

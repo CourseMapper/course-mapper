@@ -1,38 +1,56 @@
-/*jslint node: true*/
+/* jslint node: true */
 'use strict';
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
-    function($scope, socket, rootScope) {
+    function ($scope, socket, rootScope) {
 
-        var onLeave = function onLeave(currentTime, timeLapse, params) {
+        var onLeave = function (currentTime, timeLapse, params) {
             params.completed = false;
             params.showing = false;
         };
 
-        var onComplete = function onComplete(currentTime, timeLapse, params) {
+        var onComplete = function (currentTime, timeLapse, params) {
             params.completed = true;
             params.showing = false;
         };
 
-        var onUpdate = function onUpdate(currentTime, timeLapse, params) {
+        var onUpdate = function (currentTime, timeLapse, params) {
             if (!params.showing) {
                 params.completed = false;
                 params.showing = true;
             }
         };
 
-        $scope.createAnnotation = function() {
-            // get current playback time
-            var startTime = Math.floor($scope.API.currentTime / 1000);
-            var endTime = startTime + 5;
+        var checkIsAuthor = function (item) {
+            return (item.author === rootScope.user.username);
+        };
+
+        $scope.createAnnotation = function () {
+            // If the first annotation is the default,
+            // then do not allow adding another one.
+            if ($scope.annotations.length > 0 &&
+                $scope.annotations[0].isDefault) {
+                return;
+            }
+            _.each($scope.annotations, function (a) {
+                a.isEditMode = false;
+            });
+
+            // get current playback time and add
+            // default offset seconds for the end of
+            // the annotation
+            var startTime = $scope.API.currentTime;
+            var endTime = $scope.API.currentTime + (5 * 1000);
 
             var defaultAnnotation = {
                 "isEditMode": true,
+                "isDefault": true,
+                "isAuthor": true,
                 "start": startTime,
                 "end": endTime,
                 "position": {
-                    "top": "20",
-                    "left": "20"
+                    "top": "10",
+                    "left": "10"
                 },
                 "size": {
                     "height": "20",
@@ -45,38 +63,37 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             $scope.annotations.unshift(defaultAnnotation);
         };
 
-        $scope.seekPosition = function(annotation) {
-            // add .001 to seek time in order to show inline annotations
-            $scope.API.seekTime(annotation.start + 0.001);
-            $scope.API.pause();
+        $scope.seekPosition = function (annotation) {
+            $scope.API.seekTime(annotation.start / 1000);
+            //$scope.API.pause();
         };
 
-        $scope.onPlayerReady = function(API) {
+        $scope.onPlayerReady = function (API) {
             $scope.API = API;
         };
 
-        socket.on('annotations:updated', function(annotations) {
+        socket.on('annotations:updated', function (annotations) {
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];
             $scope.selectedAnnotation = null;
 
-            var currentUser = rootScope.user;
-
-            _.sortBy(annotations, 'start')
-                .forEach(function(annotation) {
+            _.sortByAll(annotations, ['start', 'end'])
+                .forEach(function (annotation) {
                     var cuePoint = {
                         timeLapse: {
-                            start: annotation.start,
-                            end: annotation.end
+                            start: (new Date(annotation.start).getTime() - 0.001) / 1000,
+                            end: new Date(annotation.end).getTime() / 1000
                         },
                         onLeave: onLeave,
                         onUpdate: onUpdate,
                         onComplete: onComplete,
                         params: annotation
                     };
-                    annotation.isAuthor = (annotation.author === currentUser.username);
-                    annotation.reposition = function(params) {
+                    $scope.cuePoints.points.push(cuePoint);
+
+                    annotation.isAuthor = checkIsAuthor(annotation);
+                    annotation.reposition = function (params) {
                         if (params.position) {
                             annotation.position = params.position;
                         }
@@ -84,17 +101,16 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                             annotation.size = params.size;
                         }
                     };
-
-                    _.forEach(annotation.comments, function(comment) {
-                        comment.isAuthor = (comment.author === currentUser.username);
-                    });
-
                     $scope.annotations.push(annotation);
-                    $scope.cuePoints.points.push(cuePoint);
+
+                    // find current user comments
+                    _.forEach(annotation.comments, function (c) {
+                        c.isAuthor = checkIsAuthor(c);
+                    });
                 });
         });
 
-        $scope.init = function(videoId, videoSource) {
+        $scope.init = function (videoId, videoSource) {
             $scope.sources = [{
                 src: videoSource,
                 type: 'video/mp4'
@@ -112,7 +128,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
 
         // Initialize scope when the video-source is set.
-        $scope.$watch('videoSource', function(oldVal, newVal) {
+        $scope.$watch('videoSource', function (oldVal, newVal) {
             if (oldVal !== newVal) {
                 $scope.init($scope.videoId, $scope.videoSource);
             }

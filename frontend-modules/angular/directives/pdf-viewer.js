@@ -34,7 +34,7 @@ app.directive('pdfViewer',
                 };
 
                 attrs.$observe('source', function (pdfFilePath) {
-                    console.log(pdfFilePath);
+                    //console.log(pdfFilePath);
                     if (pdfFilePath) {
                         PDFJS.getDocument(pdfFilePath).then(function (pdfDocument) {
 
@@ -42,7 +42,7 @@ app.directive('pdfViewer',
                                 scope.pageToView = parseInt(attrs.currentPageNumber);
                             }
 
-                            console.log("Started loading pdf");
+                            //console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
 
                             scope.calculateSlideNavigationProgress(scope.currentPageNumber);
@@ -71,7 +71,7 @@ app.directive('pdfViewer',
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                console.log("PDF LOADED");
+                                //console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
                                 $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
@@ -120,7 +120,7 @@ app.directive('pdfViewer',
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw().catch(function(){});
 
-                            console.log("PDF LOADED");
+                            //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
 
                             $rootScope.$broadcast('onPdfPageChange', newSlideNumber);

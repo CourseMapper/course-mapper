@@ -1,4 +1,4 @@
-app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService) {
+app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -22,6 +22,15 @@ app.controller('LoginPageController', function($scope, $http, $rootScope, $cooki
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
+
+    $scope.noticeAfterSignUp = function(){
+        var k = $location.search();
+        if(k.referer && k.referer == 'signUp' && k.result && k.result == 'success'){
+            toastr.success('Please login using your new username and password!', 'Sign Up Success');
+        }
+    };
+
+    $scope.noticeAfterSignUp();
 
     $scope.login = function(isValid){
         if(isValid){

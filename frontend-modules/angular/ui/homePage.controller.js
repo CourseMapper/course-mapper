@@ -40,7 +40,6 @@ app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        console.log(ngRepeatFinishedEvent);
         $scope.initJSPlumb();
     });
 
