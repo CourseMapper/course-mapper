@@ -726,6 +726,9 @@ a.cursor {
     min-height: 200px;
     max-height: 400px!important;
 }
+.ql-text-info{
+    font-size:12px;
+}
 .content-header.action-header >.breadcrumb>li>a{
     color:white;
 }
