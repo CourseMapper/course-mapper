@@ -65,10 +65,14 @@
 
                         $(inputId + ' .editor').click(function(){
                             if(scope.editor.getLength() > 0){
-                                scope.editor.setSelection(scope.editor.getLength() - 1, scope.editor.getLength() );
+                                var range = scope.editor.getSelection();
+                                if(!range){
+                                    scope.editor.setSelection(scope.editor.getLength() - 1, scope.editor.getLength() );
+                                }
                             }
-                            else
+                            else {
                                 scope.editor.focus();
+                            }
                         });
 
                         ngModel.$render();
