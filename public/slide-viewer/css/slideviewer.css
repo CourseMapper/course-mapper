@@ -45,6 +45,7 @@ input#searchInput{
   padding: 2px;
   padding-left: 5px;
   padding-right: 5px;
+  margin: 2px;
 }
 .filter-tag:hover{
   font-size: 9pt;

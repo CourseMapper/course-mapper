@@ -119,6 +119,7 @@
                           <span class="filter-header">Filter:</span>
                         </div>
                         <div class="col-xs-11">
+                          <!--<span class="filter-header">None</span>-->
                           <button type="button" class="btn btn-default btn-xs filter-tag" ng-hide="((key == 'pdfId')||(key == 'pdfPageNumber')) " ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
                             <span class="glyphicon glyphicon-remove " aria-hidden="true" ></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
                           </button>
