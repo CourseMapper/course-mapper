@@ -2877,6 +2877,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.comment = {};
 
+
+    $scope.finalEditRawText = "";
+    $scope.editRawText = [];
+
+    $scope.editMode = -1;
     $scope.orderType = false;
     $scope.orderBy = false;
     $scope.ascending = "true";
@@ -2901,6 +2906,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.tagColor = [];
 
     $scope.writeCommentMode = false;
+
+
 
     $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
         $scope.currentPageNumber = newSlideNumber;
@@ -3138,6 +3145,42 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             });
     };
 
+    $scope.submitEdit = function (comment) {
+
+
+      var config = {
+          params: {
+              updateId: comment._id,
+              author: $scope.currentUser.username,
+              authorId: $scope.currentUser._id,
+              rawText: $scope.editRawText[$scope.editMode]
+          }
+      };
+
+      $http.post("/slide-viewer/updateComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment edit successful!");
+
+                $scope.comment.rawText = '';
+                $scope.setQuillSelection();
+              }
+
+              $scope.$broadcast('reloadTags');
+
+              $scope.writeCommentMode = false;
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+    };
+
     $scope.setQuillSelection = function(){
         for(var i = 0; i < Quill.editors.length; i++){
             if(Quill.editors[i].quillId == '#rawText'){
@@ -3261,13 +3304,25 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     };
 
+    $scope.changeEditMode = function (id, bool) {
+      //$scope.finalEditRawText = "";
+      $scope.editRawText = [];
+      if(bool) {
+        $scope.editMode = id;
+        $scope.writeCommentMode = false;
+      }
+      else if($scope.editMode == id){
+        $scope.editMode = -1;
+      }
+    };
+
     $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
-            console.log('COMMENTS UPDATED');
+            //console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
 
-            $scope.comments = data.comments;
 
+            $scope.editMode = -1;
             for (var i in $scope.comments) {
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
@@ -3275,6 +3330,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
             }
+
+            $scope.comments = data.comments;
 
 
             $timeout(function () {
@@ -3411,7 +3468,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       }
     });
 
-
+    $scope.$watch("writeCommentMode", function (newValue, oldValue) {
+      if(newValue == true)
+        $scope.editMode = -1;
+    });
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
@@ -3456,6 +3516,17 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       });
       //});
     };
+
+    $scope.setRawText = function(id,newText) {
+      $scope.editRawText[id] = newText;
+      $timeout(function () {
+          $scope.$apply();
+      });
+    };
+
+    /*$scope.$watch("editRawText", function (newValue, oldValue) {
+      console.log("REGISTERED CHANGE");
+    });*/
 
     $rootScope.safeApply = function(fn) {
             var phase = this.$root.$$phase;

@@ -20,6 +20,7 @@
                 restrict: 'A',
                 require: "ngModel",
                 replace: true,
+
                 scope: {
                     annotationZoneAction: '&'
                 },
