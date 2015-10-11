@@ -43,7 +43,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         };
 
         uploadParams.file = [];
-        // we only take one pdf file
+        // we only take one picture file
         if ($scope.filespicture && $scope.filespicture.length){
             uploadParams.file.push($scope.filespicture[0]);
         }
@@ -61,8 +61,14 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
                 return;
 
             var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-
+            if(Array.isArray(evt.config.file) && evt.config.file.length > 0){
+                for(var i in evt.config.file){
+                    var fle = evt.config.file[i];
+                    console.log('progress: ' + progressPercentage + '% ' + fle.name);
+                }
+            } else {
+                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+            }
         })
             .success(function (data) {
                 $scope.$emit('onAfterEditCourse', data.course);

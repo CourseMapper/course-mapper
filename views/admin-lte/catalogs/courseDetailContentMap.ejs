@@ -2,7 +2,8 @@
     <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-         data-toggle="dropdown" data-hover="dropdown">
+         data-toggle="dropdown" data-hover="dropdown"
+            ng-class="{'owned': (data.createdBy==user._id), 'deleted': data.isDeleted}">
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
@@ -11,7 +12,9 @@
 
         <a ng-show="data.type == 'contentNode' && !data.isDeleted"
            ng-href="{{getContentNodeLink(data)}}"> {{data.name}} </a>
+
         <span ng-show="data.type != 'contentNode'" > {{data.name}} </span>
+
         <span ng-show="data.type == 'contentNode' && data.isDeleted == true" > {{data.name}} </span>
 
         <!-- subtopic menu-->
@@ -35,6 +38,11 @@
                 <a class="cursor" data-toggle="modal" data-target="#editSubTopicModal"
                    ng-click="setMode('edit', 'subTopic', data)"><i class="ionicons ion-edit"></i> Edit</a>
             </li>
+            <li>
+                <a class="cursor" ng-show="data.createdBy==user._id"
+                   ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
+            </li>
+
         </ul>
 
         <!-- contentnode menu-->

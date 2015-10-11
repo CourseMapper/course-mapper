@@ -6,11 +6,15 @@
     <div class="container">
         <div class="excerpt">
             <div class="description">
-                Started By:
+                Started
                 <strong>
-                    {{user.username}}
-                </strong> at <b>
-                {{course.dateAdded | relativeDate}}</b>
+                {{course.dateAdded | relativeDate}}
+                </strong>
+
+                By
+                <strong>
+                    {{user.displayName}}
+                </strong>
 
                 <h1>
                     <span class="visible-xs" style="margin-left:15px"></span>

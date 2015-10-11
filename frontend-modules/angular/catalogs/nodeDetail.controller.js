@@ -38,10 +38,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
                 }
             })
                 .success(function(res) {
-                    console.log(res);
                     if(res.result){
-                        //todo: go to map view
-                        console.log("node deleted");
                         $location.path('/cid/' + $scope.courseId);
                         $location.search('tab', 'map');
                     } else {
