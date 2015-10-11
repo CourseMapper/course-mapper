@@ -5,14 +5,17 @@ var async = require('asyncawait/async'),
     await = require('asyncawait/await'),
     VideoAnnotation = require('../modules/annotations/models/video-annotation');
 
+var checkSession = function(socket) {
+    return socket &&
+        socket.request &&
+        socket.request.session &&
+        socket.request.session.passport &&
+        socket.request.session.passport.user;
+};
+
 module.exports = function(io) {
+
     io.sockets.on('connection', function(socket) {
-        if (!socket.request ||
-            !socket.request.session ||
-            !socket.request.session.passport) {
-            throw new Error('Cannot authenticate socket connection without passing a valid session.');
-        }
-        var user = socket.request.session.passport.user;
         var getAnnotationsAsync = async(function(videoId) {
             return await (VideoAnnotation.find({
                 video_id: videoId
@@ -30,6 +33,10 @@ module.exports = function(io) {
         socket.on('annotations:save', async(function(params) {
             // find annotation model from DB
             var annotation = await (VideoAnnotation.findById(params.annotation._id).exec());
+            if (!checkSession()) {
+                return;
+            }
+            var user = socket.request.session.passport.user;
 
             // update annotation properties
             if (annotation) {
@@ -93,7 +100,10 @@ module.exports = function(io) {
                 if (!annotation) {
                     return;
                 }
-
+                if (!checkSession()) {
+                    return;
+                }
+                var user = socket.request.session.passport.user;
                 var comment = {
                     text: params.text,
                     author: user.username || 'Unknown'
@@ -124,6 +134,10 @@ module.exports = function(io) {
                 if (!annotation) {
                     return;
                 }
+                if (!checkSession()) {
+                    return;
+                }
+                var user = socket.request.session.passport.user;
 
                 for (var i = 0; i < annotation.comments.length; i++) {
                     if (annotation.comments[i]._id.toString() === commentId) {
