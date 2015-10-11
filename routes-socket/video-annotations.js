@@ -6,15 +6,15 @@ var async = require('asyncawait/async'),
     VideoAnnotation = require('../modules/annotations/models/video-annotation');
 
 var checkSession = function(socket) {
-    return socket &&
+    var hasSession = socket &&
         socket.request &&
         socket.request.session &&
         socket.request.session.passport &&
         socket.request.session.passport.user;
+    return hasSession;
 };
 
 module.exports = function(io) {
-
     io.sockets.on('connection', function(socket) {
         var getAnnotationsAsync = async(function(videoId) {
             return await (VideoAnnotation.find({
@@ -33,7 +33,7 @@ module.exports = function(io) {
         socket.on('annotations:save', async(function(params) {
             // find annotation model from DB
             var annotation = await (VideoAnnotation.findById(params.annotation._id).exec());
-            if (!checkSession()) {
+            if (!checkSession(socket)) {
                 return;
             }
             var user = socket.request.session.passport.user;
@@ -100,7 +100,7 @@ module.exports = function(io) {
                 if (!annotation) {
                     return;
                 }
-                if (!checkSession()) {
+                if (!checkSession(socket)) {
                     return;
                 }
                 var user = socket.request.session.passport.user;
@@ -134,7 +134,7 @@ module.exports = function(io) {
                 if (!annotation) {
                     return;
                 }
-                if (!checkSession()) {
+                if (!checkSession(socket)) {
                     return;
                 }
                 var user = socket.request.session.passport.user;
