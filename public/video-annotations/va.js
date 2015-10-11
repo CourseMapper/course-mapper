@@ -66,6 +66,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
 
         $scope.cancelAnnotation = function() {
             $scope.$parent.annotations.shift();
+            $scope.hideSearch = false;
         };
 
         $scope.deleteAnnotation = function() {
