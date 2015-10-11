@@ -2,6 +2,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.comment = {};
 
+
+    $scope.finalEditRawText = "";
+    $scope.editRawText = [];
+
+    $scope.editMode = -1;
     $scope.orderType = false;
     $scope.orderBy = false;
     $scope.ascending = "true";
@@ -26,6 +31,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.tagColor = [];
 
     $scope.writeCommentMode = false;
+
+
 
     $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
         $scope.currentPageNumber = newSlideNumber;
@@ -106,7 +113,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             },
             color: color,
             pdfId: pdfId,
-            pdfPageNumber: pdfPageNumber
+            pdfPageNumber: pdfPageNumber,
+            author: $scope.currentUser.username,
+            authorID: $scope.currentUser._id
         };
 
         /*var oldText;
@@ -137,6 +146,74 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     };
 
+    $scope.submitReply = function (resultVarName) {
+      var config = {
+        params: {
+          rawText: $scope.comment.rawText,
+          author: $scope.currentUser.username,
+          authorID: $scope.currentUser._id,
+          pageNumber: $scope.currentPageNumber,
+          tagNames: $scope.comment.tagNames,
+          tagRelPos: $scope.comment.tagRelPos,
+          tagRelCoord: $scope.comment.tagRelCoord,
+          tagColor: $scope.comment.tagColor,
+          annotationZones: $scope.annotationZones,
+          numOfAnnotationZones: $scope.annotationZones.length,
+          pdfId: $scope.pdfFile._id,
+          hasParent: false
+        }
+      };
+
+      $http.post("/slide-viewer/submitComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment submission successful!");
+
+                //TODO: reset everything
+              }
+
+              $scope.$broadcast('reloadTags');
+
+              $scope.writeCommentMode = false;
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+    };
+
+    $scope.deleteCommentById = function (id) {
+      var config = {
+          params: {
+              deleteId: id,
+              author: $scope.currentUser.username,
+              authorId: $scope.currentUser._id
+          }
+      };
+
+      $http.post("/slide-viewer/deleteComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment deletion successful!");
+              }
+              $scope.$broadcast('reloadTags');
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+    };
+
     $scope.submitComment = function (resultVarName) {
         var annZoneCheckResult = $scope.populateAnnotationZone();
         if(!annZoneCheckResult) {
@@ -150,6 +227,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             params: {
                 rawText: $scope.comment.rawText,
                 author: $scope.currentUser.username,
+                authorID: $scope.currentUser._id,
                 pageNumber: $scope.currentPageNumber,
                 tagNames: $scope.comment.tagNames,
                 tagRelPos: $scope.comment.tagRelPos,
@@ -157,7 +235,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 tagColor: $scope.comment.tagColor,
                 annotationZones: $scope.annotationZones,
                 numOfAnnotationZones: $scope.annotationZones.length,
-                pdfId: $scope.pdfFile._id
+                pdfId: $scope.pdfFile._id,
+                hasParent: false
             }
         };
 
@@ -189,6 +268,42 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             .error(function (data, status, headers, config) {
                 displayCommentSubmissionResponse("Error: Unexpected Server Response!");
             });
+    };
+
+    $scope.submitEdit = function (comment) {
+
+
+      var config = {
+          params: {
+              updateId: comment._id,
+              author: $scope.currentUser.username,
+              authorId: $scope.currentUser._id,
+              rawText: $scope.editRawText[$scope.editMode]
+          }
+      };
+
+      $http.post("/slide-viewer/updateComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment edit successful!");
+
+                $scope.comment.rawText = '';
+                $scope.setQuillSelection();
+              }
+
+              $scope.$broadcast('reloadTags');
+
+              $scope.writeCommentMode = false;
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
     };
 
     $scope.setQuillSelection = function(){
@@ -314,13 +429,25 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         }
     };
 
+    $scope.changeEditMode = function (id, bool) {
+      //$scope.finalEditRawText = "";
+      $scope.editRawText = [];
+      if(bool) {
+        $scope.editMode = id;
+        $scope.writeCommentMode = false;
+      }
+      else if($scope.editMode == id){
+        $scope.editMode = -1;
+      }
+    };
+
     $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
             //console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
 
-            $scope.comments = data.comments;
 
+            $scope.editMode = -1;
             for (var i in $scope.comments) {
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
@@ -328,6 +455,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
 
             }
+
+            $scope.comments = data.comments;
 
 
             $timeout(function () {
@@ -409,11 +538,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         if($scope.currentTab == 'pdf') {
 
                 //commented because we want to use own toolbar
-            ActionBarService.extraActionsMenu.push({
+          /*  ActionBarService.extraActionsMenu.push({
                 clickAction: $scope.switchCommentSubmissionDisplay,
                 title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
                 aTitle: 'Write a comment on this slide'
-            });
+            });*/
         }
     };
 
@@ -464,7 +593,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       }
     });
 
-
+    $scope.$watch("writeCommentMode", function (newValue, oldValue) {
+      if(newValue == true)
+        $scope.editMode = -1;
+    });
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
@@ -510,6 +642,17 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       //});
     };
 
+    $scope.setRawText = function(id,newText) {
+      $scope.editRawText[id] = newText;
+      $timeout(function () {
+          $scope.$apply();
+      });
+    };
+
+    /*$scope.$watch("editRawText", function (newValue, oldValue) {
+      console.log("REGISTERED CHANGE");
+    });*/
+
     $rootScope.safeApply = function(fn) {
             var phase = this.$root.$$phase;
             if(phase == '$apply' || phase == '$digest') {
@@ -519,6 +662,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             } else {
                 this.$apply(fn);
             }
+    };
+
+    $scope.removeFilterRawField = function (id) {
+      delete $scope.filtersRaw[id];
+      $scope.$broadcast('onFiltersRawChange');
     };
 
 });

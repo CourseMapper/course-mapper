@@ -27,14 +27,18 @@
         <br/>
     </div>
     <div class="box-footer">
-        <div ng-show="source.isAuthor && !source.isEditMode" class="replyControl">
-            <div class="editReplyButton">
+        <div class="replyControl">
+            <div style="float:left;">
+                <span>[{{source.start | msToTime}}] - [{{source.end | msToTime}}]</span>
+            </div>
+            <div class="editReplyButton" ng-show="source.isAuthor && !source.isEditMode">
                 <a ng-click="editAnnotation()" class="btn btn-primary btn-xs">EDIT</a>
             </div>
-            <div class="deleteReplyButton">
+            <div class="deleteReplyButton" ng-show="source.isAuthor && !source.isEditMode">
                 <a ng-click="deleteAnnotation()" class="btn btn-danger btn-xs">DELETE</a>
             </div>
         </div>
+        <br/>
         <div class="replyControl" ng-show="source.isEditMode">
             <div class="editReplyButton">
                 <a class="btn btn-primary btn-xs" ng-click="saveAnnotation()">SAVE</a>
@@ -47,7 +51,7 @@
             </div>
         </div>
         <div ng-hide="source.isEditMode" id="comments">
-            <a ng-click="toggle = !toggle">{{!toggle ? 'show comments' : 'hide comments'}}</a>
+            <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'}}</a>
             <article ng-show="toggle">
                 <div id="comment-box">
                     <input placeholder="Write a comment..." type="text" ng-model="commentText">

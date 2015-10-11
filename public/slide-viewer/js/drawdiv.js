@@ -268,9 +268,21 @@ function rescalingRects(rectClassName, tagClassName) {
     //console.log("Scaling factor: "+scalingFactor);
 
     for (var i = 0, len = allElements.length; i < len; i++) {
-        var coordAttr = $(allElements[i]).attr("data-relstartcoord").split(";");
-        var startXAttr = coordAttr[0] * scalingFactor;
-        var startYAttr = coordAttr[1] * scalingFactor;
+        var coordAttr;
+        var startXAttr;
+        var startYAttr;
+        if($(allElements[i]).attr("can-move")=="true"){
+          //coordAttr[0]=$(allElements[i]).position().top;
+          startYAttr=parseInt($(allElements[i]).css("top"))* scalingFactor;
+          startXAttr=parseInt($(allElements[i]).css("left"))* scalingFactor;
+
+        }
+        else{
+            coordAttr = $(allElements[i]).attr("data-relstartcoord").split(";");
+            startXAttr = coordAttr[0] * scalingFactor;
+            startYAttr = coordAttr[1] * scalingFactor;
+        }
+
         $(allElements[i]).attr("data-relstartcoord", startXAttr + ";" + startYAttr);
         $(allElements[i]).css('left', Math.round(startXAttr));
         $(allElements[i]).css('top', Math.round(startYAttr));

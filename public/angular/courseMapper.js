@@ -1555,7 +1555,7 @@ app.directive('movable', function () {
                     PDFJS.getDocument($scope.source).then(function (pdfDocument) {
                         pdfDocument.getPage($scope.pageToView).then(function (pdfPage) {
                             $scope.pdfPageView.setPdfPage(pdfPage);
-                            $scope.pdfPageView.draw();
+                            $scope.pdfPageView.draw().catch(function(){});
 
                             //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
@@ -1600,7 +1600,7 @@ app.directive('movable', function () {
                 $(window).resize(function () {
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                     $scope.pdfPageView.update($scope.scale, 0);
-                    $scope.pdfPageView.draw();
+                    $scope.pdfPageView.draw().catch(function(){});
                 });
 
                 $scope.$on('onPdfPageChange', function (event, pageNumber) {
@@ -2463,11 +2463,27 @@ app.filter('base64Decode', function() {
     }
 });
 
-app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;(function(){"use strict";angular.module("relativeDate",[]).value("now",null).value("relativeDateTranslations",{just_now:"just now",seconds_ago:"{{time}} seconds ago",a_minute_ago:"a minute ago",minutes_ago:"{{time}} minutes ago",an_hour_ago:"an hour ago",hours_ago:"{{time}} hours ago",a_day_ago:"yesterday",days_ago:"{{time}} days ago",a_week_ago:"a week ago",weeks_ago:"{{time}} weeks ago",a_month_ago:"a month ago",months_ago:"{{time}} months ago",a_year_ago:"a year ago",years_ago:"{{time}} years ago",over_a_year_ago:"over a year ago",seconds_from_now:"{{time}} seconds from now",a_minute_from_now:"a minute from now",minutes_from_now:"{{time}} minutes from now",an_hour_from_now:"an hour from now",hours_from_now:"{{time}} hours from now",a_day_from_now:"tomorrow",days_from_now:"{{time}} days from now",a_week_from_now:"a week from now",weeks_from_now:"{{time}} weeks from now",a_month_from_now:"a month from now",months_from_now:"{{time}} months from now",a_year_from_now:"a year from now",years_from_now:"{{time}} years from now",over_a_year_from_now:"over a year from now"}).filter("relativeDate",["$injector","now","relativeDateTranslations",function(a,b,c){var d,e;return d=a.has("$translate")?a.get("$translate"):{instant:function(a,b){return c[a].replace("{{time}}",b.time)}},e=function(a,b){return Math.round(Math.abs(a-b)/1e3)},function(a){var c,f,g,h,i,j,k,l,m;switch(j=b?b:new Date,a instanceof Date||(a=new Date(a)),f=null,h=60,g=60*h,c=24*g,l=7*c,i=30*c,m=365*c,f=e(j,a),f>c&&l>f&&(a=new Date(a.getFullYear(),a.getMonth(),a.getDate(),0,0,0),f=e(j,a)),k=function(b,c){var e;return e="just_now"===b?b:j>=a?""+b+"_ago":""+b+"_from_now",d.instant(e,{time:c})},!1){case!(30>f):return k("just_now");case!(h>f):return k("seconds",f);case!(2*h>f):return k("a_minute");case!(g>f):return k("minutes",Math.floor(f/h));case 1!==Math.floor(f/g):return k("an_hour");case!(c>f):return k("hours",Math.floor(f/g));case!(2*c>f):return k("a_day");case!(l>f):return k("days",Math.floor(f/c));case 1!==Math.floor(f/l):return k("a_week");case!(i>f):return k("weeks",Math.floor(f/l));case 1!==Math.floor(f/i):return k("a_month");case!(m>f):return k("months",Math.floor(f/i));case 1!==Math.floor(f/m):return k("a_year");default:return k("over_a_year")}}}])}).call(this);;app.filter('secondsToDateTime', [function() {
+app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('msToTime', function() {
+    return function msToTime(s) {
+        function addZ(n) {
+            return (n < 10 ? '0' : '') + n;
+        }
+
+        var ms = s % 1000;
+        s = (s - ms) / 1000;
+        var secs = s % 60;
+        s = (s - secs) / 60;
+        var mins = s % 60;
+        var hrs = (s - mins) / 60;
+        return addZ(hrs) + ':' + addZ(mins) + ':' + addZ(secs);
+    };
+});
+;(function(){"use strict";angular.module("relativeDate",[]).value("now",null).value("relativeDateTranslations",{just_now:"just now",seconds_ago:"{{time}} seconds ago",a_minute_ago:"a minute ago",minutes_ago:"{{time}} minutes ago",an_hour_ago:"an hour ago",hours_ago:"{{time}} hours ago",a_day_ago:"yesterday",days_ago:"{{time}} days ago",a_week_ago:"a week ago",weeks_ago:"{{time}} weeks ago",a_month_ago:"a month ago",months_ago:"{{time}} months ago",a_year_ago:"a year ago",years_ago:"{{time}} years ago",over_a_year_ago:"over a year ago",seconds_from_now:"{{time}} seconds from now",a_minute_from_now:"a minute from now",minutes_from_now:"{{time}} minutes from now",an_hour_from_now:"an hour from now",hours_from_now:"{{time}} hours from now",a_day_from_now:"tomorrow",days_from_now:"{{time}} days from now",a_week_from_now:"a week from now",weeks_from_now:"{{time}} weeks from now",a_month_from_now:"a month from now",months_from_now:"{{time}} months from now",a_year_from_now:"a year from now",years_from_now:"{{time}} years from now",over_a_year_from_now:"over a year from now"}).filter("relativeDate",["$injector","now","relativeDateTranslations",function(a,b,c){var d,e;return d=a.has("$translate")?a.get("$translate"):{instant:function(a,b){return c[a].replace("{{time}}",b.time)}},e=function(a,b){return Math.round(Math.abs(a-b)/1e3)},function(a){var c,f,g,h,i,j,k,l,m;switch(j=b?b:new Date,a instanceof Date||(a=new Date(a)),f=null,h=60,g=60*h,c=24*g,l=7*c,i=30*c,m=365*c,f=e(j,a),f>c&&l>f&&(a=new Date(a.getFullYear(),a.getMonth(),a.getDate(),0,0,0),f=e(j,a)),k=function(b,c){var e;return e="just_now"===b?b:j>=a?""+b+"_ago":""+b+"_from_now",d.instant(e,{time:c})},!1){case!(30>f):return k("just_now");case!(h>f):return k("seconds",f);case!(2*h>f):return k("a_minute");case!(g>f):return k("minutes",Math.floor(f/h));case 1!==Math.floor(f/g):return k("an_hour");case!(c>f):return k("hours",Math.floor(f/g));case!(2*c>f):return k("a_day");case!(l>f):return k("days",Math.floor(f/c));case 1!==Math.floor(f/l):return k("a_week");case!(i>f):return k("weeks",Math.floor(f/l));case 1!==Math.floor(f/i):return k("a_month");case!(m>f):return k("months",Math.floor(f/i));case 1!==Math.floor(f/m):return k("a_year");default:return k("over_a_year")}}}])}).call(this);;app.filter('secondsToDateTime', [function() {
     return function(seconds) {
         return new Date(1970, 0, 1).setSeconds(seconds);
     };
-}]);;app.
+}]);
+;app.
     controller('LinksController', function($scope, $rootScope, $http, $location,
                                            $sce, $compile, ActionBarService, $timeout,
                                            toastr
@@ -2884,6 +2900,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.comment = {};
 
+
+    $scope.finalEditRawText = "";
+    $scope.editRawText = [];
+
+    $scope.editMode = -1;
     $scope.orderType = false;
     $scope.orderBy = false;
     $scope.ascending = "true";
@@ -2908,6 +2929,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.tagColor = [];
 
     $scope.writeCommentMode = false;
+
+
 
     $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
         $scope.currentPageNumber = newSlideNumber;
@@ -2988,7 +3011,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             },
             color: color,
             pdfId: pdfId,
-            pdfPageNumber: pdfPageNumber
+            pdfPageNumber: pdfPageNumber,
+            author: $scope.currentUser.username,
+            authorID: $scope.currentUser._id
         };
 
         /*var oldText;
@@ -3019,6 +3044,74 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     };
 
+    $scope.submitReply = function (resultVarName) {
+      var config = {
+        params: {
+          rawText: $scope.comment.rawText,
+          author: $scope.currentUser.username,
+          authorID: $scope.currentUser._id,
+          pageNumber: $scope.currentPageNumber,
+          tagNames: $scope.comment.tagNames,
+          tagRelPos: $scope.comment.tagRelPos,
+          tagRelCoord: $scope.comment.tagRelCoord,
+          tagColor: $scope.comment.tagColor,
+          annotationZones: $scope.annotationZones,
+          numOfAnnotationZones: $scope.annotationZones.length,
+          pdfId: $scope.pdfFile._id,
+          hasParent: false
+        }
+      };
+
+      $http.post("/slide-viewer/submitComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment submission successful!");
+
+                //TODO: reset everything
+              }
+
+              $scope.$broadcast('reloadTags');
+
+              $scope.writeCommentMode = false;
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+    };
+
+    $scope.deleteCommentById = function (id) {
+      var config = {
+          params: {
+              deleteId: id,
+              author: $scope.currentUser.username,
+              authorId: $scope.currentUser._id
+          }
+      };
+
+      $http.post("/slide-viewer/deleteComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment deletion successful!");
+              }
+              $scope.$broadcast('reloadTags');
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+    };
+
     $scope.submitComment = function (resultVarName) {
         var annZoneCheckResult = $scope.populateAnnotationZone();
         if(!annZoneCheckResult) {
@@ -3032,6 +3125,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             params: {
                 rawText: $scope.comment.rawText,
                 author: $scope.currentUser.username,
+                authorID: $scope.currentUser._id,
                 pageNumber: $scope.currentPageNumber,
                 tagNames: $scope.comment.tagNames,
                 tagRelPos: $scope.comment.tagRelPos,
@@ -3039,7 +3133,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 tagColor: $scope.comment.tagColor,
                 annotationZones: $scope.annotationZones,
                 numOfAnnotationZones: $scope.annotationZones.length,
-                pdfId: $scope.pdfFile._id
+                pdfId: $scope.pdfFile._id,
+                hasParent: false
             }
         };
 
@@ -3071,6 +3166,42 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             .error(function (data, status, headers, config) {
                 displayCommentSubmissionResponse("Error: Unexpected Server Response!");
             });
+    };
+
+    $scope.submitEdit = function (comment) {
+
+
+      var config = {
+          params: {
+              updateId: comment._id,
+              author: $scope.currentUser.username,
+              authorId: $scope.currentUser._id,
+              rawText: $scope.editRawText[$scope.editMode]
+          }
+      };
+
+      $http.post("/slide-viewer/updateComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment edit successful!");
+
+                $scope.comment.rawText = '';
+                $scope.setQuillSelection();
+              }
+
+              $scope.$broadcast('reloadTags');
+
+              $scope.writeCommentMode = false;
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
     };
 
     $scope.setQuillSelection = function(){
@@ -3196,13 +3327,25 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     };
 
+    $scope.changeEditMode = function (id, bool) {
+      //$scope.finalEditRawText = "";
+      $scope.editRawText = [];
+      if(bool) {
+        $scope.editMode = id;
+        $scope.writeCommentMode = false;
+      }
+      else if($scope.editMode == id){
+        $scope.editMode = -1;
+      }
+    };
+
     $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
             //console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
 
-            $scope.comments = data.comments;
 
+            $scope.editMode = -1;
             for (var i in $scope.comments) {
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
@@ -3210,6 +3353,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
             }
+
+            $scope.comments = data.comments;
 
 
             $timeout(function () {
@@ -3291,11 +3436,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         if($scope.currentTab == 'pdf') {
 
                 //commented because we want to use own toolbar
-            ActionBarService.extraActionsMenu.push({
+          /*  ActionBarService.extraActionsMenu.push({
                 clickAction: $scope.switchCommentSubmissionDisplay,
                 title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
                 aTitle: 'Write a comment on this slide'
-            });
+            });*/
         }
     };
 
@@ -3346,7 +3491,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       }
     });
 
-
+    $scope.$watch("writeCommentMode", function (newValue, oldValue) {
+      if(newValue == true)
+        $scope.editMode = -1;
+    });
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
@@ -3392,6 +3540,17 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       //});
     };
 
+    $scope.setRawText = function(id,newText) {
+      $scope.editRawText[id] = newText;
+      $timeout(function () {
+          $scope.$apply();
+      });
+    };
+
+    /*$scope.$watch("editRawText", function (newValue, oldValue) {
+      console.log("REGISTERED CHANGE");
+    });*/
+
     $rootScope.safeApply = function(fn) {
             var phase = this.$root.$$phase;
             if(phase == '$apply' || phase == '$digest') {
@@ -3401,6 +3560,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             } else {
                 this.$apply(fn);
             }
+    };
+
+    $scope.removeFilterRawField = function (id) {
+      delete $scope.filtersRaw[id];
+      $scope.$broadcast('onFiltersRawChange');
     };
 
 });
