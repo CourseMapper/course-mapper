@@ -3468,6 +3468,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             }
     };
 
+    $scope.removeFilterRawField = function (id) {
+      delete $scope.filtersRaw[id];
+      $scope.$broadcast('onFiltersRawChange');
+    };
+
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;
