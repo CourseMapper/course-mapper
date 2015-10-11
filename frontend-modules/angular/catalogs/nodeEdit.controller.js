@@ -153,7 +153,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
 
         $scope.isLoading = true;
 
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -171,7 +171,6 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                 }
 
             }).success(function (data, status, headers, config) {
-                console.log(data);
 
                 if(data.result) {
                     data.treeNode['resources'] = [];
@@ -217,6 +216,10 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
     };
 
     $scope.cancel = function(){
+        if($scope.upload){
+            $scope.upload.abort();
+        }
+
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });

@@ -268,7 +268,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         }
 
         $scope.isLoading = true;
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -303,6 +303,10 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
     $scope.cancel = function(){
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+
+        if($scope.upload){
+            $scope.upload.abort();
+        }
     };
 });
 ;
@@ -1189,7 +1193,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.isLoading = true;
 
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -1207,7 +1211,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
 
             }).success(function (data, status, headers, config) {
-                console.log(data);
 
                 if(data.result) {
                     data.treeNode['resources'] = [];
@@ -1253,6 +1256,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.cancel = function(){
+        if($scope.upload){
+            $scope.upload.abort();
+        }
+
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });
