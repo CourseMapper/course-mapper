@@ -16,6 +16,7 @@
 }
 input#searchInput{
   height: 34px;
+  margin-top: 5px;
 }
 
 #tagErrorList{

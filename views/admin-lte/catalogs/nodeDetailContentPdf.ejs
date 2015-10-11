@@ -85,19 +85,18 @@
             </div>
 
             <div class="commentZoneList">
-                    <h4>Comments</h4>
-
-                    <div class="row">
-                      <div class="col-md-6"><input id="searchInput" placeholder="Search..." class="col-md-12" ng-model="rawSearchTerm"></input></div>
-                        <div class="controls col-md-6">
-                            <div class="nopadding">
-                                <select id="orderTypeSelect"
-                                        placeholder = "bla"
-                                        ng-model="orderType"
-                                        ng-init="orderType = orderType || orderingOptions[0]"
-                                        ng-options="item as item.name for item in orderingOptions"
-                                        class="form-control">
-                                </select>
+                      <div class="panel panel-default">
+                        <div class="panel-body">
+                            <button class="col-xs-4 btn btn-primary btn-md" ng-click="createAnnotation()">Annotate</button>
+                            <div class="col-xs-8">
+                              <select id="orderTypeSelect"
+                                      placeholder = "bla"
+                                      ng-model="orderType"
+                                      ng-init="orderType = orderType || orderingOptions[0]"
+                                      ng-options="item as item.name for item in orderingOptions"
+                                      class="form-control">
+                              </select>
+                                <input id="searchInput" placeholder="Search..." class="form-control" ng-model="rawSearchTerm"></input>
                             </div>
                         </div>
                     </div>
