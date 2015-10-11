@@ -62,6 +62,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             };
             $scope.annotations.unshift(defaultAnnotation);
             $scope.hideSearch = true;
+            $scope.query = '';
         };
 
         $scope.seekPosition = function(annotation) {
