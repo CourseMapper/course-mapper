@@ -279,7 +279,6 @@ function createMovableAnnZone() {
   addAnnotationZoneElement(element);
 };
 
-
 /*
 moved to controller, and used model
 function switchCommentSubmissionDisplay() {
