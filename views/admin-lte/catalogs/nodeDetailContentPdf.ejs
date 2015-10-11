@@ -125,17 +125,17 @@
                                         ></comment>
                                 <div ng-hide="editMode != comment._id">
                                   You are editing your post:
-                                  <div id="rawText" name="rawText"
+                                  <div id="editQuill_{{comment._id}}" name="editQuill"
                                        ng-model="comment.rawText"
                                        quill
                                        type="pdf-comment"
                                        annotation-zone-action="annotationZoneAction()">
                                   </div>
-                                  <button class="btn btn-primary"> Add Comment
+                                  <button class="btn btn-primary"> Submit
                                       <spinner show="isLoading"></spinner>
                                   </button>
 
-                                  <button type="button" class="btn btn-warning" ng-click="editMode=-1">Cancel</button>
+                                  <button type="button" class="btn btn-warning" ng-click="changeEditMode(comment._id, false)">Cancel</button>
                                 </div>
 
                             </div>
