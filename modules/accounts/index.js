@@ -5,6 +5,8 @@ var passport = require('passport');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:server');
 
+var appRoot = require('app-root-path');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 var crypto = require('crypto');
 
 function hash(passwd, salt) {
@@ -69,8 +71,10 @@ account.prototype.addUser = function(errorCallback, params, done){
 
     var user = new User({
         username: params.username,
-        email: params.email,
+        email: params.email
     });
+
+    user.displayName = user.username;
 
     if(params.role)
         user.role = params.role;
@@ -254,8 +258,17 @@ account.prototype.getUser = function(error, params, success){
         .exec(function(err, doc){
             if(err)
                 error(err);
-            else
-                success(doc);
+            else {
+                if(doc){
+                    if(!doc.displayName)
+                        doc.displayName = doc.username;
+
+                    success(doc);
+                }
+                else {
+                    error(helper.createError404('User'));
+                }
+            }
         });
 };
 

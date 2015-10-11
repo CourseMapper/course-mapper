@@ -34,7 +34,7 @@ courseDiscussion.prototype.getCourseDiscussions = function(error, courseId, succ
     })
         .sort({dateAdded: -1})
         .populate('discussion')
-        .populate('createdBy', 'username')
+        .populate('createdBy', 'username displayName')
         .exec(function(err, docs) {
             if (!err){
                 success(docs);
@@ -50,7 +50,7 @@ courseDiscussion.prototype.getCourseDiscussion = function(error, pId, success){
     })
         .sort({dateAdded: -1})
         .populate('discussion')
-        .populate('createdBy', 'username')
+        .populate('createdBy', 'username displayName')
         .exec(function(err, docs) {
             if (!err){
                 success(docs);
@@ -79,7 +79,7 @@ courseDiscussion.prototype.getReplies = function(error, parentId, success){
         ]
     })
         .sort({dateAdded: -1})
-        .populate('createdBy', 'username')
+        .populate('createdBy', 'username displayName')
         .exec(function(err, docs) {
         if (!err){
             var cats = convertToDictionary(docs);
@@ -136,21 +136,6 @@ courseDiscussion.prototype.editPost = function(error, params, success){
         }
     });
 
-    /*Posts.findOneAndUpdate(
-        ,
-        {
-            $set: {
-                title: params.title,
-                content: params.content
-            }
-        },
-        {safe: true, upsert: true},
-        function(err, doc){
-            if(err)
-                error(err);
-            else
-                success(doc);
-        });*/
 };
 
 courseDiscussion.prototype.deletePost = function(error, params, success){

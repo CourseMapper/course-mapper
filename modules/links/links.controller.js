@@ -27,7 +27,7 @@ NodeLinks.prototype.getNodeLinks = function(error, nodeId, success){
     })
         .sort({dateAdded: -1})
         .populate('link')
-        .populate('createdBy', 'username')
+        .populate('createdBy', 'username displayName')
         .exec(function(err, docs) {
             if (err){
                 error(err);
@@ -46,7 +46,7 @@ NodeLinks.prototype.getNodeLink = function(error, pId, success){
     })
         .sort({dateAdded: -1})
         .populate('link')
-        .populate('createdBy', 'username')
+        .populate('createdBy', 'username displayName')
         .exec(function(err, doc) {
             if (err) {
                 error(err);
