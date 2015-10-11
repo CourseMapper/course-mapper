@@ -71,6 +71,24 @@ router.post('/submitComment/', function(req, res, next){
     comment.handleSubmitPost(req, res, next);
 });
 
+router.post('/deleteComment/', function(req, res, next){
+    var comment = new Comment();
+    comment.handleDeletePost(req, res, next);
+});
+
+router.post('/updateComment/', function(req, res, next){
+    var comment = new Comment();
+    comment.handleUpdatePost(req, res, next);
+});
+
+router.post('/updateAnnZone/', function(req, res, next){
+    var annZone = new AnnZones();
+    annZone.handleUpdatePost(req, res, next);
+});
+
+
+
+
 
 
 /*router.post('/submitTag/', function(req, res, next){
@@ -153,6 +171,7 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
         _id:  data[i]._id,
+        id:  data[i].id,
         author: data[i].author,
         date: data[i].dateOfCreation,
         slide: data[i].originSlide,
@@ -172,6 +191,8 @@ router.get('/disAnnZones/', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
+        _id:  data[i]._id,
+        id:  data[i].id,
         name: data[i].annotationZoneName,
         relPosX: data[i].relativeCoordinates.X,
         relPosY: data[i].relativeCoordinates.Y,
@@ -194,6 +215,8 @@ router.get('/disAnnZones/:pdfId/:pdfPageNumber', function(req, res, next){
     var modifiedData = new Array(data.length);
     for(var i=0; i<data.length; i++){
       modifiedData[i] = {
+        _id:  data[i]._id,
+        id:  data[i].id,
         name: data[i].annotationZoneName,
         relPosX: data[i].relativeCoordinates.X,
         relPosY: data[i].relativeCoordinates.Y,

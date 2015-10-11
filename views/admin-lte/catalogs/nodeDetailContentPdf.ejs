@@ -106,9 +106,6 @@
                     <div id="commentList" class="row">
 
                         <div class="replies" ng-repeat="comment in comments" ng-cloak>
-                            <div class="col-xs-1">
-                                <voting vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>
-                            </div>
                             <div class="col-xs-11">
                                 <comment posted-by="{{comment.author}}"
                                          post-id="{{comment._id}}"
@@ -118,10 +115,14 @@
                                          show-control="true"
                                          show-reply-button="true"
                                          show-delete-button="true"
+                                         delete-action="deleteCommentById(comment.id)"
                                          show-edit-button="true"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                         ></comment>
+                            </div>
+                            <div class="col-xs-1">
+                                <voting vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>
                             </div>
                         </div>
                     </div>

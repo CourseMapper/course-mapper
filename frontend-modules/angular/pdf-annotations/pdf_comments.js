@@ -180,6 +180,33 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           });
     };
 
+    $scope.deleteCommentById = function (id) {
+      var config = {
+          params: {
+              deleteId: id,
+              author: $scope.currentUser.username,
+              authorId: $scope.currentUser._id
+          }
+      };
+
+      $http.post("/slide-viewer/deleteComment/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Comment deletion successful!");
+              }
+              $scope.$broadcast('reloadTags');
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+    };
+
     $scope.submitComment = function (resultVarName) {
         var annZoneCheckResult = $scope.populateAnnotationZone();
         if(!annZoneCheckResult) {
@@ -361,7 +388,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
-            //console.log('COMMENTS UPDATED');
+            console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
 
             $scope.comments = data.comments;
