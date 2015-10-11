@@ -124,7 +124,8 @@ Comment.prototype.updateAnnotation = function(err,params,done) {
   if(typeof params.updateId != 'undefined') {
     this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
       if(success) {
-        var temp = this.convertRawText;
+        console.log("Confirmed ownership");
+        var temp = Comment.prototype.convertRawText;
 
         //var htmlEscapedRawText = validator.escape(params.rawText);
         var htmlEscapedRawText = params.rawText;
@@ -135,12 +136,12 @@ Comment.prototype.updateAnnotation = function(err,params,done) {
           };
 
           // save it to db
-          annotationsPDF.update({_id: params.Id}, updatedAnnotationsPDF, function (errBool) {
+          AnnotationsPDF.update({_id: params.Id}, updatedAnnotationsPDF, function (errBool) {
             if (errBool) {
               err("Server Error: Unable to update annotation");
             } else {
               // call success callback
-              done(annotationsPDF);
+              done();
             }
           });
         });
@@ -347,9 +348,9 @@ Comment.prototype.handleUpdatePost = function(req, res, next) {
             return res.status(200).send({result:false, error: err});
         },
         req.query,
-        function done(annotationsPDF) {
+        function done() {
             // todo: implement flash
-            return res.status(200).send({result: true, annotationsPDF: annotationsPDF});
+            return res.status(200).send({result: true});
             // todo: implement redirect to previous screen.
         }
     );
