@@ -3356,11 +3356,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         if($scope.currentTab == 'pdf') {
 
                 //commented because we want to use own toolbar
-            ActionBarService.extraActionsMenu.push({
+          /*  ActionBarService.extraActionsMenu.push({
                 clickAction: $scope.switchCommentSubmissionDisplay,
                 title: '<i class="ionicons ion-edit"></i> &nbsp;ADD COMMENT',
                 aTitle: 'Write a comment on this slide'
-            });
+            });*/
         }
     };
 

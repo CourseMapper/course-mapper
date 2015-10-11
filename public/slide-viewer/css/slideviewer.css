@@ -24,6 +24,14 @@ input#searchInput{
   padding-bottom: 10px;
 }
 
+.annoZonesNote{
+  font-size: 9pt;
+  font-weight: bold;
+  color: #333;
+  text-align: left;
+  float:left;
+}
+
 #tagErrorList{
   font-size: 9pt;
   font-weight: bold;

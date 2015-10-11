@@ -50,7 +50,7 @@
                             <div id="annotationZoneSubmitList">
                             </div>
 
-                            <div id="annZoneList"
+                           <div id="annZoneList"
                                  ng-controller="AnnotationZoneListController">
                                 <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
                                     <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
@@ -58,31 +58,33 @@
                                     </div>
                                 </div>
 
-                                <div>
-                                  <div id="replyAnno" class="replyControl">
-                                      <div class="editReplyButton">
-                                          <a class="btn btn-primary btn-xs">SAVE</a>
-                                      </div>
-                                      <div class="deleteReplyButton" >
-                                          <a class="btn btn-danger btn-xs">CANCEL</a>
-                                      </div>
-                                  </div>
+                                <!--<div>
+
                                   <label> Currently edited annotation zones: </label>
                                   <div ng-repeat="item in tagNamesList">
                                     #{{item}} : <button type="button" class="btn btn-primary" ng-click="addReference('#'+ item);"> Add reference </button>
                                   </div>
-                                </div>
+                                </div>-->
 
-                                <div>
+                                <!--<div>
                                   <label> Already existing annotation zones: </label>
                                   <div ng-repeat="item in annZones">
                                     {{item.name}} : <button type="button" class="btn btn-primary" ng-click="addReference(item.name);"> Add reference </button>
                                   </div>
-                                </div>
+                                </div>-->
 
                             </div>
-
-                            <div class="control-group">
+                            <div id="replyAnno" class="replyControl">
+                                <div class="annoZonesNote">Click on the Annotation Zone to add a reference
+                                </div>
+                                <div class="editReplyButton">
+                                    <a class="btn btn-primary btn-xs" ng-click="submitComment()">SAVE</a>
+                                </div>
+                                <div class="deleteReplyButton" >
+                                    <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
+                                </div>
+                            </div>
+                            <!--<div class="control-group">
                                 <div class="controls">
                                     <br class="clear">
                                     <button class="btn btn-primary"> Add Comment
@@ -91,7 +93,7 @@
 
                                     <button type="button" class="btn btn-warning" ng-click="writeCommentMode=false">Cancel</button>
                                 </div>
-                            </div>
+                            </div>-->
 
                         </fieldset>
                     </form>
