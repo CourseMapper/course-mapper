@@ -28,6 +28,12 @@ var annotationZonesPDFSchema = new mongoose.Schema({
     color: {
       type: String
     },
+    author: {
+        type: String
+    },
+    authorID: {
+        type: String
+    },
     pdfId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true

@@ -9,15 +9,61 @@ function Comment(){
 }
 
 Comment.prototype.submitAnnotation = function(err, params, done){
+  if(typeof params.hasParent == 'undefined') {
+    err("Server Error: Missing hasParent element");
+  }
+  else {
+    params.hasParent = (params.hasParent === "true");
+    if(params.hasParent == false) {
+      this.submitFirstLevelAnnotation(err,params,done);
+    }
+    else {
+      this.submitReplyAnnotation(err,params,done);
+    }
+  }
+};
+
+
+//TODO: Temporary reply function. Later when replies have more functionality maybe merge with submitFirstLevelAnnotation
+Comment.prototype.submitReplyAnnotation = function(err, params,done){
+  var temp = this.convertRawText;
+
+  //var htmlEscapedRawText = validator.escape(params.rawText);
+  var htmlEscapedRawText = params.rawText;
+  temp(htmlEscapedRawText,function(renderedText){
+    var annotationsPDF = new AnnotationsPDF({
+      rawText: htmlEscapedRawText,
+      renderedText: renderedText,
+      author: params.author,
+      authorID: params.authorID,
+      pdfId: params.pdfId,
+      pdfPageNumber: params.pageNumber,
+      hasParent: params.hasParent,
+      parentId: params.parentId
+    });
+
+    // save it to db
+    annotationsPDF.save(function (errBool) {
+      if (errBool) {
+        err("Server Error: Unable to store annotation");
+      } else {
+        // call success callback
+        done(annotationsPDF);
+      }
+    });
+  });
+};
+
+Comment.prototype.submitFirstLevelAnnotation = function(err, params,done){
   var temp = this.convertRawText;
 
   var annZones = [];
+  //Small fix to avoid problems arising from empty annZone lists
   if(params.numOfAnnotationZones==1)
     annZones[0] = params.annotationZones;
   else
     annZones = params.annotationZones;
 
-  //console.log(err(""));
   this.submitAllTagsObject(err,annZones,params.pdfId,function(completed){
     if(completed){
       //var htmlEscapedRawText = validator.escape(params.rawText);//TODO: Put back in when whitelisting is complete
@@ -27,18 +73,18 @@ Comment.prototype.submitAnnotation = function(err, params, done){
           rawText: htmlEscapedRawText,
           renderedText: renderedText,
           author: params.author,
+          authorID: params.authorID,
           pdfId: params.pdfId,
-          pdfPageNumber: params.pageNumber
+          pdfPageNumber: params.pageNumber,
+          hasParent: params.hasParent
         });
 
-        //console.log(this.convertRawText(params.rawText));
 
 
         // save it to db
         annotationsPDF.save(function (errBool) {
             if (errBool) {
                 err("Server Error: Unable to store annotation");
-                //errorCallback(err);
             } else {
                 // call success callback
 
@@ -49,8 +95,93 @@ Comment.prototype.submitAnnotation = function(err, params, done){
         });
       }
       else{
-        err("Server Error: Unable to story one or more annotation zones");
+        err("Server Error: Unable to store one or more annotation zones");
       }
+  });
+};
+
+
+Comment.prototype.deleteAnnotation = function(err,params,done){
+  if(typeof params.deleteId != 'undefined') {
+    this.checkOwnership(params.deleteId, params.author, params.authorId, function(success) {
+      if(success) {
+        AnnotationsPDF.findOne({ _id: params.deleteId }).remove().exec();
+        done();
+      }
+      else {
+        err("Server Error: Unable to delete annotation since access was denied or the entry was not found");
+      }
+    });
+  }
+  else {
+    err("Server Error: Unable to delete annotation due to invalid request");
+  }
+};
+
+
+
+Comment.prototype.updateAnnotation = function(err,params,done) {
+  if(typeof params.updateId != 'undefined') {
+    this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
+      if(success) {
+        console.log("Confirmed ownership");
+        var temp = Comment.prototype.convertRawText;
+
+        //var htmlEscapedRawText = validator.escape(params.rawText);
+        var htmlEscapedRawText = params.rawText;
+        temp(htmlEscapedRawText,function(renderedText){
+          var updatedAnnotationsPDF = {
+            rawText: htmlEscapedRawText,
+            renderedText: renderedText
+          };
+
+          // save it to db
+          AnnotationsPDF.update({_id: params.Id}, updatedAnnotationsPDF, function (errBool) {
+            if (errBool) {
+              err("Server Error: Unable to update annotation");
+            } else {
+              // call success callback
+              done();
+            }
+          });
+        });
+      }
+      else {
+        err("Server Error: Unable to update annotation since access was denied or the entry was not found");
+      }
+    });
+  }
+  else {
+    err("Server Error: Unable to update annotation due to invalid request");
+  }
+};
+
+Comment.prototype.checkOwnership = function(id,author,authorId,callback) {
+  this.getCommentById(id, function(success,data) {
+    if(success == true) {
+      if((author == data.author)&&(authorId == data.authorID)) {
+        callback(true);
+      }
+      else {
+        callback(false);
+      }
+    }
+    else {
+      callback(false);
+    }
+  });
+};
+
+Comment.prototype.getCommentById = function(id, callback) {
+  AnnotationsPDF.findOne({
+    _id: id
+  }, function (err, data) {
+    if(err) {
+      callback(false, data);
+    }
+    else {
+      callback(true, data);
+    }
   });
 };
 
@@ -190,6 +321,36 @@ Comment.prototype.handleSubmitPost = function(req, res, next) {
         function done(annotationsPDF) {
             // todo: implement flash
             return res.status(200).send({result: true, annotationsPDF: annotationsPDF});
+            // todo: implement redirect to previous screen.
+        }
+    );
+};
+
+Comment.prototype.handleDeletePost = function(req, res, next) {
+    //console.log(req);
+    this.deleteAnnotation(
+        function error(err){
+            return res.status(200).send({result:false, error: err});
+        },
+        req.query,
+        function done() {
+            // todo: implement flash
+            return res.status(200).send({result: true});
+            // todo: implement redirect to previous screen.
+        }
+    );
+};
+
+Comment.prototype.handleUpdatePost = function(req, res, next) {
+    //console.log(req);
+    this.updateAnnotation(
+        function error(err){
+            return res.status(200).send({result:false, error: err});
+        },
+        req.query,
+        function done() {
+            // todo: implement flash
+            return res.status(200).send({result: true});
             // todo: implement redirect to previous screen.
         }
     );

@@ -32,7 +32,95 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
   });
 };
 
-//TODO: Unify the two following functions
+AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
+  if(typeof params.updateId != 'undefined') {
+    this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
+      if(success) {
+        AnnotationZonesPDF.findOne({
+            id: params.updateId
+          },
+          function (err, data) {
+            if(!err) {
+              this.getAnnotationZonesById(params.pdfId, function(completed,data2){
+                if(completed) {
+                  var oldTagList = data2;
+                  var currentTag = params.updatedAnnZone;
+                  if(!validateTagObject(currentTag,oldTagList))
+                    err('Server Error: Validation failed for updating of annotation zone');
+                  else {
+                    var updatedAnnotationZonePDF = {
+                      annotationZoneName: currentTag.annotationZoneName,
+                      relativeCoordinates: {
+                          X: currentTag.relativeCoordinates.X,
+                          Y: currentTag.relativeCoordinates.Y
+                      },
+                      relativeDimensions: {
+                          X: currentTag.relativeDimensions.X,
+                          Y: currentTag.relativeDimensions.Y
+                      },
+                      color: currentTag.color
+                    };
+
+                    // save it to db
+                    annotationZonePDF.update({id: params.updateId}, updatedAnnotationZonePDF,function (err) {
+                        if (err) {
+                            err('Server Error: Unable to update annotation zone');
+                        } else {
+                            done(annotationZonePdf);
+                        }
+                    });
+                  }
+                }
+                else {
+                  err('Server Error: Unable to access annotation zone');
+                }
+              });
+            }
+            else {
+              err('Server Error: Unable to access annotation zone');
+            }
+          }
+        );
+      }
+      else {
+        err("Server Error: Unable to update annotation zone since access was denied or the entry was not found");
+      }
+    });
+  }
+  else {
+    err("Server Error: Unable to update annotation due to invalid request");
+  }
+};
+
+AnnZones.prototype.checkOwnership = function(id,author,authorId,callback) {
+  this.getAnnZoneById(params.id, function(success,data) {
+    if(success) {
+      if((author == data.author)&&(authorId == data.authorId)) {
+        callback(true);
+      }
+      else {
+        callback(false);
+      }
+    }
+    else {
+      callback(false);
+    }
+  });
+};
+
+AnnZones.prototype.getAnnZoneById = function(id,callback) {
+  AnnotationZonesPDF.findOne({
+    id: id
+  }, function (err, data) {
+    if(err) {
+      callback(false, data);
+    }
+    else {
+      callback(true, data);
+    }
+  });
+};
+
 /*function submitSingleTag(tagList, pageNumber, err, restList, mainCallback, done) {
   //console.log(tagList);
   var annotationZonePDF = new AnnotationZonesPDF({
@@ -46,7 +134,7 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
       Y: tagList[2].split(";")[1]
     },
     color: tagList[3],
-    pdfId : 1, //TODO: Adapt later
+    pdfId : 1,
     pdfPageNumber: pageNumber
   });
 
@@ -79,7 +167,7 @@ function submitSingleTagLast(tagList,pageNumber , mainCallback) {
       Y: tagList[2].split(";")[1]
     },
     color: tagList[3],
-    pdfId : 1, //TODO: Adapt later
+    pdfId : 1,
     pdfPageNumber: pageNumber
   });
 
@@ -234,7 +322,7 @@ function nameIsAvailable(name,tagList) {
 };*/
 
 
-AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
+/*AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
     //console.log(req);
     this.submitAnnotationZone(
         function error(err){
@@ -244,6 +332,19 @@ AnnZones.prototype.handleZoneSubmitPost = function(req, res, next) {
         function done(annotationZonePDF) {
             return res.redirect('/slide-viewer/');
             // todo: implement redirect to previous screen.
+        }
+    );
+};*/
+
+//TODO: finish
+AnnZones.prototype.handleUpdatePost = function(req, res, next) {
+    this.updateAnnotationZone(
+        function error(err){
+            return res.status(200).send({result:false, error: err});
+        },
+        req.query,
+        function done(annotationsPDF) {
+            return res.status(200).send({result: true, annotationsPDF: annotationsPDF});
         }
     );
 };
