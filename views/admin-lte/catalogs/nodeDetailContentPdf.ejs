@@ -18,9 +18,24 @@
             <div class="annotation-wrapper">
 
                 <!--<button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>-->
-
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                      <button class="col-xs-4 btn btn-primary btn-md"  ng-click="switchCommentSubmissionDisplay()">Annotate</button>
+                      <div class="col-xs-8">
+                        <select id="orderTypeSelect"
+                                placeholder = "bla"
+                                ng-model="orderType"
+                                ng-init="orderType = orderType || orderingOptions[0]"
+                                ng-options="item as item.name for item in orderingOptions"
+                                class="form-control">
+                        </select>
+                          <input id="searchInput" placeholder="Search..." class="form-control" ng-model="rawSearchTerm"></input>
+                      </div>
+                  </div>
+              </div>
                 <div id="commentSubmissionDiv" ng-show="writeCommentMode">
                     <form name="commentForm" ng-submit="submitComment()">
+
                         <fieldset>
                             <div class="control-group">
                                     <div id="rawText" name="rawText"
@@ -44,6 +59,14 @@
                                 </div>
 
                                 <div>
+                                  <div id="replyAnno" class="replyControl">
+                                      <div class="editReplyButton">
+                                          <a class="btn btn-primary btn-xs">SAVE</a>
+                                      </div>
+                                      <div class="deleteReplyButton" >
+                                          <a class="btn btn-danger btn-xs">CANCEL</a>
+                                      </div>
+                                  </div>
                                   <label> Currently edited annotation zones: </label>
                                   <div ng-repeat="item in tagNamesList">
                                     #{{item}} : <button type="button" class="btn btn-primary" ng-click="addReference('#'+ item);"> Add reference </button>
@@ -85,21 +108,7 @@
             </div>
 
             <div class="commentZoneList">
-                      <div class="panel panel-default">
-                        <div class="panel-body">
-                            <button class="col-xs-4 btn btn-primary btn-md" ng-click="createAnnotation()">Annotate</button>
-                            <div class="col-xs-8">
-                              <select id="orderTypeSelect"
-                                      placeholder = "bla"
-                                      ng-model="orderType"
-                                      ng-init="orderType = orderType || orderingOptions[0]"
-                                      ng-options="item as item.name for item in orderingOptions"
-                                      class="form-control">
-                              </select>
-                                <input id="searchInput" placeholder="Search..." class="form-control" ng-model="rawSearchTerm"></input>
-                            </div>
-                        </div>
-                    </div>
+
                     <div>
                       <label id="activeFilterLabel" ng-bind="activeFilterString"></label>
                       <button class="btn btn-white btn-link" ng-click="removeActiveFilters();" style="color:black;">X</button>
@@ -122,9 +131,7 @@
                                          author-click-action="authorLabelClick(comment.author)"
                                         ></comment>
                             </div>
-                            <div class="col-xs-1">
-                                <voting vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>
-                            </div>
+                            <voting class="col-xs-1" vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>
                         </div>
                     </div>
                 </div>
