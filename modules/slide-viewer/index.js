@@ -135,7 +135,7 @@ Comment.prototype.updateAnnotation = function(err,params,done) {
           };
 
           // save it to db
-          annotationsPDF.update({id: params.Id}, updatedAnnotationsPDF, function (errBool) {
+          annotationsPDF.update({_id: params.Id}, updatedAnnotationsPDF, function (errBool) {
             if (errBool) {
               err("Server Error: Unable to update annotation");
             } else {
