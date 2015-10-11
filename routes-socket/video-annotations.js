@@ -10,7 +10,7 @@ module.exports = function(io) {
         if (!socket.request ||
             !socket.request.session ||
             !socket.request.session.passport) {
-            throw new Error('Cannot authenticate socket session withour passing a valid session.');
+            throw new Error('Cannot authenticate socket connection without passing a valid session.');
         }
         var user = socket.request.session.passport.user;
         var getAnnotationsAsync = async(function(videoId) {
