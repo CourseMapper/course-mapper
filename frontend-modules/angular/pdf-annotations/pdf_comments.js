@@ -3,7 +3,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.comment = {};
 
 
-    $scope.editRawText = "";
+    $scope.finalEditRawText = "";
+    $scope.editRawText = [];
 
     $scope.editMode = -1;
     $scope.orderType = false;
@@ -270,17 +271,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.submitEdit = function (comment) {
-      $timeout(function () {
-          $scope.$apply();
-      });
 
-      console.log("SUBMITTING: " + $scope.editRawText);
+
       var config = {
           params: {
               updateId: comment._id,
               author: $scope.currentUser.username,
               authorId: $scope.currentUser._id,
-              rawText: $scope.editRawText
+              rawText: $scope.editRawText[$scope.editMode]
           }
       };
 
@@ -432,7 +430,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.changeEditMode = function (id, bool) {
-      $scope.editRawText = "";
+      //$scope.finalEditRawText = "";
+      $scope.editRawText = [];
       if(bool) {
         $scope.editMode = id;
         $scope.writeCommentMode = false;
@@ -444,7 +443,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
-            console.log('COMMENTS UPDATED');
+            //console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
 
 
@@ -643,19 +642,16 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       //});
     };
 
-    $scope.setRawText = function(newText) {
-      console.log($scope.editRawText);
-      console.log("TO");
-      console.log(newText);
-      $scope.editRawText = newText;
+    $scope.setRawText = function(id,newText) {
+      $scope.editRawText[id] = newText;
       $timeout(function () {
           $scope.$apply();
       });
     };
 
-    $scope.$watch("editRawText", function (newValue, oldValue) {
+    /*$scope.$watch("editRawText", function (newValue, oldValue) {
       console.log("REGISTERED CHANGE");
-    });
+    });*/
 
     $rootScope.safeApply = function(fn) {
             var phase = this.$root.$$phase;

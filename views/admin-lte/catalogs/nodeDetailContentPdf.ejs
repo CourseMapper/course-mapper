@@ -136,7 +136,7 @@
                                          show-delete-button="true"
                                          delete-action="deleteCommentById(comment.id)"
                                          show-edit-button="true"
-                                         edit-action="changeEditMode(comment._id, true);setRawText(comment.html);"
+                                         edit-action="changeEditMode(comment._id, true);setRawText(comment._id,comment.html);"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                          ng-hide="editMode == comment._id"
@@ -144,7 +144,7 @@
                                 <div ng-hide="editMode != comment._id">
                                   You are editing your post:
                                   <div id="editQuill_{{comment._id}}" name="editQuill"
-                                       ng-model="editRawText"
+                                       ng-model="editRawText[comment._id]"
                                        quill
                                        >
                                   </div>
