@@ -69,7 +69,6 @@
                                     <button type="button" class="btn btn-warning" ng-click="writeCommentMode=false">Cancel</button>
                                 </div>
                             </div>
-
                         </fieldset>
                     </form>
                 </div>
@@ -119,9 +118,26 @@
                                          show-delete-button="true"
                                          delete-action="deleteCommentById(comment.id)"
                                          show-edit-button="true"
+                                         edit-action="changeEditMode(comment._id, true)"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
+                                         ng-hide="editMode == comment._id"
                                         ></comment>
+                                <div ng-hide="editMode != comment._id">
+                                  You are editing your post:
+                                  <div id="rawText" name="rawText"
+                                       ng-model="comment.rawText"
+                                       quill
+                                       type="pdf-comment"
+                                       annotation-zone-action="annotationZoneAction()">
+                                  </div>
+                                  <button class="btn btn-primary"> Add Comment
+                                      <spinner show="isLoading"></spinner>
+                                  </button>
+
+                                  <button type="button" class="btn btn-warning" ng-click="editMode=-1">Cancel</button>
+                                </div>
+
                             </div>
                             <div class="col-xs-1">
                                 <voting vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>

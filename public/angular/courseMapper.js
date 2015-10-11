@@ -2877,6 +2877,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.comment = {};
 
+
+    $scope.editMode = -1;
     $scope.orderType = false;
     $scope.orderBy = false;
     $scope.ascending = "true";
@@ -3261,13 +3263,21 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     };
 
+    $scope.changeEditMode = function (id, bool) {
+      if(bool)
+        $scope.editMode = id;
+      else if($scope.editMode == id){
+        $scope.editMode = -1;
+      }
+    };
+
     $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
             console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
 
-            $scope.comments = data.comments;
 
+            $scope.editMode = -1;
             for (var i in $scope.comments) {
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
@@ -3275,6 +3285,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
             }
+
+            $scope.comments = data.comments;
 
 
             $timeout(function () {
