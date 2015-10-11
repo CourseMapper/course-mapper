@@ -47,7 +47,7 @@
             </div>
         </div>
         <div ng-hide="source.isEditMode" id="comments">
-            <a ng-click="toggle = !toggle">{{!toggle ? 'show comments' : 'hide comments'}}</a>
+            <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'}}</a>
             <article ng-show="toggle">
                 <div id="comment-box">
                     <input placeholder="Write a comment..." type="text" ng-model="commentText">
