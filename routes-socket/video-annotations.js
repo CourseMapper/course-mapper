@@ -7,8 +7,12 @@ var async = require('asyncawait/async'),
 
 module.exports = function(io) {
     io.sockets.on('connection', function(socket) {
+        if (!socket.request ||
+            !socket.request.session ||
+            !socket.request.session.passport) {
+            throw new Error('Cannot authenticate socket session withour passing a valid session.');
+        }
         var user = socket.request.session.passport.user;
-
         var getAnnotationsAsync = async(function(videoId) {
             return await (VideoAnnotation.find({
                 video_id: videoId
