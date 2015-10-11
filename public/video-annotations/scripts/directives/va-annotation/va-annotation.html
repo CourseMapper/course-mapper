@@ -28,6 +28,9 @@
     </div>
     <div class="box-footer">
         <div ng-show="source.isAuthor && !source.isEditMode" class="replyControl">
+            <div>
+                <span>[{{source.start | msToTime}}] - [{{source.end | msToTime}}]</span>
+            </div>
             <div class="editReplyButton">
                 <a ng-click="editAnnotation()" class="btn btn-primary btn-xs">EDIT</a>
             </div>
