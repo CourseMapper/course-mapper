@@ -7,7 +7,7 @@
                 <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
                     <div class="widget-item box no-border no-round">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Edit Account: Change Password</h3>
+                            <h3 class="box-title">Edit Account</h3>
 
                             <div class="box-tools pull-right">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
@@ -55,7 +55,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="control-group">
+                                    <div class="control-group" ng-hide="user.facebook">
                                         <p></p>
                                         <!-- Password-->
                                         <label class="control-label" for="password">Old Password</label>
@@ -67,7 +67,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="control-group">
+                                    <div class="control-group" ng-hide="user.facebook">
                                         <p></p>
                                         <!-- Password-->
                                         <label class="control-label" for="password">New Password</label>
@@ -81,7 +81,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="control-group">
+                                    <div class="control-group" ng-hide="user.facebook">
                                         <p></p>
                                         <!-- Password -->
                                         <label class="control-label" for="passwordConfirm">New Password
@@ -101,7 +101,7 @@
                                         <!-- Button -->
                                         <div class="controls">
                                             <button class="btn btn-md btn-primary">Save</button>
-                                            <button type="button" class="btn btn-md btn-primary"
+                                            <button type="button" class="btn btn-md btn-warning"
                                                     data-dismiss="modal" aria-label="Close"
                                                     ng-click="cancel()">
                                                 <span aria-hidden="true">Cancel</span>

@@ -442,15 +442,26 @@ li.disabled i {
     height: auto;
 }
 [data-shape=Ellipse] {
-    /*width:210px;
-    height:70px;
-    left:250px;
-    top:300px;
-    line-height: 70px;*/
     max-width: 200px;
     min-width: 120px;
 }
+.w.subTopic.deleted{
+    width: 20px;
+    min-width: 20px;
+    height:20px;
+    min-height:20px;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    background-color:#3C8DBC ;
+    padding:0px;
 
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+
+    z-index:0;
+}
 .box.box-primary.dropdown-menu {
     width: auto;
     position: absolute;
@@ -714,6 +725,9 @@ a.cursor {
 .ql-container{
     min-height: 200px;
     max-height: 400px!important;
+}
+.ql-text-info{
+    font-size:12px;
 }
 .content-header.action-header >.breadcrumb>li>a{
     color:white;
