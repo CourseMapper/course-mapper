@@ -65,6 +65,10 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             $scope.query = '';
         };
 
+        $scope.searchHide = function(value) {
+            $scope.hideSearch = value;
+        };
+
         $scope.seekPosition = function(annotation) {
             $scope.API.seekTime(annotation.start / 1000);
             //$scope.API.pause();

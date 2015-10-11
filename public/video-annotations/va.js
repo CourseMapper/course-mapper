@@ -39,6 +39,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
 
         $scope.editAnnotation = function() {
             $scope.source.isEditMode = true;
+            $scope.$parent.searchHide(true);
             _.each($scope.$parent.annotations, function(a) {
                 if (a._id !== $scope.source._id)
                     a.isEditMode = false;
@@ -47,7 +48,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
 
         $scope.closeAnnotation = function() {
             $scope.source.isEditMode = false;
-            $scope.hideSearch = false;
+            $scope.$parent.searchHide(false);
         };
 
         $scope.saveAnnotation = function() {
@@ -60,13 +61,14 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             socket.emit('annotations:save', {
                 annotation: annotation
             });
+
             $scope.source.isEditMode = false;
-            $scope.hideSearch = false;
+            $scope.$parent.searchHide(false);
         };
 
         $scope.cancelAnnotation = function() {
             $scope.$parent.annotations.shift();
-            $scope.hideSearch = false;
+            $scope.$parent.searchHide(false);
         };
 
         $scope.deleteAnnotation = function() {
@@ -181,6 +183,11 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             };
             $scope.annotations.unshift(defaultAnnotation);
             $scope.hideSearch = true;
+            $scope.query = '';
+        };
+
+        $scope.searchHide = function(value) {
+            $scope.hideSearch = value;
         };
 
         $scope.seekPosition = function(annotation) {
