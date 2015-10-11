@@ -27,14 +27,14 @@
         <br/>
     </div>
     <div class="box-footer">
-        <div ng-show="source.isAuthor && !source.isEditMode" class="replyControl">
+        <div class="replyControl">
             <div style="float:left;">
                 <span>[{{source.start | msToTime}}] - [{{source.end | msToTime}}]</span>
             </div>
-            <div class="editReplyButton">
+            <div class="editReplyButton" ng-show="source.isAuthor && !source.isEditMode">
                 <a ng-click="editAnnotation()" class="btn btn-primary btn-xs">EDIT</a>
             </div>
-            <div class="deleteReplyButton">
+            <div class="deleteReplyButton" ng-show="source.isAuthor && !source.isEditMode">
                 <a ng-click="deleteAnnotation()" class="btn btn-danger btn-xs">DELETE</a>
             </div>
         </div>
