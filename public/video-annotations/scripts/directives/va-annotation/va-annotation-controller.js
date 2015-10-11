@@ -2,14 +2,14 @@
 'use strict';
 
 videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootScope',
-    function ($scope, socket, rootScope) {
+    function($scope, socket, rootScope) {
         function markAuthoredComments(comments) {
-            _.forEach(comments, function (comment) {
+            _.forEach(comments, function(comment) {
                 comment.isAuthor = (comment.author === rootScope.user.username);
             });
         }
 
-        this.init = function () {
+        this.init = function() {
             $scope.commentText = '';
             $scope.isAuthor = ($scope.source.author === rootScope.user.username);
             $scope.annotationTypes = [{
@@ -20,25 +20,27 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
                 name: 'Note'
             }];
             // Listen for changes in comments
-            socket.on($scope.source._id + ':comments:updated', function (params) {
+            socket.on($scope.source._id + ':comments:updated', function(params) {
                 markAuthoredComments(params.comments);
                 $scope.source.comments = params.comments;
             });
         };
 
-        $scope.editAnnotation = function () {
+        $scope.editAnnotation = function() {
             $scope.source.isEditMode = true;
-            _.each($scope.$parent.annotations, function (a) {
+            $scope.$parent.searchHide(true);
+            _.each($scope.$parent.annotations, function(a) {
                 if (a._id !== $scope.source._id)
                     a.isEditMode = false;
             });
         };
 
-        $scope.closeAnnotation = function () {
+        $scope.closeAnnotation = function() {
             $scope.source.isEditMode = false;
+            $scope.$parent.searchHide(false);
         };
 
-        $scope.saveAnnotation = function () {
+        $scope.saveAnnotation = function() {
             var annotation = $scope.source;
 
             if (!annotation.text) return;
@@ -48,21 +50,24 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             socket.emit('annotations:save', {
                 annotation: annotation
             });
+
             $scope.source.isEditMode = false;
+            $scope.$parent.searchHide(false);
         };
 
-        $scope.cancelAnnotation = function () {
+        $scope.cancelAnnotation = function() {
             $scope.$parent.annotations.shift();
+            $scope.$parent.searchHide(false);
         };
 
-        $scope.deleteAnnotation = function () {
+        $scope.deleteAnnotation = function() {
             var params = {
                 id: $scope.source._id
             };
             socket.emit('annotations:delete', params);
         };
 
-        $scope.postComment = function () {
+        $scope.postComment = function() {
             var annotationId = $scope.source._id;
             var commentText = $scope.commentText;
 
@@ -80,7 +85,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
         };
 
 
-        $scope.removeComment = function (commentId) {
+        $scope.removeComment = function(commentId) {
             var params = {
                 annotation_id: $scope.source._id,
                 comment_id: commentId
