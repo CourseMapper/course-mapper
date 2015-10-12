@@ -26,7 +26,7 @@ var startYRel;
 
 
 var opacityFactor = "0.125";
-var opacityFactorHighlight = "0.5";
+var opacityFactorHighlight = "0.75";
 var opacityFactorCreate = "0.75"
 
 //Random Values
@@ -306,6 +306,7 @@ function alwaysRescaleRects() {
 }
 
 function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove, canBeEdited, annZoneId) {
+  //canBeEdited=true;
     //if(!canMove){
     switch (color) {
         case "Red":
@@ -330,7 +331,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
         //"on-moved" : "annZoneMov["+rectPrefix + divCounter+"].reposition",
         //"ng-style" : "{top: annZoneMov["+rectPrefix + divCounter+"].position.top + '%', left: annZoneMov["+rectPrefix + divCounter+"].position.left + '%', width: annZoneMov["+rectPrefix + divCounter+"].size.width + '%', height: annZoneMov["+rectPrefix + divCounter+"].size.height + '%'}",
         "can-move": canMove,
-        "can-be-edited": canBeEdited,
         id: rectPrefix + divCounter,
         position: 'absolute',
         class: 'slideRect',
@@ -380,6 +380,23 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
     "height": "100%"
 
   });
+
+  editElement = $('<span/>', {
+    id: "editSpan-" + divCounter,
+    class:'glyphicon glyphicon-pencil',
+    "aria-hidden":"true"
+  });
+  editElement.css({
+      float: "right",
+      color: "white",
+      margin: "2px",
+      cursor: "pointer"
+  });
+
+  editElement.click(function () {
+      alert($(this).attr("id"));
+  });
+
 
   var left  = 0,
       top   = 0;
@@ -545,6 +562,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
         wrapperElement.append(spanElement);
         spanElement.append(editInputElement);
         spanElement.text(tagname);
+        if(canBeEdited){
+          wrapperElement.append(editElement);
+        }
+
     }
     else {
         spanElement.text("#");
