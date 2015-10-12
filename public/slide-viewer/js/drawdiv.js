@@ -603,24 +603,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
         });
 
 
-        $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
-
-        $('#destroy').on('click', function() {
-          $('select').simplecolorpicker('destroy');
-        });
-        // By default, activate simplecolorpicker plugin on HTML selects
-        $('#init').trigger('click');
-
-
-        nColorPickerInput.on('change', function() {
-            $(this).parent().parent().parent().css('background-color', $(this).val());
-            $(this).attr("value",$(this).val());
-
-          });
 
 
     }
-    wrapperElement.append(debuggingTextElement);
+    //wrapperElement.append(debuggingTextElement);
     caElement.append(wrapperElement);
     element.append(caElement);
 
@@ -632,6 +618,23 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
     element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
     divCounter = divCounter + 1;
 
+    if (canMove) {
+
+      $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+
+      $('#destroy').on('click', function() {
+        $('select').simplecolorpicker('destroy');
+      });
+      // By default, activate simplecolorpicker plugin on HTML selects
+      $('#init').trigger('click');
+
+
+      nColorPickerInput.on('change', function() {
+          $(this).parent().parent().parent().css('background-color', $(this).val());
+          $(this).attr("value",$(this).val());
+
+        });
+      }
 
 
 
