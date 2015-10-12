@@ -1,4 +1,4 @@
-var AnnotationsPDF = require('./annotation')
+var AnnotationsPDF = require('./annotation');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');

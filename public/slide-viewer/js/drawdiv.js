@@ -505,7 +505,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
        editInputElement.attr("ng-model", "editZoneValues['" + id + "'].name");
        editInputElement.attr("ng-hide", "(editZoneMode != '"+id+"')");
        editInputElement.addClass("slideRectInput");
-       editInputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editInputElement);
+       //editInputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editInputElement);
 
        editInputElement.css({
          'color': 'black',
@@ -533,7 +533,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
        id: "editSpan-" + divCounter,
        class:'glyphicon glyphicon-pencil',
        "aria-hidden":"true",
-       "ng-click": "setEditZoneMode('" + annZoneId + "',"+divCounter+",'"+color+"')"
+       "ng-click": "setEditZoneMode('" + annZoneId + "',"+divCounter+",'"+color+"')",
+       "ng-hide": "(editZoneMode == '"+id+"')"
      });
      editElement.css({
          float: "right",
@@ -546,6 +547,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
        id: "saveSpan-" + divCounter,
        class:'glyphicon glyphicon-floppy-remove',
        "aria-hidden":"true",
+       "ng-hide": "(editZoneMode != '"+id+"')",
+       "ng-click": "resetEditZoneMode()",
      });
 
      cancelSaveElement.css({
@@ -559,6 +562,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
        id: "saveSpan-" + divCounter,
        class:'glyphicon glyphicon-floppy-saved',
        "aria-hidden":"true",
+       "ng-hide": "(editZoneMode != '"+id+"')",
+       "ng-click": "updateAnnZone('"+annZoneId+"')"
      });
 
      saveElement.css({

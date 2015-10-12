@@ -336,6 +336,12 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         }
     });
 
+    $rootScope.displayCommentSubmissionResponse = function(text) {
+      displayCommentSubmissionResponse(text);
+    };
+
+
+
     //$scope.pageFilter;
 
     $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;

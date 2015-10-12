@@ -2798,7 +2798,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.setEditZoneMode = function(id,divCounter,color) {
 
-      console.log(color);
       $scope.editZoneMode = id;
 
       var ele = $('select[name="colorpicker-change-background-color2"]');
@@ -2850,21 +2849,32 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     };
 
-    $scope.updateAnnZone = function (id) {
+    $scope.resetEditZoneMode = function() {
+      $scope.editZoneMode = -1;
 
+      var ele = $('select[name="colorpicker-change-background-color2"]');
+      ele.parent().find(".simplecolorpicker").remove();
+      ele.parent().css({"margin-left":"0px"});
+      ele.remove();
+    };
+
+    $scope.updateAnnZone = function (id) {
 
       var config = {
         params: {
           updateId: id,
           author: $scope.currentUser.username,
-          authorID: $scope.currentUser._id,
+          authorId: $scope.currentUser._id,
           updatedAnnZone:
           {
-            annotationZoneName: $scope.editZoneValues[$scope.editZoneMode].name,
-            color: $scope.editZoneValues[$scope.editZoneMode].color
-          }
+            annotationZoneName: "#"+$scope.editZoneValues[$scope.editZoneMode].name,
+            color: $scope.editZoneValues[$scope.editZoneMode].color.substring(1)
+          },
+          pdfId: $scope.pdfFile._id,
         }
       };
+
+      console.log(config);
 
 
 
@@ -2874,10 +2884,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
               //$scope.savedZones = data.annotationZones;
 
               if(data.result == false){
-                displayCommentSubmissionResponse(data.error);
+                $rootScope.displayCommentSubmissionResponse(data.error);
               }
               else {
-                displayCommentSubmissionResponse("Annotation zone update successful!");
+                $rootScope.displayCommentSubmissionResponse("Annotation zone update successful!");
 
                 //TODO: reset everything
               }
@@ -2887,10 +2897,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
               $scope.writeCommentMode = false;
               $scope.replyRawText = [];
               $scope.replyMode = -1;
+              $scope.resetEditZoneMode();
 
           })
           .error(function (data, status, headers, config) {
-              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+              $rootScope.displayCommentSubmissionResponse("Error: Unexpected Server Response!");
           });
       };
 
@@ -3440,6 +3451,12 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             $scope.currentUser = $rootScope.user;
         }
     });
+
+    $rootScope.displayCommentSubmissionResponse = function(text) {
+      displayCommentSubmissionResponse(text);
+    };
+
+
 
     //$scope.pageFilter;
 
