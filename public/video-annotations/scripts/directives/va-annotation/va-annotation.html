@@ -1,15 +1,13 @@
 <div class="box box-solid">
     <div class="box-body" ng-show="!source.isEditMode">
-        <div class="row">
-            <div class="col-xs-10">
-                <span class="posted-at">
+        <p>
+            <span>[{{source.start | msToTime}} - {{source.end | msToTime}}]</span>
+            <span class="posted-at">
                       Posted <strong>{{source.date_created | relativeDate}}</strong>
                       By <strong>{{source.author}}</strong>
                 </span>
-                <p id="annotation-text" ng-click="$parent.seekPosition(source)">{{source.text}}</p>
-            </div>
-            <voting class="col-xs-1" vote-type="videoAnnotation" vote-type-id="{{source._id}}"></voting>
-        </div>
+        </p>
+        <p id="annotation-text" ng-click="$parent.seekPosition(source)">{{source.text}}</p>
     </div>
     <div class="box-body form-group" ng-show="source.isEditMode">
         <textarea placeholder="Start annotating..." class="form-control" rows="3" id="va-text" type="text" ng-model="source.text"></textarea>
@@ -27,48 +25,40 @@
         <br/>
     </div>
     <div class="box-footer">
-        <div class="replyControl">
-            <div style="float:left;">
-                <span>[{{source.start | msToTime}}] - [{{source.end | msToTime}}]</span>
+        <div>
+            <div class="pull-left" ng-hide="source.isEditMode">
+                <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'}}</a>
             </div>
-            <div class="editReplyButton" ng-show="source.isAuthor && !source.isEditMode">
-                <a ng-click="editAnnotation()" class="btn btn-primary btn-xs">EDIT</a>
-            </div>
-            <div class="deleteReplyButton" ng-show="source.isAuthor && !source.isEditMode">
-                <a ng-click="deleteAnnotation()" class="btn btn-danger btn-xs">DELETE</a>
+            <div class="pull-right" ng-show="source.isAuthor && !source.isEditMode">
+                <a class="btn btn-primary btn-xs" ng-click="editAnnotation()">EDIT</a>
+                <a class="btn btn-danger btn-xs" ng-click="deleteAnnotation()">DELETE</a>
             </div>
         </div>
-        <div class="replyControl" ng-show="source.isEditMode">
-            <div class="editReplyButton">
-                <a class="btn btn-primary btn-xs" ng-click="saveAnnotation()">SAVE</a>
-            </div>
-            <div class="deleteReplyButton" ng-hide="source.isDefault">
-                <a ng-click="closeAnnotation()" class="btn btn-danger btn-xs">CLOSE</a>
-            </div>
-            <div class="deleteReplyButton" ng-show="source.isDefault">
-                <a ng-click="cancelAnnotation()" class="btn btn-danger btn-xs">CANCEL</a>
-            </div>
+        <div class="clearfix"></div>
+        <div ng-show="source.isEditMode">
+            <a class="btn btn-primary btn-xs" ng-click="saveAnnotation()">SAVE</a>
+            <a ng-hide="source.isDefault" ng-click="closeAnnotation()" class="btn btn-danger btn-xs">CLOSE</a>
+            <a ng-show="source.isDefault" ng-click="cancelAnnotation()" class="btn btn-danger btn-xs">CANCEL</a>
         </div>
         <div ng-hide="source.isEditMode" id="comments">
-            <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'}}</a>
             <article ng-show="toggle">
-                <div id="comment-box">
-                    <input placeholder="Write a comment..." type="text" ng-model="commentText">
-                    <button class="btn btn-primary btn-xs" type="submit" ng-click="postComment()">reply</button>
+                <br/>
+                <div id="comment-box" class="input-group input-group-sm">
+                    <input class="form-control" placeholder="Write a comment..." type="text" ng-model="commentText">
+                    <span class="input-group-btn">
+                      <button class="btn btn-primary btn-flat" type="submit" ng-click="postComment()">REPLY</button>
+                    </span>
                 </div>
+                <br/>
                 <section ng-repeat="comment in source.comments.slice().reverse()">
-                    <div class="box box-solid">
+                    <div class="box box-solid" style="background: rgba(0, 0, 255, 0.05)">
                         <div class="box-body">
                             <span class="posted-at">
                               Posted <strong>{{comment.date_created | relativeDate}}</strong>
                               By <strong><span>{{comment.author}}</span></strong>
                             </span>
+                            <a class="pull-right" style="cursor: pointer;" ng-show="comment.isAuthor" ng-click="removeComment(comment._id)">X</a>
                             <p class="reply">{{comment.text}}</p>
-                        </div>
-                        <div class="box-footer">
-                            <div class="replyControl">
-                                <a style="cursor: pointer;" ng-show="comment.isAuthor" ng-click="removeComment(comment._id)" title="delete" class="btn btn-danger btn-xs">DELETE</a>
-                            </div>
                         </div>
                     </div>
                 </section>
