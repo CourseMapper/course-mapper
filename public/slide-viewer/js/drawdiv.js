@@ -305,7 +305,7 @@ function alwaysRescaleRects() {
     max_width_rect_abs = currentCanvasHeight * max_width_rect_rel;
 }
 
-function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove, canBeEdited) {
+function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove, canBeEdited, annZoneId) {
     //if(!canMove){
     switch (color) {
         case "Red":
@@ -475,12 +475,37 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
       inputElement.addClass("slideRectInput");
       inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
 
-    inputElement.css({
+      inputElement.css({
         'color': 'black',
         'transition': 'width 0.25s',
         'border': '0'
-    });
-	}
+      });
+	   }
+     else if(canBeEdited) {
+       var id = annZoneId;
+       console.log(id);
+       editInputElement = $('<input type="text"/>');
+       editInputElement.attr("id", "rectEditInputField-" + divCounter);
+       editInputElement.attr("ng-model", "editZoneValues['" + id + "']");
+       editInputElement.attr("ng-hide", "(editZoneMode != '"+id+"')");
+       editInputElement.addClass("slideRectEditInput");
+       editInputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editInputElement);
+
+       editInputElement.css({
+         'color': 'black',
+         'transition': 'width 0.25s',
+         'border': '0'
+       });
+       nColorPickerEditInput = $('<select/>');
+       nColorPickerEditInput.attr("name","colorpicker-change-background-color");
+       nColorPickerEditInput.attr("value","#ac725e");
+       nColorPickerEditInput.attr("ng-hide", "(editZoneMode != '"+annZoneId+"')");
+       nColorPickerEditInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
+       nColorPickerEditInput.attr("id", "colorPickerEditInput-" + divCounter);
+       nColorPickerEditInput.addClass("slideRectColorPickerEdit");
+       nColorPickerEditInput = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(nColorPickerEditInput);
+
+     }
 
 
     nColorPickerInput = $('<select/>');
@@ -489,6 +514,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
     nColorPickerInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
     nColorPickerInput.attr("id", "colorPickerInput-" + divCounter);
     nColorPickerInput.addClass("slideRectColorPicker");
+
+
 
     removeElement = $('<button/>', {
         class: "btn btn-white btn-link",
@@ -516,6 +543,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
 
     if (!canMove) {
         wrapperElement.append(spanElement);
+        spanElement.append(editInputElement);
         spanElement.text(tagname);
     }
     else {

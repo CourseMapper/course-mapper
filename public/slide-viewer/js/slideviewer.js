@@ -79,7 +79,7 @@ function drawAnnZonesWhenPDFAndDBDone() {
       for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
         //console.log("createAnnotationZones");
         var isAuthor = (toDrawAnnotationZoneData[i].author == angular.element($("#annZoneList")).scope().currentUser.username);
-        loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeight, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, isAuthor)
+        loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeight, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, isAuthor, toDrawAnnotationZoneData[i].id)
       }
 
   }
@@ -273,7 +273,7 @@ function switchRegexFilter(attribute,value){
 };*/
 
 function createMovableAnnZone() {
-  var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "", true, true);
+  var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "", true, false, "");
   addAnnotationZoneElement(element);
 };
 
