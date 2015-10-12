@@ -143,7 +143,7 @@ app.config(function(toastrConfig) {
                 }
             });
 
-            if ($scope.course.createdBy == $rootScope.user._id) {
+            if ($scope.course.createdBy._id == $rootScope.user._id) {
                 $scope.isOwner = true;
                 $scope.enrolled = true;
             }
@@ -1034,7 +1034,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
             });
 
-            if ($scope.course.createdBy == $rootScope.user._id) {
+            if ($scope.course.createdBy._id == $rootScope.user._id) {
                 $scope.isOwner = true;
                 $scope.enrolled = true;
             }
