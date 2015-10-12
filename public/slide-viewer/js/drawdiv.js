@@ -401,6 +401,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
       //Need to be redone again.
       caElement.click(function () {
+        angular.element($("#commentController")).scope().addReference(tagname);
+        /*
         //check if commentbox is displayed and mouse wasnt move during mousedown event
         if($('#commentSubmissionDiv').css('display')!='none' && mousemovedbool==false){
         //check if entered string is neither empty nor whitespaced
@@ -413,20 +415,21 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
             }
 
           }
-        }
+        }*/
       });
         element.css('opacity', opacityFactorCreate);
         element.css('border', ' 1px dashed white');
     } else {
       caElement.click(function () {
-        if($('#commentSubmissionDiv').css('display')!='none' ){
+        angular.element($("#commentController")).scope().addReference(tagname);
+        /*if($('#commentSubmissionDiv').css('display')!='none' ){
           for(i=0; i<Quill.editors.length; i++){
               if(Quill.editors[i].quillId=='#rawText'){
               Quill.editors[i].insertText(Quill.editors[i].getLength()-1, " "+ $(this).parent().attr("data-tagName")+" ", true);
               Quill.editors[i].focus();
             }
           }
-        }
+        }*/
       });
         element.css('opacity', opacityFactor);
         element.hover(function () {

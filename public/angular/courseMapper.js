@@ -3522,17 +3522,30 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.addReference = function(name) {
+      console.log("got here");
       //$rootScope.safeApply(function() {
-      if(typeof $scope.comment.rawText == 'undefined')
-        $scope.comment.rawText = name + ' ';
-      else {
-        var len = $scope.comment.rawText.length;
-        var firstPart = $scope.comment.rawText.substring(0,len-6);
-        var lastPart = $scope.comment.rawText.substring(len-6);
-        $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+      if($scope.editMode == -1) {
+        if(typeof $scope.comment.rawText == 'undefined')
+          $scope.comment.rawText = name + ' ';
+        else {
+          var len = $scope.comment.rawText.length;
+          var firstPart = $scope.comment.rawText.substring(0,len-6);
+          var lastPart = $scope.comment.rawText.substring(len-6);
+          $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+        }
       }
-      //console.log($scope.comment.rawText);
-      //Quill.editors[i].focus();
+      else {
+        console.log("did it");
+        if(typeof $scope.editRawText[$scope.editMode] == 'undefined')
+          $scope.editRawText[$scope.editMode] = name + ' ';
+        else {
+          var len = $scope.editRawText[$scope.editMode].length;
+          var firstPart = $scope.editRawText[$scope.editMode].substring(0,len-6);
+          var lastPart = $scope.editRawText[$scope.editMode].substring(len-6);
+          $scope.editRawText[$scope.editMode] = firstPart + ' ' + name + ' ' + lastPart;
+        }
+      }
+
       $timeout(function () {
           $scope.$apply();
           $scope.commentsLoaded();
