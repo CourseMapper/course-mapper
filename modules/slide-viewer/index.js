@@ -8,6 +8,47 @@ var validator = require('validator');
 function Comment(){
 }
 
+Comment.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
+  var newName2 = validator.escape(newName);
+
+  AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
+    if(err2) {
+      err("Server Error: Unable to find associated annotations");
+    }
+    else {
+      for(var key in data) {
+        var changed = false;
+        var rawText = data[key].rawText;
+        var newRawText = rawText.replace(/#(\w+)/g, function(x){
+          if(x == oldName){
+            var ret = newName2;
+            changed = true;
+            return ret;
+          }
+          else {
+            return x;
+          }
+        });
+        if(changed) {
+          this.convertRawText(newRawText, function(newRenderedText){
+            var newText = {
+              rawText: newRawText,
+              renderedText: newRenderedText
+            };
+            AnnotationsPDF.update({_id: data[key].id}, newText, function (errBool) {
+              if (errBool) {
+                err("Server Error: Unable to update annotation");
+              } else {
+                done();
+              }
+            });
+          });
+        }
+      }
+    }
+  });
+};
+
 Comment.prototype.submitAnnotation = function(err, params, done){
   if(typeof params.hasParent == 'undefined') {
     err("Server Error: Missing hasParent element");

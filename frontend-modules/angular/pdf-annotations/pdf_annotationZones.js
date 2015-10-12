@@ -20,6 +20,50 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         }
     };*/
 
+    $scope.updateAnnZone = function (id) {
+
+
+      var config = {
+        params: {
+          updateId: id,
+          author: $scope.currentUser.username,
+          authorID: $scope.currentUser._id,
+          updatedAnnZone:
+          {
+            annotationZoneName: ,//TODO
+            color: //TODO
+          }
+        }
+      };
+
+
+
+      $http.post("/slide-viewer/updateAnnZone/", null, config)
+          .success(function (data, status, headers, config) {
+              $scope.updateScope($scope.commentGetUrl);
+              //$scope.savedZones = data.annotationZones;
+
+              if(data.result == false){
+                displayCommentSubmissionResponse(data.error);
+              }
+              else {
+                displayCommentSubmissionResponse("Annotation zone update successful!");
+
+                //TODO: reset everything
+              }
+
+              $scope.$broadcast('reloadTags');
+
+              $scope.writeCommentMode = false;
+              $scope.replyRawText = [];
+              $scope.replyMode = -1;
+
+          })
+          .error(function (data, status, headers, config) {
+              displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+          });
+      };
+
       $rootScope.removeAllActiveAnnotationZones = function () {
         for(var inputId in $scope.tagNamesList) {
             var element = $("#annotationZone #"+inputId);

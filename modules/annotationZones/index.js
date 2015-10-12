@@ -6,6 +6,7 @@ var async = require('asyncawait/async');
 var foreach = require('async-foreach').forEach;
 var await = require('asyncawait/await');
 var validator = require('validator');
+var Anns = require('../slide-viewer/index');
 
 
 
@@ -52,12 +53,15 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
                       annotationZoneName: currentTag.annotationZoneName,
                       color: currentTag.color
                     };
-
+                    var oldName = data.annotationZoneName;
+                    var newName = currentTag.annotationZoneName;
+                    var pdfId = data.pdfId;
                     // save it to db
-                    annotationZonePDF.update({id: params.updateId}, updatedAnnotationZonePDF,function (err) {
+                    AnnotationZonesPDF.update({id: params.updateId}, updatedAnnotationZonePDF,function (err) {
                         if (err) {
                             err('Server Error: Unable to update annotation zone');
                         } else {
+                            updateAllReferences(oldName, newName, pdfId,err,done);
                             done(annotationZonePdf);
                         }
                     });
@@ -83,6 +87,11 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
     err("Server Error: Unable to update annotation due to invalid request");
   }
 };
+
+function updateAllReferences(oldName, newName, pdfId,err,done) {
+  var ann = new Anns();
+  ann.updateAllReferences(oldName,newName,pdfId,err,done);
+}
 
 AnnZones.prototype.checkOwnership = function(id,author,authorId,callback) {
   this.getAnnZoneById(params.id, function(success,data) {
