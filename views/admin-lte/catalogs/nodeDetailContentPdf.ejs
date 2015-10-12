@@ -128,13 +128,13 @@
 
                         <div class="replies" ng-repeat="comment in comments" ng-cloak>
                             <div class="col-xs-11">
-                                <comment posted-by="{{comment.author}}"
+                                <pdf-comment posted-by="{{comment.author}}"
                                          post-id="{{comment._id}}"
                                          posted-date="{{comment.date}}"
                                          post-content="comment.html"
                                          is-post-owner="comment.author==$root.user.username"
                                          show-control="true"
-                                         show-reply-button="true"
+                                         show-reply-button="false"
                                          show-delete-button="true"
                                          delete-action="deleteCommentById(comment.id)"
                                          show-edit-button="true"
@@ -142,12 +142,16 @@
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                          ng-hide="editMode == comment._id"
-                                        ></comment>
+                                         show-commenting-area="true"
+                                         comments="[]"
+                                        ></pdf-comment>
                                 <div ng-hide="editMode != comment._id">
                                   You are editing your post:
                                   <div id="editQuill_{{comment._id}}" name="editQuill"
                                        ng-model="editRawText[comment._id]"
                                        quill
+                                       type="pdf-comment"
+                                       hide-ann-zone-button="true"
                                        >
                                   </div>
                                   <button class="btn btn-primary" ng-click="submitEdit(comment)"> Submit
