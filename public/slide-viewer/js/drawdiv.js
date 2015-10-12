@@ -512,6 +512,10 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
          'transition': 'width 0.25s',
          'border': '0'
        });
+
+
+
+
        //angular.element($("#annZoneList")).scope().editZoneValues[id].name = tagname.substring(1);
 
 
@@ -532,6 +536,32 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
        "ng-click": "setEditZoneMode('" + annZoneId + "',"+divCounter+",'"+color+"')"
      });
      editElement.css({
+         float: "right",
+         color: "white",
+         margin: "2px",
+         cursor: "pointer"
+     });
+
+     cancelSaveElement = $('<span/>', {
+       id: "saveSpan-" + divCounter,
+       class:'glyphicon glyphicon-floppy-remove',
+       "aria-hidden":"true",
+     });
+
+     cancelSaveElement.css({
+         float: "right",
+         color: "white",
+         margin: "2px",
+         cursor: "pointer"
+     });
+
+     saveElement = $('<span/>', {
+       id: "saveSpan-" + divCounter,
+       class:'glyphicon glyphicon-floppy-saved',
+       "aria-hidden":"true",
+     });
+
+     saveElement.css({
          float: "right",
          color: "white",
          margin: "2px",
@@ -587,6 +617,8 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
         wrapperElement.append(spanElement);
         if(canBeEdited){
           wrapperElement.append(editElement);
+          wrapperElement.append(cancelSaveElement);
+          wrapperElement.append(saveElement);
         }
     }
     else {
