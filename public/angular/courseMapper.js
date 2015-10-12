@@ -2775,7 +2775,12 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.storedAnnZoneColors = [];
     $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
+
+    $scope.editZoneMode = -1;
+    $scope.editZoneValues = [];
+
     //$scope.annZoneMov = [];
+
 
 
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
@@ -2801,8 +2806,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
           authorID: $scope.currentUser._id,
           updatedAnnZone:
           {
-            annotationZoneName: ,//TODO
-            color: //TODO
+            annotationZoneName: $scope.editZoneValues[$scope.editZoneMode].name,
+            color: $scope.editZoneValues[$scope.editZoneMode].color
           }
         }
       };
@@ -3713,6 +3718,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.addReference = function(name) {
       //$rootScope.safeApply(function() {
+      if(name !="#")
       if($scope.writeCommentMode) {
         if(typeof $scope.comment.rawText == 'undefined')
           $scope.comment.rawText = name + ' ';
