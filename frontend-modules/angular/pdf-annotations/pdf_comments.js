@@ -165,7 +165,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           parentId: id
         }
       };
-      console.log(config);
 
 
 
