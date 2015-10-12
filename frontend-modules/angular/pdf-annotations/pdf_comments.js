@@ -2,7 +2,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.comment = {};
 
-
     $scope.finalEditRawText = "";
     $scope.editRawText = [];
 
@@ -32,7 +31,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.writeCommentMode = false;
 
-
+    $scope.exampleComments = [
+        {author:'a',text:'b',date_created:'2015-09-28T13:13:50.038+0000'},
+        {author:'c',text:'d',date_created:'2015-09-28T13:13:50.038+0000'}
+    ];
 
     $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
         $scope.currentPageNumber = newSlideNumber;
@@ -681,5 +683,4 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       delete $scope.filtersRaw[id];
       $scope.$broadcast('onFiltersRawChange');
     };
-
 });

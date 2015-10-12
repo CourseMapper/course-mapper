@@ -1459,10 +1459,19 @@ app.directive('movable', function () {
                 deleteAction: '&',
                 replyAction: '&',
                 showCommentingArea: '=',
-                comments: '='
+                comments: '=',
+                postComment: '&'
             },
 
-            templateUrl: '/angular/views/pdf-comment.html'
+            templateUrl: '/angular/views/pdf-comment.html',
+
+            controller: function($http, $scope, $rootScope, $sce){
+                $scope.commentText = "";
+
+                $scope.postComment = function(){
+                    alert($scope.commentText);
+                }
+            }
         };
     });;app.directive('pdfViewer',
     function ($compile, $timeout, $rootScope, $location, $routeParams) {
@@ -2929,7 +2938,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.comment = {};
 
-
     $scope.finalEditRawText = "";
     $scope.editRawText = [];
 
@@ -2959,7 +2967,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.writeCommentMode = false;
 
-
+    $scope.exampleComments = [
+        {author:'a',text:'b',date_created:'2015-09-28T13:13:50.038+0000'},
+        {author:'c',text:'d',date_created:'2015-09-28T13:13:50.038+0000'}
+    ];
 
     $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
         $scope.currentPageNumber = newSlideNumber;
@@ -3608,7 +3619,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       delete $scope.filtersRaw[id];
       $scope.$broadcast('onFiltersRawChange');
     };
-
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;

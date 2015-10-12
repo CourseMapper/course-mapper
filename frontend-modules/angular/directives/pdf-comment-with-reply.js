@@ -22,9 +22,18 @@ app.directive('pdfComment',
                 deleteAction: '&',
                 replyAction: '&',
                 showCommentingArea: '=',
-                comments: '='
+                comments: '=',
+                postComment: '&'
             },
 
-            templateUrl: '/angular/views/pdf-comment.html'
+            templateUrl: '/angular/views/pdf-comment.html',
+
+            controller: function($http, $scope, $rootScope, $sce){
+                $scope.commentText = "";
+
+                $scope.postComment = function(){
+                    alert($scope.commentText);
+                }
+            }
         };
     });

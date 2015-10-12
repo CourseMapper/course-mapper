@@ -143,8 +143,9 @@
                                          author-click-action="authorLabelClick(comment.author)"
                                          ng-hide="editMode == comment._id"
                                          show-commenting-area="true"
-                                         comments="[]"
+                                         comments="exampleComments"
                                         ></pdf-comment>
+
                                 <div ng-hide="editMode != comment._id">
                                   You are editing your post:
                                   <div id="editQuill_{{comment._id}}" name="editQuill"
