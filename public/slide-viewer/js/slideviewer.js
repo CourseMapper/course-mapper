@@ -78,8 +78,8 @@ function drawAnnZonesWhenPDFAndDBDone() {
   if(annotationZonesAreLoaded) {
       for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
         //console.log("createAnnotationZones");
-        var isAuthor = (toDrawAnnotationZoneData[i].author == angular.element($("#annZoneList")).scope().currentUser.username;
-        loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeigh, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, isAuthor)
+        var isAuthor = (toDrawAnnotationZoneData[i].author == angular.element($("#annZoneList")).scope().currentUser.username);
+        loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeight, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, isAuthor)
       }
 
   }

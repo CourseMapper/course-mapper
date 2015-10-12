@@ -305,7 +305,7 @@ function alwaysRescaleRects() {
     max_width_rect_abs = currentCanvasHeight * max_width_rect_rel;
 }
 
-function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove) {
+function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove, canBeEdited) {
     //if(!canMove){
     switch (color) {
         case "Red":
@@ -330,6 +330,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         //"on-moved" : "annZoneMov["+rectPrefix + divCounter+"].reposition",
         //"ng-style" : "{top: annZoneMov["+rectPrefix + divCounter+"].position.top + '%', left: annZoneMov["+rectPrefix + divCounter+"].position.left + '%', width: annZoneMov["+rectPrefix + divCounter+"].size.width + '%', height: annZoneMov["+rectPrefix + divCounter+"].size.height + '%'}",
         "can-move": canMove,
+        "can-be-edited": canBeEdited,
         id: rectPrefix + divCounter,
         position: 'absolute',
         class: 'slideRect',
