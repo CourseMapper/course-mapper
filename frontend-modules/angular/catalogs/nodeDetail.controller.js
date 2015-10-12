@@ -186,7 +186,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
                 }
             });
 
-            if ($scope.course.createdBy == $rootScope.user._id) {
+            if ($scope.course.createdBy._id == $rootScope.user._id) {
                 $scope.isOwner = true;
                 $scope.enrolled = true;
             }

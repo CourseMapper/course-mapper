@@ -73,7 +73,7 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
                 }
             });
 
-            if ($scope.course.createdBy == $rootScope.user._id) {
+            if ($scope.course.createdBy._id == $rootScope.user._id) {
                 $scope.isOwner = true;
                 $scope.enrolled = true;
             }
