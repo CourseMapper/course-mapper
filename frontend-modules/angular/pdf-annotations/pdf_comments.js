@@ -3,10 +3,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.comment = {};
 
 
-    $scope.finalEditRawText = "";
     $scope.editRawText = [];
-
     $scope.editMode = -1;
+
+    $scope.replyRawText = [];
+    $scope.replyMode = -1;
+
+    $scope.comments = [];
+
     $scope.orderType = false;
     $scope.orderBy = false;
     $scope.ascending = "true";
@@ -149,20 +153,19 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.submitReply = function (resultVarName) {
       var config = {
         params: {
-          rawText: $scope.comment.rawText,
+          rawText: $scope.replyRawText[$scope.replyMode],
           author: $scope.currentUser.username,
           authorID: $scope.currentUser._id,
           pageNumber: $scope.currentPageNumber,
-          tagNames: $scope.comment.tagNames,
-          tagRelPos: $scope.comment.tagRelPos,
-          tagRelCoord: $scope.comment.tagRelCoord,
-          tagColor: $scope.comment.tagColor,
-          annotationZones: $scope.annotationZones,
-          numOfAnnotationZones: $scope.annotationZones.length,
+          numOfAnnotationZones: 0,
           pdfId: $scope.pdfFile._id,
-          hasParent: false
+          hasParent: true,
+          parentId: $scope.replyMode
         }
       };
+
+
+
 
       $http.post("/slide-viewer/submitComment/", null, config)
           .success(function (data, status, headers, config) {
@@ -181,6 +184,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
               $scope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
+              $scope.replyRawText = [];
+              $scope.replyMode = -1;
+
           })
           .error(function (data, status, headers, config) {
               displayCommentSubmissionResponse("Error: Unexpected Server Response!");
@@ -269,6 +275,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 displayCommentSubmissionResponse("Error: Unexpected Server Response!");
             });
     };
+
 
     $scope.submitEdit = function (comment) {
 
@@ -456,7 +463,19 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
             }
 
-            $scope.comments = data.comments;
+            for(var item in data.comments) {
+              if(data.comments[item].hasParent == false) {
+                $scope.comments.push(data.comments[item]);
+              }
+              else if(data.comments[item].hasParent == true){
+                if(typeof $scope.replies[data.comments[item].parentId] == 'undefined') {
+                  $scope.replies[data.comments[item].parentId] = [];
+                }
+                $scope.replies[data.comments[item].parentId].push(data.comments[item]);
+              }
+            }
+
+            //$scope.comments = data.comments;
 
 
             $timeout(function () {
