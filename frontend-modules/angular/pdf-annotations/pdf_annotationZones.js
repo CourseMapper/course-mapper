@@ -4,7 +4,12 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.storedAnnZoneColors = [];
     $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
+
+    $scope.editZoneMode = -1;
+    $scope.editZoneValues = [];
+
     //$scope.annZoneMov = [];
+
 
 
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
@@ -30,8 +35,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           authorID: $scope.currentUser._id,
           updatedAnnZone:
           {
-            annotationZoneName: ,//TODO
-            color: //TODO
+            annotationZoneName: $scope.editZoneValues[$scope.editZoneMode].name,
+            color: $scope.editZoneValues[$scope.editZoneMode].color
           }
         }
       };

@@ -667,6 +667,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.addReference = function(name) {
       //$rootScope.safeApply(function() {
+      if(name !="#")
       if($scope.writeCommentMode) {
         if(typeof $scope.comment.rawText == 'undefined')
           $scope.comment.rawText = name + ' ';

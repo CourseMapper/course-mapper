@@ -419,7 +419,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
 
       //Need to be redone again.
       caElement.click(function () {
-        angular.element($("#commentController")).scope().addReference(tagname);
+        angular.element($("#commentController")).scope().addReference("#"+$(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val());
         /*
         //check if commentbox is displayed and mouse wasnt move during mousedown event
         if($('#commentSubmissionDiv').css('display')!='none' && mousemovedbool==false){
