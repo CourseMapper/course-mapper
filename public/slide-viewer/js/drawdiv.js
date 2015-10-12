@@ -504,7 +504,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
        editInputElement.attr("name", "rectEditInputField-" + divCounter);
        editInputElement.attr("ng-model", "editZoneValues['" + id + "'].name");
        editInputElement.attr("ng-hide", "(editZoneMode != '"+id+"')");
-       editInputElement.addClass("slideRectEditInput");
+       editInputElement.addClass("slideRectInput");
        editInputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editInputElement);
 
        editInputElement.css({
@@ -529,7 +529,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
        id: "editSpan-" + divCounter,
        class:'glyphicon glyphicon-pencil',
        "aria-hidden":"true",
-       "ng-click": "setEditZoneMode('" + annZoneId + "',"+divCounter+")"
+       "ng-click": "setEditZoneMode('" + annZoneId + "',"+divCounter+",'"+color+"')"
      });
      editElement.css({
          float: "right",
@@ -538,7 +538,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
          cursor: "pointer"
      });
 
-     editElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editElement);
+     //editElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editElement);
 
 
 
