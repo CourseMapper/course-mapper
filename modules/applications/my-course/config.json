@@ -2,21 +2,21 @@
   "name": "My Courses",
   "widgets":[
     {
-      "name": "My Courses List",
+      "name": "My Enrolled Course List",
       "location": "user-profile",
-      "description": "Will list all your following courses",
-      "entryPoint": "/my-course/my-following-courses",
-      "widgetJavascript": ["my-following-courses.js"],
+      "description": "List of all your enrolled courses",
+      "entryPoint": "/my-course/my-enrolled-courses",
+      "widgetJavascript": ["my-enrolled-courses.js"],
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "My Enrolled Course List",
+      "name": "My Created Course List",
       "location": "user-profile",
-      "description": "Will list all your enrolled and created courses",
-      "entryPoint": "/my-course/my-enrolled-courses",
-      "widgetJavascript": ["my-enrolled-courses.js"],
+      "description": "List all of your created courses",
+      "entryPoint": "/my-course/my-created-courses",
+      "widgetJavascript": ["my-created-courses.js"],
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"

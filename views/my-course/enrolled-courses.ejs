@@ -3,11 +3,11 @@
         <tbody>
         <tr>
             <th style="width:10px;">Nr.</th>
-            <th>{{title}}</th>
+            <th>{{headerTitle}}</th>
         </tr>
-        <tr ng-repeat="created in courseCreated">
-            <td>{{$index+1}}</td>
-            <td><a href="/course/{{created.slug}}/#/cid/{{created._id}}"> {{created.name}} </a></td>
+        <tr ng-repeat="enrolled in courseEnrolled">
+            <td>{{$index+1}}.</td>
+            <td><a href="/course/{{enrolled.course.slug}}/#/cid/{{enrolled.course._id}}"> {{enrolled.course.name}} </a></td>
         </tr>
         </tbody>
     </table>

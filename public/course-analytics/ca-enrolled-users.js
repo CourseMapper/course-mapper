@@ -1,6 +1,6 @@
 angular.module('EnrolledUsers', [''])
     .controller('UserListEnrolledController', function($scope, $http, $location) {
-        $scope.title = "List of User that Enrolled in This Course";
+        $scope.HeaderTitle = "User Name";
 
         var loc = $location.path();
         var parseLoc = loc.replace ('/cid/', '');

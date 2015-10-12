@@ -26,6 +26,10 @@ router.get('/my-enrolled-courses', function(req, res, next) {
     res.render('my-course/enrolled-courses');
 });
 
+router.get('/my-created-courses', function(req, res, next) {
+    res.render('my-course/created-courses');
+});
+
 
 //routes to my-activity-summary
 router.get('/my-activity-summary', function(req, res, next) {
@@ -35,6 +39,8 @@ router.get('/my-activity-summary', function(req, res, next) {
 router.get('/my-course-progress', function(req, res, next) {
     res.render('my-course/course-history');
 });
+
+
 
 
 
