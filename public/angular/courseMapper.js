@@ -4,6 +4,12 @@ var app = angular.module('courseMapper', [
     'relativeDate', 'wysiwyg.module', 'angular-quill',
     'VideoAnnotations','SlideViewerAnnotationZones',
     'ngAnimate', 'toastr']);
+
+app.config(function(toastrConfig) {
+    angular.extend(toastrConfig, {
+        positionClass: 'toast-top-center'
+    });
+});
 ;app.config(['$routeProvider', '$locationProvider',
 
     function($routeProvider, $locationProvider) {
