@@ -42,11 +42,11 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
 
-      $('#destroy').on('click', function() {
-        $('select').simplecolorpicker('destroy');
-      });
+//      $('#destroy').on('click', function() {
+        //$('select').simplecolorpicker('destroy');
+      //});
       // By default, activate simplecolorpicker plugin on HTML selects
-      $('#init').trigger('click');
+      //$('#init').trigger('click');
 
 
       nColorPickerEditInput.on('change', function() {
