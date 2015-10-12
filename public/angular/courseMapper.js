@@ -3653,20 +3653,26 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         });
     };
 
+    $scope.onCategoryHover = function(slug){
+        $('#' + slug).find('ul').show();
+
+        $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
+            function(res){
+                if(res.result){
+                    $scope.widgets[slug] = $sce.trustAsHtml(res.widgets);
+                }
+            }
+        );
+    };
+
+    $scope.onCategoryHoverOut = function(slug){
+        $('#' + slug).find('ul').hide();
+    };
+
     $scope.interConnect = function(parent, categories, instance){
         for(var i in categories){
             var child = categories[i];
-
-            // instantiate on hover
-            $('#' + child.slug).mouseover(function(event){
-                $(this).find('ul').show();
-                $rootScope.$broadcast('onCategoryHover', $(this).attr('id'));
-
-            }).mouseout(function(){
-                $(this).find('ul').hide();
-                $rootScope.$broadcast('onCategoryHoverOut', $(this).attr('id'));
-            });
-
+  
             instance.connect({
                 source: parent, target: child.slug,
                 anchors: [
@@ -3680,27 +3686,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             }
         }
     };
-
-    $scope.$on('onCategoryHover', function(event, slug){
-        if($scope.isRequesting)
-            return;
-
-        $scope.isRequesting = true;
-        $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
-           function(res){
-               $scope.isRequesting = false;
-               if(res.result){
-                    $scope.widgets[slug] = $sce.trustAsHtml(res.widgets);
-               }
-           }
-       ).error(function(){
-                $scope.isRequesting = false;
-            });
-    });
-
-    $scope.$on('onCategoryHoverOut', function(event, slug){
-        $scope.isRequesting = false;
-    });
 
     $scope.goToDetail = function(categorySlug){
         window.location.href = "/courses/#/category/" + categorySlug;

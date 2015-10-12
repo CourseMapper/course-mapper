@@ -40,7 +40,7 @@
                     <!--{{category}}-->
 
                     <div class="col-sm-6 col-lg-3" ng-repeat="c in courses">
-                        <div class="form_hover" ng-mouseover="getCourseAnalytics(c._id)">
+                        <div class="form_hover" ng-mouseenter="getCourseAnalytics(c._id)">
                             <div class="box box-primary peekCourse">
                                 <div class="box-header with-border">
                                     <a href="/course/{{c.slug}}/#/cid/{{c._id}}" class="box-title">{{c.name}}</a>
