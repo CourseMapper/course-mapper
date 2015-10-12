@@ -53,7 +53,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         }
 
         $scope.isLoading = true;
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -88,5 +88,9 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
     $scope.cancel = function(){
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+
+        if($scope.upload){
+            $scope.upload.abort();
+        }
     };
 });
