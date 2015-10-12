@@ -677,4 +677,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             }
     };
 
+    $scope.removeFilterRawField = function (id) {
+      delete $scope.filtersRaw[id];
+      $scope.$broadcast('onFiltersRawChange');
+    };
+
 });
