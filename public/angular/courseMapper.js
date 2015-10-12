@@ -268,7 +268,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         }
 
         $scope.isLoading = true;
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -303,6 +303,10 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
     $scope.cancel = function(){
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+
+        if($scope.upload){
+            $scope.upload.abort();
+        }
     };
 });
 ;
@@ -1189,7 +1193,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.isLoading = true;
 
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -1207,7 +1211,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
 
             }).success(function (data, status, headers, config) {
-                console.log(data);
 
                 if(data.result) {
                     data.treeNode['resources'] = [];
@@ -1253,6 +1256,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.cancel = function(){
+        if($scope.upload){
+            $scope.upload.abort();
+        }
+
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });
@@ -1428,6 +1435,49 @@ app.directive('movable', function () {
         }
     };
 });
+;app.directive('pdfComment',
+    function ($compile, $timeout) {
+        return {
+            restrict: 'E',
+
+            terminal: true,
+
+            scope: {
+                postedBy: '@',
+                postedDate: '@',
+                showControl: '=',
+                showReplyButton: '=',
+                showEditButton: '=',
+                showDeleteButton: '=',
+                authorClickAction: '&',
+                authorClickable: '=',
+                postContent: '=',
+                isPostOwner: '=',
+                isDeleted: '=',
+                postId: '@',
+                editAction: '&',
+                deleteAction: '&',
+                replyAction: '&',
+                showCommentingArea: '=',
+                comments: '=',
+                postComment: '&',
+                commentText: '='
+            },
+
+            templateUrl: '/angular/views/pdf-comment.html',
+
+            controller: function($http, $scope, $rootScope, $sce){
+                //$scope.commentText = "";
+
+                //console.log($scope.postComment);
+
+
+                $scope.removeComment = function(commentId){
+                    alert(commentId);
+                }
+            }
+        };
+    });
 ;app.directive('pdfViewer',
     function ($compile, $timeout, $rootScope, $location, $routeParams) {
         return {
@@ -2954,7 +3004,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.comment = {};
 
-
     $scope.editRawText = [];
     $scope.editMode = -1;
 
@@ -2962,6 +3011,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.replyMode = -1;
 
     $scope.comments = [];
+    $scope.replies = [];
 
     $scope.orderType = false;
     $scope.orderBy = false;
@@ -3102,20 +3152,22 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     };
 
-    $scope.submitReply = function (resultVarName) {
+    $scope.submitReply = function (id) {
+
+
       var config = {
         params: {
-          rawText: $scope.replyRawText[$scope.replyMode],
+          rawText: $scope.replyRawText[id],
           author: $scope.currentUser.username,
           authorID: $scope.currentUser._id,
           pageNumber: $scope.currentPageNumber,
           numOfAnnotationZones: 0,
           pdfId: $scope.pdfFile._id,
           hasParent: true,
-          parentId: $scope.replyMode
+          parentId: id
         }
       };
-
+      console.log(config);
 
 
 
@@ -3421,13 +3473,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
             $scope.editMode = -1;
-            for (var i in $scope.comments) {
+            /*for (var i in $scope.comments) {
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
 
 
-            }
+            }*/
+            $scope.comments = [];
+            $scope.replies = [];
 
             for(var item in data.comments) {
               if(data.comments[item].hasParent == false) {
@@ -3641,7 +3695,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
           $scope.replyRawText[$scope.replyMode] = name + ' ';
         else {
           var len = $scope.replyRawText[$scope.replyMode].length;
-          var firstPart = $scope.replyRawText[$scope.replyMode]].substring(0,len-6);
+          var firstPart = $scope.replyRawText[$scope.replyMode].substring(0,len-6);
           var lastPart = $scope.replyRawText[$scope.replyMode].substring(len-6);
           $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
         }
@@ -3687,7 +3741,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       delete $scope.filtersRaw[id];
       $scope.$broadcast('onFiltersRawChange');
     };
-
 });
 ;app.controller('HomePageController', function($scope, $http, $rootScope, $sce) {
     $scope.hideSlider = false;

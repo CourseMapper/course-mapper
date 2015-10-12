@@ -2,7 +2,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.comment = {};
 
-
     $scope.editRawText = [];
     $scope.editMode = -1;
 
@@ -10,6 +9,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.replyMode = -1;
 
     $scope.comments = [];
+    $scope.replies = [];
 
     $scope.orderType = false;
     $scope.orderBy = false;
@@ -150,20 +150,22 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     };
 
-    $scope.submitReply = function (resultVarName) {
+    $scope.submitReply = function (id) {
+
+
       var config = {
         params: {
-          rawText: $scope.replyRawText[$scope.replyMode],
+          rawText: $scope.replyRawText[id],
           author: $scope.currentUser.username,
           authorID: $scope.currentUser._id,
           pageNumber: $scope.currentPageNumber,
           numOfAnnotationZones: 0,
           pdfId: $scope.pdfFile._id,
           hasParent: true,
-          parentId: $scope.replyMode
+          parentId: id
         }
       };
-
+      console.log(config);
 
 
 
@@ -469,13 +471,15 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
 
             $scope.editMode = -1;
-            for (var i in $scope.comments) {
+            /*for (var i in $scope.comments) {
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
 
 
-            }
+            }*/
+            $scope.comments = [];
+            $scope.replies = [];
 
             for(var item in data.comments) {
               if(data.comments[item].hasParent == false) {
@@ -689,7 +693,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           $scope.replyRawText[$scope.replyMode] = name + ' ';
         else {
           var len = $scope.replyRawText[$scope.replyMode].length;
-          var firstPart = $scope.replyRawText[$scope.replyMode]].substring(0,len-6);
+          var firstPart = $scope.replyRawText[$scope.replyMode].substring(0,len-6);
           var lastPart = $scope.replyRawText[$scope.replyMode].substring(len-6);
           $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
         }
@@ -735,5 +739,4 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       delete $scope.filtersRaw[id];
       $scope.$broadcast('onFiltersRawChange');
     };
-
 });

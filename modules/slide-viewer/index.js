@@ -28,8 +28,8 @@ Comment.prototype.submitAnnotation = function(err, params, done){
 Comment.prototype.submitReplyAnnotation = function(err, params,done){
   var temp = this.convertRawText;
 
-  //var htmlEscapedRawText = validator.escape(params.rawText);
-  var htmlEscapedRawText = params.rawText;
+  var htmlEscapedRawText = validator.escape(params.rawText);
+  //var htmlEscapedRawText = params.rawText;
   temp(htmlEscapedRawText,function(renderedText){
     var annotationsPDF = new AnnotationsPDF({
       rawText: htmlEscapedRawText,
@@ -41,6 +41,8 @@ Comment.prototype.submitReplyAnnotation = function(err, params,done){
       hasParent: params.hasParent,
       parentId: params.parentId
     });
+
+    console.log(annotationsPDF);
 
     // save it to db
     annotationsPDF.save(function (errBool) {
