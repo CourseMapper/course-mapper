@@ -50,14 +50,6 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
                   else {
                     var updatedAnnotationZonePDF = {
                       annotationZoneName: currentTag.annotationZoneName,
-                      relativeCoordinates: {
-                          X: currentTag.relativeCoordinates.X,
-                          Y: currentTag.relativeCoordinates.Y
-                      },
-                      relativeDimensions: {
-                          X: currentTag.relativeDimensions.X,
-                          Y: currentTag.relativeDimensions.Y
-                      },
                       color: currentTag.color
                     };
 

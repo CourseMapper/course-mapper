@@ -220,6 +220,7 @@ router.get('/disAnnZones/:pdfId/:pdfPageNumber', function(req, res, next){
         _id:  data[i]._id,
         id:  data[i].id,
         name: data[i].annotationZoneName,
+        author: data[i].author,
         relPosX: data[i].relativeCoordinates.X,
         relPosY: data[i].relativeCoordinates.Y,
         relWidth: data[i].relativeDimensions.X,
