@@ -2741,6 +2741,67 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     };*/
 
+      $rootScope.removeAllActiveAnnotationZones = function () {
+        for(var inputId in $scope.tagNamesList) {
+            var element = $("#annotationZone #"+inputId);
+
+            //var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
+
+          //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
+          //var inputId = element.attr("id");*/
+          console.log(angular.element($("#annZoneList")).scope().tagNamesList);
+          console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
+          console.log(inputId);
+          delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
+          angular.element($("#annZoneList")).scope().timeout();
+
+          //annotationInList.parent().remove();
+          element.remove();
+
+          delete $scope.tagNameErrors[inputId];
+          delete $scope.tagNamesList[inputId];
+
+
+          /*var element = $(childElement).parent();
+          var rectId = element.find("#rectangleId").val();
+          var rectElement = $("#"+rectId);
+          rectElement.remove();
+          element.remove();*/
+        }
+      };
+
+    $rootScope.removeAnnotationZone = function (id) {
+      var element = $("#annotationZone #"+id);
+
+      var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
+
+      //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
+      var inputId = element.attr("id");
+      console.log(angular.element($("#annZoneList")).scope().tagNamesList);
+      console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
+      console.log(inputId);
+      delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
+      angular.element($("#annZoneList")).scope().timeout();
+
+      annotationInList.parent().remove();
+      element.remove();
+
+      delete $scope.tagNameErrors[id];
+      delete $scope.tagNamesList[id];
+
+
+      /*var element = $(childElement).parent();
+      var rectId = element.find("#rectangleId").val();
+      var rectElement = $("#"+rectId);
+      rectElement.remove();
+      element.remove();*/
+
+    };
+
+//    $scope.removeAnnotationZone = function (id) {
+      //$rootScope.removeAnnotationZone(id);
+    //};
+
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
         //console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
@@ -3487,6 +3548,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.$watch("writeCommentMode", function (newValue, oldValue) {
       if(newValue == true)
         $scope.editMode = -1;
+      else {
+        $rootScope.removeAllActiveAnnotationZones();
+        $scope.comment.rawText = "";
+      }
     });
 
     $scope.annotationZoneAction = function(){

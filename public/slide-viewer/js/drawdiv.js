@@ -491,7 +491,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
     removeElement = $('<button/>', {
         class: "btn btn-white btn-link",
-        onclick: "removeAnnotationZone('" + rectPrefix + divCounter + "');",
+        "ng-click": "removeAnnotationZone('" + rectPrefix + divCounter + "');",
         text: "X",
     });
 

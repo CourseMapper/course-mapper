@@ -87,7 +87,7 @@ function drawAnnZonesWhenPDFAndDBDone() {
   }
 };
 
-function removeAnnotationZone(id) {
+/*function removeAnnotationZone(id) {
   var element = $("#annotationZone #"+id);
 
   var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
@@ -109,7 +109,7 @@ function removeAnnotationZone(id) {
   rectElement.remove();
   element.remove();*/
 
-};
+//};
 
 function addAnnotationZoneElement(element) {
 

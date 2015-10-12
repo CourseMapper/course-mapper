@@ -596,6 +596,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.$watch("writeCommentMode", function (newValue, oldValue) {
       if(newValue == true)
         $scope.editMode = -1;
+      else {
+        $rootScope.removeAllActiveAnnotationZones();
+        $scope.comment.rawText = "";
+      }
     });
 
     $scope.annotationZoneAction = function(){
