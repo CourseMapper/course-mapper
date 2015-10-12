@@ -26,62 +26,24 @@
       "runOn": "server"
     },
     {
-      "name": "Top Contributors",
+      "name": "Enrolled Users",
       "location": "course-preview",
-      "description": "List of top contributor for current course",
-      "entryPoint": "/course-analytics/ca-preview-top-contributors",
-      "widgetJavascript": ["ca-preview-top-contributors.js"],
+      "description": "List of users that enrolled to the course",
+      "entryPoint": "/course-analytics/ca-enrolled-users",
+      "widgetJavascript": ["ca-enrolled-users.js"],
       "width": 12,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "Course Statistics",
-      "location": "course-preview",
-      "description": "Course Statistics data for current course",
-      "entryPoint": "/course-analytics/ca-preview-statistics",
-      "widgetJavascript": ["ca-preview-statistics.js"],
-      "width": 12,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "Top Contributors analytics",
+      "name": "Enrolled User List",
       "location": "course-analytics",
-      "description": "List of top contributor for current course",
-      "entryPoint": "/course-analytics/ca-top-contributors",
-      "widgetJavascript": ["ca-top-contributors.js"],
+      "description": "List of users that enrolled to the course",
+      "entryPoint": "/course-analytics/ca-enrolled-users",
+      "widgetJavascript": ["ca-enrolled-users.js"],
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "Course Statistics analytics",
-      "location": "course-analytics",
-      "description": "Course Statistics data for current course",
-      "entryPoint": "/course-analytics/ca-statistics",
-      "widgetJavascript": ["ca-statistics.js"],
-      "width": 4,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "History analytics",
-      "location": "course-analytics",
-      "description": "Bar graph to show history analytics for current course",
-      "entryPoint": "/course-analytics/ca-history-analytics",
-      "widgetJavascript": [ "../chartjs/Chart.min.js", "../chartjs/angular-chart.min.js", "ca-history-analytics.js" ],
-      "width": 7,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "node topic",
-      "location": "node-icon-analytics",
-      "description": "analytic icons in node topic",
-      "entryPoint": "/course-analytics/icon-analytics.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
     }
   ]
 }
