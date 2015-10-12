@@ -30,8 +30,11 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       console.log(color);
       $scope.editZoneMode = id;
 
+      var ele = $('select[name="colorpicker-change-background-color2"]');
+      ele.parent().find(".simplecolorpicker").remove();
+      ele.parent().css({"margin-left":"0px"});
+      ele.remove();
 
-      
 
       var nColorPickerEditInput = $('<select/>');
       nColorPickerEditInput.attr("name","colorpicker-change-background-color2");
@@ -57,9 +60,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $('select[name="colorpicker-change-background-color2"]').simplecolorpicker("selectColor",color);
 
 
-//      $('#destroy').on('click', function() {
-        //$('select').simplecolorpicker('destroy');
-      //});
+      /*$('#destroy').on('click', function() {
+        $('select').simplecolorpicker('destroy');
+      });*/
       // By default, activate simplecolorpicker plugin on HTML selects
       //$('#init').trigger('click');
 
