@@ -3393,10 +3393,24 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       $scope.editRawText = [];
       if(bool) {
         $scope.editMode = id;
+        $scope.replyMode = -1;
         $scope.writeCommentMode = false;
       }
       else if($scope.editMode == id){
         $scope.editMode = -1;
+      }
+    };
+
+    $scope.changeReplyMode = function (id, bool) {
+      //$scope.finalEditRawText = "";
+      $scope.replyRawText = [];
+      if(bool) {
+        $scope.replyMode = id;
+        $scope.editMode = -1;
+        $scope.writeCommentMode = false;
+      }
+      else if($scope.replyMode == id){
+        $scope.replyMode = -1;
       }
     };
 
@@ -3565,8 +3579,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$watch("writeCommentMode", function (newValue, oldValue) {
-      if(newValue == true)
+      if(newValue == true) {
         $scope.editMode = -1;
+        $scope.replyMode = -1;
+      }
       else {
         $rootScope.removeAllActiveAnnotationZones();
         $scope.comment.rawText = "";
@@ -3599,9 +3615,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.addReference = function(name) {
-      console.log("got here");
       //$rootScope.safeApply(function() {
-      if($scope.editMode == -1) {
+      if($scope.writeCommentMode) {
         if(typeof $scope.comment.rawText == 'undefined')
           $scope.comment.rawText = name + ' ';
         else {
@@ -3611,8 +3626,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
           $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
         }
       }
-      else {
-        console.log("did it");
+      else if($scope.editMode != -1){
         if(typeof $scope.editRawText[$scope.editMode] == 'undefined')
           $scope.editRawText[$scope.editMode] = name + ' ';
         else {
@@ -3620,6 +3634,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
           var firstPart = $scope.editRawText[$scope.editMode].substring(0,len-6);
           var lastPart = $scope.editRawText[$scope.editMode].substring(len-6);
           $scope.editRawText[$scope.editMode] = firstPart + ' ' + name + ' ' + lastPart;
+        }
+      }
+      else if($scope.replyMode != -1){
+        if(typeof $scope.replyRawText[$scope.replyMode] == 'undefined')
+          $scope.replyRawText[$scope.replyMode] = name + ' ';
+        else {
+          var len = $scope.replyRawText[$scope.replyMode].length;
+          var firstPart = $scope.replyRawText[$scope.replyMode]].substring(0,len-6);
+          var lastPart = $scope.replyRawText[$scope.replyMode].substring(len-6);
+          $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
         }
       }
 
@@ -3630,8 +3654,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       //});
     };
 
-    $scope.setRawText = function(id,newText) {
+    $scope.setEditRawText = function(id,newText) {
       $scope.editRawText[id] = newText;
+      $timeout(function () {
+          $scope.$apply();
+      });
+    };
+
+    $scope.setReplyRawText = function(id,newText) {
+      $scope.replyRawText[id] = newText;
       $timeout(function () {
           $scope.$apply();
       });

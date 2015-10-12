@@ -138,7 +138,7 @@
                                          show-delete-button="true"
                                          delete-action="deleteCommentById(comment.id)"
                                          show-edit-button="true"
-                                         edit-action="changeEditMode(comment._id, true);setRawText(comment._id,comment.html);"
+                                         edit-action="changeEditMode(comment._id, true);setEditRawText(comment._id,comment.html);"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                          ng-hide="editMode == comment._id"
