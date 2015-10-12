@@ -268,7 +268,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
         }
 
         $scope.isLoading = true;
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -303,6 +303,10 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
     $scope.cancel = function(){
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+
+        if($scope.upload){
+            $scope.upload.abort();
+        }
     };
 });
 ;
@@ -1189,7 +1193,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.isLoading = true;
 
-        Upload.upload(
+        $scope.upload = Upload.upload(
             uploadParams
 
         ).progress(function (evt) {
@@ -1207,7 +1211,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
 
             }).success(function (data, status, headers, config) {
-                console.log(data);
 
                 if(data.result) {
                     data.treeNode['resources'] = [];
@@ -1253,6 +1256,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.cancel = function(){
+        if($scope.upload){
+            $scope.upload.abort();
+        }
+
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     }
 });
@@ -2894,7 +2901,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.comment = {};
 
 
-    $scope.editRawText = "";
+    $scope.finalEditRawText = "";
+    $scope.editRawText = [];
 
     $scope.editMode = -1;
     $scope.orderType = false;
@@ -3161,17 +3169,14 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.submitEdit = function (comment) {
-      $timeout(function () {
-          $scope.$apply();
-      });
 
-      console.log("SUBMITTING: " + $scope.editRawText);
+
       var config = {
           params: {
               updateId: comment._id,
               author: $scope.currentUser.username,
               authorId: $scope.currentUser._id,
-              rawText: $scope.editRawText
+              rawText: $scope.editRawText[$scope.editMode]
           }
       };
 
@@ -3323,7 +3328,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.changeEditMode = function (id, bool) {
-      $scope.editRawText = "";
+      //$scope.finalEditRawText = "";
+      $scope.editRawText = [];
       if(bool) {
         $scope.editMode = id;
         $scope.writeCommentMode = false;
@@ -3335,7 +3341,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.updateScope = function(url) {
         $http.get(url).success(function (data) {
-            console.log('COMMENTS UPDATED');
+            //console.log('COMMENTS UPDATED');
             //console.log("url: " + url);
 
 
@@ -3516,17 +3522,30 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.addReference = function(name) {
+      console.log("got here");
       //$rootScope.safeApply(function() {
-      if(typeof $scope.comment.rawText == 'undefined')
-        $scope.comment.rawText = name + ' ';
-      else {
-        var len = $scope.comment.rawText.length;
-        var firstPart = $scope.comment.rawText.substring(0,len-6);
-        var lastPart = $scope.comment.rawText.substring(len-6);
-        $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+      if($scope.editMode == -1) {
+        if(typeof $scope.comment.rawText == 'undefined')
+          $scope.comment.rawText = name + ' ';
+        else {
+          var len = $scope.comment.rawText.length;
+          var firstPart = $scope.comment.rawText.substring(0,len-6);
+          var lastPart = $scope.comment.rawText.substring(len-6);
+          $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+        }
       }
-      //console.log($scope.comment.rawText);
-      //Quill.editors[i].focus();
+      else {
+        console.log("did it");
+        if(typeof $scope.editRawText[$scope.editMode] == 'undefined')
+          $scope.editRawText[$scope.editMode] = name + ' ';
+        else {
+          var len = $scope.editRawText[$scope.editMode].length;
+          var firstPart = $scope.editRawText[$scope.editMode].substring(0,len-6);
+          var lastPart = $scope.editRawText[$scope.editMode].substring(len-6);
+          $scope.editRawText[$scope.editMode] = firstPart + ' ' + name + ' ' + lastPart;
+        }
+      }
+
       $timeout(function () {
           $scope.$apply();
           $scope.commentsLoaded();
@@ -3534,19 +3553,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       //});
     };
 
-    $scope.setRawText = function(newText) {
-      console.log($scope.editRawText);
-      console.log("TO");
-      console.log(newText);
-      $scope.editRawText = newText;
+    $scope.setRawText = function(id,newText) {
+      $scope.editRawText[id] = newText;
       $timeout(function () {
           $scope.$apply();
       });
     };
 
-    $scope.$watch("editRawText", function (newValue, oldValue) {
+    /*$scope.$watch("editRawText", function (newValue, oldValue) {
       console.log("REGISTERED CHANGE");
-    });
+    });*/
 
     $rootScope.safeApply = function(fn) {
             var phase = this.$root.$$phase;
@@ -3557,6 +3573,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             } else {
                 this.$apply(fn);
             }
+    };
+
+    $scope.removeFilterRawField = function (id) {
+      delete $scope.filtersRaw[id];
+      $scope.$broadcast('onFiltersRawChange');
     };
 
 });

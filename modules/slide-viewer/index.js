@@ -124,7 +124,6 @@ Comment.prototype.updateAnnotation = function(err,params,done) {
   if(typeof params.updateId != 'undefined') {
     this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
       if(success) {
-        console.log("Confirmed ownership");
         var temp = Comment.prototype.convertRawText;
 
         //var htmlEscapedRawText = validator.escape(params.rawText);
@@ -136,7 +135,7 @@ Comment.prototype.updateAnnotation = function(err,params,done) {
           };
 
           // save it to db
-          AnnotationsPDF.update({_id: params.Id}, updatedAnnotationsPDF, function (errBool) {
+          AnnotationsPDF.update({_id: params.updateId}, updatedAnnotationsPDF, function (errBool) {
             if (errBool) {
               err("Server Error: Unable to update annotation");
             } else {

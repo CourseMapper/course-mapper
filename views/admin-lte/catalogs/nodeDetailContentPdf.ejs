@@ -1,6 +1,6 @@
 <div class="row">
 
-    <div class="col-xs-11" ng-controller="CommentListController">
+    <div id="commentController" class="col-xs-11" ng-controller="CommentListController">
 
         <div class="slide-container col-sm-8 col-md-8">
             <div id="viewerWrapper">
@@ -110,19 +110,21 @@
 
             <div class="commentZoneList">
 
-                    <div>
+                    <!--<div>
                       <label id="activeFilterLabel" ng-bind="activeFilterString"></label>
                       <button class="btn btn-white btn-link" ng-click="removeActiveFilters();" style="color:black;">X</button>
+                    </div>-->
+                    <div class="filter-wrapper col-xs-1">
+                      <span class="filter-header">Filter:</span>
+                    </div>
+                    <div class="col-xs-11">
+                      <!--<span class="filter-header">None</span>-->
+                      <button type="button" class="btn btn-default btn-xs filter-tag" ng-hide="((key == 'pdfId')||(key == 'pdfPageNumber')) " ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
+                        <span class="glyphicon glyphicon-remove " aria-hidden="true" ></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
+                      </button>
                     </div>
                     <div id="commentList" class="row">
-                        <!--<div class="filter-wrapper col-xs-1">
-                          <span class="filter-header">Filter:</span>
-                        </div>
-                        <div class="col-xs-11">
-                          <button type="button" class="btn btn-default btn-xs filter-tag">
-                            <span class="glyphicon glyphicon-remove " aria-hidden="true"></span> Star
-                          </button>
-                        </div>-->
+
 
                         <div class="replies" ng-repeat="comment in comments" ng-cloak>
                             <div class="col-xs-11">
@@ -136,7 +138,7 @@
                                          show-delete-button="true"
                                          delete-action="deleteCommentById(comment.id)"
                                          show-edit-button="true"
-                                         edit-action="changeEditMode(comment._id, true);setRawText(comment.html);"
+                                         edit-action="changeEditMode(comment._id, true);setRawText(comment._id,comment.html);"
                                          author-clickable="true"
                                          author-click-action="authorLabelClick(comment.author)"
                                          ng-hide="editMode == comment._id"
@@ -144,7 +146,7 @@
                                 <div ng-hide="editMode != comment._id">
                                   You are editing your post:
                                   <div id="editQuill_{{comment._id}}" name="editQuill"
-                                       ng-model="editRawText"
+                                       ng-model="editRawText[comment._id]"
                                        quill
                                        >
                                   </div>

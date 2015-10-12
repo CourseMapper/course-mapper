@@ -20,7 +20,7 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
   // save it to db
   annotationZonePDF.save(function (err) {
       if (err) {
-          console.log('annotation submitting error2');
+          //console.log('annotation submitting error2');
           // call error callback
           console.log(err);
           //errorCallback(err);
@@ -246,7 +246,7 @@ function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
     // save it to db
     annotationZonePDF.save(function (err) {
         if (err) {
-            console.log('annotation submitting error');
+            //console.log('annotation submitting error');
             // call error callback
             callback(false);
             //errorCallback(err);
