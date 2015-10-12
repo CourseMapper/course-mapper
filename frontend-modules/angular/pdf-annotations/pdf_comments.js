@@ -32,7 +32,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $scope.writeCommentMode = false;
 
     $scope.exampleComments = [
-        {author:'a',text:'b',date_created:'2015-09-28T13:13:50.038+0000'},
+        {_id: 'kdk83893ks999887juj',author:'a',text:'b',date_created:'2015-09-28T13:13:50.038+0000', isAuthor:true},
         {author:'c',text:'d',date_created:'2015-09-28T13:13:50.038+0000'}
     ];
 

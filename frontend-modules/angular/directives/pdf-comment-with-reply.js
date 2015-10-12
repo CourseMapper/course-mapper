@@ -33,6 +33,10 @@ app.directive('pdfComment',
 
                 $scope.postComment = function(){
                     alert($scope.commentText);
+                };
+
+                $scope.removeComment = function(commentId){
+                    alert(commentId);
                 }
             }
         };
