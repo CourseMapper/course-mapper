@@ -409,9 +409,13 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
     if (canMove) {
 
       //Need to be redone again.
-      caElement.click(function () {
-        angular.element($("#commentController")).scope().addReference("#"+$(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val());
-        /*
+      caElement.click(function(evt) {
+          console.log()
+          if(!$(evt.target).hasClass('simplecolorpicker')){
+            angular.element($("#commentController")).scope().addReference("#"+$(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val());
+          }
+
+          /*
         //check if commentbox is displayed and mouse wasnt move during mousedown event
         if($('#commentSubmissionDiv').css('display')!='none' && mousemovedbool==false){
         //check if entered string is neither empty nor whitespaced
@@ -642,6 +646,7 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
 
 
 
+
     }
     //wrapperElement.append(debuggingTextElement);
     caElement.append(wrapperElement);
@@ -658,7 +663,6 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
     if (canMove) {
 
       $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
-
       $('#destroy').on('click', function() {
         $('select').simplecolorpicker('destroy');
       });
