@@ -22,6 +22,9 @@ router.get('/my-following-courses', function(req, res, next) {
     res.render('my-course/following-course');
 });
 
+router.get('/my-enrolled-courses', function(req, res, next) {
+    res.render('my-course/enrolled-courses');
+});
 
 
 //routes to my-activity-summary

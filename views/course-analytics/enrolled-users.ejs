@@ -1,0 +1,14 @@
+<div class="box-body no-padding" ng-controller="UserListEnrolledController">
+    <table class="table table-striped">
+        <tbody>
+        <tr>
+            <th style="width:10px;">Nr.</th>
+            <th>{{title}}</th>
+        </tr>
+        <tr ng-repeat="user in userList">
+            <td>{{$index+1}}</td>
+            <td>{{user.user.username}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

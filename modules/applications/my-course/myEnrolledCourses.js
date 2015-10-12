@@ -28,7 +28,6 @@ enrolledCourses.prototype.getEnrolledCourses = function (error, params, done) {
         else {
 
             self.getCreatedCourses(error, params, function (docs){
-                //var retArr = _.merge(docs, res);
                 done(
                     {
                         created: docs,

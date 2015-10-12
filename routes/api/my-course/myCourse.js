@@ -28,10 +28,7 @@ router.get('/', function(req, res, next) {
                 user: mongoose.Types.ObjectId(req.user._id)
             },
             function success(courses){
-                //if(courses.length > 0)
                     res.status(200).json({result:true, courses:courses});
-                //else
-                //    res.status(200).json({result:true, courses:null});
             }
         );
 

@@ -24,6 +24,16 @@
       "entryPoint": "/course-analytics/course-list-createdDate.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
+    },
+    {
+      "name": "Enrolled Users",
+      "location": "course-preview",
+      "description": "List of users that enrolled to the course",
+      "entryPoint": "/course-analytics/ca-enrolled-users",
+      "widgetJavascript": ["ca-enrolled-users.js"],
+      "width": 12,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
     }
   ]
 }

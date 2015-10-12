@@ -10,6 +10,16 @@
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Enrolled Course List",
+      "location": "user-profile",
+      "description": "Will list all your enrolled and created courses",
+      "entryPoint": "/my-course/my-enrolled-courses",
+      "widgetJavascript": ["my-enrolled-courses.js"],
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
     }
   ]
 }
