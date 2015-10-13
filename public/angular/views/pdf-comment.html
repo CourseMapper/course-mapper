@@ -47,13 +47,14 @@
                 <div class="input-group input-group-sm">
                     <input placeholder="Write a comment..." type="text" ng-model="commentText" class="form-control">
                     <span class="input-group-btn">
-                      <button class="btn btn-primary btn-flat" type="submit" ng-click="postComment()">reply</button>
+                      <button class="btn btn-primary btn-flat" type="submit" ng-click="postComment()">REPLY</button>
                     </span>
                 </div>
             </div>
+            <br>
             <section ng-repeat="comment in comments">
                 <div class="box box-solid">
-                    <div class="box-body">
+                    <div class="box-body cmtBx">
                             <span class="posted-at">
                               Posted <strong>{{comment.date_created | relativeDate}}</strong>
                               By <strong><span>{{comment.author}}</span></strong>
@@ -61,14 +62,15 @@
 
                         <p class="reply">{{comment.html}}</p>
                     </div>
-                    <div class="box-footer">
+
+                    <!--<div class="box-footer">
                         <div class="replyControl">
                             <a ng-show="comment.isAuthor"
                                ng-click="removeComment(comment._id)"
                                title="delete"
                                class="cursor btn btn-danger btn-xs">DELETE</a>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
             </section>
         </article>
