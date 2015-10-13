@@ -53,7 +53,13 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       wrapperElement.prepend(nColorPickerEditInput);
       wrapperElement.css({"margin-left":"-20px"});
 
-
+      //$("#rect-"+divCounter).css({opacity:"0.75"});
+      $("#rect-"+divCounter).hover(function () {
+          $(this).stop().fadeTo("fast", "0.75");
+      }, function () {
+          $(this).stop().fadeTo("fast", "0.75");
+      });
+      $("#rect-"+divCounter).css('border', ' 1px dashed white');
 
       $('select[name="colorpicker-change-background-color2"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
       $('select[name="colorpicker-change-background-color2"]').simplecolorpicker("selectColor",color);
