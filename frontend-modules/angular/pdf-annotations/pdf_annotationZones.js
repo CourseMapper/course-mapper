@@ -331,6 +331,25 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       }
     }
 
+    $rootScope.nameHasNoError = function (name) {
+      
+      for(var key in $scope.tagNameErrors) {
+        if($scope.tagNameErrors[key].name == name.substring(1)) {
+          if($scope.tagNameErrors[key].text == "") {
+            console.log("1");
+            return true;
+          }
+          else {
+            console.log("2");
+            return false;
+          }
+        }
+      }
+      console.log("3");
+      return true;
+    };
+
+
     $rootScope.clearTagNameErrors = function () {
       /*for(var key in $scope.tagNameErrors) {
         delete $scope.tagNameErrors[key];
