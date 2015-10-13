@@ -3355,7 +3355,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.deleteCommentById = function (id) {
-      console.log(id);
+      //console.log(id);
       var config = {
           params: {
               deleteId: id,

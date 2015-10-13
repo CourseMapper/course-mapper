@@ -195,7 +195,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.deleteCommentById = function (id) {
-      console.log(id);
+      //console.log(id);
       var config = {
           params: {
               deleteId: id,
