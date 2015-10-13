@@ -2797,6 +2797,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };*/
 
     $scope.setEditZoneMode = function(id,divCounter,color) {
+      $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
 
@@ -2855,7 +2856,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     };
 
-    $scope.resetEditZoneMode = function() {
+    $rootScope.resetEditZoneMode = function() {
       $scope.editZoneMode = -1;
 
       var ele = $('select[name="colorpicker-change-background-color2"]');
@@ -2903,7 +2904,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
               $scope.writeCommentMode = false;
               $scope.replyRawText = [];
               $scope.replyMode = -1;
-              $scope.resetEditZoneMode();
+              $rootScope.resetEditZoneMode();
 
           })
           .error(function (data, status, headers, config) {
@@ -3572,10 +3573,18 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         $scope.editMode = id;
         $scope.replyMode = -1;
         $scope.writeCommentMode = false;
+        $rootScope.resetEditZoneMode();
       }
       else if($scope.editMode == id){
         $scope.editMode = -1;
       }
+    };
+
+    $rootScope.resetEditAndReplyMode = function (){
+      $scope.editMode = -1;
+      $scope.replyMode = -1;
+      $scope.writeCommentMode = false;
+      
     };
 
     $scope.changeReplyMode = function (id, bool) {
@@ -3585,6 +3594,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         $scope.replyMode = id;
         $scope.editMode = -1;
         $scope.writeCommentMode = false;
+        $rootScope.resetEditZoneMode();
       }
       else if($scope.replyMode == id){
         $scope.replyMode = -1;
@@ -3761,6 +3771,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       if(newValue == true) {
         $scope.editMode = -1;
         $scope.replyMode = -1;
+        $rootScope.resetEditZoneMode();
       }
       else {
         $rootScope.removeAllActiveAnnotationZones();
