@@ -181,12 +181,13 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
                 err("Server Error: Unable to update annotation");
               } else {
                 console.log("HERE5");
-                done();
+
               }
             });
           });
         }
       }
+      done();
     }
   });
 
