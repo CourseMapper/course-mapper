@@ -110,7 +110,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         }
       };
 
-      console.log(config);
+      //console.log(config);
 
 
 
@@ -149,9 +149,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
           //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
           //var inputId = element.attr("id");*/
-          console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-          console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-          console.log(inputId);
+          //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
+          //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
+          //console.log(inputId);
           delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
           angular.element($("#annZoneList")).scope().timeout();
 
@@ -177,9 +177,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
       var inputId = element.attr("id");
-      console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-      console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-      console.log(inputId);
+      //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
+      //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
+      //console.log(inputId);
       delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
       angular.element($("#annZoneList")).scope().timeout();
 
@@ -230,7 +230,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -240,7 +240,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     });
 
     $scope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -346,16 +346,13 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       for(var key in $scope.tagNameErrors) {
         if($scope.tagNameErrors[key].name == name.substring(1)) {
           if($scope.tagNameErrors[key].text == "") {
-            console.log("1");
             return true;
           }
           else {
-            console.log("2");
             return false;
           }
         }
       }
-      console.log("3");
       return true;
     };
 

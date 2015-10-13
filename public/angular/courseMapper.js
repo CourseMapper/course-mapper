@@ -1643,12 +1643,9 @@ app.directive('movable', function () {
                 $(window).resize(function () {
                   //console.log($location.search().tab );
                   if($location.search().tab == "pdf") {
-                    console.log("Got called");
-                    console.log($scope.scale);
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
-                    console.log($scope.scale);
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
                     $rootScope.$broadcast('reloadTags');
@@ -2890,7 +2887,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
       };
 
-      console.log(config);
+      //console.log(config);
 
 
 
@@ -2929,9 +2926,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
           //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
           //var inputId = element.attr("id");*/
-          console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-          console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-          console.log(inputId);
+          //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
+          //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
+          //console.log(inputId);
           delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
           angular.element($("#annZoneList")).scope().timeout();
 
@@ -2957,9 +2954,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
       //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
       var inputId = element.attr("id");
-      console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-      console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-      console.log(inputId);
+      //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
+      //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
+      //console.log(inputId);
       delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
       angular.element($("#annZoneList")).scope().timeout();
 
@@ -3010,7 +3007,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -3020,7 +3017,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$on('reloadTags', function(event) {
-      console.log("LOADED RESET");
+      //console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -3126,16 +3123,13 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       for(var key in $scope.tagNameErrors) {
         if($scope.tagNameErrors[key].name == name.substring(1)) {
           if($scope.tagNameErrors[key].text == "") {
-            console.log("1");
             return true;
           }
           else {
-            console.log("2");
             return false;
           }
         }
       }
-      console.log("3");
       return true;
     };
 

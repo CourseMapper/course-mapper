@@ -31,7 +31,7 @@ function commentsLoaded(){
     //console.log("ADDED CLICK FUNCTION");
     //console.log($("#commentList .annotationZoneReference").length);
     $("#commentList .annotationZoneReference").not('.hasOnClick').click(function(){
-      console.log("TEST:");
+      //console.log("TEST:");
       switchRegexFilter("renderedText",$(this).html());
     });
     $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
@@ -290,5 +290,6 @@ function switchCommentSubmissionDisplay() {
 */
 
 function displayDebug() {
-  console.log("TAGNAMELIST: "+ angular.element($("#annZoneList")).scope().tagNames);
+  //console.log("TAGNAMELIST: "+ angular.element($("#annZoneList")).scope().tagNames);
+  ;
 }

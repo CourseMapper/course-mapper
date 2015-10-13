@@ -83,7 +83,7 @@ Comment.prototype.submitReplyAnnotation = function(err, params,done){
       parentId: params.parentId
     });
 
-    console.log(annotationsPDF);
+    //console.log(annotationsPDF);
 
     // save it to db
     annotationsPDF.save(function (errBool) {
@@ -316,9 +316,9 @@ Comment.prototype.convertRawText = function(rawText,callback){
 
     var renderedText = rawText.replace(/#(\w+)/g, function(x){
         var comm = new Comment();
-        console.log("Found tag with name: "+x);
+        //console.log("Found tag with name: "+x);
         if(comm.checkTagName(x,tagNameList) != -1){
-          console.log("Checked tag with name: "+x);
+          //console.log("Checked tag with name: "+x);
 
           var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[comm.checkTagName(x,tagNameList)] + "'>" + x + "</label>";
           return ret;
@@ -441,21 +441,21 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
     if(typeof filters["renderedText"] != 'undefined') {
       if(typeof filters["renderedText"]["regex_hash"] != 'undefined'){
         filters["renderedText"] = new RegExp('#' + filters["renderedText"]["regex_hash"],'i');
-        console.log("found tag request");
+        //console.log("found tag request");
       }
     }
 
     if(typeof filters["renderedText"] != 'undefined') {
       if(typeof filters["renderedText"]["regex"] != 'undefined'){
         filters["renderedText"] = new RegExp(filters["renderedText"]["regex"],'i');
-        console.log("found tag request");
+        //console.log("found tag request");
       }
     }
 
     if(typeof filters["rawText"] != 'undefined') {
       if(typeof filters["rawText"]["regex"] != 'undefined'){
         filters["rawText"] = new RegExp(filters["rawText"]["regex"],'i');
-        console.log("found tag request");
+        //console.log("found tag request");
       }
     }
 

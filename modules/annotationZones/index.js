@@ -139,7 +139,7 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
   var ann = new Comments();
   ann.updateAllReferences(oldName,newName,pdfId,err,done);*/
   var convertRaw = AnnZones.prototype.convertRawText2;
-  console.log(convertRaw);
+  //console.log(convertRaw);
 
   var newName2 = validator.escape(newName);
 
@@ -168,19 +168,19 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
         });
         //console.log("HEREEE");
         if(changed) {
-          console.log("BLUB");
+          //console.log("BLUB");
           convertRaw(newRawText, function(newRenderedText){
             var newText = {
               rawText: newRawText,
               renderedText: newRenderedText
             };
-            console.log("HERE2");
+            //console.log("HERE2");
             //console.log(newText);
             AnnotationsPDF.update({_id: data[key].id}, newText, function (errBool) {
               if (errBool) {
                 err("Server Error: Unable to update annotation");
               } else {
-                console.log("HERE5");
+                //console.log("HERE5");
 
               }
             });
@@ -214,7 +214,7 @@ AnnZones.prototype.checkOwnership = function(id,author,authorId,callback) {
 };
 
 AnnZones.prototype.getAnnZoneById = function(id,callback) {
-  console.log(id);
+  //console.log(id);
   AnnotationZonesPDF.findOne({
     _id: id
   }, function (err, data) {

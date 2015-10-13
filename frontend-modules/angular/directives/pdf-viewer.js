@@ -163,12 +163,9 @@ app.directive('pdfViewer',
                 $(window).resize(function () {
                   //console.log($location.search().tab );
                   if($location.search().tab == "pdf") {
-                    console.log("Got called");
-                    console.log($scope.scale);
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
-                    console.log($scope.scale);
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
                     $rootScope.$broadcast('reloadTags');

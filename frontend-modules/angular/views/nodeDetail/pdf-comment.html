@@ -59,7 +59,7 @@
                               By <strong><span>{{comment.author}}</span></strong>
                             </span>
 
-                        <p class="reply">{{comment.html}}</p>
+                        <p class="reply" ng-bind-html="comment.html | unsafe"></p>
                     </div>
                     <div class="box-footer">
                         <div class="replyControl">
