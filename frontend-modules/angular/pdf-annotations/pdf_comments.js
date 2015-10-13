@@ -461,7 +461,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       $scope.editMode = -1;
       $scope.replyMode = -1;
       $scope.writeCommentMode = false;
-      
+
     };
 
     $scope.changeReplyMode = function (id, bool) {
@@ -723,18 +723,26 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.setEditRawText = function(id,newText) {
-      $scope.editRawText[id] = newText;
+      $scope.editRawText[id] = strip(newText);
       $timeout(function () {
           $scope.$apply();
       });
     };
 
     $scope.setReplyRawText = function(id,newText) {
+
       $scope.replyRawText[id] = newText;
       $timeout(function () {
           $scope.$apply();
       });
     };
+
+    function strip(html)
+    {
+       var tmp = document.createElement("DIV");
+       tmp.innerHTML = html;
+       return tmp.textContent || tmp.innerText || "";
+    }
 
     /*$scope.$watch("editRawText", function (newValue, oldValue) {
       console.log("REGISTERED CHANGE");
