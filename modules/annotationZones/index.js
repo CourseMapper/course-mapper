@@ -40,11 +40,11 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
     this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
       if(success) {
         AnnotationZonesPDF.findOne({
-            id: params.updateId
+            _id: params.updateId
           },
           function (errB, data) {
             if(!errB) {
-              getAnnZonesById(params.pdfId, function(completed,data2){
+              getAnnZonesById(params.updateId, function(completed,data2){
                 if(completed) {
                   var oldTagList = data2;
                   var currentTag = JSON.parse(params.updatedAnnZone);
@@ -55,16 +55,17 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
                       annotationZoneName: currentTag.annotationZoneName,
                       color: currentTag.color
                     };
-                    var oldName = data2.annotationZoneName;
+                    var oldName = data.annotationZoneName;
+                    //console.log(data);
                     var newName = currentTag.annotationZoneName;
-                    var pdfId = data2.pdfId;
+                    var pdfId = data.pdfId;
                     // save it to db
                     AnnotationZonesPDF.update({_id: params.updateId}, updatedAnnotationZonePDF,function (errB) {
                         if (errB) {
                             err('Server Error: Unable to update annotation zone');
                         } else {
-                            upAllRefs(oldName, newName, pdfId,err,done);
-                            done();
+                            upAllRefs(oldName, newName, pdfId,err,function(){done();});
+
                         }
                     });
                   }
@@ -90,14 +91,59 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
   }
 };
 
+AnnZones.prototype.convertRawText2 = function(rawText,callback){
+
+  var check = AnnZones.prototype.checkTagName;
+
+  AnnZones.prototype.getAllAnnotationZones(function(success,data){
+    //TODO: test for success
+    var tagNameList = [];
+    var tagColorList = [];
+
+    for(var i = 0; i < data.length; i++){
+      tagNameList[i] = data[i].annotationZoneName;
+      tagColorList[i] = data[i].color;
+    }
+    //console.log(data);
+
+
+    var renderedText = rawText.replace(/#(\w+)/g, function(x){
+        if(check(x,tagNameList) != -1){
+
+          var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[check(x,tagNameList)] + "'>" + x + "</label>";
+          return ret;
+        }
+        else {
+          return x;
+        }
+
+    });
+
+    callback(renderedText);
+  });
+};
+
+AnnZones.prototype.checkTagName = function(tagName,tagNameList){
+//    var annZone = new AnnZones();
+//    return annZone.annotationZoneNameExists(tagName);
+  for(var i = 0; i < tagNameList.length; i++){
+    if(tagName == tagNameList[i])
+      return i;
+  }
+  return -1;
+
+};
+
 AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
   /*console.log(AnnotationsPDF);
   var ann = new Comments();
   ann.updateAllReferences(oldName,newName,pdfId,err,done);*/
+  var convertRaw = AnnZones.prototype.convertRawText2;
+  console.log(convertRaw);
 
   var newName2 = validator.escape(newName);
 
-  //console.log("HERE");
+  //console.log(pdfId);
 
   AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
     if(err2) {
@@ -105,6 +151,7 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
     }
     else {
       //console.log("HERE3");
+      //console.log(data);
 
       for(var key in data) {
         var changed = false;
@@ -119,18 +166,21 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
             return x;
           }
         });
+        //console.log("HEREEE");
         if(changed) {
-          this.convertRawText(newRawText, function(newRenderedText){
+          console.log("BLUB");
+          convertRaw(newRawText, function(newRenderedText){
             var newText = {
               rawText: newRawText,
               renderedText: newRenderedText
             };
-            //console.log("HERE2");
+            console.log("HERE2");
             //console.log(newText);
             AnnotationsPDF.update({_id: data[key].id}, newText, function (errBool) {
               if (errBool) {
                 err("Server Error: Unable to update annotation");
               } else {
+                console.log("HERE5");
                 done();
               }
             });
@@ -140,7 +190,8 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
     }
   });
 
-}
+};
+
 
 
 
@@ -162,6 +213,7 @@ AnnZones.prototype.checkOwnership = function(id,author,authorId,callback) {
 };
 
 AnnZones.prototype.getAnnZoneById = function(id,callback) {
+  console.log(id);
   AnnotationZonesPDF.findOne({
     _id: id
   }, function (err, data) {
