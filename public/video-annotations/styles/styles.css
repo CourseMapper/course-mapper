@@ -10,7 +10,7 @@
 .inline-va-annotation {
     position: absolute !important;
     display: table;
-    background: rgba(0, 0, 0, 0.2);;
+    background: rgba(0, 0, 0, 0.2);
     color: #FFFFFF;
 }
 
@@ -52,6 +52,10 @@ video-annotation.showing {
 
 video-annotation.completed {
     opacity: 0.5;
+}
+
+video-annotation.default {
+    opacity: 1.0;
 }
 
 #search-box {

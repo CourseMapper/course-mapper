@@ -15,7 +15,9 @@ function catalog() {
 
 catalog.prototype.getCourse = function (error, params, success) {
     Course.findOne(params)
-        .populate('category courseTags').exec(function (err, doc) {
+        .populate('category courseTags')
+        .populate('createdBy', '_id username displayName')
+        .exec(function (err, doc) {
             if (err) {
                 error(err);
             } else {

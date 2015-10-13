@@ -20,9 +20,12 @@
         <!-- Main content -->
 
         <script type="text/ng-template"  id="tree_item_renderer.html">
-                <div class="w dropdown-toggle" id="{{data.slug}}"
+                <div class="w" id="{{data.slug}}"
                      data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}"
-                     data-shape="Rectangle" >
+                     data-shape="Rectangle"
+                     ng-mouseenter="onCategoryHover(data.slug)"
+                     ng-mouseleave="onCategoryHoverOut(data.slug)"
+                        >
 
                     {{data.name}}
 
