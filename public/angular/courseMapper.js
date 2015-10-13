@@ -1461,7 +1461,8 @@ app.directive('movable', function () {
                 showCommentingArea: '=',
                 comments: '=',
                 postComment: '&',
-                commentText: '='
+                commentText: '=',
+                removeFunction: '&'
             },
 
             templateUrl: '/angular/views/pdf-comment.html',
@@ -1473,8 +1474,12 @@ app.directive('movable', function () {
 
 
                 $scope.removeComment = function(commentId){
-                    alert(commentId);
+                    //var id = commentId;
+                    $scope.removeFunction({id:commentId});
+                    //alert(commentId);
                 }
+
+                //console.log($scope.removeComment);
             }
         };
     });
@@ -3350,6 +3355,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     };
 
     $scope.deleteCommentById = function (id) {
+      console.log(id);
       var config = {
           params: {
               deleteId: id,
@@ -3652,12 +3658,16 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
             for(var item in data.comments) {
               if(data.comments[item].hasParent == false) {
+                //data.comments[item].isAuthor = true;
                 $scope.comments.push(data.comments[item]);
               }
               else if(data.comments[item].hasParent == true){
                 if(typeof $scope.replies[data.comments[item].parentId] == 'undefined') {
                   $scope.replies[data.comments[item].parentId] = [];
                 }
+                //console.log($scope.currentUser.username);
+                //console.log(data.comments[item].author);
+                data.comments[item].isAuthor = (data.comments[item].author == $scope.currentUser.username);
                 $scope.replies[data.comments[item].parentId].push(data.comments[item]);
               }
             }

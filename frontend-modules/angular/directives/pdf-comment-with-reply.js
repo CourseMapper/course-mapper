@@ -24,7 +24,8 @@ app.directive('pdfComment',
                 showCommentingArea: '=',
                 comments: '=',
                 postComment: '&',
-                commentText: '='
+                commentText: '=',
+                removeFunction: '&'
             },
 
             templateUrl: '/angular/views/pdf-comment.html',
@@ -36,8 +37,12 @@ app.directive('pdfComment',
 
 
                 $scope.removeComment = function(commentId){
-                    alert(commentId);
+                    //var id = commentId;
+                    $scope.removeFunction({id:commentId});
+                    //alert(commentId);
                 }
+
+                //console.log($scope.removeComment);
             }
         };
     });

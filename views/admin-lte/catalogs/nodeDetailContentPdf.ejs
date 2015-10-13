@@ -146,6 +146,7 @@
                                          comments="replies[comment._id]"
                                          post-comment= "submitReply(comment._id)"
                                          comment-text= "replyRawText[comment._id]"
+                                         remove-function = "deleteCommentById(id)"
                                         ></pdf-comment>
 
                                 <div ng-hide="editMode != comment._id">
