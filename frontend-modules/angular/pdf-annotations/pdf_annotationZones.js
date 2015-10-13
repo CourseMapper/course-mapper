@@ -26,6 +26,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };*/
 
     $scope.setEditZoneMode = function(id,divCounter,color) {
+      $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
 
@@ -78,7 +79,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     };
 
-    $scope.resetEditZoneMode = function() {
+    $rootScope.resetEditZoneMode = function() {
       $scope.editZoneMode = -1;
 
       var ele = $('select[name="colorpicker-change-background-color2"]');
@@ -126,7 +127,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
               $scope.writeCommentMode = false;
               $scope.replyRawText = [];
               $scope.replyMode = -1;
-              $scope.resetEditZoneMode();
+              $rootScope.resetEditZoneMode();
 
           })
           .error(function (data, status, headers, config) {

@@ -450,10 +450,18 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $scope.editMode = id;
         $scope.replyMode = -1;
         $scope.writeCommentMode = false;
+        $rootScope.resetEditZoneMode();
       }
       else if($scope.editMode == id){
         $scope.editMode = -1;
       }
+    };
+
+    $rootScope.resetEditAndReplyMode = function (){
+      $scope.editMode = -1;
+      $scope.replyMode = -1;
+      $scope.writeCommentMode = false;
+      
     };
 
     $scope.changeReplyMode = function (id, bool) {
@@ -463,6 +471,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $scope.replyMode = id;
         $scope.editMode = -1;
         $scope.writeCommentMode = false;
+        $rootScope.resetEditZoneMode();
       }
       else if($scope.replyMode == id){
         $scope.replyMode = -1;
@@ -639,6 +648,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       if(newValue == true) {
         $scope.editMode = -1;
         $scope.replyMode = -1;
+        $rootScope.resetEditZoneMode();
       }
       else {
         $rootScope.removeAllActiveAnnotationZones();
