@@ -1641,9 +1641,18 @@ app.directive('movable', function () {
                 };
 
                 $(window).resize(function () {
+                  //console.log($location.search().tab );
+                  if($location.search().tab == "pdf") {
+                    console.log("Got called");
+                    console.log($scope.scale);
+                    if($scope.scale == 0)
+                      $scope.scale = 1.0;
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
+                    console.log($scope.scale);
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
+                    $rootScope.$broadcast('reloadTags');
+                  }
                 });
 
                 $scope.$on('onPdfPageChange', function (event, pageNumber) {
@@ -3000,8 +3009,18 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       $scope.$emit('reloadTags');
     });
 
+    $rootScope.$on('reloadTags', function(event) {
+      console.log("LOADED RESET");
+      $(".slideRect").remove();
+
+      annotationZonesAreLoaded = false;
+
+      toDrawAnnotationZoneData = [];
+      $scope.refreshTags();
+    });
+
     $scope.$on('reloadTags', function(event) {
-      //console.log("LOADED RESET");
+      console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -3103,7 +3122,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     }
 
     $rootScope.nameHasNoError = function (name) {
-      
+
       for(var key in $scope.tagNameErrors) {
         if($scope.tagNameErrors[key].name == name.substring(1)) {
           if($scope.tagNameErrors[key].text == "") {

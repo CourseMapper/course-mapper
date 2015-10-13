@@ -229,8 +229,18 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $scope.$emit('reloadTags');
     });
 
+    $rootScope.$on('reloadTags', function(event) {
+      console.log("LOADED RESET");
+      $(".slideRect").remove();
+
+      annotationZonesAreLoaded = false;
+
+      toDrawAnnotationZoneData = [];
+      $scope.refreshTags();
+    });
+
     $scope.$on('reloadTags', function(event) {
-      //console.log("LOADED RESET");
+      console.log("LOADED RESET");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -332,7 +342,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     }
 
     $rootScope.nameHasNoError = function (name) {
-      
+
       for(var key in $scope.tagNameErrors) {
         if($scope.tagNameErrors[key].name == name.substring(1)) {
           if($scope.tagNameErrors[key].text == "") {
