@@ -2,11 +2,15 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.comment = {};
 
-
-    $scope.finalEditRawText = "";
     $scope.editRawText = [];
-
     $scope.editMode = -1;
+
+    $scope.replyRawText = [];
+    $scope.replyMode = -1;
+
+    $scope.comments = [];
+    $scope.replies = [];
+
     $scope.orderType = false;
     $scope.orderBy = false;
     $scope.ascending = "true";
@@ -146,23 +150,23 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     };
 
-    $scope.submitReply = function (resultVarName) {
+    $scope.submitReply = function (id) {
+
+
       var config = {
         params: {
-          rawText: $scope.comment.rawText,
+          rawText: $scope.replyRawText[id],
           author: $scope.currentUser.username,
           authorID: $scope.currentUser._id,
           pageNumber: $scope.currentPageNumber,
-          tagNames: $scope.comment.tagNames,
-          tagRelPos: $scope.comment.tagRelPos,
-          tagRelCoord: $scope.comment.tagRelCoord,
-          tagColor: $scope.comment.tagColor,
-          annotationZones: $scope.annotationZones,
-          numOfAnnotationZones: $scope.annotationZones.length,
+          numOfAnnotationZones: 0,
           pdfId: $scope.pdfFile._id,
-          hasParent: false
+          hasParent: true,
+          parentId: id
         }
       };
+
+
 
       $http.post("/slide-viewer/submitComment/", null, config)
           .success(function (data, status, headers, config) {
@@ -181,6 +185,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
               $scope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
+              $scope.replyRawText = [];
+              $scope.replyMode = -1;
+
           })
           .error(function (data, status, headers, config) {
               displayCommentSubmissionResponse("Error: Unexpected Server Response!");
@@ -188,6 +195,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     };
 
     $scope.deleteCommentById = function (id) {
+      //console.log(id);
       var config = {
           params: {
               deleteId: id,
@@ -270,6 +278,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             });
     };
 
+
     $scope.submitEdit = function (comment) {
 
 
@@ -327,6 +336,12 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             $scope.currentUser = $rootScope.user;
         }
     });
+
+    $rootScope.displayCommentSubmissionResponse = function(text) {
+      displayCommentSubmissionResponse(text);
+    };
+
+
 
     //$scope.pageFilter;
 
@@ -434,10 +449,33 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       $scope.editRawText = [];
       if(bool) {
         $scope.editMode = id;
+        $scope.replyMode = -1;
         $scope.writeCommentMode = false;
+        $rootScope.resetEditZoneMode();
       }
       else if($scope.editMode == id){
         $scope.editMode = -1;
+      }
+    };
+
+    $rootScope.resetEditAndReplyMode = function (){
+      $scope.editMode = -1;
+      $scope.replyMode = -1;
+      $scope.writeCommentMode = false;
+
+    };
+
+    $scope.changeReplyMode = function (id, bool) {
+      //$scope.finalEditRawText = "";
+      $scope.replyRawText = [];
+      if(bool) {
+        $scope.replyMode = id;
+        $scope.editMode = -1;
+        $scope.writeCommentMode = false;
+        $rootScope.resetEditZoneMode();
+      }
+      else if($scope.replyMode == id){
+        $scope.replyMode = -1;
       }
     };
 
@@ -448,15 +486,33 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
 
             $scope.editMode = -1;
-            for (var i in $scope.comments) {
+            /*for (var i in $scope.comments) {
                 var cmnt = $scope.comments[i];
                 //cmnt.html = $sce.trustAsHtml(cmnt.html);
 
 
 
+            }*/
+            $scope.comments = [];
+            $scope.replies = [];
+
+            for(var item in data.comments) {
+              if(data.comments[item].hasParent == false) {
+                //data.comments[item].isAuthor = true;
+                $scope.comments.push(data.comments[item]);
+              }
+              else if(data.comments[item].hasParent == true){
+                if(typeof $scope.replies[data.comments[item].parentId] == 'undefined') {
+                  $scope.replies[data.comments[item].parentId] = [];
+                }
+                //console.log($scope.currentUser.username);
+                //console.log(data.comments[item].author);
+                data.comments[item].isAuthor = (data.comments[item].author == $scope.currentUser.username);
+                $scope.replies[data.comments[item].parentId].push(data.comments[item]);
+              }
             }
 
-            $scope.comments = data.comments;
+            //$scope.comments = data.comments;
 
 
             $timeout(function () {
@@ -594,8 +650,15 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     });
 
     $scope.$watch("writeCommentMode", function (newValue, oldValue) {
-      if(newValue == true)
+      if(newValue == true) {
         $scope.editMode = -1;
+        $scope.replyMode = -1;
+        $rootScope.resetEditZoneMode();
+      }
+      else {
+        $rootScope.removeAllActiveAnnotationZones();
+        $scope.comment.rawText = "";
+      }
     });
 
     $scope.annotationZoneAction = function(){
@@ -624,43 +687,68 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     });
 
     $scope.addReference = function(name) {
-      console.log("got here");
       //$rootScope.safeApply(function() {
-      if($scope.editMode == -1) {
-        if(typeof $scope.comment.rawText == 'undefined')
-          $scope.comment.rawText = name + ' ';
-        else {
-          var len = $scope.comment.rawText.length;
-          var firstPart = $scope.comment.rawText.substring(0,len-6);
-          var lastPart = $scope.comment.rawText.substring(len-6);
-          $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+      if($rootScope.nameHasNoError(name)){
+        if(name !="#")
+        if($scope.writeCommentMode) {
+          if(typeof $scope.comment.rawText == 'undefined')
+            $scope.comment.rawText = name + ' ';
+          else {
+            var len = $scope.comment.rawText.length;
+            var firstPart = $scope.comment.rawText.substring(0,len-6);
+            var lastPart = $scope.comment.rawText.substring(len-6);
+            $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+          }
         }
-      }
-      else {
-        console.log("did it");
-        if(typeof $scope.editRawText[$scope.editMode] == 'undefined')
-          $scope.editRawText[$scope.editMode] = name + ' ';
-        else {
-          var len = $scope.editRawText[$scope.editMode].length;
-          var firstPart = $scope.editRawText[$scope.editMode].substring(0,len-6);
-          var lastPart = $scope.editRawText[$scope.editMode].substring(len-6);
-          $scope.editRawText[$scope.editMode] = firstPart + ' ' + name + ' ' + lastPart;
+        else if($scope.editMode != -1){
+          if(typeof $scope.editRawText[$scope.editMode] == 'undefined')
+            $scope.editRawText[$scope.editMode] = name + ' ';
+          else {
+            var len = $scope.editRawText[$scope.editMode].length;
+            var firstPart = $scope.editRawText[$scope.editMode].substring(0,len-6);
+            var lastPart = $scope.editRawText[$scope.editMode].substring(len-6);
+            $scope.editRawText[$scope.editMode] = firstPart + ' ' + name + ' ' + lastPart;
+          }
         }
-      }
+        else if($scope.replyMode != -1){
+          if(typeof $scope.replyRawText[$scope.replyMode] == 'undefined')
+            $scope.replyRawText[$scope.replyMode] = name + ' ';
+          else {
+            var len = $scope.replyRawText[$scope.replyMode].length;
+            var firstPart = $scope.replyRawText[$scope.replyMode].substring(0,len-6);
+            var lastPart = $scope.replyRawText[$scope.replyMode].substring(len-6);
+            $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
+          }
+        }
 
-      $timeout(function () {
-          $scope.$apply();
-          $scope.commentsLoaded();
-      });
-      //});
+        $timeout(function () {
+            $scope.$apply();
+            $scope.commentsLoaded();
+        });
+      }
     };
 
-    $scope.setRawText = function(id,newText) {
-      $scope.editRawText[id] = newText;
+    $scope.setEditRawText = function(id,newText) {
+      $scope.editRawText[id] = strip(newText);
       $timeout(function () {
           $scope.$apply();
       });
     };
+
+    $scope.setReplyRawText = function(id,newText) {
+
+      $scope.replyRawText[id] = newText;
+      $timeout(function () {
+          $scope.$apply();
+      });
+    };
+
+    function strip(html)
+    {
+       var tmp = document.createElement("DIV");
+       tmp.innerHTML = html;
+       return tmp.textContent || tmp.innerText || "";
+    }
 
     /*$scope.$watch("editRawText", function (newValue, oldValue) {
       console.log("REGISTERED CHANGE");
@@ -681,5 +769,4 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       delete $scope.filtersRaw[id];
       $scope.$broadcast('onFiltersRawChange');
     };
-
 });

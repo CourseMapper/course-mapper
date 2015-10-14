@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 
 var annotationPDFSchema = new mongoose.Schema({
     parentId: {
-        type: Number
+        type: String
     },
     hasParent: {
         type: Boolean

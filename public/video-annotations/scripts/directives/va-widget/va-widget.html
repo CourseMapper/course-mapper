@@ -1,7 +1,7 @@
 <div class="col-md-7">
     <videogular vg-player-ready="onPlayerReady($API)" vg-cue-points="cuePoints">
         <vg-media vg-src="sources"></vg-media>
-        <vg-controls>
+        <vg-controls vg-autohide="true" vg-autohide-time="3000">
             <vg-play-pause-button></vg-play-pause-button>
             <vg-time-display>{{ currentTime | date:'HH:mm:ss':'UTC' }}</vg-time-display>
             <vg-scrub-bar>
@@ -14,6 +14,7 @@
             </vg-volume>
             <vg-fullscreen-button></vg-fullscreen-button>
         </vg-controls>
+         <vg-overlay-play></vg-overlay-play>
         <div id="inline-va-container">
             <div movable can-move="{{item.isEditMode===true}}" on-moved="item.reposition" ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation" ng-show="item.showing" ng-style="{
                         top: item.position.top + '%',

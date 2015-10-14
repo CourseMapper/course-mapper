@@ -175,7 +175,9 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
         author: data[i].author,
         date: data[i].dateOfCreation,
         slide: data[i].originSlide,
-        html: data[i].renderedText
+        html: data[i].renderedText,
+        hasParent: data[i].hasParent,
+        parentId: data[i].parentId
       };
     }
     res.status(200).json({result:true, comments: modifiedData});
@@ -218,6 +220,7 @@ router.get('/disAnnZones/:pdfId/:pdfPageNumber', function(req, res, next){
         _id:  data[i]._id,
         id:  data[i].id,
         name: data[i].annotationZoneName,
+        author: data[i].author,
         relPosX: data[i].relativeCoordinates.X,
         relPosY: data[i].relativeCoordinates.Y,
         relWidth: data[i].relativeDimensions.X,

@@ -54,6 +54,10 @@ video-annotation.completed {
     opacity: 0.5;
 }
 
+video-annotation.default {
+    opacity: 1.0;
+}
+
 #search-box {
     margin-top: 10px;
 }

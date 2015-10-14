@@ -26,7 +26,7 @@ var startYRel;
 
 
 var opacityFactor = "0.125";
-var opacityFactorHighlight = "0.5";
+var opacityFactorHighlight = "0.75";
 var opacityFactorCreate = "0.75"
 
 //Random Values
@@ -305,7 +305,8 @@ function alwaysRescaleRects() {
     max_width_rect_abs = currentCanvasHeight * max_width_rect_rel;
 }
 
-function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove) {
+function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove, canBeEdited, annZoneId) {
+  //canBeEdited=true;
     //if(!canMove){
     switch (color) {
         case "Red":
@@ -380,6 +381,14 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
 
   });
 
+
+
+
+  /*editElement.click(function () {
+      alert($(this).attr("id"));
+  });*/
+
+
   var left  = 0,
       top   = 0;
   var mousemovedbool =false
@@ -400,9 +409,13 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     if (canMove) {
 
       //Need to be redone again.
-      caElement.click(function () {
-        angular.element($("#commentController")).scope().addReference(tagname);
-        /*
+      caElement.click(function(evt) {
+          console.log()
+          if(!$(evt.target).hasClass('simplecolorpicker')){
+            angular.element($("#commentController")).scope().addReference("#"+$(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val());
+          }
+
+          /*
         //check if commentbox is displayed and mouse wasnt move during mousedown event
         if($('#commentSubmissionDiv').css('display')!='none' && mousemovedbool==false){
         //check if entered string is neither empty nor whitespaced
@@ -474,24 +487,104 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
       inputElement.addClass("slideRectInput");
       inputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(inputElement);
 
-    inputElement.css({
+      inputElement.css({
         'color': 'black',
         'transition': 'width 0.25s',
         'border': '0'
-    });
-	}
+      });
+      nColorPickerInput = $('<select/>');
+      nColorPickerInput.attr("name","colorpicker-change-background-color");
+      nColorPickerInput.attr("value","#ac725e");
+      nColorPickerInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
+      nColorPickerInput.attr("id", "colorPickerInput-" + divCounter);
+      nColorPickerInput.addClass("slideRectColorPicker");
+
+	   }
+     else if(canBeEdited) {
+       var id = annZoneId;
+       //console.log(id);
+       editInputElement = $('<input type="text"/>');
+       editInputElement.attr("id", "rectEditInputField-" + divCounter);
+       editInputElement.attr("name", "rectEditInputField-" + divCounter);
+       editInputElement.attr("ng-model", "editZoneValues['" + id + "'].name");
+       editInputElement.attr("ng-hide", "(editZoneMode != '"+id+"')");
+       editInputElement.addClass("slideRectInput");
+       //editInputElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editInputElement);
+
+       editInputElement.css({
+         'color': 'black',
+         'transition': 'width 0.25s',
+         'border': '0'
+       });
 
 
-    nColorPickerInput = $('<select/>');
-    nColorPickerInput.attr("name","colorpicker-change-background-color");
-    nColorPickerInput.attr("value","#ac725e");
-    nColorPickerInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
-    nColorPickerInput.attr("id", "colorPickerInput-" + divCounter);
-    nColorPickerInput.addClass("slideRectColorPicker");
+
+
+       //angular.element($("#annZoneList")).scope().editZoneValues[id].name = tagname.substring(1);
+
+
+
+       //angular.element($("#annZoneList")).scope().editZoneValues[id].color = color;
+
+       angular.element($("#annZoneList")).scope().editZoneValues[id] = {name: tagname.substring(1), color: color};
+
+
+
+     }
+
+
+     editElement = $('<span/>', {
+       id: "editSpan-" + divCounter,
+       class:'glyphicon glyphicon-pencil',
+       "aria-hidden":"true",
+       "ng-click": "setEditZoneMode('" + annZoneId + "',"+divCounter+",'"+color+"')",
+       "ng-hide": "(editZoneMode == '"+id+"')"
+     });
+     editElement.css({
+         float: "right",
+         color: "white",
+         margin: "2px",
+         cursor: "pointer"
+     });
+
+     cancelSaveElement = $('<span/>', {
+       id: "saveSpan-" + divCounter,
+       class:'glyphicon glyphicon-floppy-remove',
+       "aria-hidden":"true",
+       "ng-hide": "(editZoneMode != '"+id+"')",
+       "ng-click": "resetEditZoneMode()",
+     });
+
+     cancelSaveElement.css({
+         float: "right",
+         color: "white",
+         margin: "2px",
+         cursor: "pointer"
+     });
+
+     saveElement = $('<span/>', {
+       id: "saveSpan-" + divCounter,
+       class:'glyphicon glyphicon-floppy-saved',
+       "aria-hidden":"true",
+       "ng-hide": "(editZoneMode != '"+id+"')",
+       "ng-click": "updateAnnZone('"+annZoneId+"')"
+     });
+
+     saveElement.css({
+         float: "right",
+         color: "white",
+         margin: "2px",
+         cursor: "pointer"
+     });
+
+     //editElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(editElement);
+
+
+
 
     removeElement = $('<button/>', {
         class: "btn btn-white btn-link",
-        onclick: "removeAnnotationZone('" + rectPrefix + divCounter + "');",
+        "ng-click": "removeAnnotationZone('" + rectPrefix + divCounter + "');",
         text: "X",
     });
 
@@ -513,9 +606,29 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     //Add Class for right validation
     //glyphicon glyphicon-ok-sign
 
+    hashElement = $("<span/>");
+    hashElement.text("#");
+    hashElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(hashElement);
+
+
+    tagNameElement = $("<span/>");
+    tagNameElement.text(tagname.substring(1));
+    tagNameElement.attr("ng-hide", "(editZoneMode == '"+annZoneId+"')");
+    tagNameElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(tagNameElement);
+
+
     if (!canMove) {
+        spanElement.append(hashElement);
+        spanElement.append(tagNameElement);
+        spanElement.append(editInputElement);
+        //wrapperElement.append(nColorPickerEditInput);
+        //wrapperElement.css({"margin-left":"-20px"});
         wrapperElement.append(spanElement);
-        spanElement.text(tagname);
+        if(canBeEdited){
+          wrapperElement.append(editElement);
+          wrapperElement.append(cancelSaveElement);
+          wrapperElement.append(saveElement);
+        }
     }
     else {
         spanElement.text("#");
@@ -529,8 +642,13 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
         inputElement.click(function(e) {
             e.stopPropagation();
         });
+
+
+
+
+
     }
-    wrapperElement.append(debuggingTextElement);
+    //wrapperElement.append(debuggingTextElement);
     caElement.append(wrapperElement);
     element.append(caElement);
 
@@ -542,19 +660,23 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove)
     element = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(element);
     divCounter = divCounter + 1;
 
-    $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+    if (canMove) {
 
-    $('#destroy').on('click', function() {
-      $('select').simplecolorpicker('destroy');
-    });
-    // By default, activate simplecolorpicker plugin on HTML selects
-    $('#init').trigger('click');
-
-    nColorPickerInput.on('change', function() {
-        $(this).parent().parent().parent().css('background-color', $(this).val());
-        $(this).attr("value",$(this).val());
-
+      $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+      $('#destroy').on('click', function() {
+        $('select').simplecolorpicker('destroy');
       });
+      // By default, activate simplecolorpicker plugin on HTML selects
+      $('#init').trigger('click');
+
+
+      nColorPickerInput.on('change', function() {
+          $(this).parent().parent().parent().css('background-color', $(this).val());
+          $(this).attr("value",$(this).val());
+
+        });
+      }
+
 
 
 

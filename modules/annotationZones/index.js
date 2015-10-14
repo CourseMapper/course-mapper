@@ -1,4 +1,5 @@
-var AnnotationZonesPDF = require('./annotationZones')
+var AnnotationZonesPDF = require('./annotationZones');
+var AnnotationsPDF = require('../slide-viewer/annotation');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
@@ -33,40 +34,38 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
 };
 
 AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
+  var getAnnZonesById = this.getAnnotationZonesById;
+  var upAllRefs = this.updateAllReferences;
   if(typeof params.updateId != 'undefined') {
     this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
       if(success) {
         AnnotationZonesPDF.findOne({
-            id: params.updateId
+            _id: params.updateId
           },
-          function (err, data) {
-            if(!err) {
-              this.getAnnotationZonesById(params.pdfId, function(completed,data2){
+          function (errB, data) {
+            if(!errB) {
+              getAnnZonesById(params.updateId, function(completed,data2){
                 if(completed) {
                   var oldTagList = data2;
-                  var currentTag = params.updatedAnnZone;
-                  if(!validateTagObject(currentTag,oldTagList))
+                  var currentTag = JSON.parse(params.updatedAnnZone);
+                  if(!validateTagObject(currentTag,oldTagList,true))
                     err('Server Error: Validation failed for updating of annotation zone');
                   else {
                     var updatedAnnotationZonePDF = {
                       annotationZoneName: currentTag.annotationZoneName,
-                      relativeCoordinates: {
-                          X: currentTag.relativeCoordinates.X,
-                          Y: currentTag.relativeCoordinates.Y
-                      },
-                      relativeDimensions: {
-                          X: currentTag.relativeDimensions.X,
-                          Y: currentTag.relativeDimensions.Y
-                      },
                       color: currentTag.color
                     };
-
+                    var oldName = data.annotationZoneName;
+                    //console.log(data);
+                    var newName = currentTag.annotationZoneName;
+                    var pdfId = data.pdfId;
                     // save it to db
-                    annotationZonePDF.update({id: params.updateId}, updatedAnnotationZonePDF,function (err) {
-                        if (err) {
+                    AnnotationZonesPDF.update({_id: params.updateId}, updatedAnnotationZonePDF,function (errB) {
+                        if (errB) {
                             err('Server Error: Unable to update annotation zone');
                         } else {
-                            done(annotationZonePdf);
+                            upAllRefs(oldName, newName, pdfId,err,function(){done();});
+
                         }
                     });
                   }
@@ -92,10 +91,116 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
   }
 };
 
+AnnZones.prototype.convertRawText2 = function(rawText,callback){
+
+  var check = AnnZones.prototype.checkTagName;
+
+  AnnZones.prototype.getAllAnnotationZones(function(success,data){
+    //TODO: test for success
+    var tagNameList = [];
+    var tagColorList = [];
+
+    for(var i = 0; i < data.length; i++){
+      tagNameList[i] = data[i].annotationZoneName;
+      tagColorList[i] = data[i].color;
+    }
+    //console.log(data);
+
+
+    var renderedText = rawText.replace(/#(\w+)/g, function(x){
+        if(check(x,tagNameList) != -1){
+
+          var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[check(x,tagNameList)] + "'>" + x + "</label>";
+          return ret;
+        }
+        else {
+          return x;
+        }
+
+    });
+
+    callback(renderedText);
+  });
+};
+
+AnnZones.prototype.checkTagName = function(tagName,tagNameList){
+//    var annZone = new AnnZones();
+//    return annZone.annotationZoneNameExists(tagName);
+  for(var i = 0; i < tagNameList.length; i++){
+    if(tagName == tagNameList[i])
+      return i;
+  }
+  return -1;
+
+};
+
+AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
+  /*console.log(AnnotationsPDF);
+  var ann = new Comments();
+  ann.updateAllReferences(oldName,newName,pdfId,err,done);*/
+  var convertRaw = AnnZones.prototype.convertRawText2;
+  //console.log(convertRaw);
+
+  var newName2 = validator.escape(newName);
+
+  //console.log(pdfId);
+
+  AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
+    if(err2) {
+      err("Server Error: Unable to find associated annotations");
+    }
+    else {
+      //console.log("HERE3");
+      //console.log(data);
+
+      for(var key in data) {
+        var changed = false;
+        var rawText = data[key].rawText;
+        var newRawText = rawText.replace(/#(\w+)/g, function(x){
+          if(x == oldName){
+            var ret = newName2;
+            changed = true;
+            return ret;
+          }
+          else {
+            return x;
+          }
+        });
+        //console.log("HEREEE");
+        if(changed) {
+          //console.log("BLUB");
+          convertRaw(newRawText, function(newRenderedText){
+            var newText = {
+              rawText: newRawText,
+              renderedText: newRenderedText
+            };
+            //console.log("HERE2");
+            //console.log(newText);
+            AnnotationsPDF.update({_id: data[key].id}, newText, function (errBool) {
+              if (errBool) {
+                err("Server Error: Unable to update annotation");
+              } else {
+                //console.log("HERE5");
+
+              }
+            });
+          });
+        }
+      }
+      done();
+    }
+  });
+
+};
+
+
+
+
+
 AnnZones.prototype.checkOwnership = function(id,author,authorId,callback) {
-  this.getAnnZoneById(params.id, function(success,data) {
+  this.getAnnZoneById(id, function(success,data) {
     if(success) {
-      if((author == data.author)&&(authorId == data.authorId)) {
+      if((author == data.author)&&(authorId == data.authorID)) {
         callback(true);
       }
       else {
@@ -109,8 +214,9 @@ AnnZones.prototype.checkOwnership = function(id,author,authorId,callback) {
 };
 
 AnnZones.prototype.getAnnZoneById = function(id,callback) {
+  //console.log(id);
   AnnotationZonesPDF.findOne({
-    id: id
+    _id: id
   }, function (err, data) {
     if(err) {
       callback(false, data);
@@ -224,7 +330,7 @@ AnnZones.prototype.submitTagObjectList = function(err,tags, pdfId, callback){
 
 function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
   var currentTag = JSON.parse(tags[currentIndex]);
-  if(!validateTagObject(currentTag,oldTagList))
+  if(!validateTagObject(currentTag,oldTagList,false))
     callback(false);
   else {
     /*var annotationZonePDF = new AnnotationZonesPDF({
@@ -261,7 +367,7 @@ function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
   }
 };
 
-function validateTagObject(currentTag,oldTagList) {
+function validateTagObject(currentTag,oldTagList,simple) {
   var ret = true;
   if(!(currentTag.annotationZoneName.length >= 3))
     return false;
@@ -271,22 +377,24 @@ function validateTagObject(currentTag,oldTagList) {
   ret &= validator.isAlphanumeric(currentTag.annotationZoneName.substring(1));
   ret &= nameIsAvailable(currentTag.annotationZoneName,oldTagList);
 
-  ret &= validator.isFloat(currentTag.relativeCoordinates.X);
-  ret &= validator.isFloat(currentTag.relativeCoordinates.Y);
-  ret &= (currentTag.relativeCoordinates.X <= 1) && (currentTag.relativeCoordinates.X >= 0)
-  ret &= (currentTag.relativeCoordinates.Y <= 1) && (currentTag.relativeCoordinates.Y >= 0)
-
-  ret &= validator.isFloat(currentTag.relativeDimensions.X);
-  ret &= validator.isFloat(currentTag.relativeDimensions.Y);
-  ret &= (currentTag.relativeDimensions.X <= 1) && (currentTag.relativeDimensions.X >= 0)
-  ret &= (currentTag.relativeDimensions.Y <= 1) && (currentTag.relativeDimensions.Y >= 0)
-  ret &= (currentTag.relativeDimensions.X + currentTag.relativeCoordinates.X <= 1)
-  ret &= (currentTag.relativeDimensions.Y + currentTag.relativeCoordinates.Y <= 1)
-
   ret &= validator.isHexadecimal(currentTag.color);
-  ret &= validator.isHexadecimal(currentTag.pdfId);
-  ret &= validator.isDecimal(currentTag.pdfPageNumber);
 
+  if(!simple) {
+    ret &= validator.isFloat(currentTag.relativeCoordinates.X);
+    ret &= validator.isFloat(currentTag.relativeCoordinates.Y);
+    ret &= (currentTag.relativeCoordinates.X <= 1) && (currentTag.relativeCoordinates.X >= 0)
+    ret &= (currentTag.relativeCoordinates.Y <= 1) && (currentTag.relativeCoordinates.Y >= 0)
+
+    ret &= validator.isFloat(currentTag.relativeDimensions.X);
+    ret &= validator.isFloat(currentTag.relativeDimensions.Y);
+    ret &= (currentTag.relativeDimensions.X <= 1) && (currentTag.relativeDimensions.X >= 0)
+    ret &= (currentTag.relativeDimensions.Y <= 1) && (currentTag.relativeDimensions.Y >= 0)
+    ret &= (currentTag.relativeDimensions.X + currentTag.relativeCoordinates.X <= 1)
+    ret &= (currentTag.relativeDimensions.Y + currentTag.relativeCoordinates.Y <= 1)
+
+    ret &= validator.isHexadecimal(currentTag.pdfId);
+    ret &= validator.isDecimal(currentTag.pdfPageNumber);
+  }
   return ret;
 };
 

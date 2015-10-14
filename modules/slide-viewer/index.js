@@ -1,4 +1,4 @@
-var AnnotationsPDF = require('./annotation')
+var AnnotationsPDF = require('./annotation');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
@@ -7,6 +7,47 @@ var validator = require('validator');
 
 function Comment(){
 }
+
+Comment.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
+  var newName2 = validator.escape(newName);
+
+  AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
+    if(err2) {
+      err("Server Error: Unable to find associated annotations");
+    }
+    else {
+      for(var key in data) {
+        var changed = false;
+        var rawText = data[key].rawText;
+        var newRawText = rawText.replace(/#(\w+)/g, function(x){
+          if(x == oldName){
+            var ret = newName2;
+            changed = true;
+            return ret;
+          }
+          else {
+            return x;
+          }
+        });
+        if(changed) {
+          this.convertRawText(newRawText, function(newRenderedText){
+            var newText = {
+              rawText: newRawText,
+              renderedText: newRenderedText
+            };
+            AnnotationsPDF.update({_id: data[key].id}, newText, function (errBool) {
+              if (errBool) {
+                err("Server Error: Unable to update annotation");
+              } else {
+                done();
+              }
+            });
+          });
+        }
+      }
+    }
+  });
+};
 
 Comment.prototype.submitAnnotation = function(err, params, done){
   if(typeof params.hasParent == 'undefined') {
@@ -28,8 +69,8 @@ Comment.prototype.submitAnnotation = function(err, params, done){
 Comment.prototype.submitReplyAnnotation = function(err, params,done){
   var temp = this.convertRawText;
 
-  //var htmlEscapedRawText = validator.escape(params.rawText);
-  var htmlEscapedRawText = params.rawText;
+  var htmlEscapedRawText = validator.escape(params.rawText);
+  //var htmlEscapedRawText = params.rawText;
   temp(htmlEscapedRawText,function(renderedText){
     var annotationsPDF = new AnnotationsPDF({
       rawText: htmlEscapedRawText,
@@ -41,6 +82,8 @@ Comment.prototype.submitReplyAnnotation = function(err, params,done){
       hasParent: params.hasParent,
       parentId: params.parentId
     });
+
+    //console.log(annotationsPDF);
 
     // save it to db
     annotationsPDF.save(function (errBool) {
@@ -273,9 +316,9 @@ Comment.prototype.convertRawText = function(rawText,callback){
 
     var renderedText = rawText.replace(/#(\w+)/g, function(x){
         var comm = new Comment();
-        console.log("Found tag with name: "+x);
+        //console.log("Found tag with name: "+x);
         if(comm.checkTagName(x,tagNameList) != -1){
-          console.log("Checked tag with name: "+x);
+          //console.log("Checked tag with name: "+x);
 
           var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[comm.checkTagName(x,tagNameList)] + "'>" + x + "</label>";
           return ret;
@@ -398,21 +441,21 @@ Comment.prototype.getOrderedFilteredComments = function(order,filters,callback) 
     if(typeof filters["renderedText"] != 'undefined') {
       if(typeof filters["renderedText"]["regex_hash"] != 'undefined'){
         filters["renderedText"] = new RegExp('#' + filters["renderedText"]["regex_hash"],'i');
-        console.log("found tag request");
+        //console.log("found tag request");
       }
     }
 
     if(typeof filters["renderedText"] != 'undefined') {
       if(typeof filters["renderedText"]["regex"] != 'undefined'){
         filters["renderedText"] = new RegExp(filters["renderedText"]["regex"],'i');
-        console.log("found tag request");
+        //console.log("found tag request");
       }
     }
 
     if(typeof filters["rawText"] != 'undefined') {
       if(typeof filters["rawText"]["regex"] != 'undefined'){
         filters["rawText"] = new RegExp(filters["rawText"]["regex"],'i');
-        console.log("found tag request");
+        //console.log("found tag request");
       }
     }
 

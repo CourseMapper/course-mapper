@@ -31,7 +31,7 @@ function commentsLoaded(){
     //console.log("ADDED CLICK FUNCTION");
     //console.log($("#commentList .annotationZoneReference").length);
     $("#commentList .annotationZoneReference").not('.hasOnClick').click(function(){
-      console.log("TEST:");
+      //console.log("TEST:");
       switchRegexFilter("renderedText",$(this).html());
     });
     $("#commentList .annotationZoneReference").not('.hasOnClick').addClass("hasOnClick");
@@ -62,18 +62,15 @@ function commentsLoaded(){
 function tagListLoaded(tagList) {
   //console.log("RUN TAGLISTLOADED");
   for(var i = 0; i < tagList.length; i++) {
-    toDrawAnnotationZoneData[i] = [tagList[i].name, tagList[i].relPosX, tagList[i].relPosY, tagList[i].relWidth, tagList[i].relHeight, tagList[i].color];
+    //toDrawAnnotationZoneData[i] = [tagList[i].name, tagList[i].relPosX, tagList[i].relPosY, tagList[i].relWidth, tagList[i].relHeight, tagList[i].color];
+    toDrawAnnotationZoneData[i] = tagList[i];
   }
   //console.log("ANNZONES LOADED");
   annotationZonesAreLoaded = true;
   drawAnnZonesWhenPDFAndDBDone();
 };
 
-/*function createAnnoationZone(name,relPosX,relPosY,relWidth,relHeight,color) {
-  console.log("createAnnotationZones");
-  console.log("name: "+name+" relPosX: "+relPosX+" relPosY: "+ relPosY+" relWidth: "+relWidth+ " relHeight: "+relHeight+" color: "+color);
-  loadRect(relPosX, relPosY, relWidth, relHeight, color, name)
-};*/
+
 
 function drawAnnZonesWhenPDFAndDBDone() {
   //console.log(annotationZonesAreLoaded);
@@ -81,13 +78,14 @@ function drawAnnZonesWhenPDFAndDBDone() {
   if(annotationZonesAreLoaded) {
       for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
         //console.log("createAnnotationZones");
-        loadRect(toDrawAnnotationZoneData[i][1], toDrawAnnotationZoneData[i][2], toDrawAnnotationZoneData[i][3], toDrawAnnotationZoneData[i][4], toDrawAnnotationZoneData[i][5], toDrawAnnotationZoneData[i][0], false)
+        var isAuthor = (toDrawAnnotationZoneData[i].author == angular.element($("#annZoneList")).scope().currentUser.username);
+        loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeight, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, isAuthor, toDrawAnnotationZoneData[i].id)
       }
 
   }
 };
 
-function removeAnnotationZone(id) {
+/*function removeAnnotationZone(id) {
   var element = $("#annotationZone #"+id);
 
   var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
@@ -109,7 +107,7 @@ function removeAnnotationZone(id) {
   rectElement.remove();
   element.remove();*/
 
-};
+//};
 
 function addAnnotationZoneElement(element) {
 
@@ -275,7 +273,7 @@ function switchRegexFilter(attribute,value){
 };*/
 
 function createMovableAnnZone() {
-  var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "NoNameYet", true);
+  var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "", true, false, "");
   addAnnotationZoneElement(element);
 };
 
@@ -292,5 +290,6 @@ function switchCommentSubmissionDisplay() {
 */
 
 function displayDebug() {
-  console.log("TAGNAMELIST: "+ angular.element($("#annZoneList")).scope().tagNames);
+  //console.log("TAGNAMELIST: "+ angular.element($("#annZoneList")).scope().tagNames);
+  ;
 }

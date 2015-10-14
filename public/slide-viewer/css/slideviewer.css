@@ -19,6 +19,10 @@ input#searchInput{
   margin-top: 10px;
 }
 
+.cmtBx{
+  background-color: rgba(0, 0, 255, 0.05);
+}
+
 #replyAnno.replyControl{
   padding-top: 10px;
   padding-bottom: 10px;

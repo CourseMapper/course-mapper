@@ -22,9 +22,9 @@
                 replace: true,
 
                 scope: {
-                    annotationZoneAction: '&'
+                    annotationZoneAction: '&',
+                    hideAnnZoneButton: '='
                 },
-
 
                 templateUrl:
                     function(elem,attrs){

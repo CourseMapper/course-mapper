@@ -58,7 +58,7 @@ module.exports = function(io) {
                 await (annotation.save());
             } else {
                 //  set the author and
-                // create new model in DB 
+                // create new model in DB
                 params.annotation.author = user.username;
                 annotation = await (VideoAnnotation.create(params.annotation));
             }
@@ -142,7 +142,7 @@ module.exports = function(io) {
                 for (var i = 0; i < annotation.comments.length; i++) {
                     if (annotation.comments[i]._id.toString() === commentId) {
                         if (annotation.comments[i].author === user.username) {
-                            console.log('removing comment', commentId);
+                            //console.log('removing comment', commentId);
                             annotation.comments[i].remove();
                             break;
                         }
