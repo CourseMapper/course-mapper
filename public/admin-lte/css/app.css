@@ -574,8 +574,19 @@ ul.dropdown-menu.course{
     display: inline;
 }
 
-#courses h4 {
-    font-size: 15px;
+#courses h4.courses-title {
+    margin-top: 17px;
+    margin-bottom:20px;
+}
+.course-search-box{
+    position: absolute;
+    top: 2px;
+    left: 120px;
+}
+.course-search-icon{
+    position: absolute;
+    top: 20px;
+    left: 100px;
 }
 
 a.videoButton{
