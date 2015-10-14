@@ -738,6 +738,10 @@ a.cursor {
 .open-new-tab {
     float: right;
 }
+.w:hover > ul,
+.open{
+    display: block;
+}
 .course-picture{
     width: 100%;
 }

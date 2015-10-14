@@ -22,10 +22,7 @@
         <script type="text/ng-template"  id="tree_item_renderer.html">
                 <div class="w" id="{{data.slug}}"
                      data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}"
-                     data-shape="Rectangle"
-                     ng-mouseenter="onCategoryHover(data.slug)"
-                     ng-mouseleave="onCategoryHoverOut(data.slug)"
-                        >
+                     data-shape="Rectangle" >
 
                     {{data.name}}
 
@@ -35,7 +32,7 @@
                             <li id="analytics-{{data.slug}}" ng-bind-html="widgets[data.slug]">
                             </li>
                             <li class="divider"></li>
-                            <li>
+                            <li class="goto-button">
                                 <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse Courses</button>
                             </li>
                         </ul>
