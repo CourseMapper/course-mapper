@@ -1,5 +1,5 @@
 app.controller('CourseController', function($scope, $rootScope, $filter, $http,
-                                            $location, $routeParams, $timeout, toastr) {
+                                            $location, $routeParams, $timeout, toastr, Page) {
     $scope.course = null;
     $scope.videoSources = false;
     $scope.enrolled = false;
@@ -31,12 +31,17 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
 
         $scope.currentTab = $scope.tabs[defaultPath];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+
+        if($scope.course)
+            Page.setTitleWithPrefix($scope.course.name + ' > ' + $scope.currentTab);
     };
 
     $scope.init = function(refreshPicture){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
                 $scope.course = res.course;
+
+                Page.setTitleWithPrefix($scope.course.name);
 
                 if(refreshPicture) {
                     if($scope.course.picture)

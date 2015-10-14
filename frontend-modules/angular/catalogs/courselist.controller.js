@@ -1,4 +1,4 @@
-app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce ) {
+app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce, Page ) {
     $scope.slug = $routeParams.slug;
 
     // chosen filter
@@ -101,6 +101,8 @@ app.controller('CourseListController', function($scope, $rootScope, $http, $rout
      */
     $http.get('/api/category/' + $scope.slug ).success(function(data) {
         $scope.category = data.category;
+
+        Page.setTitleWithPrefix($scope.category.name);
 
         // once we get the complete category structure, we operate by id
         $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function(data) {

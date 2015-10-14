@@ -1,4 +1,7 @@
-app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout, ActionBarService) {
+app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location,
+                                                $routeParams, $timeout, ActionBarService,
+                                                Page
+) {
     $scope.course = null;
     $scope.user = null;
     $scope.treeNode = null;
@@ -131,6 +134,9 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
             if(res.result) {
                 $scope.treeNode = res.treeNode;
+
+                if($scope.course && $scope.treeNode)
+                    Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
                 $scope.parseResources();
 

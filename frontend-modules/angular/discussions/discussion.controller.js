@@ -1,7 +1,12 @@
-app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
+app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce,
+                                                $compile, ActionBarService,
+                                                $timeout, toastr, Page) {
     $scope.formData = {
         content: ''
     };
+
+    $scope.pageTitleOnDiscussion = "";
+
     $scope.course = {};
     $scope.currentReplyingTo = false;
     $scope.currentEditPost = {};
@@ -32,6 +37,8 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
         $http.get('/api/discussions/' + course._id).success(function(res){
            if(res.result && res.posts){
                $scope.topics = res.posts;
+
+               $scope.pageTitleOnDiscussion = Page.title();
 
                $scope.initiateTopic();
            }
@@ -283,6 +290,9 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
         var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
         if($scope.topics[i]){
             $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+
+            Page.setTitle($scope.pageTitleOnDiscussion + ' > ' + $scope.currentTopic.title);
+
             $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
 
             $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);

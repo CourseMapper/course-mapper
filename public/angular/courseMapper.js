@@ -69,7 +69,7 @@ app.config(function(toastrConfig) {
 
 });
 ;app.controller('CourseController', function($scope, $rootScope, $filter, $http,
-                                            $location, $routeParams, $timeout, toastr) {
+                                            $location, $routeParams, $timeout, toastr, Page) {
     $scope.course = null;
     $scope.videoSources = false;
     $scope.enrolled = false;
@@ -101,12 +101,17 @@ app.config(function(toastrConfig) {
 
         $scope.currentTab = $scope.tabs[defaultPath];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+
+        if($scope.course)
+            Page.setTitleWithPrefix($scope.course.name + ' > ' + $scope.currentTab);
     };
 
     $scope.init = function(refreshPicture){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
                 $scope.course = res.course;
+
+                Page.setTitleWithPrefix($scope.course.name);
 
                 if(refreshPicture) {
                     if($scope.course.picture)
@@ -369,7 +374,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 });
-;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce ) {
+;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce, Page ) {
     $scope.slug = $routeParams.slug;
 
     // chosen filter
@@ -472,6 +477,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
      */
     $http.get('/api/category/' + $scope.slug ).success(function(data) {
         $scope.category = data.category;
+
+        Page.setTitleWithPrefix($scope.category.name);
 
         // once we get the complete category structure, we operate by id
         $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function(data) {
@@ -846,7 +853,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     }
 });
-;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location, $routeParams, $timeout, ActionBarService) {
+;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location,
+                                                $routeParams, $timeout, ActionBarService,
+                                                Page
+) {
     $scope.course = null;
     $scope.user = null;
     $scope.treeNode = null;
@@ -979,6 +989,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
             if(res.result) {
                 $scope.treeNode = res.treeNode;
+
+                if($scope.course && $scope.treeNode)
+                    Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
                 $scope.parseResources();
 
@@ -1955,10 +1968,15 @@ app.directive('timepicker', function ($timeout) {
             }
 
         };
-    });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce, $compile, ActionBarService, $timeout, toastr) {
+    });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce,
+                                                $compile, ActionBarService,
+                                                $timeout, toastr, Page) {
     $scope.formData = {
         content: ''
     };
+
+    $scope.pageTitleOnDiscussion = "";
+
     $scope.course = {};
     $scope.currentReplyingTo = false;
     $scope.currentEditPost = {};
@@ -1989,6 +2007,8 @@ app.directive('timepicker', function ($timeout) {
         $http.get('/api/discussions/' + course._id).success(function(res){
            if(res.result && res.posts){
                $scope.topics = res.posts;
+
+               $scope.pageTitleOnDiscussion = Page.title();
 
                $scope.initiateTopic();
            }
@@ -2240,6 +2260,9 @@ app.directive('timepicker', function ($timeout) {
         var i = _.findIndex($scope.topics, { 'discussion': {'_id' : postId}});
         if($scope.topics[i]){
             $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+
+            Page.setTitle($scope.pageTitleOnDiscussion + ' > ' + $scope.currentTopic.title);
+
             $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
 
             $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
@@ -2478,7 +2501,15 @@ app.directive('timepicker', function ($timeout) {
             }
         }
     }
-]);;/*jslint node: true */
+]);;app.factory('Page', function() {
+    var prefix = 'CourseMapper';
+    var title = 'CourseMapper';
+    return {
+        title: function() { return title; },
+        setTitle: function(newTitle) { title = newTitle },
+        setTitleWithPrefix: function(newTitle) { title = prefix + ': ' + newTitle }
+    };
+});;/*jslint node: true */
 'use strict';
 
 app.factory('socket', function($rootScope) {
@@ -4128,7 +4159,10 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         }
     }
 
-});;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService, toastr) {
+});;app.controller('MainController', function($scope, Page) {
+    $scope.Page = Page;
+});
+;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService, toastr) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
