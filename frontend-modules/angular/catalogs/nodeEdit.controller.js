@@ -4,6 +4,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
     $scope.filespdf = [];
     $scope.filesvideo = [];
     $scope.currentEditNode = false;
+    $scope.progressPercentage = 0;
 
     $scope.isLoading = false;
     $scope.errors = [];
@@ -160,15 +161,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                 if(!evt.config.file)
                     return;
 
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                if(Array.isArray(evt.config.file) && evt.config.file.length > 0){
-                    for(var i in evt.config.file){
-                        var fle = evt.config.file[i];
-                        console.log('progress: ' + progressPercentage + '% ' + fle.name);
-                    }
-                } else {
-                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-                }
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
 
             }).success(function (data, status, headers, config) {
 
@@ -203,7 +196,7 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                     $scope.editContentNodeForm.$setPristine();
                 }
 
-                toastr.success('Successfully Saved');
+                toastr.success('Content Node has been created, You can move it away from its default position');
                 $scope.isLoading = false;
             })
             .error(function(data){

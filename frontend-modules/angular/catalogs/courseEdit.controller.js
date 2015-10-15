@@ -10,6 +10,8 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.isLoading = false;
     $scope.errors = [];
 
+    $scope.progressPercentage = 0;
+
     $scope.$on('onAfterInitCourse', function(event, course){
         $scope.init();
     });
@@ -60,15 +62,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             if(!evt.config.file)
                 return;
 
-            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            if(Array.isArray(evt.config.file) && evt.config.file.length > 0){
-                for(var i in evt.config.file){
-                    var fle = evt.config.file[i];
-                    console.log('progress: ' + progressPercentage + '% ' + fle.name);
-                }
-            } else {
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-            }
+            $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
         })
             .success(function (data) {
                 $scope.$emit('onAfterEditCourse', data.course);
@@ -78,11 +72,15 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
                 $scope.isLoading = false;
                 $('#editView').modal('hide');
+
+                $scope.progressPercentage = 0;
             })
 
             .error(function(){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+
+                $scope.progressPercentage = 0;
             });
     };
 

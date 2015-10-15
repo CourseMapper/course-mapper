@@ -101,6 +101,12 @@
                                     </div>
                                 </div>
                             </div>
+ 
+                            <div class="col-xs-12" ng-show="progressPercentage > 0">
+                                <div class="progress" >
+                                    <div class="progress-bar" ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
+                                </div>
+                            </div>
 
                             <div class="control-group">
                                 <p class="help-block"></p>

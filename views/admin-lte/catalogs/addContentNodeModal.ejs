@@ -42,11 +42,13 @@
                                     <div class="controls">
                                         <div class="btn btn-sm btn-default"
                                              ngf-select accept="application/pdf" ngf-accept="'application/pdf'"
-                                             ng-model="filespdf" ngf-multiple="false" ngf-max-size='100000000'><i
-                                                class="fa fa-file-pdf-o"></i> &nbsp; Select a pdf file
+                                             ng-model="filespdf" ngf-multiple="false" ngf-max-size='100000000'>
+                                            <i class="fa fa-file-pdf-o"></i> &nbsp; Select a pdf file
                                         </div>
                                         &nbsp; <span ng-repeat="f in filespdf">{{f.name}}</span>
                                     </div>
+
+
                                 </div>
                             </div>
                             <div class="col-md-6" id="video">
@@ -61,6 +63,13 @@
                                         </div>
                                         &nbsp; <span ng-repeat="f in filesvideo">{{f.name}}</span>
                                     </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12" ng-show="progressPercentage > 0">
+                                <div class="progress" >
+                                    <div class="progress-bar" ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
                                 </div>
                             </div>
 

@@ -236,6 +236,8 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.isLoading = false;
     $scope.errors = [];
 
+    $scope.progressPercentage = 0;
+
     $scope.$on('onAfterInitCourse', function(event, course){
         $scope.init();
     });
@@ -286,15 +288,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             if(!evt.config.file)
                 return;
 
-            var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            if(Array.isArray(evt.config.file) && evt.config.file.length > 0){
-                for(var i in evt.config.file){
-                    var fle = evt.config.file[i];
-                    console.log('progress: ' + progressPercentage + '% ' + fle.name);
-                }
-            } else {
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-            }
+            $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
         })
             .success(function (data) {
                 $scope.$emit('onAfterEditCourse', data.course);
@@ -304,11 +298,15 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
                 $scope.isLoading = false;
                 $('#editView').modal('hide');
+
+                $scope.progressPercentage = 0;
             })
 
             .error(function(){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
+
+                $scope.progressPercentage = 0;
             });
     };
 
@@ -1063,6 +1061,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.filespdf = [];
     $scope.filesvideo = [];
     $scope.currentEditNode = false;
+    $scope.progressPercentage = 0;
 
     $scope.isLoading = false;
     $scope.errors = [];
@@ -1219,15 +1218,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 if(!evt.config.file)
                     return;
 
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                if(Array.isArray(evt.config.file) && evt.config.file.length > 0){
-                    for(var i in evt.config.file){
-                        var fle = evt.config.file[i];
-                        console.log('progress: ' + progressPercentage + '% ' + fle.name);
-                    }
-                } else {
-                    console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-                }
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
 
             }).success(function (data, status, headers, config) {
 
@@ -1262,7 +1253,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $scope.editContentNodeForm.$setPristine();
                 }
 
-                toastr.success('Successfully Saved');
+                toastr.success('Content Node has been created, You can move it away from its default position');
                 $scope.isLoading = false;
             })
             .error(function(data){
@@ -2501,13 +2492,23 @@ app.directive('timepicker', function ($timeout) {
             }
         }
     }
-]);;app.factory('Page', function() {
+]);;app.factory('Page', function($window) {
     var prefix = 'CourseMapper';
     var title = 'CourseMapper';
     return {
-        title: function() { return title; },
-        setTitle: function(newTitle) { title = newTitle },
-        setTitleWithPrefix: function(newTitle) { title = prefix + ': ' + newTitle }
+        title: function() {
+            return title;
+        },
+
+        setTitle: function(newTitle) {
+            title = newTitle;
+            $window.document.title = title;
+        },
+
+        setTitleWithPrefix: function(newTitle) {
+            title = prefix + ': ' + newTitle;
+            $window.document.title = title;
+        }
     };
 });;/*jslint node: true */
 'use strict';
