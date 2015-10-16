@@ -1,4 +1,4 @@
-var admin = angular.module('courseMapperAdmin', ['ngResource', 'ngRoute']);
+var admin = angular.module('courseMapperAdmin', ['courseMapper', 'ngResource', 'ngRoute', 'toastr']);
 
 admin.filter('capitalize', function() {
     return function(input, all) {
