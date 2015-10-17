@@ -7,6 +7,9 @@ var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var debug = require('debug')('cm:route');
 var router = express.Router();
 
+var appRoot = require('app-root-path');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
+
 router.get('/categories', function(req, res, next) {
     var cat = new Category();
     cat.getCategories(
@@ -64,6 +67,45 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
         },
         function(cat){
             res.status(200).json({category: cat});
+        }
+    );
+});
+
+
+/**
+ * update category.positionFromRoot value
+ */
+router.put('/category/:categoryId', function(req, res, next) {
+    // check for user rights, only admin can edit cats positions on the homepage
+    if (!req.user || (req.user && req.user.role != 'admin')) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    try{
+        req.params.categoryId = mongoose.Types.ObjectId(req.params.categoryId);
+    } catch(exc) {
+        helper.createError('wrong category id format', 500);
+        return;
+    }
+
+    var cat = new Category();
+
+    cat.updateCategory(
+        function(err){
+            res.status(500).json({
+                result: false,
+                errors: err
+            });
+        },
+        {
+            _id: req.params.categoryId
+        }
+        ,
+        req.body,
+        function(cat){
+            res.status(200).json({
+                result:true });
         }
     );
 });
@@ -138,6 +180,37 @@ router.post('/categories', function(req, res, next){
             }
         );
     }
+});
+
+
+router.delete('/category/:categoryId', function(req, res, next) {
+    // check for user rights, only admin can delete cats positions on the homepage
+    if (!req.user || (req.user && req.user.role != 'admin')) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    try{
+        req.params.categoryId = mongoose.Types.ObjectId(req.params.categoryId);
+    } catch(exc) {
+        helper.createError('wrong category id format', 500);
+        return;
+    }
+
+    var cat = new Category();
+
+    cat.deleteCategory(
+        function(err){
+            res.status(500).json({
+                result: false,
+                errors: err
+            });
+        },
+        req.params,
+        function(cat){
+            res.status(200).json({result: true});
+        }
+    );
 });
 
 module.exports = router;

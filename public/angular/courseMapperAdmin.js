@@ -70,11 +70,15 @@ admin.filter('capitalize', function() {
     });
 
     $scope.deleteCategory = function(catId){
+        if(!confirm('Delete this category and its childs?'))
+            return;
 
         $http.delete('/api/category/' + catId)
             .success(function(data){
                 if(data.result){
                     toastr.success('Successfully deleted');
+
+                    $scope.$emit('init');
                 }
             })
             .error(function(data){
@@ -90,7 +94,10 @@ admin.filter('capitalize', function() {
         }
 
         $scope.editMode = true;
-        $scope.editData = angular.copy(data);
+        $scope.editData = {
+            _id: data._id,
+            name: data.name
+        };
 
         $('#editCategoryModal').modal('show');
     };
@@ -112,10 +119,12 @@ admin.filter('capitalize', function() {
 
                 if (data.result) {
                     // if successful, bind success message to message
-                    $scope.categories[data.category._id] = data.category;
+                    //$scope.categories[data.category._id] = data.category;
 
-                    $timeout(function(){
-                        $scope.$apply()});
+                    toastr.success('category edited');
+                    $('#editCategoryModal').modal('hide');
+                    $scope.$emit('init');
+
                 }
             })
             .error(function (data) {

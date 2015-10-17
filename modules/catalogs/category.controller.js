@@ -6,6 +6,9 @@ var Tag = require('./courseTags.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 
+var appRoot = require('app-root-path');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
+
 function catalog(){
 }
 
@@ -38,7 +41,7 @@ catalog.prototype.getCategories = function(error, params, success){
             var tree = [];
 
             function again(cat){
-                if(cat[children]){
+                if(cat && cat[children]){
                     var childrens = [];
                     for(var e in cat[children]){
                         var catId = cat[children][e];
@@ -98,6 +101,84 @@ catalog.prototype.updateCategoryPosition = function(error, paramsWhere, paramsUp
                 // success saved the cat
                     success(cat);
             });
+    });
+};
+
+
+catalog.prototype.updateCategory = function(error, paramsWhere, paramsUpdate, success){
+    Category.findOne(paramsWhere).exec(function(err, cat){
+        if(err) error(err);
+        else
+            cat.update({
+                $set: paramsUpdate
+            }, function(err){
+                if (err) {
+                    debug('failed update cat');
+                    error(err);
+                }
+                else
+                // success saved the cat
+                    success(cat);
+            });
+    });
+};
+
+catalog.prototype.deleteCategory = function(error, params, success){
+    var self = this;
+
+    if (!helper.checkRequiredParams(params, ['categoryId'], error)) {
+        return;
+    }
+
+    Category.findOne({_id: params.categoryId}, function(err, doc){
+        if(err){
+            error(err);
+            return;
+        }
+
+        if(doc){
+            if(doc.parentCategory) {
+                // remove from parent
+                Category.findById(doc.parentCategory,
+                    function (err, parentCat) {
+                        if (err) {
+                            debug('cant find parent cat');
+                            error(err);
+                            return;
+                        }
+                        if (parentCat) {
+                            parentCat.update({
+                                $pull: {
+                                    subCategories: doc._id
+                                }
+                            }, function (err) {
+                                if (err) {
+                                    debug('failed updated parent cat');
+                                }
+                            });
+                        }
+                    });
+            }
+
+            if(doc.subCategories) {
+                for(var i in doc.subCategories){
+                    var subCatId = doc.subCategories[i];
+                    self.deleteCategory(function(){}, {categoryId: subCatId}, function(){});
+                }
+            }
+
+            //remove this cat
+            Category.remove({
+                    _id: params.categoryId
+                },
+                function(err){
+                    if(err)
+                        error(err);
+                    else {
+                        success();
+                    }
+                });
+        }
     });
 };
 
