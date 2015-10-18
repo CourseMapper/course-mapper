@@ -29,7 +29,7 @@
             <div class="pull-left" ng-hide="source.isEditMode">
                 <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'}}</a>
             </div>
-            <div class="pull-right" ng-show="source.isAuthor && !source.isEditMode">
+            <div class="pull-right" ng-show="source.canEdit && !source.isEditMode">
                 <a class="btn btn-primary btn-xs" ng-click="editAnnotation()">EDIT</a>
                 <a class="btn btn-danger btn-xs" ng-click="deleteAnnotation()">DELETE</a>
             </div>
@@ -57,7 +57,7 @@
                               Posted <strong>{{comment.date_created | relativeDate}}</strong>
                               By <strong><span>{{comment.author}}</span></strong>
                             </span>
-                            <a class="pull-right" style="cursor: pointer;" ng-show="comment.isAuthor" ng-click="removeComment(comment._id)">X</a>
+                            <a class="pull-right" style="cursor: pointer;" ng-show="comment.canEdit" ng-click="removeComment(comment._id)">X</a>
                             <p class="reply">{{comment.text}}</p>
                         </div>
                     </div>

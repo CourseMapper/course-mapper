@@ -40,9 +40,11 @@ module.exports = function(io) {
 
             // update annotation properties
             if (annotation) {
-                // Do not allow other users, except the author to
-                // modify the annotation
-                if (annotation.author !== user.username) {
+                // Do not allow other users, except
+                // the author an admin to modify the annotation
+                var isAuthor = annotation.author === user.username;
+                var isAdmin = user.role === 'admin';
+                if (!isAuthor && !isAdmin) {
                     return;
                 }
                 var model = params.annotation;
@@ -138,10 +140,12 @@ module.exports = function(io) {
                     return;
                 }
                 var user = socket.request.session.passport.user;
+                var isAdmin = user.role === 'admin';
 
                 for (var i = 0; i < annotation.comments.length; i++) {
                     if (annotation.comments[i]._id.toString() === commentId) {
-                        if (annotation.comments[i].author === user.username) {
+                        var isAuthor = annotation.comments[i].author === user.username;
+                        if (isAuthor || isAdmin) {
                             //console.log('removing comment', commentId);
                             annotation.comments[i].remove();
                             break;
