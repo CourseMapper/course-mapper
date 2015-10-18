@@ -541,6 +541,16 @@ ul.dropdown-menu.course{
     #courseTabs .tree-container {
         left: 5px !important;
     }
+
+    .action-header .navbar-custom-menu{
+        float: none!important;
+        text-align: left;
+        margin-top: 10px;
+    }
+
+    .action-header .navbar-custom-menu > ul{
+        padding: 0px;
+    }
 }
 
 .control {
@@ -800,4 +810,10 @@ toastr custom*/
 
 .draw-tab-show > li{
     width: 64px;
+}
+
+.draw-tab-button a{
+    color:white;
+    font-weight: bold;
+    font-size: 14px;
 }
