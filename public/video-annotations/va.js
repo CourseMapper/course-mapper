@@ -63,6 +63,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             });
 
             $scope.source.isEditMode = false;
+            $scope.source.isDefault = false;
             $scope.$parent.searchHide(false);
         };
 
@@ -200,10 +201,22 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
 
         socket.on('annotations:updated', function(annotations) {
+
+            var editedAnnotation = null;
+            if ($scope.annotations && $scope.annotations.length > 0) {
+                editedAnnotation = _.find($scope.annotations, function(ann) {
+                    return ann.isEditMode;
+                });
+            }
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];
             $scope.selectedAnnotation = null;
+
+            //Restore annotation that the user is editing.
+            if (editedAnnotation) {
+                $scope.annotations.push(editedAnnotation);
+            }
 
             _.sortByAll(annotations, ['start'])
                 .forEach(function(annotation) {

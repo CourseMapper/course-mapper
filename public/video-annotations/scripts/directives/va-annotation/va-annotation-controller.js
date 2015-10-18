@@ -52,6 +52,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             });
 
             $scope.source.isEditMode = false;
+            $scope.source.isDefault = false;
             $scope.$parent.searchHide(false);
         };
 
