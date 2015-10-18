@@ -162,31 +162,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
 
                 return false;
             });
-            /*.on('mouseenter', function(){
-                $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
-                    function (res) {
-                        if (res.result) {
-                            $scope.widgets[slug] = $sce.trustAsHtml(res.widgets);
-                        }
-                    }
-                );
-            });*/
     };
-
-    /*$scope.onNodeMouseOver = function(nodeId){
-        if ($(nodeId).find('ul').hasClass('open')) {
-            if ($(nodeId).find('ul').hasClass('dropdown-course')) {
-                //return true;
-            }
-            else
-                $('.open').removeClass('open');
-            //return false;
-        }
-        else {
-            $('.open').not($(this).parents('ul')).removeClass('open');
-            $(nodeId).find('ul').addClass('open');
-        }
-    };*/
 
     $scope.interConnect = function (parent, treeNodes, instance) {
         // added "t" in id because id cannot start with number

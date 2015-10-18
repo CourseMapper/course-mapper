@@ -14,10 +14,9 @@
                     <li class="active">Browse Courses</li>
                     <li class="active">{{category.name}}</li>
                 </ol>
-                <% if(locals.user){ %>
-                <a class="btn btn-primary btn-xs" style="float: right" data-toggle="modal"
+
+                <a ng-show="user" class="btn btn-primary btn-xs" style="float: right" data-toggle="modal"
                    data-target="#modalCreateCourse">Create A Course</a>
-                <% }%>
             </section>
 
             <!-- for routing purpose we write it as an ng-view although we write the html also in this file. -->
