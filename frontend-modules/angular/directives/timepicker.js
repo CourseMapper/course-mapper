@@ -1,7 +1,7 @@
 /*jslint node: true */
 'use strict';
 
-app.directive('timepicker', function ($timeout) {
+app.directive('timepicker', function($timeout) {
     function msToTime(s) {
         function addZ(n) {
             return (n < 10 ? '0' : '') + n;
@@ -26,11 +26,9 @@ app.directive('timepicker', function ($timeout) {
     return {
         restrict: 'EA',
         template: '<div class="input-group bootstrap-timepicker timepicker">' +
-        '<input id="timepicker2" type="text" class="form-control input-small">' +
-        '<span class="input-group-addon">' +
-        '<i class="glyphicon glyphicon-time"></i></span> </div>',
+            '<input id="timepicker2" type="text" class="form-control input-small"></div>',
         require: 'ngModel',
-        link: function (scope, element, attrs, ngModel) {
+        link: function(scope, element, attrs, ngModel) {
             var tp = element.find('input');
             var value = parseInt(scope.$eval(attrs.ngModel));
 
@@ -46,16 +44,16 @@ app.directive('timepicker', function ($timeout) {
 
             tp.timepicker('setTime', msToTime(value));
 
-            tp.on('changeTime.timepicker', function (e) {
+            tp.on('changeTime.timepicker', function(e) {
                 var time = timeToMs(e.time.value);
                 ngModel.$setViewValue(time);
                 ngModel.$render();
-                $timeout(function () {
+                $timeout(function() {
                     scope.$apply();
                 });
             });
 
-            scope.$on('$destroy', function () {
+            scope.$on('$destroy', function() {
                 element.off('**');
             });
         }

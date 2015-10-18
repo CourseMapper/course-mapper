@@ -10,7 +10,7 @@
         <p id="annotation-text" ng-click="$parent.seekPosition(source)">{{source.text}}</p>
     </div>
     <div class="box-body form-group" ng-show="source.isEditMode">
-        <textarea placeholder="Start annotating..." class="form-control" rows="3" id="va-text" type="text" ng-model="source.text"></textarea>
+        <textarea placeholder="Start annotating..." class="form-control" rows="5" id="va-text" type="text" ng-model="source.text"></textarea>
         <br/>
         <select class="form-control" ng-model="source.type">
             <option ng-selected="type.id===source.type" ng-repeat="type in annotationTypes" value="{{type.id}}">
@@ -18,18 +18,32 @@
             </option>
         </select>
         <br/>
-        <label class="control-label" for="va-start">Start:</label>
-        <timepicker id="va-start" ng-model="source.start"></timepicker>
-        <label class="control-label" for="va-end">End:</label>
-        <timepicker id="va-end" ng-model="source.end"></timepicker>
-        <br/>
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="glyphicon glyphicon-arrow-right"></i>
+                    </div>
+                    <timepicker id="va-start" ng-model="source.start"></timepicker>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="input-group">
+                    <timepicker id="va-end" ng-model="source.end"></timepicker>
+                    <div class="input-group-addon">
+                        <i class="glyphicon glyphicon-arrow-left"></i>
+                    </div>
+                </div>
+            </div>
+            <br/>
+        </div>
     </div>
     <div class="box-footer">
         <div>
             <div class="pull-left" ng-hide="source.isEditMode">
                 <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'}}</a>
             </div>
-            <div class="pull-right" ng-show="source.isAuthor && !source.isEditMode">
+            <div class="pull-right" ng-show="source.canEdit && !source.isEditMode">
                 <a class="btn btn-primary btn-xs" ng-click="editAnnotation()">EDIT</a>
                 <a class="btn btn-danger btn-xs" ng-click="deleteAnnotation()">DELETE</a>
             </div>
@@ -57,7 +71,7 @@
                               Posted <strong>{{comment.date_created | relativeDate}}</strong>
                               By <strong><span>{{comment.author}}</span></strong>
                             </span>
-                            <a class="pull-right" style="cursor: pointer;" ng-show="comment.isAuthor" ng-click="removeComment(comment._id)">X</a>
+                            <a class="pull-right" style="cursor: pointer;" ng-show="comment.canEdit" ng-click="removeComment(comment._id)">X</a>
                             <p class="reply">{{comment.text}}</p>
                         </div>
                     </div>

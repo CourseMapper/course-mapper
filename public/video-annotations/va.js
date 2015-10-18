@@ -15,14 +15,29 @@ var videoAnnotationsModule = angular.module('VideoAnnotations', [
 videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootScope',
     function($scope, socket, rootScope) {
         function markAuthoredComments(comments) {
+            var user = rootScope.user;
+            var isAdmin = user.role === 'admin';
+
             _.forEach(comments, function(comment) {
-                comment.isAuthor = (comment.author === rootScope.user.username);
+                if (isAdmin) {
+                    comment.canEdit = true;
+                } else {
+                    var isAuthor = comment.author === user.username;
+                    comment.canEdit = isAuthor;
+                }
             });
         }
 
         this.init = function() {
             $scope.commentText = '';
-            $scope.isAuthor = ($scope.source.author === rootScope.user.username);
+            var user = rootScope.user;
+            var isAdmin = user.role === 'admin';
+            if (isAdmin) {
+                $scope.canEdit = true;
+            } else {
+                var isAuthor = $scope.source.author === user.username;
+                $scope.canEdit = isAuthor;
+            }
             $scope.annotationTypes = [{
                 id: 'embedded-note',
                 name: 'Embedded Note'
@@ -40,6 +55,8 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
         $scope.editAnnotation = function() {
             $scope.source.isEditMode = true;
             $scope.$parent.searchHide(true);
+            $scope.$parent.seekPosition($scope.source);
+            
             _.each($scope.$parent.annotations, function(a) {
                 if (a._id !== $scope.source._id)
                     a.isEditMode = false;
@@ -63,6 +80,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             });
 
             $scope.source.isEditMode = false;
+            $scope.source.isDefault = false;
             $scope.$parent.searchHide(false);
         };
 
@@ -142,8 +160,11 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             }
         };
 
-        var checkIsAuthor = function(item) {
-            return (item.author === rootScope.user.username);
+        var checkCanEdit = function(item) {
+            var user = rootScope.user;
+            var isAuthor = item.author === user.username;
+            var isAdmin = user.role === 'admin';
+            return (isAuthor || isAdmin);
         };
 
         $scope.createAnnotation = function() {
@@ -167,6 +188,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                 "isEditMode": true,
                 "isDefault": true,
                 "isAuthor": true,
+                "canEdit": true,
                 "start": startTime,
                 "end": endTime,
                 "position": {
@@ -200,12 +222,24 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
 
         socket.on('annotations:updated', function(annotations) {
+
+            var editedAnnotation = null;
+            if ($scope.annotations && $scope.annotations.length > 0) {
+                editedAnnotation = _.find($scope.annotations, function(ann) {
+                    return ann.isEditMode;
+                });
+            }
             // clear current annotations state
             $scope.annotations = [];
             $scope.cuePoints.points = [];
             $scope.selectedAnnotation = null;
 
-            _.sortByAll(annotations, ['start', 'end'])
+            //Restore annotation that the user is editing.
+            if (editedAnnotation) {
+                $scope.annotations.push(editedAnnotation);
+            }
+
+            _.sortByAll(annotations, ['start'])
                 .forEach(function(annotation) {
                     var cuePoint = {
                         timeLapse: {
@@ -219,7 +253,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                     };
                     $scope.cuePoints.points.push(cuePoint);
 
-                    annotation.isAuthor = checkIsAuthor(annotation);
+                    annotation.canEdit = checkCanEdit(annotation);
                     annotation.reposition = function(params) {
                         if (params.position) {
                             annotation.position = params.position;
@@ -232,10 +266,21 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
                     // find current user comments
                     _.forEach(annotation.comments, function(c) {
-                        c.isAuthor = checkIsAuthor(c);
+                        c.canEdit = checkCanEdit(c);
                     });
                 });
         });
+
+        $scope.getInlineAnnotationStyle = function(item) {
+            return {
+                'top': item.position.top + '%',
+                'left': item.position.left + '%',
+                'width': item.size.width + '%',
+                'z-index': item.isEditMode ? 1 : 0,
+                'height': item.size.height + '%',
+                'background': item.isHovered ? 'rgba(0, 0, 0, 0.3)' : 'background: rgba(0, 0, 0, 0.05)'
+            };
+        };
 
         $scope.init = function(videoId, videoSource) {
             $scope.sources = [{

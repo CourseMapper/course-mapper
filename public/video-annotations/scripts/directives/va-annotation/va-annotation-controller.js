@@ -4,14 +4,29 @@
 videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootScope',
     function($scope, socket, rootScope) {
         function markAuthoredComments(comments) {
+            var user = rootScope.user;
+            var isAdmin = user.role === 'admin';
+
             _.forEach(comments, function(comment) {
-                comment.isAuthor = (comment.author === rootScope.user.username);
+                if (isAdmin) {
+                    comment.canEdit = true;
+                } else {
+                    var isAuthor = comment.author === user.username;
+                    comment.canEdit = isAuthor;
+                }
             });
         }
 
         this.init = function() {
             $scope.commentText = '';
-            $scope.isAuthor = ($scope.source.author === rootScope.user.username);
+            var user = rootScope.user;
+            var isAdmin = user.role === 'admin';
+            if (isAdmin) {
+                $scope.canEdit = true;
+            } else {
+                var isAuthor = $scope.source.author === user.username;
+                $scope.canEdit = isAuthor;
+            }
             $scope.annotationTypes = [{
                 id: 'embedded-note',
                 name: 'Embedded Note'
@@ -29,6 +44,8 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
         $scope.editAnnotation = function() {
             $scope.source.isEditMode = true;
             $scope.$parent.searchHide(true);
+            $scope.$parent.seekPosition($scope.source);
+            
             _.each($scope.$parent.annotations, function(a) {
                 if (a._id !== $scope.source._id)
                     a.isEditMode = false;
@@ -52,6 +69,7 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
             });
 
             $scope.source.isEditMode = false;
+            $scope.source.isDefault = false;
             $scope.$parent.searchHide(false);
         };
 
