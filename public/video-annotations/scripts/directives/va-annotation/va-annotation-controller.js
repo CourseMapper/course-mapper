@@ -44,6 +44,8 @@ videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootSco
         $scope.editAnnotation = function() {
             $scope.source.isEditMode = true;
             $scope.$parent.searchHide(true);
+            $scope.$parent.seekPosition($scope.source);
+            
             _.each($scope.$parent.annotations, function(a) {
                 if (a._id !== $scope.source._id)
                     a.isEditMode = false;
