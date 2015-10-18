@@ -62,3 +62,14 @@ function handleTab(){
     $(document).scrollTop(0);
 }
 
+function toggleTabMenu(){
+    var drw = $('.draw-tab');
+    if(!drw.hasClass('draw-tab-show')){
+        drw.addClass('draw-tab-show');
+    } else {
+        drw.removeClass('draw-tab-show');
+    }
+}
+function hideTabMenu(){
+    $('.draw-tab').removeClass('draw-tab-show');
+}

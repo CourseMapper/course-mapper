@@ -537,6 +537,12 @@ ul.dropdown-menu.course{
     top:7px;
 }
 
+@media (max-width: 991px) {
+    #courseTabs .tree-container {
+        left: 5px !important;
+    }
+}
+
 .control {
     position: fixed;
     top: 120px;
@@ -777,4 +783,21 @@ toastr custom*/
 }
 #toast-container>.toast-info.wide{
     background-position: 20px 20px;
+}
+
+.draw-tab{
+    position: fixed;
+    z-index: 1000;
+    background: white;
+    padding-right: 25px;
+    width:80px!important;
+    left:-100px!important;
+}
+
+.draw-tab-show{
+    left:0px!important;
+}
+
+.draw-tab-show > li{
+    width: 64px;
 }
