@@ -565,26 +565,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             } else {
                 $scope.initJSPlumb();
             }
+
+            if($location.search().tab && $location.search().tab == 'map'){
+                if($scope.treeNodes.length == 0){
+                    $scope.showMapEmptyInfo();
+                }
+            }
         });
     };
-
-    /*$scope.$on('onTabChange', function(event, currentTab){
-        if(currentTab == 'map'){
-            if($scope.treeNodes && $scope.treeNodes.length == 0){
-                $scope.showMapEmptyInfo();
-            }
-        }
-    });*/
 
     $scope.$on('onAfterInitCourse', function (event, course) {
         $scope.course = course;
         $scope.init();
-
-        if($location.search().tab && $location.search().tab == 'map'){
-            if($scope.treeNodes && $scope.treeNodes.length == 0){
-                $scope.showMapEmptyInfo();
-            }
-        }
     });
 
     // initiate draggable jqUI to the topic node
@@ -823,6 +815,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function () {
                 $scope.$apply();
                 $scope.initJSPlumb();
+
+                if ($('.open').length > 0) {
+                    $('.open').removeClass('open');
+                    return true;
+                }
             });
     });
 
