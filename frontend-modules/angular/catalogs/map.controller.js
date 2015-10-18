@@ -42,16 +42,31 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
         $scope.center = {x: $scope.width / 2, y: ($scope.height / 2) - 100};
     });
 
+    $scope.initDropDownMenuHybrid = function () {
+        $('#tree .course-map').on('click', function (event) {
+            var target = $(event.target);
+            var k = target.parents('div');
+            if(k.hasClass('ui-draggable') && k.hasClass('w') ){
+                return true;
+            } else if(k.hasClass('center-course') ){
+                return true;
+            } else if(target.hasClass('w')){
+                return true;
+            }
+
+            if ($('.open').length > 0) {
+                $('.open').removeClass('open');
+                return false;
+            }
+        });
+    };
+
     /**
      * get all categories, recursived on the server
      */
     $scope.init = function () {
         // add hover to center instantiate on hover
-        $('.center-course').mouseover(function () {
-            $(this).find('ul').show();
-        }).mouseout(function () {
-            $(this).find('ul').hide()
-        });
+        $scope.initDropDown('center');
 
         // get node data
         $http.get('/api/treeNodes/course/' + $scope.course._id).success(function (data) {
@@ -124,8 +139,54 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
         instance.batch(function () {
             /* connect center to first level cats recursively*/
             $scope.interConnect('center', $scope.treeNodes, instance);
+
+            /*blanket on click to close dropdown menu*/
+            $scope.initDropDownMenuHybrid();
         });
     };
+
+    $scope.initDropDown = function (slug) {
+        $('#' + slug)
+            .on('click mousedown mouseup touchstart', function (event) {
+                if ($(this).find('ul').hasClass('open')) {
+                    if ($(this).find('ul').hasClass('dropdown-course')) {
+                        return true;
+                    }
+
+                    $('.open').removeClass('open');
+                    return false;
+                }
+
+                $('.open').not($(this).parents('ul')).removeClass('open');
+                $(this).find('ul').addClass('open');
+
+                return false;
+            });
+            /*.on('mouseenter', function(){
+                $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
+                    function (res) {
+                        if (res.result) {
+                            $scope.widgets[slug] = $sce.trustAsHtml(res.widgets);
+                        }
+                    }
+                );
+            });*/
+    };
+
+    /*$scope.onNodeMouseOver = function(nodeId){
+        if ($(nodeId).find('ul').hasClass('open')) {
+            if ($(nodeId).find('ul').hasClass('dropdown-course')) {
+                //return true;
+            }
+            else
+                $('.open').removeClass('open');
+            //return false;
+        }
+        else {
+            $('.open').not($(this).parents('ul')).removeClass('open');
+            $(nodeId).find('ul').addClass('open');
+        }
+    };*/
 
     $scope.interConnect = function (parent, treeNodes, instance) {
         // added "t" in id because id cannot start with number
@@ -134,14 +195,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
             var childId = 't' + child._id;
 
             // instantiate on hover
-            $('#' + childId).mouseover(function () {
-                $(this).find('ul').show();
-                $rootScope.$broadcast('onTopicHover', $(this).attr('id'));
-
-            }).mouseout(function () {
-                $(this).find('ul').hide();
-                $rootScope.$broadcast('onTopicHoverOut', $(this).attr('id'));
-            });
+            $scope.initDropDown(childId);
 
             // connecting parent and chidlern
             var conn = instance.connect({

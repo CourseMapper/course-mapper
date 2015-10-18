@@ -766,6 +766,7 @@ a.cursor {
     float: right;
 }
 .w:hover > ul,
+.center-course:hover > ul,
 .open{
     display: block;
 }
