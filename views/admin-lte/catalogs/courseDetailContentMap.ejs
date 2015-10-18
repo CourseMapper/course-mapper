@@ -57,14 +57,17 @@
     </div>
 </script>
 
-<div class="box-body no-border" id="tree">
+<div class="box-body no-border" id="tree" ng-controller="MapController">
 
 <div class="course-control">
     <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i
             class="ionicons ion-android-locate"></i></button>
+
+    <button class="btn btn-default btn-sm" ng-click="showMapInfo()">
+        <i class="ionicons ion-information"></i></button>
 </div>
 
-<div class="tree-container" ng-controller="MapController">
+<div class="tree-container">
     <div class="course-map" id="course-map">
 
         <div ng-repeat="data in treeNodes" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">

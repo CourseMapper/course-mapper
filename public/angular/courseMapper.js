@@ -219,7 +219,6 @@ app.config(function(toastrConfig) {
                 });
         }
 
-        //#toast-container>div
     };
 
     $scope.newCourseNotification();
@@ -487,7 +486,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $sce, $location) {
+;app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $sce, $location, toastr) {
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
@@ -569,9 +568,23 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     };
 
+    /*$scope.$on('onTabChange', function(event, currentTab){
+        if(currentTab == 'map'){
+            if($scope.treeNodes && $scope.treeNodes.length == 0){
+                $scope.showMapEmptyInfo();
+            }
+        }
+    });*/
+
     $scope.$on('onAfterInitCourse', function (event, course) {
         $scope.course = course;
         $scope.init();
+
+        if($location.search().tab && $location.search().tab == 'map'){
+            if($scope.treeNodes && $scope.treeNodes.length == 0){
+                $scope.showMapEmptyInfo();
+            }
+        }
     });
 
     // initiate draggable jqUI to the topic node
@@ -651,6 +664,56 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 return false;
             });
+    };
+
+    $scope.infoToast = null;
+    $scope.showMapInfo = function(){
+        if(!$scope.infoToast){
+            $scope.infoToast = toastr.info(
+                'To add a pdf or a video node (which we call "Content Node"), ' +
+                '<br>you need to have at least a subtopic node that acts as a hub.' +
+                '<br>' +
+                '<br>Hover over the node to see available actions, such as create subtopic or content node'
+                ,   {
+                    allowHtml: true,
+                    autoDismiss: false,
+                    onHidden: function(){
+                        if($scope.infoToast)$scope.infoToast = null;
+                    },
+                    tapToDismiss: true,
+                    extendedTimeOut: 10000,
+                    timeOut: 10000,
+                    toastClass: 'toast wide',
+                });
+        } else {
+            toastr.clear();
+            $scope.infoToast = null;
+        }
+    };
+
+    $scope.infoEmptyToast = null;
+    $scope.showMapEmptyInfo = function(){
+        if(!$scope.infoEmptyToast){
+            $scope.infoEmptyToast = toastr.info(
+                'Hi, this course is new, Please add a subtopic first, ' +
+                '<br>from there, you can add a content node, then upload a pdf or a video.' +
+                '<br>' +
+                '<br>Hover over the center node to see available actions.'
+                ,   {
+                    allowHtml: true,
+                    autoDismiss: false,
+                    onHidden: function(){
+                        if($scope.infoEmptyToast)$scope.infoEmptyToast = null;
+                    },
+                    tapToDismiss: true,
+                    extendedTimeOut: 10000,
+                    timeOut: 10000,
+                    toastClass: 'toast wide',
+                });
+        } else {
+            toastr.clear();
+            $scope.infoEmptyToast = null;
+        }
     };
 
     $scope.interConnect = function (parent, treeNodes, instance) {

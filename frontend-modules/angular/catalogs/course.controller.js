@@ -149,7 +149,6 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
                 });
         }
 
-        //#toast-container>div
     };
 
     $scope.newCourseNotification();
