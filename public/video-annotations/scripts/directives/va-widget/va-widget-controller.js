@@ -116,6 +116,17 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
                 });
         });
 
+        $scope.getInlineAnnotationStyle = function(item) {
+            return {
+                'top': item.position.top + '%',
+                'left': item.position.left + '%',
+                'width': item.size.width + '%',
+                'z-index': item.isEditMode ? 1 : 0,
+                'height': item.size.height + '%',
+                'background': item.isHovered ? 'rgba(0, 0, 0, 0.3)' : 'background: rgba(0, 0, 0, 0.05)'
+            };
+        };
+
         $scope.init = function(videoId, videoSource) {
             $scope.sources = [{
                 src: videoSource,

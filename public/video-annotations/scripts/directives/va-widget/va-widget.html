@@ -14,14 +14,10 @@
             </vg-volume>
             <vg-fullscreen-button></vg-fullscreen-button>
         </vg-controls>
-         <vg-overlay-play></vg-overlay-play>
+        <vg-overlay-play></vg-overlay-play>
         <div id="inline-va-container">
-            <div movable can-move="{{item.isEditMode===true}}" on-moved="item.reposition" ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation" ng-show="item.showing" ng-style="{
-                        top: item.position.top + '%',
-                        left: item.position.left + '%',
-                        width: item.size.width + '%',
-                        height: item.size.height + '%'}">
-                <span>{{item.text}}</span>
+            <div ng-mouseover="item.isHovered=true" ng-mouseleave="item.isHovered=false" movable can-move="{{item.isEditMode===true}}" on-moved="item.reposition" ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation" ng-show="item.showing" ng-style="getInlineAnnotationStyle(item)">
+                <span ng-show="item.isHovered">{{item.text}}</span>
             </div>
         </div>
     </videogular>
@@ -47,7 +43,8 @@
         <section class="row" id="annotations-view" ng-show="annotations.length > 0">
             <div ng-repeat="annotation in annotations | filter:query | orderBy:sortBy">
                 <div class="col-xs-11">
-                    <video-annotation source="annotation" ng-class="{showing: annotation.showing, completed: annotation.completed}"></video-annotation>
+                    <video-annotation ng-mouseover="annotation.isHovered=true" ng-mouseleave="annotation.isHovered=false" source="annotation" ng-class="{showing: annotation.showing, completed: annotation.completed}">
+                    </video-annotation>
                 </div>
                 <voting class="col-xs-1" vote-type="videoAnnotation" vote-type-id="{{annotation._id}}"></voting>
             </div>
