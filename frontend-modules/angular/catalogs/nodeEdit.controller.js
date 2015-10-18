@@ -1,4 +1,4 @@
-app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr) {
+app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -17,6 +17,10 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
 
         if($scope.currentNodeAction.parent)
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
+        else {
+            if($scope.formData.parent)
+                delete $scope.formData.parent;
+        }
 
         $scope.currentEditNode = $scope.currentNodeAction.parent;
         $scope.currentEditNodeOriginal = cloneSimpleObject($scope.currentNodeAction.parent);
@@ -66,13 +70,14 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                     // cleaining up formData
                     if($scope.formData.parent) {
                         delete $scope.formData.parent;
+                        $timeout(function(){$scope.$apply()});
                     }
                     $scope.formData.name = "";
 
                     $scope.isLoading = false;
                     $scope.addSubTopicForm.$setPristine();
 
-                    toastr.success('Successfully Saved');
+                    toastr.success('Successfully Saved, You can move it away from its default position');
                 }
             })
             .error(function(data){
@@ -110,6 +115,12 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                 $scope.isLoading = false;
                 if(data.result) {
                     $rootScope.$broadcast('onAfterEditNode', data.treeNode);
+
+                    if($scope.formData.parent) {
+                        $scope.currentEditNode = {};
+                        delete $scope.formData.parent;
+                        $timeout(function(){$scope.$apply()});
+                    }
 
                     $('#editSubTopicModal').modal('hide');
                     $('#editContentNodeModal').modal('hide');
