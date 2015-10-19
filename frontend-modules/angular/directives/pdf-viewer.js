@@ -165,6 +165,8 @@ app.directive('pdfViewer',
                 function adjustPdfScale () {
                   if($scope.scale == 0)
                     $scope.scale = 1.0;
+
+                  console.log($scope.pdfPageView);
                   $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                   $scope.pdfPageView.update($scope.scale, 0);
                   $scope.pdfPageView.draw().catch(function(){});
