@@ -1794,7 +1794,7 @@ app.directive('movable', function () {
                 };
 
                 function adjustPdfScale () {
-                  console.log($scope.pdfPageView);
+                  //console.log($scope.pdfPageView);
                   if(typeof $scope.pdfPageView != 'undefined'){
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
@@ -1803,23 +1803,24 @@ app.directive('movable', function () {
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
                     $rootScope.$broadcast('reloadTags');
-                    console.log($scope.scale);
+                    //console.log($scope.scale);
                   }
                 };
 
                 $(window).resize(function (event) {
-                  console.log("Registered resize. Got tab: " + $scope.currentTab) +", callerId: "+event.target.id;
-                  if($scope.currentTab == "pdf") {
-                    console.log("Got called on resize");
+                  //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
+                  console.log(event)
+                  if($scope.currentTab == "pdf" && $.isWindow(event.target)) {
+                    //console.log("Got called on resize");
                     adjustPdfScale();
                   }
                 });
 
                 $scope.$on('onNodeTabChange', function(event, tab){
-                  console.log("Registered tab change. Got tab: " + tab);
+                  //console.log("Registered tab change. Got tab: " + tab);
                   $scope.currentTab = tab;
                   if(tab == "pdf") {
-                    console.log("Got called on tabchange");
+                    //console.log("Got called on tabchange");
                     adjustPdfScale();
                   }
                 });
