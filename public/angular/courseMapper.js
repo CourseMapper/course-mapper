@@ -1530,15 +1530,29 @@ app.directive('modalClose',
     });;/*jslint node: true */
 'use strict';
 
-app.directive('movable', function () {
+app.directive('movable', function() {
+    var getRelativePosition = function(position, parent) {
+        return {
+            left: Math.round((100 * position.left / parent.clientWidth)),
+            top: Math.round((100 * position.top / parent.clientHeight))
+        };
+    };
+
+    var getRelativeSize = function(size, parent) {
+        return {
+            width: Math.round((100 * size.width / parent.clientWidth)),
+            height: Math.round((100 * size.height / parent.clientHeight))
+        };
+    };
+
     return {
         restrict: 'A',
         scope: {
             onMoved: '=',
             canMove: '@'
         },
-        link: function (scope, element, attrs) {
-            attrs.$observe('canMove', function (value) {
+        link: function(scope, element, attrs) {
+            attrs.$observe('canMove', function(value) {
                 if (value === 'false') {
                     element.draggable({
                         disabled: true
@@ -1554,21 +1568,14 @@ app.directive('movable', function () {
                 }
             });
 
-            var getPosition = function (ui) {
-                var position = {
-                    left: Math.round((100 * ui.position.left / element.parent()[0].clientWidth)),
-                    top: Math.round((100 * ui.position.top / element.parent()[0].clientHeight))
-                };
-                return position;
-            };
             element
                 .draggable({
                     containment: 'parent',
                     cursor: 'move',
-                    stop: function (event, ui) {
+                    stop: function(event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
-                                position: getPosition(ui)
+                                position: getRelativePosition(ui.position, element.parent()[0])
                             });
                         }
                     }
@@ -1576,23 +1583,19 @@ app.directive('movable', function () {
                 .resizable({
                     containment: 'parent',
                     handles: 'ne, se, sw, nw',
-                    stop: function (event, ui) {
-                        // get relative size to the container element
-                        var size = {};
-                        size.width = Math.round((100 * ui.size.width / element.parent()[0].clientWidth));
-                        size.height = Math.round((100 * ui.size.height / element.parent()[0].clientHeight));
-
+                    stop: function(event, ui) {
                         if (scope.onMoved) {
+                            var parent = element.parent()[0];
                             scope.onMoved({
-                                position: getPosition(ui),
-                                size: size
+                                position: getRelativePosition(ui.position, parent),
+                                size: getRelativeSize(ui.size, parent)
                             });
                         }
                     }
                 });
 
             // remove event handlers
-            scope.$on('$destroy', function () {
+            scope.$on('$destroy', function() {
                 element.off('**');
             });
         }
