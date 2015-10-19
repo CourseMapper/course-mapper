@@ -160,15 +160,26 @@ app.directive('pdfViewer',
                     }
                 };
 
+                function adjustPdfScale () {
+                  if($scope.scale == 0)
+                    $scope.scale = 1.0;
+                  $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
+                  $scope.pdfPageView.update($scope.scale, 0);
+                  $scope.pdfPageView.draw().catch(function(){});
+                  $rootScope.$broadcast('reloadTags');
+                  alert($scope.scale);
+                };
+
                 $(window).resize(function () {
-                  //console.log($location.search().tab );
+                  console.log($location.search().tab );
                   if($location.search().tab == "pdf") {
-                    if($scope.scale == 0)
-                      $scope.scale = 1.0;
-                    $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
-                    $scope.pdfPageView.update($scope.scale, 0);
-                    $scope.pdfPageView.draw().catch(function(){});
-                    $rootScope.$broadcast('reloadTags');
+                    adjustPdfScale();
+                  }
+                });
+
+                $scope.$on('onNodeTabChange', function(event, tab){
+                  if(tab == "pdf") {
+                    adjustPdfScale();
                   }
                 });
 

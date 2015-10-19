@@ -1775,15 +1775,26 @@ app.directive('movable', function () {
                     }
                 };
 
+                function adjustPdfScale () {
+                  if($scope.scale == 0)
+                    $scope.scale = 1.0;
+                  $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
+                  $scope.pdfPageView.update($scope.scale, 0);
+                  $scope.pdfPageView.draw().catch(function(){});
+                  $rootScope.$broadcast('reloadTags');
+                  alert($scope.scale);
+                };
+
                 $(window).resize(function () {
-                  //console.log($location.search().tab );
+                  console.log($location.search().tab );
                   if($location.search().tab == "pdf") {
-                    if($scope.scale == 0)
-                      $scope.scale = 1.0;
-                    $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
-                    $scope.pdfPageView.update($scope.scale, 0);
-                    $scope.pdfPageView.draw().catch(function(){});
-                    $rootScope.$broadcast('reloadTags');
+                    adjustPdfScale();
+                  }
+                });
+
+                $scope.$on('onNodeTabChange', function(event, tab){
+                  if(tab == "pdf") {
+                    adjustPdfScale();
                   }
                 });
 
@@ -3142,7 +3153,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
-        alert('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
+        //alert('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
