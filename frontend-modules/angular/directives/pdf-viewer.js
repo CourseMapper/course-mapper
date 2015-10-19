@@ -176,8 +176,8 @@ app.directive('pdfViewer',
                   }
                 };
 
-                $(window).resize(function () {
-                  console.log("Registered resize. Got tab: " + $scope.currentTab);
+                $(window).resize(function (event) {
+                  console.log("Registered resize. Got tab: " + $scope.currentTab) +", callerId: "+event.target.id;
                   if($scope.currentTab == "pdf") {
                     console.log("Got called on resize");
                     adjustPdfScale();
