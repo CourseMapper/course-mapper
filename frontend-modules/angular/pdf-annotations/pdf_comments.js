@@ -182,7 +182,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 //TODO: reset everything
               }
               //console.log("commReplyEv");
-              $scope.$broadcast('reloadTags');
+              $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
               $scope.replyRawText = [];
@@ -215,9 +215,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
               else {
                 displayCommentSubmissionResponse("Comment deletion successful!");
               }
-              console.log("commDeleteEv");
+              //console.log("commDeleteEv");
 
-              $scope.$broadcast('reloadTags');
+              $rootScope.$broadcast('reloadTags');
           })
           .error(function (data, status, headers, config) {
               displayCommentSubmissionResponse("Error: Unexpected Server Response!");
@@ -270,8 +270,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
                   $("#annotationZoneSubmitList div").remove();
                 }
-                console.log("commSubmitEv");
-                $scope.$broadcast('reloadTags');
+                //console.log("commSubmitEv");
+                $rootScope.$broadcast('reloadTags');
 
                 $scope.writeCommentMode = false;
             })
@@ -308,7 +308,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 $scope.setQuillSelection();
               }
               //console.log("commEditEv");
-              $scope.$broadcast('reloadTags');
+              $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
           })

@@ -233,7 +233,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      //console.log("RootScope");
+      console.log("Reload Tags called");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;

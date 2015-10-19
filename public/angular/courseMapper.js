@@ -3239,7 +3239,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      //console.log("RootScope");
+      console.log("Reload Tags called");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -3569,7 +3569,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 //TODO: reset everything
               }
               //console.log("commReplyEv");
-              $scope.$broadcast('reloadTags');
+              $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
               $scope.replyRawText = [];
@@ -3602,9 +3602,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
               else {
                 displayCommentSubmissionResponse("Comment deletion successful!");
               }
-              console.log("commDeleteEv");
+              //console.log("commDeleteEv");
 
-              $scope.$broadcast('reloadTags');
+              $rootScope.$broadcast('reloadTags');
           })
           .error(function (data, status, headers, config) {
               displayCommentSubmissionResponse("Error: Unexpected Server Response!");
@@ -3657,8 +3657,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
                   $("#annotationZoneSubmitList div").remove();
                 }
-                console.log("commSubmitEv");
-                $scope.$broadcast('reloadTags');
+                //console.log("commSubmitEv");
+                $rootScope.$broadcast('reloadTags');
 
                 $scope.writeCommentMode = false;
             })
@@ -3695,7 +3695,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 $scope.setQuillSelection();
               }
               //console.log("commEditEv");
-              $scope.$broadcast('reloadTags');
+              $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
           })
