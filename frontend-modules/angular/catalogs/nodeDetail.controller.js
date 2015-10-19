@@ -100,8 +100,14 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         $scope.currentTab = $scope.defaultPath;
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
+        $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
+
         $scope.manageActionBar();
     };
+
+    $scope.$on('onNodeTabChange', function(event, tab){
+        console.log(tab);
+    });
 
     $scope.currentNodeAction = {};
     $scope.setEditMode = function(){
@@ -171,7 +177,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             }
         });
 
-        $scope.changeTab();
+        //$scope.changeTab();
     };
 
     $scope.init();
@@ -200,6 +206,14 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     });
 
     $scope.$on('$routeUpdate', function(){
-        $scope.changeTab();
+        var q = $location.search();
+
+        if(q.tab) {
+            if($scope.currentTab && $scope.currentTab != q.tab){
+                $scope.changeTab();
+            }
+        }
+        else
+            $scope.changeTab();
     });
 });
