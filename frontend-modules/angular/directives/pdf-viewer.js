@@ -93,6 +93,8 @@ app.directive('pdfViewer',
                 $scope.currentPageNumber = 1;
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
+                $scope.currentTab = "";
+
 
                 $scope.changePageNumber = function (value) {
                     //console.log("GOT CALLED");
@@ -171,6 +173,7 @@ app.directive('pdfViewer',
                 };
 
                 $(window).resize(function () {
+                  console.log("Registered resize. Got tab: " + $scope.currentTab);
                   if($location.search().tab == "pdf") {
                     console.log("Got called on resize");
                     adjustPdfScale();
@@ -178,6 +181,8 @@ app.directive('pdfViewer',
                 });
 
                 $scope.$on('onNodeTabChange', function(event, tab){
+                  console.log("Registered tab change. Got tab: " + tab);
+                  $scope.currentTab = tab;
                   if(tab == "pdf") {
                     console.log("Got called on tabchange");
                     adjustPdfScale();
