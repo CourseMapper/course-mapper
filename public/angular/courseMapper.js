@@ -3239,7 +3239,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      console.log("Reload Tags called");
+      //console.log("Reload Tags called");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
