@@ -167,18 +167,19 @@ app.directive('pdfViewer',
                   $scope.pdfPageView.update($scope.scale, 0);
                   $scope.pdfPageView.draw().catch(function(){});
                   $rootScope.$broadcast('reloadTags');
-                  alert($scope.scale);
+                  console.log($scope.scale);
                 };
 
                 $(window).resize(function () {
-                  console.log($location.search().tab );
                   if($location.search().tab == "pdf") {
+                    console.log("Got called on resize");
                     adjustPdfScale();
                   }
                 });
 
                 $scope.$on('onNodeTabChange', function(event, tab){
                   if(tab == "pdf") {
+                    console.log("Got called on tabchange");
                     adjustPdfScale();
                   }
                 });
