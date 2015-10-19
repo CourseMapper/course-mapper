@@ -100,3 +100,7 @@ video-annotation.default {
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+vg-scrub-bar-cue-points.default .cue-point {
+    background-color: yellow !important;
+}

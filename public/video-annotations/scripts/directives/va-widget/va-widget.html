@@ -5,7 +5,9 @@
             <vg-play-pause-button></vg-play-pause-button>
             <vg-time-display>{{ currentTime | date:'HH:mm:ss':'UTC' }}</vg-time-display>
             <vg-scrub-bar>
+                <vg-scrub-bar-buffer></vg-scrub-bar-buffer>
                 <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                <vg-scrub-bar-cue-points class="default" vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
             <vg-volume>

@@ -16,11 +16,11 @@
   },
   "license": "MIT",
   "homepage": "http://nampnq.vietnamcode.info",
-  "_release": "72aa1bf270",
+  "_release": "1b74fb32f5",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "72aa1bf270d8e045ecc2d04740ed02885045fc18"
+    "commit": "1b74fb32f5009403830fc2ccfa0968282aaf568d"
   },
   "_source": "git://github.com/NamPNQ/bower-videogular-youtube.git",
   "_target": "master",
