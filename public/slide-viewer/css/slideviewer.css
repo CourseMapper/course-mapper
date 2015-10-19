@@ -137,6 +137,12 @@ input#searchInput{
   margin-left: 2px;
 }
 
+.commentZoneList{
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .slideRect{
 }
 .btn-white{
