@@ -204,7 +204,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
-        //console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
+        alert('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
