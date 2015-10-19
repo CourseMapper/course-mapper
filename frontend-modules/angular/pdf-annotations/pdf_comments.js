@@ -181,7 +181,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
                 //TODO: reset everything
               }
-
+              //console.log("commReplyEv");
               $scope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
@@ -215,6 +215,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
               else {
                 displayCommentSubmissionResponse("Comment deletion successful!");
               }
+              console.log("commDeleteEv");
+
               $scope.$broadcast('reloadTags');
           })
           .error(function (data, status, headers, config) {
@@ -268,7 +270,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
                   $("#annotationZoneSubmitList div").remove();
                 }
-
+                console.log("commSubmitEv");
                 $scope.$broadcast('reloadTags');
 
                 $scope.writeCommentMode = false;
@@ -305,7 +307,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 $scope.comment.rawText = '';
                 $scope.setQuillSelection();
               }
-
+              //console.log("commEditEv");
               $scope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;

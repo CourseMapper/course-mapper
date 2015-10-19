@@ -10,6 +10,7 @@ function Comment(){
 
 Comment.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
   var newName2 = validator.escape(newName);
+  
 
   AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
     if(err2) {

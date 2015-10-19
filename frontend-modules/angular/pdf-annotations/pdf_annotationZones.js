@@ -128,7 +128,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
                 //TODO: reset everything
               }
 
-              $scope.$broadcast('reloadTags');
+              //console.log("updateAnnZoneEv");
+              $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
               $scope.replyRawText = [];
@@ -203,8 +204,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     //};
 
     $scope.refreshTags = function() {
+      //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
-        console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -226,12 +227,13 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
-      console.log("PdfPageChange");
-      $scope.$emit('reloadTags');
+      //console.log("PdfPageChange");
+      //console.log("pdfPageChangeEv");
+      $rootScope.$emit('reloadTags');
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      console.log("RootScope");
+      //console.log("RootScope");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -240,7 +242,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $scope.refreshTags();
     });
 
-    $scope.$on('reloadTags', function(event) {
+    /*$scope.$on('reloadTags', function(event) {
       console.log("Scope");
       $(".slideRect").remove();
 
@@ -248,7 +250,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
-    });
+    });*/
 
     /*
     use onPdfPageChange event instead
