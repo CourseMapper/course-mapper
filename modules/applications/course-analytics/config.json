@@ -26,6 +26,14 @@
       "runOn": "server"
     },
     {
+      "name": "Node Icon Stats",
+      "location": "topic-icon-analytics",
+      "description": "analytic icons in node topic",
+      "entryPoint": "/course-analytics/icon-analytics.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
       "name": "Enrolled Users",
       "location": "course-preview",
       "description": "List of users that enrolled to the course",
