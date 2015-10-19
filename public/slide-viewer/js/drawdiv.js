@@ -412,7 +412,9 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
       caElement.click(function(evt) {
           console.log()
           if(!$(evt.target).hasClass('simplecolorpicker')){
-            angular.element($("#commentController")).scope().addReference("#"+$(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val());
+            if($('#commentSubmissionDiv').css('display')!='none' && mousemovedbool==false){
+              angular.element($("#commentController")).scope().addReference("#"+$(this).find(".slideRectWrapper").find(".slideRectSpan").find(".slideRectInput").val());
+            }
           }
 
           /*
