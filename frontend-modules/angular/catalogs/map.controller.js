@@ -167,6 +167,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
                 $(this).find('ul').addClass('open');
 
                 return false;
+            })
+            .on('mouseenter', function(){
+               $scope.requestIconAnalyitics(slug);
             });
     };
 
@@ -382,7 +385,21 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
         return 'Rectangle';
     };
 
-    $scope.$on('onTopicHover', function (event, nodeId) {
+    $scope.requestIconAnalyitics = function(nodeId){
+        nodeId = nodeId.substring(1);
+        $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
+            function (res) {
+                $scope.isRequesting = false;
+                if (res.result) {
+                    $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
+                }
+            }
+        ).error(function () {
+                $scope.isRequesting = false;
+            });
+    };
+
+    /*$scope.$on('onTopicHover', function (event, nodeId) {
         if ($scope.isRequesting)
             return;
 
@@ -399,11 +416,11 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
         ).error(function () {
                 $scope.isRequesting = false;
             });
-    });
+    });*/
 
-    $scope.$on('onTopicHoverOut', function (event, slug) {
+    /*$scope.$on('onTopicHoverOut', function (event, slug) {
         $scope.isRequesting = false;
-    });
+    });*/
 
     $scope.getContentNodeLink = function (d) {
         return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
