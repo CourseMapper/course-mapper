@@ -104,3 +104,10 @@ video-annotation.default {
 vg-scrub-bar-cue-points.default .cue-point {
     background-color: yellow !important;
 }
+
+videogular-container {
+    width: 100%;
+    height: 320px;
+    margin: auto;
+    overflow: hidden;
+}
