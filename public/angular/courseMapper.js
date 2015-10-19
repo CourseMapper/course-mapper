@@ -1808,7 +1808,7 @@ app.directive('movable', function () {
                 };
 
                 $(window).resize(function (event) {
-                  console.log("Registered resize. Got tab: " + $scope.currentTab) +", callerId: "+event.target.id;
+                  console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event);
                   if($scope.currentTab == "pdf") {
                     console.log("Got called on resize");
                     adjustPdfScale();
