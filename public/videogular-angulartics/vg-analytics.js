@@ -1,5 +1,5 @@
 /**
- * @license videogular v1.1.0 http://videogular.com
+ * @license videogular v1.3.2 http://videogular.com
  * Two Fucking Developers http://twofuckingdevelopers.com
  * License: MIT
  */
@@ -58,156 +58,165 @@
  */
 "use strict";
 angular.module("com.2fdevs.videogular.plugins.analytics", ["angulartics"])
-  .directive(
-  "vgAnalytics",
-  ["$analytics", "VG_STATES", function ($analytics, VG_STATES) {
-    return {
-      restrict: "E",
-      require: "^videogular",
-      scope: {
-        vgTrackInfo: "=?"
-      },
-      link: function (scope, elem, attr, API) {
-        var info = null;
-        var currentState = null;
-        var totalMiliseconds = null;
-        var progressTracks = [];
+    .directive(
+    "vgAnalytics",
+    ["$analytics", "VG_STATES", function ($analytics, VG_STATES) {
+        return {
+            restrict: "E",
+            require: "^videogular",
+            scope: {
+                vgTrackInfo: "=?"
+            },
+            link: function (scope, elem, attr, API) {
+                var info = null;
+                var currentState = null;
+                var totalMiliseconds = null;
+                var progressTracks = [];
 
-        scope.API = API;
+                scope.API = API;
 
-        scope.trackEvent = function trackEvent(eventName) {
-          $analytics.eventTrack(eventName, info);
-        };
+                scope.trackEvent = function trackEvent(eventName) {
+                    $analytics.eventTrack(eventName, info);
+                };
 
-        scope.onPlayerReady = function onPlayerReady(isReady) {
-          if (isReady) {
-            scope.trackEvent("ready");
-          }
-        };
+                scope.onPlayerReady = function onPlayerReady(isReady) {
+                    if (isReady) {
+                        scope.trackEvent("ready");
+                    }
+                };
 
-        scope.onChangeState = function onChangeState(state) {
-          currentState = state;
+                scope.onChangeState = function onChangeState(state) {
+                    currentState = state;
 
-          switch(state) {
-            case VG_STATES.PLAY:
-              if (scope.vgTrackInfo.events.play) scope.trackEvent("play");
-              break;
+                    switch (state) {
+                        case VG_STATES.PLAY:
+                            if (scope.vgTrackInfo.events.play) scope.trackEvent("play");
+                            break;
 
-            case VG_STATES.PAUSE:
-              if (scope.vgTrackInfo.events.pause) scope.trackEvent("pause");
-              break;
+                        case VG_STATES.PAUSE:
+                            if (scope.vgTrackInfo.events.pause) scope.trackEvent("pause");
+                            break;
 
-            case VG_STATES.STOP:
-              if (scope.vgTrackInfo.events.stop) scope.trackEvent("stop");
-              break;
-          }
-        };
+                        case VG_STATES.STOP:
+                            if (scope.vgTrackInfo.events.stop) scope.trackEvent("stop");
+                            break;
+                    }
+                };
 
-        scope.onCompleteVideo = function onCompleteVideo(isCompleted) {
-          if (isCompleted) {
-            scope.trackEvent("complete");
-          }
-        };
+                scope.onCompleteVideo = function onCompleteVideo(isCompleted) {
+                    if (isCompleted) {
+                        scope.trackEvent("complete");
+                    }
+                };
 
-        scope.onUpdateTime = function onUpdateTime(newCurrentTime) {
-          if (progressTracks.length > 0 && newCurrentTime >= progressTracks[0].jump) {
-            scope.trackEvent("progress " + progressTracks[0].percent + "%");
-            progressTracks.shift();
-          }
-        };
+                scope.onUpdateTime = function onUpdateTime(newCurrentTime) {
+                    if (progressTracks.length > 0 && newCurrentTime >= progressTracks[0].jump) {
+                        scope.trackEvent("progress " + progressTracks[0].percent + "%");
+                        progressTracks.shift();
+                    }
+                };
 
-        scope.addWatchers = function() {
-          if (scope.vgTrackInfo.category || scope.vgTrackInfo.label) {
-            info = {};
+                scope.updateTrackInfo = function updateTrackInfo(newVal) {
+                    if (scope.vgTrackInfo.category) info.category = scope.vgTrackInfo.category;
+                    if (scope.vgTrackInfo.label) info.label = scope.vgTrackInfo.label;
+                };
 
-            if (scope.vgTrackInfo.category) info.category = scope.vgTrackInfo.category;
-            if (scope.vgTrackInfo.label) info.label = scope.vgTrackInfo.label;
-          }
+                scope.addWatchers = function () {
+                    if (scope.vgTrackInfo.category || scope.vgTrackInfo.label) {
+                        info = {};
 
-          // Add ready track event
-          if (scope.vgTrackInfo.events.ready) {
-            scope.$watch(
-              function () {
-                return API.isReady;
-              },
-              function (newVal, oldVal) {
-                scope.onPlayerReady(newVal);
-              }
-            );
-          }
+                        scope.updateTrackInfo(scope.vgTrackInfo);
+                    }
 
-          // Add state track event
-          if (scope.vgTrackInfo.events.play || scope.vgTrackInfo.events.pause || scope.vgTrackInfo.events.stop) {
-            scope.$watch(
-              function () {
-                return API.currentState;
-              },
-              function (newVal, oldVal) {
-                if (newVal != oldVal) scope.onChangeState(newVal);
-              }
-            );
-          }
+                    scope.$watch('vgTrackInfo', scope.updateTrackInfo, true);
 
-          // Add complete track event
-          if (scope.vgTrackInfo.events.complete) {
-            scope.$watch(
-              function () {
-                return API.isCompleted;
-              },
-              function (newVal, oldVal) {
-                scope.onCompleteVideo(newVal);
-              }
-            );
-          }
+                    // Add ready track event
+                    if (scope.vgTrackInfo.events.ready) {
+                        scope.$watch(
+                            function () {
+                                return API.isReady;
+                            },
+                            function (newVal, oldVal) {
+                                scope.onPlayerReady(newVal);
+                            }
+                        );
+                    }
 
-          // Add progress track event
-          if (scope.vgTrackInfo.events.progress) {
-            scope.$watch(
-              function () {
-                return API.currentTime;
-              },
-              function (newVal, oldVal) {
-                scope.onUpdateTime(newVal / 1000);
-              }
-            );
+                    // Add state track event
+                    if (scope.vgTrackInfo.events.play || scope.vgTrackInfo.events.pause || scope.vgTrackInfo.events.stop) {
+                        scope.$watch(
+                            function () {
+                                return API.currentState;
+                            },
+                            function (newVal, oldVal) {
+                                if (newVal != oldVal) scope.onChangeState(newVal);
+                            }
+                        );
+                    }
 
-            var totalTimeWatch = scope.$watch(
-              function () {
-                return API.totalTime;
-              },
-              function (newVal, oldVal) {
-                totalMiliseconds = newVal / 1000;
+                    // Add complete track event
+                    if (scope.vgTrackInfo.events.complete) {
+                        scope.$watch(
+                            function () {
+                                return API.isCompleted;
+                            },
+                            function (newVal, oldVal) {
+                                scope.onCompleteVideo(newVal);
+                            }
+                        );
+                    }
 
-                if (totalMiliseconds > 0) {
-                  var totalTracks = scope.vgTrackInfo.events.progress - 1;
-                  var progressJump = Math.floor(totalMiliseconds / scope.vgTrackInfo.events.progress);
+                    // Add progress track event
+                    if (scope.vgTrackInfo.events.progress) {
+                        scope.$watch(
+                            function () {
+                                return API.currentTime;
+                            },
+                            function (newVal, oldVal) {
+                                scope.onUpdateTime(newVal / 1000);
+                            }
+                        );
 
-                  for (var i=0; i<totalTracks; i++) {
-                    progressTracks.push({percent: (i + 1) * scope.vgTrackInfo.events.progress, jump: (i + 1) * progressJump});
-                  }
+                        var totalTimeWatch = scope.$watch(
+                            function () {
+                                return API.totalTime;
+                            },
+                            function (newVal, oldVal) {
+                                totalMiliseconds = newVal / 1000;
 
-                  totalTimeWatch();
+                                if (totalMiliseconds > 0) {
+                                    var totalTracks = scope.vgTrackInfo.events.progress - 1;
+                                    var progressJump = Math.floor(totalMiliseconds / scope.vgTrackInfo.events.progress);
+
+                                    for (var i = 0; i < totalTracks; i++) {
+                                        progressTracks.push({
+                                            percent: (i + 1) * scope.vgTrackInfo.events.progress,
+                                            jump: (i + 1) * progressJump
+                                        });
+                                    }
+
+                                    totalTimeWatch();
+                                }
+                            }
+                        );
+                    }
+                };
+
+                if (API.isConfig) {
+                    scope.$watch("API.config",
+                        function () {
+                            if (scope.API.config) {
+                                scope.vgTrackInfo = scope.API.config.plugins.analytics;
+                                scope.addWatchers();
+                            }
+                        }
+                    );
                 }
-              }
-            );
-          }
-        };
-
-        if (API.isConfig) {
-          scope.$watch("API.config",
-            function() {
-              if (scope.API.config) {
-                scope.vgTrackInfo = scope.API.config.plugins.analytics;
-                scope.addWatchers();
-              }
+                else {
+                    scope.addWatchers();
+                }
             }
-          );
         }
-        else {
-          scope.addWatchers();
-        }
-      }
     }
-  }
-  ]);
+    ]);
 

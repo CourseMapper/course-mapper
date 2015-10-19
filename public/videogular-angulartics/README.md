@@ -7,7 +7,7 @@ Videogular `analytics` plugin repository for distribution on `bower`.
 
 Install [Videogular](http://www.videogular.com/) `analytics` plugin with Bower:
 
-`bower install videogular-analytics`
+`bower install videogular-angulartics`
 
 ### Install Videogular
 

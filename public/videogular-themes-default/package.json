@@ -1,15 +1,12 @@
 {
-	"name": "videogular-theme-default",
-	"version": "0.3.1",
-	"dependencies": {},
+	"name": "videogular-themes-default",
+	"version": "1.3.2",
+	"main": "videogular.css",
 	"devDependencies": {
 		"grunt": "~0.4.1",
 		"grunt-release": "~0.7.0"
 	},
 	"engines": {
 		"node": ">=0.8.0"
-	},
-	"scripts": {
-		"test": "grunt test"
 	}
 }

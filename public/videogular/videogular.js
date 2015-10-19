@@ -1,5 +1,5 @@
 /**
- * @license videogular v1.2.6 http://videogular.com
+ * @license videogular v1.3.2 http://videogular.com
  * Two Fucking Developers http://twofuckingdevelopers.com
  * License: MIT
  */
@@ -106,6 +106,7 @@ angular.module("com.2fdevs.videogular")
  *      start: 0,
  *      end: 10
  *    },
+ *    onEnter: callback(currentTime, timeLapse, params),
  *    onLeave: callback(currentTime, timeLapse, params),
  *    onUpdate: callback(currentTime, timeLapse, params),
  *    onComplete: callback(currentTime, timeLapse, params),
@@ -114,11 +115,12 @@ angular.module("com.2fdevs.videogular")
  *    }
  * }</pre>
  *
- *    * timeLapse: Object with start and end properties to define in seconds when this timeline is active.\n
- *    * onLeave: Callback function that will be called when user seeks and the new time doesn't reach to the timeLapse.start property.
- *    * onUpdate: Callback function that will be called when the progress is in the middle of timeLapse.start and timeLapse.end.
- *    * onComplete: Callback function that will be called when the progress is bigger than timeLapse.end.
- *    * params: Custom object with data to pass to the callbacks.
+ *    * **timeLapse:** Object with start and end properties to define in seconds when this timeline is active.\n
+ *    * **onEnter:** Callback function that will be called when progress reaches a cue point or being outside a cue point user seeks to a cue point manually.
+ *    * **onLeave:** Callback function that will be called when user seeks and the new time doesn't reach to the timeLapse.start property.
+ *    * **onUpdate:** Callback function that will be called when the progress is in the middle of timeLapse.start and timeLapse.end.
+ *    * **onComplete:** Callback function that will be called when the progress is bigger than timeLapse.end.
+ *    * **params:** Custom object with data to pass to the callbacks.
  *
  * - isFullScreen: Boolean value to know if we’re in fullscreen mode.
  * - currentState: String value with “play”, “pause” or “stop”.
@@ -127,6 +129,8 @@ angular.module("com.2fdevs.videogular")
  * - timeLeft: Number value with current media time left.
  * - volume: Number value with current volume between 0 and 1.
  * - playback: Number value with current playback between 0 and 2.
+ * - bufferEnd: Number value with latest buffer point in milliseconds.
+ * - buffered: Array of TimeRanges objects that represents current buffer state.
  *
  */
 angular.module("com.2fdevs.videogular")
@@ -199,8 +203,22 @@ angular.module("com.2fdevs.videogular")
             this.onUpdateTime(evt);
         };
 
+        this.onProgress = function (event) {
+            if (event.target.buffered.length) {
+                this.buffered = event.target.buffered;
+                this.bufferEnd = 1000 * event.target.buffered.end(event.target.buffered.length - 1);
+            }
+
+            $scope.$apply();
+        };
+
         this.onUpdateTime = function (event) {
             this.currentTime = 1000 * event.target.currentTime;
+
+            if (event.target.buffered.length) {
+                this.buffered = event.target.buffered;
+                this.bufferEnd = 1000 * event.target.buffered.end(event.target.buffered.length - 1);
+            }
 
             if (event.target.duration != Infinity) {
                 this.totalTime = 1000 * event.target.duration;
@@ -225,19 +243,31 @@ angular.module("com.2fdevs.videogular")
             for (var tl in this.cuePoints) {
                 for (var i = 0, l = this.cuePoints[tl].length; i < l; i++) {
                     var cp = this.cuePoints[tl][i];
+                    var currentSecond = parseInt(currentTime, 10);
+                    var start = parseInt(cp.timeLapse.start, 10);
 
                     // If timeLapse.end is not defined we set it as 1 second length
                     if (!cp.timeLapse.end) cp.timeLapse.end = cp.timeLapse.start + 1;
 
                     if (currentTime < cp.timeLapse.end) cp.$$isCompleted = false;
 
+                    // Fire the onEnter event once reach to the cue point
+                    if(!cp.$$isDirty && currentSecond === start && (typeof cp.onEnter == 'function')) {
+                        cp.onEnter(currentTime, cp.timeLapse, cp.params);
+                        cp.$$isDirty = true;
+                    }
+
                     // Check if we've been reached to the cue point
                     if (currentTime > cp.timeLapse.start) {
-                        cp.$$isDirty = true;
-
                         // We're in the timelapse
                         if (currentTime < cp.timeLapse.end) {
+                            // Trigger onUpdate each time we enter here
                             if (cp.onUpdate) cp.onUpdate(currentTime, cp.timeLapse, cp.params);
+
+                            // Trigger onEnter if we enter on the cue point by manually seeking
+                            if (!cp.$$isDirty && (typeof cp.onEnter === 'function')) {
+                                cp.onEnter(currentTime, cp.timeLapse, cp.params);
+                            }
                         }
 
                         // We've been passed the cue point
@@ -247,6 +277,8 @@ angular.module("com.2fdevs.videogular")
                                 cp.onComplete(currentTime, cp.timeLapse, cp.params);
                             }
                         }
+
+                        cp.$$isDirty = true;
                     }
                     else {
                         if (cp.onLeave && cp.$$isDirty) {
@@ -342,6 +374,8 @@ angular.module("com.2fdevs.videogular")
                 this.mediaElement[0].currentTime = 0;
 
                 this.currentTime = 0;
+                this.buffered = [];
+                this.bufferEnd = 0;
                 this.setState(VG_STATES.STOP);
             }
             catch (e) {
@@ -491,6 +525,7 @@ angular.module("com.2fdevs.videogular")
             this.mediaElement[0].addEventListener("volumechange", this.onVolumeChange.bind(this), false);
             this.mediaElement[0].addEventListener("playbackchange", this.onPlaybackChange.bind(this), false);
             this.mediaElement[0].addEventListener("timeupdate", this.onUpdateTime.bind(this), false);
+            this.mediaElement[0].addEventListener("progress", this.onProgress.bind(this), false);
             this.mediaElement[0].addEventListener("seeking", this.onSeeking.bind(this), false);
             this.mediaElement[0].addEventListener("seeked", this.onSeeked.bind(this), false);
             this.mediaElement[0].addEventListener("error", this.onVideoError.bind(this), false);
@@ -499,11 +534,14 @@ angular.module("com.2fdevs.videogular")
         this.init = function () {
             this.isReady = false;
             this.isCompleted = false;
+            this.buffered = [];
+            this.bufferEnd = 0;
             this.currentTime = 0;
             this.totalTime = 0;
             this.timeLeft = 0;
             this.isLive = false;
             this.isFullScreen = false;
+            this.playback = 1;
             this.isConfig = ($scope.vgConfig != undefined);
 
             if (vgFullscreen.isAvailable) {
@@ -974,12 +1012,13 @@ angular.module("com.2fdevs.videogular")
             require: "^videogular",
             link: {
                 pre: function (scope, elem, attr, API) {
+                    var isMetaDataLoaded = false;
                     var tracks;
-                    var trackText;
                     var i;
                     var l;
 
                     scope.onLoadMetaData = function() {
+                        isMetaDataLoaded = true;
                         scope.updateTracks();
                     };
 
@@ -1009,8 +1048,22 @@ angular.module("com.2fdevs.videogular")
                     };
 
                     scope.onLoadTrack = function(track) {
-                        track.mode = 'showing';
-                        API.mediaElement[0].textTracks[0].mode = 'showing'; // thanks Firefox
+                        if (track.default) track.mode = 'showing';
+                        else track.mode = 'hidden';
+
+                        for (var i=0, l=API.mediaElement[0].textTracks.length; i<l; i++) {
+                            if (track.label == API.mediaElement[0].textTracks[i].label) {
+                                if (track.default) {
+                                    API.mediaElement[0].textTracks[i].mode = 'showing';
+                                }
+                                else {
+                                    API.mediaElement[0].textTracks[i].mode = 'disabled';
+                                }
+                            }
+
+                        }
+
+                        track.removeEventListener('load', scope.onLoadTrack.bind(scope, track));
                     };
 
                     scope.setTracks = function setTracks(value) {
@@ -1018,7 +1071,12 @@ angular.module("com.2fdevs.videogular")
                         tracks = value;
                         API.tracks = value;
 
-                        API.mediaElement[0].addEventListener("loadedmetadata", scope.onLoadMetaData.bind(scope), false);
+                        if (isMetaDataLoaded) {
+                            scope.updateTracks();
+                        }
+                        else {
+                            API.mediaElement[0].addEventListener("loadedmetadata", scope.onLoadMetaData.bind(scope), false);
+                        }
                     };
 
                     if (API.isConfig) {
@@ -1038,7 +1096,7 @@ angular.module("com.2fdevs.videogular")
                             if ((!tracks || newValue != oldValue)) {
                                 scope.setTracks(newValue);
                             }
-                        });
+                        }, true);
                     }
                 }
             }
@@ -1070,6 +1128,7 @@ angular.module("com.2fdevs.videogular")
  *
  * @param {object} vgCuePoints Bindable object containing a list of timelines with cue points objects. A timeline is an array of objects with the following properties:
  * - `timeLapse` is an object with two properties `start` and `end` representing in seconds the period for this cue points.
+ * - `onEnter` callback called when user enters on a cue point. callback(currentTime, timeLapse, params)
  * - `onLeave` callback called when user seeks backwards and leave the current cue point or a completed cue point. callback(currentTime, timeLapse, params)
  * - `onUpdate` callback called when the current time is between timeLapse.start and timeLapse.end. callback(currentTime, timeLapse, params)
  * - `onComplete` callback called when the user seek forward or the current time passes timeLapse.end property. callback(currentTime, timeLapse, params)
@@ -1243,7 +1302,7 @@ angular.module("com.2fdevs.videogular")
 angular.module("com.2fdevs.videogular")
     .service("vgFullscreen", ["VG_UTILS", function (VG_UTILS) {
         // Native fullscreen polyfill
-        var fsAPI;
+        var element;
         var polyfill = null;
         var APIs = {
             w3: {
@@ -1309,7 +1368,16 @@ angular.module("com.2fdevs.videogular")
         }
 
         function isFullScreen() {
-            return (document[polyfill.element] != null);
+            var result = false;
+
+            if (element) {
+                result = (document[polyfill.element] != null || element.webkitDisplayingFullscreen)
+            }
+            else {
+                result = (document[polyfill.element] != null)
+            }
+
+            return result;
         }
 
         this.isAvailable = (polyfill != null);
@@ -1322,7 +1390,8 @@ angular.module("com.2fdevs.videogular")
                 document[polyfill.exit]();
             };
             this.request = function (elem) {
-                elem[polyfill.request]();
+                element = elem;
+                element[polyfill.request]();
             };
         }
     }]);

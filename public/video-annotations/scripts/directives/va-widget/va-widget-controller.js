@@ -3,7 +3,6 @@
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
     function($scope, socket, rootScope) {
-
         var onLeave = function(currentTime, timeLapse, params) {
             params.completed = false;
             params.showing = false;
