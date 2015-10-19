@@ -1794,20 +1794,22 @@ app.directive('movable', function () {
                 };
 
                 function adjustPdfScale () {
-                  if($scope.scale == 0)
-                    $scope.scale = 1.0;
-
                   console.log($scope.pdfPageView);
-                  $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
-                  $scope.pdfPageView.update($scope.scale, 0);
-                  $scope.pdfPageView.draw().catch(function(){});
-                  $rootScope.$broadcast('reloadTags');
-                  console.log($scope.scale);
+                  if(typeof $scope.pdfPageView != 'undefined'){
+                    if($scope.scale == 0)
+                      $scope.scale = 1.0;
+
+                    $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
+                    $scope.pdfPageView.update($scope.scale, 0);
+                    $scope.pdfPageView.draw().catch(function(){});
+                    $rootScope.$broadcast('reloadTags');
+                    console.log($scope.scale);
+                  }
                 };
 
                 $(window).resize(function () {
                   console.log("Registered resize. Got tab: " + $scope.currentTab);
-                  if($location.search().tab == "pdf") {
+                  if($scope.currentTab == "pdf") {
                     console.log("Got called on resize");
                     adjustPdfScale();
                   }
