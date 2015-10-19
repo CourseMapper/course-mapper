@@ -3180,7 +3180,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
-        //alert('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
+        console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -3202,11 +3202,12 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+      console.log("PdfPageChange");
       $scope.$emit('reloadTags');
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      //console.log("LOADED RESET");
+      console.log("RootScope");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -3216,7 +3217,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $scope.$on('reloadTags', function(event) {
-      //console.log("LOADED RESET");
+      console.log("Scope");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
