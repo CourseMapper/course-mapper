@@ -616,8 +616,15 @@ function loadRect(relLeft, relTop, relWidth, relHeight, color, tagname, canMove,
     tagNameElement.attr("ng-hide", "(editZoneMode == '"+annZoneId+"')");
     tagNameElement = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(tagNameElement);
 
-
-    if (!canMove) {
+    if(!canBeEdited && !canMove) {
+      spanElement.append(hashElement);
+      spanElement.append(tagNameElement);
+      //spanElement.append(editInputElement);
+      //wrapperElement.append(nColorPickerEditInput);
+      //wrapperElement.css({"margin-left":"-20px"});
+      wrapperElement.append(spanElement);
+    }
+    else if (!canMove && canBeEdited) {
         spanElement.append(hashElement);
         spanElement.append(tagNameElement);
         spanElement.append(editInputElement);
