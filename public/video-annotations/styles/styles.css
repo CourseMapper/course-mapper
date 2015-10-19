@@ -33,10 +33,14 @@
     color: #FFFFFF;
     z-index: 11;
     pointer-events: all;
+    -webkit-transition: 0.2s linear all;
+    transition: 0.2s ease-out all;
 }
 
 .inline-va-annotation:hover {
     background: rgba(0, 0, 0, 0.3);
+    -webkit-transition: 0.2s linear all;
+    transition: 0.2s ease-out all;
 }
 
 .inline-va-annotation span {
@@ -80,7 +84,7 @@ video-annotation.completed {
 }
 
 video-annotation.hovered {
-    background: red;
+    //background: red;
 }
 
 video-annotation.default {
