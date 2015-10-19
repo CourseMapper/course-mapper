@@ -1067,9 +1067,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.manageActionBar();
     };
 
-    $scope.$on('onNodeTabChange', function(event, tab){
+    /*$scope.$on('onNodeTabChange', function(event, tab){
         console.log(tab);
-    });
+    });*/
 
     $scope.currentNodeAction = {};
     $scope.setEditMode = function(){
@@ -1178,7 +1178,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         else
             $scope.changeTab();
     });
-});;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
+});
+;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -1744,6 +1745,8 @@ app.directive('movable', function() {
                 $scope.currentPageNumber = 1;
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
+                $scope.currentTab = "";
+
 
                 $scope.changePageNumber = function (value) {
                     //console.log("GOT CALLED");
@@ -1811,15 +1814,44 @@ app.directive('movable', function() {
                     }
                 };
 
-                $(window).resize(function () {
-                  //console.log($location.search().tab );
-                  if($location.search().tab == "pdf") {
+                function adjustPdfScale () {
+                  //console.log($scope.pdfPageView);
+                  if(typeof $scope.pdfPageView != 'undefined'){
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
+
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
+                    //console.log("pdfviewerEv");
                     $rootScope.$broadcast('reloadTags');
+                    //console.log($scope.scale);
+                  }
+                };
+
+                $(window).resize(function (event) {
+                  //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
+                  //console.log(event)
+                  if($scope.currentTab == "pdf" && $.isWindow(event.target)) {
+                    //console.log("Got called on resize");
+                    adjustPdfScale();
+                  }
+                });
+
+                /*$scope.$on('onAfterInitTreeNode', function(node){
+                  console.log("Got called");
+                  //if($scope.pdfReady) {
+                    console.log("Got also here");
+                    $rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
+                  //}
+                });*/
+
+                $scope.$on('onNodeTabChange', function(event, tab){
+                  //console.log("Registered tab change. Got tab: " + tab);
+                  $scope.currentTab = tab;
+                  if(tab == "pdf") {
+                    //console.log("Got called on tabchange");
+                    adjustPdfScale();
                   }
                 });
 
@@ -3102,7 +3134,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 //TODO: reset everything
               }
 
-              $scope.$broadcast('reloadTags');
+              //console.log("updateAnnZoneEv");
+              $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
               $scope.replyRawText = [];
@@ -3177,8 +3210,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     //};
 
     $scope.refreshTags = function() {
+      //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
-        //console.log('TAGS UPDATED OF PAGE ' + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -3200,11 +3233,13 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
     $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
-      $scope.$emit('reloadTags');
+      //console.log("PdfPageChange");
+      //console.log("pdfPageChangeEv");
+      $rootScope.$emit('reloadTags');
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      //console.log("LOADED RESET");
+      //console.log("RootScope");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
@@ -3213,15 +3248,15 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       $scope.refreshTags();
     });
 
-    $scope.$on('reloadTags', function(event) {
-      //console.log("LOADED RESET");
+    /*$scope.$on('reloadTags', function(event) {
+      console.log("Scope");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
 
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
-    });
+    });*/
 
     /*
     use onPdfPageChange event instead
@@ -3533,7 +3568,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
                 //TODO: reset everything
               }
-
+              //console.log("commReplyEv");
               $scope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
@@ -3567,6 +3602,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
               else {
                 displayCommentSubmissionResponse("Comment deletion successful!");
               }
+              console.log("commDeleteEv");
+
               $scope.$broadcast('reloadTags');
           })
           .error(function (data, status, headers, config) {
@@ -3620,7 +3657,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
                   $("#annotationZoneSubmitList div").remove();
                 }
-
+                console.log("commSubmitEv");
                 $scope.$broadcast('reloadTags');
 
                 $scope.writeCommentMode = false;
@@ -3657,7 +3694,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
                 $scope.comment.rawText = '';
                 $scope.setQuillSelection();
               }
-
+              //console.log("commEditEv");
               $scope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;

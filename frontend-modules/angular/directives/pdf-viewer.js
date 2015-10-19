@@ -93,6 +93,8 @@ app.directive('pdfViewer',
                 $scope.currentPageNumber = 1;
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
+                $scope.currentTab = "";
+
 
                 $scope.changePageNumber = function (value) {
                     //console.log("GOT CALLED");
@@ -160,15 +162,44 @@ app.directive('pdfViewer',
                     }
                 };
 
-                $(window).resize(function () {
-                  //console.log($location.search().tab );
-                  if($location.search().tab == "pdf") {
+                function adjustPdfScale () {
+                  //console.log($scope.pdfPageView);
+                  if(typeof $scope.pdfPageView != 'undefined'){
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
+
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
+                    //console.log("pdfviewerEv");
                     $rootScope.$broadcast('reloadTags');
+                    //console.log($scope.scale);
+                  }
+                };
+
+                $(window).resize(function (event) {
+                  //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
+                  //console.log(event)
+                  if($scope.currentTab == "pdf" && $.isWindow(event.target)) {
+                    //console.log("Got called on resize");
+                    adjustPdfScale();
+                  }
+                });
+
+                /*$scope.$on('onAfterInitTreeNode', function(node){
+                  console.log("Got called");
+                  //if($scope.pdfReady) {
+                    console.log("Got also here");
+                    $rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
+                  //}
+                });*/
+
+                $scope.$on('onNodeTabChange', function(event, tab){
+                  //console.log("Registered tab change. Got tab: " + tab);
+                  $scope.currentTab = tab;
+                  if(tab == "pdf") {
+                    //console.log("Got called on tabchange");
+                    adjustPdfScale();
                   }
                 });
 

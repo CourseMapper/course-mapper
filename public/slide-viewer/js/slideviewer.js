@@ -81,7 +81,7 @@ function drawAnnZonesWhenPDFAndDBDone() {
         var isAuthor = (toDrawAnnotationZoneData[i].author == angular.element($("#annZoneList")).scope().currentUser.username);
         loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeight, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, isAuthor, toDrawAnnotationZoneData[i].id)
       }
-
+      //angular.bootstrap(document,['pdfViewer']).broadcast('onPdfPageChange', 1);
   }
 };
 
