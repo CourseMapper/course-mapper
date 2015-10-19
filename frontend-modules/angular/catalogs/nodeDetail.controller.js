@@ -177,7 +177,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             }
         });
 
-        $scope.changeTab();
+        //$scope.changeTab();
     };
 
     $scope.init();
@@ -206,6 +206,14 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     });
 
     $scope.$on('$routeUpdate', function(){
-        $scope.changeTab();
+        var q = $location.search();
+
+        if(q.tab) {
+            if($scope.currentTab && $scope.currentTab != q.tab){
+                $scope.changeTab();
+            }
+        }
+        else
+            $scope.changeTab();
     });
 });

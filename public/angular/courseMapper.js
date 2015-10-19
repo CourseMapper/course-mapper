@@ -1122,7 +1122,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         });
 
-        $scope.changeTab();
+        //$scope.changeTab();
     };
 
     $scope.init();
@@ -1151,7 +1151,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });
 
     $scope.$on('$routeUpdate', function(){
-        $scope.changeTab();
+        var q = $location.search();
+
+        if(q.tab) {
+            if($scope.currentTab && $scope.currentTab != q.tab){
+                $scope.changeTab();
+            }
+        }
+        else
+            $scope.changeTab();
     });
 });;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
