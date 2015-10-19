@@ -34,6 +34,8 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
 
         if($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + $scope.currentTab);
+
+        $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
     };
 
     $scope.init = function(refreshPicture){

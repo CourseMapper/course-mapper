@@ -104,6 +104,8 @@ app.config(function(toastrConfig) {
 
         if($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + $scope.currentTab);
+
+        $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
     };
 
     $scope.init = function(refreshPicture){
@@ -1043,8 +1045,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentTab = $scope.defaultPath;
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
+        $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
+
         $scope.manageActionBar();
     };
+
+    $scope.$on('onNodeTabChange', function(event, tab){
+        console.log(tab);
+    });
 
     $scope.currentNodeAction = {};
     $scope.setEditMode = function(){

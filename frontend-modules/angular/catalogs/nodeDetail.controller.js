@@ -100,8 +100,14 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         $scope.currentTab = $scope.defaultPath;
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
+        $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
+
         $scope.manageActionBar();
     };
+
+    $scope.$on('onNodeTabChange', function(event, tab){
+        console.log(tab);
+    });
 
     $scope.currentNodeAction = {};
     $scope.setEditMode = function(){
