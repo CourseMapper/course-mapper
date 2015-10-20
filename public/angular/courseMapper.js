@@ -3185,7 +3185,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $rootScope.removeAnnotationZone = function (id) {
       var element = $("#annotationZone #"+id);
 
-      var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
+      //var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
+      var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
 
       //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
       var inputId = element.attr("id");
@@ -3245,7 +3246,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      console.log("Reload Tags called");
+      //console.log("Reload Tags called");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
