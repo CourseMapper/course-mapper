@@ -33,8 +33,6 @@
     color: #FFFFFF;
     z-index: 11;
     pointer-events: all;
-    -webkit-transition: 0.2s linear all;
-    transition: 0.2s ease-out all;
 }
 
 .inline-va-annotation:hover {
