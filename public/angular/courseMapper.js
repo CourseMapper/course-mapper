@@ -1726,6 +1726,7 @@ app.directive('movable', function() {
                                 //console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
+
                                 $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
 
                                 /*
@@ -1838,20 +1839,22 @@ app.directive('movable', function() {
                   }
                 });
 
-                /*$scope.$on('onAfterInitTreeNode', function(node){
-                  console.log("Got called");
+                $scope.$on('onAfterInitTreeNode', function(node){
+                  //console.log("Got called");
                   //if($scope.pdfReady) {
-                    console.log("Got also here");
-                    $rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
+                    //console.log(node);
+                    //$rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
+                    $rootScope.pdfId = node.targetScope.pdfFile._id;
                   //}
-                });*/
+                });
 
                 $scope.$on('onNodeTabChange', function(event, tab){
                   //console.log("Registered tab change. Got tab: " + tab);
                   $scope.currentTab = tab;
                   if(tab == "pdf") {
-                    //console.log("Got called on tabchange");
                     adjustPdfScale();
+                    //$rootScope.$broadcast('reloadTags');
+
                   }
                 });
 
@@ -3017,6 +3020,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     //$scope.annZoneMov = [];
 
 
+    $rootScope.pdfId = "";
+
 
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
       console.log($scope.storedAnnZones);
@@ -3211,7 +3216,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
     $scope.refreshTags = function() {
       //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
-      $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
+      //$http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
+      $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -3239,7 +3245,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      //console.log("Reload Tags called");
+      console.log("Reload Tags called");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;

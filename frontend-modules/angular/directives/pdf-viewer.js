@@ -74,6 +74,7 @@ app.directive('pdfViewer',
                                 //console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
+
                                 $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
 
                                 /*
@@ -186,20 +187,22 @@ app.directive('pdfViewer',
                   }
                 });
 
-                /*$scope.$on('onAfterInitTreeNode', function(node){
-                  console.log("Got called");
+                $scope.$on('onAfterInitTreeNode', function(node){
+                  //console.log("Got called");
                   //if($scope.pdfReady) {
-                    console.log("Got also here");
-                    $rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
+                    //console.log(node);
+                    //$rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
+                    $rootScope.pdfId = node.targetScope.pdfFile._id;
                   //}
-                });*/
+                });
 
                 $scope.$on('onNodeTabChange', function(event, tab){
                   //console.log("Registered tab change. Got tab: " + tab);
                   $scope.currentTab = tab;
                   if(tab == "pdf") {
-                    //console.log("Got called on tabchange");
                     adjustPdfScale();
+                    //$rootScope.$broadcast('reloadTags');
+
                   }
                 });
 

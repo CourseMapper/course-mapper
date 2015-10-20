@@ -11,6 +11,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     //$scope.annZoneMov = [];
 
 
+    $rootScope.pdfId = "";
+
 
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
       console.log($scope.storedAnnZones);
@@ -205,7 +207,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.refreshTags = function() {
       //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
-      $http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
+      //$http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
+      $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -233,7 +236,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     });
 
     $rootScope.$on('reloadTags', function(event) {
-      //console.log("Reload Tags called");
+      console.log("Reload Tags called");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;
