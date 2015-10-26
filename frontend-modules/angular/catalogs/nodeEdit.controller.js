@@ -5,6 +5,8 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
     $scope.filesvideo = [];
     $scope.currentEditNode = false;
     $scope.progressPercentage = 0;
+    $scope.videoHostLink = '';
+    $scope.pdfHostLink = '';
 
     $scope.isLoading = false;
     $scope.errors = [];
@@ -148,12 +150,20 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
             $scope.formData = $scope.currentEditNode;
         }
 
+        if($scope.videoHostLink.trim() != ''){
+            $scope.formData.videoHostLink = $scope.videoHostLink;
+        }
+        if($scope.pdfHostLink.trim() != ''){
+            $scope.formData.pdfHostLink = $scope.pdfHostLink;
+        }
+
         var uploadParams = {
             url: '/api/treeNodes',
             fields: $scope.formData
         };
 
         uploadParams.file = [];
+
         // we only take one pdf file
         if ($scope.filespdf && $scope.filespdf.length){
             uploadParams.file.push($scope.filespdf[0]);
@@ -195,6 +205,8 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                     $scope.formData.name = "";
                     $scope.filespdf = [];
                     $scope.filesvideo = [];
+                    $scope.videoHostLink = '';
+                    $scope.pdfHostLink = '';
 
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
@@ -214,6 +226,8 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
 
+                $scope.progressPercentage = 0;
+
                 toastr.error('Saving Failed');
             });
 
@@ -225,5 +239,10 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
         }
 
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
+    };
+
+    $scope.clearVideo = function(){
+        $scope.filesvideo=[];
+        $timeout(function(){$scope.$apply()});
     }
 });

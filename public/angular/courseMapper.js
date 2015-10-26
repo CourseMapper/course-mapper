@@ -27,15 +27,15 @@ app.config(function(toastrConfig) {
                 reloadOnSearch: false
             }).
 
-            when('/cid/:courseId', {
-                templateUrl: '/course/courseDetail',
-                controller: 'CourseController',
-                reloadOnSearch: false
-            }).
-
             when('/cid/:courseId/nid/:nodeId', {
                 templateUrl: '/course/nodeDetail',
                 controller: 'NodeDetailController',
+                reloadOnSearch: false
+            }).
+
+            when('/cid/:courseId', {
+                templateUrl: '/course/courseDetail',
+                controller: 'CourseController',
                 reloadOnSearch: false
             }).
 
@@ -1086,11 +1086,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.parseResources = function(){
         for(var i = 0;i < $scope.treeNode.resources.length; i++){
             var content = $scope.treeNode.resources[i];
-            if(content['type'] == 'mp4' || content['type'] == 'video'){
+            if(content['type'] == 'mp4'
+                || content['type'] == 'video'
+                || content['type'] == 'videoLink'
+            ){
                 $scope.isVideoExist = true;
                 $scope.videoFile = content;
                 $scope.treeNode.videoFile = content;
-            } else if(content['type'] == 'pdf'){
+            } else if(content['type'] == 'pdf'
+                || content['type'] == 'pdfLink'
+            ){
                 $scope.pdfFile = content;
                 $scope.treeNode.pdfFile = content;
                 $scope.isPdfExist = true;
@@ -1186,6 +1191,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.filesvideo = [];
     $scope.currentEditNode = false;
     $scope.progressPercentage = 0;
+    $scope.videoHostLink = '';
+    $scope.pdfHostLink = '';
 
     $scope.isLoading = false;
     $scope.errors = [];
@@ -1329,12 +1336,20 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.formData = $scope.currentEditNode;
         }
 
+        if($scope.videoHostLink.trim() != ''){
+            $scope.formData.videoHostLink = $scope.videoHostLink;
+        }
+        if($scope.pdfHostLink.trim() != ''){
+            $scope.formData.pdfHostLink = $scope.pdfHostLink;
+        }
+
         var uploadParams = {
             url: '/api/treeNodes',
             fields: $scope.formData
         };
 
         uploadParams.file = [];
+
         // we only take one pdf file
         if ($scope.filespdf && $scope.filespdf.length){
             uploadParams.file.push($scope.filespdf[0]);
@@ -1376,6 +1391,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $scope.formData.name = "";
                     $scope.filespdf = [];
                     $scope.filesvideo = [];
+                    $scope.videoHostLink = '';
+                    $scope.pdfHostLink = '';
 
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
@@ -1395,6 +1412,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
 
+                $scope.progressPercentage = 0;
+
                 toastr.error('Saving Failed');
             });
 
@@ -1406,6 +1425,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
 
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
+    };
+
+    $scope.clearVideo = function(){
+        $scope.filesvideo=[];
+        $timeout(function(){$scope.$apply()});
     }
 });
 ;app.directive('comment',

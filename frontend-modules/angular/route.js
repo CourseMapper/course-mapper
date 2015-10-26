@@ -15,15 +15,15 @@ app.config(['$routeProvider', '$locationProvider',
                 reloadOnSearch: false
             }).
 
-            when('/cid/:courseId', {
-                templateUrl: '/course/courseDetail',
-                controller: 'CourseController',
-                reloadOnSearch: false
-            }).
-
             when('/cid/:courseId/nid/:nodeId', {
                 templateUrl: '/course/nodeDetail',
                 controller: 'NodeDetailController',
+                reloadOnSearch: false
+            }).
+
+            when('/cid/:courseId', {
+                templateUrl: '/course/courseDetail',
+                controller: 'CourseController',
                 reloadOnSearch: false
             }).
 

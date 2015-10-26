@@ -58,7 +58,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
 
     // check for at least 1 resource either it s a pdf or a video
     if (params.type == 'contentNode' && !params._id) {
-        if (!files.file) {
+        if (!files.file && !params.pdfHostLink && !params.videoHostLink) {
             error(helper.createError('need at least 1 resource', 400));
             return;
         }
@@ -112,15 +112,35 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         }
     }
 
-    function attachResourcesToNode(tn, files, self, node) {
+    function attachLinkToNode(contentNode, type, url){
+        var Res = new Resources({
+            type: type,
+            createdBy: contentNode.createdBy,
+            link: url,
+            courseId: contentNode.courseId,
+            treeNodeId: contentNode._id
+        });
+
+        Res.save(function () {
+            TreeNodes.update({_id: contentNode._id}, {
+                    $addToSet: {
+                        resources: Res._id
+                    }
+                },
+                function () {
+                });
+        });
+    }
+
+    function attachResourcesToNode(tn, files, self) {
         if (files) {
             for (var i in files.file) {
                 var f = files.file[i];
                 self.saveResourceFile(
                     ['pdf', 'mp4', 'webm'], f,
                     tn,
-                    node.createdBy,
-                    node.courseId
+                    tn.createdBy,
+                    tn.courseId
                 );
             }
         }
@@ -129,8 +149,16 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     }
 
     function cbAfterSave(tn, files, self, node, params, success){
+        if(params.pdfHostLink){
+            attachLinkToNode(tn, 'pdf', params.pdfHostLink);
+        }
+
+        if(params.videoHostLink){
+            attachLinkToNode(tn, 'video', params.videoHostLink);
+        }
+
         // process files
-        attachResourcesToNode(tn, files, self, node);
+        attachResourcesToNode(tn, files, self);
 
         // put this object as the parent's child,
         insertNodeToParent(node, tn, success);
@@ -158,7 +186,15 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
                             debug('failed adding Tree Node');
                             error(err);
                         } else {
-                            attachResourcesToNode(tn, files, self, node);
+                            if(params.pdfHostLink){
+                                attachLinkToNode(tn, 'pdf', params.pdfHostLink);
+                            }
+
+                            if(params.videoHostLink){
+                                attachLinkToNode(tn, 'video', params.pdfHostLink);
+                            }
+
+                            attachResourcesToNode(tn, files, self);
 
                             success(tn);
 

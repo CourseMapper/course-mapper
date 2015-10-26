@@ -34,7 +34,9 @@
                                 </div>
                             </div>
                             <br>
+
                             <p class="help-block">Please attach at least a pdf or a video</p>
+
                             <div class="col-md-6" id="pdf">
                                 <div class="control-group">
                                     <label class="control-label" for="pdf">Upload PDF</label>
@@ -53,23 +55,73 @@
                             </div>
                             <div class="col-md-6" id="video">
                                 <div class="control-group">
-                                    <label class="control-label" for="video">Upload Video</label>
 
-                                    <div class="controls">
-                                        <div class="btn btn-sm btn-default"
-                                             ngf-select accept="video/*" ngf-accept="'video/*'"
-                                             ng-model="filesvideo" ngf-multiple="false" ngf-max-size='100000000'><i
-                                                class="fa fa-file-video-o"></i> &nbsp; Select a video file  (Max 75MB)
+                                    <label class="control-label" for="video">Add Video</label>
+
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a data-toggle="tab" data-target="#upload-video">
+                                                <i class="fa fa-hdd-o"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a data-toggle="tab" data-target="#upload-link">
+                                                <i class="fa fa-youtube"></i>
+                                                <i class="fa fa-vimeo-square"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" style="min-height:80px;">
+                                        <div id="upload-video" class="tab-pane fade in active">
+                                            <br>
+                                            <div ng-show="videoHostLink.trim()!=''">
+                                                You have added a link to an external video, please remove it if you want to upload from local drive.
+                                            </div>
+                                            <div class="controls" ng-hide="videoHostLink.trim() != ''">
+                                                <div class="btn btn-sm btn-default"
+                                                     ngf-select accept="video/*" ngf-accept="'video/*'"
+                                                     ng-model="filesvideo" ngf-multiple="false"
+                                                     ngf-max-size='100000000'><i
+                                                        class="fa fa-file-video-o"></i> &nbsp; Select a video file (Max
+                                                    75MB)
+                                                </div>
+                                                <br>
+                                                <span ng-repeat="f in filesvideo">
+                                                <div class="label label-info ">
+                                                {{f.name}}
+                                                    <a ng-click="clearVideo()" class="cursor"> <i class="fa fa-close"></i> </a>
+                                                </div>
+                                                </span>
+                                            </div>
                                         </div>
-                                        &nbsp; <span ng-repeat="f in filesvideo">{{f.name}}</span>
+                                        <div id="upload-link" class="tab-pane fade">
+                                            <div ng-hide="filesvideo.length > 0">
+                                                <!--<h5 >Video Link</h5>
+                                                <input type="url" ng-model="videoHostLink" class="form-control" name="videoHostLink">-->
+                                                <br>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="fa fa-chain"></i></span>
+                                                    <input type="url" class="form-control" placeholder="http://youtube.com/" ng-model="videoHostLink">
+                                                </div>
+
+                                                <span class="error" ng-show="addContentNodeForm.videoHostLink.$error.url">
+                                                    Not valid url!</span>
+                                            </div>
+                                            <div ng-show="filesvideo.length > 0">
+                                                <br>
+                                                You have added a file video, please remove it if you want to use an external link
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                 </div>
                             </div>
 
                             <div class="col-xs-12" ng-show="progressPercentage > 0">
-                                <div class="progress" >
-                                    <div class="progress-bar" ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
+                                <div class="progress">
+                                    <div class="progress-bar"
+                                         ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
                                 </div>
                             </div>
 

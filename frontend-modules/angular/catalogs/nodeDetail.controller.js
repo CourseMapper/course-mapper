@@ -124,11 +124,16 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     $scope.parseResources = function(){
         for(var i = 0;i < $scope.treeNode.resources.length; i++){
             var content = $scope.treeNode.resources[i];
-            if(content['type'] == 'mp4' || content['type'] == 'video'){
+            if(content['type'] == 'mp4'
+                || content['type'] == 'video'
+                || content['type'] == 'videoLink'
+            ){
                 $scope.isVideoExist = true;
                 $scope.videoFile = content;
                 $scope.treeNode.videoFile = content;
-            } else if(content['type'] == 'pdf'){
+            } else if(content['type'] == 'pdf'
+                || content['type'] == 'pdfLink'
+            ){
                 $scope.pdfFile = content;
                 $scope.treeNode.pdfFile = content;
                 $scope.isPdfExist = true;
