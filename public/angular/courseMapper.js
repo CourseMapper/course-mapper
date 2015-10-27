@@ -1431,6 +1431,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.filesvideo=[];
         $timeout(function(){$scope.$apply()});
     }
+
+    $scope.clearPdf = function(){
+        $scope.filespdf=[];
+        $timeout(function(){$scope.$apply()});
+    }
 });
 ;app.directive('comment',
     function ($compile, $timeout) {

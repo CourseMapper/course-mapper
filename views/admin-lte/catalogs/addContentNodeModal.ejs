@@ -68,7 +68,15 @@
                                                      ng-hide="pdfHostLink.trim()!=''">
                                                     <i class="fa fa-file-pdf-o"></i> &nbsp; Select a pdf file (Max 24MB)
                                                 </div>
-                                                &nbsp; <span ng-repeat="f in filespdf">{{f.name}}</span>
+                                                <br>
+                                                <span ng-repeat="f in filespdf">
+                                                    <div class="label label-info ">
+                                                        {{f.name}}
+                                                        <a ng-click="clearPdf()">
+                                                        <i class="fa fa-close"></i>
+                                                        </a>
+                                                        </div>
+                                                </span>
                                             </div>
                                         </div>
 

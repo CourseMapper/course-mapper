@@ -245,4 +245,9 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
         $scope.filesvideo=[];
         $timeout(function(){$scope.$apply()});
     }
+
+    $scope.clearPdf = function(){
+        $scope.filespdf=[];
+        $timeout(function(){$scope.$apply()});
+    }
 });
