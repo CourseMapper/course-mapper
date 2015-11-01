@@ -373,6 +373,12 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
             case 'mp4':
                 return 'fa fa-file-video-o';
 
+            case 'pdfLink':
+                return 'fa fa-file-pdf-o';
+
+            case 'videoLink':
+                return 'fa fa-file-video-o';
+
             case 'video':
                 return 'fa fa-file-video-o';
         }
@@ -398,29 +404,6 @@ app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $
                 $scope.isRequesting = false;
             });
     };
-
-    /*$scope.$on('onTopicHover', function (event, nodeId) {
-        if ($scope.isRequesting)
-            return;
-
-        $scope.isRequesting = true;
-        // the nodeId has "t", so we remove them first
-        nodeId = nodeId.substring(1);
-        $http.get('/api/server-widgets/node-icon-analytics/?nodeId=' + nodeId).success(
-            function (res) {
-                $scope.isRequesting = false;
-                if (res.result) {
-                    $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
-                }
-            }
-        ).error(function () {
-                $scope.isRequesting = false;
-            });
-    });*/
-
-    /*$scope.$on('onTopicHoverOut', function (event, slug) {
-        $scope.isRequesting = false;
-    });*/
 
     $scope.getContentNodeLink = function (d) {
         return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;

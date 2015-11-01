@@ -193,10 +193,23 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                         var resTemp = $scope.parseNgFile(f);
                         data.treeNode['resources'].push(resTemp);
                     }
+
+                    if($scope.videoHostLink != ''){
+                        data.treeNode['resources'].push({
+                            type: 'videoLink'
+                        });
+                    }
+
+                    if($scope.pdfHostLink != ''){
+                        data.treeNode['resources'].push({
+                            type: 'pdfLink'
+                        });
+                    }
                 }
 
                 if($scope.addContentNodeForm) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
+                    $scope.progressPercentage = 0;
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
