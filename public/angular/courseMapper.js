@@ -4647,8 +4647,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         };
 
         var curNode = {x:0, y:0};
-        //for(var i in locs){
-            //var loc = locs[i];
 
         var $gs = $(loc);
         $gs.gridstack(options);
@@ -4659,7 +4657,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
 
         $gs.on('onMove', function (e, node) {
-            console.log(node.x + " ++ " + node.y);
+
         });
 
         $gs.on('onFinishDrop', function (e, node) {
@@ -4668,7 +4666,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             if(options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0){
                 o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
             }
-            console.log("onFinishDrop");
+
             var wId = o.attr('id').substr(1);
             $scope.setPosition(wId, node.x, node.y);
         });
@@ -4678,16 +4676,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         $http.put('/api/widget/' + wId + '/setPosition/', {
             x:x, y:y
         }).success(function(res){
-            if(res.result)
+            /*if(res.result)
+            {
                 console.log('set position success');
+            }*/
         });
     };
 
-    /*$scope.populateWidgets = function(){
-        for(var i in $scope.widgets){
-            $scope.addWidget($scope.widgets[i].widgetId._id);
-        }
-    }*/
 });
 ;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr) {
     $scope.location = "";
