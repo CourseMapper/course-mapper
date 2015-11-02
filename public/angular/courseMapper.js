@@ -1440,6 +1440,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $timeout(function(){$scope.$apply()});
     }
 });
+;app.controller('ProfileController', function(  Page) {
+    Page.setTitleWithPrefix('My Account');
+});
 ;app.directive('comment',
     function ($compile, $timeout) {
         return {
