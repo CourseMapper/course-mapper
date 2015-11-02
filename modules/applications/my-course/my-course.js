@@ -73,6 +73,20 @@ var MyCourseListener = {
                 else
                     debug(err);
             });
+    },
+
+    onPdfRead: function(params){
+        /**
+         * {
+        courseId: mongoObjectId,
+        nodeId: mongoObjectId,
+        resourceId: mongoObjectId,
+        pageNumber: int,
+        userId: mongoObjectId
+    }
+         */
+
+        console.log('courseId = ' + params.courseId);
     }
 };
 

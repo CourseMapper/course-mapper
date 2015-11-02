@@ -124,13 +124,14 @@ router.get('/read/:courseId/:nodeId/:resourceId/:pageNumber/:totalPage', functio
     if (!req.user)
         return res.status(401).send('Unauthorized');
 
-    var cid, nid, rid;
+    var cid, nid, rid, uid;
     try{
         cid = mongoose.Types.ObjectId(req.params.courseId);
         nid = mongoose.Types.ObjectId(req.params.nodeId);
         rid = mongoose.Types.ObjectId(req.params.resourceId);
+        uid = mongoose.Types.ObjectId(req.user._id);
     } catch(err) {
-        helper.resReturn("resourceId needs to be an object id", res);
+        helper.resReturn("Ids needs to be an object id", res);
         return;
     }
 
@@ -140,7 +141,7 @@ router.get('/read/:courseId/:nodeId/:resourceId/:pageNumber/:totalPage', functio
         resourceId: rid,
         pageNumber: req.params.pageNumber,
         totalPage: req.params.totalPage,
-        userId: req.user._id
+        userId: uid
     };
 
     Plugin.doAction('onPdfRead', params);
