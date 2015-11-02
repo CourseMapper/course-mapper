@@ -4457,7 +4457,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
-;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout) {
+;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout, authService) {
     $scope.user = {};
     $scope.formData = {};
     $scope.errors = null;
@@ -4489,6 +4489,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             .success(function(data) {
                 if(data.result) {
                     $scope.$emit('init');
+                    authService.loginCheck(function(user){
+                        $scope.user = user;
+                        $timeout(function(){
+                            $scope.$apply();
+                            $('.user-image').attr('src', $scope.user.image);
+                        });
+                    });
                     $('#editAccountModal').modal('hide');
                 }
             })
