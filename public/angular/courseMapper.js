@@ -1114,6 +1114,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.initNode();
     });
 
+    /**
+     * ping server on our latest page read
+     */
+    $scope.$on('onPdfPageChange', function(event, params){
+        $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+    });
+
     $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
@@ -1752,7 +1759,7 @@ app.directive('movable', function() {
 
                                 scope.pdfIsLoaded = true;
 
-                                $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
+                                $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
                                 /*
                                  todo: move this somewhere else
@@ -1803,7 +1810,7 @@ app.directive('movable', function() {
                             //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
 
-                            $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
+                            $rootScope.$broadcast('onPdfPageChange', [newSlideNumber, $scope.totalPage]);
 
                             /* todo: move this somewhere else
                              drawAnnZonesWhenPDFAndDBDone();
@@ -1868,7 +1875,6 @@ app.directive('movable', function() {
                   //console.log("Got called");
                   //if($scope.pdfReady) {
                     //console.log(node);
-                    //$rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
                     $rootScope.pdfId = node.targetScope.pdfFile._id;
                   //}
                 });
@@ -1883,10 +1889,10 @@ app.directive('movable', function() {
                   }
                 });
 
-                $scope.$on('onPdfPageChange', function (event, pageNumber) {
+                $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
 
-                    $scope.setHistoryStack(pageNumber);
+                    $scope.setHistoryStack(params[0]);
                 });
 
                 // onload
@@ -3012,27 +3018,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             return $sce.trustAsResourceUrl(url);
         };
 
-    });;/*
-moved to directive
-app.controller('PDFNavigationController', function($scope, $http, $rootScope, $sce, $timeout) {
-    $scope.currentPageNumber = 1;
-    $scope.maxPageNumber = 30;
-
-    $scope.changePageNumber = function(value){
-      //console.log("GOT CALLED");
-      if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
-        $scope.currentPageNumber = $scope.currentPageNumber + value;
-        $timeout(function(){
-          $scope.$apply();
-          pdfIsLoaded = false;
-          changeSlide($scope.currentPageNumber);
-        });
-
-    }
-
-
-});*/
-;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
+    });;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
@@ -3264,7 +3250,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
 
-    $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+    $rootScope.$on('onPdfPageChange', function(e, params){
       //console.log("PdfPageChange");
       //console.log("pdfPageChangeEv");
       $rootScope.$emit('reloadTags');
@@ -3457,8 +3443,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
 
-    $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
-        $scope.currentPageNumber = newSlideNumber;
+    $rootScope.$on('onPdfPageChange', function (e, params) {
+        $scope.currentPageNumber = params[0];
         $scope.getComment($scope.orderType.id);
     });
 

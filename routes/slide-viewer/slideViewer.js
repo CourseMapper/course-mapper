@@ -9,6 +9,8 @@ var mongoose = require('mongoose');
 
 var Comment = require(appRoot + '/modules/slide-viewer');
 
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
 
 var router = express.Router();
 
@@ -115,9 +117,38 @@ router.get('/slide-viewer', function(req, res, next) {
 
 });
 
+/**
+ * GET to let the server know that the user is opening which pdf and page
+ */
+router.get('/read/:courseId/:nodeId/:resourceId/:pageNumber/:totalPage', function(req, res, next){
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
 
+    var cid, nid, rid;
+    try{
+        cid = mongoose.Types.ObjectId(req.params.courseId);
+        nid = mongoose.Types.ObjectId(req.params.nodeId);
+        rid = mongoose.Types.ObjectId(req.params.resourceId);
+    } catch(err) {
+        helper.resReturn("resourceId needs to be an object id", res);
+        return;
+    }
 
+    var params = {
+        courseId: cid,
+        nodeId: nid,
+        resourceId: rid,
+        pageNumber: req.params.pageNumber,
+        totalPage: req.params.totalPage,
+        userId: req.user._id
+    };
 
+    Plugin.doAction('onPdfRead', params);
+
+    res.status(200).json({
+        result: true
+    });
+});
 
 router.get('/disComm', function(req, res, next){
   var comment = new Comment();

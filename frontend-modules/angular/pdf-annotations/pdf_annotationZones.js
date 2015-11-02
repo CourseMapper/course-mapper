@@ -230,7 +230,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
 
-    $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+    $rootScope.$on('onPdfPageChange', function(e, params){
       //console.log("PdfPageChange");
       //console.log("pdfPageChangeEv");
       $rootScope.$emit('reloadTags');
