@@ -729,8 +729,11 @@ a.videoButton:hover{
 }
 .grid-stack>.grid-stack-item>.grid-stack-item-content{
     background: white;
+    overflow-y: hidden!important;
 }
-
+.grid-stack-item-content .box-body{
+    overflow-y: auto;
+}
 .empty-widget{
     width: 100%;
     text-align: center;

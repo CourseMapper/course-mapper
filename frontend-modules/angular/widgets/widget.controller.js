@@ -6,6 +6,9 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
     $scope.initWidgetButton = function(id){
         $.AdminLTE.boxWidget.activate();
         $scope.addWidget(id);
+
+        var h = $('#w' + id + ' .grid-stack-item-content');
+        $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
     };
 
     $scope.$on('onAfterInitUser', function(event, user){
@@ -137,8 +140,6 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
         };
 
         var curNode = {x:0, y:0};
-        //for(var i in locs){
-            //var loc = locs[i];
 
         var $gs = $(loc);
         $gs.gridstack(options);
@@ -149,7 +150,7 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
         });
 
         $gs.on('onMove', function (e, node) {
-            console.log(node.x + " ++ " + node.y);
+
         });
 
         $gs.on('onFinishDrop', function (e, node) {
@@ -158,7 +159,7 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
             if(options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0){
                 o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
             }
-            console.log("onFinishDrop");
+
             var wId = o.attr('id').substr(1);
             $scope.setPosition(wId, node.x, node.y);
         });
@@ -168,14 +169,11 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
         $http.put('/api/widget/' + wId + '/setPosition/', {
             x:x, y:y
         }).success(function(res){
-            if(res.result)
+            /*if(res.result)
+            {
                 console.log('set position success');
+            }*/
         });
     };
 
-    /*$scope.populateWidgets = function(){
-        for(var i in $scope.widgets){
-            $scope.addWidget($scope.widgets[i].widgetId._id);
-        }
-    }*/
 });
