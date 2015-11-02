@@ -6,6 +6,9 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
     $scope.initWidgetButton = function(id){
         $.AdminLTE.boxWidget.activate();
         $scope.addWidget(id);
+
+        var h = $('#w' + id + ' .grid-stack-item-content');
+        $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
     };
 
     $scope.$on('onAfterInitUser', function(event, user){
