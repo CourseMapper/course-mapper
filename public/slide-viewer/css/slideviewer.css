@@ -138,10 +138,17 @@ input#searchInput{
 }
 
 .commentZoneList{
+  /*max-height: 600px;*/
+/*  overflow-y: auto;
+  overflow-x: hidden;*/
+}
+
+#commentList{
   max-height: 600px;
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 
 .slideRect{
 }

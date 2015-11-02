@@ -108,21 +108,23 @@
 
             </div>
 
+            <div class="filter-wrapper col-xs-1">
+              <span class="filter-header">Filter: </span>
+            </div>
+            <div >
+              <!--<span class="filter-header">None</span> class="col-xs-11"-->
+              <button type="button" class="btn btn-default btn-xs filter-tag" ng-hide="((key == 'pdfId')||(key == 'pdfPageNumber')||(key == 'rawText')) " ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
+                <span class="glyphicon glyphicon-remove " aria-hidden="true" ></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
+              </button>
+            </div>
+
             <div class="commentZoneList">
 
                     <!--<div>
                       <label id="activeFilterLabel" ng-bind="activeFilterString"></label>
                       <button class="btn btn-white btn-link" ng-click="removeActiveFilters();" style="color:black;">X</button>
                     </div>-->
-                    <div class="filter-wrapper col-xs-1">
-                      <span class="filter-header">Filter:</span>
-                    </div>
-                    <div class="col-xs-11">
-                      <!--<span class="filter-header">None</span>-->
-                      <button type="button" class="btn btn-default btn-xs filter-tag" ng-hide="((key == 'pdfId')||(key == 'pdfPageNumber')||(key == 'rawText')) " ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
-                        <span class="glyphicon glyphicon-remove " aria-hidden="true" ></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
-                      </button>
-                    </div>
+
                     <div id="commentList" class="row">
 
 
