@@ -4180,10 +4180,11 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
       $scope.$broadcast('onFiltersRawChange');
     };
 });
-;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce) {
+;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, Page) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];
+    Page.setTitleWithPrefix('Home');
 
     $(document).ready(function () {
         if (typeof(localStorage) !== "undefined") {
