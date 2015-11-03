@@ -169,6 +169,13 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         $scope.initNode();
     });
 
+    /**
+     * ping server on our latest page read
+     */
+    $scope.$on('onPdfPageChange', function(event, params){
+        $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+    });
+
     $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {

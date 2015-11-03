@@ -1,4 +1,4 @@
-admin.controller('applicationsController', function($scope, $route, $routeParams, $location, $http) {
+admin.controller('applicationsController', function($scope, $route, $routeParams, $location, $http, $timeout) {
     $scope.route = $route;
     $scope.location = $location;
     $scope.routeParams = $routeParams;
@@ -19,6 +19,8 @@ admin.controller('applicationsController', function($scope, $route, $routeParams
                 wdg.isActive = updated.isActive;
             }
         }
+
+        $timeout(function(){$scope.$apply()});
     }
 
     $scope.activate = function(app, widgetName){
@@ -26,6 +28,7 @@ admin.controller('applicationsController', function($scope, $route, $routeParams
             isActive:true
         }).success(function(res){
             if(res.result && res.widget){
+                res.widget.isActive = true;
                 updateWidgetResult(res.widget, $scope.widgets);
             }
         });
@@ -36,6 +39,7 @@ admin.controller('applicationsController', function($scope, $route, $routeParams
             isActive:false
         }).success(function(res){
             if(res.result && res.widget){
+                res.widget.isActive = false;
                 updateWidgetResult(res.widget, $scope.widgets);
             }
         });

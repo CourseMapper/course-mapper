@@ -6,7 +6,7 @@ admin.filter('capitalize', function() {
     }
 });
 
-;admin.controller('applicationsController', function($scope, $route, $routeParams, $location, $http) {
+;admin.controller('applicationsController', function($scope, $route, $routeParams, $location, $http, $timeout) {
     $scope.route = $route;
     $scope.location = $location;
     $scope.routeParams = $routeParams;
@@ -27,6 +27,8 @@ admin.filter('capitalize', function() {
                 wdg.isActive = updated.isActive;
             }
         }
+
+        $timeout(function(){$scope.$apply()});
     }
 
     $scope.activate = function(app, widgetName){
@@ -34,6 +36,7 @@ admin.filter('capitalize', function() {
             isActive:true
         }).success(function(res){
             if(res.result && res.widget){
+                res.widget.isActive = true;
                 updateWidgetResult(res.widget, $scope.widgets);
             }
         });
@@ -44,6 +47,7 @@ admin.filter('capitalize', function() {
             isActive:false
         }).success(function(res){
             if(res.result && res.widget){
+                res.widget.isActive = false;
                 updateWidgetResult(res.widget, $scope.widgets);
             }
         });

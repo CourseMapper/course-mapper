@@ -1114,6 +1114,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.initNode();
     });
 
+    /**
+     * ping server on our latest page read
+     */
+    $scope.$on('onPdfPageChange', function(event, params){
+        $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+    });
+
     $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){
             if(res.result) {
@@ -1432,6 +1439,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.filespdf=[];
         $timeout(function(){$scope.$apply()});
     }
+});
+;app.controller('ProfileController', function(  Page) {
+    Page.setTitleWithPrefix('My Account');
 });
 ;app.directive('comment',
     function ($compile, $timeout) {
@@ -1752,7 +1762,7 @@ app.directive('movable', function() {
 
                                 scope.pdfIsLoaded = true;
 
-                                $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
+                                $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
                                 /*
                                  todo: move this somewhere else
@@ -1803,7 +1813,7 @@ app.directive('movable', function() {
                             //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
 
-                            $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
+                            $rootScope.$broadcast('onPdfPageChange', [newSlideNumber, $scope.totalPage]);
 
                             /* todo: move this somewhere else
                              drawAnnZonesWhenPDFAndDBDone();
@@ -1868,7 +1878,6 @@ app.directive('movable', function() {
                   //console.log("Got called");
                   //if($scope.pdfReady) {
                     //console.log(node);
-                    //$rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
                     $rootScope.pdfId = node.targetScope.pdfFile._id;
                   //}
                 });
@@ -1883,10 +1892,10 @@ app.directive('movable', function() {
                   }
                 });
 
-                $scope.$on('onPdfPageChange', function (event, pageNumber) {
+                $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
 
-                    $scope.setHistoryStack(pageNumber);
+                    $scope.setHistoryStack(params[0]);
                 });
 
                 // onload
@@ -3012,27 +3021,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             return $sce.trustAsResourceUrl(url);
         };
 
-    });;/*
-moved to directive
-app.controller('PDFNavigationController', function($scope, $http, $rootScope, $sce, $timeout) {
-    $scope.currentPageNumber = 1;
-    $scope.maxPageNumber = 30;
-
-    $scope.changePageNumber = function(value){
-      //console.log("GOT CALLED");
-      if( ($scope.currentPageNumber + value) <= $scope.maxPageNumber && ($scope.currentPageNumber + value) >= 1)
-        $scope.currentPageNumber = $scope.currentPageNumber + value;
-        $timeout(function(){
-          $scope.$apply();
-          pdfIsLoaded = false;
-          changeSlide($scope.currentPageNumber);
-        });
-
-    }
-
-
-});*/
-;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
+    });;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
@@ -3264,7 +3253,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
 
-    $rootScope.$on('onPdfPageChange', function(e, newSlideNumber){
+    $rootScope.$on('onPdfPageChange', function(e, params){
       //console.log("PdfPageChange");
       //console.log("pdfPageChangeEv");
       $rootScope.$emit('reloadTags');
@@ -3457,8 +3446,8 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 
 
 
-    $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
-        $scope.currentPageNumber = newSlideNumber;
+    $rootScope.$on('onPdfPageChange', function (e, params) {
+        $scope.currentPageNumber = params[0];
         $scope.getComment($scope.orderType.id);
     });
 
@@ -4191,10 +4180,11 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
       $scope.$broadcast('onFiltersRawChange');
     };
 });
-;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce) {
+;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, Page) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];
+    Page.setTitleWithPrefix('Home');
 
     $(document).ready(function () {
         if (typeof(localStorage) !== "undefined") {
@@ -4471,7 +4461,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
-;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout) {
+;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout, authService) {
     $scope.user = {};
     $scope.formData = {};
     $scope.errors = null;
@@ -4503,6 +4493,13 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             .success(function(data) {
                 if(data.result) {
                     $scope.$emit('init');
+                    authService.loginCheck(function(user){
+                        $scope.user = user;
+                        $timeout(function(){
+                            $scope.$apply();
+                            $('.user-image').attr('src', $scope.user.image);
+                        });
+                    });
                     $('#editAccountModal').modal('hide');
                 }
             })
@@ -4527,6 +4524,9 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
     $scope.initWidgetButton = function(id){
         $.AdminLTE.boxWidget.activate();
         $scope.addWidget(id);
+
+        var h = $('#w' + id + ' .grid-stack-item-content');
+        $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
     };
 
     $scope.$on('onAfterInitUser', function(event, user){
@@ -4658,8 +4658,6 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         };
 
         var curNode = {x:0, y:0};
-        //for(var i in locs){
-            //var loc = locs[i];
 
         var $gs = $(loc);
         $gs.gridstack(options);
@@ -4670,7 +4668,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         });
 
         $gs.on('onMove', function (e, node) {
-            console.log(node.x + " ++ " + node.y);
+
         });
 
         $gs.on('onFinishDrop', function (e, node) {
@@ -4679,7 +4677,7 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
             if(options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0){
                 o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
             }
-            console.log("onFinishDrop");
+
             var wId = o.attr('id').substr(1);
             $scope.setPosition(wId, node.x, node.y);
         });
@@ -4689,16 +4687,13 @@ app.controller('PDFNavigationController', function($scope, $http, $rootScope, $s
         $http.put('/api/widget/' + wId + '/setPosition/', {
             x:x, y:y
         }).success(function(res){
-            if(res.result)
+            /*if(res.result)
+            {
                 console.log('set position success');
+            }*/
         });
     };
 
-    /*$scope.populateWidgets = function(){
-        for(var i in $scope.widgets){
-            $scope.addWidget($scope.widgets[i].widgetId._id);
-        }
-    }*/
 });
 ;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr) {
     $scope.location = "";

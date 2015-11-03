@@ -1,0 +1,20 @@
+<div class="box-body no-padding" ng-controller="PdfStatusController">
+    <table class="table table-striped">
+        <tbody>
+        <tr>
+            <th style="width:10px;">Nr.</th>
+            <th>Your Last PDF History</th>
+            <th>Last Page Accessed</th>
+            <th>Total Page</th>
+            <th>Percentage Finished</th>
+        </tr>
+        <tr ng-repeat="pdf in pdfHistory">
+            <td>{{$index+1}}.</td>
+            <td>{{pdf.nodeId.name}}</td>
+            <td>{{pdf.pageNumber}}</td>
+            <td>{{pdf.totalPage}}</td>
+            <td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

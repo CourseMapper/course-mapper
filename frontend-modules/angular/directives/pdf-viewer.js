@@ -75,7 +75,7 @@ app.directive('pdfViewer',
 
                                 scope.pdfIsLoaded = true;
 
-                                $rootScope.$broadcast('onPdfPageChange', scope.currentPageNumber);
+                                $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
                                 /*
                                  todo: move this somewhere else
@@ -126,7 +126,7 @@ app.directive('pdfViewer',
                             //console.log("PDF LOADED");
                             $scope.pdfIsLoaded = true;
 
-                            $rootScope.$broadcast('onPdfPageChange', newSlideNumber);
+                            $rootScope.$broadcast('onPdfPageChange', [newSlideNumber, $scope.totalPage]);
 
                             /* todo: move this somewhere else
                              drawAnnZonesWhenPDFAndDBDone();
@@ -191,7 +191,6 @@ app.directive('pdfViewer',
                   //console.log("Got called");
                   //if($scope.pdfReady) {
                     //console.log(node);
-                    //$rootScope.$broadcast('onPdfPageChange', $scope.currentPageNumber);
                     $rootScope.pdfId = node.targetScope.pdfFile._id;
                   //}
                 });
@@ -206,10 +205,10 @@ app.directive('pdfViewer',
                   }
                 });
 
-                $scope.$on('onPdfPageChange', function (event, pageNumber) {
+                $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
 
-                    $scope.setHistoryStack(pageNumber);
+                    $scope.setHistoryStack(params[0]);
                 });
 
                 // onload

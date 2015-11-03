@@ -38,8 +38,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
 
 
-    $rootScope.$on('onPdfPageChange', function (e, newSlideNumber) {
-        $scope.currentPageNumber = newSlideNumber;
+    $rootScope.$on('onPdfPageChange', function (e, params) {
+        $scope.currentPageNumber = params[0];
         $scope.getComment($scope.orderType.id);
     });
 

@@ -8,7 +8,8 @@
 //var Plugins = require(appRoot + '/app-root-path');
 
 var debug = require('debug')('cm:server');
-var CreatedNodes = require('./myCreatedNodes.js');
+var CreatedNodes = require('./models/myCreatedNodes.js');
+var PdfRead = require('./models/myPDFStatus.js');
 
 var MyCourseListener = {
     /**
@@ -73,6 +74,25 @@ var MyCourseListener = {
                 else
                     debug(err);
             });
+    },
+
+    onPdfRead: function(params){
+        PdfRead.findOneAndUpdate(
+            {
+                userId: params.userId,
+                courseId:params.courseId,
+                resourceId:params.resourceId,
+                nodeId:params.nodeId
+            },
+            {$set: {"pageNumber":params.pageNumber, "totalPage":params.totalPage}},
+            {safe: true, upsert: true},
+
+            function(err, doc){
+                if(!err) debug('my-course: new node aggregated');
+                else
+                    debug(err);
+            }
+        );
     }
 };
 
