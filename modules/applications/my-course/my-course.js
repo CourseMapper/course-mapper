@@ -78,7 +78,12 @@ var MyCourseListener = {
 
     onPdfRead: function(params){
         PdfRead.findOneAndUpdate(
-            {userId: params.userId, courseId:params.courseId, resourceId:params.resourceId, nodeId:params.nodeId},
+            {
+                userId: params.userId,
+                courseId:params.courseId,
+                resourceId:params.resourceId,
+                nodeId:params.nodeId
+            },
             {$set: {"pageNumber":params.pageNumber, "totalPage":params.totalPage}},
             {safe: true, upsert: true},
 
@@ -88,8 +93,6 @@ var MyCourseListener = {
                     debug(err);
             }
         );
-
-        //console.log('courseId = ' + params.courseId);
     }
 };
 
