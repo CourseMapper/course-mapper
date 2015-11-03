@@ -16,8 +16,8 @@
                     <tbody>
                     <tr>
                         <th>Application</th>
-                        <th>Widget</th>
                         <th>Location</th>
+                        <th>Widget</th>
                         <th>Activate</th>
                     </tr>
                     <tr ng-repeat="widget in widgets">
@@ -25,10 +25,10 @@
                             {{widget.application}}
                         </td>
                         <td>
-                            {{widget.name}}
+                            {{widget.location}}
                         </td>
                         <td>
-                            {{widget.location}}
+                            {{widget.name}}
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"

@@ -1440,6 +1440,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $timeout(function(){$scope.$apply()});
     }
 });
+;app.controller('ProfileController', function(  Page) {
+    Page.setTitleWithPrefix('My Account');
+});
 ;app.directive('comment',
     function ($compile, $timeout) {
         return {
@@ -4177,10 +4180,11 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
       $scope.$broadcast('onFiltersRawChange');
     };
 });
-;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce) {
+;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, Page) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];
+    Page.setTitleWithPrefix('Home');
 
     $(document).ready(function () {
         if (typeof(localStorage) !== "undefined") {
@@ -4457,7 +4461,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
-;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout) {
+;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout, authService) {
     $scope.user = {};
     $scope.formData = {};
     $scope.errors = null;
@@ -4489,6 +4493,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             .success(function(data) {
                 if(data.result) {
                     $scope.$emit('init');
+                    authService.loginCheck(function(user){
+                        $scope.user = user;
+                        $timeout(function(){
+                            $scope.$apply();
+                            $('.user-image').attr('src', $scope.user.image);
+                        });
+                    });
                     $('#editAccountModal').modal('hide');
                 }
             })

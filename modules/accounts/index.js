@@ -82,6 +82,9 @@ account.prototype.addUser = function(errorCallback, params, done){
     // hash the password first
     user.setPassword(params.password);
 
+    // generate gravater image url
+    user.setImage(params.email);
+
     // check whether need activation, if yes, generate new code, and default to deactivated
     if(config.get('signUp.needActivation')){
         user.setActivationCode();
@@ -217,6 +220,9 @@ account.prototype.editAccount = function(error, params, success){
                     debug('edit displayname');
                 }
 
+                // generate gravater image url
+                doc.setImage(doc.email);
+
                 doc.save(function(err){
                     if(err)
                         error(err);
@@ -262,6 +268,12 @@ account.prototype.getUser = function(error, params, success){
                 if(doc){
                     if(!doc.displayName)
                         doc.displayName = doc.username;
+
+                    if(!doc.image){
+                        // generate gravater image url
+                        doc.setImage(doc.email);
+                        doc.save();
+                    }
 
                     success(doc);
                 }

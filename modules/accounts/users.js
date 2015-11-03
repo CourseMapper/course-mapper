@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var uuid = require('node-uuid');
 var validator = require('validator');
+var gravatar = require('gravatar');
 
 function hash(passwd, salt) {
     return crypto.createHmac('sha256', salt).update(passwd).digest('hex');
@@ -9,6 +10,11 @@ function hash(passwd, salt) {
 
 function generateActivationCode(salt){
     return crypto.createHmac('sha256', salt).update(uuid.v1()).digest('hex');
+}
+
+function generateGravatarImage(email){
+    var url = gravatar.url(email, {s: '200', r: 'pg', d: 'mm'});
+    return url;
 }
 
 var userSchema = new mongoose.Schema({
@@ -21,6 +27,9 @@ var userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.Mixed
     },
     displayName:{
+        type: String
+    },
+    image:{
         type: String
     },
     salt: { type: String, required: true, default: uuid.v1 },
@@ -51,6 +60,10 @@ userSchema.pre('save', function(next){
 
 userSchema.methods.setPassword = function(passwordString) {
     this.password = hash(passwordString, this.salt);
+};
+
+userSchema.methods.setImage = function(email) {
+    this.image = generateGravatarImage(email);
 };
 
 userSchema.methods.setActivationCode = function() {
