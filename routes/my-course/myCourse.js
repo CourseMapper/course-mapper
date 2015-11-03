@@ -31,7 +31,7 @@ router.get('/my-created-courses', function(req, res, next) {
 });
 
 router.get('/my-pdf-status', function(req, res, next){
-    res.render('/my-course/my-pdf-status')
+    res.render('my-course/pdf-status');
 });
 
 //routes to my-activity-summary

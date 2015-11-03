@@ -27,7 +27,7 @@
       "description": "Show information on the status of accessed PDF and suggestion based on the current PDF read",
       "entryPoint": "/my-course/my-pdf-status",
       "widgetJavascript": ["my-pdf-status.js"],
-      "width": 4,
+      "width": 6,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     }
