@@ -9,7 +9,7 @@ function AStat(){
 
 AStat.prototype.init = function(params){
     this._id = mongoose.Types.ObjectId(params.cid);
-    console.log(this._id)
+    //console.log(this._id)
 };
 
 AStat.prototype.run = async ( function(){
