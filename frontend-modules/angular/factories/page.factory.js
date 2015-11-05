@@ -23,9 +23,9 @@ app.factory('Page', function($window) {
         defineDevSize: function(width){
             if(width < this.xs){
                 return 'xs';
-            } else if(width > xs && width <= this.sm){
+            } else if(width > this.xs && width <= this.sm){
                 return 'sm';
-            } else if(width > sm && width <= this.md){
+            } else if(width > this.sm && width <= this.md){
                 return 'md';
             } else if(width > this.md){
                 return 'lg';
