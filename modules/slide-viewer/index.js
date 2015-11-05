@@ -10,7 +10,7 @@ function Comment(){
 
 Comment.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
   var newName2 = validator.escape(newName);
-  
+
 
   AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
     if(err2) {
@@ -145,9 +145,9 @@ Comment.prototype.submitFirstLevelAnnotation = function(err, params,done){
 };
 
 
-Comment.prototype.deleteAnnotation = function(err,params,done){
+Comment.prototype.deleteAnnotation = function(err,params,isAdmin,done){
   if(typeof params.deleteId != 'undefined') {
-    this.checkOwnership(params.deleteId, params.author, params.authorId, function(success) {
+    this.checkOwnership(params.deleteId, params.author, params.authorId, isAdmin, function(success) {
       if(success) {
         AnnotationsPDF.findOne({ _id: params.deleteId }).remove().exec();
         done();
@@ -164,9 +164,9 @@ Comment.prototype.deleteAnnotation = function(err,params,done){
 
 
 
-Comment.prototype.updateAnnotation = function(err,params,done) {
+Comment.prototype.updateAnnotation = function(err,params,isAdmin,done) {
   if(typeof params.updateId != 'undefined') {
-    this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
+    this.checkOwnership(params.updateId, params.author, params.authorId, isAdmin, function(success) {
       if(success) {
         var temp = Comment.prototype.convertRawText;
 
@@ -199,20 +199,24 @@ Comment.prototype.updateAnnotation = function(err,params,done) {
   }
 };
 
-Comment.prototype.checkOwnership = function(id,author,authorId,callback) {
-  this.getCommentById(id, function(success,data) {
-    if(success == true) {
-      if((author == data.author)&&(authorId == data.authorID)) {
-        callback(true);
+Comment.prototype.checkOwnership = function(id,author,authorId,isAuthor,callback) {
+  if(isAuthor)
+    callback(true);
+  else{
+    this.getCommentById(id, function(success,data) {
+      if(success == true) {
+        if((author == data.author)&&(authorId == data.authorID)) {
+          callback(true);
+        }
+        else {
+          callback(false);
+        }
       }
       else {
         callback(false);
       }
-    }
-    else {
-      callback(false);
-    }
-  });
+    });
+  }
 };
 
 Comment.prototype.getCommentById = function(id, callback) {
@@ -376,6 +380,7 @@ Comment.prototype.handleDeletePost = function(req, res, next) {
             return res.status(200).send({result:false, error: err});
         },
         req.query,
+        req.user.role == "admin",
         function done() {
             // todo: implement flash
             return res.status(200).send({result: true});
@@ -391,6 +396,7 @@ Comment.prototype.handleUpdatePost = function(req, res, next) {
             return res.status(200).send({result:false, error: err});
         },
         req.query,
+        req.user.role == "admin",
         function done() {
             // todo: implement flash
             return res.status(200).send({result: true});
