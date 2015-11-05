@@ -330,6 +330,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       label.text(text);
       label.show();
       label.fadeOut(5000);
+      //label.animate({opacity:0.0},5000);
     };
 
     $scope.currentUser = "";

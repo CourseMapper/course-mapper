@@ -3749,6 +3749,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
       label.text(text);
       label.show();
       label.fadeOut(5000);
+      //label.animate({opacity:0.0},5000);
     };
 
     $scope.currentUser = "";
