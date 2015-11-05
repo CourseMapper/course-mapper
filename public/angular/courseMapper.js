@@ -1792,6 +1792,8 @@ app.directive('movable', function() {
                     if (($scope.currentPageNumber + value) <= $scope.totalPage && ($scope.currentPageNumber + value) >= 1)
                         $scope.currentPageNumber = $scope.currentPageNumber + value;
 
+                    $scope.setHistoryStack( $scope.currentPageNumber);
+
                     $timeout(function () {
                         $scope.$apply();
 
@@ -1826,17 +1828,7 @@ app.directive('movable', function() {
                 };
 
                 $scope.setHistoryStack = function (pageNumber) {
-                    var q = $location.search();
-
-                    var pageNumFromUrl = -1;
-                    if (q.slidePage) {
-                        pageNumFromUrl = parseInt(q.slidePage);
-                    }
-
-                    if (pageNumber != pageNumFromUrl) {
-                        // set the search path of the angular url
-                        $location.search('slidePage', pageNumber);
-                    }
+                    $location.search('slidePage', pageNumber);
                 };
 
                 $scope.changePageNumberBasedOnUrl = function () {
@@ -1897,8 +1889,6 @@ app.directive('movable', function() {
 
                 $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
-
-                    $scope.setHistoryStack(params[0]);
                 });
 
                 // onload
