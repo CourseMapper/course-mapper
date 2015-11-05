@@ -217,8 +217,6 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                     $scope.formData.name = "";
                     $scope.filespdf = [];
                     $scope.filesvideo = [];
-                    $scope.videoHostLink = '';
-                    $scope.pdfHostLink = '';
 
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
@@ -235,6 +233,8 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                     toastr.success('Successfully Saved');
                 }
 
+                $scope.videoHostLink = '';
+                $scope.pdfHostLink = '';
                 $scope.progressPercentage = 0;
                 $scope.isLoading = false;
             })
@@ -260,10 +260,10 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
     $scope.clearVideo = function(){
         $scope.filesvideo=[];
         $timeout(function(){$scope.$apply()});
-    }
+    };
 
     $scope.clearPdf = function(){
         $scope.filespdf=[];
         $timeout(function(){$scope.$apply()});
-    }
+    };
 });

@@ -50,6 +50,14 @@
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>
+            <li ng-show="data.createdBy==user._id">
+                <a class="cursor" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('edit', 'contentNode', data)"><i class="ionicons ion-edit"></i> Edit</a>
+            </li>
+            <li ng-show="data.createdBy==user._id">
+                <a class="cursor"
+                   ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
+            </li>
         </ul>
     </div>
 
