@@ -49,6 +49,8 @@ app.directive('pdfComment',
                 var isAdmin = user.role === 'admin';
                 var hasPermission = (isAuthor || isAdmin);
 
+                $scope.isAdmin = isAdmin;
+
                 $scope.showEditButton = hasPermission;
                 $scope.showDeleteButton = hasPermission;
 
