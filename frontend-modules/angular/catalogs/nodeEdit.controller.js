@@ -209,7 +209,6 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
 
                 if($scope.addContentNodeForm) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
-                    $scope.progressPercentage = 0;
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
@@ -225,14 +224,18 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                         delete $scope.formData.parent;
 
                     $scope.addContentNodeForm.$setPristine();
+
+                    toastr.success('Content Node has been created, You can move it away from its default position');
                 } else if($scope.editContentNodeForm){
                     $rootScope.$broadcast('onAfterEditContentNode', data.treeNode);
 
                     $('#editContentNodeModal').modal('hide');
                     $scope.editContentNodeForm.$setPristine();
+
+                    toastr.success('Successfully Saved');
                 }
 
-                toastr.success('Content Node has been created, You can move it away from its default position');
+                $scope.progressPercentage = 0;
                 $scope.isLoading = false;
             })
             .error(function(data){
