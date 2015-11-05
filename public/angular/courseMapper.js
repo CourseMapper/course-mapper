@@ -1019,9 +1019,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.changeTab = function(){
         var q = $location.search();
 
-        if(q.tab){
-            $scope.defaultPath = q.tab;
-        } else {
+        if(!q.tab) {
 
             jQuery('#video').removeClass('active');
             jQuery('li.video').removeClass('active');
@@ -1035,11 +1033,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             } else if($scope.isPdfExist){
                 jQuery('#pdf').addClass('active');
                 jQuery('li.pdf').addClass('active');
-                $scope.defaultPath = 'pdf';
             } else {
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
             }
+        }
+
+        if($scope.isVideoExist && $scope.isPdfExist){
+            $scope.defaultPath = 'video';
+        } else if($scope.isPdfExist){
+            $scope.defaultPath = 'pdf';
         }
 
         $scope.currentTab = $scope.defaultPath;
@@ -2750,9 +2753,9 @@ app.directive('timepicker', function($timeout) {
         defineDevSize: function(width){
             if(width < this.xs){
                 return 'xs';
-            } else if(width > xs && width <= this.sm){
+            } else if(width > this.xs && width <= this.sm){
                 return 'sm';
-            } else if(width > sm && width <= this.md){
+            } else if(width > this.sm && width <= this.md){
                 return 'md';
             } else if(width > this.md){
                 return 'lg';
@@ -2850,9 +2853,11 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             $scope.wSize = Page.defineDevSize(value);
         });
 
-        $scope.initiateLink = function(){
-            $scope.pid = $location.search().pid;
-            $scope.manageActionBar($scope.pid);
+        $scope.initiateLink = function(pid){
+            $scope.pid = pid;
+            $location.search('pid', pid);
+
+            $scope.manageActionBar();
 
             if($scope.pid) {
                 $scope.setCurrentLink($scope.pid)
@@ -2866,7 +2871,10 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
                if(res.result && res.posts){
                    $scope.links = res.posts;
 
-                   $scope.initiateLink();
+                   if($location.search().pid){
+                       $scope.manageActionBar();
+                       $scope.setCurrentLink($location.search().pid);
+                   }
                }
             });
         });
@@ -2976,10 +2984,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             }
         };
 
-        $scope.$on('$routeUpdate', function(){
-            $scope.initiateLink();
-        });
-
         $scope.$on('onAfterDeleteLink', function(e, postId){
             var i = _.findIndex($scope.links, { link: { '_id' : postId}});
             if(i >= 0) {
@@ -2997,13 +3001,28 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
 
         $scope.manageActionBar = function(){
-            if($scope.$parent.currentTab != 'links')
+            if($location.search().tab != 'links')
                 return;
 
             if($scope.pid){
                 ActionBarService.extraActionsMenu = [];
                 ActionBarService.extraActionsMenu.unshift({
                     separator: true
+                });
+
+                ActionBarService.extraActionsMenu.push({
+                    'html':
+                    '<a style="cursor: pointer;"' +
+                    ' data-toggle="modal" data-target="#EditLinksModal"' +
+                    ' title="Edit">' +
+                    '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                });
+
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deletePost,
+                    clickParams: $scope.pid,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE'
                 });
             }
             else if(!$scope.pid){
@@ -3013,24 +3032,18 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         };
 
         $scope.$on('onAfterInitUser', function(event, user){
+            var vk = $location.search();
+
+            if(vk.pid){
+                $scope.initiateLink(vk.pid);
+            }
+
             $scope.$watch('currentLink', function(oldVal, newVal){
+                /*if(oldVal && newVal && oldVal._id == newVal._id)
+                    return;*/
+
                 if($scope.currentLink && $scope.currentLink.createdBy &&
                     $scope.currentLink.createdBy._id == $rootScope.user._id) {
-
-                    ActionBarService.extraActionsMenu.push({
-                        'html':
-                        '<a style="cursor: pointer;"' +
-                        ' data-toggle="modal" data-target="#EditLinksModal"' +
-                        ' title="Edit">' +
-                        '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
-                    });
-
-                    ActionBarService.extraActionsMenu.push({
-                        clickAction: $scope.deletePost,
-                        clickParams: $scope.currentLink._id,
-                        title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
-                        aTitle: 'DELETE'
-                    });
                 }
             });
         });

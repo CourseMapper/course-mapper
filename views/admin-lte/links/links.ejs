@@ -2,7 +2,7 @@
 <div ng-controller="LinksController">
 
     <div class="row">
-        <div class="col-md-3" id="LinksList">
+        <div class="col-xs-11" id="LinksList">
             <h4>Links</h4>
 
             <div ng-show="links.length == 0" class="posts-list">
@@ -15,18 +15,19 @@
             </div>
 
             <div class="posts-list"
-                 ng-show="links.length > 0 && (pid && (wSize != 'xs' && wSize != 'sm'))">
+                 ng-show="links.length > 0">
 
                 <ul class="posts">
-                    <li class="post" ng-repeat="bookmark in links" ng-class="(pid==bookmark.link._id)?'active':''"
-                        ng-hide="bookmark.isDeleted">
-                        <h4>
-                            <a ng-href="#/cid/{{course._id}}/nid/{{contentNode._id}}?tab=links&pid={{bookmark.link._id}}">
-                                {{bookmark.link.title}}
-                            </a></h4>
+                    <li class="post cursor"
+                        ng-repeat="bookmark in links" ng-class="(pid==bookmark.link._id)?'active':''"
+                        ng-hide="bookmark.isDeleted"
+                        ng-click="initiateLink(bookmark.link._id)"
+                            >
+                        <h4> {{bookmark.link.title}} </h4>
 
+                        <br class="clear">
                         <a class="btn btn-primary btn-xs open-new-tab" title="Open in a New Tab" href="{{bookmark.link.content}}" target="_blank">
-                            <i class="fa fa-external-link"></i></a>
+                            <i class="fa fa-external-link"></i> Open in a new tab</a>
                         <br class="clear">
                         <span class="posted-at">
                             Posted <strong>{{bookmark.link.dateAdded | relativeDate}}</strong>
@@ -36,7 +37,7 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-8" id="linksContent" ng-hide="(!pid && (wSize == 'xs' || wSize == 'sm'))">
+        <div class="col-md-8" id="linksContent" ng-hide="true">
 
             <div ng-hide="pid || links.length == 0" class="hidden-sm hidden-xs">
                 <h4>Please pick one from the existing links</h4>
@@ -47,7 +48,7 @@
                 <div ng-show="currentLink" class="currentTopic">
                     <div class="box box-solid">
                         <div class="box-body">
-                             <iframe ng-src="{{currentLinkUrl}}" class="link" frameborder="0"></iframe>
+                             <!--<iframe ng-src="{{currentLinkUrl}}" class="link" frameborder="0"></iframe>-->
                         </div>
                     </div>
                 </div>

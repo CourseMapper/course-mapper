@@ -74,9 +74,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     $scope.changeTab = function(){
         var q = $location.search();
 
-        if(q.tab){
-            $scope.defaultPath = q.tab;
-        } else {
+        if(!q.tab) {
 
             jQuery('#video').removeClass('active');
             jQuery('li.video').removeClass('active');
@@ -90,11 +88,16 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
             } else if($scope.isPdfExist){
                 jQuery('#pdf').addClass('active');
                 jQuery('li.pdf').addClass('active');
-                $scope.defaultPath = 'pdf';
             } else {
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
             }
+        }
+
+        if($scope.isVideoExist && $scope.isPdfExist){
+            $scope.defaultPath = 'video';
+        } else if($scope.isPdfExist){
+            $scope.defaultPath = 'pdf';
         }
 
         $scope.currentTab = $scope.defaultPath;
