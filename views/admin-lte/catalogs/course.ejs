@@ -4,15 +4,6 @@
     <!-- Header Navbar -->
     <% include ../mainMenu %>
 
-    <!-- Content Wrapper. Contains page content -->
-    <section class="content-header">
-        <ol class="breadcrumb">
-            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
-            <li><a href="/courses/#/category/{{course.category.slug}}%>"> </i> {{course.category.name}}</a></li>
-            <li class="active">{{course.name}}</li>
-        </ol>
-    </section>
-
     <div class="content-wrapper" ng-view>
     </div>
     <!-- /.content-wrapper -->
@@ -23,10 +14,5 @@
 <% include ../jsfooter %>
 
 <script src="/gridstack/gridstack.js"></script>
-<!--add chart.js source-->
-
-
-<!--course widget static source from public/course-analytics (css file should be removed to header later) -->
-<link rel="stylesheet" type="text/css" href="/course-analytics/user_profile.css">
 
 <% include ../footer %>

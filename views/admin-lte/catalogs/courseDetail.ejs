@@ -1,5 +1,13 @@
 <% include actionBarCourse %>
 
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+        <li><a href="/courses/#/category/{{course.category.slug}}%>"> </i> {{course.category.name}}</a></li>
+        <li class="active"><a href="#/cid/{{course._id}}?tab=preview">{{course.name}}</a></li>
+    </ol>
+</section>
+
 <section class="content-header action-header blue">
     <li class="visible-sm-inline-block visible-xs-inline-block draw-tab-button">
         <a class="cursor" onclick="toggleTabMenu()" style="color: white"><i class="ionicons ion-navicon-round"></i></a>
