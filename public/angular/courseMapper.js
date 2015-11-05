@@ -2184,10 +2184,20 @@ app.directive('timepicker', function($timeout) {
         };
     });;app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce,
                                                 $compile, ActionBarService,
-                                                $timeout, toastr, Page) {
+                                                $timeout, toastr, Page, $window) {
     $scope.formData = {
         content: ''
     };
+
+    /**
+     * watch for different window size
+     */
+    $scope.wSize = 'lg';
+    $scope.$watch(function(){
+        return $window.innerWidth;
+    }, function(value) {
+        $scope.wSize = Page.defineDevSize(value);
+    });
 
     $scope.pageTitleOnDiscussion = "";
 
@@ -2731,6 +2741,22 @@ app.directive('timepicker', function($timeout) {
         setTitleWithPrefix: function(newTitle) {
             title = prefix + ': ' + newTitle;
             $window.document.title = title;
+        },
+
+        xs: 768,
+        sm: 992,
+        md: 1200,
+
+        defineDevSize: function(width){
+            if(width < this.xs){
+                return 'xs';
+            } else if(width > xs && width <= this.sm){
+                return 'sm';
+            } else if(width > sm && width <= this.md){
+                return 'md';
+            } else if(width > this.md){
+                return 'lg';
+            }
         }
     };
 });;/*jslint node: true */
@@ -2801,7 +2827,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 ;app.
     controller('LinksController', function($scope, $rootScope, $http, $location,
                                            $sce, $compile, ActionBarService, $timeout,
-                                           toastr
+                                           toastr, Page, $window
     ) {
         $scope.formData = {};
         $scope.course = {};
@@ -2813,6 +2839,16 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         $scope.links = [];
         $scope.errors = [];
         $scope.isLoading = false;
+
+        /**
+         * watch for different window size
+         */
+        $scope.wSize = 'lg';
+        $scope.$watch(function(){
+            return $window.innerWidth;
+        }, function(value) {
+            $scope.wSize = Page.defineDevSize(value);
+        });
 
         $scope.initiateLink = function(){
             $scope.pid = $location.search().pid;

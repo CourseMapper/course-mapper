@@ -1,7 +1,7 @@
 app.
     controller('LinksController', function($scope, $rootScope, $http, $location,
                                            $sce, $compile, ActionBarService, $timeout,
-                                           toastr
+                                           toastr, Page, $window
     ) {
         $scope.formData = {};
         $scope.course = {};
@@ -13,6 +13,16 @@ app.
         $scope.links = [];
         $scope.errors = [];
         $scope.isLoading = false;
+
+        /**
+         * watch for different window size
+         */
+        $scope.wSize = 'lg';
+        $scope.$watch(function(){
+            return $window.innerWidth;
+        }, function(value) {
+            $scope.wSize = Page.defineDevSize(value);
+        });
 
         $scope.initiateLink = function(){
             $scope.pid = $location.search().pid;

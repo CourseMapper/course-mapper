@@ -1,9 +1,19 @@
 app.controller('DiscussionController', function($scope, $rootScope, $http, $location, $sce,
                                                 $compile, ActionBarService,
-                                                $timeout, toastr, Page) {
+                                                $timeout, toastr, Page, $window) {
     $scope.formData = {
         content: ''
     };
+
+    /**
+     * watch for different window size
+     */
+    $scope.wSize = 'lg';
+    $scope.$watch(function(){
+        return $window.innerWidth;
+    }, function(value) {
+        $scope.wSize = Page.defineDevSize(value);
+    });
 
     $scope.pageTitleOnDiscussion = "";
 

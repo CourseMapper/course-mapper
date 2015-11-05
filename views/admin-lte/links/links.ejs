@@ -14,7 +14,9 @@
                 </ul>
             </div>
 
-            <div class="posts-list" ng-show="links.length > 0">
+            <div class="posts-list"
+                 ng-show="links.length > 0 && (pid && (wSize != 'xs' && wSize != 'sm'))">
+
                 <ul class="posts">
                     <li class="post" ng-repeat="bookmark in links" ng-class="(pid==bookmark.link._id)?'active':''"
                         ng-hide="bookmark.isDeleted">
@@ -34,9 +36,9 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-8" id="linksContent">
+        <div class="col-md-8" id="linksContent" ng-hide="(!pid && (wSize == 'xs' || wSize == 'sm'))">
 
-            <div ng-hide="pid || links.length == 0">
+            <div ng-hide="pid || links.length == 0" class="hidden-sm hidden-xs">
                 <h4>Please pick one from the existing links</h4>
             </div>
 

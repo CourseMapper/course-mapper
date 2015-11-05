@@ -14,6 +14,22 @@ app.factory('Page', function($window) {
         setTitleWithPrefix: function(newTitle) {
             title = prefix + ': ' + newTitle;
             $window.document.title = title;
+        },
+
+        xs: 768,
+        sm: 992,
+        md: 1200,
+
+        defineDevSize: function(width){
+            if(width < this.xs){
+                return 'xs';
+            } else if(width > xs && width <= this.sm){
+                return 'sm';
+            } else if(width > sm && width <= this.md){
+                return 'md';
+            } else if(width > this.md){
+                return 'lg';
+            }
         }
     };
 });
