@@ -11,6 +11,11 @@ var mongoose = require('mongoose');
  * return all posts of a course
  */
 router.get('/discussions/:courseId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var cat = new CourseDiscussionController();
     cat.getCourseDiscussions(
         function (err) {
@@ -35,6 +40,11 @@ router.get('/discussions/:courseId', function (req, res, next) {
  * get all posts/replies under a post
  */
 router.get('/discussion/:postId/posts', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var cat = new CourseDiscussionController();
     cat.getReplies(
         function (err) {
@@ -58,6 +68,11 @@ router.get('/discussion/:postId/posts', function (req, res, next) {
  * create a new topic under a course
  */
 router.post('/discussions/:courseId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var cat = new CourseDiscussionController();
 
     // todo: check for enrollment
@@ -93,8 +108,10 @@ router.post('/discussions/:courseId', function (req, res, next) {
  * create a new reply under a post
  */
 router.post('/discussion/replies', function (req, res, next) {
-    if (!req.user)
-        return res.status(401).send('Unauthorized');
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
 
     if(!helper.checkRequiredParams(req.body, ['content'], function (err) {
         helper.resReturn(err, res);
@@ -129,8 +146,10 @@ router.post('/discussion/replies', function (req, res, next) {
  * edit any type of post (topic or reply)
  */
 router.put('/discussion/:postId', function (req, res, next) {
-    if (!req.user)
-        return res.status(401).send('Unauthorized');
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
 
     if(!helper.checkRequiredParams(req.body, ['title', 'content'], function (err) {
         helper.resReturn(err, res);
@@ -160,6 +179,11 @@ router.put('/discussion/:postId', function (req, res, next) {
 });
 
 router.delete('/discussion/:postId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var cat = new CourseDiscussionController();
     cat.deletePost(
         function (err) {
@@ -181,6 +205,11 @@ router.delete('/discussion/:postId', function (req, res, next) {
 });
 
 router.delete('/discussions/:courseId/topic/:postId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var cat = new CourseDiscussionController();
     cat.deletePost(
         function (err) {
