@@ -24,7 +24,7 @@
             </div>
 
             <div class="editReplyButton">
-                <a ng-show="isPostOwner && showEditButton"
+                <a ng-show="showEditButton"
                    title="Edit"
                    ng-click="editAction()"
                    class="btn btn-primary btn-xs"
@@ -32,7 +32,7 @@
             </div>
 
             <div class="deleteReplyButton">
-                <a ng-show="isPostOwner && showDeleteButton"
+                <a ng-show="showDeleteButton"
                    ng-click="deleteAction()"
                    title="delete"
                    class="cursor btn btn-danger btn-xs">DELETE</a>

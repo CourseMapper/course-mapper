@@ -1649,12 +1649,13 @@ app.directive('movable', function() {
                 postedDate: '@',
                 showControl: '=',
                 showReplyButton: '=',
-                showEditButton: '=',
-                showDeleteButton: '=',
+                //showEditButton: '=',
+                //showDeleteButton: '=',
                 authorClickAction: '&',
                 authorClickable: '=',
                 postContent: '=',
                 isPostOwner: '=',
+                postOwner: '=',
                 isDeleted: '=',
                 postId: '@',
                 editAction: '&',
@@ -1680,6 +1681,18 @@ app.directive('movable', function() {
                     $scope.removeFunction({id:commentId});
                     //alert(commentId);
                 }
+
+
+                var user = $rootScope.user;
+                var isAuthor = $scope.postOwner === user.username;
+                var isAdmin = user.role === 'admin';
+                var hasPermission = (isAuthor || isAdmin);
+
+                console.log(hasPermission);
+
+                $scope.showEditButton = hasPermission;
+                $scope.showDeleteButton = hasPermission;
+
 
                 //console.log($scope.removeComment);
             }
