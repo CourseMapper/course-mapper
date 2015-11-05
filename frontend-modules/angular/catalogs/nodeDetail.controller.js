@@ -101,6 +101,10 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
         }
 
         $scope.currentTab = $scope.defaultPath;
+        if(q.tab){
+            $scope.currentTab = q.tab;
+        }
+
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
         $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);

@@ -1083,6 +1083,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
 
         $scope.currentTab = $scope.defaultPath;
+        if(q.tab){
+            $scope.currentTab = q.tab;
+        }
+
         $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
 
         $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
@@ -2916,6 +2920,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             }
         };
 
+        $scope.$on('onNodeTabChange', function(event, tab){
+            if(tab == 'links'){
+                $scope.manageActionBar();
+            }
+        });
+
         $scope.$on('onAfterInitTreeNode', function(e, contentNode){
             $scope.contentNode = contentNode;
 
@@ -2990,12 +3000,12 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             })
                 .success(function(data) {
                     if(data.result) {
-                        $scope.$emit('onAfterEditLinks', data.post);
+                        $scope.$emit('onAfterEditLinks', $scope.currentLink);
 
                         $('#EditLinksModal').modal('hide');
 
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
-                        $scope.links[i].link = data.post;
+                        $scope.links[i].link = $scope.currentLink;
                         $timeout(function(){$scope.$apply()});
 
                         toastr.success('Successfully Saved');

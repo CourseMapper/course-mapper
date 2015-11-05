@@ -35,6 +35,12 @@ app.
             }
         };
 
+        $scope.$on('onNodeTabChange', function(event, tab){
+            if(tab == 'links'){
+                $scope.manageActionBar();
+            }
+        });
+
         $scope.$on('onAfterInitTreeNode', function(e, contentNode){
             $scope.contentNode = contentNode;
 
@@ -109,12 +115,12 @@ app.
             })
                 .success(function(data) {
                     if(data.result) {
-                        $scope.$emit('onAfterEditLinks', data.post);
+                        $scope.$emit('onAfterEditLinks', $scope.currentLink);
 
                         $('#EditLinksModal').modal('hide');
 
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
-                        $scope.links[i].link = data.post;
+                        $scope.links[i].link = $scope.currentLink;
                         $timeout(function(){$scope.$apply()});
 
                         toastr.success('Successfully Saved');
