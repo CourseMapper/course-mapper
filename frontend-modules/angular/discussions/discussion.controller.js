@@ -36,9 +36,25 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
         if($scope.pid) {
             $scope.getReplies($scope.pid);
+            $scope.manageBreadCrumb();
         }
 
         $scope.manageActionBar();
+    };
+
+    $scope.manageBreadCrumb = function(){
+        var dt = $('.action-header .breadcrumb').find('li.discussionTitle');
+        $('.action-header .breadcrumb li').removeClass('active');
+        var u = '#/cid/' + $scope.course._id + '?tab=discussion';
+        if(dt.length > 0){
+            dt.html($scope.currentTopic.title);
+        } else {
+            if($scope.pid){
+                $('.action-header .breadcrumb').find('li.tab').wrapInner('<a class="discussionTabLink" href="'+u+'"></a>');
+                var newEl = '<li class="discussionTitle active">' + $scope.currentTopic.title + '</li>';
+                $('.action-header .breadcrumb').append(newEl);
+            }
+        }
     };
 
     $scope.$on('onAfterInitCourse', function(e, course){
@@ -199,6 +215,12 @@ app.controller('DiscussionController', function($scope, $rootScope, $http, $loca
 
     $scope.$on('$routeUpdate', function(){
         $scope.initiateTopic();
+
+        if(!$scope.pid){
+            $('li.discussionTitle').remove();
+            var te = $('a.discussionTabLink').text();
+            $('.action-header .breadcrumb li.tab').html(te);
+        }
     });
 
     $scope.$on('onAfterCreateNewTopic', function(e, f){

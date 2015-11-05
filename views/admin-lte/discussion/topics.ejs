@@ -3,8 +3,6 @@
 <div ng-controller="DiscussionController">
     <div class="row">
         <div class="col-md-5" id="topicLists">
-            <!--http://localhost:3000/course/xcvawdd/#/cid/5637805a1efe53612e8649e5?tab=discussion&pid=563a65c07522a6d91166f47d
-            http://localhost:3000/course/xcvawdd/#/cid/5637805a1efe53612e8649e5?tab=discussion-->
             <h4>Discussion Topics</h4>
 
             <div ng-show="topics.length == 0 && (!pid && (wSize != 'xs' || wSize != 'sm'))" class="posts-list">
@@ -18,8 +16,10 @@
 
             <!--Posts List-->
             <div class="posts-list"
-                 ng-show="topics.length > 0 && (pid && (wSize != 'xs' && wSize != 'sm'))"
-                 >
+                 ng-show="topics.length > 0 && (
+                  (pid && (wSize != 'xs' && wSize != 'sm')) ||
+                  (!pid && (wSize == 'xs' || wSize == 'sm')) )
+                 ">
 
                 <ul class="posts">
                     <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''"
