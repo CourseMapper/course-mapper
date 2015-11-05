@@ -79,7 +79,10 @@ function drawAnnZonesWhenPDFAndDBDone() {
       for(var i = 0; i < toDrawAnnotationZoneData.length; i++) {
         //console.log("createAnnotationZones");
         var isAuthor = (toDrawAnnotationZoneData[i].author == angular.element($("#annZoneList")).scope().currentUser.username);
-        loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeight, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, isAuthor, toDrawAnnotationZoneData[i].id)
+        var isAdmin =  angular.element($("#annZoneList")).scope().$root.user.role == "admin";
+        var allowedToEdit = (isAdmin || isAuthor);
+
+        loadRect(toDrawAnnotationZoneData[i].relPosX, toDrawAnnotationZoneData[i].relPosY, toDrawAnnotationZoneData[i].relWidth, toDrawAnnotationZoneData[i].relHeight, toDrawAnnotationZoneData[i].color, toDrawAnnotationZoneData[i].name, false, allowedToEdit, toDrawAnnotationZoneData[i].id)
       }
   }
 };

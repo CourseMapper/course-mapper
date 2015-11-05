@@ -33,11 +33,11 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
   });
 };
 
-AnnZones.prototype.updateAnnotationZone = function(err,params,done) {
+AnnZones.prototype.updateAnnotationZone = function(err,params,isAdmin,done) {
   var getAnnZonesById = this.getAnnotationZonesById;
   var upAllRefs = this.updateAllReferences;
   if(typeof params.updateId != 'undefined') {
-    this.checkOwnership(params.updateId, params.author, params.authorId, function(success) {
+    this.checkOwnership(params.updateId, params.author, params.authorId, isAdmin, function(success) {
       if(success) {
         AnnotationZonesPDF.findOne({
             _id: params.updateId
@@ -208,20 +208,24 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
 
 
 
-AnnZones.prototype.checkOwnership = function(id,author,authorId,callback) {
-  this.getAnnZoneById(id, function(success,data) {
-    if(success) {
-      if((author == data.author)&&(authorId == data.authorID)) {
-        callback(true);
+AnnZones.prototype.checkOwnership = function(id,author,authorId,isAdmin,callback) {
+  if(isAdmin)
+    callback(true);
+  else{
+    this.getAnnZoneById(id, function(success,data) {
+      if(success) {
+        if((author == data.author)&&(authorId == data.authorID)) {
+          callback(true);
+        }
+        else {
+          callback(false);
+        }
       }
       else {
         callback(false);
       }
-    }
-    else {
-      callback(false);
-    }
-  });
+    });
+  }
 };
 
 AnnZones.prototype.getAnnZoneById = function(id,callback) {
@@ -462,6 +466,7 @@ AnnZones.prototype.handleUpdatePost = function(req, res, next) {
             return res.status(200).send({result:false, error: err});
         },
         req.query,
+        req.user.role == "admin",
         function done(annotationsPDF) {
             return res.status(200).send({result: true, annotationsPDF: annotationsPDF});
         }
