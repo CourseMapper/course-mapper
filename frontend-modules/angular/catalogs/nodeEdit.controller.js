@@ -209,7 +209,6 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
 
                 if($scope.addContentNodeForm) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
-                    $scope.progressPercentage = 0;
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
@@ -218,21 +217,25 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
                     $scope.formData.name = "";
                     $scope.filespdf = [];
                     $scope.filesvideo = [];
-                    $scope.videoHostLink = '';
-                    $scope.pdfHostLink = '';
 
                     if($scope.formData.parent)
                         delete $scope.formData.parent;
 
                     $scope.addContentNodeForm.$setPristine();
+
+                    toastr.success('Content Node has been created, You can move it away from its default position');
                 } else if($scope.editContentNodeForm){
                     $rootScope.$broadcast('onAfterEditContentNode', data.treeNode);
 
                     $('#editContentNodeModal').modal('hide');
                     $scope.editContentNodeForm.$setPristine();
+
+                    toastr.success('Successfully Saved');
                 }
 
-                toastr.success('Content Node has been created, You can move it away from its default position');
+                $scope.videoHostLink = '';
+                $scope.pdfHostLink = '';
+                $scope.progressPercentage = 0;
                 $scope.isLoading = false;
             })
             .error(function(data){
@@ -257,10 +260,10 @@ app.controller('NodeEditController', function($scope, $http, $rootScope, Upload,
     $scope.clearVideo = function(){
         $scope.filesvideo=[];
         $timeout(function(){$scope.$apply()});
-    }
+    };
 
     $scope.clearPdf = function(){
         $scope.filespdf=[];
         $timeout(function(){$scope.$apply()});
-    }
+    };
 });

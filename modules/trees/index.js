@@ -191,7 +191,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
                             }
 
                             if(params.videoHostLink){
-                                attachLinkToNode(tn, 'video', params.pdfHostLink);
+                                attachLinkToNode(tn, 'video', params.videoHostLink);
                             }
 
                             attachResourcesToNode(tn, files, self);

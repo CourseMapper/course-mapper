@@ -45,7 +45,7 @@
                                                 <i class="fa fa-hdd-o"></i>
                                             </a>
                                         </li>
-                                        <li>
+                                        <li ng-hide="true">
                                             <a data-toggle="tab" data-target="#upload-pdf-link">
                                                 <i class="fa fa-globe"></i>
                                             </a>
@@ -114,12 +114,12 @@
                             <div class="col-md-6" id="video" ng-hide="currentEditNode.videoFile">
                                 <ul class="nav nav-tabs">
                                     <li class="active">
-                                        <a data-toggle="tab" data-target="#upload-video">
+                                        <a data-toggle="tab" data-target="#upload-video-edit">
                                             <i class="fa fa-hdd-o"></i>
                                         </a>
                                     </li>
                                     <li>
-                                        <a data-toggle="tab" data-target="#upload-link">
+                                        <a data-toggle="tab" data-target="#upload-link-edit">
                                             <i class="fa fa-youtube"></i>
                                             <i class="fa fa-vimeo-square"></i>
                                         </a>
@@ -127,7 +127,7 @@
                                 </ul>
 
                                 <div class="tab-content" style="min-height:80px;">
-                                    <div id="upload-video" class="tab-pane fade in active">
+                                    <div id="upload-video-edit" class="tab-pane fade in active">
                                         <br>
                                         <div ng-show="videoHostLink.trim()!=''">
                                             You have added a link to an external video, please remove it if you want to
@@ -156,7 +156,7 @@
 
                                     </div>
 
-                                    <div id="upload-link" class="tab-pane fade">
+                                    <div id="upload-link-edit" class="tab-pane fade">
                                         <div ng-hide="filesvideo.length > 0">
                                             <br>
                                             <div class="input-group">

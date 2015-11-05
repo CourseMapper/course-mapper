@@ -3,10 +3,9 @@
 <div ng-controller="DiscussionController">
     <div class="row">
         <div class="col-md-5" id="topicLists">
-
             <h4>Discussion Topics</h4>
 
-            <div ng-show="topics.length == 0" class="posts-list">
+            <div ng-show="topics.length == 0 && (!pid && (wSize != 'xs' || wSize != 'sm'))" class="posts-list">
                 <ul class="posts">
                     <li class="post">
                         <h5>There is no topic to show, you can add a new one by clicking the
@@ -16,7 +15,12 @@
             </div>
 
             <!--Posts List-->
-            <div class="posts-list" ng-show="topics.length > 0">
+            <div class="posts-list"
+                 ng-show="topics.length > 0 && (
+                  (pid && (wSize != 'xs' && wSize != 'sm')) ||
+                  (!pid) )
+                 ">
+
                 <ul class="posts">
                     <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''"
                         ng-hide="topic.isDeleted">
@@ -40,8 +44,8 @@
             </div>
 
         </div>
-        <div class="col-md-6" id="topicContents">
-            <div ng-hide="pid || topics.length == 0">
+        <div class="col-md-6" id="topicContents" ng-hide="(!pid && (wSize == 'xs' || wSize == 'sm'))">
+            <div ng-hide="(pid || topics.length == 0)" class="hidden-sm hidden-xs">
                 <h4>Please pick one from the existing topics</h4>
             </div>
 

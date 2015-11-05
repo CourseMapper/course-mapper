@@ -10,6 +10,11 @@ var mongoose = require('mongoose');
  * get all active apps > widgets
  */
 router.get('/widgets/', function(req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var app = new AppsGallery();
     app.getWidgets(
         function(err){
@@ -28,6 +33,11 @@ router.get('/widgets/', function(req, res, next) {
  * use this tu update widgets, active or deactivate
  */
 router.put('/widgets/:application/:name', function(req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var app = new AppsGallery();
     app.updateWidget(
         function(err){
@@ -189,6 +199,11 @@ router.get('/widgets/:location', function(req, res, next){
 });
 
 router.put('/widget/:id/setPosition', function(req, res, next){
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var app = new AppsGallery();
     app.setPosition(
         function(err){

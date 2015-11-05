@@ -739,7 +739,7 @@ a.videoButton:hover{
     text-align: center;
     min-height: 800px;
 }
-a.cursor {
+a.cursor, .cursor {
     cursor: pointer;
 }
 
@@ -762,11 +762,14 @@ a.cursor {
 .content-header.action-header >.breadcrumb>li>a{
     color:white;
 }
+.action-header .breadcrumb li a{
+    font-weight: bold;
+}
 #LinksList .posts-list h4{
     float: left;
 }
 .open-new-tab {
-    float: right;
+    /*float: right;*/
 }
 .w:hover > ul,
 .center-course:hover > ul,

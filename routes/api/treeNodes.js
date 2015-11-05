@@ -65,6 +65,11 @@ router.post('/treeNodes', multipartyMiddleware, function (req, res, next) {
  * get all tree nodes based on course id
  */
 router.get('/treeNodes/course/:courseId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
     var tr = new Tree();
 
     tr.getTreeNodes(
@@ -85,6 +90,11 @@ router.get('/treeNodes/course/:courseId', function (req, res, next) {
  * get all tree nodes based on course id
  */
 router.get('/treeNode/:nodeId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+    
     var tr = new Tree();
 
     tr.getTreeNode(

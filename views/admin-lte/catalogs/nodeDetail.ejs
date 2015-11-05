@@ -1,3 +1,11 @@
+<section class="content-header">
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+        <li><a href="/courses/#/category/{{course.category.slug}}%>"> </i> {{course.category.name}}</a></li>
+        <li class="active"><a href="#/cid/{{course._id}}?tab=preview">{{course.name}}</a></li>
+    </ol>
+</section>
+
 <section class="content-header action-header red">
     <li class="visible-sm-inline-block visible-xs-inline-block draw-tab-button">
         <a class="cursor" onclick="toggleTabMenu()" style="color: white"><i class="ionicons ion-navicon-round"></i></a>
@@ -6,7 +14,7 @@
     <ol class="breadcrumb">
         <li class="home"><a href="#/cid/{{course._id}}?tab=map&center={{nodeId}}"> &leftarrow;Back &nbsp;&nbsp; {{course.name}}</a></li>
         <li><a href="#/cid/{{course._id}}?tab=map&center={{nodeId}}">Map</a></li>
-        <li><strong>Content Node</strong> : <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a></li>
+        <li><a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a></li>
         <li class="active">{{tabs[currentTab]}}</li>
     </ol>
     <!-- breadcrumb 2nd row -->

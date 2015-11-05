@@ -1,7 +1,7 @@
 app.
     controller('LinksController', function($scope, $rootScope, $http, $location,
                                            $sce, $compile, ActionBarService, $timeout,
-                                           toastr
+                                           toastr, Page, $window
     ) {
         $scope.formData = {};
         $scope.course = {};
@@ -14,14 +14,32 @@ app.
         $scope.errors = [];
         $scope.isLoading = false;
 
-        $scope.initiateLink = function(){
-            $scope.pid = $location.search().pid;
-            $scope.manageActionBar($scope.pid);
+        /**
+         * watch for different window size
+         */
+        $scope.wSize = 'lg';
+        $scope.$watch(function(){
+            return $window.innerWidth;
+        }, function(value) {
+            $scope.wSize = Page.defineDevSize(value);
+        });
+
+        $scope.initiateLink = function(pid){
+            $scope.pid = pid;
+            $location.search('pid', pid);
+
+            $scope.manageActionBar();
 
             if($scope.pid) {
                 $scope.setCurrentLink($scope.pid)
             }
         };
+
+        $scope.$on('onNodeTabChange', function(event, tab){
+            if(tab == 'links'){
+                $scope.manageActionBar();
+            }
+        });
 
         $scope.$on('onAfterInitTreeNode', function(e, contentNode){
             $scope.contentNode = contentNode;
@@ -30,7 +48,10 @@ app.
                if(res.result && res.posts){
                    $scope.links = res.posts;
 
-                   $scope.initiateLink();
+                   if($location.search().pid){
+                       $scope.manageActionBar();
+                       $scope.setCurrentLink($location.search().pid);
+                   }
                }
             });
         });
@@ -94,12 +115,12 @@ app.
             })
                 .success(function(data) {
                     if(data.result) {
-                        $scope.$emit('onAfterEditLinks', data.post);
+                        $scope.$emit('onAfterEditLinks', $scope.currentLink);
 
                         $('#EditLinksModal').modal('hide');
 
                         var i = _.findIndex($scope.links, { 'link': {'_id' : data.post._id}});
-                        $scope.links[i].link = data.post;
+                        $scope.links[i].link = $scope.currentLink;
                         $timeout(function(){$scope.$apply()});
 
                         toastr.success('Successfully Saved');
@@ -140,10 +161,6 @@ app.
             }
         };
 
-        $scope.$on('$routeUpdate', function(){
-            $scope.initiateLink();
-        });
-
         $scope.$on('onAfterDeleteLink', function(e, postId){
             var i = _.findIndex($scope.links, { link: { '_id' : postId}});
             if(i >= 0) {
@@ -161,13 +178,28 @@ app.
         });
 
         $scope.manageActionBar = function(){
-            if($scope.$parent.currentTab != 'links')
+            if($location.search().tab != 'links')
                 return;
 
             if($scope.pid){
                 ActionBarService.extraActionsMenu = [];
                 ActionBarService.extraActionsMenu.unshift({
                     separator: true
+                });
+
+                ActionBarService.extraActionsMenu.push({
+                    'html':
+                    '<a style="cursor: pointer;"' +
+                    ' data-toggle="modal" data-target="#EditLinksModal"' +
+                    ' title="Edit">' +
+                    '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                });
+
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deletePost,
+                    clickParams: $scope.pid,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE'
                 });
             }
             else if(!$scope.pid){
@@ -177,24 +209,18 @@ app.
         };
 
         $scope.$on('onAfterInitUser', function(event, user){
+            var vk = $location.search();
+
+            if(vk.pid){
+                $scope.initiateLink(vk.pid);
+            }
+
             $scope.$watch('currentLink', function(oldVal, newVal){
+                /*if(oldVal && newVal && oldVal._id == newVal._id)
+                    return;*/
+
                 if($scope.currentLink && $scope.currentLink.createdBy &&
                     $scope.currentLink.createdBy._id == $rootScope.user._id) {
-
-                    ActionBarService.extraActionsMenu.push({
-                        'html':
-                        '<a style="cursor: pointer;"' +
-                        ' data-toggle="modal" data-target="#EditLinksModal"' +
-                        ' title="Edit">' +
-                        '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
-                    });
-
-                    ActionBarService.extraActionsMenu.push({
-                        clickAction: $scope.deletePost,
-                        clickParams: $scope.currentLink._id,
-                        title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
-                        aTitle: 'DELETE'
-                    });
                 }
             });
         });
