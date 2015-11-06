@@ -262,12 +262,9 @@ catalog.prototype.getCourses = function (error, params, success) {
 };
 
 catalog.prototype.getUserCourses = function (error, params, done) {
-    if (!helper.checkRequiredParams(params, ['course', 'user'], error)) {
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
         return;
     }
-
-    params.course = mongoose.Types.ObjectId(params.course);
-    params.user = mongoose.Types.ObjectId(params.user);
 
     UserCourses.find(params).populate('course').exec(function (err, res) {
         if (err) error(err);

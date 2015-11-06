@@ -45,7 +45,6 @@ router.get('/accounts/logout', function(req, res, next) {
     res.status(200).json({result:true, message: 'Logged out'});
 });
 
-
 router.get('/accounts', function(req, res, next) {
     if(req.user)
         res.redirect('/api/accounts/' + req.user.username);
@@ -126,116 +125,141 @@ router.post('/accounts/login',
 );
 
 router.get('/accounts/:username', function(req, res, next) {
-    if(req.session.passport.user){
-        var account = new Account();
-        account.getUser(
-            function(err){
-                res.status(500).json({result: false, errors: [err.message]});
-            },
-            {username: req.session.passport.user.username},
-            function(doc){
-                if(doc) {
-                    res.status(200).json({
-                        result: true, user: doc
-                    });
-                } else {
-                    res.status(404).json({
-                        result: false, errors: ["User not found"]
-                    });
-                }
-            }
-        );
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
     }
-    else
-        res.status(401).json({result: false, errors: ['Not authorized']});
+
+    // todo: if admin, can get val from url param
+
+    var account = new Account();
+    account.getUser(
+        function(err){
+            helper.resReturn(err, res);
+        },
+
+        {username: req.session.passport.user.username},
+
+        function(doc){
+            if(doc) {
+                res.status(200).json({
+                    result: true, user: doc
+                });
+            } else {
+                res.status(404).json({
+                    result: false, errors: ["User not found"]
+                });
+            }
+        }
+    );
 });
 
 /**
  * change password only
  */
 router.put('/accounts/:userId/changePassword', function(req, res, next){
-    if(req.session.passport.user){
-        if(req.session.passport.user._id == req.params.userId){
-            req.body.userId = Mongoose.Types.ObjectId(req.params.userId);
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
 
-            if(!req.body.password || !req.body.passwordConfirm) {
-                res.status(400).json({result: false, errors:["parameter not complete"]});
-                next();
+    req.body.userId = Mongoose.Types.ObjectId(req.user._id);
+
+    // todo: if admin, can put val from url param
+
+    if(!req.body.password || !req.body.passwordConfirm) {
+        res.status(400).json({result: false, errors:["parameter not complete"]});
+        next();
+    }
+    else {
+        var account = new Account();
+        account.changePassword(
+            function error(err) {
+                helper.resReturn(err, res);
+            },
+            req.body,
+            function success(r) {
+                res.status(200).json({result: true});
             }
-            else {
-                var account = new Account();
-                account.changePassword(
-                    function error(err) {
-                        res.status(500).json({result: false, errors: [err]});
-                    },
-                    req.body,
-                    function success(r) {
-                        res.status(200).json({result: true});
-                    }
-                );
-            }
-        }
+        );
     }
 });
 
 router.put('/accounts/:userId', function(req, res, next){
-    if(req.session.passport.user){
-        if(req.session.passport.user._id == req.params.userId){
-            req.body.userId = Mongoose.Types.ObjectId(req.params.userId);
-
-            var account = new Account();
-            account.editAccount(
-                function error(err) {
-                    res.status(500).json({result: false, errors: [err]});
-                },
-                req.body,
-                function success(r) {
-                    res.status(200).json({result: true});
-                }
-            );
-
-        }
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
     }
+
+    req.body.userId = Mongoose.Types.ObjectId(req.user._id);
+
+    // todo: if admin, can put val from url param
+
+    var account = new Account();
+    account.editAccount(
+        function error(err) {
+            helper.resReturn(err, res);
+        },
+
+        req.body,
+
+        function success(r) {
+            res.status(200).json({result: true});
+        }
+    );
 });
 
 router.get('/accounts/:userId/courses', function(req, res, next) {
-    if(req.session.passport.user) {
-        var crs = new Course();
-        crs.getUserCourses(
-            function error(err){
-                res.status(200).json({result:false, message:err});
-            },
-            { user: req.params.userId },
-            function success(courses){
-                res.status(200).json({result:true, courses:courses});
-            }
-        );
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
     }
-    else
-        res.status(401).json({message: 'Not authorized'});
+
+    var crs = new Course();
+
+    var userId = mongoose.Types.ObjectId(req.params.userId);
+
+    // todo: if admin, can put val from url param
+
+    crs.getUserCourses(
+        function error(err){
+            helper.resReturn(err, res);
+        },
+        { user: userId },
+        function success(courses){
+            res.status(200).json({result:true, courses:courses});
+        }
+    );
 });
 
 router.get('/accounts/:userId/course/:courseId', function(req, res, next) {
-    if(req.session.passport.user){
-        var crs = new Course();
-        crs.getUserCourses(
-            function error(err){
-                res.status(200).json({result:false, message:err});
-            },
-            {
-                user: req.params.userId,
-                course: req.params.courseId
-            },
-            function success(courses){
-                if(courses.length > 0)
-                    res.status(200).json({result:true, courses:courses[0]});
-                else
-                    res.status(200).json({result:true, courses:null});
-            }
-        );
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
     }
-    else
-        res.status(401).json({message: 'Not authorized'});
+
+    var crs = new Course();
+
+    var userId = mongoose.Types.ObjectId(req.params.userId);
+    var courseId = mongoose.Types.ObjectId(req.params.courseId);
+
+    // todo: if admin, can put val from url param
+
+    crs.getUserCourses(
+        function error(err){
+            helper.resReturn(err, res);
+        },
+        {
+            user: userId,
+            course: courseId
+        },
+        function success(courses){
+            if(courses.length > 0)
+                res.status(200).json({result:true, courses:courses[0]});
+            else
+                res.status(200).json({result:true, courses:null});
+        }
+    );
 });
 
 module.exports = router;

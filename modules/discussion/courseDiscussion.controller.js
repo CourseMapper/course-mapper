@@ -193,23 +193,22 @@ courseDiscussion.prototype.addPost = function(error, params, success){
         }
 
         // set parent and parentsPath
-        {
-            if (params.parentPost) {
-                newPost.parentPost = params.parentPost;
-                newPost.save();
+        if (params.parentPost) {
+            newPost.parentPost = params.parentPost;
+            newPost.save();
 
-                // put this guy as its child
-                Posts.findOne({_id: params.parentPost}, function (err, doc) {
-                    if (!err) {
-                        if(doc) doc.childPosts.push(newPost._id);
-                    }
-                });
-            }
+            // put this guy as its child
+            Posts.findOne({_id: params.parentPost}, function (err, doc) {
+                if (!err) {
+                    if(doc) doc.childPosts.push(newPost._id);
+                }
+            });
+        }
 
-            if (params.parentPath) {
-                newPost.parentPath = params.parentPath;
-                newPost.save();
-            }
+        // set parent path
+        if (params.parentPath) {
+            newPost.parentPath = params.parentPath;
+            newPost.save();
         }
 
         // make a relation to courseDiscussion

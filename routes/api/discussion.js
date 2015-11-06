@@ -2,6 +2,7 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var CourseDiscussionController = require(appRoot + '/modules/discussion/courseDiscussion.controller.js');
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
 var router = express.Router();
@@ -34,7 +35,6 @@ router.get('/discussions/:courseId', function (req, res, next) {
         }
     );
 });
-
 
 /**
  * get all posts/replies under a post
@@ -75,14 +75,25 @@ router.post('/discussions/:courseId', function (req, res, next) {
 
     var cat = new CourseDiscussionController();
 
-    // todo: check for enrollment
-    {
-        //
-    }
-
     if(!helper.checkRequiredParams(req.body, ['title', 'content'], function (err) {
         helper.resReturn(err, res);
     }))return;
+
+    var courseId, userId;
+
+    try{
+        courseId = mongoose.Types.ObjectId(req.params.courseId);
+        userId = mongoose.Types.ObjectId(req.user._id);
+    }
+    catch(err){
+        helper.resReturn(err, res);
+        return;
+    }
+
+    if(!userHelper.isUserEnrolled(req.user, courseId)) {
+        //
+        return;
+    }
 
     cat.addPost(
         function (err) {
@@ -91,10 +102,8 @@ router.post('/discussions/:courseId', function (req, res, next) {
         {
             title: req.body.title,
             content: req.body.content,
-            createdBy: mongoose.Types.ObjectId(req.user._id),
-            courseId: mongoose.Types.ObjectId(req.params.courseId)
-            //params.parentPost
-            //params.parentPath
+            createdBy: userId,
+            courseId: courseId
         },
         function (post) {
             res.status(200).json({
@@ -117,11 +126,6 @@ router.post('/discussion/replies', function (req, res, next) {
         helper.resReturn(err, res);
     }))return;
 
-    // todo: check for enrollment
-    {
-        //
-    }
-
     var cat = new CourseDiscussionController();
     cat.addPost(
         function (err) {
@@ -132,7 +136,6 @@ router.post('/discussion/replies', function (req, res, next) {
             content: req.body.content,
             createdBy: mongoose.Types.ObjectId(req.user._id),
             parentPost: mongoose.Types.ObjectId(req.body.parentPost)
-            //params.parentPath: []
         },
         function (post) {
             res.status(200).json({
