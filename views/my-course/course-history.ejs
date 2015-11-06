@@ -1,0 +1,40 @@
+<div class="box-body no-padding" ng-controller="BarProgressController">
+    <div class="nav-tabs-custom">
+        <!-- Tabs within a box -->
+        <ul class="nav nav-tabs pull-right" ng-init="tab = 1">
+            <li class="active"><a href ng-click="tab = 1" data-toggle="tab">PDF Read</a></li>
+            <li><a href ng-click="tab = 2" data-toggle="tab">Video Watched</a></li>
+            <li><a href ng-click="tab = 3" data-toggle="tab">Comments Made</a></li>
+            <li><a href ng-click="tab = 4" data-toggle="tab">Likes</a></li>
+            <li><a href ng-click="tab = 5" data-toggle="tab">Following Courses</a></li>
+        </ul>
+        <br>
+
+        <div class="pdf-read-chart no-padding" ng-show="tab ===1">
+            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="myPDFReadData"
+                    chart-labels="labels">
+            </canvas>
+        </div>
+        <div class="video-watched-chart" ng-show="tab === 2">
+            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="myVideoWatchedData"
+                    chart-labels="labels">
+            </canvas>
+        </div>
+        <div class="comments-made-chart" ng-show="tab === 3">
+            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="myCommentsMadeData"
+                    chart-labels="labels">
+            </canvas>
+        </div>
+        <div class="likes-chart" ng-show="tab === 4">
+            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="myLikesData"
+                    chart-labels="labels">
+            </canvas>
+        </div>
+        <div class="following-courses-chart" ng-show="tab === 5">
+            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="myFollowingCoursesData"
+                    chart-labels="labels">
+            </canvas>
+        </div>
+
+    </div><!-- /.nav-tabs-custom -->
+</div>

@@ -1,0 +1,16 @@
+{
+  "theme": "admin-lte",
+  "session": {
+    "secret": "CatsRuleTehInterwebs",
+    "maxAge": 2419200000
+  },
+  "signUp": {
+    "needActivation": false
+  },
+  "facebookAuth": {
+    "clientID": "1490140297947360",
+    "clientSecret": "75c5cd4a9a79d16df45b155ff10470ae",
+    "callbackURL": "http://localhost:3000/api/accounts/facebook/callback"
+  },
+  "database": "localhost/course_mapper"
+}

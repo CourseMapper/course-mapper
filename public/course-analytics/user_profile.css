@@ -1,0 +1,45 @@
+/* line 5, user_profile.scss */
+.grid-stack-item-content .box {
+  border: 1px solid #eeeeee;
+  border-top: 3px solid #d2d6de;
+}
+
+/* line 13, user_profile.scss */
+.box-body-widget {
+  border: 1px #d2d6de;
+  /*
+  li:hover {
+    background: #eee;
+    cursor: pointer;
+  }
+  */
+}
+/* line 16, user_profile.scss */
+.box-body-widget ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+/* line 23, user_profile.scss */
+.box-body-widget h5 {
+  font-weight: bold;
+  margin-bottom: 1px;
+}
+/* line 30, user_profile.scss */
+.box-body-widget li {
+  padding: 10px;
+  overflow: auto;
+}
+/* line 35, user_profile.scss */
+.box-body-widget li img {
+  float: left;
+  margin: 0 15px 0 0;
+}
+/* line 40, user_profile.scss */
+.box-body-widget li p {
+  margin-top: 3px;
+}
+/* line 44, user_profile.scss */
+.box-body-widget li:nth-child(even) {
+  background-color: #eeeeee;
+}

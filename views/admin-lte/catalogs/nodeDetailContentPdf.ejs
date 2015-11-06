@@ -1,0 +1,188 @@
+<div class="row ">
+
+    <div id="commentController" class="col-xs-11 container-fluid" ng-controller="CommentListController">
+
+        <div class="slide-container col-sm-7 col-md-7">
+            <div id="viewerWrapper">
+
+                <pdf-viewer source="{{pdfFile.link}}" current-page-number="1"></pdf-viewer>
+
+                <div id="annotationZone">
+                    <!--<div movable style="background-color:yellow;height:100px;width:100px;" ></div>-->
+                </div>
+
+            </div>
+        </div>
+        <div class="posts-list col-sm-4 col-md-4">
+
+            <div class="annotation-wrapper">
+
+                <!--<button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>-->
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                      <button class="col-xs-4 btn btn-primary btn-md"  ng-click="switchCommentSubmissionDisplay()">Annotate</button>
+                      <div class="col-xs-8">
+                        <select id="orderTypeSelect"
+                                placeholder = "bla"
+                                ng-model="orderType"
+                                ng-init="orderType = orderType || orderingOptions[0]"
+                                ng-options="item as item.name for item in orderingOptions"
+                                class="form-control">
+                        </select>
+                          <input id="searchInput" placeholder="Search..." class="form-control" ng-model="rawSearchTerm"></input>
+                      </div>
+                  </div>
+              </div>
+                <div id="commentSubmissionDiv" ng-show="writeCommentMode">
+                    <form name="commentForm" ng-submit="submitComment()">
+
+                        <fieldset>
+                            <div class="control-group">
+                                    <div id="rawText" name="rawText"
+                                         ng-model="comment.rawText"
+                                         quill
+                                         type="pdf-comment"
+                                         annotation-zone-action="annotationZoneAction()">
+                                    </div>
+                            </div>
+
+                            <!-- Will be filled when annotation zones are created -->
+                            <div id="annotationZoneSubmitList">
+                            </div>
+
+                           <div id="annZoneList"
+                                 ng-controller="AnnotationZoneListController">
+                                <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
+                                    <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
+                                        The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
+                                    </div>
+                                </div>
+
+                                <!--<div>
+
+                                  <label> Currently edited annotation zones: </label>
+                                  <div ng-repeat="item in tagNamesList">
+                                    #{{item}} : <button type="button" class="btn btn-primary" ng-click="addReference('#'+ item);"> Add reference </button>
+                                  </div>
+                                </div>-->
+
+                                <!--<div>
+                                  <label> Already existing annotation zones: </label>
+                                  <div ng-repeat="item in annZones">
+                                    {{item.name}} : <button type="button" class="btn btn-primary" ng-click="addReference(item.name);"> Add reference </button>
+                                  </div>
+                                </div>-->
+
+                            </div>
+                            <div id="replyAnno" class="replyControl">
+                                <div class="annoZonesNote">Click on the Annotation Zone to add a reference
+                                </div>
+                                <div class="editReplyButton">
+                                    <a class="btn btn-primary btn-xs" ng-click="submitComment()">SAVE</a>
+                                </div>
+                                <div class="deleteReplyButton" >
+                                    <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
+                                </div>
+                            </div>
+                            <!--<div class="control-group">
+                                <div class="controls">
+                                    <br class="clear">
+                                    <button class="btn btn-primary"> Add Comment
+                                        <spinner show="isLoading"></spinner>
+                                    </button>
+
+                                    <button type="button" class="btn btn-warning" ng-click="writeCommentMode=false">Cancel</button>
+                                </div>
+                            </div>-->
+                        </fieldset>
+                    </form>
+                </div>
+
+                <!--<div id="annotationZoneSubmitListMovables">
+                    <button class="btn btn-default" onclick="createMovableAnnZone();">
+                        Add Annotation Zone
+                    </button>
+                </div>-->
+                <label id="commentSubmissionResponse"></label>
+
+
+            </div>
+            <div class="col-xs-12">
+            <div class="filter-wrapper col-xs-2">
+              <span class="filter-header">Filter: </span>
+            </div>
+            <div >
+              <!--<span class="filter-header">None</span> class="col-xs-11"-->
+              <button type="button" class="btn btn-default btn-xs filter-tag" ng-hide="((key == 'pdfId')||(key == 'pdfPageNumber')||(key == 'rawText')) " ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
+                <span class="glyphicon glyphicon-remove " aria-hidden="true" ></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
+              </button>
+            </div>
+
+            <div class="commentZoneList">
+
+                    <!--<div>
+                      <label id="activeFilterLabel" ng-bind="activeFilterString"></label>
+                      <button class="btn btn-white btn-link" ng-click="removeActiveFilters();" style="color:black;">X</button>
+                    </div>-->
+
+                    <div id="commentList" class="row">
+
+
+                        <div class="replies" ng-repeat="comment in comments" ng-cloak>
+                            <div class="col-xs-11">
+                                <pdf-comment posted-by="{{comment.author}}"
+                                         post-id="{{comment._id}}"
+                                         posted-date="{{comment.date}}"
+                                         post-content="comment.html"
+                                         is-post-owner="comment.author==$root.user.username"
+                                         post-owner="comment.author"
+                                         show-control="true"
+                                         show-reply-button="false"
+                                         show-delete-button="true"
+                                         delete-action="deleteCommentById(comment.id)"
+                                         show-edit-button="true"
+                                         edit-action="changeEditMode(comment._id, true);setEditRawText(comment._id,comment.html);"
+                                         author-clickable="true"
+                                         author-click-action="authorLabelClick(comment.author)"
+                                         ng-hide="editMode == comment._id"
+                                         show-commenting-area="true"
+                                         comments="replies[comment._id]"
+                                         post-comment= "submitReply(comment._id)"
+                                         comment-text= "replyRawText[comment._id]"
+                                         remove-function = "deleteCommentById(id)"
+                                        ></pdf-comment>
+
+                                <div ng-hide="editMode != comment._id">
+                                  You are editing your post:
+                                  <div id="editQuill_{{comment._id}}" name="editQuill"
+                                       ng-model="editRawText[comment._id]"
+                                       quill
+                                       type="pdf-comment"
+                                       hide-ann-zone-button="true"
+                                       >
+                                  </div>
+                                  <button class="btn btn-primary" ng-click="submitEdit(comment)"> Submit
+                                      <spinner show="isLoading"></spinner>
+                                  </button>
+
+                                  <button type="button" class="btn btn-warning" ng-click="changeEditMode(comment._id, false)">Cancel</button>
+                                </div>
+
+                            </div>
+                            <voting class="col-xs-1" vote-type="slideComment" vote-type-id="{{comment._id}}"></voting>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    $("#btn-fullscreen").click(function () {
+        $("#viewerWrapper").toggleFullScreen();
+    });
+</script>

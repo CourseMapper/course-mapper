@@ -1,0 +1,57 @@
+{
+  "name": "Course Analytics",
+  "widgets":[
+    {
+      "name": "Home Widget - Category Date Created",
+      "location": "category-homepage",
+      "description": "Widget that show the created date of each node in the homepage",
+      "entryPoint": "/course-analytics/category-home-createdDate.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Home Widget - Count SubNodes",
+      "location": "category-homepage",
+      "description": "Widget that show the number of sub-nodes available inside one node",
+      "entryPoint": "/course-analytics/category-home-countSubNodes.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Course Listing Date Created",
+      "location": "course-listing",
+      "description": "Widget that show the created date of a course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-createdDate.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Node Icon Stats",
+      "location": "topic-icon-analytics",
+      "description": "analytic icons in node topic",
+      "entryPoint": "/course-analytics/icon-analytics.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Enrolled Users",
+      "location": "course-preview",
+      "description": "List of users that enrolled to the course",
+      "entryPoint": "/course-analytics/ca-enrolled-users",
+      "widgetJavascript": ["ca-enrolled-users.js"],
+      "width": 12,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Enrolled User List",
+      "location": "course-analytics",
+      "description": "List of users that enrolled to the course",
+      "entryPoint": "/course-analytics/ca-enrolled-users",
+      "widgetJavascript": ["ca-enrolled-users.js"],
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    }
+  ]
+}

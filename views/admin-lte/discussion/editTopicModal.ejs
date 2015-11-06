@@ -1,0 +1,64 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="editTopicModal" tabindex="-1" role="dialog"
+         aria-labelledby="Edit Topic" aria-hidden="true">
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
+                    <div class="widget-item box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Edit Topic</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span
+                                        aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <form name="editTopicForm" role="form" ng-submit="saveEditPost(editTopicForm.$valid)" novalidate>
+                                <fieldset>
+                                    <div class="control-group">
+                                        <label class="control-label" for="title">Title</label>
+
+                                        <p class="help-block">Title can contain any letters or numbers</p>
+
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : editTopicForm.title.$invalid && !editTopicForm.$pristine }">
+                                            <input type="text" id="title" name="title" placeholder=""
+                                                   class="form-control"
+                                                   ng-model="currentTopic.title"
+                                                   required ng-required="true">
+
+                                            <p ng-show="editTopicForm.title.$invalid && !editTopicForm.$pristine"
+                                               class="help-block">Topic must contains title</p>
+                                        </div>
+                                    </div>
+                                    <br>
+
+                                    <div class="control-group">
+                                        <div class="controls">
+                                            <div id="editTopicContent" name="content" ng-model="currentTopic.content" quill></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <br class="clear">
+                                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <button class="btn btn-primary" ng-click="editTopicForm.$setDirty()">Save
+                                                <spinner show="isLoading"></spinner>
+                                            </button>
+                                            <cancel></cancel>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

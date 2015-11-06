@@ -1,0 +1,26 @@
+
+
+
+###
+backdoor to admin panel
+-----------------------
+
+localhost:3000/accounts/createAdmin/[username]
+e.g:
+
+make sure it is a new user
+localhost:3000/accounts/createAdmin/zuhra
+than login using
+username: zuhra
+password: 1
+
+once logged in, you can see link "Admin Panel" on your profile page.
+click, it will go to
+http://localhost:3000/cm-admin
+
+### category, tag, course management
+in top menu:
+manage -> categories
+
+on this screen, you can add child category.
+if you click on a category, you will go to its detail, in which you can add courses, and tags.

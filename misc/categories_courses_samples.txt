@@ -1,0 +1,48 @@
+categories
+
+db.categories.remove();
+db.categories.insert([{ "category" : "Music" },
+                      { "category" : "Cooking" },
+                      { "category" : "Maths" },
+                      { "category" : "I.T", "subCategories" : [
+                      "Web Development", "Networking" ]
+                      }]);
+
+db.users.insert(
+{
+        username: "rpl",
+        role: "admin",
+        email: "r@rpl.im",
+        password: "1"
+    }
+);
+
+db.courses.insert([
+{
+    "course" : "Web Tech",
+    "category": "I.T"
+},
+{
+     "course" : "Distributed Computing",
+     "category": "I.T"
+},
+{
+    "course" : "Introducing to Computer Graphic",
+    "category": "I.T"
+},
+{
+    "course" : "Music Genre",
+    "category": "Music"
+},
+{
+    "course" : "Pasta",
+    "category": "Cooking"
+},
+{
+    "course" : "Pizza",
+    "category": "Cooking"
+},
+{
+    "course" : "Statistics and Probability",
+    "category": "Maths"
+}])

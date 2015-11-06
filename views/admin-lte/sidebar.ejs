@@ -1,0 +1,17 @@
+<aside class="main-sidebar" ng-controller="CategoryListController">
+    <section class="sidebar">
+        <ul class="sidebar-menu">
+
+            <li ng-repeat="category in categories" class="treeview">
+                <a href="#">
+                    <span>{{category.name}}</span>
+                    <i ng-show="(category.subCategories.length)" class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu" ng-show="(category.subCategories.length)" on-finish-render="sidebarInit">
+                    <li ng-repeat="subCategory in category.subCategories" ><a href="#">{{subCategory.name}}</a></li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>

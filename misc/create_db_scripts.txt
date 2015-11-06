@@ -1,0 +1,39 @@
+// start without auth to add admin user
+mongod --noauth --dbpath data
+
+// connect with client
+mongo
+
+db.createUser(
+  {
+    user: "root",
+    pwd: "1",
+    roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+  }
+)
+
+use course_mapper
+
+db.createUser(
+  {
+    user: "rpl",
+    pwd: "1",
+    roles: [ { role: "readWrite", db: "course_mapper" } ]
+  }
+)
+
+use course_mapper_test
+
+db.createUser(
+  {
+    user: "rpl",
+    pwd: "1",
+    roles: [ { role: "readWrite", db: "course_mapper_test" } ]
+  }
+)
+
+// start with auth on
+mongod --dbpath data
+
+//connect to db
+mongo --port 27017 -u rpl -p 1 course_mapper

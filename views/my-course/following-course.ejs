@@ -1,0 +1,15 @@
+<div class="box-body no-padding" ng-controller="CatListController">
+	<table class="table table-striped">
+		<tbody>
+		<tr>
+			<th style="width:10px;">Nr.</th>
+			<th>{{title}}</th>
+		</tr>
+		<tr ng-repeat="cat in categories">
+			<td>{{$index+1}}</td>
+			<td> {{cat.name}} </td>
+		</tr>
+		</tbody>
+	</table>
+</div>
+
