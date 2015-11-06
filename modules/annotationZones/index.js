@@ -386,7 +386,7 @@ function validateTagObject(currentTag,oldTagList,simple) {
   var ret = true;
   if(!(currentTag.annotationZoneName.length >= 3))
     return false;
-  if(!(currentTag.annotationZoneName.length < 10))
+  if(!(currentTag.annotationZoneName.length <= 10))
     return false;
   ret &= (currentTag.annotationZoneName[0] == '#');
   ret &= validator.isAlphanumeric(currentTag.annotationZoneName.substring(1));
