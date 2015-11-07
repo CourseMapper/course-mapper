@@ -90,25 +90,37 @@ router.post('/discussions/:courseId', function (req, res, next) {
         return;
     }
 
-    if(!userHelper.isUserEnrolled(req.user, courseId)) {
-        //
-        return;
-    }
-
-    cat.addPost(
-        function (err) {
+    userHelper.isUserEnrolled(
+        function(err){
             helper.resReturn(err, res);
         },
-        {
-            title: req.body.title,
-            content: req.body.content,
-            createdBy: userId,
-            courseId: courseId
-        },
-        function (post) {
-            res.status(200).json({
-                result: true, post: post
-            });
+
+        userId, courseId,
+
+        function(isEnrolled){
+            if(isEnrolled){
+
+                cat.addPost(
+                    function (err) {
+                        helper.resReturn(err, res);
+                    },
+                    {
+                        title: req.body.title,
+                        content: req.body.content,
+                        createdBy: userId,
+                        courseId: courseId
+                    },
+                    function (post) {
+                        res.status(200).json({
+                            result: true, post: post
+                        });
+                    }
+                );
+
+            } else {
+                var err = helper.createError("You are not enrolled", 400);
+                helper.resReturn(err, res);
+            }
         }
     );
 });
