@@ -4,7 +4,7 @@
 var express = require('express');
 var passport = require('passport');
 var config = require('config');
-var Mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
@@ -163,7 +163,7 @@ router.put('/accounts/:userId/changePassword', function(req, res, next){
         return;
     }
 
-    req.body.userId = Mongoose.Types.ObjectId(req.user._id);
+    req.body.userId = mongoose.Types.ObjectId(req.user._id);
 
     // todo: if admin, can put val from url param
 
@@ -191,7 +191,7 @@ router.put('/accounts/:userId', function(req, res, next){
         return;
     }
 
-    req.body.userId = Mongoose.Types.ObjectId(req.user._id);
+    req.body.userId = mongoose.Types.ObjectId(req.user._id);
 
     // todo: if admin, can put val from url param
 
