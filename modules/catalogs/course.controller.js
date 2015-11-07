@@ -33,6 +33,50 @@ catalog.prototype.getCourse = function (error, params, success) {
 };
 
 /**
+ * to add a manager, we are allowing user to find another user.
+ * this method will do the check whether the username exist or not.
+ *
+ * checkUsername, parameter:
+ * courseId, we will only course owner to do the check
+ * @params: {userId, courseId}
+ */
+catalog.prototype.checkUsername = function(error, params, success){
+    Course.findOne({
+        _id: params.courseId,
+        createdBy: params.userId
+    }, function(err, doc){
+        if(err){
+            error(err);
+        } else if(doc){
+            // this is an owner of a course,
+            Users.findOne({
+                username: params.username
+            }, function(err, usr){
+                if(err){
+                    error(err);
+                } else if(usr){
+                    if(usr.id == params.userId.toString()) {
+                        error(helper.createError('You are the owner of this course', 404));
+                    }
+                    else
+                        success(
+                            {
+                                _id: usr._id,
+                                username: usr.username
+                            }
+                        );
+                } else {
+                    error(helper.createError404('User'));
+                }
+            })
+        }
+        else {
+            error(helper.createError('Not an owner', 401));
+        }
+    });
+};
+
+/**
  *
  * @param err
  * @param userParam
@@ -250,10 +294,10 @@ catalog.prototype.editCourse = function (error, params, files, success) {
     );
 };
 
-catalog.prototype.addManager = function (error, params, files, success) {
+catalog.prototype.addManager = function (error, params, success) {
     var self = this;
 
-    if (!helper.checkRequiredParams(params, ['courseId', 'createdBy', 'managers'], error)) {
+    if (!helper.checkRequiredParams(params, ['courseId', 'createdBy'], error)) {
         return;
     }
 
@@ -267,32 +311,32 @@ catalog.prototype.addManager = function (error, params, files, success) {
         courseFnParams,
 
         function (course) {
-            // find usernames first
-            for(var i in params.managers){
-                var uname = params.managers[i];
-
-                Users.findOne({username: uname}, function(err, usr){
-                    if(usr){
-                        // update this course with the manager
-                        course.update({
-                            $addToSet: {
-                                managers: usr._id
-                            }
-                        }, function(err, res){
-                            /*if (err) {
-                                error(err);
-                            } else
-                                success(res);
-                                */
-
-                            // todo: async success call on final for loop
-                        });
+            if(params.managers.length == 0){
+                course.update({
+                    $set: {
+                        managers: []
                     }
+                }, function(err, res){
+                    success(res);
                 });
-            }
+            } else {
+                // find usernames and add one by one
+                for (var i in params.managers) {
+                    // dont insert our own uid
+                    if(params.managers[i] != params.createdBy.toString()){
+                        params.managers[i] = mongoose.Types.ObjectId(params.managers[i]);
+                    }
+                }
 
-            // todo: proper success call after asyncly those updates return
-            success(res);
+                course.update({
+                    $set: {
+                        managers: params.managers
+                    }
+                }, function (err, res) {
+                    success(res);
+                });
+
+            }
         }
     );
 };

@@ -124,6 +124,37 @@ router.get('/course/:courseId', function(req, res, next) {
 });
 
 /**
+ * GET
+ * check username if exist
+ */
+router.get('/course/:courseId/checkUsername/:username', function(req, res, next){
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    var catalog = new Course();
+
+    var courseId = mongoose.Types.ObjectId(req.params.courseId);
+    var userId = mongoose.Types.ObjectId(req.user._id);
+
+    catalog.checkUsername(
+        function failed(err){
+            helper.resReturn(err, res);
+        },
+
+        {
+            userId: userId,
+            courseId: courseId,
+            username: req.params.username
+        },
+
+        function (user) {
+            res.status(200).json({
+                result: true, user: user
+            });
+        });
+});
+
+/**
  * PUT
  * enrolling user into a course
  */
@@ -138,7 +169,7 @@ router.put('/course/:courseId/enroll', function(req, res, next) {
 
     catalog.enroll(
         function failed(err){
-            res.status(200).send({result:false, errors:err});
+            helper.resReturn(err, res);
         },
 
         {id: uid},
@@ -153,7 +184,7 @@ router.put('/course/:courseId/enroll', function(req, res, next) {
 
 /**
  * PUT
- *
+ * leave course
  */
 router.put('/course/:courseId/leave', function(req, res, next) {
     if (!req.user)
@@ -165,7 +196,7 @@ router.put('/course/:courseId/leave', function(req, res, next) {
     var catalog = new Course();
     catalog.leave(
         function failed(err){
-            res.status(200).send({result:false, errors:err});
+            helper.resReturn(err, res);
         },
 
         {id: uid},
@@ -193,11 +224,7 @@ router.put('/course/:courseId/addManager', function(req, res, next){
     // format the tags data structure
     if(req.body.managers) {
         // because the data is in {text:the-tag} format. let's just get the values.
-        var managerSlugs = [];
-        var tTags = JSON.parse(req.body.managers);
-        for (var i in tTags) {
-            managerSlugs.push(tTags[i]['text']);
-        }
+        var managerSlugs = JSON.parse(req.body.managers);
         req.body.managers = managerSlugs;
     }
 

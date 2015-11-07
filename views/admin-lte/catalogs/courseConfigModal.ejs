@@ -25,24 +25,28 @@
                                 </p>
 
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" placeholder="username">
+                                    <input type="text" class="form-control" placeholder="username" ng-model="username" id="usernameSearchBox">
                                     <span class="input-group-btn">
-                                      <button class="btn btn-info btn-flat" type="button"><i class="ionicons ion-plus"></i></button>
+                                      <button class="btn btn-info btn-flat" type="button" ng-click="findUsername()">
+                                          <i class="ionicons ion-plus"></i>
+                                          <spinner show="isLoading"></spinner>
+                                      </button>
                                     </span>
                                 </div>
-
+                                <br>
+                                <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                 <div class="controls">
-                                    <tags-input id="managerTagForm" ng-model="managersRaw" placeholder="Course Managers" readonly="readonly">
+                                    <tags-input id="managerTagForm"
+                                                ng-model="managersRaw" placeholder="Course Managers" readonly="readonly"
+                                                on-tag-removed="removeUsername($tag)"
+                                    >
                                     </tags-input>
                                 </div>
                             </div>
 
                             <div class="control-group">
-
                                 <br class="clear">
-
                                 <div class="box-footer">
-                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                     <!-- Button -->
                                     <div class="controls">
                                         <button class="btn btn-md btn-primary"
