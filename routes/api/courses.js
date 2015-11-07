@@ -9,6 +9,7 @@ var moment = require('moment');
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty();
 var router = express.Router();
+var mongoose = require('mongoose');
 
 /**
  * POST
@@ -59,8 +60,8 @@ router.post('/course/:courseId', multipartyMiddleware, function(req, res, next){
     }
 
     var catalog = new Course();
-    req.body.userId = req.user._id;
-    req.body.courseId = req.params.courseId;
+    req.body.userId = mongoose.Types.ObjectId(req.user._id);
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
 
     // format the tags data structure
     if(req.body.tags) {
@@ -131,12 +132,18 @@ router.put('/course/:courseId/enroll', function(req, res, next) {
         return res.status(401).send('Unauthorized');
 
     var catalog = new Course();
+
+    var uid = mongoose.Types.ObjectId(req.user._id);
+    var courseId = mongoose.Types.ObjectId(req.params.courseId);
+
     catalog.enroll(
         function failed(err){
             res.status(200).send({result:false, errors:err});
         },
-        {id: req.user._id},
-        {id: req.params.courseId},
+
+        {id: uid},
+        {id: courseId},
+
         function (followed) {
             res.status(200).json({result:true, enrollment: followed});
         },
@@ -149,21 +156,63 @@ router.put('/course/:courseId/enroll', function(req, res, next) {
  *
  */
 router.put('/course/:courseId/leave', function(req, res, next) {
-    if(!req.params.courseId)
-        res.status(500).send('parameter not complete');
-
     if (!req.user)
         res.status(401).send('Unauthorized');
+
+    var uid = mongoose.Types.ObjectId(req.user._id);
+    var courseId = mongoose.Types.ObjectId(req.params.courseId);
 
     var catalog = new Course();
     catalog.leave(
         function failed(err){
             res.status(200).send({result:false, errors:err});
         },
-        {id: req.user._id},
-        {id: req.params.courseId},
+
+        {id: uid},
+        {id: courseId},
+
         function () {
             res.status(200).json({result:true});
         });
 });
+
+/**
+ * PUT
+ * add a username as a manager into a course
+ */
+router.put('/course/:courseId/addManager', function(req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    req.body.createdBy = mongoose.Types.ObjectId(req.user._id);
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+
+    var catalog = new Course();
+
+    // format the tags data structure
+    if(req.body.managers) {
+        // because the data is in {text:the-tag} format. let's just get the values.
+        var managerSlugs = [];
+        var tTags = JSON.parse(req.body.managers);
+        for (var i in tTags) {
+            managerSlugs.push(tTags[i]['text']);
+        }
+        req.body.managers = managerSlugs;
+    }
+
+    catalog.addManager(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+
+        // parameters
+        req.body,
+
+        function (course) {
+            res.status(200).json({result:true, course: course});
+        }
+    );
+});
+
 module.exports = router;
