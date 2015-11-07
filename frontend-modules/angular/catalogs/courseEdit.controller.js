@@ -13,13 +13,16 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
     $scope.progressPercentage = 0;
 
     $scope.$on('onAfterInitCourse', function(event, course){
-        $scope.init();
+        $scope.init(course);
     });
 
-    $scope.init = function(){
+    $scope.init = function(course){
+        if(!course)
+            return;
+
         $scope.tagsRaw = [];
 
-        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+        $scope.courseEdit = cloneSimpleObject(course);
 
         if($scope.courseEdit)
         if($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0){
