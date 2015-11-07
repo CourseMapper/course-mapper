@@ -1,0 +1,67 @@
+<!-- Main content -->
+<section class="content">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-5 col-centered">
+            <div class="box no-border" ng-controller="CourseConfigController" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Course Configuration: {{courseEdit.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form role="form" ng-submit="saveCourseSetting(configCourseForm.$valid)" name="configCourseForm"
+                          novalidate>
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="description">Add Course Managers</label>
+
+                                <p class="help-block">Course Manager can act as a Course Creator.
+                                    a user with this privilege can edit or delete
+                                    contents that have been added into this course
+                                </p>
+
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" placeholder="username">
+                                    <span class="input-group-btn">
+                                      <button class="btn btn-info btn-flat" type="button"><i class="ionicons ion-plus"></i></button>
+                                    </span>
+                                </div>
+
+                                <div class="controls">
+                                    <tags-input id="managerTagForm" ng-model="managersRaw" placeholder="Course Managers" readonly="readonly">
+                                    </tags-input>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-md btn-primary"
+                                                ng-click="configCourseForm.$pristine=false">Save Edit
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+
+                                        <button type="button" class="btn btn btn-warning"
+                                                data-dismiss="modal" aria-label="Close" ng-click="cancel()">
+                                            <span aria-hidden="true">Cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <!-- ./CourseEditController-->
+        </div>
+    </div>
+</section>

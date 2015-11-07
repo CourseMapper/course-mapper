@@ -22,6 +22,12 @@
                 <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
         </li>
         <li ng-show="isOwner">
+            <a style="cursor: pointer"
+               data-toggle="modal" data-target="#configView"
+               title="Edit this course's details">
+                <i class="ionicons ion-gear-a"></i> &nbsp; SETTINGS</a>
+        </li>
+        <li ng-show="isOwner">
             <a style="cursor: pointer;"
                data-toggle="modal" data-target="#widgetGallery"
                title="Add or remove preview widgets">
