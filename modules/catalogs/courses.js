@@ -18,6 +18,7 @@ var courseSchema = new mongoose.Schema({
     video: { type: String },
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'categories', required: true},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
+    managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users'}],
     courseTags:[{ type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
