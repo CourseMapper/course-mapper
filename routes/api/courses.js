@@ -109,16 +109,37 @@ router.get('/course/:courseId', function(req, res, next) {
             helper.resReturn(err, res);
         })) return;
 
+    var params = {
+        _id : mongoose.Types.ObjectId(req.params.courseId)
+    };
+
     var cat = new Course();
     cat.getCourse(
         function(err){
             helper.resReturn(err, res);
         },
-        {
-            _id: req.params.courseId
-        },
+
+        params,
+
         function(course){
-            res.status(200).json({result:true, course: course});
+            if(course && req.user){
+                var userId = mongoose.Types.ObjectId(req.user._id);
+
+                cat.getUserCourses(
+                    function(err){
+                        helper.resReturn(err, res);
+                    },
+                    {
+                        user: userId,
+                        course: course._id
+                    },
+                    function(uc){
+                        course.isEnrolled = uc.length > 0;
+
+                        res.status(200).json({result:true, course: course});
+                    });
+            } else
+                res.status(200).json({result:true, course: course});
         }
     );
 });

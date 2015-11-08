@@ -69,13 +69,16 @@ app.config(function(toastrConfig) {
 
 });
 ;app.controller('CourseController', function($scope, $rootScope, $filter, $http,
-                                            $location, $routeParams, $timeout, toastr, Page) {
+                                            $location, $routeParams, $timeout,
+                                            courseService, authService, toastr, Page) {
     $scope.course = null;
     $scope.videoSources = false;
-    $scope.enrolled = false;
+
     $scope.loc = $location.absUrl() ;
     $scope.courseId = $routeParams.courseId;
+
     $scope.isOwner = false;
+    $scope.isEnrolled = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
@@ -109,9 +112,9 @@ app.config(function(toastrConfig) {
     };
 
     $scope.init = function(refreshPicture){
-        $http.get('/api/course/' + $scope.courseId).success(function(res){
-            if(res.result) {
-                $scope.course = res.course;
+        courseService.init($scope.courseId,
+            function(course){
+                $scope.course = course;
 
                 Page.setTitleWithPrefix($scope.course.name);
 
@@ -132,30 +135,16 @@ app.config(function(toastrConfig) {
                         $scope.$broadcast('onAfterInitCourse', $scope.course);
                     });
                 }
+            },
+
+            function(res){
+                $scope.errors = res.errors;
+                toastr.error('Failed getting course');
             }
-        });
+        );
 
         $scope.changeTab();
     };
-
-    $scope.init();
-
-    $scope.$watchGroup(['user', 'course'], function(){
-        if($scope.user != null && $scope.course != null) {
-            $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
-                if (res.result && res.courses) {
-                    $scope.enrolled = res.courses.isEnrolled;
-                } else {
-                    $scope.enrolled = false;
-                }
-            });
-
-            if ($scope.course.createdBy._id == $rootScope.user._id) {
-                $scope.isOwner = true;
-                $scope.enrolled = true;
-            }
-        }
-    });
 
     $scope.playVideo = function(){
         $scope.isPlaying = true;
@@ -170,36 +159,41 @@ app.config(function(toastrConfig) {
     });
 
     $scope.enroll = function(){
-        var url = '/api/course/' + $scope.course._id + '/enroll';
         $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result)
-                $scope.enrolled = true;
+        courseService.enroll(authService.user,
 
-        }).finally(function(){
-            $scope.loading = false;
-            toastr.success('You are now enrolled');
-        });
+            function(){
+                $scope.loading = false;
+                toastr.success('You are now enrolled');
+            },
+
+            function(res){
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
+            }
+        );
+
     };
 
     $scope.leave = function(){
-        var url = '/api/course/' + $scope.course._id + '/leave';
         $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result){
-                // success leaving
-                $scope.enrolled = false;
+
+        courseService.leave(authService.user,
+            function(){
+                $scope.loading = false;
+                toastr.success('You left the course');
+            },
+
+            function(){
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
             }
-        }).finally(function(){
-            $scope.loading = false;
-            toastr.success('You left the course');
-        });
+        );
     };
 
-    $scope.$on('$routeUpdate', function(){
-        $scope.changeTab();
-    });
-
+    /**
+     * show new course notification/guide if it is a new course
+     */
     $scope.newCourseNotification = function(){
         var loc = $location.search();
         if(loc.new && loc.new == 1){
@@ -224,6 +218,31 @@ app.config(function(toastrConfig) {
     };
 
     $scope.newCourseNotification();
+
+    /**
+     * initiate course when user is logged in
+     */
+    /*authService.loginCheck(function(){
+        $scope.init();
+    });*/
+
+    $scope.$watch(function(){ return authService.isLoggedIn;}, function(){
+        if(authService.isLoggedIn !== null && !$scope.course){
+            $scope.init();
+        }
+    });
+
+    $scope.$watch(function(){ return courseService.isEnrolled(); }, function(newVal, oldVal){
+        $scope.isEnrolled = newVal;
+    });
+
+    $scope.$watch(function(){ return courseService.isOwner(authService.user); }, function(newVal, oldVal){
+        $scope.isOwner = newVal;
+    });
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
 });
 ;app.controller('CourseConfigController', function ($scope, $http, toastr) {
     $scope.courseEdit = null;
@@ -2835,24 +2854,58 @@ app.directive('timepicker', function($timeout) {
 });;app.factory('authService', [
     '$rootScope', '$http',
 
-    function($rootScope, $http) {
+    function ($rootScope, $http) {
         return {
+            user: null,
 
-            loginCheck : function(successCallback){
-                $http.get('/api/accounts').success(function(data) {
-                    if(data.result) {
-                        $rootScope.user = data.user;
+            isCheckingForLogin: false,
 
-                        $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+            isLoggedIn: null,
 
-                        successCallback($rootScope.user);
-                    }
-                }).error(function(data){
-                    //console.log(data);
-                });
+            loginCheck: function (successCallback, errorCallback) {
+                var self = this;
+
+                if (self.user) {
+                    self.isLoggedIn = true;
+                    successCallback(self.user);
+                }
+                else {
+                    if(self.isCheckingForLogin)
+                        return;
+
+                    self.isCheckingForLogin = true;
+
+                    $http.get('/api/accounts').success(function (data) {
+                        self.isCheckingForLogin = false;
+
+                        if (data.result) {
+                            self.user = data.user;
+                            self.isLoggedIn = true;
+                            $rootScope.user = data.user;
+
+                            $rootScope.$broadcast('onAfterInitUser', self.user);
+                            successCallback(self.user);
+                        }
+                    }).error(function (data) {
+                        self.isCheckingForLogin = false;
+                        self.isLoggedIn = false;
+
+                        if (errorCallback)
+                            errorCallback(data);
+                    });
+                }
             },
 
-            login: function(loginData, successCallback, errorCallback){
+            /*isLoggedIn: function () {
+                if (!this.user)
+                    return false;
+
+                return true;
+            },*/
+
+            login: function (loginData, successCallback, errorCallback) {
+                var self = this;
+
                 var d = transformRequest(loginData);
                 $http({
                     method: 'POST',
@@ -2863,22 +2916,25 @@ app.directive('timepicker', function($timeout) {
                     }
                 })
                     .success(
-                    function success(data) {
-                        if(data.result) {
-                            $rootScope.user = data.user;
+                        function success(data) {
+                            if (data.result) {
+                                $rootScope.user = data.user;
+                                self.user = data.user;
+                                self.isLoggedIn = true;
 
-                            $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+                                $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
 
-                            successCallback($rootScope.user);
-                        }
-                    }).error(
-                    function (data) {
-                        errorCallback(data);
-                    }
-                );
+                                successCallback($rootScope.user);
+                            }
+                        })
+                    .error(
+                        function (data) {
+                            self.isLoggedIn = false;
+                            errorCallback(data);
+                        });
             },
 
-            signUp: function(loginData, successCallback, errorCallback){
+            signUp: function (loginData, successCallback, errorCallback) {
                 var d = transformRequest(loginData);
                 $http({
                     method: 'POST',
@@ -2889,20 +2945,139 @@ app.directive('timepicker', function($timeout) {
                     }
                 })
                     .success(
-                    function success(data) {
-                        if(data.result) {
-                            //$rootScope.user = data.user;
-                            $rootScope.$broadcast('onAfterUserRegistration', data.user);
+                        function success(data) {
+                            if (data.result) {
+                                //$rootScope.user = data.user;
+                                $rootScope.$broadcast('onAfterUserRegistration', data.user);
 
-                            successCallback(data.user);
-                        } else {
-                            errorCallback(data);
-                        }
-                    }).error(
+                                successCallback(data.user);
+                            } else {
+                                errorCallback(data);
+                            }
+                        }).error(
                     function (data) {
                         errorCallback(data);
                     }
                 );
+            }
+        }
+    }
+]);;app.factory('courseService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            course: null,
+
+            init: function(courseId, success, error){
+                var self = this;
+
+                $http.get('/api/course/' + courseId)
+                    .success(function(res){
+                        if(res.result) {
+                            self.course = res.course;
+
+                            if(success)
+                                success(res.course);
+                        }
+                    })
+                    .error(function(res){
+                        if(error)
+                            error(res);
+                    });
+            },
+
+            isEnrolled: function(){
+                if(!this.isInitialized()) return false;
+
+                return this.course.isEnrolled;
+            },
+
+            isOwner: function (user) {
+                var self = this;
+
+                if(!user){
+                    return;
+                }
+
+                if(!self.isInitialized()) return;
+
+                return (user._id == self.course.createdBy._id);
+            },
+
+            isManager: function (user) {
+                /*var self = this;
+
+                if(!user){
+                    console.error('user does not exist');
+                    return;
+                }
+
+                if(!self.isInitialized()) return;
+
+                return (user._id == self.course.createdBy._id);*/
+            },
+
+            leave: function(user, success, error){
+                var self = this;
+
+                if(!user){
+                    console.error('user does not exist');
+                    return;
+                }
+
+                if(!self.isInitialized()) return;
+
+                var url = '/api/course/' + self.course._id + '/leave';
+
+                $http.put(url, {})
+                    .success(function(res){
+                        if(res.result){
+                            // success leaving
+                            self.course.isEnrolled = false;
+                        }
+
+                        if(success)
+                            success(self.course.isEnrolled);
+                    })
+                    .error(function(res){
+                        if(error)
+                            error(res);
+                    });
+            },
+
+            enroll: function(user, success, error){
+                var self = this;
+
+                if(!user){
+                    console.error('user does not exist');
+                    return;
+                }
+
+                if(!self.isInitialized()) return;
+
+                var url = '/api/course/' + self.course._id + '/enroll';
+
+                $http.put(url, {})
+                    .success(function(res){
+                        if(res.result)
+                            self.course.isEnrolled = true;
+
+                        if(success)
+                            success(self.course.isEnrolled);
+                    })
+                    .error(function(res){
+                        if(error)
+                            error(res);
+                    });
+            },
+
+            isInitialized: function(){
+                if(!this.course){
+                    return false;
+                }
+
+                return true;
             }
         }
     }

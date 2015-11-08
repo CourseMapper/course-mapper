@@ -24,8 +24,9 @@ catalog.prototype.getCourse = function (error, params, success) {
             if (err) {
                 error(err);
             } else {
-                if (doc)
+                if (doc) {
                     success(doc);
+                }
                 else
                     error(helper.createError404('Course'));
             }
@@ -40,22 +41,22 @@ catalog.prototype.getCourse = function (error, params, success) {
  * courseId, we will only course owner to do the check
  * @params: {userId, courseId}
  */
-catalog.prototype.checkUsername = function(error, params, success){
+catalog.prototype.checkUsername = function (error, params, success) {
     Course.findOne({
         _id: params.courseId,
         createdBy: params.userId
-    }, function(err, doc){
-        if(err){
+    }, function (err, doc) {
+        if (err) {
             error(err);
-        } else if(doc){
+        } else if (doc) {
             // this is an owner of a course,
             Users.findOne({
                 username: params.username
-            }, function(err, usr){
-                if(err){
+            }, function (err, usr) {
+                if (err) {
                     error(err);
-                } else if(usr){
-                    if(usr.id == params.userId.toString()) {
+                } else if (usr) {
+                    if (usr.id == params.userId.toString()) {
                         error(helper.createError('You are the owner of this course', 404));
                     }
                     else
@@ -86,8 +87,7 @@ catalog.prototype.checkUsername = function(error, params, success){
  */
 catalog.prototype.enroll = function (error, userParam, courseParam, done, isEnrolled) {
     if (
-        !helper.checkRequiredParams(userParam, ['id'], error) &&
-        !helper.checkRequiredParams(courseParam, ['id'], error)
+        !helper.checkRequiredParams(userParam, ['id'], error) && !helper.checkRequiredParams(courseParam, ['id'], error)
     ) {
         return;
     }
@@ -106,13 +106,13 @@ catalog.prototype.enroll = function (error, userParam, courseParam, done, isEnro
         },
         {upsert: true}
     ).exec(function (err, doc) {
-            if (err) {
-                // perhaps this user is already enrolled
-                error(err)
-            } else {
-                done(doc);
-            }
-        });
+        if (err) {
+            // perhaps this user is already enrolled
+            error(err)
+        } else {
+            done(doc);
+        }
+    });
 };
 
 /**
@@ -311,19 +311,19 @@ catalog.prototype.addManager = function (error, params, success) {
         courseFnParams,
 
         function (course) {
-            if(params.managers.length == 0){
+            if (params.managers.length == 0) {
                 course.update({
                     $set: {
                         managers: []
                     }
-                }, function(err, res){
+                }, function (err, res) {
                     success(res);
                 });
             } else {
                 // find usernames and add one by one
                 for (var i in params.managers) {
                     // dont insert our own uid
-                    if(params.managers[i] != params.createdBy.toString()){
+                    if (params.managers[i] != params.createdBy.toString()) {
                         params.managers[i] = mongoose.Types.ObjectId(params.managers[i]);
                     }
                 }
@@ -351,6 +351,12 @@ catalog.prototype.getCourses = function (error, params, success) {
     });
 };
 
+/**
+ *
+ * @param error
+ * @param params {user:ObjectId, course:ObjectId}
+ * @param done
+ */
 catalog.prototype.getUserCourses = function (error, params, done) {
     if (!helper.checkRequiredParams(params, ['user'], error)) {
         return;

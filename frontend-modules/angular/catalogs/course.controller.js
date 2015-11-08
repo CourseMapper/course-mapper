@@ -1,11 +1,14 @@
 app.controller('CourseController', function($scope, $rootScope, $filter, $http,
-                                            $location, $routeParams, $timeout, toastr, Page) {
+                                            $location, $routeParams, $timeout,
+                                            courseService, authService, toastr, Page) {
     $scope.course = null;
     $scope.videoSources = false;
-    $scope.enrolled = false;
+
     $scope.loc = $location.absUrl() ;
     $scope.courseId = $routeParams.courseId;
+
     $scope.isOwner = false;
+    $scope.isEnrolled = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
@@ -39,9 +42,9 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
     };
 
     $scope.init = function(refreshPicture){
-        $http.get('/api/course/' + $scope.courseId).success(function(res){
-            if(res.result) {
-                $scope.course = res.course;
+        courseService.init($scope.courseId,
+            function(course){
+                $scope.course = course;
 
                 Page.setTitleWithPrefix($scope.course.name);
 
@@ -62,30 +65,16 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
                         $scope.$broadcast('onAfterInitCourse', $scope.course);
                     });
                 }
+            },
+
+            function(res){
+                $scope.errors = res.errors;
+                toastr.error('Failed getting course');
             }
-        });
+        );
 
         $scope.changeTab();
     };
-
-    $scope.init();
-
-    $scope.$watchGroup(['user', 'course'], function(){
-        if($scope.user != null && $scope.course != null) {
-            $http.get('/api/accounts/' + $rootScope.user._id + '/course/' + $scope.courseId).success(function (res) {
-                if (res.result && res.courses) {
-                    $scope.enrolled = res.courses.isEnrolled;
-                } else {
-                    $scope.enrolled = false;
-                }
-            });
-
-            if ($scope.course.createdBy._id == $rootScope.user._id) {
-                $scope.isOwner = true;
-                $scope.enrolled = true;
-            }
-        }
-    });
 
     $scope.playVideo = function(){
         $scope.isPlaying = true;
@@ -100,36 +89,41 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
     });
 
     $scope.enroll = function(){
-        var url = '/api/course/' + $scope.course._id + '/enroll';
         $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result)
-                $scope.enrolled = true;
+        courseService.enroll(authService.user,
 
-        }).finally(function(){
-            $scope.loading = false;
-            toastr.success('You are now enrolled');
-        });
+            function(){
+                $scope.loading = false;
+                toastr.success('You are now enrolled');
+            },
+
+            function(res){
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
+            }
+        );
+
     };
 
     $scope.leave = function(){
-        var url = '/api/course/' + $scope.course._id + '/leave';
         $scope.loading = true;
-        $http.put(url, {}).success(function(res){
-            if(res.result){
-                // success leaving
-                $scope.enrolled = false;
+
+        courseService.leave(authService.user,
+            function(){
+                $scope.loading = false;
+                toastr.success('You left the course');
+            },
+
+            function(){
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
             }
-        }).finally(function(){
-            $scope.loading = false;
-            toastr.success('You left the course');
-        });
+        );
     };
 
-    $scope.$on('$routeUpdate', function(){
-        $scope.changeTab();
-    });
-
+    /**
+     * show new course notification/guide if it is a new course
+     */
     $scope.newCourseNotification = function(){
         var loc = $location.search();
         if(loc.new && loc.new == 1){
@@ -154,4 +148,29 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
     };
 
     $scope.newCourseNotification();
+
+    /**
+     * initiate course when user is logged in
+     */
+    /*authService.loginCheck(function(){
+        $scope.init();
+    });*/
+
+    $scope.$watch(function(){ return authService.isLoggedIn;}, function(){
+        if(authService.isLoggedIn !== null && !$scope.course){
+            $scope.init();
+        }
+    });
+
+    $scope.$watch(function(){ return courseService.isEnrolled(); }, function(newVal, oldVal){
+        $scope.isEnrolled = newVal;
+    });
+
+    $scope.$watch(function(){ return courseService.isOwner(authService.user); }, function(newVal, oldVal){
+        $scope.isOwner = newVal;
+    });
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
 });
