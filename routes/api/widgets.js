@@ -116,6 +116,15 @@ router.put('/widget/:id/setPosition', function(req, res, next){
         return;
     }
 
+    var params = {
+        userId: mongoose.Types.ObjectId(req.user._id),
+        widgetId: mongoose.Types.ObjectId(req.params.id)
+    };
+
+    if(req.body.courseId){
+        params.courseId = mongoose.Types.ObjectId(req.body.courseId)
+    }
+
     var app = new AppsGallery();
     app.setPosition(
         function(err){
@@ -123,10 +132,7 @@ router.put('/widget/:id/setPosition', function(req, res, next){
         },
 
         // get and verify if this widget belongs to this user.
-        {
-            userId: mongoose.Types.ObjectId(req.user._id),
-            widgetId:mongoose.Types.ObjectId(req.params.id)
-        }
+        params
         ,
 
         req.body.x,

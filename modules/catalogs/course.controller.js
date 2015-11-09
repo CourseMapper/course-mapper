@@ -10,6 +10,7 @@ var TagController = require('./tag.controller.js');
 var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 
 function catalog() {
 }
@@ -229,67 +230,83 @@ catalog.prototype.editCourse = function (error, params, files, success) {
         return;
     }
 
+    function saveEditCourse(course) {
+        course.name = params.name;
+        course.description = params.description;
+        course.courseTags = [];
+
+        // save the update
+        course.save();
+
+        if (files) {
+            if (files.file && files.file.constructor != Array) {
+                var be = [files.file];
+                files.file = be;
+            }
+
+            for (var i in files.file) {
+                var f = files.file[i];
+                self.saveResourceFile(
+                    error,
+                    f,
+                    course.id,
+                    function (fn, ft) {
+                        if (ft == 'picture') {
+                            course.picture = fn;
+                            course.save();
+                        } else if (ft == 'video') {
+                            course.video = fn;
+                            course.save();
+                        }
+                    }
+                );
+            }
+        }
+
+        // they giving us the tags in array of slug string.
+        if (params.tagSlugs) {
+            // insert all the tags, if it failed, means it is already there
+            var tc = new TagController();
+            // get all the tags, we need the _ids
+            for (var i in params.tagSlugs) {
+                var tagParam = {
+                    name: params.tagSlugs[i],
+                    course: course._id,
+                    category: course.category._id
+                };
+
+                tc.addCourseTag(function (err) {
+                        if (err) debug(err);
+                    },
+                    tagParam,
+                    // we dont need to do anything after, so pass it an empty func
+                    function () {
+                    });
+            }
+        }
+
+        success(course);
+    }
+
     self.getCourse(error,
         {
-            _id: params.courseId,
-            createdBy: params.userId
+            _id: params.courseId
         },
-        function (course) {
-            course.name = params.name;
-            course.description = params.description;
-            course.courseTags = [];
 
-            // save the update
-            course.save();
+        function(course){
+            userHelper.isAuthorized(error,
+                {
+                    userId: params.userId,
+                    courseId: params.courseId
+                },
 
-            if (files) {
-                if (files.file && files.file.constructor != Array) {
-                    var be = [files.file];
-                    files.file = be;
-                }
-
-                for (var i in files.file) {
-                    var f = files.file[i];
-                    self.saveResourceFile(
-                        error,
-                        f,
-                        course.id,
-                        function (fn, ft) {
-                            if (ft == 'picture') {
-                                course.picture = fn;
-                                course.save();
-                            } else if (ft == 'video') {
-                                course.video = fn;
-                                course.save();
-                            }
-                        }
-                    );
-                }
-            }
-
-            // they giving us the tags in array of slug string.
-            if (params.tagSlugs) {
-                // insert all the tags, if it failed, means it is already there
-                var tc = new TagController();
-                // get all the tags, we need the _ids
-                for (var i in params.tagSlugs) {
-                    var tagParam = {
-                        name: params.tagSlugs[i],
-                        course: course._id,
-                        category: course.category._id
-                    };
-
-                    tc.addCourseTag(function (err) {
-                            if (err) debug(err);
-                        },
-                        tagParam,
-                        // we dont need to do anything after, so pass it an empty func
-                        function () {
-                        });
-                }
-            }
-
-            success(course);
+                function(isAllowed){
+                    if(isAllowed){
+                        saveEditCourse(course);
+                    } else {
+                        error(helper.createError401());
+                    }
+                });
         }
     );
 };

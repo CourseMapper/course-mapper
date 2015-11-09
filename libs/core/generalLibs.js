@@ -45,6 +45,17 @@ var cmLibraries = {
         return error;
     },
 
+    createError401: function (msg) {
+        if(!msg){
+            msg = 'Not Authorized';
+        }
+
+        var error = new Error(msg);
+        error.httpCode = 401;
+
+        return error;
+    },
+
     convertToDictionary: function (documents) {
         var ret = {};
         for (var i in documents) {

@@ -79,7 +79,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
                 $scope.progressPercentage = 0;
             })
 
-            .error(function(){
+            .error(function(data){
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
 
