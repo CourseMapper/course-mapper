@@ -79,6 +79,7 @@ app.config(function(toastrConfig) {
 
     $scope.isOwner = false;
     $scope.isEnrolled = false;
+    $scope.isManager = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
@@ -234,6 +235,10 @@ app.config(function(toastrConfig) {
 
     $scope.$watch(function(){ return courseService.isEnrolled(); }, function(newVal, oldVal){
         $scope.isEnrolled = newVal;
+    });
+
+    $scope.$watch(function(){ return courseService.isManager(authService.user); }, function(newVal, oldVal){
+        $scope.isManager = newVal;
     });
 
     $scope.$watch(function(){ return courseService.isOwner(authService.user); }, function(newVal, oldVal){
@@ -2997,36 +3002,40 @@ app.directive('timepicker', function($timeout) {
                 var self = this;
 
                 if(!user){
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
                 return (user._id == self.course.createdBy._id);
             },
 
             isManager: function (user) {
-                /*var self = this;
+                var self = this;
 
                 if(!user){
-                    console.error('user does not exist');
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
-                return (user._id == self.course.createdBy._id);*/
+                var mgr = _.find(self.course.managers, {_id: user._id});
+
+                if(mgr){
+                    return true;
+                }
+
+                return false;
             },
 
             leave: function(user, success, error){
                 var self = this;
 
                 if(!user){
-                    console.error('user does not exist');
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
                 var url = '/api/course/' + self.course._id + '/leave';
 
@@ -3050,11 +3059,10 @@ app.directive('timepicker', function($timeout) {
                 var self = this;
 
                 if(!user){
-                    console.error('user does not exist');
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
                 var url = '/api/course/' + self.course._id + '/enroll';
 
@@ -5126,7 +5134,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
         $scope.$on(onCloseButtonClicked, function (event, widget) {
-             $scope.uninstall(widget.location, widget.application, widget.widget, widget.courseId);
+             $scope.uninstall(widget._id);
         });
     });
 
@@ -5149,40 +5157,40 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         if(courseId)
             params.courseId = courseId;
 
-        $http.put('/api/widgets/install', params).success(function (data) {
-            if(data.result)
-                $scope.installedWidget = data.installed;
+        $http.put('/api/widgets/install', params)
+            .success(function (data) {
+                if(data.result)
+                    $scope.installedWidget = data.installed;
 
-            // hide the widget gallery
-            $('#widgetGallery').modal('hide');
+                // hide the widget gallery
+                $('#widgetGallery').modal('hide');
 
-            $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
+                $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
 
-            toastr.success('Widget is installed');
-        });
+                toastr.success('Widget is installed');
+            })
+            .error(function(data){
+                toastr.error('Installation failed');
+            });
     };
 
-    $scope.uninstall = function(location, application, name, courseId){
-        var params = {
-            application: application,
-            widget: name,
-            location: location
-        };
+    $scope.uninstall = function(installId){
+        $http.put('/api/widgets/uninstall/' + installId, {})
+            .success(function (data) {
+                if(data.result) {
+                    $scope.uninstalledWidget = data.uninstalled;
 
-        if(courseId)
-            params.courseId = courseId;
+                    // hide the widget gallery
+                    $('#widgetGallery').modal('hide');
 
-        $http.put('/api/widgets/uninstall', params).success(function (data) {
-            if(data.result)
-                $scope.uninstalledWidget = data.uninstalled;
+                    $rootScope.$broadcast('onAfterUninstall' + data.uninstalled.location, $scope.uninstalledWidget);
 
-            // hide the widget gallery
-            $('#widgetGallery').modal('hide');
-
-            $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
-
-            toastr.success('Widget is uninstalled');
-        });
+                    toastr.success('Widget is uninstalled');
+                }
+            })
+            .error(function(data){
+                toastr.error('Uninstallation failed');
+            });
     };
 
 });

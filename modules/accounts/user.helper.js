@@ -1,7 +1,15 @@
 var UserCourses = require('../catalogs/course.controller.js');
+var Courses = require('../catalogs/courses.js');
 
 var userHelper = {
 
+    /**
+     *
+     * @param error
+     * @param userId
+     * @param courseId
+     * @param success
+     */
     isUserEnrolled: function(error, userId, courseId, success){
         var params = {
             course: courseId,
@@ -25,9 +33,15 @@ var userHelper = {
             });
     },
 
+    /**
+     * check if this userId is the creator of this courseId
+     * @param error
+     * @param userId
+     * @param courseId
+     * @param success
+     */
     isUserCreatedCourse: function(error, userId, courseId, success){
-        // check if this guy creates this course
-        var params2 = {
+        var params = {
             createdBy: userId,
             _id: courseId
         };
@@ -38,7 +52,7 @@ var userHelper = {
                 error(err);
             },
 
-            params2,
+            params,
 
             function(doc){
                 if(doc.length > 0){
@@ -48,7 +62,32 @@ var userHelper = {
                 }
             }
         );
+    },
+
+    isManager: function(error, userId, courseId, success){
+        var params = {
+            _id: courseId,
+            managers: userId
+        };
+
+        Courses.find(
+
+            params,
+
+            function(err, doc){
+                if(err)
+                    error();
+                else {
+                    if (doc.length > 0) {
+                        success(true);
+                    } else {
+                        success(false);
+                    }
+                }
+            }
+        );
     }
+
 };
 
 module.exports = userHelper;

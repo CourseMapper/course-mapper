@@ -20,7 +20,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
         $scope.$on(onCloseButtonClicked, function (event, widget) {
-             $scope.uninstall(widget.location, widget.application, widget.widget, widget.courseId);
+             $scope.uninstall(widget._id);
         });
     });
 
@@ -43,40 +43,40 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
         if(courseId)
             params.courseId = courseId;
 
-        $http.put('/api/widgets/install', params).success(function (data) {
-            if(data.result)
-                $scope.installedWidget = data.installed;
+        $http.put('/api/widgets/install', params)
+            .success(function (data) {
+                if(data.result)
+                    $scope.installedWidget = data.installed;
 
-            // hide the widget gallery
-            $('#widgetGallery').modal('hide');
+                // hide the widget gallery
+                $('#widgetGallery').modal('hide');
 
-            $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
+                $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
 
-            toastr.success('Widget is installed');
-        });
+                toastr.success('Widget is installed');
+            })
+            .error(function(data){
+                toastr.error('Installation failed');
+            });
     };
 
-    $scope.uninstall = function(location, application, name, courseId){
-        var params = {
-            application: application,
-            widget: name,
-            location: location
-        };
+    $scope.uninstall = function(installId){
+        $http.put('/api/widgets/uninstall/' + installId, {})
+            .success(function (data) {
+                if(data.result) {
+                    $scope.uninstalledWidget = data.uninstalled;
 
-        if(courseId)
-            params.courseId = courseId;
+                    // hide the widget gallery
+                    $('#widgetGallery').modal('hide');
 
-        $http.put('/api/widgets/uninstall', params).success(function (data) {
-            if(data.result)
-                $scope.uninstalledWidget = data.uninstalled;
+                    $rootScope.$broadcast('onAfterUninstall' + data.uninstalled.location, $scope.uninstalledWidget);
 
-            // hide the widget gallery
-            $('#widgetGallery').modal('hide');
-
-            $rootScope.$broadcast('onAfterUninstall' + location, $scope.uninstalledWidget);
-
-            toastr.success('Widget is uninstalled');
-        });
+                    toastr.success('Widget is uninstalled');
+                }
+            })
+            .error(function(data){
+                toastr.error('Uninstallation failed');
+            });
     };
 
 });

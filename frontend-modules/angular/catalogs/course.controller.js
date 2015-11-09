@@ -9,6 +9,7 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
 
     $scope.isOwner = false;
     $scope.isEnrolled = false;
+    $scope.isManager = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
@@ -164,6 +165,10 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
 
     $scope.$watch(function(){ return courseService.isEnrolled(); }, function(newVal, oldVal){
         $scope.isEnrolled = newVal;
+    });
+
+    $scope.$watch(function(){ return courseService.isManager(authService.user); }, function(newVal, oldVal){
+        $scope.isManager = newVal;
     });
 
     $scope.$watch(function(){ return courseService.isOwner(authService.user); }, function(newVal, oldVal){

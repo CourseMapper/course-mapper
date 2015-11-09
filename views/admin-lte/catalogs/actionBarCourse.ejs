@@ -1,6 +1,6 @@
 <script type="text/ng-template" id="actionBar-course-preview">
     <ul class="">
-        <li ng-hide="isOwner">
+        <li ng-hide="isOwner || isManager">
             <span ng-hide="user">Please
                 login to enroll to this course</span>
 
@@ -15,7 +15,10 @@
         <li ng-show="isOwner">
             You created this course
         </li>
-        <li ng-show="isOwner">
+        <li ng-show="isManager">
+            You are a manager
+        </li>
+        <li ng-show="isOwner || isManager">
             <a style="cursor: pointer"
                data-toggle="modal" data-target="#editView"
                title="Edit this course's details">
@@ -27,7 +30,7 @@
                title="Edit this course's details">
                 <i class="ionicons ion-gear-a"></i> &nbsp; SETTINGS</a>
         </li>
-        <li ng-show="isOwner">
+        <li ng-show="isOwner || isManager">
             <a style="cursor: pointer;"
                data-toggle="modal" data-target="#widgetGallery"
                title="Add or remove preview widgets">

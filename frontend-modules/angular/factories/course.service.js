@@ -33,36 +33,40 @@ app.factory('courseService', [
                 var self = this;
 
                 if(!user){
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
                 return (user._id == self.course.createdBy._id);
             },
 
             isManager: function (user) {
-                /*var self = this;
+                var self = this;
 
                 if(!user){
-                    console.error('user does not exist');
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
-                return (user._id == self.course.createdBy._id);*/
+                var mgr = _.find(self.course.managers, {_id: user._id});
+
+                if(mgr){
+                    return true;
+                }
+
+                return false;
             },
 
             leave: function(user, success, error){
                 var self = this;
 
                 if(!user){
-                    console.error('user does not exist');
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
                 var url = '/api/course/' + self.course._id + '/leave';
 
@@ -86,11 +90,10 @@ app.factory('courseService', [
                 var self = this;
 
                 if(!user){
-                    console.error('user does not exist');
-                    return;
+                    return false;
                 }
 
-                if(!self.isInitialized()) return;
+                if(!self.isInitialized()) return false;
 
                 var url = '/api/course/' + self.course._id + '/enroll';
 
