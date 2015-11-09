@@ -217,6 +217,17 @@ AppStore.prototype.setPosition = function (error, params, x, y, success) {
         return;
     }
 
+    function docSave(doc){
+        doc.save(function (err, w) {
+            if (err) {
+                error(err);
+            } else {
+                // call success callback
+                success(doc);
+            }
+        });
+    }
+
     WP.findOne({
         _id: params.widgetId
     }, function (err, doc) {
@@ -244,37 +255,20 @@ AppStore.prototype.setPosition = function (error, params, x, y, success) {
 
                 function (isAllowed) {
                     if (isAllowed) {
-
-                        doc.save(function (err, w) {
-                            if (err) {
-                                error(err);
-                            } else {
-                                // call success callback
-                                success(doc);
-                            }
-                        });
-
+                        docSave(doc);
                     } else {
-                        error(helper.createError('Not Authorized', 401));
+                        error(helper.createError401());
                     }
                 }
             );
         }
 
         else if (params.userId == doc.userId) {
-
-            doc.save(function (err) {
-                if (err) {
-                    error(err);
-                } else {
-                    // call success callback
-                    success(doc);
-                }
-            });
+            docSave(doc);
         }
 
         else {
-            error(helper.createError('Not Authorized', 401));
+            error(helper.createError401());
         }
     });
 
@@ -339,6 +333,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                         where.userId = params.userId
                     }
 
+                    // this widget can be installed multiple of times
                     if (wdg.allowMultipleInstallation) {
                         var newInstall = new WP(ins);
                         newInstall.save(function (err) {
@@ -349,6 +344,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                         });
 
                     } else {
+                        // we only installation once per widget per user
                         WP.findOneAndUpdate(
                             where,
                             ins,
