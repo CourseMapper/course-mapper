@@ -8,8 +8,8 @@
     "needActivation": false
   },
   "facebookAuth": {
-    "clientID": "1490140297947360",
-    "clientSecret": "75c5cd4a9a79d16df45b155ff10470ae",
+    "clientID": "1490134417947948",
+    "clientSecret": "9c239c9b196756f1a31744b42eca49ae",
     "callbackURL": "http://lanzarote.informatik.rwth-aachen.de:3000/api/accounts/facebook/callback"
   },
   "database": "localhost/course_mapper_prod"
