@@ -84,7 +84,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     };
 
     socket.on('annotations:updated', function (annotations) {
-
       var editedAnnotation = null;
       if ($scope.annotations && $scope.annotations.length > 0) {
         editedAnnotation = _.find($scope.annotations, function (ann) {
@@ -101,36 +100,36 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         $scope.annotations.push(editedAnnotation);
       }
 
-      _.sortByAll(annotations, ['start'])
-        .forEach(function (annotation) {
-          var cuePoint = {
-            timeLapse: {
-              start: (new Date(annotation.start).getTime() - 0.001) / 1000,
-              end: new Date(annotation.end).getTime() / 1000
-            },
-            onLeave: onLeave,
-            onUpdate: onUpdate,
-            onComplete: onComplete,
-            params: annotation
-          };
-          $scope.cuePoints.points.push(cuePoint);
+      var sorted = _.sortByAll(annotations, ['start']);
+      sorted.forEach(function (annotation) {
+        var cuePoint = {
+          timeLapse: {
+            start: (new Date(annotation.start).getTime() - 0.001) / 1000,
+            end: new Date(annotation.end).getTime() / 1000
+          },
+          onLeave: onLeave,
+          onUpdate: onUpdate,
+          onComplete: onComplete,
+          params: annotation
+        };
+        $scope.cuePoints.points.push(cuePoint);
 
-          annotation.canEdit = checkCanEdit(annotation);
-          annotation.reposition = function (params) {
-            if (params.position) {
-              annotation.position = params.position;
-            }
-            if (params.size) {
-              annotation.size = params.size;
-            }
-          };
-          $scope.annotations.push(annotation);
+        annotation.canEdit = checkCanEdit(annotation);
+        annotation.reposition = function (params) {
+          if (params.position) {
+            annotation.position = params.position;
+          }
+          if (params.size) {
+            annotation.size = params.size;
+          }
+        };
+        $scope.annotations.push(annotation);
 
-          // find current user comments
-          _.forEach(annotation.comments, function (c) {
-            c.canEdit = checkCanEdit(c);
-          });
+        // find current user comments
+        _.forEach(annotation.comments, function (c) {
+          c.canEdit = checkCanEdit(c);
         });
+      });
     });
 
     $scope.getInlineAnnotationStyle = function (item) {
