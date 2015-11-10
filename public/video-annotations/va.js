@@ -218,7 +218,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
     $scope.onPlayerReady = function (API) {
       // Bootstrap footprint
-      new Footprint({type: 'video', controls: false});
+      new Footprint({type: 'video', controls: false, timeupdate: false});
       $scope.API = API;
     };
 
