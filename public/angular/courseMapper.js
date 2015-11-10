@@ -648,12 +648,20 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.controller('MapController', function ($scope, $http, $rootScope, $timeout, $sce, $location, toastr) {
+;app.controller('MapController', function (
+    $scope, $http, $rootScope,
+    $timeout, $sce, $location,
+    toastr, mapService, courseService) {
+
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
     $scope.isTreeInitiated = false;
     $scope.isCurrentTabIsMap = false;
+    $scope.infoToast = null;
+    $scope.infoEmptyToast = null;
+    $scope.nodeModaltitle = "";
+    $scope.currentNodeAction = {};
 
     /**
      * find node recursively
@@ -686,12 +694,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             return found;
     };
 
-    $(document).ready(function () {
-        $scope.width = jQuery(window).width();
-        $scope.height = jQuery(window).height();
-        $scope.center = {x: $scope.width / 2, y: ($scope.height / 2) - 100};
-    });
-
     $scope.initDropDownMenuHybrid = function () {
         $('#tree .course-map').on('click', function (event) {
             var target = $(event.target);
@@ -714,32 +716,48 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * get all categories, recursived on the server
      */
-    $scope.init = function () {
+    $scope.initTab = function (course) {
         // add hover to center instantiate on hover
         $scope.initDropDown('center');
 
-        // get node data
-        $http.get('/api/treeNodes/course/' + $scope.course._id).success(function (data) {
-            if (!data.result)
-                console.log(data.errors);
-            else if (data.treeNodes.length > 0) {
-                $scope.treeNodes = data.treeNodes;
-            } else {
-                $scope.initJSPlumb();
-            }
+        mapService.init(course._id,
 
-            if($location.search().tab && $location.search().tab == 'map'){
-                if($scope.treeNodes.length == 0){
+            function(treeNodes){
+                if (treeNodes.length > 0) {
+                    $scope.treeNodes = treeNodes;
+                } else {
+                    $scope.initJSPlumb();
                     $scope.showMapEmptyInfo();
                 }
+            },
+
+            function(err){
+                console.log(err);
+                toastr.error('cannot load course tree');
             }
-        });
+        );
     };
 
-    $scope.$on('onAfterInitCourse', function (event, course) {
-        $scope.course = course;
-        $scope.init();
-    });
+    $scope.tabOpened = function () {
+        $scope.actionBarTemplate = 'actionBar-course-map';
+
+        if (courseService.course) {
+            $scope.course = courseService.course;
+
+            if(mapService.treeNodes){
+                $scope.treeNodes = mapService.treeNodes;
+            }
+
+            $scope.initTab(courseService.course);
+        } else {
+
+            $scope.$on('onAfterInitCourse', function (event, course) {
+                $scope.initTab(course);
+            });
+        }
+
+        $rootScope.$broadcast('onCoursePreviewTabOpened', $scope.currentTab);
+    };
 
     // initiate draggable jqUI to the topic node
     $scope.initDraggable = function (jsPlumbInstance) {
@@ -823,7 +841,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     };
 
-    $scope.infoToast = null;
     $scope.showMapInfo = function(){
         if(!$scope.infoToast){
             $scope.infoToast = toastr.info(
@@ -848,7 +865,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 
-    $scope.infoEmptyToast = null;
     $scope.showMapEmptyInfo = function(){
         if(!$scope.infoEmptyToast){
             $scope.infoEmptyToast = toastr.info(
@@ -904,8 +920,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         window.location.href = "/courses/#/category/" + categorySlug;
     };
 
-    $scope.nodeModaltitle = "";
-    $scope.currentNodeAction = {};
     $scope.setMode = function (mode, type, parent) {
         switch (mode) {
             case 'add':
@@ -941,25 +955,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $rootScope.$broadcast('onAfterSetMode', $scope.$parent.course);
     };
 
-    $scope.$watch(function () {
-        return $location.search()
-    }, function (newVal, oldVal) {
-        var currentTab = $location.search().tab;
-        if (currentTab == 'map') {
-            $scope.isCurrentTabIsMap = true;
-        }
-    }, true);
-
-    $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        $scope.isTreeInitiated = true;
-    });
-
-    $scope.$on('onAfterSetMode', function(event, course){
-        if($scope.currentNodeAction.type == "contentNode"){
-            $scope.parseResources();
-        }
-    });
-
     $scope.parseResources = function(){
         for(var i = 0;i < $scope.currentNodeAction.parent.resources.length; i++){
             var content = $scope.currentNodeAction.parent.resources[i];
@@ -975,76 +970,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         }
     };
-
-    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function (oldVal, newVal) {
-        if ($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
-            $scope.initJSPlumb();
-        }
-    });
-
-    $scope.$on('onAfterCreateNode', function (event, treeNode) {
-        if (treeNode.parent) {
-            found = false;
-            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
-
-            if (pNode) {
-                pNode.childrens.push(treeNode);
-            }
-        }
-        else
-            $scope.treeNodes.push(treeNode);
-
-        // destroy the jsplumb instance and svg rendered
-        $scope.destroyJSPlumb();
-
-        // this will reinitiate the model, and thus also jsplumb connection
-        $scope.treeNodes = angular.copy($scope.treeNodes);
-        $timeout(
-            function () {
-                $scope.$apply();
-                $scope.initJSPlumb();
-
-                if ($('.open').length > 0) {
-                    $('.open').removeClass('open');
-                    return true;
-                }
-            });
-    });
-
-    $scope.$on('onAfterEditNode', function (event, treeNode) {
-        if (treeNode) {
-            found = false;
-            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
-            if (pNode) {
-                pNode.name = treeNode.name;
-            }
-        }
-
-        $timeout(
-            function () {
-                $scope.$apply();
-            });
-    });
-
-    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
-        if (treeNode) {
-            found = false;
-            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
-            if (pNode) {
-                pNode.name = treeNode.name;
-                if(treeNode.resources.length > 0){
-                    for(var i in treeNode.resources){
-                        pNode.resources.push(treeNode.resources[i]);
-                    }
-                }
-            }
-        }
-
-        $timeout(
-            function () {
-                $scope.$apply();
-            });
-    });
 
     /**
      * remove all svg generated by js plumb.
@@ -1139,6 +1064,101 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 });
         }
     }
+
+    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+        if (treeNode.parent) {
+            found = false;
+            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
+
+            if (pNode) {
+                pNode.childrens.push(treeNode);
+            }
+        }
+        else
+            $scope.treeNodes.push(treeNode);
+
+        // destroy the jsplumb instance and svg rendered
+        $scope.destroyJSPlumb();
+
+        // this will reinitiate the model, and thus also jsplumb connection
+        $scope.treeNodes = angular.copy($scope.treeNodes);
+        $timeout(
+            function () {
+                $scope.$apply();
+                $scope.initJSPlumb();
+
+                if ($('.open').length > 0) {
+                    $('.open').removeClass('open');
+                    return true;
+                }
+            });
+    });
+
+    $scope.$on('onAfterEditNode', function (event, treeNode) {
+        if (treeNode) {
+            found = false;
+            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
+            if (pNode) {
+                pNode.name = treeNode.name;
+            }
+        }
+
+        $timeout(
+            function () {
+                $scope.$apply();
+            });
+    });
+
+    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+        if (treeNode) {
+            found = false;
+            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
+            if (pNode) {
+                pNode.name = treeNode.name;
+                if(treeNode.resources.length > 0){
+                    for(var i in treeNode.resources){
+                        pNode.resources.push(treeNode.resources[i]);
+                    }
+                }
+            }
+        }
+
+        $timeout(
+            function () {
+                $scope.$apply();
+            });
+    });
+
+    $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
+        $scope.isTreeInitiated = true;
+    });
+
+    $scope.$on('onAfterSetMode', function(event, course){
+        if($scope.currentNodeAction.type == "contentNode"){
+            $scope.parseResources();
+        }
+    });
+
+    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function (oldVal, newVal) {
+        if ($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
+            $scope.initJSPlumb();
+        }
+    });
+
+    $scope.$watch(function () { return $location.search() }, function (newVal, oldVal) {
+        var currentTab = $location.search().tab;
+        if (currentTab == 'map') {
+            $scope.isCurrentTabIsMap = true;
+        }
+    }, true);
+
+    $(document).ready(function () {
+        $scope.width = jQuery(window).width();
+        $scope.height = jQuery(window).height();
+        $scope.center = {x: $scope.width / 2, y: ($scope.height / 2) - 100};
+    });
+
+    $scope.tabOpened();
 });
 ;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location,
                                                 $routeParams, $timeout, ActionBarService,
@@ -3121,7 +3141,48 @@ app.directive('timepicker', function($timeout) {
             }
         }
     }
-]);;;app.factory('Page', function($window) {
+]);;app.factory('mapService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            treeNodes: null,
+
+            init: function (courseId, success, error, force) {
+                var self = this;
+
+                if (!force && self.treeNodes) {
+                    if (success)
+                        success(self.treeNodes);
+                }
+
+                else if (force || !self.treeNodes)
+                    $http.get('/api/treeNodes/course/' + courseId)
+                        .success(function (data) {
+                            if (data.result) {
+                                self.treeNodes = data.treeNodes;
+                                if (success)
+                                    success(self.treeNodes);
+                            }
+                        })
+
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+
+            isInitialized: function () {
+                if (!this.treeNodes) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+    }
+]);;app.factory('Page', function($window) {
     var prefix = 'CourseMapper';
     var title = 'CourseMapper';
     return {
