@@ -95,11 +95,11 @@ app.config(function(toastrConfig) {
         var defaultPath = "preview";
         var q = $location.search();
 
-        if(q.tab){
-            defaultPath = q.tab;
+        if(!q.tab){
+            q.tab = defaultPath;
         }
 
-        $scope.currentTab = $scope.tabs[defaultPath];
+        $scope.currentTab = $scope.tabs[q.tab];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
 
         if($scope.course)
@@ -2284,7 +2284,7 @@ app.directive('timepicker', function($timeout) {
             dt.html($scope.currentTopic.title);
         } else {
             if($scope.pid){
-                $('.action-header .breadcrumb').find('li.tab').wrapInner('<a class="discussionTabLink" href="'+u+'"></a>');
+                $('.action-header .breadcrumb').find('li.tabName').wrapInner('<a class="discussionTabLink" href="'+u+'"></a>');
                 var newEl = '<li class="discussionTitle active">' + $scope.currentTopic.title + '</li>';
                 $('.action-header .breadcrumb').append(newEl);
             }

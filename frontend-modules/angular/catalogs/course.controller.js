@@ -25,11 +25,11 @@ app.controller('CourseController', function($scope, $rootScope, $filter, $http,
         var defaultPath = "preview";
         var q = $location.search();
 
-        if(q.tab){
-            defaultPath = q.tab;
+        if(!q.tab){
+            q.tab = defaultPath;
         }
 
-        $scope.currentTab = $scope.tabs[defaultPath];
+        $scope.currentTab = $scope.tabs[q.tab];
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
 
         if($scope.course)
