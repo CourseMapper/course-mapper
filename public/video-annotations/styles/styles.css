@@ -8,7 +8,7 @@
 
 ::-webkit-scrollbar-thumb {
     background: #3c8dbc;
-    //-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 5);
+/ / -webkit-box-shadow: inset 0 0 6 px rgba(0, 0, 0, 5);
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
@@ -37,8 +37,8 @@
 
 .inline-va-annotation:hover {
     background: rgba(0, 0, 0, 0.3);
-    -webkit-transition: 0.2s linear all;
-    transition: 0.2s ease-out all;
+    -webkit-transition: 0.1s linear all;
+    transition: 0.1s ease-out all;
 }
 
 .inline-va-annotation span {
@@ -82,7 +82,7 @@ video-annotation.completed {
 }
 
 video-annotation.hovered {
-    //background: red;
+/ / background: red;
 }
 
 video-annotation.default {
