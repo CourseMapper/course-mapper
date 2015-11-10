@@ -302,7 +302,7 @@ app.controller('MapController', function (
         else
             $scope.currentNodeAction.parent = false;
 
-        $rootScope.$broadcast('onAfterSetMode', $scope.$parent.course);
+        $rootScope.$broadcast('onAfterSetMode', $scope.course);
     };
 
     $scope.parseResources = function(){
@@ -368,7 +368,7 @@ app.controller('MapController', function (
     };
 
     $scope.getContentNodeLink = function (d) {
-        return '#/cid/' + $scope.$parent.course._id + '/nid/' + d._id;
+        return '#/cid/' + $scope.course._id + '/nid/' + d._id;
     };
 
     $scope.deleteNode = function (data) {
