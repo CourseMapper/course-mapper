@@ -685,11 +685,11 @@ a.videoButton:hover{
     margin-bottom: 0px !important;
 }
 
-#preview .preview-image {
+.preview .preview-image {
     width: 100%;
 }
 
-.content-course #preview .container {
+.content-course .preview .container {
     top: 0px;
     left: 0px;
     position: absolute;
@@ -700,7 +700,7 @@ a.videoButton:hover{
     margin-right: 40px;
 }
 
-.content-node #preview .container {
+.content-node .preview .container {
     padding: 20px;
     background: transparent;
     min-height: 120px;
@@ -708,7 +708,7 @@ a.videoButton:hover{
     margin-right: 40px;
 }
 
-#preview .container .excerpt {
+.preview .container .excerpt {
     background: white;
     margin: 5px 20px 20px;
     padding: 20px;
@@ -723,7 +723,7 @@ a.videoButton:hover{
     overflow: auto;
 }
 
-#preview h1 {
+.preview h1 {
     font-size: 27px;
     margin-top: 10px;
 }

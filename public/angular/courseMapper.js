@@ -35,7 +35,7 @@ app.config(function(toastrConfig) {
 
             when('/cid/:courseId', {
                 templateUrl: '/course/courseDetail',
-                controller: 'CourseController',
+                controller: 'CourseRootController',
                 reloadOnSearch: false
             }).
 
@@ -68,107 +68,67 @@ app.config(function(toastrConfig) {
     });
 
 });
-;app.controller('CourseController', function($scope, $rootScope, $filter, $http,
-                                            $location, $routeParams, $timeout,
-                                            courseService, authService, toastr, Page) {
+;app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
+                                             $location, $routeParams, $timeout,
+                                             courseService, authService, toastr, Page) {
+
+    $scope.courseId = $routeParams.courseId;
     $scope.course = null;
     $scope.videoSources = false;
-
-    $scope.loc = $location.absUrl() ;
-    $scope.courseId = $routeParams.courseId;
-
-    $scope.isOwner = false;
-    $scope.isEnrolled = false;
-    $scope.isManager = false;
-
-    $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?enroll=1';
-
     $scope.isPlaying = false;
+    $scope.actionBarTemplate = 'actionBar-course-preview';
 
-    $scope.currentTab = "preview";
-    $scope.tabs = {
-        'preview':'preview',
-        'analytics':'analytics',
-        'map':'map',
-        'updates':'updates',
-        'discussion':'discussion'
-    };
+    $scope.tabOpened = function () {
+        $scope.actionBarTemplate = 'actionBar-course-preview';
 
-    $scope.changeTab = function(){
-        var defaultPath = "preview";
-        var q = $location.search();
-
-        if(q.tab){
-            defaultPath = q.tab;
+        if (courseService.course) {
+            $scope.course = courseService.course;
+            $scope.initTab($scope.course);
+        } else {
+            $scope.$on('onAfterInitCourse', function (event, course, refreshPicture) {
+                $scope.initTab(course, refreshPicture);
+            });
         }
 
-        $scope.currentTab = $scope.tabs[defaultPath];
-        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
-
-        if($scope.course)
-            Page.setTitleWithPrefix($scope.course.name + ' > ' + $scope.currentTab);
-
-        $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
+        $rootScope.$broadcast('onCoursePreviewTabOpened', $scope.currentTab);
     };
 
-    $scope.init = function(refreshPicture){
-        courseService.init($scope.courseId,
-            function(course){
-                $scope.course = course;
+    $scope.initTab = function (course, refreshPicture) {
+        $scope.course = course;
 
-                Page.setTitleWithPrefix($scope.course.name);
+        if (refreshPicture) {
+            if ($scope.course.picture)
+                $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+        }
 
-                if(refreshPicture) {
-                    if($scope.course.picture)
-                        $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
-                }
+        if ($scope.course.video) {
+            $scope.videoSources = [{
+                src: $scope.course.video,
+                type: 'video/mp4'
+            }];
+        }
 
-                if($scope.course.video){
-                    $scope.videoSources = [{
-                        src: $scope.course.video,
-                        type: 'video/mp4'
-                    }];
-                }
-
-                if(!refreshPicture) {
-                    $timeout(function () {
-                        $scope.$broadcast('onAfterInitCourse', $scope.course);
-                    });
-                }
-            },
-
-            function(res){
-                $scope.errors = res.errors;
-                toastr.error('Failed getting course');
-            }
-        );
-
-        $scope.changeTab();
+        Page.setTitleWithPrefix($scope.course.name + ' > Preview');
     };
 
-    $scope.playVideo = function(){
+    $scope.playVideo = function () {
         $scope.isPlaying = true;
     };
 
-    $scope.stopVideo = function(){
+    $scope.stopVideo = function () {
         $scope.isPlaying = false;
     };
 
-    $scope.$on('onAfterEditCourse',function(events, course){
-        $scope.init(true);
-    });
-
-    $scope.enroll = function(){
+    $scope.enroll = function () {
         $scope.loading = true;
         courseService.enroll(authService.user,
 
-            function(){
+            function () {
                 $scope.loading = false;
                 toastr.success('You are now enrolled');
             },
 
-            function(res){
+            function (res) {
                 $scope.loading = false;
                 toastr.error(JSON.stringify(res.errors));
             }
@@ -176,16 +136,16 @@ app.config(function(toastrConfig) {
 
     };
 
-    $scope.leave = function(){
+    $scope.leave = function () {
         $scope.loading = true;
 
         courseService.leave(authService.user,
-            function(){
+            function () {
                 $scope.loading = false;
                 toastr.success('You left the course');
             },
 
-            function(){
+            function () {
                 $scope.loading = false;
                 toastr.error(JSON.stringify(res.errors));
             }
@@ -193,61 +153,9 @@ app.config(function(toastrConfig) {
     };
 
     /**
-     * show new course notification/guide if it is a new course
+     * init tabs
      */
-    $scope.newCourseNotification = function(){
-        var loc = $location.search();
-        if(loc.new && loc.new == 1){
-            toastr.info('<p>You are now in a newly created course. </p>' +
-            '<p>You can start by customizing this course by uploading introduction picture and video on the edit panel.</p>' +
-            '<p>Collaborate and Annotate on course map and its contents in <i class="ionicons ion-map"></i> <b>Map Tab</b></p>' +
-            '<p>Discuss related topic in <i class="ionicons ion-ios-chatboxes"></i> <b>Discussion Tab.</b></p>' +
-            '<p>Adding widgets on <i class="ionicons ion-stats-bars"></i> <b>Analytics tab</b>.</p>' +
-            '<p>Or wait for your students to enroll in to this course and start collaborating.</p>'
-                , 'New course created'
-                , {
-                    allowHtml: true,
-                    closeButton: true,
-                    autoDismiss: false,
-                    tapToDismiss: false,
-                    toastClass: 'toast wide',
-                    extendedTimeOut: 30000,
-                    timeOut: 30000
-                });
-        }
-
-    };
-
-    $scope.newCourseNotification();
-
-    /**
-     * initiate course when user is logged in
-     */
-    /*authService.loginCheck(function(){
-        $scope.init();
-    });*/
-
-    $scope.$watch(function(){ return authService.isLoggedIn;}, function(){
-        if(authService.isLoggedIn !== null && !$scope.course){
-            $scope.init();
-        }
-    });
-
-    $scope.$watch(function(){ return courseService.isEnrolled(); }, function(newVal, oldVal){
-        $scope.isEnrolled = newVal;
-    });
-
-    $scope.$watch(function(){ return courseService.isManager(authService.user); }, function(newVal, oldVal){
-        $scope.isManager = newVal;
-    });
-
-    $scope.$watch(function(){ return courseService.isOwner(authService.user); }, function(newVal, oldVal){
-        $scope.isOwner = newVal;
-    });
-
-    $scope.$on('$routeUpdate', function(){
-        $scope.changeTab();
-    });
+    $scope.tabOpened();
 });
 ;app.controller('CourseConfigController', function ($scope, $http, toastr) {
     $scope.courseEdit = null;
@@ -505,6 +413,125 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 });
         }
     };
+});
+;app.controller('CourseRootController', function($scope, $rootScope, $filter, $http,
+                                            $location, $routeParams, $timeout,
+                                            courseService, authService, toastr, Page) {
+
+    $scope.courseId = $routeParams.courseId;
+    $scope.course = null;
+
+    $scope.isOwner = false;
+    $scope.isEnrolled = false;
+    $scope.isManager = false;
+
+    $scope.currentUrl = window.location.href;
+    $scope.followUrl = $scope.currentUrl + '?enroll=1';
+
+    $scope.currentTab = "preview";
+    $scope.include = null;
+
+    $scope.changeTab = function(){
+        var defaultPath = "preview";
+        var q = $location.search();
+
+        if(!q.tab){
+            q.tab = defaultPath;
+        }
+
+        $scope.currentTab = q.tab;
+        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
+
+        if($scope.course)
+            Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
+
+        $scope.include = '/course/' + $scope.currentTab;
+
+        $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
+    };
+
+    $scope.init = function(refreshPicture){
+        courseService.init(
+            $scope.courseId,
+
+            function(course){
+                $scope.course = course;
+
+                Page.setTitleWithPrefix($scope.course.name);
+
+                $timeout(function () {
+                    $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
+                });
+            },
+
+            function(res){
+                $scope.errors = res.errors;
+                toastr.error('Failed getting course');
+            },
+
+            true
+        );
+
+        $scope.changeTab();
+    };
+
+    /**
+     * show new course notification/guide if it is a new course
+     */
+    $scope.newCourseNotification = function(){
+        var loc = $location.search();
+        if(loc.new && loc.new == 1){
+            toastr.info('<p>You are now in a newly created course. </p>' +
+                '<p>You can start by customizing this course by uploading introduction picture and video on the edit panel.</p>' +
+                '<p>Collaborate and Annotate on course map and its contents in <i class="ionicons ion-map"></i> <b>Map Tab</b></p>' +
+                '<p>Discuss related topic in <i class="ionicons ion-ios-chatboxes"></i> <b>Discussion Tab.</b></p>' +
+                '<p>Adding widgets on <i class="ionicons ion-stats-bars"></i> <b>Analytics tab</b>.</p>' +
+                '<p>Or wait for your students to enroll in to this course and start collaborating.</p>'
+                , 'New course created'
+                , {
+                    allowHtml: true,
+                    closeButton: true,
+                    autoDismiss: false,
+                    tapToDismiss: false,
+                    toastClass: 'toast wide',
+                    extendedTimeOut: 30000,
+                    timeOut: 30000
+                });
+        }
+
+    };
+
+    $scope.newCourseNotification();
+
+    /**
+     * initiate course when user is logged in
+     */
+    $scope.$watch(function(){ return authService.isLoggedIn;}, function(){
+        if(authService.isLoggedIn !== null && !$scope.course){
+            $scope.init();
+        }
+    });
+
+    $scope.$watch(function(){ return courseService.isEnrolled(); }, function(newVal, oldVal){
+        $scope.isEnrolled = newVal;
+    });
+
+    $scope.$watch(function(){ return courseService.isManager(authService.user); }, function(newVal, oldVal){
+        $scope.isManager = newVal;
+    });
+
+    $scope.$watch(function(){ return courseService.isOwner(authService.user); }, function(newVal, oldVal){
+        $scope.isOwner = newVal;
+    });
+
+    $scope.$on('$routeUpdate', function(){
+        $scope.changeTab();
+    });
+
+    $scope.$on('onAfterEditCourse',function(events, course){
+        $scope.init(true);
+    });
+
 });
 ;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce, Page ) {
     $scope.slug = $routeParams.slug;
@@ -2974,22 +3001,27 @@ app.directive('timepicker', function($timeout) {
         return {
             course: null,
 
-            init: function(courseId, success, error){
+            init: function(courseId, success, error, force){
                 var self = this;
 
-                $http.get('/api/course/' + courseId)
-                    .success(function(res){
-                        if(res.result) {
-                            self.course = res.course;
+                if(!force && self.course){
+                    if(success)
+                        success(self.course);
+                }
+                else if(force || !self.course)
+                    $http.get('/api/course/' + courseId)
+                        .success(function(res){
+                            if(res.result) {
+                                self.course = res.course;
 
-                            if(success)
-                                success(res.course);
-                        }
-                    })
-                    .error(function(res){
-                        if(error)
-                            error(res);
-                    });
+                                if(success)
+                                    success(res.course);
+                            }
+                        })
+                        .error(function(res){
+                            if(error)
+                                error(res);
+                        });
             },
 
             isEnrolled: function(){
@@ -3089,7 +3121,7 @@ app.directive('timepicker', function($timeout) {
             }
         }
     }
-]);;app.factory('Page', function($window) {
+]);;;app.factory('Page', function($window) {
     var prefix = 'CourseMapper';
     var title = 'CourseMapper';
     return {

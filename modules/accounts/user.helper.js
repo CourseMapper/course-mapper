@@ -1,5 +1,5 @@
-var UserCourses = require('../catalogs/course.controller.js');
-var Courses = require('../catalogs/courses.js');
+var appRoot = require('app-root-path');
+var Courses = require( appRoot + '/modules/catalogs/courses.js');
 
 var userHelper = {
 
@@ -16,7 +16,7 @@ var userHelper = {
             user: userId
         };
 
-        var uc = new UserCourses();
+        var uc = new Course();
         uc.getUserCourses(
             function(err){
                 error(err);
@@ -46,22 +46,17 @@ var userHelper = {
             _id: courseId
         };
 
-        var uc = new UserCourses();
-        uc.getCourses(
-            function(err){
-                error(err);
-            },
-
-            params,
-
-            function(doc){
-                if(doc.length > 0){
+        Courses.find(params, function (err, docs) {
+            if (!err) {
+                if(docs.length > 0){
                     success(true);
                 } else {
                     success(false);
                 }
+            } else {
+                error(err);
             }
-        );
+        });
     },
 
     isManager: function(error, userId, courseId, success){

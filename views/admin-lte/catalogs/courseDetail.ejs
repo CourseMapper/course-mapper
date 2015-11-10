@@ -42,25 +42,8 @@
                 <% include courseDetailLeftTab %>
 
                 <div class="tab-content">
-                    <div class="tab-pane active" id="preview">
-                        <% include courseDetailContentPreview %>
-                    </div>
-
-                    <div class="tab-pane" id="map">
-                        <% include courseDetailContentMap %>
-                        <div class="clear"></div>
-                    </div>
-
-                    <div class="tab-pane" id="discussion">
-                        <% include ../discussion/topics %>
-                    </div>
-
-                    <div class="tab-pane" id="updates">
-                        <% include courseDetailContentUpdates %>
-                    </div>
-
-                    <div class="tab-pane" id="analytics">
-                        <% include courseDetailContentAnalytics %>
+                    <div class="tab-pane active" ng-class="currentTab" id="tabContent">
+                        <div ng-include="include"></div>
                     </div>
                 </div>
             </div>

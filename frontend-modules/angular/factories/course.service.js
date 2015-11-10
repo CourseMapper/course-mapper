@@ -5,22 +5,27 @@ app.factory('courseService', [
         return {
             course: null,
 
-            init: function(courseId, success, error){
+            init: function(courseId, success, error, force){
                 var self = this;
 
-                $http.get('/api/course/' + courseId)
-                    .success(function(res){
-                        if(res.result) {
-                            self.course = res.course;
+                if(!force && self.course){
+                    if(success)
+                        success(self.course);
+                }
+                else if(force || !self.course)
+                    $http.get('/api/course/' + courseId)
+                        .success(function(res){
+                            if(res.result) {
+                                self.course = res.course;
 
-                            if(success)
-                                success(res.course);
-                        }
-                    })
-                    .error(function(res){
-                        if(error)
-                            error(res);
-                    });
+                                if(success)
+                                    success(res.course);
+                            }
+                        })
+                        .error(function(res){
+                            if(error)
+                                error(res);
+                        });
             },
 
             isEnrolled: function(){

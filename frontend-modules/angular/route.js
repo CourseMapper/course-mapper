@@ -23,7 +23,7 @@ app.config(['$routeProvider', '$locationProvider',
 
             when('/cid/:courseId', {
                 templateUrl: '/course/courseDetail',
-                controller: 'CourseController',
+                controller: 'CourseRootController',
                 reloadOnSearch: false
             }).
 
