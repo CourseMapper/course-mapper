@@ -18,7 +18,7 @@
                                 <h4>{{widget.name}}</h4>
                                 <p>{{widget.description}}</p>
                                 <a ng-hide="isInstalled(widget._id)" style="cursor: pointer"
-                                   ng-click="install(location, widget.application, widget.name, course._id)"
+                                   ng-click="install(location, widget.application, widget.name, {courseId: course._id})"
                                    class="btn btn-primary btn-sm" role="button"><i class="fa fa-download"></i> Install </a>
                                 <a ng-show="isInstalled(widget._id)"
                                    class="btn btn-warning btn-sm" role="button"> Installed </a>

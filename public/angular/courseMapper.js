@@ -3296,7 +3296,210 @@ app.factory('socket', function($rootScope) {
         }
     };
 });
-;app.filter('capitalize', function() {
+;app.factory('widgetService', [
+    '$scope', '$http', '$rootScope', '$ocLazyLoad', '$timeout',
+
+    function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+        return {
+            widgets: [],
+            uninstalledwidgets: [],
+            installedWidgets: [],
+
+            getWidgetsOnLocation: function (location, id, success, error, force) {
+                var self = this;
+
+                if (!force && self.widgets[location]) {
+                    self.initializeWidgets(data.widgets);
+
+                    if (success) {
+                        success(data.widgets);
+                    }
+                }
+
+                else if (force || !self.widgets[location])
+                    $http.get('/api/widgets/' + location + '/' + id)
+                        .success(function (data) {
+                            if(data.result){
+                                self.widgets[location] = data.widgets;
+                                self.initializeWidgets(data.widgets);
+
+                                if (success) {
+                                    success(data.widgets);
+                                }
+                            } else
+                                if (error)
+                                    error(data.errors);
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+            initializeWidgets: function (widgets) {
+                for (var i in widgets) {
+                    var wdg = widgets[i];
+
+                    // loop to load the js (if exist)
+                    if (wdg.widgetId.widgetJavascript) {
+                        this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0]);
+                    }
+                }
+            },
+
+            isInitialized: function (location) {
+                if (!this.widgets[location]) {
+                    return false;
+                }
+
+                return true;
+            },
+
+            addWidget: function (location, id) {
+                var self = this;
+
+                var loc = '#' + location + '-widgets';
+                var grid = $(loc).data('gridstack');
+
+                var el = '#w' + id;
+
+                // get width and height
+                var i = _.findIndex(self.widgets[location], {'widgetId': {'_id': id}});
+                var wdg = self.widgets[location][i];
+
+                //add_widget(el, x, y, width, height, auto_position)
+                var x = 0;
+                var y = 0;
+                if (wdg.position) {
+                    x = wdg.position.x;
+                    y = wdg.position.y;
+                }
+
+                grid.add_widget(el, x, y, wdg.width, wdg.height, false);
+            },
+
+            initWidgetButton: function (location, id) {
+                $.AdminLTE.boxWidget.activate();
+                this.addWidget(location, id);
+
+                var h = $('#w' + id + ' .grid-stack-item-content');
+                $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
+            },
+
+            lazyLoad: function (wdg, currentIndex, widgetJsArray, fileToLoad) {
+                (function (wdg) {
+                    var jsfn = '/' + wdg.application + '/' + fileToLoad;
+
+                    $ocLazyLoad.load(jsfn).then(function () {
+                        // the last one has been loaded
+                        var l = wdg.widgetId.widgetJavascript.length - 1;
+                        if (fileToLoad == wdg.widgetId.widgetJavascript[l]) {
+                            // only push to main widgets array when it is the last js to load
+                            $scope.widgets.push(wdg);
+                        } else {
+                            var nextFile = widgetJsArray[currentIndex++];
+                            $scope.lazyLoad(wdg, currentIndex, widgetJsArray, nextFile);
+                        }
+                    });
+                })(wdg);
+            },
+
+            install: function (location, application, name, extraParams) {
+                var params = {
+                    application: application,
+                    widget: name,
+                    location: location
+                };
+
+                params = _.merge(params, extraParams);
+
+                $http.put('/api/widgets/install', params)
+                    .success(function (data) {
+                        if (data.result) {
+                            $rootScope.$broadcast('onAfterInstall' + location, data.installed);
+
+                            if (success)
+                                success(data.installed);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
+            uninstall: function (installId, success, error) {
+                var self = this;
+
+                $http.put('/api/widgets/uninstall/' + installId, {})
+                    .success(function (data) {
+                        if (data.result) {
+                            $rootScope.$broadcast('onAfterUninstall' + data.uninstalled.location, data.uninstalled);
+                            self.uninstalledwidgets.push(installId);
+
+                            if (success)
+                                success(data.uninstalled);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
+            setPosition: function (wId, x, y, success, error) {
+                $http.put('/api/widget/' + wId + '/setPosition/', {
+                        x: x, y: y
+                    })
+                    .success(function (res) {
+                        if (success)
+                            success(res);
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
+            initiateDraggableGrid: function (locs) {
+                var self = this;
+
+                var loc = '#' + locs + '-widgets';
+
+                var options = {
+                    cell_height: 340,
+                    vertical_margin: 10,
+                    resizable: false
+                };
+
+                var curNode = {x: 0, y: 0};
+
+                var $gs = $(loc);
+                $gs.gridstack(options);
+
+                $gs.on('onStartMove', function (e, node) {
+                    curNode.x = node.x;
+                    curNode.y = node.y;
+                });
+
+                $gs.on('onMove', function (e, node) {
+
+                });
+
+                $gs.on('onFinishDrop', function (e, node) {
+                    var o = $(node.el);
+
+                    if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
+                        o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+                    }
+
+                    var wId = o.attr('id').substr(1);
+                    self.setPosition(wId, node.x, node.y);
+                });
+            },
+        }
+    }
+]);;app.filter('capitalize', function() {
     return function(input, all) {
         return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
     }
@@ -5257,6 +5460,83 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
     };
 
+});
+;app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
+                                                         $timeout, widgetService, courseService) {
+    $scope.location = "user-preview";
+    $scope.widgets = [];
+    $scope.widgetsTemp = [];
+
+    $scope.getWidgets = function(force){
+        widgetService.getWidgetsOnLocation($scope.location, $scope.course._id,
+
+            function(widgets){
+                $scope.widgets = widgets;
+                $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, widgets);
+            },
+
+            function(errors){
+                toastr.error(errors);
+            },
+
+            force
+        );
+    };
+
+    $scope.closeWidget = function(id){
+        widgetService.uninstall(id);
+    };
+
+    $scope.setupInstallmentWatch = function(){
+        var onafter = 'onAfterInstall' + $scope.location;
+        $scope.$on(onafter, function (event, newWidget) {
+            // remove all widget in the page
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
+            grid.remove_all();
+
+            $scope.getWidgets(true);
+        });
+
+        var onafter2 = 'onAfterUninstall' + $scope.location;
+        $scope.$on( onafter2, function(event, newWidget){
+            // remove all widget in the page
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
+            grid.remove_all();
+
+            $scope.getWidgets(true);
+        });
+    };
+
+    $scope.initWidgets = function(){
+
+        if (courseService.course) {
+            $scope.course = course;
+            $scope.getWidgets();
+
+        } else {
+            $scope.$on('onAfterInitCourse', function (e, course) {
+                $scope.course = course;
+                $scope.getWidgets();
+            });
+        }
+
+        /*$scope.$on('onAfterInitUser', function(event, user){
+            $scope.$watch('location', function(newVal, oldVal){
+                if($scope.location == 'user-profile'){
+                    $scope.getWidgets();
+                }
+            });
+        });*/
+
+        widgetService.initiateDraggableGrid(location);
+        $scope.setupInstallmentWatch();
+    };
+
+    $scope.initWidgetButton = function(id) {
+        widgetService.initWidgetButton('course-preview', id)
+    };
+
+    $scope.initWidgets();
 });
 ;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr) {
     $scope.location = "";

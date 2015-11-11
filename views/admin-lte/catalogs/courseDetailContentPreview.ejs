@@ -45,9 +45,7 @@
 
 <!-- analytics-->
 <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
-     ng-controller="widgetController"
-     ng-init="location='course-preview';
-              initiateDraggableGrid('course-preview');">
+     ng-controller="widgetCoursePreviewController" >
 
     <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
         There is no registered widget here.
@@ -60,7 +58,7 @@
          data-gs-locked="yes"
          data-gs-no-resize="yes"
          ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}">
-        <!--on-finish-render="OnAfterWidgetLoadedcourse-preview"-->
+
         <div class="grid-stack-item-content">
             <div class="box no-shadow">
                 <div class="box-header with-border">
