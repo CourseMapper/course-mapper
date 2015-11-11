@@ -1,5 +1,6 @@
 app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
-                                                         $timeout, widgetService, courseService) {
+                                                         $timeout,
+                                                         widgetService, courseService, authService) {
     $scope.location = "course-preview";
     $scope.widgets = [];
 
@@ -70,6 +71,13 @@ app.controller('widgetCoursePreviewController', function($scope, $http, $rootSco
 
     $scope.initWidgetButton = function(id) {
         widgetService.initWidgetButton('course-preview', id)
+    };
+
+    $scope.checkOwnership = function(userId){
+        if(authService.user && authService.user._id == userId)
+            return true;
+
+        return false;
     };
 
     $scope.initWidgets();

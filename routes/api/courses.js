@@ -121,7 +121,7 @@ router.get('/course/:courseId', function(req, res, next) {
 
         params,
 
-        function(course){ 
+        function(course){
             if(course && req.user){
                 // check for enrollement
                 var userId = mongoose.Types.ObjectId(req.user._id);
