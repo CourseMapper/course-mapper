@@ -1,7 +1,7 @@
 app.factory('widgetService', [
-    '$scope', '$http', '$rootScope', '$ocLazyLoad', '$timeout',
+    '$http', '$rootScope', '$ocLazyLoad', '$timeout',
 
-    function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+    function (  $http, $rootScope, $ocLazyLoad, $timeout) {
         return {
             widgets: [],
             uninstalledwidgets: [],
@@ -10,24 +10,27 @@ app.factory('widgetService', [
             getWidgetsOnLocation: function (location, id, success, error, force) {
                 var self = this;
 
-                if (!force && self.widgets[location]) {
-                    self.initializeWidgets(data.widgets);
-
-                    if (success) {
-                        success(data.widgets);
-                    }
+                if (!force && self.installedWidgets[location]) {
+                    self.initializeWidgets(self.installedWidgets[location], location, function( ){
+                        if (success) {
+                            success(self.widgets[location]);
+                        }
+                    });
                 }
 
                 else if (force || !self.widgets[location])
                     $http.get('/api/widgets/' + location + '/' + id)
                         .success(function (data) {
-                            if(data.result){
-                                self.widgets[location] = data.widgets;
-                                self.initializeWidgets(data.widgets);
+                            self.installedWidgets[location] = [];
 
-                                if (success) {
-                                    success(data.widgets);
-                                }
+                            if(data.result){
+                                self.installedWidgets[location] = data.widgets;
+
+                                self.initializeWidgets(data.widgets, location, function( ){
+                                    if (success) {
+                                        success(self.widgets[location]);
+                                    }
+                                });
                             } else
                                 if (error)
                                     error(data.errors);
@@ -38,15 +41,44 @@ app.factory('widgetService', [
                         });
             },
 
-            initializeWidgets: function (widgets) {
+            lazyLoad: function (wdg, currentIndex, widgetJsArray, fileToLoad, location) {
+                var self = this;
+
+                (function (wdg) {
+                    var jsfn = '/' + wdg.application + '/' + fileToLoad;
+
+                    $ocLazyLoad.load(jsfn).then(function () {
+                        // the last one has been loaded
+                        var l = wdg.widgetId.widgetJavascript.length - 1;
+                        if (fileToLoad == wdg.widgetId.widgetJavascript[l]) {
+                            // only push to main widgets array when it is the last js to load
+                            self.widgets[location].push(wdg);
+                        } else {
+                            var nextFile = widgetJsArray[currentIndex++];
+                            self.lazyLoad(wdg, currentIndex, widgetJsArray, nextFile);
+                        }
+                    });
+                })(wdg);
+            },
+
+            initializeWidgets: function (widgets, location, finishedCB) {
+                var self = this;
+
+                self.widgets[location] = [];
+
                 for (var i in widgets) {
                     var wdg = widgets[i];
 
                     // loop to load the js (if exist)
                     if (wdg.widgetId.widgetJavascript) {
-                        this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0]);
+                        this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0], location);
+                    } else {
+                        self.widgets[location].push(wdg);
                     }
                 }
+
+                if(finishedCB)
+                    finishedCB(self.widgets[location]);
             },
 
             isInitialized: function (location) {
@@ -86,24 +118,6 @@ app.factory('widgetService', [
 
                 var h = $('#w' + id + ' .grid-stack-item-content');
                 $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
-            },
-
-            lazyLoad: function (wdg, currentIndex, widgetJsArray, fileToLoad) {
-                (function (wdg) {
-                    var jsfn = '/' + wdg.application + '/' + fileToLoad;
-
-                    $ocLazyLoad.load(jsfn).then(function () {
-                        // the last one has been loaded
-                        var l = wdg.widgetId.widgetJavascript.length - 1;
-                        if (fileToLoad == wdg.widgetId.widgetJavascript[l]) {
-                            // only push to main widgets array when it is the last js to load
-                            $scope.widgets.push(wdg);
-                        } else {
-                            var nextFile = widgetJsArray[currentIndex++];
-                            $scope.lazyLoad(wdg, currentIndex, widgetJsArray, nextFile);
-                        }
-                    });
-                })(wdg);
             },
 
             install: function (location, application, name, extraParams) {
@@ -150,7 +164,7 @@ app.factory('widgetService', [
             },
 
             setPosition: function (wId, x, y, success, error) {
-                $http.put('/api/widget/' + wId + '/setPosition/', {
+                $http.put('/api/widget/' + wId + '/setPosition', {
                         x: x, y: y
                     })
                     .success(function (res) {

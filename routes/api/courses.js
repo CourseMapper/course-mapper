@@ -121,19 +121,21 @@ router.get('/course/:courseId', function(req, res, next) {
 
         params,
 
-        function(course){
+        function(course){ 
             if(course && req.user){
+                // check for enrollement
                 var userId = mongoose.Types.ObjectId(req.user._id);
-
                 cat.getUserCourses(
                     function(err){
                         helper.resReturn(err, res);
                     },
                     {
                         user: userId,
-                        course: course._id
+                        course: course._id,
+                        isEnrolled: true
                     },
                     function(uc){
+                        course = course.toObject();
                         course.isEnrolled = uc.length > 0;
 
                         res.status(200).json({result:true, course: course});

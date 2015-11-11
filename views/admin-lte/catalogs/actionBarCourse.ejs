@@ -1,5 +1,5 @@
 <script type="text/ng-template" id="actionBar-course-preview">
-    <ul class="">
+    <ul ng-controller="actionBarCoursePreviewController">
         <li ng-hide="isOwner || isManager">
             <span ng-hide="user">Please
                 login to enroll to this course</span>

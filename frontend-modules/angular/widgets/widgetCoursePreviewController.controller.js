@@ -1,8 +1,7 @@
 app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
                                                          $timeout, widgetService, courseService) {
-    $scope.location = "user-preview";
+    $scope.location = "course-preview";
     $scope.widgets = [];
-    $scope.widgetsTemp = [];
 
     $scope.getWidgets = function(force){
         widgetService.getWidgetsOnLocation($scope.location, $scope.course._id,
@@ -65,7 +64,7 @@ app.controller('widgetCoursePreviewController', function($scope, $http, $rootSco
             });
         });*/
 
-        widgetService.initiateDraggableGrid(location);
+        widgetService.initiateDraggableGrid($scope.location);
         $scope.setupInstallmentWatch();
     };
 

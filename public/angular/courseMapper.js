@@ -57,7 +57,44 @@ app.config(function(toastrConfig) {
         }
     });
 
-});;app.controller('CategoryListController', function($scope, $http, $rootScope) {
+});;app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr) {
+
+    $scope.loading = false;
+
+    $scope.enroll = function () {
+        $scope.loading = true;
+        courseService.enroll(authService.user,
+
+            function () {
+                $scope.loading = false;
+                toastr.success('You are now enrolled');
+            },
+
+            function (res) {
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
+            }
+        );
+
+    };
+
+    $scope.leave = function () {
+        $scope.loading = true;
+
+        courseService.leave(authService.user,
+            function () {
+                $scope.loading = false;
+                toastr.success('You left the course');
+            },
+
+            function () {
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
+            }
+        );
+    };
+});
+;app.controller('CategoryListController', function($scope, $http, $rootScope) {
 
     $http.get('/api/categories').success(function (data) {
         $scope.categories = data.categories;
@@ -76,11 +113,8 @@ app.config(function(toastrConfig) {
     $scope.course = null;
     $scope.videoSources = false;
     $scope.isPlaying = false;
-    $scope.actionBarTemplate = 'actionBar-course-preview';
 
     $scope.tabOpened = function () {
-        $scope.actionBarTemplate = 'actionBar-course-preview';
-
         if (courseService.course) {
             $scope.course = courseService.course;
             $scope.initTab($scope.course);
@@ -117,39 +151,6 @@ app.config(function(toastrConfig) {
 
     $scope.stopVideo = function () {
         $scope.isPlaying = false;
-    };
-
-    $scope.enroll = function () {
-        $scope.loading = true;
-        courseService.enroll(authService.user,
-
-            function () {
-                $scope.loading = false;
-                toastr.success('You are now enrolled');
-            },
-
-            function (res) {
-                $scope.loading = false;
-                toastr.error(JSON.stringify(res.errors));
-            }
-        );
-
-    };
-
-    $scope.leave = function () {
-        $scope.loading = true;
-
-        courseService.leave(authService.user,
-            function () {
-                $scope.loading = false;
-                toastr.success('You left the course');
-            },
-
-            function () {
-                $scope.loading = false;
-                toastr.error(JSON.stringify(res.errors));
-            }
-        );
     };
 
     /**
@@ -3297,9 +3298,9 @@ app.factory('socket', function($rootScope) {
     };
 });
 ;app.factory('widgetService', [
-    '$scope', '$http', '$rootScope', '$ocLazyLoad', '$timeout',
+    '$http', '$rootScope', '$ocLazyLoad', '$timeout',
 
-    function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+    function (  $http, $rootScope, $ocLazyLoad, $timeout) {
         return {
             widgets: [],
             uninstalledwidgets: [],
@@ -3308,24 +3309,27 @@ app.factory('socket', function($rootScope) {
             getWidgetsOnLocation: function (location, id, success, error, force) {
                 var self = this;
 
-                if (!force && self.widgets[location]) {
-                    self.initializeWidgets(data.widgets);
-
-                    if (success) {
-                        success(data.widgets);
-                    }
+                if (!force && self.installedWidgets[location]) {
+                    self.initializeWidgets(self.installedWidgets[location], location, function( ){
+                        if (success) {
+                            success(self.widgets[location]);
+                        }
+                    });
                 }
 
                 else if (force || !self.widgets[location])
                     $http.get('/api/widgets/' + location + '/' + id)
                         .success(function (data) {
-                            if(data.result){
-                                self.widgets[location] = data.widgets;
-                                self.initializeWidgets(data.widgets);
+                            self.installedWidgets[location] = [];
 
-                                if (success) {
-                                    success(data.widgets);
-                                }
+                            if(data.result){
+                                self.installedWidgets[location] = data.widgets;
+
+                                self.initializeWidgets(data.widgets, location, function( ){
+                                    if (success) {
+                                        success(self.widgets[location]);
+                                    }
+                                });
                             } else
                                 if (error)
                                     error(data.errors);
@@ -3336,15 +3340,44 @@ app.factory('socket', function($rootScope) {
                         });
             },
 
-            initializeWidgets: function (widgets) {
+            lazyLoad: function (wdg, currentIndex, widgetJsArray, fileToLoad, location) {
+                var self = this;
+
+                (function (wdg) {
+                    var jsfn = '/' + wdg.application + '/' + fileToLoad;
+
+                    $ocLazyLoad.load(jsfn).then(function () {
+                        // the last one has been loaded
+                        var l = wdg.widgetId.widgetJavascript.length - 1;
+                        if (fileToLoad == wdg.widgetId.widgetJavascript[l]) {
+                            // only push to main widgets array when it is the last js to load
+                            self.widgets[location].push(wdg);
+                        } else {
+                            var nextFile = widgetJsArray[currentIndex++];
+                            self.lazyLoad(wdg, currentIndex, widgetJsArray, nextFile);
+                        }
+                    });
+                })(wdg);
+            },
+
+            initializeWidgets: function (widgets, location, finishedCB) {
+                var self = this;
+
+                self.widgets[location] = [];
+
                 for (var i in widgets) {
                     var wdg = widgets[i];
 
                     // loop to load the js (if exist)
                     if (wdg.widgetId.widgetJavascript) {
-                        this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0]);
+                        this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0], location);
+                    } else {
+                        self.widgets[location].push(wdg);
                     }
                 }
+
+                if(finishedCB)
+                    finishedCB(self.widgets[location]);
             },
 
             isInitialized: function (location) {
@@ -3384,24 +3417,6 @@ app.factory('socket', function($rootScope) {
 
                 var h = $('#w' + id + ' .grid-stack-item-content');
                 $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
-            },
-
-            lazyLoad: function (wdg, currentIndex, widgetJsArray, fileToLoad) {
-                (function (wdg) {
-                    var jsfn = '/' + wdg.application + '/' + fileToLoad;
-
-                    $ocLazyLoad.load(jsfn).then(function () {
-                        // the last one has been loaded
-                        var l = wdg.widgetId.widgetJavascript.length - 1;
-                        if (fileToLoad == wdg.widgetId.widgetJavascript[l]) {
-                            // only push to main widgets array when it is the last js to load
-                            $scope.widgets.push(wdg);
-                        } else {
-                            var nextFile = widgetJsArray[currentIndex++];
-                            $scope.lazyLoad(wdg, currentIndex, widgetJsArray, nextFile);
-                        }
-                    });
-                })(wdg);
             },
 
             install: function (location, application, name, extraParams) {
@@ -3448,7 +3463,7 @@ app.factory('socket', function($rootScope) {
             },
 
             setPosition: function (wId, x, y, success, error) {
-                $http.put('/api/widget/' + wId + '/setPosition/', {
+                $http.put('/api/widget/' + wId + '/setPosition', {
                         x: x, y: y
                     })
                     .success(function (res) {
@@ -5450,7 +5465,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
     };
 
     $scope.setPosition = function(wId, x, y){
-        $http.put('/api/widget/' + wId + '/setPosition/', {
+        $http.put('/api/widget/' + wId + '/setPosition', {
             x:x, y:y
         }).success(function(res){
             /*if(res.result)
@@ -5463,9 +5478,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 });
 ;app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
                                                          $timeout, widgetService, courseService) {
-    $scope.location = "user-preview";
+    $scope.location = "course-preview";
     $scope.widgets = [];
-    $scope.widgetsTemp = [];
 
     $scope.getWidgets = function(force){
         widgetService.getWidgetsOnLocation($scope.location, $scope.course._id,
@@ -5528,7 +5542,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             });
         });*/
 
-        widgetService.initiateDraggableGrid(location);
+        widgetService.initiateDraggableGrid($scope.location);
         $scope.setupInstallmentWatch();
     };
 
