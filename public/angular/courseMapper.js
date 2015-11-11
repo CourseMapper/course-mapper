@@ -2962,6 +2962,12 @@ app.directive('timepicker', function($timeout) {
                 }
             },
 
+            isAdmin: function(){
+                if(this.user && this.user.role == 'admin')
+                    return true;
+
+                return false;
+            },
             /*isLoggedIn: function () {
                 if (!this.user)
                     return false;
@@ -3476,7 +3482,7 @@ app.factory('socket', function($rootScope) {
                     });
             },
 
-            initiateDraggableGrid: function (locs) {
+            initiateDraggableGrid: function (locs, enableDragging) {
                 var self = this;
 
                 var loc = '#' + locs + '-widgets';
@@ -3487,31 +3493,37 @@ app.factory('socket', function($rootScope) {
                     resizable: false
                 };
 
+                if(!enableDragging){
+                    options.draggable = {'disabled': true};
+                }
+
                 var curNode = {x: 0, y: 0};
 
                 var $gs = $(loc);
                 $gs.gridstack(options);
 
-                $gs.on('onStartMove', function (e, node) {
-                    curNode.x = node.x;
-                    curNode.y = node.y;
-                });
+                if(enableDragging){
+                    $gs.on('onStartMove', function (e, node) {
+                        curNode.x = node.x;
+                        curNode.y = node.y;
+                    });
 
-                $gs.on('onMove', function (e, node) {
+                    $gs.on('onMove', function (e, node) {
 
-                });
+                    });
 
-                $gs.on('onFinishDrop', function (e, node) {
-                    var o = $(node.el);
+                    $gs.on('onFinishDrop', function (e, node) {
+                        var o = $(node.el);
 
-                    if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
-                        o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
-                    }
+                        if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
+                            o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+                        }
 
-                    var wId = o.attr('id').substr(1);
-                    self.setPosition(wId, node.x, node.y);
-                });
-            },
+                        var wId = o.attr('id').substr(1);
+                        self.setPosition(wId, node.x, node.y);
+                    });
+                }
+            }
         }
     }
 ]);;app.filter('capitalize', function() {
@@ -5477,7 +5489,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
 });
 ;app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
-                                                         $timeout,
+                                                         $timeout, toastr,
                                                          widgetService, courseService, authService) {
     $scope.location = "course-preview";
     $scope.widgets = [];
@@ -5543,7 +5555,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             });
         });*/
 
-        widgetService.initiateDraggableGrid($scope.location);
+        var enableDragging = ($scope.isManager || authService.isAdmin() || $scope.isOwner)? true: false;
+        widgetService.initiateDraggableGrid($scope.location, enableDragging);
+
         $scope.setupInstallmentWatch();
     };
 

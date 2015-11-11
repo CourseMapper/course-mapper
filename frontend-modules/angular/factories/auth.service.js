@@ -43,6 +43,12 @@ app.factory('authService', [
                 }
             },
 
+            isAdmin: function(){
+                if(this.user && this.user.role == 'admin')
+                    return true;
+
+                return false;
+            },
             /*isLoggedIn: function () {
                 if (!this.user)
                     return false;

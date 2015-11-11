@@ -177,7 +177,7 @@ app.factory('widgetService', [
                     });
             },
 
-            initiateDraggableGrid: function (locs) {
+            initiateDraggableGrid: function (locs, enableDragging) {
                 var self = this;
 
                 var loc = '#' + locs + '-widgets';
@@ -188,31 +188,37 @@ app.factory('widgetService', [
                     resizable: false
                 };
 
+                if(!enableDragging){
+                    options.draggable = {'disabled': true};
+                }
+
                 var curNode = {x: 0, y: 0};
 
                 var $gs = $(loc);
                 $gs.gridstack(options);
 
-                $gs.on('onStartMove', function (e, node) {
-                    curNode.x = node.x;
-                    curNode.y = node.y;
-                });
+                if(enableDragging){
+                    $gs.on('onStartMove', function (e, node) {
+                        curNode.x = node.x;
+                        curNode.y = node.y;
+                    });
 
-                $gs.on('onMove', function (e, node) {
+                    $gs.on('onMove', function (e, node) {
 
-                });
+                    });
 
-                $gs.on('onFinishDrop', function (e, node) {
-                    var o = $(node.el);
+                    $gs.on('onFinishDrop', function (e, node) {
+                        var o = $(node.el);
 
-                    if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
-                        o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
-                    }
+                        if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
+                            o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+                        }
 
-                    var wId = o.attr('id').substr(1);
-                    self.setPosition(wId, node.x, node.y);
-                });
-            },
+                        var wId = o.attr('id').substr(1);
+                        self.setPosition(wId, node.x, node.y);
+                    });
+                }
+            }
         }
     }
 ]);

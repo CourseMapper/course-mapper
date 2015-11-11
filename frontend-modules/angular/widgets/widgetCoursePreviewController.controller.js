@@ -1,5 +1,5 @@
 app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
-                                                         $timeout,
+                                                         $timeout, toastr,
                                                          widgetService, courseService, authService) {
     $scope.location = "course-preview";
     $scope.widgets = [];
@@ -65,7 +65,9 @@ app.controller('widgetCoursePreviewController', function($scope, $http, $rootSco
             });
         });*/
 
-        widgetService.initiateDraggableGrid($scope.location);
+        var enableDragging = ($scope.isManager || authService.isAdmin() || $scope.isOwner)? true: false;
+        widgetService.initiateDraggableGrid($scope.location, enableDragging);
+
         $scope.setupInstallmentWatch();
     };
 
