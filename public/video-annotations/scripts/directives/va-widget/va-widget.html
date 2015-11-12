@@ -6,12 +6,11 @@
             <vg-play-pause-button></vg-play-pause-button>
             <vg-time-display>{{ currentTime | date:'HH:mm:ss':'UTC' }}</vg-time-display>
             <vg-scrub-bar>
-                <vg-scrub-bar-buffer></vg-scrub-bar-buffer>
-                <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                <vg-scrub-bar-buffer ng-show="!isFpOn"></vg-scrub-bar-buffer>
+                <vg-scrub-bar-current-time ng-show="!isFpOn"></vg-scrub-bar-current-time>
                 <vg-scrub-bar-cue-points ng-show="!isFpOn" class="default"
                                          vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
-                <div ng-show="isFpOn" class="fp-timeline" ng-style="timelineWidth">
-                    <div style="background-color: red; height: 5px"></div>
+                <div ng-class="{ invisible: !isFpOn }" class="fp-timeline" ng-style="timelineWidth">
                 </div>
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
@@ -28,6 +27,7 @@
                     <img src="/video-annotations/img/a.png">
                 </div>
             </div>
+            <div class="fp-info-data" ng-show="isFpOn"></div>
         </vg-controls>
         <vg-overlay-play></vg-overlay-play>
         <div id="inline-va-container">

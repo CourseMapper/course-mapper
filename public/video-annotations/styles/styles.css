@@ -127,3 +127,23 @@ videogular div.fp-toggle-button {
     cursor: pointer;
 }
 
+videogular .fp-toggle-button img {
+    width: 20px;
+    height: 20px;
+}
+
+videogular .fp-timeline {
+    position: relative;
+    top: -3px;
+}
+
+videogular .fp-scale-holder, 
+videogular .fp-btn,
+videogular .fp-tooltip {
+    color: #FFF;
+    background-color: rgba(30,30,30,0.6);
+}
+
+videogular .fp-tooltip-arrow {
+    border-top-color: rgba(30,30,30,0.6);
+}
