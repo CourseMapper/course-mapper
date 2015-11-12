@@ -10,8 +10,7 @@
                 <vg-scrub-bar-current-time ng-show="!isFpOn"></vg-scrub-bar-current-time>
                 <vg-scrub-bar-cue-points ng-show="!isFpOn" class="default"
                                          vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
-                <div ng-class="{ invisible: !isFpOn }" class="fp-timeline" ng-style="timelineWidth">
-                </div>
+                <div ng-class="{ invisible: !isFpOn }" class="fp-timeline" ng-style="timelineWidth"></div>
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
             <vg-volume>
