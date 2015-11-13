@@ -14,19 +14,151 @@ var helper = require(appRoot + '/libs/core/generalLibs.js');
 
 var router = express.Router();
 
-router.post('/accounts/signUp', function(req, res, next){
+router.get('/accounts/logout', function (req, res, next) {
+    req.logout();
+    res.status(200).json({result: true, message: 'Logged out'});
+});
 
-    if(!helper.checkRequiredParams(req.body, ['username', 'email', 'password'], function (err) {
+router.get('/accounts', function (req, res, next) {
+    if (req.user)
+        res.redirect('/api/accounts/' + req.user.username);
+    else
+        res.status(401).json({message: 'Not authorized'});
+});
+
+/*router.get('/accounts/req', function (req, res, next) {
+    res.status(200).json({
+        result: true, user: req.user
+    });
+});*/
+
+router.get('/accounts/login/facebook',
+    passport.authenticate('facebook', {scope: ['email', 'public_profile']})
+);
+
+router.get('/accounts/facebook/callback',
+    passport.authenticate('facebook', {
+        successRedirect: '/accounts',
+        failureRedirect: '/login'
+    }),
+
+    // on succes
+    function (req, res) {
+        // return the token or you would wish otherwise give eg. a succes message
+        res.status(200).json({result: true, tokens: JSON.stringify(req.user.access_token)});
+    },
+
+    // on error; likely to be something FacebookTokenError token invalid or already used token,
+    // these errors occur when the user logs in twice with the same token
+    function (err, req, res, next) {
+        // You could put your own behavior in here, fx: you could force auth again...
+        // res.redirect('/auth/facebook/');
+        if (err) {
+            res.status(400).json({result: false, errors: [err.message]});
+        }
+    }
+);
+
+router.get('/accounts/:username', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    // todo: if admin, can get val from url param
+
+    var account = new Account();
+    account.getUser(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+
+        {username: req.session.passport.user.username},
+
+        function (doc) {
+            if (doc) {
+                res.status(200).json({
+                    result: true, user: doc
+                });
+            } else {
+                res.status(404).json({
+                    result: false, errors: ["User not found"]
+                });
+            }
+        }
+    );
+});
+
+router.get('/accounts/:userId/courses', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var crs = new Course();
+
+    var userId = mongoose.Types.ObjectId(req.params.userId);
+
+    // todo: if admin, can put val from url param
+
+    crs.getUserCourses(
+        function error(err) {
+            helper.resReturn(err, res);
+        },
+        {user: userId},
+        function success(courses) {
+            res.status(200).json({result: true, courses: courses});
+        }
+    );
+});
+
+router.get('/accounts/:userId/course/:courseId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var crs = new Course();
+
+    var userId = mongoose.Types.ObjectId(req.params.userId);
+    var courseId = mongoose.Types.ObjectId(req.params.courseId);
+
+    // todo: if admin, can put val from url param
+
+    crs.getUserCourses(
+        function error(err) {
+            helper.resReturn(err, res);
+        },
+        {
+            user: userId,
+            course: courseId
+        },
+        function success(courses) {
+            if (courses.length > 0)
+                res.status(200).json({result: true, courses: courses[0]});
+            else
+                res.status(200).json({result: true, courses: null});
+        }
+    );
+});
+
+/**
+ * POST
+ */
+
+router.post('/accounts/signUp', function (req, res, next) {
+
+    if (!helper.checkRequiredParams(req.body, ['username', 'email', 'password'], function (err) {
             helper.resReturn(err, res);
         }))return;
 
     var account = new Account();
     account.signUp(
-        function failedSignUp(err){
+        function failedSignUp(err) {
             helper.resReturn(err, res);
         },
         req.body,
-        function successSignUp(user){
+        function successSignUp(user) {
             res.status(201).json({
                 result: (user),
 
@@ -40,48 +172,9 @@ router.post('/accounts/signUp', function(req, res, next){
     );
 });
 
-router.get('/accounts/logout', function(req, res, next) {
-    req.logout();
-    res.status(200).json({result:true, message: 'Logged out'});
-});
-
-router.get('/accounts', function(req, res, next) {
-    if(req.user)
-        res.redirect('/api/accounts/' + req.user.username);
-    else
-        res.status(401).json({message: 'Not authorized'});
-});
-
-router.get('/accounts/login/facebook',
-    passport.authenticate('facebook', { scope : ['email','public_profile'] })
-);
-
-router.get('/accounts/facebook/callback',
-    passport.authenticate('facebook', {
-        successRedirect : '/accounts',
-        failureRedirect : '/login'
-    }),
-
-    // on succes
-    function(req,res) {
-        // return the token or you would wish otherwise give eg. a succes message
-        res.status(200).json({result:true, tokens: JSON.stringify(req.user.access_token)});
-    },
-
-    // on error; likely to be something FacebookTokenError token invalid or already used token,
-    // these errors occur when the user logs in twice with the same token
-    function(err,req,res,next) {
-        // You could put your own behavior in here, fx: you could force auth again...
-        // res.redirect('/auth/facebook/');
-        if(err) {
-            res.status(400).json({result: false, errors: [err.message]});
-        }
-    }
-);
-
 router.post('/accounts/login',
-    function(req, res, next){
-        passport.authenticate('local', function(err, user, info) {
+    function (req, res, next) {
+        passport.authenticate('local', function (err, user, info) {
             if (err) {
                 // if error happens
                 return next(err);
@@ -97,7 +190,7 @@ router.post('/accounts/login',
             }
 
             // if everything is OK
-            req.logIn(user, function(err) {
+            req.logIn(user, function (err) {
                 if (err) {
                     req.session.messages = "Error";
                     return next(err);
@@ -124,40 +217,14 @@ router.post('/accounts/login',
     }
 );
 
-router.get('/accounts/:username', function(req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    // todo: if admin, can get val from url param
-
-    var account = new Account();
-    account.getUser(
-        function(err){
-            helper.resReturn(err, res);
-        },
-
-        {username: req.session.passport.user.username},
-
-        function(doc){
-            if(doc) {
-                res.status(200).json({
-                    result: true, user: doc
-                });
-            } else {
-                res.status(404).json({
-                    result: false, errors: ["User not found"]
-                });
-            }
-        }
-    );
-});
+/**
+ * PUT
+ */
 
 /**
  * change password only
  */
-router.put('/accounts/:userId/changePassword', function(req, res, next){
+router.put('/accounts/:userId/changePassword', function (req, res, next) {
     if (!req.user) {
         res.status(401).send('Unauthorized');
         return;
@@ -167,8 +234,8 @@ router.put('/accounts/:userId/changePassword', function(req, res, next){
 
     // todo: if admin, can put val from url param
 
-    if(!req.body.password || !req.body.passwordConfirm) {
-        res.status(400).json({result: false, errors:["parameter not complete"]});
+    if (!req.body.password || !req.body.passwordConfirm) {
+        res.status(400).json({result: false, errors: ["parameter not complete"]});
         next();
     }
     else {
@@ -185,7 +252,7 @@ router.put('/accounts/:userId/changePassword', function(req, res, next){
     }
 });
 
-router.put('/accounts/:userId', function(req, res, next){
+router.put('/accounts/:userId', function (req, res, next) {
     if (!req.user) {
         res.status(401).send('Unauthorized');
         return;
@@ -205,59 +272,6 @@ router.put('/accounts/:userId', function(req, res, next){
 
         function success(r) {
             res.status(200).json({result: true});
-        }
-    );
-});
-
-router.get('/accounts/:userId/courses', function(req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    var crs = new Course();
-
-    var userId = mongoose.Types.ObjectId(req.params.userId);
-
-    // todo: if admin, can put val from url param
-
-    crs.getUserCourses(
-        function error(err){
-            helper.resReturn(err, res);
-        },
-        { user: userId },
-        function success(courses){
-            res.status(200).json({result:true, courses:courses});
-        }
-    );
-});
-
-router.get('/accounts/:userId/course/:courseId', function(req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    var crs = new Course();
-
-    var userId = mongoose.Types.ObjectId(req.params.userId);
-    var courseId = mongoose.Types.ObjectId(req.params.courseId);
-
-    // todo: if admin, can put val from url param
-
-    crs.getUserCourses(
-        function error(err){
-            helper.resReturn(err, res);
-        },
-        {
-            user: userId,
-            course: courseId
-        },
-        function success(courses){
-            if(courses.length > 0)
-                res.status(200).json({result:true, courses:courses[0]});
-            else
-                res.status(200).json({result:true, courses:null});
         }
     );
 });
