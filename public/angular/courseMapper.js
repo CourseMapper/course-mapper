@@ -1820,7 +1820,7 @@ app.directive('movable', function() {
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                
+
                                 scope.pdfIsLoaded = true;
 
                                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
@@ -1873,7 +1873,7 @@ app.directive('movable', function() {
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw().catch(function(){});
 
-                            console.log("Slide Changed");
+                            //console.log("Slide Changed");
                             $scope.pdfIsLoaded = true;
 
 
@@ -3239,7 +3239,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
     };
 
     $rootScope.resetEditZoneMode = function() {
-      console.log("Reset Edit Zone Mode");
       $rootScope.$broadcast('reloadTags');
 
       $scope.writeCommentMode = false;
@@ -3363,9 +3362,9 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
       //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
       //$http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
-        console.log("Loading AnnZones");
-        console.log("PDF_ID: "+ $scope.pdfId);
-        console.log("PageNumber: " + $scope.currentPageNumber);
+        //console.log("Loading AnnZones");
+        //console.log("PDF_ID: "+ $scope.pdfId);
+        //console.log("PageNumber: " + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -3387,7 +3386,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
-      console.log("PdfPageChange: ");
+      //console.log("PdfPageChange: ");
       $scope.$emit('reloadTags');
     });
 
@@ -3395,7 +3394,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
 
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
-      console.log("Reload Tags called");
+      //console.log("Reload Tags called");
       $(".slideRect").remove();
 
       annotationZonesAreLoaded = false;

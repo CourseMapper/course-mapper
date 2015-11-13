@@ -71,7 +71,7 @@ app.directive('pdfViewer',
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                
+
                                 scope.pdfIsLoaded = true;
 
                                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
@@ -124,7 +124,7 @@ app.directive('pdfViewer',
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw().catch(function(){});
 
-                            console.log("Slide Changed");
+                            //console.log("Slide Changed");
                             $scope.pdfIsLoaded = true;
 
 
