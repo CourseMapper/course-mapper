@@ -171,10 +171,12 @@ app.config(function(toastrConfig) {
     });
 
     $scope.init = function (course) {
-        if(!course)
+        if (!course)
             return;
 
-        $('#usernameSearchBox').on('keydown', function(event) {
+        $scope.managersRaw = [];
+
+        $('#usernameSearchBox').on('keydown', function (event) {
             var x = event.which;
             if (x === 13) {
                 event.preventDefault();
@@ -187,23 +189,23 @@ app.config(function(toastrConfig) {
         $('#managerTagForm input').attr('readonly', 'readonly');
 
         if ($scope.courseEdit) {
-            if($scope.courseEdit.managers && $scope.courseEdit.managers.length > 0){
-                for(var i in $scope.courseEdit.managers) {
+            if ($scope.courseEdit.managers && $scope.courseEdit.managers.length > 0) {
+                for (var i in $scope.courseEdit.managers) {
                     var t = $scope.courseEdit.managers[i];
-                    $scope.managersRaw.push( {"text": t.username, "_id": t._id} );
+                    $scope.managersRaw.push({"text": t.username, "_id": t._id});
                 }
             }
         }
     };
 
-    $scope.findUsername = function(){
+    $scope.findUsername = function () {
         $scope.errors = [];
 
-        if($scope.username.trim() != ''){
+        if ($scope.username.trim() != '') {
             $scope.isLoading = true;
             $http.get('/api/course/' + $scope.courseEdit._id + '/checkUsername/' + $scope.username)
-                .success(function(res){
-                    if(res.result) {
+                .success(function (res) {
+                    if (res.result) {
                         if (res.user.username == $scope.username) {
                             if (!_.find($scope.managersRaw, {'text': $scope.username}, 'text')) {
                                 $scope.managersRaw.push({"text": res.user.username, '_id': res.user._id});
@@ -214,7 +216,7 @@ app.config(function(toastrConfig) {
                     $scope.username = '';
                     $scope.isLoading = false;
                 })
-                .error(function(res){
+                .error(function (res) {
                     $scope.errors = res.errors;
                     $scope.isLoading = false;
                 });
@@ -222,14 +224,16 @@ app.config(function(toastrConfig) {
     };
 
     $scope.saveCourseSetting = function (isValid) {
-        if(!isValid)
+        if (!isValid)
             return;
+        
+        $scope.managersIdRaw = [];
 
         var url = '/api/course/' + $scope.courseEdit._id + '/addManager';
-
-        if($scope.managersRaw.length > 0){
-            for(var i in $scope.managersRaw){
-                $scope.managersIdRaw.push( $scope.managersRaw[i]._id );
+        $scope.managersIdRaw = [];
+        if ($scope.managersRaw.length > 0) {
+            for (var i in $scope.managersRaw) {
+                $scope.managersIdRaw.push($scope.managersRaw[i]._id);
             }
         }
 
@@ -239,8 +243,8 @@ app.config(function(toastrConfig) {
 
         $scope.isLoading = true;
         $http.put(url, params)
-            .success(function(res){
-                if(res.result){
+            .success(function (res) {
+                if (res.result) {
                     toastr.success('Successfully Saved');
                 }
 
@@ -250,13 +254,13 @@ app.config(function(toastrConfig) {
                 $('#configView').modal('hide');
                 $scope.errors = [];
             })
-            .error(function(res){
+            .error(function (res) {
                 $scope.errors = res.errors;
                 $scope.isLoading = false;
             });
     };
 
-    $scope.removeUsername = function($tag){
+    $scope.removeUsername = function ($tag) {
         console.log('removed ' + JSON.stringify($tag));
     };
 
@@ -264,8 +268,7 @@ app.config(function(toastrConfig) {
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
     };
 });
-;
-app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload, toastr) {
+;app.controller('CourseEditController', function ($scope, $filter, $http, $location, Upload, toastr) {
     $scope.createdDate = new Date();
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
@@ -278,29 +281,29 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
     $scope.progressPercentage = 0;
 
-    $scope.$on('onAfterInitCourse', function(event, course){
+    $scope.$on('onAfterInitCourse', function (event, course) {
         $scope.init(course);
     });
 
-    $scope.init = function(course){
-        if(!course)
+    $scope.init = function (course) {
+        if (!course)
             return;
 
         $scope.tagsRaw = [];
 
         $scope.courseEdit = cloneSimpleObject(course);
 
-        if($scope.courseEdit)
-        if($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0){
-            for(var i in $scope.courseEdit.courseTags) {
-                var t = $scope.courseEdit.courseTags[i];
-                $scope.tagsRaw.push( {"text": t.name} );
+        if ($scope.courseEdit)
+            if ($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0) {
+                for (var i in $scope.courseEdit.courseTags) {
+                    var t = $scope.courseEdit.courseTags[i];
+                    $scope.tagsRaw.push({"text": t.name});
+                }
             }
-        }
     };
 
-    $scope.saveCourse = function() {
-        if($scope.tagsRaw) {
+    $scope.saveCourse = function () {
+        if ($scope.tagsRaw) {
             $scope.courseEdit.tags = JSON.stringify($scope.tagsRaw);
         }
 
@@ -315,24 +318,25 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
         uploadParams.file = [];
         // we only take one picture file
-        if ($scope.filespicture && $scope.filespicture.length){
+        if ($scope.filespicture && $scope.filespicture.length) {
             uploadParams.file.push($scope.filespicture[0]);
         }
         // we only take one vid file
-        if ($scope.filesvideo && $scope.filesvideo.length){
+        if ($scope.filesvideo && $scope.filesvideo.length) {
             uploadParams.file.push($scope.filesvideo[0]);
         }
 
         $scope.isLoading = true;
         $scope.upload = Upload.upload(
             uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
 
-        ).progress(function (evt) {
-            if(!evt.config.file)
-                return;
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            })
 
-            $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-        })
             .success(function (data) {
                 $scope.$emit('onAfterEditCourse', data.course);
 
@@ -345,7 +349,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
                 $scope.progressPercentage = 0;
             })
 
-            .error(function(data){
+            .error(function (data) {
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
 
@@ -353,40 +357,40 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             });
     };
 
-    $scope.deleteVideo = function(){
+    $scope.deleteVideo = function () {
         $http.post('/api/course/' + $scope.courseEdit._id, {
-            video: "delete",
-            name: $scope.courseEdit.name
-        })
-            .success(function(data){
+                video: "delete",
+                name: $scope.courseEdit.name
+            })
+            .success(function (data) {
                 $scope.courseEdit.video = false;
                 $scope.$emit('onAfterEditCourse', data.course);
                 toastr.success('Video deleted');
             })
-            .error(function(){
+            .error(function () {
                 toastr.error('Video delete failed');
             });
     };
 
-    $scope.deletePicture = function(){
+    $scope.deletePicture = function () {
         $http.post('/api/course/' + $scope.courseEdit._id, {
                 picture: "delete",
                 name: $scope.courseEdit.name
             })
-            .success(function(data){
+            .success(function (data) {
                 $scope.courseEdit.video = false;
                 $scope.$emit('onAfterEditCourse', data.course);
                 toastr.success('Picture deleted');
             })
-            .error(function(){
+            .error(function () {
                 toastr.error('Picture delete failed');
             });
     };
 
-    $scope.cancel = function(){
+    $scope.cancel = function () {
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
 
-        if($scope.upload){
+        if ($scope.upload) {
             $scope.upload.abort();
         }
     };
@@ -445,9 +449,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 });
-;app.controller('CourseRootController', function($scope, $rootScope, $filter, $http,
-                                            $location, $routeParams, $timeout,
-                                            courseService, authService, toastr, Page) {
+;app.controller('CourseRootController', function ($scope, $rootScope, $filter, $http,
+                                                 $location, $routeParams, $timeout,
+                                                 courseService, authService, toastr, Page) {
 
     $scope.courseId = $routeParams.courseId;
     $scope.course = null;
@@ -462,25 +466,25 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.currentTab = "preview";
     $scope.include = null;
 
-    $scope.changeTab = function(){
+    $scope.changeTab = function () {
         var defaultPath = "preview";
         var q = $location.search();
 
-        if(!q.tab){
+        if (!q.tab) {
             q.tab = defaultPath;
         }
 
         $scope.currentTab = q.tab;
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
 
-        $timeout(function(){
-            if(!authService.isLoggedIn){
-                if($scope.currentTab != defaultPath)
+        $timeout(function () {
+            if (!authService.isLoggedIn) {
+                if ($scope.currentTab != defaultPath)
                     $location.search('tab', defaultPath);
             }
         });
 
-        if($scope.course)
+        if ($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
 
         $scope.include = '/course/' + $scope.currentTab;
@@ -488,21 +492,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
     };
 
-    $scope.init = function(refreshPicture){
+    $scope.init = function (refreshPicture) {
         courseService.init(
             $scope.courseId,
 
-            function(course){
+            function (course) {
                 $scope.course = course;
-
                 Page.setTitleWithPrefix($scope.course.name);
-
-                //$timeout(function () {
-                    $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
-                //});
+                $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
             },
 
-            function(res){
+            function (res) {
                 $scope.errors = res.errors;
                 toastr.error('Failed getting course');
             },
@@ -516,9 +516,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * show new course notification/guide if it is a new course
      */
-    $scope.newCourseNotification = function(){
+    $scope.newCourseNotification = function () {
         var loc = $location.search();
-        if(loc.new && loc.new == 1){
+        if (loc.new && loc.new == 1) {
             toastr.info('<p>You are now in a newly created course. </p>' +
                 '<p>You can start by customizing this course by uploading introduction picture and video on the edit panel.</p>' +
                 '<p>Collaborate and Annotate on course map and its contents in <i class="ionicons ion-map"></i> <b>Map Tab</b></p>' +
@@ -544,29 +544,37 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * initiate course when user hast tried to log in
      */
-    $scope.$watch(function(){ return authService.isLoggedIn;}, function(){
-        if(authService.hasTriedToLogin && !$scope.course){
+    $scope.$watch(function () {
+        return authService.isLoggedIn;
+    }, function () {
+        if (authService.hasTriedToLogin && !$scope.course) {
             $scope.init();
         }
     });
 
-    $scope.$watch(function(){ return courseService.isEnrolled(); }, function(newVal, oldVal){
+    $scope.$watch(function () {
+        return courseService.isEnrolled();
+    }, function (newVal, oldVal) {
         $scope.isEnrolled = newVal;
     });
 
-    $scope.$watch(function(){ return courseService.isManager(authService.user); }, function(newVal, oldVal){
+    $scope.$watch(function () {
+        return courseService.isManager(authService.user);
+    }, function (newVal, oldVal) {
         $scope.isManager = newVal;
     });
 
-    $scope.$watch(function(){ return courseService.isOwner(authService.user); }, function(newVal, oldVal){
+    $scope.$watch(function () {
+        return courseService.isOwner(authService.user);
+    }, function (newVal, oldVal) {
         $scope.isOwner = newVal;
     });
 
-    $scope.$on('$routeUpdate', function(){
+    $scope.$on('$routeUpdate', function () {
         $scope.changeTab();
     });
 
-    $scope.$on('onAfterEditCourse',function(events, course){
+    $scope.$on('onAfterEditCourse', function (events, course) {
         $scope.init(true);
     });
 
@@ -5532,21 +5540,21 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
     };
 
 });
-;app.controller('widgetCourseAnalyticsController', function($scope, $http, $rootScope,
-                                                         $timeout, toastr,
-                                                         widgetService, courseService, authService) {
+;app.controller('widgetCourseAnalyticsController', function ($scope, $http, $rootScope,
+                                                            $timeout, toastr,
+                                                            widgetService, courseService, authService) {
     $scope.location = "course-analytics";
     $scope.widgets = [];
 
-    $scope.getWidgets = function(force){
+    $scope.getWidgets = function (force) {
         widgetService.getWidgetsOnLocation($scope.location, $scope.course._id,
 
-            function(widgets){
+            function (widgets) {
                 $scope.widgets = widgets;
                 $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, widgets);
             },
 
-            function(errors){
+            function (errors) {
                 toastr.error(errors);
             },
 
@@ -5554,22 +5562,22 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         );
     };
 
-    $scope.closeWidget = function(id){
+    $scope.closeWidget = function (id) {
         widgetService.uninstall(id, {courseId: $scope.course._id},
-            function(wdg){
+            function (wdg) {
                 var grid = $('#' + $scope.location + '-widgets').data('gridstack');
                 grid.remove_all();
                 $scope.getWidgets(true);
                 toastr.success('Widget is uninstalled');
             },
 
-            function(errors){
+            function (errors) {
                 toastr.error('Uninstallation failed');
             }
         );
     };
 
-    $scope.setupInstallmentWatch = function(){
+    $scope.setupInstallmentWatch = function () {
         var onafter = 'onAfterInstall' + $scope.location;
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
@@ -5580,7 +5588,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
 
         var onafter2 = 'onAfterUninstall' + $scope.location;
-        $scope.$on( onafter2, function(event, newWidget){
+        $scope.$on(onafter2, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
@@ -5589,7 +5597,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
     };
 
-    $scope.initWidgets = function(){
+    $scope.initWidgets = function () {
 
         if (courseService.course) {
             $scope.course = courseService.course;
@@ -5602,18 +5610,18 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             });
         }
 
-        var enableDragging = ($scope.isManager || authService.isAdmin() || $scope.isOwner)? true: false;
+        var enableDragging = ($scope.isManager || authService.isAdmin() || $scope.isOwner) ? true : false;
         widgetService.initiateDraggableGrid($scope.location, enableDragging);
 
         $scope.setupInstallmentWatch();
     };
 
-    $scope.initWidgetButton = function(id) {
+    $scope.initWidgetButton = function (id) {
         widgetService.initWidgetButton($scope.location, id)
     };
 
-    $scope.checkOwnership = function(userId){
-        if(authService.user && authService.user._id == userId)
+    $scope.checkOwnership = function (userId) {
+        if (authService.user && authService.user._id == userId)
             return true;
 
         return false;
@@ -5732,7 +5740,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
     };
 
-    $scope.$watch('location', function(newVal, oldVal) {
+    $scope.$watch('location', function (newVal, oldVal) {
         var onafter = 'onAfterGetWidgets' + $scope.location;
         $scope.$on(onafter, function (event, installedWidgets) {
             $scope.installedWidgets = installedWidgets;
@@ -5740,24 +5748,24 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
         $scope.$on(onCloseButtonClicked, function (event, widget) {
-             $scope.uninstall(widget._id);
+            $scope.uninstall(widget._id);
         });
     });
 
-    $scope.isInstalled = function(widgetId){
-        if($scope.installedWidgets){
-            var isInstalled = _.find($scope.installedWidgets, {widgetId:{_id: widgetId}});
+    $scope.isInstalled = function (widgetId) {
+        if ($scope.installedWidgets) {
+            var isInstalled = _.find($scope.installedWidgets, {widgetId: {_id: widgetId}});
             return isInstalled;
         }
 
         return false;
     };
 
-    $scope.install = function(location, application, name, extraParams){
+    $scope.install = function (location, application, name, extraParams) {
 
         widgetService.install(location, application, name, extraParams,
 
-            function(installedWidget){
+            function (installedWidget) {
                 $scope.installedWidget = installedWidget;
 
                 // hide the widget gallery
@@ -5768,16 +5776,16 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
                 $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
             },
 
-            function(errors){
+            function (errors) {
                 toastr.error('Installation failed');
             }
         );
     };
 
-    $scope.uninstall = function(installId){
+    $scope.uninstall = function (installId) {
 
         widgetService.uninstall(installId,
-            function(uninstalled){
+            function (uninstalled) {
                 $scope.uninstalledWidget = uninstalled;
 
                 // hide the widget gallery
@@ -5787,7 +5795,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
                 $rootScope.$broadcast('onAfterUninstall' + uninstalled.location, $scope.uninstalledWidget);
             },
-            function(errors){
+            function (errors) {
                 toastr.error('Uninstallation failed');
             }
         );

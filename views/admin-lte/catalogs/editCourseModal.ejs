@@ -61,7 +61,6 @@
                                 <div class="controls">
                                     <tags-input ng-model="tagsRaw">
                                     </tags-input>
-
                                 </div>
                             </div>
 
@@ -75,7 +74,7 @@
 
                                     <div class="controls">
                                         <p class="help-block" ng-show="courseEdit.picture">
-                                            You have uploaded a picture. You can change it by reuploading the picture.
+                                            You have uploaded a picture. You can reupload the picture.
                                         </p>
 
                                         <div class="btn btn-sm btn-default"
@@ -84,6 +83,7 @@
                                                     class="ionicons ion-image"></i> &nbsp; Select a picture
                                         </div>
                                         &nbsp; <span ng-repeat="f in filespicture">{{f.name}}</span>
+
                                         <div ng-show="courseEdit.picture">
                                             <p class="help-block" ng-show="courseEdit.picture">or delete the picture</p>
                                             <a class="pointer btn btn-sm btn-danger" ng-click="deletePicture()">

@@ -12,7 +12,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
         });
     };
 
-    $scope.$watch('location', function(newVal, oldVal) {
+    $scope.$watch('location', function (newVal, oldVal) {
         var onafter = 'onAfterGetWidgets' + $scope.location;
         $scope.$on(onafter, function (event, installedWidgets) {
             $scope.installedWidgets = installedWidgets;
@@ -20,24 +20,24 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
 
         var onCloseButtonClicked = 'onAfterCloseButtonClicked' + $scope.location;
         $scope.$on(onCloseButtonClicked, function (event, widget) {
-             $scope.uninstall(widget._id);
+            $scope.uninstall(widget._id);
         });
     });
 
-    $scope.isInstalled = function(widgetId){
-        if($scope.installedWidgets){
-            var isInstalled = _.find($scope.installedWidgets, {widgetId:{_id: widgetId}});
+    $scope.isInstalled = function (widgetId) {
+        if ($scope.installedWidgets) {
+            var isInstalled = _.find($scope.installedWidgets, {widgetId: {_id: widgetId}});
             return isInstalled;
         }
 
         return false;
     };
 
-    $scope.install = function(location, application, name, extraParams){
+    $scope.install = function (location, application, name, extraParams) {
 
         widgetService.install(location, application, name, extraParams,
 
-            function(installedWidget){
+            function (installedWidget) {
                 $scope.installedWidget = installedWidget;
 
                 // hide the widget gallery
@@ -48,16 +48,16 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
                 $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
             },
 
-            function(errors){
+            function (errors) {
                 toastr.error('Installation failed');
             }
         );
     };
 
-    $scope.uninstall = function(installId){
+    $scope.uninstall = function (installId) {
 
         widgetService.uninstall(installId,
-            function(uninstalled){
+            function (uninstalled) {
                 $scope.uninstalledWidget = uninstalled;
 
                 // hide the widget gallery
@@ -67,7 +67,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
 
                 $rootScope.$broadcast('onAfterUninstall' + uninstalled.location, $scope.uninstalledWidget);
             },
-            function(errors){
+            function (errors) {
                 toastr.error('Uninstallation failed');
             }
         );
