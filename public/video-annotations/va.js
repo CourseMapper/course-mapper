@@ -198,7 +198,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
           "height": "20",
           "width": "30"
         },
-        "type": "embedded-note",
+        "type": "note",
         "text": "",
         "video_id": $scope.videoId
       };
