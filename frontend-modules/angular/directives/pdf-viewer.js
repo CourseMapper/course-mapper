@@ -75,7 +75,7 @@ app.directive('pdfViewer',
 
                                 scope.pdfIsLoaded = true;
 
-                                $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
+                                //$rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
                                 /*
                                  todo: move this somewhere else
@@ -164,8 +164,9 @@ app.directive('pdfViewer',
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
-                    //console.log("pdfviewerEv");
-                    $rootScope.$broadcast('reloadTags');
+
+                    //console.log("PDF Scale Change");
+                    //$rootScope.$broadcast('reloadTags');
                     //console.log($scope.scale);
                   }
                 };
@@ -192,8 +193,6 @@ app.directive('pdfViewer',
                   $scope.currentTab = tab;
                   if(tab == "pdf") {
                     adjustPdfScale();
-                    //$rootScope.$broadcast('reloadTags');
-
                   }
                 });
 
