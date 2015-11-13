@@ -1,5 +1,5 @@
 var appRoot = require('app-root-path');
-var Courses = require( appRoot + '/modules/catalogs/courses.js');
+var Courses = require(appRoot + '/modules/catalogs/courses.js');
 
 var userHelper = {
 
@@ -10,24 +10,21 @@ var userHelper = {
      * @param courseId
      * @param success
      */
-    isUserEnrolled: function(error, userId, courseId, success){
+    isUserEnrolled: function (error, userId, courseId, success) {
         var params = {
             course: courseId,
             user: userId
         };
 
-        var uc = new Course();
-        uc.getUserCourses(
-            function(err){
-                error(err);
-            },
-
+        Courses.find(
             params,
 
-            function(doc){
-                if(doc.length > 0){
+            function (err, doc) {
+                if (err)
+                    error();
+                else if (doc.length > 0) {
                     success(true);
-                } else{
+                } else {
                     userHelper.isUserCreatedCourse(error, userId, courseId, success);
                 }
             });
@@ -40,7 +37,7 @@ var userHelper = {
      * @param courseId
      * @param success
      */
-    isUserCreatedCourse: function(error, userId, courseId, success){
+    isUserCreatedCourse: function (error, userId, courseId, success) {
         var params = {
             createdBy: userId,
             _id: courseId
@@ -48,7 +45,7 @@ var userHelper = {
 
         Courses.find(params, function (err, docs) {
             if (!err) {
-                if(docs.length > 0){
+                if (docs.length > 0) {
                     success(true);
                 } else {
                     success(false);
@@ -59,18 +56,17 @@ var userHelper = {
         });
     },
 
-    isManager: function(error, userId, courseId, success){
+    isManager: function (error, userId, courseId, success) {
         var params = {
             _id: courseId,
             managers: userId
         };
 
         Courses.find(
-
             params,
 
-            function(err, doc){
-                if(err)
+            function (err, doc) {
+                if (err)
                     error();
                 else {
                     if (doc.length > 0) {
@@ -83,23 +79,23 @@ var userHelper = {
         );
     },
 
-    isAuthorized: function(error, params, success){
-        if(params.userId && params.courseId){
+    isAuthorized: function (error, params, success) {
+        if (params.userId && params.courseId) {
             userHelper.isManager(
                 error, params.userId, params.courseId,
 
-                function(ret){
+                function (ret) {
                     // is manager
-                    if(ret){
+                    if (ret) {
                         success(true);
                     } else {
                         // check is owner
                         userHelper.isUserCreatedCourse(
                             error, params.userId, params.courseId,
 
-                            function(ret){
+                            function (ret) {
                                 // is owner
-                                if(ret) {
+                                if (ret) {
                                     success(true);
                                 }
                                 else {

@@ -3491,10 +3491,10 @@ app.factory('socket', function($rootScope) {
                     });
             },
 
-            uninstall: function (installId, successCb, errorCb) {
+            uninstall: function (installId, extraParams, successCb, errorCb) {
                 var self = this;
 
-                $http.put('/api/widgets/uninstall/' + installId, {})
+                $http.put('/api/widgets/uninstall/' + installId, extraParams)
                     .success(function (data) {
                         if (data.result) {
                              self.uninstalledwidgets.push(installId);
@@ -5555,7 +5555,18 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
     };
 
     $scope.closeWidget = function(id){
-        widgetService.uninstall(id);
+        widgetService.uninstall(id, {courseId: $scope.course._id},
+            function(wdg){
+                var grid = $('#' + $scope.location + '-widgets').data('gridstack');
+                grid.remove_all();
+                $scope.getWidgets(true);
+                toastr.success('Widget is uninstalled');
+            },
+
+            function(errors){
+                toastr.error('Uninstallation failed');
+            }
+        );
     };
 
     $scope.setupInstallmentWatch = function(){
@@ -5633,7 +5644,18 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
     };
 
     $scope.closeWidget = function(id){
-        widgetService.uninstall(id);
+        widgetService.uninstall(id, {courseId: $scope.course._id},
+            function(wdg){
+                var grid = $('#' + $scope.location + '-widgets').data('gridstack');
+                grid.remove_all();
+                $scope.getWidgets(true);
+                toastr.success('Widget is uninstalled');
+            },
+
+            function(errors){
+                toastr.error('Uninstallation failed');
+            }
+        );
     };
 
     $scope.setupInstallmentWatch = function(){
@@ -5740,6 +5762,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
                 // hide the widget gallery
                 $('#widgetGallery').modal('hide');
+                $('#widgetGalleryAnalytics').modal('hide');
                 toastr.success('Widget is installed');
 
                 $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
@@ -5759,6 +5782,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
                 // hide the widget gallery
                 $('#widgetGallery').modal('hide');
+                $('#widgetGalleryAnalytics').modal('hide');
                 toastr.success('Widget is uninstalled');
 
                 $rootScope.$broadcast('onAfterUninstall' + uninstalled.location, $scope.uninstalledWidget);

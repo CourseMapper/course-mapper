@@ -42,6 +42,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
 
                 // hide the widget gallery
                 $('#widgetGallery').modal('hide');
+                $('#widgetGalleryAnalytics').modal('hide');
                 toastr.success('Widget is installed');
 
                 $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
@@ -61,6 +62,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
 
                 // hide the widget gallery
                 $('#widgetGallery').modal('hide');
+                $('#widgetGalleryAnalytics').modal('hide');
                 toastr.success('Widget is uninstalled');
 
                 $rootScope.$broadcast('onAfterUninstall' + uninstalled.location, $scope.uninstalledWidget);

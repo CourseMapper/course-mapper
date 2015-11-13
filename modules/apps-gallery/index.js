@@ -412,28 +412,55 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
         return;
     }
 
-    WP.findOneAndUpdate(
-        {
+    function deleteWidgetPlacement(deleteParams){
+        WP.findOneAndRemove(
+            deleteParams,
+
+            function (err, doc) {
+                if (err)
+                    error(err);
+                else if (doc)
+                    success(doc);
+                else {
+                    error(helper.createError404('Widget Installation'));
+                }
+            }
+        );
+    }
+
+    if(params.courseId) {
+        userHelper.isAuthorized(
+            function (err) {
+                error(err);
+            },
+            {
+                userId: params.userId,
+                courseId: params.courseId
+            },
+            function (isAllowed) {
+                if (isAllowed) {
+                    var deleteParams = {
+                        _id: params._id
+                    };
+
+                    deleteWidgetPlacement(deleteParams);
+                } else {
+                    error(helper.createError401());
+                }
+            }
+        );
+    }
+
+    else {
+        var deleteParams = {
             _id: params._id,
             userId: params.userId
-        },
+        };
 
-        {
-            isInstalled: false
-        },
+        deleteWidgetPlacement(deleteParams);
+    }
 
-        {upsert: false},
 
-        function (err, doc) {
-            if (err)
-                error(err);
-            else if (doc)
-                success(doc);
-            else {
-                error(helper.createError404('Widget Installation'));
-            }
-        }
-    );
 };
 
 module.exports = AppStore;

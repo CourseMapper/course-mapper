@@ -144,10 +144,10 @@ app.factory('widgetService', [
                     });
             },
 
-            uninstall: function (installId, successCb, errorCb) {
+            uninstall: function (installId, extraParams, successCb, errorCb) {
                 var self = this;
 
-                $http.put('/api/widgets/uninstall/' + installId, {})
+                $http.put('/api/widgets/uninstall/' + installId, extraParams)
                     .success(function (data) {
                         if (data.result) {
                              self.uninstalledwidgets.push(installId);

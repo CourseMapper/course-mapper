@@ -21,7 +21,18 @@ app.controller('widgetCourseAnalyticsController', function($scope, $http, $rootS
     };
 
     $scope.closeWidget = function(id){
-        widgetService.uninstall(id);
+        widgetService.uninstall(id, {courseId: $scope.course._id},
+            function(wdg){
+                var grid = $('#' + $scope.location + '-widgets').data('gridstack');
+                grid.remove_all();
+                $scope.getWidgets(true);
+                toastr.success('Widget is uninstalled');
+            },
+
+            function(errors){
+                toastr.error('Uninstallation failed');
+            }
+        );
     };
 
     $scope.setupInstallmentWatch = function(){
