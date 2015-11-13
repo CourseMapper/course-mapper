@@ -71,11 +71,11 @@ app.directive('pdfViewer',
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                //console.log("PDF LOADED");
+                                console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
 
-                                //$rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
+                                $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
                                 /*
                                  todo: move this somewhere else
@@ -125,8 +125,9 @@ app.directive('pdfViewer',
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw().catch(function(){});
 
-                            //console.log("PDF LOADED");
+                            console.log("Slide Changed");
                             $scope.pdfIsLoaded = true;
+
 
                             $rootScope.$broadcast('onPdfPageChange', [newSlideNumber, $scope.totalPage]);
 
@@ -165,9 +166,7 @@ app.directive('pdfViewer',
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
 
-                    //console.log("PDF Scale Change");
-                    //$rootScope.$broadcast('reloadTags');
-                    //console.log($scope.scale);
+                    
                   }
                 };
 
@@ -199,6 +198,8 @@ app.directive('pdfViewer',
                 $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
                 });
+
+
 
                 // onload
                 $scope.$watch('totalPage', function(newVal, oldVal){
