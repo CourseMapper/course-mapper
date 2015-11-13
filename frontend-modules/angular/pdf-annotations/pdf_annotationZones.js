@@ -240,13 +240,13 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
       console.log("PdfPageChange: ");
-      $rootScope.$emit('reloadTags');
+      $scope.$emit('reloadTags');
     });
 
     $scope.$on('$destroy',pdfPageChangeListener);
 
 
-    var reloadTagsEventListener = $rootScope.$on('reloadTags', function(event) {
+    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       console.log("Reload Tags called");
       $(".slideRect").remove();
 
@@ -256,7 +256,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $scope.refreshTags();
     });
 
-    $rootScope.$on('$destroy',reloadTagsEventListener);
+    $scope.$on('$destroy',reloadTagsEventListener);
 
 
 

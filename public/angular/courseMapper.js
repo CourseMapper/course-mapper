@@ -1820,8 +1820,7 @@ app.directive('movable', function() {
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                console.log("PDF LOADED");
-
+                                
                                 scope.pdfIsLoaded = true;
 
                                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
@@ -1915,7 +1914,7 @@ app.directive('movable', function() {
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
 
-                    
+
                   }
                 };
 
@@ -3389,13 +3388,13 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
       console.log("PdfPageChange: ");
-      $rootScope.$emit('reloadTags');
+      $scope.$emit('reloadTags');
     });
 
     $scope.$on('$destroy',pdfPageChangeListener);
 
 
-    var reloadTagsEventListener = $rootScope.$on('reloadTags', function(event) {
+    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       console.log("Reload Tags called");
       $(".slideRect").remove();
 
@@ -3405,7 +3404,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
       $scope.refreshTags();
     });
 
-    $rootScope.$on('$destroy',reloadTagsEventListener);
+    $scope.$on('$destroy',reloadTagsEventListener);
 
 
 
