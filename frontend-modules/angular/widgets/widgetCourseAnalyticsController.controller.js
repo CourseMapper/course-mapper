@@ -1,7 +1,7 @@
-app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
+app.controller('widgetCourseAnalyticsController', function($scope, $http, $rootScope,
                                                          $timeout, toastr,
                                                          widgetService, courseService, authService) {
-    $scope.location = "course-preview";
+    $scope.location = "course-analytics";
     $scope.widgets = [];
 
     $scope.getWidgets = function(force){
@@ -57,14 +57,6 @@ app.controller('widgetCoursePreviewController', function($scope, $http, $rootSco
             });
         }
 
-        /*$scope.$on('onAfterInitUser', function(event, user){
-            $scope.$watch('location', function(newVal, oldVal){
-                if($scope.location == 'user-profile'){
-                    $scope.getWidgets();
-                }
-            });
-        });*/
-
         var enableDragging = ($scope.isManager || authService.isAdmin() || $scope.isOwner)? true: false;
         widgetService.initiateDraggableGrid($scope.location, enableDragging);
 
@@ -72,7 +64,7 @@ app.controller('widgetCoursePreviewController', function($scope, $http, $rootSco
     };
 
     $scope.initWidgetButton = function(id) {
-        widgetService.initWidgetButton('course-preview', id)
+        widgetService.initWidgetButton($scope.location, id)
     };
 
     $scope.checkOwnership = function(userId){
