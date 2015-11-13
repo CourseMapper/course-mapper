@@ -26,6 +26,13 @@ app.controller('CourseRootController', function($scope, $rootScope, $filter, $ht
         $scope.currentTab = q.tab;
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
 
+        $timeout(function(){
+            if(!authService.isLoggedIn){
+                if($scope.currentTab != defaultPath)
+                    $location.search('tab', defaultPath);
+            }
+        });
+
         if($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
 
@@ -43,9 +50,9 @@ app.controller('CourseRootController', function($scope, $rootScope, $filter, $ht
 
                 Page.setTitleWithPrefix($scope.course.name);
 
-                $timeout(function () {
+                //$timeout(function () {
                     $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
-                });
+                //});
             },
 
             function(res){
@@ -88,10 +95,10 @@ app.controller('CourseRootController', function($scope, $rootScope, $filter, $ht
     $scope.newCourseNotification();
 
     /**
-     * initiate course when user is logged in
+     * initiate course when user hast tried to log in
      */
     $scope.$watch(function(){ return authService.isLoggedIn;}, function(){
-        if(authService.isLoggedIn !== null && !$scope.course){
+        if(authService.hasTriedToLogin && !$scope.course){
             $scope.init();
         }
     });

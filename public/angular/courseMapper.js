@@ -265,7 +265,7 @@ app.config(function(toastrConfig) {
     };
 });
 ;
-app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
+app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload, toastr) {
     $scope.createdDate = new Date();
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
@@ -309,7 +309,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             fields: {
                 name: $scope.courseEdit.name,
                 description: $scope.courseEdit.description,
-                tags: $scope.courseEdit.tags,
+                tags: $scope.courseEdit.tags
             }
         };
 
@@ -350,6 +350,36 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
                 $scope.errors = data.errors;
 
                 $scope.progressPercentage = 0;
+            });
+    };
+
+    $scope.deleteVideo = function(){
+        $http.post('/api/course/' + $scope.courseEdit._id, {
+            video: "delete",
+            name: $scope.courseEdit.name
+        })
+            .success(function(data){
+                $scope.courseEdit.video = false;
+                $scope.$emit('onAfterEditCourse', data.course);
+                toastr.success('Video deleted');
+            })
+            .error(function(){
+                toastr.error('Video delete failed');
+            });
+    };
+
+    $scope.deletePicture = function(){
+        $http.post('/api/course/' + $scope.courseEdit._id, {
+                picture: "delete",
+                name: $scope.courseEdit.name
+            })
+            .success(function(data){
+                $scope.courseEdit.video = false;
+                $scope.$emit('onAfterEditCourse', data.course);
+                toastr.success('Picture deleted');
+            })
+            .error(function(){
+                toastr.error('Picture delete failed');
             });
     };
 
@@ -443,6 +473,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentTab = q.tab;
         $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
 
+        $timeout(function(){
+            if(!authService.isLoggedIn){
+                if($scope.currentTab != defaultPath)
+                    $location.search('tab', defaultPath);
+            }
+        });
+
         if($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
 
@@ -460,9 +497,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 Page.setTitleWithPrefix($scope.course.name);
 
-                $timeout(function () {
+                //$timeout(function () {
                     $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
-                });
+                //});
             },
 
             function(res){
@@ -505,10 +542,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.newCourseNotification();
 
     /**
-     * initiate course when user is logged in
+     * initiate course when user hast tried to log in
      */
     $scope.$watch(function(){ return authService.isLoggedIn;}, function(){
-        if(authService.isLoggedIn !== null && !$scope.course){
+        if(authService.hasTriedToLogin && !$scope.course){
             $scope.init();
         }
     });
@@ -2926,7 +2963,14 @@ app.directive('timepicker', function($timeout) {
 
             isCheckingForLogin: false,
 
-            isLoggedIn: null,
+            /**
+             * default value is null  because its used on a watch check
+             *
+             * if you want to use isLogged, you have to be sure that it already tried to login, or called loginCheck
+             * otherwise just use loginCheck
+             */
+            isLoggedIn: false,
+            hasTriedToLogin: false,
 
             loginCheck: function (successCallback, errorCallback) {
                 var self = this;
@@ -2943,6 +2987,8 @@ app.directive('timepicker', function($timeout) {
 
                     $http.get('/api/accounts').success(function (data) {
                         self.isCheckingForLogin = false;
+
+                        self.hasTriedToLogin = true;
 
                         if (data.result) {
                             self.user = data.user;
@@ -2968,15 +3014,11 @@ app.directive('timepicker', function($timeout) {
 
                 return false;
             },
-            /*isLoggedIn: function () {
-                if (!this.user)
-                    return false;
-
-                return true;
-            },*/
 
             login: function (loginData, successCallback, errorCallback) {
                 var self = this;
+
+                self.hasTriedToLogin = true;
 
                 var d = transformRequest(loginData);
                 $http({
@@ -3425,7 +3467,7 @@ app.factory('socket', function($rootScope) {
                 $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
-            install: function (location, application, name, extraParams) {
+            install: function (location, application, name, extraParams, successCb, errorCb) {
                 var params = {
                     application: application,
                     widget: name,
@@ -3437,34 +3479,36 @@ app.factory('socket', function($rootScope) {
                 $http.put('/api/widgets/install', params)
                     .success(function (data) {
                         if (data.result) {
-                            $rootScope.$broadcast('onAfterInstall' + location, data.installed);
-
-                            if (success)
-                                success(data.installed);
-                        }
+                            if (successCb)
+                                successCb(data.installed);
+                        } else
+                            if (errorCb)
+                                errorCb(data.errors);
                     })
                     .error(function (data) {
-                        if (error)
-                            error(data.errors);
+                        if (errorCb)
+                            errorCb(data.errors);
                     });
             },
 
-            uninstall: function (installId, success, error) {
+            uninstall: function (installId, successCb, errorCb) {
                 var self = this;
 
                 $http.put('/api/widgets/uninstall/' + installId, {})
                     .success(function (data) {
                         if (data.result) {
-                            $rootScope.$broadcast('onAfterUninstall' + data.uninstalled.location, data.uninstalled);
-                            self.uninstalledwidgets.push(installId);
+                             self.uninstalledwidgets.push(installId);
 
-                            if (success)
-                                success(data.uninstalled);
+                            if (successCb)
+                                successCb(data.uninstalled);
                         }
+                        else
+                            if (errorCb)
+                                errorCb(data.errors);
                     })
                     .error(function (data) {
-                        if (error)
-                            error(data.errors);
+                        if (errorCb)
+                            errorCb(data.errors);
                     });
             },
 
@@ -5652,7 +5696,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
     $scope.initWidgets();
 });
-;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr) {
+;app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, toastr, widgetService) {
     $scope.location = "";
     $scope.installedWidgets;
     /**
@@ -5687,50 +5731,42 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         return false;
     };
 
-    $scope.install = function(location, application, name, courseId){
-        var params = {
-            application: application,
-            widget: name,
-            location: location
-        };
+    $scope.install = function(location, application, name, extraParams){
 
-        if(courseId)
-            params.courseId = courseId;
+        widgetService.install(location, application, name, extraParams,
 
-        $http.put('/api/widgets/install', params)
-            .success(function (data) {
-                if(data.result)
-                    $scope.installedWidget = data.installed;
+            function(installedWidget){
+                $scope.installedWidget = installedWidget;
 
                 // hide the widget gallery
                 $('#widgetGallery').modal('hide');
+                toastr.success('Widget is installed');
 
                 $rootScope.$broadcast('onAfterInstall' + location, $scope.installedWidget);
+            },
 
-                toastr.success('Widget is installed');
-            })
-            .error(function(data){
+            function(errors){
                 toastr.error('Installation failed');
-            });
+            }
+        );
     };
 
     $scope.uninstall = function(installId){
-        $http.put('/api/widgets/uninstall/' + installId, {})
-            .success(function (data) {
-                if(data.result) {
-                    $scope.uninstalledWidget = data.uninstalled;
 
-                    // hide the widget gallery
-                    $('#widgetGallery').modal('hide');
+        widgetService.uninstall(installId,
+            function(uninstalled){
+                $scope.uninstalledWidget = uninstalled;
 
-                    $rootScope.$broadcast('onAfterUninstall' + data.uninstalled.location, $scope.uninstalledWidget);
+                // hide the widget gallery
+                $('#widgetGallery').modal('hide');
+                toastr.success('Widget is uninstalled');
 
-                    toastr.success('Widget is uninstalled');
-                }
-            })
-            .error(function(data){
+                $rootScope.$broadcast('onAfterUninstall' + uninstalled.location, $scope.uninstalledWidget);
+            },
+            function(errors){
                 toastr.error('Uninstallation failed');
-            });
+            }
+        );
     };
 
 });

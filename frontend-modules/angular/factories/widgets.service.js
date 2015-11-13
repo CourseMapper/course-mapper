@@ -120,7 +120,7 @@ app.factory('widgetService', [
                 $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
-            install: function (location, application, name, extraParams) {
+            install: function (location, application, name, extraParams, successCb, errorCb) {
                 var params = {
                     application: application,
                     widget: name,
@@ -132,34 +132,36 @@ app.factory('widgetService', [
                 $http.put('/api/widgets/install', params)
                     .success(function (data) {
                         if (data.result) {
-                            $rootScope.$broadcast('onAfterInstall' + location, data.installed);
-
-                            if (success)
-                                success(data.installed);
-                        }
+                            if (successCb)
+                                successCb(data.installed);
+                        } else
+                            if (errorCb)
+                                errorCb(data.errors);
                     })
                     .error(function (data) {
-                        if (error)
-                            error(data.errors);
+                        if (errorCb)
+                            errorCb(data.errors);
                     });
             },
 
-            uninstall: function (installId, success, error) {
+            uninstall: function (installId, successCb, errorCb) {
                 var self = this;
 
                 $http.put('/api/widgets/uninstall/' + installId, {})
                     .success(function (data) {
                         if (data.result) {
-                            $rootScope.$broadcast('onAfterUninstall' + data.uninstalled.location, data.uninstalled);
-                            self.uninstalledwidgets.push(installId);
+                             self.uninstalledwidgets.push(installId);
 
-                            if (success)
-                                success(data.uninstalled);
+                            if (successCb)
+                                successCb(data.uninstalled);
                         }
+                        else
+                            if (errorCb)
+                                errorCb(data.errors);
                     })
                     .error(function (data) {
-                        if (error)
-                            error(data.errors);
+                        if (errorCb)
+                            errorCb(data.errors);
                     });
             },
 

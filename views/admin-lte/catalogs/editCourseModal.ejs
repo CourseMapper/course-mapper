@@ -8,7 +8,7 @@
 
                     <div class="box-tools pull-right">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                                    aria-hidden="true">&times;</span></button>
                     </div>
                 </div>
 
@@ -39,11 +39,11 @@
 
                                 <div class="controls"
                                      ng-class="{ 'has-error' : editCourseForm.description.$invalid && !editCourseForm.$pristine }">
-                                <textarea type="description" id="description" name="description" placeholder=""
-                                          class="form-control" ng-model="courseEdit.description" required
-                                          ng-required="true"
-                                          ng-minlength="6">
-                                </textarea>
+
+                                    <div id="description" name="description"
+                                         ng-model="courseEdit.description"
+                                         quill>
+                                    </div>
 
                                     <p ng-show="editCourseForm.description.$invalid && !editCourseForm.$pristine"
                                        class="help-block">Please fill in a little bit of description about this
@@ -70,16 +70,26 @@
                                     <p></p>
                                     <label class="control-label" for="description">Intro Picture</label>
 
-                                    <p class="help-block">Select a jpg/png file (960 × 480 pixels) from your
+                                    <p class="help-block">Select a jpg/png file (900 × 320 pixels) from your
                                         computer</p>
 
                                     <div class="controls">
+                                        <p class="help-block" ng-show="courseEdit.picture">
+                                            You have uploaded a picture. You can change it by reuploading the picture.
+                                        </p>
+
                                         <div class="btn btn-sm btn-default"
                                              ngf-select accept="image/*" ngf-accept="'image/jpg,image/jpeg,image/png'"
                                              ng-model="filespicture" ngf-multiple="false" ngf-max-size='1000000'><i
-                                                class="ionicons ion-image"></i> &nbsp; Select a picture
+                                                    class="ionicons ion-image"></i> &nbsp; Select a picture
                                         </div>
                                         &nbsp; <span ng-repeat="f in filespicture">{{f.name}}</span>
+                                        <div ng-show="courseEdit.picture">
+                                            <p class="help-block" ng-show="courseEdit.picture">or delete the picture</p>
+                                            <a class="pointer btn btn-sm btn-danger" ng-click="deletePicture()">
+                                                Delete Picture
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -92,19 +102,31 @@
                                     <p class="help-block"></p>
 
                                     <div class="controls">
+                                        <p class="help-block" ng-show="courseEdit.video">
+                                            You have uploaded a video. You can change it by reuploading the video.
+                                        </p>
+
                                         <div class="btn btn-sm btn-default"
                                              ngf-select accept="video/*" ngf-accept="'video/*'"
                                              ng-model="filesvideo" ngf-multiple="false" ngf-max-size='100000000'><i
-                                                class="`"></i> &nbsp; Select a video file
+                                                    class="`"></i> &nbsp; Select a video file
                                         </div>
                                         &nbsp; <span ng-repeat="f in filesvideo">{{f.name}}</span>
+
+                                        <div ng-show="courseEdit.video">
+                                            <p class="help-block" ng-show="courseEdit.video">or delete the video</p>
+                                            <a class="pointer btn btn-sm btn-danger" ng-click="deleteVideo()">
+                                                Delete Video
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
- 
+
                             <div class="col-xs-12" ng-show="progressPercentage > 0">
-                                <div class="progress" >
-                                    <div class="progress-bar" ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
+                                <div class="progress">
+                                    <div class="progress-bar"
+                                         ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
                                 </div>
                             </div>
 
@@ -118,8 +140,10 @@
                                     <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                     <!-- Button -->
                                     <div class="controls">
-                                        <button class="btn btn-md btn-primary" ng-click="editCourseForm.$pristine=false">Save Edit
-                                            <spinner show="isLoading"></spinner></button>
+                                        <button class="btn btn-md btn-primary"
+                                                ng-click="editCourseForm.$pristine=false">Save Edit
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
 
                                         <button type="button" class="btn btn btn-warning"
                                                 data-dismiss="modal" aria-label="Close" ng-click="cancel()">

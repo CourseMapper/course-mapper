@@ -1,5 +1,5 @@
 
-app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
+app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload, toastr) {
     $scope.createdDate = new Date();
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
@@ -43,7 +43,7 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             fields: {
                 name: $scope.courseEdit.name,
                 description: $scope.courseEdit.description,
-                tags: $scope.courseEdit.tags,
+                tags: $scope.courseEdit.tags
             }
         };
 
@@ -84,6 +84,36 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
                 $scope.errors = data.errors;
 
                 $scope.progressPercentage = 0;
+            });
+    };
+
+    $scope.deleteVideo = function(){
+        $http.post('/api/course/' + $scope.courseEdit._id, {
+            video: "delete",
+            name: $scope.courseEdit.name
+        })
+            .success(function(data){
+                $scope.courseEdit.video = false;
+                $scope.$emit('onAfterEditCourse', data.course);
+                toastr.success('Video deleted');
+            })
+            .error(function(){
+                toastr.error('Video delete failed');
+            });
+    };
+
+    $scope.deletePicture = function(){
+        $http.post('/api/course/' + $scope.courseEdit._id, {
+                picture: "delete",
+                name: $scope.courseEdit.name
+            })
+            .success(function(data){
+                $scope.courseEdit.video = false;
+                $scope.$emit('onAfterEditCourse', data.course);
+                toastr.success('Picture deleted');
+            })
+            .error(function(){
+                toastr.error('Picture delete failed');
             });
     };
 

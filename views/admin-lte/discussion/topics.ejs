@@ -30,8 +30,8 @@
                             </div>
                             <div class="col-xs-11">
                                 <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
-                                    {{topic.discussion.title}}
-                                </a></h4>
+                                        {{topic.discussion.title}}
+                                    </a></h4>
                                 <span class="posted-at">
                                     Posted <strong>{{topic.discussion.dateAdded | relativeDate}}</strong>
                                     By <strong>{{topic.createdBy.displayName}}</strong>
@@ -64,8 +64,8 @@
                         </div>
                         <div class="box-body">
 
-                                <p class="topicContent" ng-bind-html="currentTopic.content | unsafe">
-                                </p>
+                            <p class="topicContent" ng-bind-html="currentTopic.content | unsafe">
+                            </p>
 
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                                          show-delete-button="true"
                                          show-edit-button="true"
                                          show-control="true"
-                                        ></comment>
+                                ></comment>
                             </div>
 
 
@@ -114,9 +114,9 @@
     <% include addNewTopicModal %>
     <% include editTopicModal %>
 
-    <% var formName= 'addNewReply'; var formTitle = 'Add'; var actionMethod = 'saveNewReply'; %>
+    <% var formName = 'addNewReply'; var formTitle = 'Add'; var actionMethod = 'saveNewReply'; %>
     <% include replyModal %>
-    <% var formName= 'editReply'; var formTitle = 'Edit'; var actionMethod = 'saveEditReply'; %>
+    <% var formName = 'editReply'; var formTitle = 'Edit'; var actionMethod = 'saveEditReply'; %>
     <% include replyModal %>
 
 </div>

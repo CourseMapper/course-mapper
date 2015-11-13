@@ -7,7 +7,14 @@ app.factory('authService', [
 
             isCheckingForLogin: false,
 
-            isLoggedIn: null,
+            /**
+             * default value is null  because its used on a watch check
+             *
+             * if you want to use isLogged, you have to be sure that it already tried to login, or called loginCheck
+             * otherwise just use loginCheck
+             */
+            isLoggedIn: false,
+            hasTriedToLogin: false,
 
             loginCheck: function (successCallback, errorCallback) {
                 var self = this;
@@ -24,6 +31,8 @@ app.factory('authService', [
 
                     $http.get('/api/accounts').success(function (data) {
                         self.isCheckingForLogin = false;
+
+                        self.hasTriedToLogin = true;
 
                         if (data.result) {
                             self.user = data.user;
@@ -49,15 +58,11 @@ app.factory('authService', [
 
                 return false;
             },
-            /*isLoggedIn: function () {
-                if (!this.user)
-                    return false;
-
-                return true;
-            },*/
 
             login: function (loginData, successCallback, errorCallback) {
                 var self = this;
+
+                self.hasTriedToLogin = true;
 
                 var d = transformRequest(loginData);
                 $http({

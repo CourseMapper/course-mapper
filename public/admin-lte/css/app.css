@@ -687,6 +687,7 @@ a.videoButton:hover{
 
 .preview .preview-image {
     width: 100%;
+    border-radius: 5px;
 }
 
 .content-course .preview .container {
@@ -718,9 +719,19 @@ a.videoButton:hover{
     box-shadow: 0px 0px 26px -4px rgba(0, 0, 0, 0.87);
 }
 
+.preview-image-container{
+    height:320px;
+    overflow: hidden;
+}
+
 .excerpt .description{
     max-height: 200px;
     overflow: auto;
+    padding:20px;
+}
+
+#description.quill-wrapper{
+    height: 150px;
 }
 
 .preview h1 {

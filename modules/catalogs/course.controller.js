@@ -302,7 +302,19 @@ catalog.prototype.editCourse = function (error, params, files, success) {
 
                 function(isAllowed){
                     if(isAllowed){
-                        saveEditCourse(course);
+                        if(params.video && params.video == 'delete'){
+                            course.video = undefined;
+                            course.save(function(){
+                                success(course);
+                            });
+                        } else if(params.picture && params.picture == 'delete'){
+                            course.picture = undefined;
+                            course.save(function(){
+                                success(course);
+                            });
+                        } else {
+                            saveEditCourse(course);
+                        }
                     } else {
                         error(helper.createError401());
                     }
