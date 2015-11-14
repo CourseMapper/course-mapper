@@ -226,7 +226,7 @@ app.config(function(toastrConfig) {
     $scope.saveCourseSetting = function (isValid) {
         if (!isValid)
             return;
-        
+
         $scope.managersIdRaw = [];
 
         var url = '/api/course/' + $scope.courseEdit._id + '/addManager';
@@ -465,6 +465,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.currentTab = "preview";
     $scope.include = null;
+    $scope.includeActionBar = null;
 
     $scope.changeTab = function () {
         var defaultPath = "preview";
@@ -487,7 +488,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if ($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
 
-        $scope.include = '/course/' + $scope.currentTab;
+        $scope.include = '/course/tab/' + $scope.currentTab;
+        $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
 
         $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
     };
@@ -3009,6 +3011,7 @@ app.directive('timepicker', function($timeout) {
                     }).error(function (data) {
                         self.isCheckingForLogin = false;
                         self.isLoggedIn = false;
+                        self.hasTriedToLogin = true;
 
                         if (errorCallback)
                             errorCallback(data);
@@ -3025,8 +3028,6 @@ app.directive('timepicker', function($timeout) {
 
             login: function (loginData, successCallback, errorCallback) {
                 var self = this;
-
-                self.hasTriedToLogin = true;
 
                 var d = transformRequest(loginData);
                 $http({

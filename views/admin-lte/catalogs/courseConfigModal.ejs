@@ -16,7 +16,7 @@
                     <form role="form" ng-submit="saveCourseSetting(configCourseForm.$valid)" name="configCourseForm"
                           novalidate>
                         <fieldset>
-                            <div class="control-group">
+                            <div class="control-group addCourseManagers">
                                 <label class="control-label" for="description">Add Course Managers</label>
 
                                 <p class="help-block">Course Manager can act as a Course Creator.
@@ -25,7 +25,8 @@
                                 </p>
 
                                 <div class="input-group input-group-sm">
-                                    <input type="text" class="form-control" placeholder="username" ng-model="username" id="usernameSearchBox">
+                                    <input type="text" class="form-control" placeholder="username" ng-model="username"
+                                           id="usernameSearchBox">
                                     <span class="input-group-btn">
                                       <button class="btn btn-info btn-flat" type="button" ng-click="findUsername()">
                                           <i class="ionicons ion-plus"></i>
@@ -45,7 +46,27 @@
                             </div>
 
                             <div class="control-group">
+                                <label class="control-label" for="description">Tabs Settings</label>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label" for="description">Embed Settings</label>
+
+                                <p>
+                                    <label for="disableControl">
+                                        <input type="checkbox" name="disableControl"> Disable Controls</label>
+                                </p>
+
+                                <p>
+                                    <label for="disableTop">
+                                        <input type="checkbox" name="disableTop"> Disable Top
+                                        Navigations</label>
+                                </p>
+                            </div>
+
+                            <div class="control-group">
                                 <br class="clear">
+
                                 <div class="box-footer">
                                     <!-- Button -->
                                     <div class="controls">

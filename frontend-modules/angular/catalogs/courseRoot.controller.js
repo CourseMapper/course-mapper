@@ -14,6 +14,7 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
 
     $scope.currentTab = "preview";
     $scope.include = null;
+    $scope.includeActionBar = null;
 
     $scope.changeTab = function () {
         var defaultPath = "preview";
@@ -36,7 +37,8 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         if ($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
 
-        $scope.include = '/course/' + $scope.currentTab;
+        $scope.include = '/course/tab/' + $scope.currentTab;
+        $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
 
         $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
     };

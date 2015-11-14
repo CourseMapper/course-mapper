@@ -6,7 +6,6 @@ var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var router = express.Router();
-
 var theme = config.get('theme');
 
 /**
@@ -33,20 +32,15 @@ router.get('/course/courseDetail', function (req, res, next) {
     res.render(theme + '/catalogs/courseDetail');
 });
 
-router.get('/course/preview', function (req, res, next) {
-    res.render(theme + '/catalogs/courseDetailContentPreview');
+/**
+ * partials related to tab and actionbars
+ */
+router.get('/course/tab/:tabName', function (req, res, next) {
+    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.tabName);
 });
-router.get('/course/map', function (req, res, next) {
-    res.render(theme + '/catalogs/courseDetailContentMap');
-});
-router.get('/course/update', function (req, res, next) {
-    res.render(theme + '/catalogs/courseDetailContentUpdates');
-});
-router.get('/course/discussion', function (req, res, next) {
-    res.render(theme + '/discussion/topics');
-});
-router.get('/course/analytics', function (req, res, next) {
-    res.render(theme + '/catalogs/courseDetailContentAnalytics');
+
+router.get('/course/actionBar/:tabName', function (req, res, next) {
+    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.tabName + 'actionBar');
 });
 
 /**
@@ -64,32 +58,19 @@ router.get('/course/edit', function (req, res, next) {
 });
 
 /**
- * partial for add sub topic modal
+ * partial for modals in course related to map actions
  */
 router.get('/course/addSubTopic', function (req, res, next) {
-    res.render(theme + '/catalogs/addSubTopicModal');
+    res.render(theme + '/course/map/addSubTopicModal');
 });
-
 router.get('/course/editSubTopic', function (req, res, next) {
-    res.render(theme + '/catalogs/editSubTopicModal');
+    res.render(theme + '/course/map/editSubTopicModal');
 });
-
-/**
- * partial for add content node modal
- */
 router.get('/course/addContentNode', function (req, res, next) {
-    res.render(theme + '/catalogs/addContentNodeModal');
+    res.render(theme + '/course/map/addContentNodeModal');
 });
-
-/**
- * partial for edit content node modal
- */
 router.get('/course/editContentNode', function (req, res, next) {
-    res.render(theme + '/catalogs/editContentNodeModal');
-});
-
-router.get('/course/:courseId/tree', function (req, res, next) {
-    res.render(theme + '/catalogs/course1', {title: req.params.courseId});
+    res.render(theme + '/course/map/editContentNodeModal');
 });
 
 /**

@@ -66,7 +66,7 @@ app.controller('CourseConfigController', function ($scope, $http, toastr) {
     $scope.saveCourseSetting = function (isValid) {
         if (!isValid)
             return;
-        
+
         $scope.managersIdRaw = [];
 
         var url = '/api/course/' + $scope.courseEdit._id + '/addManager';

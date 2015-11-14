@@ -45,6 +45,7 @@ app.factory('authService', [
                     }).error(function (data) {
                         self.isCheckingForLogin = false;
                         self.isLoggedIn = false;
+                        self.hasTriedToLogin = true;
 
                         if (errorCallback)
                             errorCallback(data);
@@ -61,8 +62,6 @@ app.factory('authService', [
 
             login: function (loginData, successCallback, errorCallback) {
                 var self = this;
-
-                self.hasTriedToLogin = true;
 
                 var d = transformRequest(loginData);
                 $http({

@@ -1,5 +1,3 @@
-<% include actionBarCourse %>
-
 <section class="content-header">
     <ol class="breadcrumb">
         <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
@@ -17,17 +15,7 @@
         <li class="active tabName">{{currentTab}}</li>
     </ol>
 
-    <div class="navbar-custom-menu" ng-show="currentTab=='preview'" ng-include
-         src="'actionBar-course-preview'"></div>
-
-    <div class="navbar-custom-menu" ng-show="currentTab=='analytics'" ng-include
-         src="'actionBar-course-analytics'"></div>
-
-    <div class="navbar-custom-menu" ng-show="currentTab=='map'" ng-include
-         src="'actionBar-course-map'"></div>
-
-    <div class="navbar-custom-menu" ng-show="currentTab=='discussion'" ng-include
-         src="'actionBar-course-discussion'"></div>
+    <div class="navbar-custom-menu" ng-include="includeActionBar"></div>
 
 </section>
 
@@ -68,7 +56,7 @@
 
         //Get window height and the wrapper height
         var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
-        var neg2= $('.content-header').outerHeight();
+        var neg2 = $('.content-header').outerHeight();
         var window_height = $(window).height();
         //Set the min-height of the content and sidebar based on the
         //the height of the document.
