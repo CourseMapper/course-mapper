@@ -22,7 +22,7 @@
                   ng-hide="currentPageNumber == 1"
                   ng-click="changePageNumber(-1)"></a>
             <span id="slideNavText"
-                  class="fsSlideNav"> <input type="email" id="inpFieldCurrPage" placeholder="{{currentPageNumber}}">/{{totalPage}}</span>
+                  class="fsSlideNav"> <input id="inpFieldCurrPage" ng-model="currentNavPageNumber" placeholder="{{currentPageNumber}}">/{{totalPage}}</span>
             <a class="glyphicon glyphicon-triangle-right iconSlideNav cursor"
                   aria-hidden="true"
                   ng-hide="currentPageNumber == totalPage"
