@@ -97,17 +97,20 @@ app.directive('pdfViewer',
 
 
                 $scope.changePageNumber = function (value) {
-                    //console.log("GOT CALLED");
-                    if (($scope.currentPageNumber + value) <= $scope.totalPage && ($scope.currentPageNumber + value) >= 1)
-                        $scope.currentPageNumber = $scope.currentPageNumber + value;
+                    $scope.setPageNumber($scope.currentPageNumber + value);
+                };
 
-                    $scope.setHistoryStack( $scope.currentPageNumber );
+                $scope.setPageNumber = function (value) {
+                  if ((value) <= $scope.totalPage && (value) >= 1)
+                      $scope.currentPageNumber = value;
 
-                    $timeout(function () {
-                        $scope.$apply();
+                  $scope.setHistoryStack( $scope.currentPageNumber );
 
-                        $scope.changeSlide($scope.currentPageNumber);
-                    });
+                  $timeout(function () {
+                      $scope.$apply();
+
+                      $scope.changeSlide($scope.currentPageNumber);
+                  });
 
                 };
 
