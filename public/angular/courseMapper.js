@@ -1838,12 +1838,14 @@ app.directive('movable', function() {
 
             }, /*end link*/
 
-            controller: function ($scope, $compile, $http, $attrs, $location, $routeParams) {
+            controller: function ($scope, $rootScope, $compile, $http, $attrs, $location, $routeParams) {
                 $scope.currentPageNumber = 1;
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
                 $scope.currentTab = "";
                 $scope.currentNavPageNumber = $scope.currentPageNumber;
+                $rootScope.switchShowAnnoZones = "On";
+
 
                 $scope.$watch("currentPageNumber", function (newVal, oldVal){
                   if(newVal!=oldVal){
@@ -1945,6 +1947,16 @@ app.directive('movable', function() {
                         }
                     }
                 };
+
+                $scope.switchShowAnnotationZone =function(){
+                  if($rootScope.switchShowAnnoZones=="On"){
+                    $rootScope.switchShowAnnoZones="Off";
+                  }else{
+                    $rootScope.switchShowAnnoZones="On";
+                  }
+
+                };
+
 
                 function adjustPdfScale () {
                   //console.log($scope.pdfPageView);
