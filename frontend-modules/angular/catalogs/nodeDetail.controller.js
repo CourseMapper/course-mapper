@@ -177,10 +177,24 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     });
 
     /**
-     * ping server on our latest page read
+     * ping server on some actions
      */
     $scope.$on('onPdfPageChange', function(event, params){
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+    });
+    $scope.$on('onVideoUpdateState', function(e, data){
+        $http.put('/api/treeNodes/watch/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.videoFile._id,
+            {
+                state:data.state,
+                totalTime:data.API.totalTime,
+                currentTime:data.API.currentTime,
+                timeLeft:data.API.timeLeft,
+                volume:data.API.volume
+            }
+        )
+            .error(function(data){
+                console.log('ping server error');
+            });
     });
 
     $scope.init = function(){
