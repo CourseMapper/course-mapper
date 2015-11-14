@@ -47,7 +47,7 @@ admin.config(['$routeProvider',
             }).
 
             when('/tabs', {
-                templateUrl: '/cm-admin/applications',
+                templateUrl: '/cm-admin/tabs',
                 controller: 'tabsController',
                 resolve: {
                     pd: function( $q ) {

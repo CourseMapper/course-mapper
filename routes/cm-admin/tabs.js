@@ -1,13 +1,13 @@
 var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
-var AppsGallery = require(appRoot + '/modules/apps-gallery');
+var TabCtrl = require(appRoot + '/modules/tabs/tabs.controller.js');
 
 var router = express.Router();
 
-router.get('/applications', function (req, res, next) {
-    var app = new AppsGallery();
-    app.populateApplications(
+router.get('/tabs', function (req, res, next) {
+    var app = new TabCtrl();
+    app.populateTabs(
         function (err) {
             console.log("error populating app");
         },
@@ -15,7 +15,7 @@ router.get('/applications', function (req, res, next) {
             console.log("success populating app");
         });
 
-    res.render(config.get('theme') + '/cm-admin/applications', {title: "Manage Applications"});
+    res.render(config.get('theme') + '/cm-admin/tabs', {title: "Manage Tabs"});
 });
 
 module.exports = router;
