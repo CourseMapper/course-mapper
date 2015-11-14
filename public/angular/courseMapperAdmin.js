@@ -333,20 +333,20 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
                 }
             }).
 
-            /*when('/application/:appName', {
-                templateUrl: '/cm-admin/application',
-                controller: 'applicationController',
+            when('/tabs', {
+                templateUrl: '/cm-admin/applications',
+                controller: 'tabsController',
                 resolve: {
                     pd: function( $q ) {
                         return( {
-                            title: 'Manage Applications',
+                            title: 'Manage Tabs',
                             breads: [
-                                {a: '#/applications', active: false, title: 'Applications'}
+                                {a: '#/tabs', active: false, title: 'Tabs'}
                             ]
                         });
                     }
                 }
-            }).*/
+            }).
 
             otherwise({
                 redirectTo: '/cm-admin'
