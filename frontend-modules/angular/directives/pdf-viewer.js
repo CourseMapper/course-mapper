@@ -94,21 +94,63 @@ app.directive('pdfViewer',
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
                 $scope.currentTab = "";
+                $scope.currentNavPageNumber = $scope.currentPageNumber;
 
+                $scope.$watch("currentPageNumber", function (newVal, oldVal){
+                  if(newVal!=oldVal){
+                    $scope.currentNavPageNumber= newVal;
+
+                    $timeout(function () {
+                        $scope.$apply();
+                    });
+                  }
+
+
+                });
+
+                $scope.$watch("currentNavPageNumber", function (newVal, oldVal){
+                  if(newVal!=oldVal){
+                      if(newVal.length==0){
+                        return;
+                      }else if(isNaN(newVal)){
+                          $scope.currentNavPageNumber=oldVal;
+
+                      }else if(!(parseInt(newVal)>=1 && parseInt(newVal)<= $scope.totalPage)){
+                          $scope.currentNavPageNumber=oldVal;
+
+                      }
+
+                  }
+
+                });
+
+                $("#inpFieldCurrPage").bind("keydown keypress", function (event) {
+                  if(event.which === 13) {
+                      $timeout(function () {
+                          $scope.setPageNumber(parseInt($scope.currentNavPageNumber));
+                          $scope.$apply();
+                      });
+
+                      event.preventDefault();
+                  }
+
+                });
 
                 $scope.changePageNumber = function (value) {
-                    //console.log("GOT CALLED");
-                    if (($scope.currentPageNumber + value) <= $scope.totalPage && ($scope.currentPageNumber + value) >= 1)
-                        $scope.currentPageNumber = $scope.currentPageNumber + value;
+                    $scope.setPageNumber($scope.currentPageNumber + value);
+                };
+
+                $scope.setPageNumber = function (value) {
+                  if ((value) <= $scope.totalPage && (value) >= 1){
+                    $scope.currentPageNumber = value;
 
                     $scope.setHistoryStack( $scope.currentPageNumber );
 
                     $timeout(function () {
-                        $scope.$apply();
-
                         $scope.changeSlide($scope.currentPageNumber);
+                        $scope.$apply();
                     });
-
+                  }
                 };
 
                 $scope.changeSlide = function (newSlideNumber) {
