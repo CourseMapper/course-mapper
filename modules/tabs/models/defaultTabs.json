@@ -1,0 +1,34 @@
+[
+  {
+    "name": "preview",
+    "displayName": "Preview",
+    "location": "course",
+    "description": "to show preview of the course",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-ios-home-outline"
+  },
+  {
+    "name": "map",
+    "displayName": "Map",
+    "location": "course",
+    "description": "to show tree map on course",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-map"
+  },
+  {
+    "name": "discussion",
+    "displayName": "Discussion",
+    "location": "course",
+    "description": "to show discussion",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-ios-chatboxes-outline"
+  },
+  {
+    "name": "analytics",
+    "displayName": "Analytics",
+    "location": "course",
+    "description": "to show analytics",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-stats-bars"
+  }
+]

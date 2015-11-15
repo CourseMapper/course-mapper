@@ -70,7 +70,7 @@ TabsStore.prototype.readTabs = function (failed, success) {
         for (var i in paths) {
             var dir = paths[i];
 
-            if(dir == 'models')
+            if (dir == 'models')
                 continue;
 
             // check if the config file exist
@@ -85,7 +85,7 @@ TabsStore.prototype.readTabs = function (failed, success) {
                     app.name = dir;
                     appsPool.push(app);
                 }
-            } catch(e){
+            } catch (e) {
 
             }
         }
@@ -105,24 +105,30 @@ TabsStore.prototype.populateTabs = function (failed, success) {
 
     self.readTabs(failed, function (apps) {
         if (apps) {
+            var defTabs = self.populateDefaultTabs();
+
+            var apps = apps.concat(defTabs);
+
             for (var i in apps) {
                 var app = apps[i];
 
-                // get the widgets on the db that is in this app.
-                self.getTab(failed, {name: app.name}, function (theTab) {
+                (function (app) {
+                    // get the widgets on the db that is in this app.
+                    self.getTab(failed, {name: app.name}, function (theTab) {
 
-                    // first we need to get the widget, is it in the db or not
-                    if (theTab) {
-                        // tab is already exist, renew with the newest vals
-                        _.extend(theTab, app);
-                        theTab.save();
-                    } else {
-                        // new tab
-                        // create new because it doesnt exist yet
-                        var newTab = new Tabs(app);
-                        newTab.save();
-                    }
-                }.bind({app: app}));
+                        // first we need to get the widget, is it in the db or not
+                        if (theTab) {
+                            // tab is already exist, renew with the newest vals
+                            _.extend(theTab, app);
+                            theTab.save();
+                        } else {
+                            // new tab
+                            // create new because it doesnt exist yet
+                            var newTab = new Tabs(app);
+                            newTab.save();
+                        }
+                    });
+                })(app);
             }
 
             self.getTabs(
@@ -135,18 +141,62 @@ TabsStore.prototype.populateTabs = function (failed, success) {
                     for (var k in tabs) {
                         var w = tabs[k];
 
+                        // now delete the tabs that are in db, but not in config.json
                         if (!_.findWhere(apps, {name: w.name})) {
-                            w.remove(function () {});
+                            w.remove(function () {
+                            });
                         }
                     }
                 }
             );
-            // now delete the tabs that are in db, but not in config.json
 
         }
 
         success();
     });
+
+};
+
+TabsStore.prototype.populateDefaultTabs = function () {
+    var self = this;
+
+    var configPath = self.directory + p.sep + 'models' + p.sep + 'defaultTabs.json';
+    var stats = fs.lstatSync(configPath);
+
+    if (stats.isFile()) {
+        // lets read the config file
+        var json = fs.readFileSync(configPath, 'utf8');
+        var vtabs = JSON.parse(json);
+
+        return vtabs;
+        /*
+         for (var j in vtabs) {
+         var app = vtabs[j];
+
+         (function (app) {
+         // get the widgets on the db that is in this app.
+         self.getTab(failed, {name: app.name}, function (theTab) {
+
+         // first we need to get the widget, is it in the db or not
+         if (theTab) {
+         // tab is already exist, renew with the newest vals
+         _.extend(theTab, app);
+         theTab.save();
+         } else {
+         // new tab
+         // create new because it doesnt exist yet
+         var newTab = new Tabs(app);
+         newTab.save();
+         }
+         });
+         })(app);
+         }
+
+         if (success)
+         success();*/
+    }
+
+    return [];
 };
 
 /**
