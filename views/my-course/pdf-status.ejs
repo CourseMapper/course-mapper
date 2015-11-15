@@ -5,13 +5,15 @@
             <th style="width:10px;">Nr.</th>
             <th>Your Last PDF History</th>
             <th>Last Page Accessed</th>
+            <th>Date Accessed</th>
             <th>Total Page</th>
             <th>Percentage Finished</th>
         </tr>
-        <tr ng-repeat="pdf in pdfHistory">
+        <tr ng-repeat="pdf in pdfHistory | orderBy: '-courseId.dateAdded'">
             <td>{{$index+1}}.</td>
-            <td>{{pdf.nodeId.name}}</td>
+            <td><a href="/course/{{pdf.courseId.slug}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?slidePage={{pdf.pageNumber}}">{{pdf.nodeId.name}}</a></td>
             <td>{{pdf.pageNumber}}</td>
+            <td>{{pdf.dateUpdated | relativeDate}}</td>
             <td>{{pdf.totalPage}}</td>
             <td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>
         </tr>
