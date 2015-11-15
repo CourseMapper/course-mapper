@@ -44,24 +44,44 @@
                                     </tags-input>
                                 </div>
                             </div>
+                            <br>
 
                             <div class="control-group">
-                                <label class="control-label" for="description">Tabs Settings</label>
+                                <label class="control-label">Tabs Settings</label>
+
+                                <div class="form-group">
+                                    <% for(var i = 0; i < tabs.length; i++){
+                                        if (_.findWhere(tabsActive, {_id: tabs[i]._id})) {
+                                            var checked = "checked";
+                                        }
+                                    %>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" checked="<%= checked %>"/> <%= tabs[i].displayName %>
+                                        </label>
+                                    </div>
+                                    <% } %>
+                                </div>
                             </div>
+
+                            <br>
 
                             <div class="control-group">
                                 <label class="control-label" for="description">Embed Settings</label>
 
-                                <p>
-                                    <label for="disableControl">
-                                        <input type="checkbox" name="disableControl"> Disable Controls</label>
-                                </p>
+                                <div class="form-group">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="disableControl"> Disable Controls</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" name="disableTop"> Disable Top
+                                            Navigations</label>
+                                    </div>
+                                </div>
 
-                                <p>
-                                    <label for="disableTop">
-                                        <input type="checkbox" name="disableTop"> Disable Top
-                                        Navigations</label>
-                                </p>
+
                             </div>
 
                             <div class="control-group">

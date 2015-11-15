@@ -172,31 +172,6 @@ TabsStore.prototype.populateDefaultTabs = function () {
         var vtabs = JSON.parse(json);
 
         return vtabs;
-        /*
-         for (var j in vtabs) {
-         var app = vtabs[j];
-
-         (function (app) {
-         // get the widgets on the db that is in this app.
-         self.getTab(failed, {name: app.name}, function (theTab) {
-
-         // first we need to get the widget, is it in the db or not
-         if (theTab) {
-         // tab is already exist, renew with the newest vals
-         _.extend(theTab, app);
-         theTab.save();
-         } else {
-         // new tab
-         // create new because it doesnt exist yet
-         var newTab = new Tabs(app);
-         newTab.save();
-         }
-         });
-         })(app);
-         }
-
-         if (success)
-         success();*/
     }
 
     return [];

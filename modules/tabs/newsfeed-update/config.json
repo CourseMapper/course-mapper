@@ -1,6 +1,6 @@
 {
   "orderNo": 5,
-  "displayName": "Course Newsfeed Update",
+  "displayName": "Newsfeed",
   "location": "course",
   "description": "to show updates on every actions on this course",
   "isDefaultActivated": true,
