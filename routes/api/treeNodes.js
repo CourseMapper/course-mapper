@@ -7,6 +7,7 @@ var debug = require('debug')('cm:route');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var multiparty = require('connect-multiparty');
+var _ = require('underscore');
 var multipartyMiddleware = multiparty();
 
 var router = express.Router();
@@ -85,6 +86,39 @@ router.get('/treeNodes/course/:courseId', function (req, res, next) {
     );
 });
 
+/**
+ * GET to let the server know that the user is interacting with videoPlayer
+ */
+router.put('/treeNodes/watch/:courseId/:nodeId/:resourceId', function(req, res, next){
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    var cid, nid, rid, uid;
+    try{
+        cid = mongoose.Types.ObjectId(req.params.courseId);
+        nid = mongoose.Types.ObjectId(req.params.nodeId);
+        rid = mongoose.Types.ObjectId(req.params.resourceId);
+        uid = mongoose.Types.ObjectId(req.user._id);
+    } catch(err) {
+        helper.resReturn("Ids needs to be an object id", res);
+        return;
+    }
+
+    var params = {
+        courseId: cid,
+        nodeId: nid,
+        resourceId: rid,
+        userId: uid
+    };
+
+    params = _.extend(params, req.body);
+
+    Plugin.doAction('onVideoUpdateState', params);
+
+    res.status(200).json({
+        result: true
+    });
+});
 
 /**
  * get all tree nodes based on course id
@@ -210,6 +244,5 @@ router.delete('/treeNodes/:nodeId', function (req, res, next) {
         }
     );
 });
-
 
 module.exports = router;
