@@ -15,6 +15,7 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
+                        <th>No</th>
                         <th>Location</th>
                         <th>Name</th>
                         <th>Activate</th>
@@ -48,16 +49,21 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
+                        <th>No</th>
                         <th>Location</th>
                         <th>Name</th>
                         <th>Activate</th>
                     </tr>
                     <tr ng-repeat="tab in tabs" ng-show="tab.isActive">
-                        <td>
-                            {{tab.name}}
-                        </td>
+                        <td>{{tab.orderNo}}</td>
                         <td>
                             {{tab.location}}
+                        </td>
+                        <td>
+                            <h4>{{tab.name}}</h4>
+                            <strong>{{tab.displayName}}</strong><br>
+
+                            {{tab.description}}
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary" ng-show="!tab.isActive"
@@ -78,16 +84,21 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
+                        <th>No</th>
                         <th>Location</th>
                         <th>Name</th>
                         <th>Activate</th>
                     </tr>
                     <tr ng-repeat="tab in tabs" ng-hide="tab.isActive">
-                        <td>
-                            {{tab.name}}
-                        </td>
+                        <td>{{tab.orderNo}}</td>
                         <td>
                             {{tab.location}}
+                        </td>
+                        <td>
+                            <h4>{{tab.name}}</h4>
+                            <strong>{{tab.displayName}}</strong><br>
+
+                            {{tab.description}}
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary" ng-show="!tab.isActive"
@@ -109,6 +120,5 @@
     <!-- /.tab-content -->
 </div>
 <!-- nav-tabs-custom -->
-</div>
 
 <div class="clear"></div>

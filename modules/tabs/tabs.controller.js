@@ -124,6 +124,9 @@ TabsStore.prototype.populateTabs = function (failed, success) {
                         } else {
                             // new tab
                             // create new because it doesnt exist yet
+                            if (app.isDefaultActivated)
+                                app.isActive = true;
+
                             var newTab = new Tabs(app);
                             newTab.save();
                         }

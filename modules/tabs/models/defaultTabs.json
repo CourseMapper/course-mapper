@@ -1,5 +1,6 @@
 [
   {
+    "orderNo": 1,
     "name": "preview",
     "displayName": "Preview",
     "location": "course",
@@ -8,6 +9,7 @@
     "icon": "ionicons ion-ios-home-outline"
   },
   {
+    "orderNo": 2,
     "name": "map",
     "displayName": "Map",
     "location": "course",
@@ -16,6 +18,7 @@
     "icon": "ionicons ion-map"
   },
   {
+    "orderNo": 3,
     "name": "discussion",
     "displayName": "Discussion",
     "location": "course",
@@ -24,6 +27,7 @@
     "icon": "ionicons ion-ios-chatboxes-outline"
   },
   {
+    "orderNo": 4,
     "name": "analytics",
     "displayName": "Analytics",
     "location": "course",

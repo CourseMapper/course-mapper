@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var tabSchema = new mongoose.Schema({
     name: {type: String, required: true},
+    orderNo: {type: Number},
     displayName: {type: String, required: true},
     location: {type: String},
     description: {type: String},
