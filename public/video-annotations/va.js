@@ -311,6 +311,13 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         $scope.init($scope.videoId, $scope.videoSource);
       }
     });
+
+    $scope.onUpdateState = function(state){
+        rootScope.$broadcast('onVideoUpdateState', {
+            'state': state,
+            'API': $scope.API
+        });
+    }
   }
 ]);;/*jslint node: true */
 'use strict';

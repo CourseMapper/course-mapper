@@ -23,7 +23,7 @@ var MyCourseListener = {
             {safe: true, upsert: true},
 
             function(err, doc){
-                if(!err) debug('my-course: new node aggregated');
+                if(!err) debug('');
                 else
                     debug(err);
             });
@@ -70,7 +70,7 @@ var MyCourseListener = {
             {safe: true, upsert: true},
 
             function(err, doc){
-                if(!err) debug('my-course: new node aggregated');
+                if(!err) debug('');
                 else
                     debug(err);
             });
@@ -84,11 +84,16 @@ var MyCourseListener = {
                 resourceId:params.resourceId,
                 nodeId:params.nodeId
             },
-            {$set: {"pageNumber":params.pageNumber, "totalPage":params.totalPage}},
+            {$set: {
+                "pageNumber":params.pageNumber,
+                "totalPage":params.totalPage,
+                "dateAdded": new Date(),
+                "dateUpdated": new Date()
+            }},
             {safe: true, upsert: true},
 
             function(err, doc){
-                if(!err) debug('my-course: new node aggregated');
+                if(!err) debug('');
                 else
                     debug(err);
             }
