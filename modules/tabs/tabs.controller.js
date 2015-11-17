@@ -3,9 +3,12 @@ var p = require('path');
 var appRoot = require('app-root-path');
 var mongoose = require('mongoose');
 var Tabs = require(appRoot + '/modules/tabs/models/tabs.schema.js');
+var TabsActive = require(appRoot + '/modules/tabs/models/tabsActive.schema.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var _ = require('underscore');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 function TabsStore() {
     this.directory = appRoot + '/modules/tabs';
@@ -50,6 +53,26 @@ TabsStore.prototype.updateTab = function (failed, params, updateParams, success)
             failed(err);
         else
             success(tab);
+    });
+};
+
+TabsStore.prototype.getActiveTabs = function (courseId, location) {
+    return async(function () {
+        var tabs = await(Tabs.find({})
+            .sort({orderNo: 1})
+            .exec());
+
+        var tabsActive = await(TabsActive
+            .find({
+                courseId: courseId,
+                location: location
+            })
+            .sort({orderNo: 1})
+            .exec());
+
+        return {
+            tabs: tabs, tabsActive: tabsActive
+        };
     });
 };
 

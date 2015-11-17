@@ -2,11 +2,11 @@ var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
+var TabsController = require(appRoot + '/modules/tabs/tabs.controller.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
-var Tabs = require(appRoot + '/modules/tabs/models/tabs.schema.js');
-var TabsActive = require(appRoot + '/modules/tabs/models/tabsActive.schema.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
+var mongoose = require('mongoose');
 var router = express.Router();
 var theme = config.get('theme');
 var async = require('asyncawait/async');
@@ -33,8 +33,24 @@ router.get('/course/nodeDetail', function (req, res, next) {
     res.render(theme + '/catalogs/nodeDetail');
 });
 
-router.get('/course/courseDetail', function (req, res, next) {
-    res.render(theme + '/catalogs/courseDetail');
+router.get('/course/courseDetail/:courseId', function (req, res, next) {
+    var TC = new TabsController();
+
+    var cid = mongoose.Types.ObjectId();
+    var k = TC.getActiveTabs(cid, 'course');
+
+    k()
+        .then(function (ret) {
+            res.render(theme + '/catalogs/courseDetail', {
+                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _
+            });
+        })
+        .catch(function (err) {
+            console.log(err);
+            res.render(theme + '/catalogs/courseDetail', {
+                tabs: [], tabsActive: [], errors: err, _: _
+            });
+        });
 });
 
 /**
@@ -60,39 +76,6 @@ router.get('/course/create', function (req, res, next) {
  */
 router.get('/course/edit', function (req, res, next) {
     res.render(theme + '/catalogs/editCourseModal');
-});
-
-router.get('/course/config/:courseId', function (req, res, next) {
-    var k = async(function () {
-        var tabs = await(Tabs.find({})
-            .sort({orderNo: 1})
-            .exec());
-
-        var tabsActive = await(TabsActive
-            .find({
-                courseId: req.params.courseId,
-                location: 'course'
-            })
-            .sort({orderNo: 1})
-            .exec());
-
-        return {
-            tabs: tabs, tabsActive: tabsActive
-        };
-    });
-
-    k()
-        .then(function (ret) {
-            res.render(theme + '/catalogs/courseConfigModal', {
-                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _
-            });
-        })
-        .catch(function (err) {
-            console.log(err);
-            res.render(theme + '/catalogs/courseConfigModal', {
-                tabs: [], tabsActive: [], errors: err, _: _
-            });
-        });
 });
 
 /**

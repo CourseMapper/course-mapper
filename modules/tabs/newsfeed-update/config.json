@@ -4,5 +4,6 @@
   "location": "course",
   "description": "to show updates on every actions on this course",
   "isDefaultActivated": true,
-  "icon": "ionicons ion-clock"
+  "icon": "ionicons ion-clock",
+  "ngShow": "isEnrolled || isOwner || isManager"
 }

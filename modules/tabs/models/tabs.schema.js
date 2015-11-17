@@ -4,6 +4,7 @@ var tabSchema = new mongoose.Schema({
     name: {type: String, required: true},
     orderNo: {type: Number},
     displayName: {type: String, required: true},
+    ngShow: {type: String},
     location: {type: String},
     description: {type: String},
     icon: {type: String},
