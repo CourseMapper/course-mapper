@@ -4,18 +4,21 @@ var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 var Account = require(appRoot + '/modules/accounts');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty();
 var router = express.Router();
 var mongoose = require('mongoose');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 /**
  * POST
  * create course
  */
-router.post('/courses', function(req, res, next){
+router.post('/courses', function (req, res, next) {
     if (!req.user) {
         res.status(401).send('Unauthorized');
     }
@@ -24,7 +27,7 @@ router.post('/courses', function(req, res, next){
         req.body.userId = req.user._id;
 
         // format the tags data structure
-        if(req.body.tags) {
+        if (req.body.tags) {
             // because the data is in {text:the-tag} format. let's just get the values.
             var tagSlugs = [];
             var tTags = JSON.parse(req.body.tags);
@@ -36,14 +39,14 @@ router.post('/courses', function(req, res, next){
 
         catalog.addCourse(
             function (err) {
-                res.status(200).json({result:false, errors: [err.message]});
+                res.status(200).json({result: false, errors: [err.message]});
             },
 
             // parameters
             req.body,
 
             function (course) {
-                res.status(200).json({result:true, course: course});
+                res.status(200).json({result: true, course: course});
             }
         );
     }
@@ -54,7 +57,7 @@ router.post('/courses', function(req, res, next){
  * update a course,
  * can take a picture file as well
  */
-router.post('/course/:courseId', multipartyMiddleware, function(req, res, next){
+router.post('/course/:courseId', multipartyMiddleware, function (req, res, next) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -64,7 +67,7 @@ router.post('/course/:courseId', multipartyMiddleware, function(req, res, next){
     req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
 
     // format the tags data structure
-    if(req.body.tags) {
+    if (req.body.tags) {
         // because the data is in {text:the-tag} format. let's just get the values.
         var tagSlugs = [];
         var tTags = JSON.parse(req.body.tags);
@@ -84,49 +87,49 @@ router.post('/course/:courseId', multipartyMiddleware, function(req, res, next){
         req.files,
 
         function (course) {
-            res.status(200).json({result:true, course: course});
+            res.status(200).json({result: true, course: course});
         }
     );
 });
 
-router.get('/courses', function(req, res, next) {
+router.get('/courses', function (req, res, next) {
     var cat = new Course();
     cat.getCourses(
-        function(err){
+        function (err) {
             helper.resReturn(err, res);
         },
         {
             // parameters
         },
-        function(courses){
+        function (courses) {
             res.status(200).json({result: true, courses: courses});
         }
     );
 });
 
-router.get('/course/:courseId', function(req, res, next) {
-    if (!helper.checkRequiredParams(req.params, ['courseId'], function(err){
+router.get('/course/:courseId', function (req, res, next) {
+    if (!helper.checkRequiredParams(req.params, ['courseId'], function (err) {
             helper.resReturn(err, res);
         })) return;
 
     var params = {
-        _id : mongoose.Types.ObjectId(req.params.courseId)
+        _id: mongoose.Types.ObjectId(req.params.courseId)
     };
 
     var cat = new Course();
     cat.getCourse(
-        function(err){
+        function (err) {
             helper.resReturn(err, res);
         },
 
         params,
 
-        function(course){
-            if(course && req.user){
+        function (course) {
+            if (course && req.user) {
                 // check for enrollement
                 var userId = mongoose.Types.ObjectId(req.user._id);
                 cat.getUserCourses(
-                    function(err){
+                    function (err) {
                         helper.resReturn(err, res);
                     },
                     {
@@ -134,14 +137,14 @@ router.get('/course/:courseId', function(req, res, next) {
                         course: course._id,
                         isEnrolled: true
                     },
-                    function(uc){
+                    function (uc) {
                         course = course.toObject();
                         course.isEnrolled = uc.length > 0;
 
-                        res.status(200).json({result:true, course: course});
+                        res.status(200).json({result: true, course: course});
                     });
             } else
-                res.status(200).json({result:true, course: course});
+                res.status(200).json({result: true, course: course});
         }
     );
 });
@@ -150,7 +153,7 @@ router.get('/course/:courseId', function(req, res, next) {
  * GET
  * check username if exist
  */
-router.get('/course/:courseId/checkUsername/:username', function(req, res, next){
+router.get('/course/:courseId/checkUsername/:username', function (req, res, next) {
     if (!req.user)
         return res.status(401).send('Unauthorized');
 
@@ -160,7 +163,7 @@ router.get('/course/:courseId/checkUsername/:username', function(req, res, next)
     var userId = mongoose.Types.ObjectId(req.user._id);
 
     catalog.checkUsername(
-        function failed(err){
+        function failed(err) {
             helper.resReturn(err, res);
         },
 
@@ -181,7 +184,7 @@ router.get('/course/:courseId/checkUsername/:username', function(req, res, next)
  * PUT
  * enrolling user into a course
  */
-router.put('/course/:courseId/enroll', function(req, res, next) {
+router.put('/course/:courseId/enroll', function (req, res, next) {
     if (!req.user)
         return res.status(401).send('Unauthorized');
 
@@ -191,7 +194,7 @@ router.put('/course/:courseId/enroll', function(req, res, next) {
     var courseId = mongoose.Types.ObjectId(req.params.courseId);
 
     catalog.enroll(
-        function failed(err){
+        function failed(err) {
             helper.resReturn(err, res);
         },
 
@@ -199,7 +202,7 @@ router.put('/course/:courseId/enroll', function(req, res, next) {
         {id: courseId},
 
         function (followed) {
-            res.status(200).json({result:true, enrollment: followed});
+            res.status(200).json({result: true, enrollment: followed});
         },
         // isEnrolled -> true
         true);
@@ -209,7 +212,7 @@ router.put('/course/:courseId/enroll', function(req, res, next) {
  * PUT
  * leave course
  */
-router.put('/course/:courseId/leave', function(req, res, next) {
+router.put('/course/:courseId/leave', function (req, res, next) {
     if (!req.user)
         res.status(401).send('Unauthorized');
 
@@ -218,7 +221,7 @@ router.put('/course/:courseId/leave', function(req, res, next) {
 
     var catalog = new Course();
     catalog.leave(
-        function failed(err){
+        function failed(err) {
             helper.resReturn(err, res);
         },
 
@@ -226,43 +229,53 @@ router.put('/course/:courseId/leave', function(req, res, next) {
         {id: courseId},
 
         function () {
-            res.status(200).json({result:true});
+            res.status(200).json({result: true});
         });
 });
 
 /**
  * PUT
- * add a username as a manager into a course
+ * add/remove a username as a manager into a course
+ *
  */
-router.put('/course/:courseId/addManager', function(req, res, next){
+router.put('/course/:courseId/settings', function (req, res, next) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
 
-    req.body.createdBy = mongoose.Types.ObjectId(req.user._id);
+    req.body.userId = mongoose.Types.ObjectId(req.user._id);
     req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
 
-    var catalog = new Course();
-
-    // format the tags data structure
-    if(req.body.managers) {
-        // because the data is in {text:the-tag} format. let's just get the values.
-        var managerSlugs = JSON.parse(req.body.managers);
-        req.body.managers = managerSlugs;
-    }
-
-    catalog.addManager(
-        function (err) {
-            helper.resReturn(err, res);
-        },
-
-        // parameters
-        req.body,
-
-        function (course) {
-            res.status(200).json({result:true, course: course});
+    var editCrsSetting = async(function () {
+        var isAuthed = await(userHelper.isAuthorizedAsync(req.body));
+        if (!isAuthed) {
+            return helper.resReturn(helper.createError401(), res);
         }
-    );
+
+        var crs = new Course();
+
+        // format the tags data structure
+        if (req.body.managers) {
+            // because the data is in {text:the-tag} format. let's just get the values.
+            req.body.managers = JSON.parse(req.body.managers);
+        }
+
+        var resRet = await(crs.saveSettings(req.body));
+
+        return resRet;
+    });
+
+    editCrsSetting()
+        .then(function (resRet) {
+            res.status(200).json({
+                result: ((resRet) ? true : false)
+            });
+        })
+        .catch(function failed(err) {
+            helper.resReturn(err, res);
+        });
+
+
 });
 
 module.exports = router;

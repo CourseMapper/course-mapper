@@ -3,9 +3,8 @@ var p = require('path');
 var appRoot = require('app-root-path');
 var mongoose = require('mongoose');
 var Tabs = require(appRoot + '/modules/tabs/models/tabs.schema.js');
-var TabsActive = require(appRoot + '/modules/tabs/models/tabsActive.schema.js');
+var Courses = require(appRoot + '/modules/catalogs/courses.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
-var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var _ = require('underscore');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
@@ -58,20 +57,21 @@ TabsStore.prototype.updateTab = function (failed, params, updateParams, success)
 
 TabsStore.prototype.getActiveTabs = function (courseId, location) {
     return async(function () {
-        var tabs = await(Tabs.find({})
+        var tabs = await(Tabs.find({location: location})
             .sort({orderNo: 1})
             .exec());
 
-        var tabsActive = await(TabsActive
-            .find({
-                courseId: courseId,
-                location: location
-            })
-            .sort({orderNo: 1})
-            .exec());
+        var tabsActive = await(
+            Courses
+                .findOne({_id: courseId}, {'tabsActive': 1})
+                .exec());
+
+        var ta = {};
+        if (tabsActive.tabsActive)
+            ta = tabsActive.tabsActive;
 
         return {
-            tabs: tabs, tabsActive: tabsActive
+            tabs: tabs, tabsActive: ta
         };
     });
 };
@@ -199,30 +199,5 @@ TabsStore.prototype.populateDefaultTabs = function () {
 
     return [];
 };
-
-/**
- * get installed widget based on parameters
- * e.g {location, userId, courseId, nodeId}
- * @param error
- * @param params
- * @param success
- */
-TabsStore.prototype.getInstalledTabs = function (error, params, success) {
-    if (params.courseId)
-        params.courseId = mongoose.Types.ObjectId(params.courseId);
-
-    if (params.userId)
-        params.userId = mongoose.Types.ObjectId(params.userId);
-
-    WP.find(params).populate('widgetId').exec(
-        function (err, widgets) {
-            if (err) error(err);
-            else {
-                success(widgets);
-            }
-        }
-    );
-};
-
 
 module.exports = TabsStore;

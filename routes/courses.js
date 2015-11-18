@@ -35,21 +35,24 @@ router.get('/course/nodeDetail', function (req, res, next) {
 
 router.get('/course/courseDetail/:courseId', function (req, res, next) {
     var TC = new TabsController();
+    var crs = new Course();
+    var cid = mongoose.Types.ObjectId(req.params.courseId);
 
-    var cid = mongoose.Types.ObjectId();
-    var k = TC.getActiveTabs(cid, 'course');
+    var op = async(function () {
+        var ta = await(TC.getActiveTabs(cid, 'course')());
+        var cr = await(crs.getCourseAsync({_id: cid})());
 
-    k()
+        return _.extend(ta, {course: cr});
+    });
+
+    op()
         .then(function (ret) {
             res.render(theme + '/catalogs/courseDetail', {
-                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _
+                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _, course: ret.course
             });
         })
         .catch(function (err) {
-            console.log(err);
-            res.render(theme + '/catalogs/courseDetail', {
-                tabs: [], tabsActive: [], errors: err, _: _
-            });
+            helper.resReturn(err, res)
         });
 });
 

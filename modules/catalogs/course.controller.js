@@ -11,6 +11,8 @@ var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 function catalog() {
 }
@@ -32,6 +34,19 @@ catalog.prototype.getCourse = function (error, params, success) {
                     error(helper.createError404('Course'));
             }
         });
+};
+
+catalog.prototype.getCourseAsync = function(params){
+    return async(function(){
+        var crs = await(Course.findOne(params)
+            .populate('category courseTags')
+            .populate('createdBy', '_id username displayName')
+            .populate('managers', '_id username')
+            .exec()
+        );
+
+        return crs;
+    });
 };
 
 /**
@@ -293,23 +308,23 @@ catalog.prototype.editCourse = function (error, params, files, success) {
             _id: params.courseId
         },
 
-        function(course){
+        function (course) {
             userHelper.isAuthorized(error,
                 {
                     userId: params.userId,
                     courseId: params.courseId
                 },
 
-                function(isAllowed){
-                    if(isAllowed){
-                        if(params.video && params.video == 'delete'){
+                function (isAllowed) {
+                    if (isAllowed) {
+                        if (params.video && params.video == 'delete') {
                             course.video = undefined;
-                            course.save(function(){
+                            course.save(function () {
                                 success(course);
                             });
-                        } else if(params.picture && params.picture == 'delete'){
+                        } else if (params.picture && params.picture == 'delete') {
                             course.picture = undefined;
-                            course.save(function(){
+                            course.save(function () {
                                 success(course);
                             });
                         } else {
@@ -323,51 +338,48 @@ catalog.prototype.editCourse = function (error, params, files, success) {
     );
 };
 
-catalog.prototype.addManager = function (error, params, success) {
-    var self = this;
-
-    if (!helper.checkRequiredParams(params, ['courseId', 'createdBy'], error)) {
-        return;
+catalog.prototype.saveSettings = function (params) {
+    if (!helper.checkRequiredParams(params, ['courseId', 'userId'], function (err) {
+            helper.resReturn(err, res);
+        })) {
+        return false;
     }
 
     var courseFnParams = {
-        _id: params.courseId,
-        createdBy: params.createdBy
+        _id: params.courseId
     };
 
-    self.getCourse(
-        error,
-        courseFnParams,
-
-        function (course) {
-            if (params.managers.length == 0) {
-                course.update({
-                    $set: {
-                        managers: []
-                    }
-                }, function (err, res) {
-                    success(res);
-                });
-            } else {
-                // find usernames and add one by one
-                for (var i in params.managers) {
-                    // dont insert our own uid
-                    if (params.managers[i] != params.createdBy.toString()) {
-                        params.managers[i] = mongoose.Types.ObjectId(params.managers[i]);
-                    }
+    var course = await(Course.findOne(courseFnParams).exec());
+    if (course) {
+        var updt = {};
+        if (params.managers.length == 0) {
+            updt.managers = []
+        } else {
+            // find usernames and add one by one
+            for (var i in params.managers) {
+                // dont insert our own uid
+                if (params.managers[i] != params.userId.toString()) {
+                    params.managers[i] = mongoose.Types.ObjectId(params.managers[i]);
                 }
-
-                course.update({
-                    $set: {
-                        managers: params.managers
-                    }
-                }, function (err, res) {
-                    success(res);
-                });
-
             }
+            updt.managers = params.managers;
         }
-    );
+
+        if (params.settings) {
+            updt.settings = params.settings;
+        }
+
+        if (params.tabsActive) {
+            updt.tabsActive = params.tabsActive;
+        }
+
+        return await(course.update({
+            $set: updt
+        }).exec());
+
+    } else {
+        return false;
+    }
 };
 
 catalog.prototype.getCourses = function (error, params, success) {

@@ -39,8 +39,7 @@
                                 <div class="controls">
                                     <tags-input id="managerTagForm"
                                                 ng-model="managersRaw" placeholder="Course Managers" readonly="readonly"
-                                                on-tag-removed="removeUsername($tag)"
-                                    >
+                                                on-tag-removed="removeUsername($tag)">
                                     </tags-input>
                                 </div>
                             </div>
@@ -50,14 +49,21 @@
                                 <label class="control-label">Tabs Settings</label>
 
                                 <div class="form-group">
+
                                     <% for(var i = 0; i < tabs.length; i++){
-                                        if (_.findWhere(tabsActive, {_id: tabs[i]._id})) {
-                                            var checked = "checked";
+                                        var isActive = tabs[i].isActive;
+                                        if (!isActive) {
+                                            continue;
+                                        }
+
+                                        if (typeof(tabsActive[tabs[i].name]) != "undefined") {
+                                            isActive = tabsActive[tabs[i].name];
                                         }
                                     %>
-                                    <div class="checkbox">
+                                    <div class="checkbox" ng-init="tabsActive.<%= tabs[i].name %> = <%= isActive %>">
                                         <label>
-                                            <input type="checkbox" checked="<%= checked %>"/> <%= tabs[i].displayName %>
+                                            <input type="checkbox"
+                                                   ng-model="tabsActive.<%= tabs[i].name %>"/> <%= tabs[i].displayName %>
                                         </label>
                                     </div>
                                     <% } %>
@@ -71,17 +77,17 @@
 
                                 <div class="form-group">
                                     <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="disableControl"> Disable Controls</label>
+                                        <label ng-init="settings.disableControls = <%= course.settings['disableControls'] %>">
+                                            <input type="checkbox" name="disableControl"
+                                                   ng-model="settings.disableControls"> Disable Controls</label>
                                     </div>
                                     <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" name="disableTop"> Disable Top
+                                        <label ng-init="settings.disableTop = <%= course.settings['disableTop'] %>">
+                                            <input type="checkbox" name="disableTop" ng-model="settings.disableTop">
+                                            Disable Top
                                             Navigations</label>
                                     </div>
                                 </div>
-
-
                             </div>
 
                             <div class="control-group">

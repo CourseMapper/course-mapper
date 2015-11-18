@@ -1,7 +1,11 @@
 <ul class="nav nav-tabs tabs-hide hidden-xs hidden-sm">
     <% for(var i = 0; i < tabs.length; i++){
-    var ta = _.findWhere(tabsActive, {_id: tabs[i]._id});
-        if (ta && !ta.isActive) {
+        var isActive = tabs[i].isActive;
+        if (typeof(tabsActive[tabs[i].name]) != "undefined") {
+            isActive = tabsActive[tabs[i].name];
+        }
+
+        if (!isActive) {
             continue;
         }
     %>

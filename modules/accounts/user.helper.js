@@ -1,5 +1,7 @@
 var appRoot = require('app-root-path');
 var Courses = require(appRoot + '/modules/catalogs/courses.js');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 var userHelper = {
 
@@ -107,7 +109,21 @@ var userHelper = {
                 }
             );
         }
-    }
+    },
+
+    isAuthorizedAsync: async(function (params) {
+        var courses = await(Courses.find({
+            _id: params.courseId,
+            managers: params.userId
+        }).exec());
+
+        var courseOwner = await(Courses.find({
+            createdBy: params.userId,
+            _id: params.courseId
+        }).exec());
+
+        return (courses.length > 0 || courseOwner.length > 0);
+    })
 };
 
 module.exports = userHelper;

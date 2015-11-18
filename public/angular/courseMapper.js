@@ -160,13 +160,18 @@ app.config(function(toastrConfig) {
      */
     $scope.tabOpened();
 });
-;app.controller('CourseConfigController', function ($scope, $http, toastr) {
+;app.controller('CourseConfigController', function ($scope, $http, toastr, $window) {
     $scope.courseEdit = null;
     $scope.errors = [];
     $scope.managersRaw = [];
     $scope.managersIdRaw = [];
     $scope.username = '';
     $scope.isLoading = false;
+    $scope.tabsActive = {};
+    $scope.settings = {
+        disableControls: false,
+        disableTop: false
+    };
 
     $scope.$on('onAfterInitCourse', function (event, course) {
         $scope.init(course);
@@ -231,7 +236,7 @@ app.config(function(toastrConfig) {
 
         $scope.managersIdRaw = [];
 
-        var url = '/api/course/' + $scope.courseEdit._id + '/addManager';
+        var url = '/api/course/' + $scope.courseEdit._id + '/settings';
         $scope.managersIdRaw = [];
         if ($scope.managersRaw.length > 0) {
             for (var i in $scope.managersRaw) {
@@ -242,6 +247,13 @@ app.config(function(toastrConfig) {
         var params = {
             managers: JSON.stringify($scope.managersIdRaw)
         };
+
+        if($scope.tabsActive){
+            params.tabsActive = $scope.tabsActive;
+        }
+        if($scope.settings){
+            params.settings = $scope.settings;
+        }
 
         $scope.isLoading = true;
         $http.put(url, params)
@@ -255,6 +267,8 @@ app.config(function(toastrConfig) {
                 $scope.isLoading = false;
                 $('#configView').modal('hide');
                 $scope.errors = [];
+
+                $window.location.reload();
             })
             .error(function (res) {
                 $scope.errors = res.errors;
