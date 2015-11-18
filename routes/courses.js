@@ -47,8 +47,24 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
 
     op()
         .then(function (ret) {
+            var activeTabs = [];
+            for (var i = 0; i < ret.tabs.length; i++) {
+                var isActive = ret.tabs[i].isActive;
+                if (!isActive) {
+                    continue;
+                }
+
+                if (typeof(ret.tabsActive[ret.tabs[i].name]) != "undefined") {
+                    if (!ret.tabsActive[ret.tabs[i].name]) {
+                        continue;
+                    }
+                }
+
+                activeTabs.push(ret.tabs[i]);
+            }
+
             res.render(theme + '/catalogs/courseDetail', {
-                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _, course: ret.course
+                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _, course: ret.course, activeTabs: activeTabs
             });
         })
         .catch(function (err) {
@@ -101,7 +117,8 @@ router.get('/course/editContentNode', function (req, res, next) {
  * full page for displaying course detail page
  */
 router.get('/course/:slug', function (req, res, next) {
-    if (!helper.checkRequiredParams(req.params, ['slug'], function (err) {
+    if (!helper.checkRequiredParams(req.params, ['slug'],
+            function (err) {
                 helper.resReturn(err, res);
             }
         )) return;
@@ -118,17 +135,49 @@ router.get('/course/:slug', function (req, res, next) {
 
         params,
 
-        function (crs) {
-            if (!crs)
+        function (cours) {
+            if (!cours)
                 res.send(404);
-            else
-                res.render(theme + '/catalogs/course', {
-                    title: crs.name,
-                    course: crs,
-                    user: req.user,
-                    moment: moment,
-                    isInNodeDetailPage: true
+
+            else {
+                var TC = new TabsController();
+      
+                var op = async(function () {
+                    var ta = await(TC.getActiveTabs(cours._id, 'course')());
+                    return ta;
                 });
+
+                op()
+                    .then(function (ret) {
+                        var activeTabs = [];
+                        for (var i = 0; i < ret.tabs.length; i++) {
+                            var isActive = ret.tabs[i].isActive;
+                            if (!isActive) {
+                                continue;
+                            }
+
+                            if (typeof(ret.tabsActive[ret.tabs[i].name]) != "undefined") {
+                                if (!ret.tabsActive[ret.tabs[i].name]) {
+                                    continue;
+                                }
+                            }
+
+                            activeTabs.push(ret.tabs[i]);
+                        }
+
+                        res.render(theme + '/catalogs/course', {
+                            title: cours.name,
+                            course: cours,
+                            user: req.user,
+                            moment: moment,
+                            isInNodeDetailPage: true,
+                            activeTabs: activeTabs
+                        });
+                    })
+                    .catch(function (err) {
+                        helper.resReturn(err, res)
+                    });
+            }
         }
     );
 

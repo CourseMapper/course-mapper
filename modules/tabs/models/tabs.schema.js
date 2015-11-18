@@ -10,7 +10,7 @@ var tabSchema = new mongoose.Schema({
     icon: {type: String},
     isActive: {type: Boolean, required: true, default: false},
     isDefaultActivated: {type: Boolean, required: true, default: false},
-
+    hasJsFiles: {type: Boolean, required: true, default: false},
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
 });
