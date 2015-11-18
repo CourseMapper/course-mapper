@@ -64,7 +64,8 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
             }
 
             res.render(theme + '/catalogs/courseDetail', {
-                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _, course: ret.course, activeTabs: activeTabs
+                tabs: ret.tabs, tabsActive: ret.tabsActive, _: _,
+                course: ret.course, activeTabs: activeTabs
             });
         })
         .catch(function (err) {
