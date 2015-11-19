@@ -24,7 +24,7 @@ app.factory('authService', [
                     successCallback(self.user);
                 }
                 else {
-                    if(self.isCheckingForLogin)
+                    if (self.isCheckingForLogin)
                         return;
 
                     self.isCheckingForLogin = true;
@@ -53,8 +53,8 @@ app.factory('authService', [
                 }
             },
 
-            isAdmin: function(){
-                if(this.user && this.user.role == 'admin')
+            isAdmin: function () {
+                if (this.user && this.user.role == 'admin')
                     return true;
 
                 return false;
@@ -75,13 +75,13 @@ app.factory('authService', [
                     .success(
                         function success(data) {
                             if (data.result) {
-                                $rootScope.user = data.user;
-                                self.user = data.user;
-                                self.isLoggedIn = true;
+                                /*$rootScope.user = data.user;
+                                 self.user = data.user;
+                                 self.isLoggedIn = true;
+                                 $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+                                 successCallback($rootScope.user);*/
 
-                                $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
-
-                                successCallback($rootScope.user);
+                                window.location.reload();
                             }
                         })
                     .error(

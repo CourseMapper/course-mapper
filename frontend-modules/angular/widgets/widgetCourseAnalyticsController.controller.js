@@ -82,6 +82,9 @@ app.controller('widgetCourseAnalyticsController', function ($scope, $http, $root
         if (authService.user && authService.user._id == userId)
             return true;
 
+        if ($scope.isManager || authService.isAdmin())
+            return true;
+
         return false;
     };
 

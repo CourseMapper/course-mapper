@@ -30,30 +30,6 @@ router.get('/widgets/', function(req, res, next) {
     );
 });
 
-/**
- * get all apps. both active and inactive
- */
-router.get('/widgets/all', function(req, res, next){
-    // check for user rights, only admin can request all widgts
-    if (req.user && req.user.role != 'admin') {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    // get the widgts
-    var app = new AppsGallery();
-    app.getWidgets(
-        function(err){
-            res.status(200).json({result:false, message:err});
-        },
-        {}
-        ,
-        function(wgs){
-            res.status(200).json({result: true, widgets: wgs});
-        }
-    );
-});
-
 router.put('/widgets/install', function(req, res, next){
     if (!req.user) {
         res.status(401).send('Unauthorized');
@@ -167,6 +143,29 @@ router.put('/widgets/:application/:name', function(req, res, next) {
 });
 
 /**
+ * get all apps. both active and inactive
+ */
+router.get('/widgets/all', function(req, res, next){
+    // check for user rights, only admin can request all widgts
+    if (req.user && req.user.role != 'admin') {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    // get the widgts
+    var app = new AppsGallery();
+    app.getWidgets(
+        function(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {}
+        ,
+        function(wgs){
+            res.status(200).json({result: true, widgets: wgs});
+        }
+    );
+});
+/**
  * get apps>widgets that are active and on particular location
  */
 router.get('/widgets/:location/:id', function(req, res, next){
@@ -225,6 +224,7 @@ router.get('/server-widgets/:location', function(req, res, next){
 });
 
 /**
+ * for store display
  * get apps>widgets that are active and on current location
  */
 router.get('/widgets/:location', function(req, res, next){

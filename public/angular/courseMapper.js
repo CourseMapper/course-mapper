@@ -3006,7 +3006,7 @@ app.directive('timepicker', function($timeout) {
                     successCallback(self.user);
                 }
                 else {
-                    if(self.isCheckingForLogin)
+                    if (self.isCheckingForLogin)
                         return;
 
                     self.isCheckingForLogin = true;
@@ -3035,8 +3035,8 @@ app.directive('timepicker', function($timeout) {
                 }
             },
 
-            isAdmin: function(){
-                if(this.user && this.user.role == 'admin')
+            isAdmin: function () {
+                if (this.user && this.user.role == 'admin')
                     return true;
 
                 return false;
@@ -3057,13 +3057,13 @@ app.directive('timepicker', function($timeout) {
                     .success(
                         function success(data) {
                             if (data.result) {
-                                $rootScope.user = data.user;
-                                self.user = data.user;
-                                self.isLoggedIn = true;
+                                /*$rootScope.user = data.user;
+                                 self.user = data.user;
+                                 self.isLoggedIn = true;
+                                 $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+                                 successCallback($rootScope.user);*/
 
-                                $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
-
-                                successCallback($rootScope.user);
+                                window.location.reload();
                             }
                         })
                     .error(
@@ -5641,26 +5641,29 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         if (authService.user && authService.user._id == userId)
             return true;
 
+        if ($scope.isManager || authService.isAdmin())
+            return true;
+
         return false;
     };
 
     $scope.initWidgets();
 });
-;app.controller('widgetCoursePreviewController', function($scope, $http, $rootScope,
-                                                         $timeout, toastr,
-                                                         widgetService, courseService, authService) {
+;app.controller('widgetCoursePreviewController', function ($scope, $http, $rootScope,
+                                                          $timeout, toastr,
+                                                          widgetService, courseService, authService) {
     $scope.location = "course-preview";
     $scope.widgets = [];
 
-    $scope.getWidgets = function(force){
+    $scope.getWidgets = function (force) {
         widgetService.getWidgetsOnLocation($scope.location, $scope.course._id,
 
-            function(widgets){
+            function (widgets) {
                 $scope.widgets = widgets;
                 $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, widgets);
             },
 
-            function(errors){
+            function (errors) {
                 toastr.error(errors);
             },
 
@@ -5668,22 +5671,22 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         );
     };
 
-    $scope.closeWidget = function(id){
+    $scope.closeWidget = function (id) {
         widgetService.uninstall(id, {courseId: $scope.course._id},
-            function(wdg){
+            function (wdg) {
                 var grid = $('#' + $scope.location + '-widgets').data('gridstack');
                 grid.remove_all();
                 $scope.getWidgets(true);
                 toastr.success('Widget is uninstalled');
             },
 
-            function(errors){
+            function (errors) {
                 toastr.error('Uninstallation failed');
             }
         );
     };
 
-    $scope.setupInstallmentWatch = function(){
+    $scope.setupInstallmentWatch = function () {
         var onafter = 'onAfterInstall' + $scope.location;
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
@@ -5694,7 +5697,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
 
         var onafter2 = 'onAfterUninstall' + $scope.location;
-        $scope.$on( onafter2, function(event, newWidget){
+        $scope.$on(onafter2, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
@@ -5703,7 +5706,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         });
     };
 
-    $scope.initWidgets = function(){
+    $scope.initWidgets = function () {
 
         if (courseService.course) {
             $scope.course = courseService.course;
@@ -5716,26 +5719,21 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
             });
         }
 
-        /*$scope.$on('onAfterInitUser', function(event, user){
-            $scope.$watch('location', function(newVal, oldVal){
-                if($scope.location == 'user-profile'){
-                    $scope.getWidgets();
-                }
-            });
-        });*/
-
-        var enableDragging = ($scope.isManager || authService.isAdmin() || $scope.isOwner)? true: false;
+        var enableDragging = ($scope.isManager || authService.isAdmin() || $scope.isOwner) ? true : false;
         widgetService.initiateDraggableGrid($scope.location, enableDragging);
 
         $scope.setupInstallmentWatch();
     };
 
-    $scope.initWidgetButton = function(id) {
+    $scope.initWidgetButton = function (id) {
         widgetService.initWidgetButton('course-preview', id)
     };
 
-    $scope.checkOwnership = function(userId){
-        if(authService.user && authService.user._id == userId)
+    $scope.checkOwnership = function (userId) {
+        if (authService.user && authService.user._id == userId)
+            return true;
+
+        if ($scope.isManager || authService.isAdmin())
             return true;
 
         return false;
