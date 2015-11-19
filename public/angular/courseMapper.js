@@ -475,6 +475,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.isOwner = false;
     $scope.isEnrolled = false;
     $scope.isManager = false;
+    $scope.isAdmin = false;
 
     $scope.currentUrl = window.location.href;
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
@@ -580,6 +581,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return courseService.isManager(authService.user);
     }, function (newVal, oldVal) {
         $scope.isManager = newVal;
+    });
+
+    $scope.$watch(function () {
+        return authService.isAdmin();
+    }, function (newVal, oldVal) {
+        $scope.isAdmin = newVal;
     });
 
     $scope.$watch(function () {
@@ -2683,7 +2690,9 @@ app.directive('timepicker', function($timeout) {
             );
 
             if ($scope.currentTopic && $scope.currentTopic.createdBy &&
-                $scope.currentTopic.createdBy._id == $rootScope.user._id) {
+                ($scope.isAdmin || $scope.isManager ||
+                $scope.isOwner || $scope.currentTopic.createdBy._id == $rootScope.user._id)
+            ) {
 
                 ActionBarService.extraActionsMenu.push({
                     'html': '<a style="cursor: pointer;"' +

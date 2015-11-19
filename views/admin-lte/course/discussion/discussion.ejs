@@ -92,7 +92,7 @@
                                          post-id="{{re._id}}"
                                          posted-date="{{re.dateAdded}}"
                                          post-content="re.content"
-                                         is-post-owner="re.createdBy._id==$root.user._id"
+                                         is-post-owner="re.createdBy._id==$root.user._id || isAdmin || isManager || isOwner"
                                          is-deleted="re.content =='[DELETED]'"
                                          edit-action="editReply(re)"
                                          delete-action="deletePost(re._id)"

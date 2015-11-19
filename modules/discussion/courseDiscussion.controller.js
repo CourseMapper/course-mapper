@@ -290,12 +290,20 @@ courseDiscussion.prototype.isPostAuthorized = async(function (params) {
         .populate('parentPost')
         .exec());
 
-    if (rep && rep.parentPost && rep.parentPost.courseId) {
-        isAllowd = await(userHelper.isCourseAuthorizedAsync({
-            userId: params.userId, courseId: rep.parentPost.courseId
-        }));
+    if (rep && rep.parentPost) {
+        var findCourse = await(
+            Discussion.findOne({discussion: rep.parentPost._id})
+                .populate('course')
+                .exec()
+        );
 
-        if (isAllowd) return true;
+        if (findCourse && findCourse.course) {
+            isAllowd = await(userHelper.isCourseAuthorizedAsync({
+                userId: params.userId, courseId: findCourse.course._id
+            }));
+
+            if (isAllowd) return true;
+        }
     }
 
     // maybe it is a discussion post

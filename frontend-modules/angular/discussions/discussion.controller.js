@@ -205,7 +205,9 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
             );
 
             if ($scope.currentTopic && $scope.currentTopic.createdBy &&
-                $scope.currentTopic.createdBy._id == $rootScope.user._id) {
+                ($scope.isAdmin || $scope.isManager ||
+                $scope.isOwner || $scope.currentTopic.createdBy._id == $rootScope.user._id)
+            ) {
 
                 ActionBarService.extraActionsMenu.push({
                     'html': '<a style="cursor: pointer;"' +
