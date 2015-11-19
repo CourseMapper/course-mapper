@@ -247,7 +247,7 @@ router.put('/course/:courseId/settings', function (req, res, next) {
     req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
 
     var editCrsSetting = async(function () {
-        var isAuthed = await(userHelper.isAuthorizedAsync(req.body));
+        var isAuthed = await(userHelper.isCourseAuthorizedAsync(req.body));
         if (!isAuthed) {
             return helper.resReturn(helper.createError401(), res);
         }
