@@ -1,19 +1,22 @@
 app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
+    /*//Keep commented out unless needed
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
     $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
+    //$rootScope.pdfId = "";
+    */
 
     $scope.editZoneMode = -1;
     $scope.editZoneValues = [];
 
+
+
+
+
+
     //$scope.annZoneMov = [];
-
-
-    $rootScope.pdfId = "";
-
-
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
       console.log($scope.storedAnnZones);
     });*/
@@ -88,6 +91,11 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };
 
     $rootScope.resetEditZoneMode = function() {
+      $rootScope.$broadcast('reloadTags');
+
+      $scope.writeCommentMode = false;
+      $scope.replyRawText = [];
+      $scope.replyMode = -1;
       $scope.editZoneMode = -1;
 
       var ele = $('select[name="colorpicker-change-background-color2"]');
@@ -131,11 +139,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
               }
 
               //console.log("updateAnnZoneEv");
-              $rootScope.$broadcast('reloadTags');
 
-              $scope.writeCommentMode = false;
-              $scope.replyRawText = [];
-              $scope.replyMode = -1;
               $rootScope.resetEditZoneMode();
 
           })
@@ -210,6 +214,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
       //$http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
+        //console.log("Loading AnnZones");
+        //console.log("PDF_ID: "+ $scope.pdfId);
+        //console.log("PageNumber: " + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -230,13 +237,15 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
 
-    $rootScope.$on('onPdfPageChange', function(e, params){
-      //console.log("PdfPageChange");
-      //console.log("pdfPageChangeEv");
-      $rootScope.$emit('reloadTags');
+    var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
+      //console.log("PdfPageChange: ");
+      $scope.$emit('reloadTags');
     });
 
-    $rootScope.$on('reloadTags', function(event) {
+    $scope.$on('$destroy',pdfPageChangeListener);
+
+
+    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       //console.log("Reload Tags called");
       $(".slideRect").remove();
 
@@ -246,27 +255,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $scope.refreshTags();
     });
 
-    /*$scope.$on('reloadTags', function(event) {
-      console.log("Scope");
-      $(".slideRect").remove();
+    $scope.$on('$destroy',reloadTagsEventListener);
 
-      annotationZonesAreLoaded = false;
 
-      toDrawAnnotationZoneData = [];
-      $scope.refreshTags();
-    });*/
 
-    /*
-    use onPdfPageChange event instead
-    $scope.$watch("currentPageNumber",function(newValue,oldValue){
-      //console.log("LOADED RESET");
-      $(".slideRect").remove();
-
-      annotationZonesAreLoaded = false;
-
-      toDrawAnnotationZoneData = [];
-      $scope.refreshTags();
-    });*/
 
     $scope.compileMovableAnnotationZone = function(element) {
       return angular.element(

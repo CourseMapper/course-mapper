@@ -179,7 +179,7 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
     /**
      * ping server on some actions
      */
-    $scope.$on('onPdfPageChange', function(event, params){
+    var pdfPageChangeListener = $scope.$on('onPdfPageChange', function(event, params){
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
     });
     $scope.$on('onVideoUpdateState', function(e, data){
@@ -196,6 +196,8 @@ app.controller('NodeDetailController', function($scope, $rootScope, $filter, $ht
                 console.log('ping server error');
             });
     });
+
+    $scope.$on('$destroy',pdfPageChangeListener);
 
     $scope.init = function(){
         $http.get('/api/course/' + $scope.courseId).success(function(res){

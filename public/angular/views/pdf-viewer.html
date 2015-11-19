@@ -8,22 +8,28 @@
         <div class="slideNavigationCurrentProgress"></div>
     </div>
     <div id="slideNavigation" class="row notSelectable" ng-cloak>
-        <div class="col-md-4 text-center"></div>
-        <div class="col-md-4 text-center">
+        <div class="col-md-5 text-center">
+          <div class="col-md-12 text-center" class="annoZonesTriggerClass" id="annoZonesTriggersId" ng-click="switchShowAnnotationZone()">
+            Annotation-Zones: {{$root.switchShowAnnoZones}}
+          </div>
+
+
+        </div>
+        <div class="col-md-2 text-center">
             <div class="row">
             <a class="glyphicon glyphicon-triangle-left iconSlideNav cursor"
                   aria-hidden="true"
                   ng-hide="currentPageNumber == 1"
                   ng-click="changePageNumber(-1)"></a>
             <span id="slideNavText"
-                  class="fsSlideNav">{{currentPageNumber}}/{{totalPage}}</span>
+                  class="fsSlideNav"> <input id="inpFieldCurrPage" ng-model="currentNavPageNumber" placeholder="{{currentPageNumber}}">/{{totalPage}}</span>
             <a class="glyphicon glyphicon-triangle-right iconSlideNav cursor"
                   aria-hidden="true"
                   ng-hide="currentPageNumber == totalPage"
                   ng-click="changePageNumber(1)"></a>
             </div>
         </div>
-        <div class="col-md-4 text-right">
+        <div class="col-md-5 text-right">
             <!--<a id="btn-fullscreen"
                 class="glyphicon glyphicon-fullscreen iconSlideNav cursor"
                 aria-hidden="true"></a>-->

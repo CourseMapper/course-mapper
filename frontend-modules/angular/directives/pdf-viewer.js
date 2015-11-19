@@ -71,7 +71,6 @@ app.directive('pdfViewer',
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                //console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
 
@@ -90,26 +89,70 @@ app.directive('pdfViewer',
 
             }, /*end link*/
 
-            controller: function ($scope, $compile, $http, $attrs, $location, $routeParams) {
+            controller: function ($scope, $rootScope, $compile, $http, $attrs, $location, $routeParams) {
                 $scope.currentPageNumber = 1;
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
                 $scope.currentTab = "";
+                $scope.currentNavPageNumber = $scope.currentPageNumber;
+                $rootScope.switchShowAnnoZones = "On";
 
+
+                $scope.$watch("currentPageNumber", function (newVal, oldVal){
+                  if(newVal!=oldVal){
+                    $scope.currentNavPageNumber= newVal;
+
+                    $timeout(function () {
+                        $scope.$apply();
+                    });
+                  }
+
+
+                });
+
+                $scope.$watch("currentNavPageNumber", function (newVal, oldVal){
+                  if(newVal!=oldVal){
+                      if(newVal.length==0){
+                        return;
+                      }else if(isNaN(newVal)){
+                          $scope.currentNavPageNumber=oldVal;
+
+                      }else if(!(parseInt(newVal)>=1 && parseInt(newVal)<= $scope.totalPage)){
+                          $scope.currentNavPageNumber=oldVal;
+
+                      }
+
+                  }
+
+                });
+
+                $("#inpFieldCurrPage").bind("keydown keypress", function (event) {
+                  if(event.which === 13) {
+                      $timeout(function () {
+                          $scope.setPageNumber(parseInt($scope.currentNavPageNumber));
+                          $scope.$apply();
+                      });
+
+                      event.preventDefault();
+                  }
+
+                });
 
                 $scope.changePageNumber = function (value) {
-                    //console.log("GOT CALLED");
-                    if (($scope.currentPageNumber + value) <= $scope.totalPage && ($scope.currentPageNumber + value) >= 1)
-                        $scope.currentPageNumber = $scope.currentPageNumber + value;
+                    $scope.setPageNumber($scope.currentPageNumber + value);
+                };
+
+                $scope.setPageNumber = function (value) {
+                  if ((value) <= $scope.totalPage && (value) >= 1){
+                    $scope.currentPageNumber = value;
 
                     $scope.setHistoryStack( $scope.currentPageNumber );
 
                     $timeout(function () {
-                        $scope.$apply();
-
                         $scope.changeSlide($scope.currentPageNumber);
+                        $scope.$apply();
                     });
-
+                  }
                 };
 
                 $scope.changeSlide = function (newSlideNumber) {
@@ -125,8 +168,9 @@ app.directive('pdfViewer',
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw().catch(function(){});
 
-                            //console.log("PDF LOADED");
+                            //console.log("Slide Changed");
                             $scope.pdfIsLoaded = true;
+
 
                             $rootScope.$broadcast('onPdfPageChange', [newSlideNumber, $scope.totalPage]);
 
@@ -155,6 +199,16 @@ app.directive('pdfViewer',
                     }
                 };
 
+                $scope.switchShowAnnotationZone =function(){
+                  if($rootScope.switchShowAnnoZones=="On"){
+                    $rootScope.switchShowAnnoZones="Off";
+                  }else{
+                    $rootScope.switchShowAnnoZones="On";
+                  }
+
+                };
+
+
                 function adjustPdfScale () {
                   //console.log($scope.pdfPageView);
                   if(typeof $scope.pdfPageView != 'undefined'){
@@ -164,9 +218,8 @@ app.directive('pdfViewer',
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
-                    //console.log("pdfviewerEv");
-                    $rootScope.$broadcast('reloadTags');
-                    //console.log($scope.scale);
+
+
                   }
                 };
 
@@ -192,14 +245,14 @@ app.directive('pdfViewer',
                   $scope.currentTab = tab;
                   if(tab == "pdf") {
                     adjustPdfScale();
-                    //$rootScope.$broadcast('reloadTags');
-
                   }
                 });
 
                 $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
                 });
+
+
 
                 // onload
                 $scope.$watch('totalPage', function(newVal, oldVal){
