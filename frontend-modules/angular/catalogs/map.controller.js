@@ -244,6 +244,9 @@ app.controller('MapController', function ($scope, $http, $rootScope,
             var child = treeNodes[i];
             var childId = 't' + child._id;
 
+            if (child.isDeletedForever)
+                continue;
+
             // instantiate on hover
             $scope.initDropDown(childId);
 
@@ -410,6 +413,46 @@ app.controller('MapController', function ($scope, $http, $rootScope,
                             console.log(data.errors);
                         }
                     }
+                });
+        }
+    };
+
+    $scope.deleteNodeForever = function (data) {
+        var msg = 'Are you sure you want to delete this content node forever?';
+        if (data.type == 'subTopic') {
+            msg = 'Are you sure you want to delete this sub topic forever?';
+        }
+
+        if (confirm(msg)) {
+            $http({
+                method: 'DELETE',
+                url: '/api/treeNodes/' + data._id,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function (res) {
+                    if (res.result) {
+                        data.isDeleted = true;
+                        data.isDeletedForever = true;
+                        data.name = '[DELETED]';
+
+                        // destroy the jsplumb instance and svg rendered
+                        $scope.destroyJSPlumb();
+
+                        // this will reinitiate the model, and thus also jsplumb connection
+                        $scope.treeNodes = angular.copy($scope.treeNodes);
+                        $timeout(
+                            function () {
+                                $scope.$apply();
+                                $scope.initJSPlumb();
+                            });
+
+                    }
+                })
+                .error(function (data) {
+                    $scope.errors = data.errors;
+                    toastr.error(data.errors);
                 });
         }
     };

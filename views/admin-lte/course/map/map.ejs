@@ -2,7 +2,8 @@
     <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}">
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
+         ng-hide="data.isDeletedForever">
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
@@ -57,6 +58,13 @@
             <li ng-show="isAuthorized(data)">
                 <a class="cursor"
                    ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
+            </li>
+        </ul>
+
+        <ul class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
+            <li>
+                <a class="cursor"
+                   ng-click="deleteNodeForever(data)"><i class="ionicons ion-trash-b"></i> Delete Forever</a>
             </li>
         </ul>
     </div>

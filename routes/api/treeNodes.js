@@ -214,26 +214,31 @@ router.delete('/treeNodes/:nodeId', function (req, res, next) {
         return;
     }
 
-    // todo: check for enrollement / ownership
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
+    var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+    var userId = mongoose.Types.ObjectId(req.user._id);
 
     var tr = new Tree();
+    tr.isNodeAuthorized({nodeId: nodeId, userId: userId})
+        .then(function (isAllwd) {
+            if (!isAllwd)
+                return helper.resReturn(helper.createError401(), res);
 
-    tr.deleteNode(
-        function (err) {
+            tr.deleteNode(
+                function (err) {
+                    helper.resReturn(err, res);
+                },
+                {
+                    _id: nodeId
+                }
+                ,
+                function (ret) {
+                    res.status(200).json({result: ret});
+                }
+            );
+        })
+        .catch(function (err) {
             helper.resReturn(err, res);
-        },
-        {
-            _id: mongoose.Types.ObjectId(req.params.nodeId)
-        }
-        ,
-        function (ret) {
-            res.status(200).json({result: ret});
-        }
-    );
+        });
 });
 
 

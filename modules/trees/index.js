@@ -367,10 +367,27 @@ catalog.prototype.deleteNode = function (error, params, success) {
     TreeNodes.findById(params).exec(function (err, tn) {
         if (err) error(err);
         else {
-            if (!tn)
-                error(helper.createError404("Node"));
+            if (!tn) {
+                return error(helper.createError404("Node"));
+            }
 
-            else {
+            if (tn.isDeleted) {
+                if(tn.childrens.length == 0){
+                    // find parent,
+                    // remove this tn from parent's children subdocs
+                    TreeNodes.findOneAndUpdate({_id: tn.parent}, {$pull: {childrens: tn._id}},
+                        function (err, data) {
+                        });
+
+                    // is already deleted, means we want to remove it forever
+                    tn.remove(function () {
+                        success(true)
+                    });
+                } else {
+                    error(helper.createError('Cannot delete node with childrens'));
+                }
+
+            } else {
                 tn.isDeleted = true;
                 tn.dateDeleted = new Date();
                 tn.save(
@@ -386,7 +403,6 @@ catalog.prototype.deleteNode = function (error, params, success) {
                 );
             }
         }
-
     });
 };
 
