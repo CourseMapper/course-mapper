@@ -363,6 +363,8 @@ app.config(function(toastrConfig) {
                 $('#editView').modal('hide');
 
                 $scope.progressPercentage = 0;
+
+                window.location.reload();
             })
 
             .error(function (data) {
@@ -719,10 +721,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.controller('MapController', function (
-    $scope, $http, $rootScope,
-    $timeout, $sce, $location,
-    toastr, mapService, courseService) {
+;app.controller('MapController', function ($scope, $http, $rootScope,
+                                          $timeout, $sce, $location,
+                                          toastr, mapService, courseService) {
 
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
@@ -769,11 +770,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $('#tree .course-map').on('click', function (event) {
             var target = $(event.target);
             var k = target.parents('div');
-            if(k.hasClass('ui-draggable') && k.hasClass('w') ){
+            if (k.hasClass('ui-draggable') && k.hasClass('w')) {
                 return true;
-            } else if(k.hasClass('center-course') ){
+            } else if (k.hasClass('center-course')) {
                 return true;
-            } else if(target.hasClass('w')){
+            } else if (target.hasClass('w')) {
                 return true;
             }
 
@@ -793,7 +794,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         mapService.init(course._id,
 
-            function(treeNodes){
+            function (treeNodes) {
                 if (treeNodes.length > 0) {
                     $scope.treeNodes = treeNodes;
                 } else {
@@ -802,7 +803,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
             },
 
-            function(err){
+            function (err) {
                 console.log(err);
                 toastr.error('cannot load course tree');
             }
@@ -815,7 +816,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if (courseService.course) {
             $scope.course = courseService.course;
 
-            if(mapService.treeNodes){
+            if (mapService.treeNodes) {
                 $scope.treeNodes = mapService.treeNodes;
             }
 
@@ -907,23 +908,23 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 return false;
             })
-            .on('mouseenter', function(){
-               $scope.requestIconAnalyitics(slug);
+            .on('mouseenter', function () {
+                $scope.requestIconAnalyitics(slug);
             });
     };
 
-    $scope.showMapInfo = function(){
-        if(!$scope.infoToast){
+    $scope.showMapInfo = function () {
+        if (!$scope.infoToast) {
             $scope.infoToast = toastr.info(
                 'To add a pdf or a video node (which we call "Content Node"), ' +
                 '<br>you need to have at least a subtopic node that acts as a hub.' +
                 '<br>' +
                 '<br>Hover over the node to see available actions, such as create subtopic or content node'
-                ,   {
+                , {
                     allowHtml: true,
                     autoDismiss: false,
-                    onHidden: function(){
-                        if($scope.infoToast)$scope.infoToast = null;
+                    onHidden: function () {
+                        if ($scope.infoToast)$scope.infoToast = null;
                     },
                     tapToDismiss: true,
                     extendedTimeOut: 10000,
@@ -936,18 +937,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 
-    $scope.showMapEmptyInfo = function(){
-        if(!$scope.infoEmptyToast){
+    $scope.showMapEmptyInfo = function () {
+        if (!$scope.infoEmptyToast) {
             $scope.infoEmptyToast = toastr.info(
                 'Hi, this course is new, Please add a subtopic first, ' +
                 '<br>from there, you can add a content node, then upload a pdf or a video.' +
                 '<br>' +
                 '<br>Hover over the center node to see available actions.'
-                ,   {
+                , {
                     allowHtml: true,
                     autoDismiss: false,
-                    onHidden: function(){
-                        if($scope.infoEmptyToast)$scope.infoEmptyToast = null;
+                    onHidden: function () {
+                        if ($scope.infoEmptyToast)$scope.infoEmptyToast = null;
                     },
                     tapToDismiss: true,
                     extendedTimeOut: 10000,
@@ -1017,7 +1018,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         if (parent) {
             $scope.currentNodeAction.parent = parent;
-            if(mode == 'add')
+            if (mode == 'add')
                 $scope.nodeModaltitle += " under " + parent.name;
         }
         else
@@ -1026,17 +1027,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $rootScope.$broadcast('onAfterSetMode', $scope.course);
     };
 
-    $scope.parseResources = function(){
-        for(var i = 0;i < $scope.currentNodeAction.parent.resources.length; i++){
+    $scope.parseResources = function () {
+        for (var i = 0; i < $scope.currentNodeAction.parent.resources.length; i++) {
             var content = $scope.currentNodeAction.parent.resources[i];
-            if(content['type'] == 'mp4'
+            if (content['type'] == 'mp4'
                 || content['type'] == 'video'
                 || content['type'] == 'videoLink'
-            ){
+            ) {
                 $scope.currentNodeAction.parent.videoFile = content;
-            } else if(content['type'] == 'pdf'
+            } else if (content['type'] == 'pdf'
                 || content['type'] == 'pdfLink'
-            ){
+            ) {
                 $scope.currentNodeAction.parent.pdfFile = content;
             }
         }
@@ -1074,7 +1075,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return 'Rectangle';
     };
 
-    $scope.requestIconAnalyitics = function(nodeId){
+    $scope.requestIconAnalyitics = function (nodeId) {
         nodeId = nodeId.substring(1);
         $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
             function (res) {
@@ -1084,8 +1085,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 }
             }
         ).error(function () {
-                $scope.isRequesting = false;
-            });
+            $scope.isRequesting = false;
+        });
     };
 
     $scope.getContentNodeLink = function (d) {
@@ -1125,7 +1126,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                                 $scope.$apply();
                                 $scope.initJSPlumb();
                             });
- 
+
                     } else {
                         if (data.result != null && !data.result) {
                             $scope.errors = data.errors;
@@ -1134,7 +1135,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     }
                 });
         }
-    }
+    };
+
+    $scope.isOwner = function (tn) {
+        return tn.createdBy == $scope.user._id;
+    };
+
+    $scope.isAuthorized = function (tn) {
+        return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
+    };
 
     $scope.$on('onAfterCreateNode', function (event, treeNode) {
         if (treeNode.parent) {
@@ -1186,8 +1195,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
             if (pNode) {
                 pNode.name = treeNode.name;
-                if(treeNode.resources.length > 0){
-                    for(var i in treeNode.resources){
+                if (treeNode.resources.length > 0) {
+                    for (var i in treeNode.resources) {
                         pNode.resources.push(treeNode.resources[i]);
                     }
                 }
@@ -1204,8 +1213,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.isTreeInitiated = true;
     });
 
-    $scope.$on('onAfterSetMode', function(event, course){
-        if($scope.currentNodeAction.type == "contentNode"){
+    $scope.$on('onAfterSetMode', function (event, course) {
+        if ($scope.currentNodeAction.type == "contentNode") {
             $scope.parseResources();
         }
     });
@@ -1216,7 +1225,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     });
 
-    $scope.$watch(function () { return $location.search() }, function (newVal, oldVal) {
+    $scope.$watch(function () {
+        return $location.search()
+    }, function (newVal, oldVal) {
         var currentTab = $location.search().tab;
         if (currentTab == 'map') {
             $scope.isCurrentTabIsMap = true;

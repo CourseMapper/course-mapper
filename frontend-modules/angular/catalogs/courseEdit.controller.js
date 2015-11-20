@@ -77,6 +77,8 @@ app.controller('CourseEditController', function ($scope, $filter, $http, $locati
                 $('#editView').modal('hide');
 
                 $scope.progressPercentage = 0;
+
+                window.location.reload();
             })
 
             .error(function (data) {

@@ -2,7 +2,7 @@
     <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-            ng-class="{'owned': (data.createdBy==user._id), 'deleted': data.isDeleted}">
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}">
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
@@ -12,9 +12,9 @@
         <a ng-show="data.type == 'contentNode' && !data.isDeleted"
            ng-href="{{getContentNodeLink(data)}}"> {{data.name}} </a>
 
-        <span ng-show="data.type != 'contentNode'" > {{data.name}} </span>
+        <span ng-show="data.type != 'contentNode'"> {{data.name}} </span>
 
-        <span ng-show="data.type == 'contentNode' && data.isDeleted == true" > {{data.name}} </span>
+        <span ng-show="data.type == 'contentNode' && data.isDeleted == true"> {{data.name}} </span>
 
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
@@ -32,14 +32,14 @@
                     <i class="ionicons ion-document"></i>
                     Add Content Node</a>
             </li>
-            <li class="separator"></li>
+            <li ng-show="isAuthorized(data)" class="separator"></li>
             <li>
                 <a class="cursor" data-toggle="modal" data-target="#editSubTopicModal"
-                   ng-show="data.createdBy==user._id"
-                   ng-click="setMode('edit', 'subTopic', data)"><i class="ionicons ion-edit"></i> Edit</a>
+                   ng-show="isAuthorized(data)"
+                   ng-click="setMode('edit', data.type, data)"><i class="ionicons ion-edit"></i> Edit</a>
             </li>
             <li>
-                <a class="cursor" ng-show="data.createdBy==user._id"
+                <a class="cursor" ng-show="isAuthorized(data)"
                    ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
             </li>
 
@@ -50,11 +50,11 @@
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>
-            <li ng-show="data.createdBy==user._id">
+            <li ng-show="isAuthorized(data)">
                 <a class="cursor" data-toggle="modal" data-target="#editContentNodeModal"
                    ng-click="setMode('edit', 'contentNode', data)"><i class="ionicons ion-edit"></i> Edit</a>
             </li>
-            <li ng-show="data.createdBy==user._id">
+            <li ng-show="isAuthorized(data)">
                 <a class="cursor"
                    ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
             </li>
@@ -67,40 +67,40 @@
 
 <div class="box-body no-border" id="tree" ng-controller="MapController">
 
-<div class="course-control">
-    <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i
-            class="ionicons ion-android-locate"></i></button>
+    <div class="course-control">
+        <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i
+                    class="ionicons ion-android-locate"></i></button>
 
-    <button class="btn btn-default btn-sm" ng-click="showMapInfo()">
-        <i class="ionicons ion-information"></i></button>
-</div>
-
-<div class="tree-container">
-    <div class="course-map" id="course-map">
-
-        <div ng-repeat="data in treeNodes" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
-        </div>
-
-        <div class="center-course" id="center" data-shape="Rectangle">
-            {{course.name}}
-
-            <ul class="dropdown-menu dropdown-course">
-                <li>
-                    <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
-                       ng-click="setMode('add', 'subTopic', false)">
-                        <i class="ionicons ion-android-add"></i>
-                        <i class="ionicons ion-android-folder"></i>
-                        Add Sub Topic</a>
-                </li>
-            </ul>
-        </div>
-
+        <button class="btn btn-default btn-sm" ng-click="showMapInfo()">
+            <i class="ionicons ion-information"></i></button>
     </div>
 
-    <!-- modal contents -->
-    <% include courseDetailContentMapModals %>
-    <!-- /.modal contents -->
-</div>
+    <div class="tree-container">
+        <div class="course-map" id="course-map">
+
+            <div ng-repeat="data in treeNodes" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+            </div>
+
+            <div class="center-course" id="center" data-shape="Rectangle">
+                {{course.name}}
+
+                <ul class="dropdown-menu dropdown-course">
+                    <li>
+                        <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
+                           ng-click="setMode('add', 'subTopic', false)">
+                            <i class="ionicons ion-android-add"></i>
+                            <i class="ionicons ion-android-folder"></i>
+                            Add Sub Topic</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- modal contents -->
+        <% include courseDetailContentMapModals %>
+        <!-- /.modal contents -->
+    </div>
 </div>
 
 <script>
