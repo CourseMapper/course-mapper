@@ -1348,92 +1348,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
     };
 });
-;app.controller('NodeDetailController', function ($scope, $rootScope, $filter, $http, $location,
-                                                 $routeParams, $timeout, ActionBarService) {
-    $scope.deleteNode = function (id) {
-        var msg = 'Are you sure you want to delete this content node?';
-
-        if (confirm(msg)) {
-            $http({
-                method: 'DELETE',
-                url: '/api/treeNodes/' + id,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-                .success(function (res) {
-                    if (res.result) {
-                        $location.path('/cid/' + $scope.courseId);
-                        $location.search('tab', 'map');
-                    } else {
-                        if (data.result != null && !data.result) {
-                            $scope.errors = data.errors;
-                            console.log(data.errors);
-                        }
-                    }
-                });
-        }
-    };
-
-    $scope.manageActionBar = function () {
-        if (($scope.currentTab == 'video' || $scope.currentTab == 'pdf') && $scope.treeNode) {
-            if (
-                $scope.treeNode.createdBy == $rootScope.user._id) {
-
-                ActionBarService.extraActionsMenu = [];
-
-                ActionBarService.extraActionsMenu.push({
-                    clickAction: $scope.deleteNode,
-                    clickParams: $scope.treeNode._id,
-                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
-                    aTitle: 'DELETE THIS NODE AND ITS CONTENTS'
-                });
-            }
-        }
-    };
-
-    $scope.changeTab = function () {
-        var q = $location.search();
-
-        if (!q.tab) {
-
-            jQuery('#video').removeClass('active');
-            jQuery('li.video').removeClass('active');
-
-            jQuery('#pdf').removeClass('active');
-            jQuery('li.pdf').removeClass('active');
-
-            if ($scope.isVideoExist && $scope.isPdfExist) {
-                jQuery('#video').addClass('active');
-                jQuery('li.video').addClass('active');
-            } else if ($scope.isPdfExist) {
-                jQuery('#pdf').addClass('active');
-                jQuery('li.pdf').addClass('active');
-            } else {
-                jQuery('#video').addClass('active');
-                jQuery('li.video').addClass('active');
-            }
-        }
-
-        if ($scope.isVideoExist && $scope.isPdfExist) {
-            $scope.defaultPath = 'video';
-        } else if ($scope.isPdfExist) {
-            $scope.defaultPath = 'pdf';
-        }
-
-        $scope.currentTab = $scope.defaultPath;
-        if (q.tab) {
-            $scope.currentTab = q.tab;
-        }
-
-        $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
-
-        $scope.manageActionBar();
-    };
-
-    $scope.init();
-});
-;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
+;;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -1755,7 +1670,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         }
 
-        if ($scope.videoFile && $scope.pdfFile) {
+        if ($scope.videoFile || ($scope.videoFile && $scope.pdfFile)) {
             $scope.defaultPath = 'video';
         } else if ($scope.pdfFile) {
             $scope.defaultPath = 'pdf';
@@ -1845,16 +1760,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
 
         /*var q = $location.search();
-        if (!q.tab) {
-            if ($scope.currentTab == 'pdf' && params[0] > 1) {
-                $location.search({'tab': 'pdf'});
-            }
-        }*/
+         if (!q.tab) {
+         if ($scope.currentTab == 'pdf' && params[0] > 1) {
+         $location.search({'tab': 'pdf'});
+         }
+         }*/
 
-        if(params[0] && params[0] != 1)
+        if (params[0] && params[0] != 1)
             $scope.currentPdfPage = params[0];
-
-        console.log('alala' + $scope.currentPdfPage);
     });
 
     $scope.$on('$routeUpdate', function () {
@@ -1896,6 +1809,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 });
 ;app.controller('ProfileController', function(  Page) {
     Page.setTitleWithPrefix('My Account');
+});
+;app.controller('VideoTabController', function ($scope, $rootScope, $filter, $http, $location,
+                                               $routeParams, $timeout, ActionBarService) {
+
 });
 ;app.directive('comment',
     function ($compile, $timeout) {

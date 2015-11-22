@@ -300,7 +300,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
         // Initialize scope when the video-source is set.
         $scope.$watch('videoSource', function(oldVal, newVal) {
-            if (oldVal !== newVal) {
+            if (newVal) {
                 $scope.init($scope.videoId, $scope.videoSource);
             }
         });

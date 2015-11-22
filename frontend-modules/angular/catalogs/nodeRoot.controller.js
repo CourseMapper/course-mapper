@@ -51,7 +51,7 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
             }
         }
 
-        if ($scope.videoFile && $scope.pdfFile) {
+        if ($scope.videoFile || ($scope.videoFile && $scope.pdfFile)) {
             $scope.defaultPath = 'video';
         } else if ($scope.pdfFile) {
             $scope.defaultPath = 'pdf';
@@ -141,16 +141,14 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
 
         /*var q = $location.search();
-        if (!q.tab) {
-            if ($scope.currentTab == 'pdf' && params[0] > 1) {
-                $location.search({'tab': 'pdf'});
-            }
-        }*/
+         if (!q.tab) {
+         if ($scope.currentTab == 'pdf' && params[0] > 1) {
+         $location.search({'tab': 'pdf'});
+         }
+         }*/
 
-        if(params[0] && params[0] != 1)
+        if (params[0] && params[0] != 1)
             $scope.currentPdfPage = params[0];
-
-        console.log('alala' + $scope.currentPdfPage);
     });
 
     $scope.$on('$routeUpdate', function () {
