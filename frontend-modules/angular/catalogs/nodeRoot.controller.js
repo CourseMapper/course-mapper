@@ -15,6 +15,7 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
     $scope.pdfFile = false;
 
     $scope.currentTab = "";
+    $scope.currentPdfPage = 1;
     $scope.defaultPath = "";
     $scope.includeActionBar = "";
     $scope.currentNodeAction = {};
@@ -145,6 +146,11 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
                 $location.search({'tab': 'pdf'});
             }
         }*/
+
+        if(params[0] && params[0] != 1)
+            $scope.currentPdfPage = params[0];
+
+        console.log('alala' + $scope.currentPdfPage);
     });
 
     $scope.$on('$routeUpdate', function () {

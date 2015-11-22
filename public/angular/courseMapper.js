@@ -1719,6 +1719,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.pdfFile = false;
 
     $scope.currentTab = "";
+    $scope.currentPdfPage = 1;
     $scope.defaultPath = "";
     $scope.includeActionBar = "";
     $scope.currentNodeAction = {};
@@ -1849,6 +1850,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 $location.search({'tab': 'pdf'});
             }
         }*/
+
+        if(params[0] && params[0] != 1)
+            $scope.currentPdfPage = params[0];
+
+        console.log('alala' + $scope.currentPdfPage);
     });
 
     $scope.$on('$routeUpdate', function () {
@@ -1873,6 +1879,20 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.initNode();
         }
     });
+});
+;app.controller('PdfTabController', function ($scope, $rootScope, $filter, $http, $location,
+                                             $routeParams, $timeout, ActionBarService) {
+
+    $scope.init = function () {
+        if ($scope.currentPdfPage > 1) {
+            var slidePage = $location.search().slidePage;
+            if (!slidePage || (slidePage && slidePage == 1)) {
+                $location.search('slidePage', $scope.currentPdfPage).replace();
+            }
+        }
+    };
+
+    $scope.init();
 });
 ;app.controller('ProfileController', function(  Page) {
     Page.setTitleWithPrefix('My Account');
