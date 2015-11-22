@@ -1,5 +1,7 @@
 app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
+    $scope.recentSubmitOnAnnotation = "";
+
     $scope.comment = {};
 
     $scope.editRawText = [];
@@ -184,6 +186,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 //TODO: reset everything
               }
               //console.log("commReplyEv");
+
+              $scope.recentSubmitOnAnnotation = id;
+
+              //console.log("Recent: "+ $scope.recentSubmitOnAnnotation);
+
               $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;

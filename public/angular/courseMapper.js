@@ -1727,6 +1727,7 @@ app.directive('movable', function() {
                 showCommentingArea: '=',
                 comments: '=',
                 postComment: '&',
+                recentSubmitOnAnnotation: '=',
                 commentText: '=',
                 removeFunction: '&'
             },
@@ -1756,8 +1757,10 @@ app.directive('movable', function() {
                 $scope.showEditButton = hasPermission;
                 $scope.showDeleteButton = hasPermission;
 
+                $scope.toggle = $scope.recentSubmitOnAnnotation;
 
-                //console.log($scope.removeComment);
+                //console.log($scope.postId);
+                //console.log($scope.toggle);
             }
         };
     });
@@ -3590,6 +3593,8 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
+    $scope.recentSubmitOnAnnotation = "";
+
     $scope.comment = {};
 
     $scope.editRawText = [];
@@ -3774,6 +3779,11 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
                 //TODO: reset everything
               }
               //console.log("commReplyEv");
+
+              $scope.recentSubmitOnAnnotation = id;
+
+              //console.log("Recent: "+ $scope.recentSubmitOnAnnotation);
+
               $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;

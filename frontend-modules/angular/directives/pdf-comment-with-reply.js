@@ -25,6 +25,7 @@ app.directive('pdfComment',
                 showCommentingArea: '=',
                 comments: '=',
                 postComment: '&',
+                recentSubmitOnAnnotation: '=',
                 commentText: '=',
                 removeFunction: '&'
             },
@@ -54,8 +55,10 @@ app.directive('pdfComment',
                 $scope.showEditButton = hasPermission;
                 $scope.showDeleteButton = hasPermission;
 
+                $scope.toggle = $scope.recentSubmitOnAnnotation;
 
-                //console.log($scope.removeComment);
+                //console.log($scope.postId);
+                //console.log($scope.toggle);
             }
         };
     });
