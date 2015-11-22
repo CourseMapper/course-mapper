@@ -57,6 +57,10 @@ app.directive('pdfComment',
 
                 $scope.toggle = $scope.recentSubmitOnAnnotation;
 
+                $scope.postedDate = new Date($scope.postedDate);
+
+                //console.log($scope.postedDate | $scope.relativeDate);
+
                 //console.log($scope.postId);
                 //console.log($scope.toggle);
             }
