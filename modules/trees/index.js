@@ -9,7 +9,6 @@ var debug = require('debug')('cm:db');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-
 var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function catalog() {
@@ -252,6 +251,17 @@ catalog.prototype.getTreeNode = function (error, params, success) {
     });
 };
 
+catalog.prototype.getNodeAsync = function (params) {
+    return async(function () {
+        var nod = await(TreeNodes.findOne(params)
+            .populate('createdBy', '_id username displayName')
+            .exec()
+        );
+
+        return nod;
+    });
+};
+
 /**
  * get all tree nodes based on params,
  * and return it in a recursived tree manners
@@ -372,7 +382,7 @@ catalog.prototype.deleteNode = function (error, params, success) {
             }
 
             if (tn.isDeleted) {
-                if(tn.childrens.length == 0){
+                if (tn.childrens.length == 0) {
                     // find parent,
                     // remove this tn from parent's children subdocs
                     TreeNodes.findOneAndUpdate({_id: tn.parent}, {$pull: {childrens: tn._id}},

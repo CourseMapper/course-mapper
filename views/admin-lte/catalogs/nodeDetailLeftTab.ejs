@@ -1,64 +1,38 @@
 <ul class="nav nav-tabs tabs-hide hidden-xs hidden-sm">
-    <li ng-show="(enrolled || isOwner) && isVideoExist" class="video">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=video"
-           data-toggle="tab" data-target="#video">
-            <i class="fa fa-file-video-o"></i>
-            <span>Video</span></a></li>
-
-    <li ng-show="(enrolled || isOwner) && isPdfExist" class="pdf">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=pdf"
-           data-toggle="tab" data-target="#pdf">
-            <i class="fa fa-file-pdf-o"></i>
-            <span>Pdf</span></a></li>
-
-    <li ng-show="enrolled || isOwner">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=links"
-           data-toggle="tab" data-target="#links">
-            <i class="ionicons ion-link"></i>
-            <span>Links</span></a></li>
-
-    <!--<li ng-show="enrolled || isOwner">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=updates" ng-show="user"
-           data-toggle="tab" data-target="#updates">
-            <i class="ionicons ion-ios-time-outline"></i><br>
-            <span>Updates</span></a></li>-->
-
-    <li ng-show="enrolled || isOwner">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=analytics" ng-show="user"
-           data-toggle="tab" data-target="#analytics">
-            <i class="ionicons ion-stats-bars"></i><br>
-            <span>Analytics</span></a></li>
+    <% for(var i = 0; i < activeTabs.length; i++){ %>
+    <li
+            <% if(activeTabs[i].ngShow && activeTabs[i].ngShow != ''){ %>
+            ng-show="<%= activeTabs[i].ngShow %>"
+            <% } %>
+            class="<%= activeTabs[i].name %>"
+    >
+        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
+           data-toggle="tab" data-target="#<%= activeTabs[i].name %>">
+            <i class="<%= activeTabs[i].icon %>"></i><br>
+            <span><%= activeTabs[i].displayName %></span>
+        </a>
+    </li>
+    <%
+    }
+    %>
 </ul>
 
-<ul class="nav nav-tabs tabs-hide visible-xs visible-sm draw-tab">
-    <li ng-show="(enrolled || isOwner) && isVideoExist" class="video">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=video"
-           data-toggle="tab" data-target="#video" onclick="hideTabMenu()" >
-            <i class="fa fa-file-video-o"></i>
-            <span>Video</span></a></li>
-
-    <li ng-show="(enrolled || isOwner) && isPdfExist" class="pdf">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=pdf"
-           data-toggle="tab" data-target="#pdf" onclick="hideTabMenu()" >
-            <i class="fa fa-file-pdf-o"></i>
-            <span>Pdf</span></a></li>
-
-    <li ng-show="enrolled || isOwner">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=links"
-           data-toggle="tab" data-target="#links" onclick="hideTabMenu()" >
-            <i class="ionicons ion-link"></i>
-            <span>Links</span></a></li>
-
-    <!--<li ng-show="enrolled || isOwner">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=updates" ng-show="user"
-           data-toggle="tab" data-target="#updates">
-            <i class="ionicons ion-ios-time-outline"></i><br>
-            <span>Updates</span></a></li>-->
-
-    <li ng-show="enrolled || isOwner">
-        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=analytics" ng-show="user"
-           data-toggle="tab" data-target="#analytics" onclick="hideTabMenu()" >
-            <i class="ionicons ion-stats-bars"></i><br>
-            <span>Analytics</span></a></li>
+<ul class="nav nav-tabs tabs-hide visible-xs visible-sm draw-tab ">
+    <% for(var i = 0; i < activeTabs.length; i++){ %>
+    <li
+            <% if(activeTabs[i].ngShow && activeTabs[i].ngShow != ''){ %>
+            ng-show="<%= activeTabs[i].ngShow %>"
+            <% } %>
+            class="<%= activeTabs[i].name %>"
+    >
+        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
+           data-toggle="tab" data-target="#<%= activeTabs[i].name %>"
+           onclick="hideTabMenu()">
+            <i class="<%= activeTabs[i].icon %>"></i><br>
+            <span><%= activeTabs[i].displayName %></span>
+        </a>
+    </li>
+    <%
+    }
+    %>
 </ul>
-

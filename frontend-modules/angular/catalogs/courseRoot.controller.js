@@ -51,6 +51,9 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
             function (course) {
                 $scope.course = course;
                 Page.setTitleWithPrefix($scope.course.name);
+
+                $scope.setCapabilities();
+
                 $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
             },
 
@@ -91,8 +94,6 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
 
     };
 
-    $scope.newCourseNotification();
-
     /**
      * initiate course when user hast tried to log in
      */
@@ -104,29 +105,12 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         }
     });
 
-    $scope.$watch(function () {
-        return courseService.isEnrolled();
-    }, function (newVal, oldVal) {
-        $scope.isEnrolled = newVal;
-    });
-
-    $scope.$watch(function () {
-        return courseService.isManager(authService.user);
-    }, function (newVal, oldVal) {
-        $scope.isManager = newVal;
-    });
-
-    $scope.$watch(function () {
-        return authService.isAdmin();
-    }, function (newVal, oldVal) {
-        $scope.isAdmin = newVal;
-    });
-
-    $scope.$watch(function () {
-        return courseService.isOwner(authService.user);
-    }, function (newVal, oldVal) {
-        $scope.isOwner = newVal;
-    });
+    $scope.setCapabilities = function () {
+        $scope.isEnrolled = courseService.isEnrolled();
+        $scope.isManager = courseService.isManager(authService.user);
+        $scope.isAdmin = authService.isAdmin();
+        $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
+    };
 
     $scope.$on('$routeUpdate', function () {
         $scope.changeTab();
@@ -136,4 +120,5 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         $scope.init(true);
     });
 
+    $scope.newCourseNotification();
 });

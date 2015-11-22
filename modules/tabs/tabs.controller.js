@@ -4,7 +4,6 @@ var appRoot = require('app-root-path');
 var mongoose = require('mongoose');
 var Tabs = require(appRoot + '/modules/tabs/models/tabs.schema.js');
 var Courses = require(appRoot + '/modules/catalogs/courses.js');
-var helper = require(appRoot + '/libs/core/generalLibs.js');
 var _ = require('underscore');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
@@ -23,12 +22,14 @@ TabsStore.prototype.init = function () {
  * @param success cb
  */
 TabsStore.prototype.getTabs = function (error, params, success) {
-    Tabs.find(params, function (err, tabs) {
-        if (err)
-            error();
-        else
-            success(tabs);
-    });
+    Tabs.find(params)
+        .sort({location: 1, orderNo: 1})
+        .exec(function (err, tabs) {
+            if (err)
+                error();
+            else
+                success(tabs);
+        });
 };
 
 TabsStore.prototype.getTab = function (error, params, success) {
@@ -61,18 +62,7 @@ TabsStore.prototype.getActiveTabs = function (courseId, location) {
             .sort({orderNo: 1})
             .exec());
 
-        var tabsActive = await(
-            Courses
-                .findOne({_id: courseId}, {'tabsActive': 1})
-                .exec());
-
-        var ta = {};
-        if (tabsActive.tabsActive)
-            ta = tabsActive.tabsActive;
-
-        return {
-            tabs: tabs, tabsActive: ta
-        };
+        return tabs;
     });
 };
 

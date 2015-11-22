@@ -38,5 +38,45 @@
     "isDefaultActivated": true,
     "icon": "ionicons ion-stats-bars",
     "ngShow": "isEnrolled || isOwner || isManager"
+  },
+  {
+    "orderNo": 1,
+    "name": "video",
+    "displayName": "Video",
+    "location": "contentNode",
+    "description": "to show video",
+    "isDefaultActivated": true,
+    "icon": "fa fa-file-video-o",
+    "ngShow": "(isEnrolled || isOwner || isManager) && videoFile"
+  },
+  {
+    "orderNo": 2,
+    "name": "pdf",
+    "displayName": "PDF",
+    "location": "contentNode",
+    "description": "to show pdf",
+    "isDefaultActivated": true,
+    "icon": "fa fa-file-pdf-o",
+    "ngShow": "(isEnrolled || isOwner || isManager) && pdfFile"
+  },
+  {
+    "orderNo": 3,
+    "name": "links",
+    "displayName": "Links",
+    "location": "contentNode",
+    "description": "to show discussion",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-link",
+    "ngShow": "isEnrolled || isOwner || isManager"
+  },
+  {
+    "orderNo": 4,
+    "name": "nodeAnalytics",
+    "displayName": "Analytics",
+    "location": "contentNode",
+    "description": "to show analytics",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-stats-bars",
+    "ngShow": "isEnrolled || isOwner || isManager"
   }
 ]

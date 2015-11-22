@@ -28,8 +28,10 @@ app.config(function(toastrConfig) {
         }).
 
         when('/cid/:courseId/nid/:nodeId', {
-            templateUrl: '/course/nodeDetail',
-            controller: 'NodeDetailController',
+            templateUrl: function (params) {
+                return '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
+            },
+            controller: 'NodeRootController',
             reloadOnSearch: false
         }).
 
@@ -520,6 +522,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function (course) {
                 $scope.course = course;
                 Page.setTitleWithPrefix($scope.course.name);
+
+                $scope.setCapabilities();
+
                 $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
             },
 
@@ -560,8 +565,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     };
 
-    $scope.newCourseNotification();
-
     /**
      * initiate course when user hast tried to log in
      */
@@ -573,29 +576,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     });
 
-    $scope.$watch(function () {
-        return courseService.isEnrolled();
-    }, function (newVal, oldVal) {
-        $scope.isEnrolled = newVal;
-    });
-
-    $scope.$watch(function () {
-        return courseService.isManager(authService.user);
-    }, function (newVal, oldVal) {
-        $scope.isManager = newVal;
-    });
-
-    $scope.$watch(function () {
-        return authService.isAdmin();
-    }, function (newVal, oldVal) {
-        $scope.isAdmin = newVal;
-    });
-
-    $scope.$watch(function () {
-        return courseService.isOwner(authService.user);
-    }, function (newVal, oldVal) {
-        $scope.isOwner = newVal;
-    });
+    $scope.setCapabilities = function () {
+        $scope.isEnrolled = courseService.isEnrolled();
+        $scope.isManager = courseService.isManager(authService.user);
+        $scope.isAdmin = authService.isAdmin();
+        $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
+    };
 
     $scope.$on('$routeUpdate', function () {
         $scope.changeTab();
@@ -605,6 +591,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.init(true);
     });
 
+    $scope.newCourseNotification();
 });
 ;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce, Page ) {
     $scope.slug = $routeParams.slug;
@@ -1285,38 +1272,87 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.tabOpened();
 });
-;app.controller('NodeDetailController', function($scope, $rootScope, $filter, $http, $location,
-                                                $routeParams, $timeout, ActionBarService,
-                                                Page
-) {
-    $scope.course = null;
-    $scope.user = null;
-    $scope.treeNode = null;
-    $scope.enrolled = false;
-    $scope.loc = $location.absUrl() ;
-    $scope.courseId = $routeParams.courseId;
-    $scope.nodeId = $routeParams.nodeId;
-    $scope.isOwner = false;
-    $scope.isNodeOwner = false;
-    $scope.isVideoExist = false;
-    $scope.isPdfExist = false;
-    $scope.videoFile = false;
-    $scope.pdfFile = false;
-
-    $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?enroll=1';
-
-    $scope.currentTab = "video";
-    $scope.defaultPath = "video";
-    $scope.tabs = {
-        'video':'Video',
-        'pdf':'Pdf',
-        'analytics':'Analytics',
-        'updates':'Updates',
-        'links':'Links'
+;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
+    $scope.nodeEdit = null;
+    $scope.errors = [];
+    $scope.managersRaw = [];
+    $scope.managersIdRaw = [];
+    $scope.username = '';
+    $scope.isLoading = false;
+    $scope.tabsActive = {};
+    $scope.settings = {
+        disableControls: false,
+        disableTop: false
     };
 
-    $scope.deleteNode = function(id){
+    $scope.$on('onAfterInitCourse', function (event, course) {
+        $scope.init(course);
+    });
+
+    $scope.init = function (treeNode) {
+        if (!treeNode)
+            return;
+
+        $scope.nodeEdit = cloneSimpleObject(treeNode);
+    };
+
+    $scope.saveNodeSetting = function (isValid) {
+        if (!isValid)
+            return;
+
+        $scope.managersIdRaw = [];
+
+        var url = '/api/course/' + $scope.courseEdit._id + '/settings';
+        $scope.managersIdRaw = [];
+        if ($scope.managersRaw.length > 0) {
+            for (var i in $scope.managersRaw) {
+                $scope.managersIdRaw.push($scope.managersRaw[i]._id);
+            }
+        }
+
+        var params = {
+            managers: JSON.stringify($scope.managersIdRaw)
+        };
+
+        if ($scope.tabsActive) {
+            params.tabsActive = $scope.tabsActive;
+        }
+        if ($scope.settings) {
+            params.settings = $scope.settings;
+        }
+
+        $scope.isLoading = true;
+        $http.put(url, params)
+            .success(function (res) {
+                if (res.result) {
+                    toastr.success('Successfully Saved');
+                }
+
+                $scope.managersIdRaw = [];
+
+                $scope.isLoading = false;
+                $('#configView').modal('hide');
+                $scope.errors = [];
+
+                $window.location.reload();
+            })
+            .error(function (res) {
+                $scope.errors = res.errors;
+                $scope.isLoading = false;
+            });
+    };
+
+    $scope.removeUsername = function ($tag) {
+        console.log('removed ' + JSON.stringify($tag));
+    };
+
+    $scope.cancel = function () {
+        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+    };
+});
+;app.controller('NodeDetailController', function ($scope, $rootScope, $filter, $http, $location,
+                                                 $routeParams, $timeout, ActionBarService) {
+    $scope.deleteNode = function (id) {
         var msg = 'Are you sure you want to delete this content node?';
 
         if (confirm(msg)) {
@@ -1327,22 +1363,22 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
-                .success(function(res) {
-                    if(res.result){
+                .success(function (res) {
+                    if (res.result) {
                         $location.path('/cid/' + $scope.courseId);
                         $location.search('tab', 'map');
                     } else {
-                        if( data.result != null && !data.result){
+                        if (data.result != null && !data.result) {
                             $scope.errors = data.errors;
                             console.log(data.errors);
                         }
                     }
-                }) ;
+                });
         }
     };
 
-    $scope.manageActionBar = function(){
-        if(($scope.currentTab == 'video' || $scope.currentTab == 'pdf') && $scope.treeNode) {
+    $scope.manageActionBar = function () {
+        if (($scope.currentTab == 'video' || $scope.currentTab == 'pdf') && $scope.treeNode) {
             if (
                 $scope.treeNode.createdBy == $rootScope.user._id) {
 
@@ -1358,10 +1394,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 
-    $scope.changeTab = function(){
+    $scope.changeTab = function () {
         var q = $location.search();
 
-        if(!q.tab) {
+        if (!q.tab) {
 
             jQuery('#video').removeClass('active');
             jQuery('li.video').removeClass('active');
@@ -1369,10 +1405,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             jQuery('#pdf').removeClass('active');
             jQuery('li.pdf').removeClass('active');
 
-            if($scope.isVideoExist && $scope.isPdfExist){
+            if ($scope.isVideoExist && $scope.isPdfExist) {
                 jQuery('#video').addClass('active');
                 jQuery('li.video').addClass('active');
-            } else if($scope.isPdfExist){
+            } else if ($scope.isPdfExist) {
                 jQuery('#pdf').addClass('active');
                 jQuery('li.pdf').addClass('active');
             } else {
@@ -1381,14 +1417,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             }
         }
 
-        if($scope.isVideoExist && $scope.isPdfExist){
+        if ($scope.isVideoExist && $scope.isPdfExist) {
             $scope.defaultPath = 'video';
-        } else if($scope.isPdfExist){
+        } else if ($scope.isPdfExist) {
             $scope.defaultPath = 'pdf';
         }
 
         $scope.currentTab = $scope.defaultPath;
-        if(q.tab){
+        if (q.tab) {
             $scope.currentTab = q.tab;
         }
 
@@ -1399,129 +1435,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.manageActionBar();
     };
 
-    /*$scope.$on('onNodeTabChange', function(event, tab){
-        console.log(tab);
-    });*/
-
-    $scope.currentNodeAction = {};
-    $scope.setEditMode = function(){
-        $scope.currentNodeAction.mode = "edit";
-        $scope.currentNodeAction.type = "contentNode";
-        $scope.currentNodeAction.typeText = "Content Node";
-        $scope.currentNodeAction.parent = $scope.treeNode;
-
-        $scope.nodeModaltitle = "Edit " + $scope.currentNodeAction.typeText;
-
-        $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
-    };
-
-    $scope.parseResources = function(){
-        for(var i = 0;i < $scope.treeNode.resources.length; i++){
-            var content = $scope.treeNode.resources[i];
-            if(content['type'] == 'mp4'
-                || content['type'] == 'video'
-                || content['type'] == 'videoLink'
-            ){
-                $scope.isVideoExist = true;
-                $scope.videoFile = content;
-                $scope.treeNode.videoFile = content;
-            } else if(content['type'] == 'pdf'
-                || content['type'] == 'pdfLink'
-            ){
-                $scope.pdfFile = content;
-                $scope.treeNode.pdfFile = content;
-                $scope.isPdfExist = true;
-            }
-        }
-    };
-
-    $scope.initNode = function(){
-        $http.get('/api/treeNode/' + $scope.nodeId).success(function(res){
-            if(res.result) {
-                $scope.treeNode = res.treeNode;
-
-                if($scope.course && $scope.treeNode)
-                    Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
-
-                $scope.parseResources();
-
-                if ($scope.treeNode.createdBy == $rootScope.user._id) {
-                    $scope.isNodeOwner = true;
-                    $scope.setEditMode();
-                }
-
-                $scope.changeTab();
-
-                $timeout(function(){
-                    $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
-                });
-            }
-        });
-    };
-
-    $scope.$on('onAfterEditContentNode', function(event, oldTreeNode){
-        $scope.initNode();
-    });
-
-    /**
-     * ping server on our latest page read
-     */
-    $scope.$on('onPdfPageChange', function(event, params){
-        $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
-    });
-
-    $scope.init = function(){
-        $http.get('/api/course/' + $scope.courseId).success(function(res){
-            if(res.result) {
-                $scope.course = res.course;
-
-                $scope.initNode();
-
-                $timeout(function(){
-                    $scope.$broadcast('onAfterInitCourse', $scope.course);
-                });
-            }
-        });
-
-        //$scope.changeTab();
-    };
-
     $scope.init();
-
-    $rootScope.$watch('user', function(){
-        if($rootScope.user) {
-            $scope.user = $rootScope.user;
-        }
-    });
-
-    $scope.$watchGroup(['user', 'course'], function(){
-        if($scope.user != null && $scope.course != null) {
-            $http.get('/api/accounts/' + $scope.user._id + '/course/' + $scope.courseId).success(function (res) {
-                if (res.result && res.courses) {
-                    $scope.enrolled = res.courses.isEnrolled;
-                } else {
-                    $scope.enrolled = false;
-                }
-            });
-
-            if ($scope.course.createdBy._id == $rootScope.user._id) {
-                $scope.isOwner = true;
-                $scope.enrolled = true;
-            }
-        }
-    });
-
-    $scope.$on('$routeUpdate', function(){
-        var q = $location.search();
-
-        if(q.tab) {
-            if($scope.currentTab && $scope.currentTab != q.tab){
-                $scope.changeTab();
-            }
-        }
-        else
-            $scope.changeTab();
-    });
 });
 ;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
@@ -1791,6 +1705,171 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.filespdf=[];
         $timeout(function(){$scope.$apply()});
     };
+});
+;app.controller('NodeRootController', function ($scope, $rootScope, $filter, $http, $location,
+                                               $routeParams, $timeout, ActionBarService, authService,
+                                               courseService, treeNodeService, Page, toastr) {
+    $scope.treeNode = null;
+    $scope.course = null;
+    $scope.nodeId = $routeParams.nodeId;
+    $scope.courseId = $routeParams.courseId;
+
+    $scope.isNodeOwner = false;
+    $scope.isAdmin = false;
+    $scope.isManager = false;
+    $scope.isOwner = false;
+    $scope.isEnrolled = false;
+    $scope.videoFile = false;
+    $scope.pdfFile = false;
+
+    $scope.currentTab = "";
+    $scope.defaultPath = "";
+    $scope.includeActionBar = "";
+    $scope.currentNodeAction = {};
+
+    $scope.manageActionBar = function () {
+        if (($scope.currentTab == 'video' || $scope.currentTab == 'pdf') && $scope.treeNode) {
+            if ($scope.treeNode.createdBy == $rootScope.user._id) {
+
+                ActionBarService.extraActionsMenu = [];
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deleteNode,
+                    clickParams: $scope.treeNode._id,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE THIS NODE AND ITS CONTENTS'
+                });
+            }
+        }
+    };
+
+    $scope.changeTab = function () {
+        var q = $location.search();
+
+        if (!q.tab) {
+            jQuery('li.video').removeClass('active');
+            jQuery('li.pdf').removeClass('active');
+
+            if ($scope.videoFile && $scope.pdfFile) {
+                jQuery('li.video').addClass('active');
+            } else if ($scope.pdfFile) {
+                jQuery('li.pdf').addClass('active');
+            } else {
+                jQuery('li.video').addClass('active');
+            }
+        }
+
+        if ($scope.videoFile && $scope.pdfFile) {
+            $scope.defaultPath = 'video';
+        } else if ($scope.pdfFile) {
+            $scope.defaultPath = 'pdf';
+        }
+
+        $scope.currentTab = $scope.defaultPath;
+        if (q.tab) {
+            $scope.currentTab = q.tab;
+        }
+
+        $scope.include = '/treeNode/tab/' + $scope.currentTab;
+        $scope.includeActionBar = '/treeNode/actionBar/' + $scope.currentTab;
+
+        $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
+
+        $scope.manageActionBar();
+    };
+
+    $scope.initNode = function () {
+        courseService.init(
+            $scope.courseId,
+
+            function (course) {
+                $scope.course = course;
+
+                treeNodeService.init($scope.nodeId,
+                    function (treeNode) {
+                        $scope.treeNode = treeNode;
+                        $scope.videoFile = treeNodeService.videoFile;
+                        $scope.pdfFile = treeNodeService.pdfFile;
+
+                        $scope.setCapabilities();
+
+                        Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
+
+                        if ($scope.treeNode.createdBy == $rootScope.user._id) {
+                            $scope.isNodeOwner = true;
+                            $scope.setEditMode();
+                        }
+
+                        $scope.changeTab();
+
+                        $timeout(function () {
+                            $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
+                        });
+                    },
+                    function (err) {
+                        toastr.error(err);
+                    }
+                );
+            },
+
+            function (res) {
+                $scope.errors = res.errors;
+                toastr.error('Failed getting course');
+            },
+
+            true
+        );
+    };
+
+    $scope.setEditMode = function () {
+        $scope.currentNodeAction.mode = "edit";
+        $scope.currentNodeAction.type = "contentNode";
+        $scope.currentNodeAction.typeText = "Content Node";
+        $scope.currentNodeAction.parent = $scope.treeNode;
+        $scope.nodeModaltitle = "Edit " + $scope.currentNodeAction.typeText;
+        $rootScope.$broadcast('onAfterSetMode', $scope.course, $scope.treeNode);
+    };
+
+    $scope.setCapabilities = function () {
+        $scope.isEnrolled = courseService.isEnrolled();
+        $scope.isManager = courseService.isManager(authService.user);
+        $scope.isAdmin = authService.isAdmin();
+        $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
+    };
+
+
+    $scope.$on('onAfterEditContentNode', function (event, oldTreeNode) {
+        window.location.reload();
+    });
+
+    /**
+     * ping server on our latest page read
+     */
+    $scope.$on('onPdfPageChange', function (event, params) {
+        $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+    });
+
+    $scope.$on('$routeUpdate', function () {
+        var q = $location.search();
+
+        if (q.tab) {
+            if ($scope.currentTab && $scope.currentTab != q.tab) {
+                $scope.changeTab();
+            }
+        }
+        else
+            $scope.changeTab();
+    });
+
+    /**
+     * initiate course when user hast tried to log in
+     */
+    $scope.$watch(function () {
+        return authService.isLoggedIn;
+    }, function () {
+        if (authService.hasTriedToLogin && !$scope.course) {
+            $scope.initNode();
+        }
+    });
 });
 ;app.controller('ProfileController', function(  Page) {
     Page.setTitleWithPrefix('My Account');
@@ -3171,31 +3250,31 @@ app.directive('timepicker', function($timeout) {
         return {
             course: null,
 
-            init: function(courseId, success, error, force){
+            init: function (courseId, success, error, force) {
                 var self = this;
 
-                if(!force && self.course){
-                    if(success)
+                if (!force && self.course) {
+                    if (success)
                         success(self.course);
                 }
-                else if(force || !self.course)
+                else if (force || !self.course)
                     $http.get('/api/course/' + courseId)
-                        .success(function(res){
-                            if(res.result) {
+                        .success(function (res) {
+                            if (res.result) {
                                 self.course = res.course;
 
-                                if(success)
+                                if (success)
                                     success(res.course);
                             }
                         })
-                        .error(function(res){
-                            if(error)
+                        .error(function (res) {
+                            if (error)
                                 error(res);
                         });
             },
 
-            isEnrolled: function(){
-                if(!this.isInitialized()) return false;
+            isEnrolled: function () {
+                if (!this.isInitialized()) return false;
 
                 return this.course.isEnrolled;
             },
@@ -3203,11 +3282,11 @@ app.directive('timepicker', function($timeout) {
             isOwner: function (user) {
                 var self = this;
 
-                if(!user){
+                if (!user) {
                     return false;
                 }
 
-                if(!self.isInitialized()) return false;
+                if (!self.isInitialized()) return false;
 
                 return (user._id == self.course.createdBy._id);
             },
@@ -3215,75 +3294,75 @@ app.directive('timepicker', function($timeout) {
             isManager: function (user) {
                 var self = this;
 
-                if(!user){
+                if (!user) {
                     return false;
                 }
 
-                if(!self.isInitialized()) return false;
+                if (!self.isInitialized()) return false;
 
                 var mgr = _.find(self.course.managers, {_id: user._id});
 
-                if(mgr){
+                if (mgr) {
                     return true;
                 }
 
                 return false;
             },
 
-            leave: function(user, success, error){
+            leave: function (user, success, error) {
                 var self = this;
 
-                if(!user){
+                if (!user) {
                     return false;
                 }
 
-                if(!self.isInitialized()) return false;
+                if (!self.isInitialized()) return false;
 
                 var url = '/api/course/' + self.course._id + '/leave';
 
                 $http.put(url, {})
-                    .success(function(res){
-                        if(res.result){
+                    .success(function (res) {
+                        if (res.result) {
                             // success leaving
                             self.course.isEnrolled = false;
                         }
 
-                        if(success)
+                        if (success)
                             success(self.course.isEnrolled);
                     })
-                    .error(function(res){
-                        if(error)
+                    .error(function (res) {
+                        if (error)
                             error(res);
                     });
             },
 
-            enroll: function(user, success, error){
+            enroll: function (user, success, error) {
                 var self = this;
 
-                if(!user){
+                if (!user) {
                     return false;
                 }
 
-                if(!self.isInitialized()) return false;
+                if (!self.isInitialized()) return false;
 
                 var url = '/api/course/' + self.course._id + '/enroll';
 
                 $http.put(url, {})
-                    .success(function(res){
-                        if(res.result)
+                    .success(function (res) {
+                        if (res.result)
                             self.course.isEnrolled = true;
 
-                        if(success)
+                        if (success)
                             success(self.course.isEnrolled);
                     })
-                    .error(function(res){
-                        if(error)
+                    .error(function (res) {
+                        if (error)
                             error(res);
                     });
             },
 
-            isInitialized: function(){
-                if(!this.course){
+            isInitialized: function () {
+                if (!this.course) {
                     return false;
                 }
 
@@ -3433,7 +3512,81 @@ app.factory('socket', function($rootScope) {
         }
     };
 });
-;app.factory('widgetService', [
+;app.factory('treeNodeService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            treeNode: null,
+            pdfFile: null,
+            videoFile: null,
+
+            init: function (nodeId, success, error, force) {
+                var self = this;
+
+                if (!force && self.treeNode) {
+                    if (success)
+                        success(self.treeNode);
+                }
+                else if (force || !self.treeNode) {
+                    $http.get('/api/treeNode/' + nodeId)
+                        .success(function (res) {
+                            if (res.result) {
+                                self.treeNode = res.treeNode;
+                                self.parseResources();
+
+                                if (success)
+                                    success(res.treeNode);
+                            }
+                        })
+                        .error(function (res) {
+                            if (error)
+                                error(res);
+                        });
+                }
+            },
+
+            parseResources: function () {
+                var self = this;
+                for (var i = 0; i < self.treeNode.resources.length; i++) {
+                    var content = self.treeNode.resources[i];
+                    if (content['type'] == 'mp4'
+                        || content['type'] == 'video'
+                        || content['type'] == 'videoLink'
+                    ) {
+                        self.videoFile = content;
+                        self.treeNode.videoFile = content;
+                    } else if (content['type'] == 'pdf'
+                        || content['type'] == 'pdfLink'
+                    ) {
+                        self.pdfFile = content;
+                        self.treeNode.pdfFile = content;
+                    }
+                }
+            },
+
+            isOwner: function (user) {
+                var self = this;
+
+                if (!user) {
+                    return false;
+                }
+
+                if (!self.isInitialized()) return false;
+
+                return (user._id == self.treeNode.createdBy._id);
+            },
+
+            isInitialized: function () {
+                if (!this.treeNode) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+    }
+]);;app.factory('widgetService', [
     '$http', '$rootScope', '$ocLazyLoad', '$timeout',
 
     function (  $http, $rootScope, $ocLazyLoad, $timeout) {

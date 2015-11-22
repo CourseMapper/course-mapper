@@ -13,6 +13,66 @@ var multipartyMiddleware = multiparty();
 var router = express.Router();
 
 /**
+ * get all tree nodes based on course id
+ */
+router.get('/treeNodes/course/:courseId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var courseId = mongoose.Types.ObjectId(req.params.courseId);
+    var userId = mongoose.Types.ObjectId(req.user._id);
+
+    userHelper.isEnrolledAsync({userId: userId, courseId: courseId})
+        .then(function (isAllowd) {
+            if (!isAllowd)
+                return helper.resReturn(helper.createError401(), res);
+
+            var tr = new Tree();
+
+            tr.getTreeNodes(
+                function (err) {
+                    helper.resReturn(err, res);
+                },
+                {
+                    courseId: courseId
+                },
+                function (treeNodes) {
+                    res.status(200).json({result: true, treeNodes: treeNodes});
+                }
+            );
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
+});
+
+/**
+ * get all tree nodes underneath a node id
+ */
+router.get('/treeNode/:nodeId', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var tr = new Tree();
+
+    tr.getTreeNode(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+        {
+            _id: mongoose.Types.ObjectId(req.params.nodeId)
+        },
+        function (treeNode) {
+            res.status(200).json({result: true, treeNode: treeNode});
+        }
+    );
+});
+
+/**
  * POST
  * create node, and allow upload
  * edit node, because multipart form data can use POST
@@ -63,67 +123,6 @@ router.post('/treeNodes', multipartyMiddleware, function (req, res, next) {
         .catch(function (err) {
             helper.resReturn(err, res);
         });
-});
-
-/**
- * get all tree nodes based on course id
- */
-router.get('/treeNodes/course/:courseId', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    var courseId = mongoose.Types.ObjectId(req.params.courseId);
-    var userId = mongoose.Types.ObjectId(req.user._id);
-
-    userHelper.isEnrolledAsync({userId: userId, courseId: courseId})
-        .then(function (isAllowd) {
-            if (!isAllowd)
-                return helper.resReturn(helper.createError401(), res);
-
-            var tr = new Tree();
-
-            tr.getTreeNodes(
-                function (err) {
-                    helper.resReturn(err, res);
-                },
-                {
-                    courseId: courseId
-                },
-                function (treeNodes) {
-                    res.status(200).json({result: true, treeNodes: treeNodes});
-                }
-            );
-        })
-        .catch(function (err) {
-            helper.resReturn(err, res);
-        });
-});
-
-
-/**
- * get all tree nodes underneath a node id
- */
-router.get('/treeNode/:nodeId', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    var tr = new Tree();
-
-    tr.getTreeNode(
-        function (err) {
-            helper.resReturn(err, res);
-        },
-        {
-            _id: mongoose.Types.ObjectId(req.params.nodeId)
-        },
-        function (treeNode) {
-            res.status(200).json({result: true, treeNode: treeNode});
-        }
-    );
 });
 
 /**
@@ -240,6 +239,5 @@ router.delete('/treeNodes/:nodeId', function (req, res, next) {
             helper.resReturn(err, res);
         });
 });
-
-
+ 
 module.exports = router;

@@ -1,7 +1,8 @@
 var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
-var Course = require(appRoot + '/modules/catalogs/course.controller.js');
+var CourseController = require(appRoot + '/modules/catalogs/course.controller.js');
+var Courses = require(appRoot + '/modules/catalogs/courses.js');
 var TabsController = require(appRoot + '/modules/tabs/tabs.controller.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:route');
@@ -26,28 +27,26 @@ router.get('/courses', function (req, res, next) {
     });
 });
 
-/**
- * partial for nodeDetail, (accessed by course detail page)
- */
-router.get('/course/nodeDetail', function (req, res, next) {
-    res.render(theme + '/catalogs/nodeDetail');
-});
 
 router.get('/course/courseDetail/:courseId', function (req, res, next) {
     var TC = new TabsController();
-    var crs = new Course();
+    var crs = new CourseController();
     var cid = mongoose.Types.ObjectId(req.params.courseId);
 
     var op = async(function () {
-        var ta = await(TC.getActiveTabs(cid, 'course')());
+        var tabs = await(TC.getActiveTabs(cid, 'course')());
         var cr = await(crs.getCourseAsync({_id: cid})());
 
-        return _.extend(ta, {course: cr});
+        return {tabs: tabs, course: cr, tabsActive: cr.tabsActive};
     });
 
     op()
         .then(function (ret) {
             var activeTabs = [];
+
+            if (!ret.tabsActive)
+                ret.tabsActive = {};
+
             for (var i = 0; i < ret.tabs.length; i++) {
                 var isActive = ret.tabs[i].isActive;
                 if (!isActive) {
@@ -128,7 +127,7 @@ router.get('/course/:slug', function (req, res, next) {
         slug: req.params.slug
     };
 
-    var c = new Course();
+    var c = new CourseController();
     c.getCourse(
         function (err) {
             helper.resReturn(err, res);
@@ -142,15 +141,18 @@ router.get('/course/:slug', function (req, res, next) {
 
             else {
                 var TC = new TabsController();
-      
+
                 var op = async(function () {
-                    var ta = await(TC.getActiveTabs(cours._id, 'course')());
-                    return ta;
+                    var tabs = await(TC.getActiveTabs(cours._id, 'course')());
+                    return {tabs: tabs, tabsActive: cours.tabsActive};
                 });
 
                 op()
                     .then(function (ret) {
                         var activeTabs = [];
+                        if (!ret.tabsActive)
+                            ret.tabsActive = {};
+
                         for (var i = 0; i < ret.tabs.length; i++) {
                             var isActive = ret.tabs[i].isActive;
                             if (!isActive) {

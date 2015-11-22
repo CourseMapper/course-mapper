@@ -16,8 +16,10 @@ app.config(['$routeProvider', '$locationProvider',
         }).
 
         when('/cid/:courseId/nid/:nodeId', {
-            templateUrl: '/course/nodeDetail',
-            controller: 'NodeDetailController',
+            templateUrl: function (params) {
+                return '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
+            },
+            controller: 'NodeRootController',
             reloadOnSearch: false
         }).
 
