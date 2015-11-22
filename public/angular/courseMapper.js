@@ -3221,7 +3221,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
     $scope.tagNameErrors = {};
     //$rootScope.pdfId = "";
 
-    $scope.tagNamesList = "";
+    $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
     $scope.editZoneMode = -1;
     $scope.editZoneValues = [];
@@ -3484,9 +3484,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
 
     $scope.$watch("tagNamesList", function (newValue, oldValue) {
       if(newValue != oldValue) {
-        //console.log("IAM ANGRY");
-        //console.log(newValue);
-        //console.log(oldValue);
         if(typeof $scope.annZones != "undefined") {
           for(var key in newValue) {
             //console.log(newValue[key]);
