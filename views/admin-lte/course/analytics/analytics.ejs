@@ -1,6 +1,7 @@
 <!-- analytics-->
 <div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-11"
-     ng-controller="widgetCourseAnalyticsController" >
+     ng-controller="widgetCourseAnalyticsController">
+    
     <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
         There is no registered widget here.
         <span ng-show="isOwner" class="empty-widget">
@@ -10,7 +11,7 @@
     <div class="grid-stack-item"
          data-gs-locked="yes"
          data-gs-no-resize="yes"
-         ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}" >
+         ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}">
         <div class="grid-stack-item-content">
 
             <div class="box no-shadow">
@@ -20,7 +21,7 @@
                         <button class="btn btn-box-tool" data-widget="remove"
                                 data-toggle="tooltip" title="Remove"
                                 ng-click="closeWidget(wdg._id);"
-                                >
+                        >
                             <i class="fa fa-times"></i></button>
                     </div>
                 </div>
