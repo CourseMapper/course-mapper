@@ -1,12 +1,11 @@
 app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
-    /*//Keep commented out unless needed
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
     //$rootScope.pdfId = "";
-    */
+
+    $scope.tagNamesList = "";
 
     $scope.editZoneMode = -1;
     $scope.editZoneValues = [];
@@ -185,6 +184,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
       var inputId = element.attr("id");
+
       //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
       //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
       //console.log(inputId);
@@ -287,6 +287,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     },true);
 
     $rootScope.checkTagName = function (tagName) {
+      console.log("Chekcing name: "+tagName);
       if(!(/^[a-zA-Z0-9]*$/.test(tagName))) {
         return "Annotation zone contains illegal characters (only alphanumeric allowed)";
       }

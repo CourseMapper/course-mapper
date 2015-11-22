@@ -668,6 +668,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
+        $rootScope.switchShowAnnoZones = "On"
         createMovableAnnZone();
     };
 
