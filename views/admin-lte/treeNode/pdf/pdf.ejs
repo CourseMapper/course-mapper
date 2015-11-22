@@ -148,6 +148,7 @@
                                          show-commenting-area="true"
                                          comments="replies[comment._id]"
                                          post-comment= "submitReply(comment._id)"
+                                         recent-submit-on-annotation = "(recentSubmitOnAnnotation == comment._id)"
                                          comment-text= "replyRawText[comment._id]"
                                          remove-function = "deleteCommentById(id)"
                                         ></pdf-comment>

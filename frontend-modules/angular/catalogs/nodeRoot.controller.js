@@ -140,6 +140,15 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
     $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
 
+
+    });
+
+    /**
+     * ping server on some actions
+     */
+    var pdfPageChangeListener = $scope.$on('onPdfPageChange', function(event, params){
+        $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+
         /*var q = $location.search();
          if (!q.tab) {
          if ($scope.currentTab == 'pdf' && params[0] > 1) {
@@ -150,6 +159,23 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
         if (params[0] && params[0] != 1)
             $scope.currentPdfPage = params[0];
     });
+
+    $scope.$on('onVideoUpdateState', function(e, data){
+        $http.put('/api/treeNodes/watch/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.videoFile._id,
+            {
+                state:data.state,
+                totalTime:data.API.totalTime,
+                currentTime:data.API.currentTime,
+                timeLeft:data.API.timeLeft,
+                volume:data.API.volume
+            }
+            )
+            .error(function(data){
+                console.log('ping server error');
+            });
+    });
+
+    $scope.$on('$destroy', pdfPageChangeListener);
 
     $scope.$on('$routeUpdate', function () {
         var q = $location.search();

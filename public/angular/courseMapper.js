@@ -1348,7 +1348,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
     };
 });
-;;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
+;
+;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
     $scope.formData = {};
     $scope.filespdf = [];
@@ -1759,6 +1760,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
 
+
+    });
+
+    /**
+     * ping server on some actions
+     */
+    var pdfPageChangeListener = $scope.$on('onPdfPageChange', function(event, params){
+        $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+
         /*var q = $location.search();
          if (!q.tab) {
          if ($scope.currentTab == 'pdf' && params[0] > 1) {
@@ -1769,6 +1779,23 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if (params[0] && params[0] != 1)
             $scope.currentPdfPage = params[0];
     });
+
+    $scope.$on('onVideoUpdateState', function(e, data){
+        $http.put('/api/treeNodes/watch/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.videoFile._id,
+            {
+                state:data.state,
+                totalTime:data.API.totalTime,
+                currentTime:data.API.currentTime,
+                timeLeft:data.API.timeLeft,
+                volume:data.API.volume
+            }
+            )
+            .error(function(data){
+                console.log('ping server error');
+            });
+    });
+
+    $scope.$on('$destroy', pdfPageChangeListener);
 
     $scope.$on('$routeUpdate', function () {
         var q = $location.search();
@@ -2035,6 +2062,7 @@ app.directive('movable', function() {
                 showCommentingArea: '=',
                 comments: '=',
                 postComment: '&',
+                recentSubmitOnAnnotation: '=',
                 commentText: '=',
                 removeFunction: '&'
             },
@@ -2064,8 +2092,14 @@ app.directive('movable', function() {
                 $scope.showEditButton = hasPermission;
                 $scope.showDeleteButton = hasPermission;
 
+                $scope.toggle = $scope.recentSubmitOnAnnotation;
 
-                //console.log($scope.removeComment);
+                $scope.postedDate = new Date($scope.postedDate);
+
+                //console.log($scope.postedDate | $scope.relativeDate);
+
+                //console.log($scope.postId);
+                //console.log($scope.toggle);
             }
         };
     });
@@ -2142,7 +2176,6 @@ app.directive('movable', function() {
                                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
 
                                 scope.pdfPageView.update(scope.scale, 0);
-                                //console.log("PDF LOADED");
 
                                 scope.pdfIsLoaded = true;
 
@@ -2161,26 +2194,70 @@ app.directive('movable', function() {
 
             }, /*end link*/
 
-            controller: function ($scope, $compile, $http, $attrs, $location, $routeParams) {
+            controller: function ($scope, $rootScope, $compile, $http, $attrs, $location, $routeParams) {
                 $scope.currentPageNumber = 1;
                 $scope.pdfIsLoaded = false;
                 $scope.totalPage = 0;
                 $scope.currentTab = "";
+                $scope.currentNavPageNumber = $scope.currentPageNumber;
+                $rootScope.switchShowAnnoZones = "On";
 
+
+                $scope.$watch("currentPageNumber", function (newVal, oldVal){
+                  if(newVal!=oldVal){
+                    $scope.currentNavPageNumber= newVal;
+
+                    $timeout(function () {
+                        $scope.$apply();
+                    });
+                  }
+
+
+                });
+
+                $scope.$watch("currentNavPageNumber", function (newVal, oldVal){
+                  if(newVal!=oldVal){
+                      if(newVal.length==0){
+                        return;
+                      }else if(isNaN(newVal)){
+                          $scope.currentNavPageNumber=oldVal;
+
+                      }else if(!(parseInt(newVal)>=1 && parseInt(newVal)<= $scope.totalPage)){
+                          $scope.currentNavPageNumber=oldVal;
+
+                      }
+
+                  }
+
+                });
+
+                $("#inpFieldCurrPage").bind("keydown keypress", function (event) {
+                  if(event.which === 13) {
+                      $timeout(function () {
+                          $scope.setPageNumber(parseInt($scope.currentNavPageNumber));
+                          $scope.$apply();
+                      });
+
+                      event.preventDefault();
+                  }
+
+                });
 
                 $scope.changePageNumber = function (value) {
-                    //console.log("GOT CALLED");
-                    if (($scope.currentPageNumber + value) <= $scope.totalPage && ($scope.currentPageNumber + value) >= 1)
-                        $scope.currentPageNumber = $scope.currentPageNumber + value;
+                    $scope.setPageNumber($scope.currentPageNumber + value);
+                };
+
+                $scope.setPageNumber = function (value) {
+                  if ((value) <= $scope.totalPage && (value) >= 1){
+                    $scope.currentPageNumber = value;
 
                     $scope.setHistoryStack( $scope.currentPageNumber );
 
                     $timeout(function () {
-                        $scope.$apply();
-
                         $scope.changeSlide($scope.currentPageNumber);
+                        $scope.$apply();
                     });
-
+                  }
                 };
 
                 $scope.changeSlide = function (newSlideNumber) {
@@ -2196,8 +2273,9 @@ app.directive('movable', function() {
                             $scope.pdfPageView.setPdfPage(pdfPage);
                             $scope.pdfPageView.draw().catch(function(){});
 
-                            //console.log("PDF LOADED");
+                            //console.log("Slide Changed");
                             $scope.pdfIsLoaded = true;
+
 
                             $rootScope.$broadcast('onPdfPageChange', [newSlideNumber, $scope.totalPage]);
 
@@ -2226,6 +2304,16 @@ app.directive('movable', function() {
                     }
                 };
 
+                $scope.switchShowAnnotationZone =function(){
+                  if($rootScope.switchShowAnnoZones=="On"){
+                    $rootScope.switchShowAnnoZones="Off";
+                  }else{
+                    $rootScope.switchShowAnnoZones="On";
+                  }
+
+                };
+
+
                 function adjustPdfScale () {
                   //console.log($scope.pdfPageView);
                   if(typeof $scope.pdfPageView != 'undefined'){
@@ -2235,9 +2323,8 @@ app.directive('movable', function() {
                     $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
-                    //console.log("pdfviewerEv");
-                    $rootScope.$broadcast('reloadTags');
-                    //console.log($scope.scale);
+
+
                   }
                 };
 
@@ -2263,14 +2350,14 @@ app.directive('movable', function() {
                   $scope.currentTab = tab;
                   if(tab == "pdf") {
                     adjustPdfScale();
-                    //$rootScope.$broadcast('reloadTags');
-
                   }
                 });
 
                 $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
                 });
+
+
 
                 // onload
                 $scope.$watch('totalPage', function(newVal, oldVal){
@@ -4077,18 +4164,20 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNamesList = "";
     $scope.tagNameErrors = {};
+    //$rootScope.pdfId = "";
+
+    $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
     $scope.editZoneMode = -1;
     $scope.editZoneValues = [];
 
+
+
+
+
+
     //$scope.annZoneMov = [];
-
-
-    $rootScope.pdfId = "";
-
-
     /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
       console.log($scope.storedAnnZones);
     });*/
@@ -4163,6 +4252,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     };
 
     $rootScope.resetEditZoneMode = function() {
+      $rootScope.$broadcast('reloadTags');
+
+      $scope.writeCommentMode = false;
+      $scope.replyRawText = [];
+      $scope.replyMode = -1;
       $scope.editZoneMode = -1;
 
       var ele = $('select[name="colorpicker-change-background-color2"]');
@@ -4206,11 +4300,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
               }
 
               //console.log("updateAnnZoneEv");
-              $rootScope.$broadcast('reloadTags');
 
-              $scope.writeCommentMode = false;
-              $scope.replyRawText = [];
-              $scope.replyMode = -1;
               $rootScope.resetEditZoneMode();
 
           })
@@ -4256,6 +4346,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
       //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
       var inputId = element.attr("id");
+
       //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
       //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
       //console.log(inputId);
@@ -4285,6 +4376,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
       //$http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
+        //console.log("Loading AnnZones");
+        //console.log("PDF_ID: "+ $scope.pdfId);
+        //console.log("PageNumber: " + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
@@ -4305,13 +4399,15 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
 
-    $rootScope.$on('onPdfPageChange', function(e, params){
-      //console.log("PdfPageChange");
-      //console.log("pdfPageChangeEv");
-      $rootScope.$emit('reloadTags');
+    var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
+      //console.log("PdfPageChange: ");
+      $scope.$emit('reloadTags');
     });
 
-    $rootScope.$on('reloadTags', function(event) {
+    $scope.$on('$destroy',pdfPageChangeListener);
+
+
+    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       //console.log("Reload Tags called");
       $(".slideRect").remove();
 
@@ -4321,27 +4417,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       $scope.refreshTags();
     });
 
-    /*$scope.$on('reloadTags', function(event) {
-      console.log("Scope");
-      $(".slideRect").remove();
+    $scope.$on('$destroy',reloadTagsEventListener);
 
-      annotationZonesAreLoaded = false;
 
-      toDrawAnnotationZoneData = [];
-      $scope.refreshTags();
-    });*/
 
-    /*
-    use onPdfPageChange event instead
-    $scope.$watch("currentPageNumber",function(newValue,oldValue){
-      //console.log("LOADED RESET");
-      $(".slideRect").remove();
-
-      annotationZonesAreLoaded = false;
-
-      toDrawAnnotationZoneData = [];
-      $scope.refreshTags();
-    });*/
 
     $scope.compileMovableAnnotationZone = function(element) {
       return angular.element(
@@ -4351,9 +4430,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.$watch("tagNamesList", function (newValue, oldValue) {
       if(newValue != oldValue) {
-        //console.log("IAM ANGRY");
-        //console.log(newValue);
-        //console.log(oldValue);
         if(typeof $scope.annZones != "undefined") {
           for(var key in newValue) {
             //console.log(newValue[key]);
@@ -4460,6 +4536,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
+    $scope.recentSubmitOnAnnotation = "";
+
     $scope.comment = {};
 
     $scope.editRawText = [];
@@ -4498,10 +4576,12 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
 
-    $rootScope.$on('onPdfPageChange', function (e, params) {
+    var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function (e, params) {
         $scope.currentPageNumber = params[0];
         $scope.getComment($scope.orderType.id);
     });
+
+    $rootScope.$on('$destroy',pdfPageChangeListener);
 
     $scope.orderingOptions = [
         {id: 'dateOfCreation.descending', name: 'Newest First'},
@@ -4642,6 +4722,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                 //TODO: reset everything
               }
               //console.log("commReplyEv");
+
+              $scope.recentSubmitOnAnnotation = id;
+
+              //console.log("Recent: "+ $scope.recentSubmitOnAnnotation);
+
               $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
@@ -5126,6 +5211,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
+        $rootScope.switchShowAnnoZones = "On"
         createMovableAnnZone();
     };
 
