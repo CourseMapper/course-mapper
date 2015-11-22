@@ -138,6 +138,13 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
      */
     $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
+
+        /*var q = $location.search();
+        if (!q.tab) {
+            if ($scope.currentTab == 'pdf' && params[0] > 1) {
+                $location.search({'tab': 'pdf'});
+            }
+        }*/
     });
 
     $scope.$on('$routeUpdate', function () {

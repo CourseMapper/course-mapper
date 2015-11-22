@@ -275,7 +275,6 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     };
 
     $scope.tabOpened = function () {
-        $scope.actionBarTemplate = 'actionBar-course-discussion';
 
         if (courseService.course) {
             $scope.course = courseService.course;

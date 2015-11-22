@@ -76,8 +76,6 @@ app.controller('NodeDetailController', function ($scope, $rootScope, $filter, $h
             $scope.currentTab = q.tab;
         }
 
-        $scope.actionBarTemplate = 'actionBar-node-' + $scope.currentTab;
-
         $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
 
         $scope.manageActionBar();

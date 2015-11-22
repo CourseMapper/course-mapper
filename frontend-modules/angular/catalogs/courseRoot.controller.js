@@ -26,7 +26,6 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         }
 
         $scope.currentTab = q.tab;
-        $scope.actionBarTemplate = 'actionBar-course-' + $scope.currentTab;
 
         $timeout(function () {
             if (!authService.isLoggedIn) {

@@ -88,7 +88,6 @@ app.controller('MapController', function ($scope, $http, $rootScope,
     };
 
     $scope.tabOpened = function () {
-        $scope.actionBarTemplate = 'actionBar-course-map';
 
         if (courseService.course) {
             $scope.course = courseService.course;
