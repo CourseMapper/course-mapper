@@ -210,7 +210,8 @@ app.directive('pdfViewer',
 
                 $scope.$on('$routeUpdate', function(next, current){
                     if(!$location.search().slidePage) {
-                        $scope.setHistoryStack($scope.currentPageNumber);
+                        if(current.params.tab && current.params.tab == 'pdf')
+                            $scope.setHistoryStack($scope.currentPageNumber);
                     } else {
                         var sp = parseInt($location.search().slidePage);
                         if(sp > 0 && sp != $scope.currentPageNumber && sp <= $scope.totalPage){
