@@ -3500,7 +3500,6 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
     },true);
 
     $rootScope.checkTagName = function (tagName) {
-      console.log("Chekcing name: "+tagName);
       if(!(/^[a-zA-Z0-9]*$/.test(tagName))) {
         return "Annotation zone contains illegal characters (only alphanumeric allowed)";
       }

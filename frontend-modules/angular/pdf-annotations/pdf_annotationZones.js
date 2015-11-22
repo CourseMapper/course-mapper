@@ -284,7 +284,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     },true);
 
     $rootScope.checkTagName = function (tagName) {
-      console.log("Chekcing name: "+tagName);
       if(!(/^[a-zA-Z0-9]*$/.test(tagName))) {
         return "Annotation zone contains illegal characters (only alphanumeric allowed)";
       }
