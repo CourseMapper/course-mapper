@@ -9,8 +9,8 @@ app.controller('NodeConfigController', function ($scope, $http, toastr, $window)
         disableTop: false
     };
 
-    $scope.$on('onAfterInitCourse', function (event, course) {
-        $scope.init(course);
+    $scope.$on('onAfterInitTreeNode', function (event, treeNode) {
+        $scope.init(treeNode);
     });
 
     $scope.init = function (treeNode) {

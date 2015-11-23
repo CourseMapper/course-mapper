@@ -8,7 +8,8 @@ app.directive('pdfViewer',
             scope: {
                 source: '@',
                 currentPageNumber: '=',
-                showControl: '='
+                showControl: '=',
+                pdfId: '@'
             },
 
             templateUrl: '/angular/views/pdf-viewer.html',
@@ -32,6 +33,10 @@ app.directive('pdfViewer',
                         progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
                     }
                 };
+
+                attrs.$observe('pdfId', function(pdfId){
+                    $rootScope.pdfId = pdfId;
+                });
 
                 attrs.$observe('source', function (pdfFilePath) {
                     //console.log(pdfFilePath);
@@ -97,7 +102,6 @@ app.directive('pdfViewer',
                 $scope.currentNavPageNumber = $scope.currentPageNumber;
                 $rootScope.switchShowAnnoZones = "On";
 
-
                 $scope.$watch("currentPageNumber", function (newVal, oldVal){
                   if(newVal!=oldVal){
                     $scope.currentNavPageNumber= newVal;
@@ -106,8 +110,6 @@ app.directive('pdfViewer',
                         $scope.$apply();
                     });
                   }
-
-
                 });
 
                 $scope.$watch("currentNavPageNumber", function (newVal, oldVal){
@@ -119,11 +121,8 @@ app.directive('pdfViewer',
 
                       }else if(!(parseInt(newVal)>=1 && parseInt(newVal)<= $scope.totalPage)){
                           $scope.currentNavPageNumber=oldVal;
-
                       }
-
                   }
-
                 });
 
                 $("#inpFieldCurrPage").bind("keydown keypress", function (event) {

@@ -1288,8 +1288,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         disableTop: false
     };
 
-    $scope.$on('onAfterInitCourse', function (event, course) {
-        $scope.init(course);
+    $scope.$on('onAfterInitTreeNode', function (event, treeNode) {
+        $scope.init(treeNode);
     });
 
     $scope.init = function (treeNode) {
@@ -2109,7 +2109,8 @@ app.directive('movable', function() {
             scope: {
                 source: '@',
                 currentPageNumber: '=',
-                showControl: '='
+                showControl: '=',
+                pdfId: '@'
             },
 
             templateUrl: '/angular/views/pdf-viewer.html',
@@ -2133,6 +2134,10 @@ app.directive('movable', function() {
                         progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
                     }
                 };
+
+                attrs.$observe('pdfId', function(pdfId){
+                    $rootScope.pdfId = pdfId;
+                });
 
                 attrs.$observe('source', function (pdfFilePath) {
                     //console.log(pdfFilePath);
@@ -2198,7 +2203,6 @@ app.directive('movable', function() {
                 $scope.currentNavPageNumber = $scope.currentPageNumber;
                 $rootScope.switchShowAnnoZones = "On";
 
-
                 $scope.$watch("currentPageNumber", function (newVal, oldVal){
                   if(newVal!=oldVal){
                     $scope.currentNavPageNumber= newVal;
@@ -2207,8 +2211,6 @@ app.directive('movable', function() {
                         $scope.$apply();
                     });
                   }
-
-
                 });
 
                 $scope.$watch("currentNavPageNumber", function (newVal, oldVal){
@@ -2220,11 +2222,8 @@ app.directive('movable', function() {
 
                       }else if(!(parseInt(newVal)>=1 && parseInt(newVal)<= $scope.totalPage)){
                           $scope.currentNavPageNumber=oldVal;
-
                       }
-
                   }
-
                 });
 
                 $("#inpFieldCurrPage").bind("keydown keypress", function (event) {
