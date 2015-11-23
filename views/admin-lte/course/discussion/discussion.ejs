@@ -39,6 +39,15 @@
 
                     </li>
                 </ul>
+
+                <pagination total-rows="topics.length"
+                            limit="10"
+                            use-search="true"
+                            sort-by="_id"
+                            order-by="desc"
+                            object-service="discussionService"
+                            last-id="topics[topics.length - 1]._id">
+                </pagination>
             </div>
 
         </div>

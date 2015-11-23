@@ -15,9 +15,12 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     $scope.pid = false;
     $scope.isLoading = false;
     $scope.errors = [];
-
     $scope.topics = [];
     $scope.replies = [];
+
+    /*$scope.discussionService = function () {
+        return discussionService
+    };*/
 
     $scope.initiateTopic = function () {
         $scope.pid = $location.search().pid;

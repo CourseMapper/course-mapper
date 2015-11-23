@@ -17,6 +17,21 @@ router.get('/discussions/:courseId', function (req, res, next) {
     if (!req.user)
         return res.status(401).send('Unauthorized');
 
+    var limit = 10;
+    if (req.query['limit']) {
+        var limitTemp = parseInt(req.query['limit']);
+        if (limitTemp != NaN)
+            limit = limitTemp;
+    }
+
+    var sortBy = 'dateAdded';
+    if (req.query['sortBy'])
+        sortBy = req.query['sortBy'];
+
+    var lastId = false;
+    if (req.query['lastId'])
+        lastId = req.query['lastId'];
+
     userHelper.isEnrolledAsync({
             userId: mongoose.Types.ObjectId(req.user._id),
             courseId: mongoose.Types.ObjectId(req.params.courseId)
@@ -37,6 +52,11 @@ router.get('/discussions/:courseId', function (req, res, next) {
                 // parameters
                 mongoose.Types.ObjectId(req.params.courseId)
                 ,
+                {
+                    lastId: lastId,
+                    limit: limit,
+                    sortBy: sortBy
+                },
                 function (posts) {
                     res.status(200).json({
                         result: true, posts: posts

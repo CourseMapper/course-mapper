@@ -30,12 +30,22 @@ function convertToDictionary(documents) {
  * @param params
  * @param success
  */
-courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, success) {
-    Discussion.find({
-            course: courseId,
-            isDeleted: false
-        })
+courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, pageParams, success) {
+    var whereParams = {
+        course: courseId,
+        isDeleted: false
+    };
+
+    if (pageParams.lastId && pageParams.lastId != 'false') {
+        if (pageParams.orderBy == 'desc')
+            whereParams[pageParams.sortBy] = {$gt: pageParams.lastId};
+        else
+            whereParams[pageParams.sortBy] = {$lt: pageParams.lastId};
+    }
+
+    Discussion.find(whereParams)
         .sort({dateAdded: -1})
+        .limit(pageParams.limit)
         .populate('discussion')
         .populate('createdBy', 'username displayName image')
         .exec(function (err, docs) {
@@ -47,7 +57,7 @@ courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, suc
         });
 };
 
-courseDiscussion.prototype.getCourseDiscussion = function (error, pId, success) {
+courseDiscussion.prototype.getDiscussion = function (error, pId, success) {
     Discussion.findOne({
             _id: pId
         })
@@ -223,7 +233,7 @@ courseDiscussion.prototype.addPost = function (error, params, success) {
                 if (!err) {
                     cd.discussion = newPost;
 
-                    self.getCourseDiscussion(error, cd._id, function (b) {
+                    self.getDiscussion(error, cd._id, function (b) {
                         success(b);
                     });
                 } else error(err);
