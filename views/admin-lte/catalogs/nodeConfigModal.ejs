@@ -27,6 +27,10 @@
                                             continue;
                                         }
 
+                                        if (tabs[i].name == 'pdf' || tabs[i].name == 'video') {
+                                            continue;
+                                        }
+
                                         if (tabsActive && typeof(tabsActive[tabs[i].name]) != "undefined") {
                                             isActive = tabsActive[tabs[i].name];
                                         }

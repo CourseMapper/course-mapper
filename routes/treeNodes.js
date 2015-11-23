@@ -33,15 +33,13 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
     var TC = new TabsController();
     var crs = new CourseController();
     var nod = new NodeController();
-    var cid = mongoose.Types.ObjectId(req.params.cid);
     var nid = mongoose.Types.ObjectId(req.params.nid);
 
     var op = async(function () {
-        var ta = await(TC.getActiveTabs(cid, 'contentNode')());
-        var cr = await(crs.getCourseAsync({_id: cid})());
+        var ta = await(TC.getActiveTabs('contentNode')());
         var nd = await(nod.getNodeAsync({_id: nid})());
 
-        return {tabs: ta, tabsActive: nd.tabsActive, course: cr, treeNode: nd};
+        return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId, treeNode: nd};
     });
 
     op()
@@ -72,6 +70,59 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
         .catch(function (err) {
             helper.resReturn(err, res);
         });
+});
+
+/**
+ * full page for displaying course detail page
+ */
+router.get('/treeNode/:nid', function (req, res, next) {
+
+    var TC = new TabsController();
+    var nod = new NodeController();
+    var nid = mongoose.Types.ObjectId(req.params.nid);
+
+    var op = async(function () {
+        var ta = await(TC.getActiveTabs('contentNode')());
+        var nd = await(nod.getNodeAsync({_id: nid})());
+
+        return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId};
+    });
+
+    op()
+        .then(function (ret) {
+            var activeTabs = [];
+            if (!ret.tabsActive)
+                ret.tabsActive = {};
+
+            for (var i = 0; i < ret.tabs.length; i++) {
+                var tap = ret.tabs[i];
+                var isActive = tap.isActive;
+                if (!isActive) {
+                    continue;
+                }
+
+                if (typeof(ret.tabsActive[tap.name]) != "undefined") {
+                    if (!ret.tabsActive[tap.name]) {
+                        continue;
+                    }
+                }
+
+                activeTabs.push(tap);
+            }
+
+            res.render(theme + '/catalogs/course', {
+                title: ret.course.name,
+                course: ret.course,
+                user: req.user,
+                moment: moment,
+                isInNodeDetailPage: true,
+                activeTabs: activeTabs
+            });
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
+
 });
 
 module.exports = router;

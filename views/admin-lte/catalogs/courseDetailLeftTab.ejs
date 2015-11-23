@@ -4,6 +4,8 @@
             <% if(activeTabs[i].ngShow && activeTabs[i].ngShow != ''){ %>
             ng-show="<%= activeTabs[i].ngShow %>"
             <% } %>
+            class="<%= activeTabs[i].name %>"
+            data-displayName="<%= activeTabs[i].displayName %>"
     >
         <a href="#/cid/{{course._id}}?tab=<%= activeTabs[i].name %>"
            data-toggle="tab" data-target="#<%= activeTabs[i].name %>">
@@ -22,6 +24,8 @@
             <% if(activeTabs[i].ngShow && activeTabs[i].ngShow != ''){ %>
             ng-show="<%= activeTabs[i].ngShow %>"
             <% } %>
+            class="<%= activeTabs[i].name %>"
+            data-displayName="<%= activeTabs[i].displayName %>"
     >
         <a href="#/cid/{{course._id}}?tab=<%= activeTabs[i].name %>"
            data-toggle="tab" data-target="#<%= activeTabs[i].name %>"

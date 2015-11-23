@@ -1,8 +1,6 @@
 app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
     $scope.nodeEdit = null;
     $scope.errors = [];
-    $scope.managersRaw = [];
-    $scope.managersIdRaw = [];
     $scope.username = '';
     $scope.isLoading = false;
     $scope.tabsActive = {};
@@ -26,19 +24,9 @@ app.controller('NodeConfigController', function ($scope, $http, toastr, $window)
         if (!isValid)
             return;
 
-        $scope.managersIdRaw = [];
+        var url = '/api/treeNodes/' + $scope.nodeEdit._id;
 
-        var url = '/api/course/' + $scope.courseEdit._id + '/settings';
-        $scope.managersIdRaw = [];
-        if ($scope.managersRaw.length > 0) {
-            for (var i in $scope.managersRaw) {
-                $scope.managersIdRaw.push($scope.managersRaw[i]._id);
-            }
-        }
-
-        var params = {
-            managers: JSON.stringify($scope.managersIdRaw)
-        };
+        var params = {};
 
         if ($scope.tabsActive) {
             params.tabsActive = $scope.tabsActive;
@@ -54,8 +42,6 @@ app.controller('NodeConfigController', function ($scope, $http, toastr, $window)
                     toastr.success('Successfully Saved');
                 }
 
-                $scope.managersIdRaw = [];
-
                 $scope.isLoading = false;
                 $('#configView').modal('hide');
                 $scope.errors = [];
@@ -68,11 +54,7 @@ app.controller('NodeConfigController', function ($scope, $http, toastr, $window)
             });
     };
 
-    $scope.removeUsername = function ($tag) {
-        console.log('removed ' + JSON.stringify($tag));
-    };
-
     $scope.cancel = function () {
-        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+        $scope.nodeEdit = cloneSimpleObject($scope.$parent.treeNode);
     };
 });

@@ -15,6 +15,7 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
     $scope.pdfFile = false;
 
     $scope.currentTab = "";
+    $scope.tabDisplayName = "";
     $scope.currentPdfPage = 1;
     $scope.defaultPath = "";
     $scope.includeActionBar = "";
@@ -67,7 +68,13 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
 
         $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
 
+        $scope.getTabDisplayName($scope.currentTab);
+
         $scope.manageActionBar();
+    };
+
+    $scope.getTabDisplayName = function (name) {
+        $scope.tabDisplayName = $('li.' + name).attr('data-displayName');
     };
 
     $scope.initNode = function () {
@@ -146,7 +153,7 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
     /**
      * ping server on some actions
      */
-    var pdfPageChangeListener = $scope.$on('onPdfPageChange', function(event, params){
+    var pdfPageChangeListener = $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
 
         /*var q = $location.search();
@@ -160,17 +167,17 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
             $scope.currentPdfPage = params[0];
     });
 
-    $scope.$on('onVideoUpdateState', function(e, data){
+    $scope.$on('onVideoUpdateState', function (e, data) {
         $http.put('/api/treeNodes/watch/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.videoFile._id,
             {
-                state:data.state,
-                totalTime:data.API.totalTime,
-                currentTime:data.API.currentTime,
-                timeLeft:data.API.timeLeft,
-                volume:data.API.volume
+                state: data.state,
+                totalTime: data.API.totalTime,
+                currentTime: data.API.currentTime,
+                timeLeft: data.API.timeLeft,
+                volume: data.API.volume
             }
             )
-            .error(function(data){
+            .error(function (data) {
                 console.log('ping server error');
             });
     });

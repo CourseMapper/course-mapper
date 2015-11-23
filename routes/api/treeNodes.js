@@ -4,7 +4,6 @@ var appRoot = require('app-root-path');
 var Tree = require(appRoot + '/modules/trees/index.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
-
 var moment = require('moment');
 var mongoose = require('mongoose');
 var multiparty = require('connect-multiparty');

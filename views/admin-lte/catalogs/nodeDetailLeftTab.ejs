@@ -5,6 +5,7 @@
             ng-show="<%= activeTabs[i].ngShow %>"
             <% } %>
             class="<%= activeTabs[i].name %>"
+            data-displayName="<%= activeTabs[i].displayName %>"
     >
         <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
            data-toggle="tab" data-target="#<%= activeTabs[i].name %>">
@@ -24,6 +25,7 @@
             ng-show="<%= activeTabs[i].ngShow %>"
             <% } %>
             class="<%= activeTabs[i].name %>"
+            data-displayName="<%= activeTabs[i].displayName %>"
     >
         <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
            data-toggle="tab" data-target="#<%= activeTabs[i].name %>"

@@ -54,8 +54,11 @@
 <% if (typeof(activeTabs) != "undefined" && activeTabs.length > 0) {
     for (var i = 0; i < activeTabs.length; i++) {
         if (activeTabs[i].hasJsFiles) {
+                var footerFolder = 'course';
+                if(isInNodeDetailPage)
+                    footerFolder = 'treeNode';
             %>
-            <%- include('../course/' + activeTabs[i].name + '/' + activeTabs[i].name + 'Footer.ejs')%>
+            <%- include('../' + footerFolder + '/' + activeTabs[i].name + '/' + activeTabs[i].name + 'Footer.ejs')%>
             <%
         }
     }

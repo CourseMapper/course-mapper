@@ -14,6 +14,7 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
     $scope.currentTab = "preview";
+    $scope.tabDisplayName = "preview";
     $scope.include = null;
     $scope.includeActionBar = null;
 
@@ -40,7 +41,13 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         $scope.include = '/course/tab/' + $scope.currentTab;
         $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
 
+        $scope.getTabDisplayName($scope.currentTab);
+
         $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
+    };
+
+    $scope.getTabDisplayName = function (name) {
+        $scope.tabDisplayName = $('li.' + name).attr('data-displayName');
     };
 
     $scope.init = function (refreshPicture) {

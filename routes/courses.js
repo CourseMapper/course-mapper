@@ -34,7 +34,7 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
     var cid = mongoose.Types.ObjectId(req.params.courseId);
 
     var op = async(function () {
-        var tabs = await(TC.getActiveTabs(cid, 'course')());
+        var tabs = await(TC.getActiveTabs('course')());
         var cr = await(crs.getCourseAsync({_id: cid})());
 
         return {tabs: tabs, course: cr, tabsActive: cr.tabsActive};
@@ -143,7 +143,7 @@ router.get('/course/:slug', function (req, res, next) {
                 var TC = new TabsController();
 
                 var op = async(function () {
-                    var tabs = await(TC.getActiveTabs(cours._id, 'course')());
+                    var tabs = await(TC.getActiveTabs('course')());
                     return {tabs: tabs, tabsActive: cours.tabsActive};
                 });
 
@@ -173,7 +173,7 @@ router.get('/course/:slug', function (req, res, next) {
                             course: cours,
                             user: req.user,
                             moment: moment,
-                            isInNodeDetailPage: true,
+                            isInNodeDetailPage: false,
                             activeTabs: activeTabs
                         });
                     })

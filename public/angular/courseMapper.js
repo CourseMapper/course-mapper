@@ -485,6 +485,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
     $scope.currentTab = "preview";
+    $scope.tabDisplayName = "preview";
     $scope.include = null;
     $scope.includeActionBar = null;
 
@@ -511,7 +512,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.include = '/course/tab/' + $scope.currentTab;
         $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
 
+        $scope.getTabDisplayName($scope.currentTab);
+
         $rootScope.$broadcast('onCourseTabChange', $scope.currentTab);
+    };
+
+    $scope.getTabDisplayName = function (name) {
+        $scope.tabDisplayName = $('li.' + name).attr('data-displayName');
     };
 
     $scope.init = function (refreshPicture) {
@@ -1078,7 +1085,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.getContentNodeLink = function (d) {
-        return '#/cid/' + $scope.course._id + '/nid/' + d._id;
+        return '/treeNode/' + d._id + '/#/cid/' + $scope.course._id + '/nid/' + d._id;
     };
 
     $scope.deleteNode = function (data) {
@@ -1273,8 +1280,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 ;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
     $scope.nodeEdit = null;
     $scope.errors = [];
-    $scope.managersRaw = [];
-    $scope.managersIdRaw = [];
     $scope.username = '';
     $scope.isLoading = false;
     $scope.tabsActive = {};
@@ -1298,19 +1303,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         if (!isValid)
             return;
 
-        $scope.managersIdRaw = [];
+        var url = '/api/treeNodes/' + $scope.nodeEdit._id;
 
-        var url = '/api/course/' + $scope.courseEdit._id + '/settings';
-        $scope.managersIdRaw = [];
-        if ($scope.managersRaw.length > 0) {
-            for (var i in $scope.managersRaw) {
-                $scope.managersIdRaw.push($scope.managersRaw[i]._id);
-            }
-        }
-
-        var params = {
-            managers: JSON.stringify($scope.managersIdRaw)
-        };
+        var params = {};
 
         if ($scope.tabsActive) {
             params.tabsActive = $scope.tabsActive;
@@ -1326,8 +1321,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     toastr.success('Successfully Saved');
                 }
 
-                $scope.managersIdRaw = [];
-
                 $scope.isLoading = false;
                 $('#configView').modal('hide');
                 $scope.errors = [];
@@ -1340,12 +1333,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     };
 
-    $scope.removeUsername = function ($tag) {
-        console.log('removed ' + JSON.stringify($tag));
-    };
-
     $scope.cancel = function () {
-        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+        $scope.nodeEdit = cloneSimpleObject($scope.$parent.treeNode);
     };
 });
 ;
@@ -1635,6 +1624,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.pdfFile = false;
 
     $scope.currentTab = "";
+    $scope.tabDisplayName = "";
     $scope.currentPdfPage = 1;
     $scope.defaultPath = "";
     $scope.includeActionBar = "";
@@ -1687,7 +1677,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $rootScope.$broadcast('onNodeTabChange', $scope.currentTab);
 
+        $scope.getTabDisplayName($scope.currentTab);
+
         $scope.manageActionBar();
+    };
+
+    $scope.getTabDisplayName = function (name) {
+        $scope.tabDisplayName = $('li.' + name).attr('data-displayName');
     };
 
     $scope.initNode = function () {
@@ -1766,7 +1762,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * ping server on some actions
      */
-    var pdfPageChangeListener = $scope.$on('onPdfPageChange', function(event, params){
+    var pdfPageChangeListener = $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
 
         /*var q = $location.search();
@@ -1780,17 +1776,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.currentPdfPage = params[0];
     });
 
-    $scope.$on('onVideoUpdateState', function(e, data){
+    $scope.$on('onVideoUpdateState', function (e, data) {
         $http.put('/api/treeNodes/watch/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.videoFile._id,
             {
-                state:data.state,
-                totalTime:data.API.totalTime,
-                currentTime:data.API.currentTime,
-                timeLeft:data.API.timeLeft,
-                volume:data.API.volume
+                state: data.state,
+                totalTime: data.API.totalTime,
+                currentTime: data.API.currentTime,
+                timeLeft: data.API.timeLeft,
+                volume: data.API.volume
             }
             )
-            .error(function(data){
+            .error(function (data) {
                 console.log('ping server error');
             });
     });

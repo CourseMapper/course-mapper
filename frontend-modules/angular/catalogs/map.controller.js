@@ -369,7 +369,7 @@ app.controller('MapController', function ($scope, $http, $rootScope,
     };
 
     $scope.getContentNodeLink = function (d) {
-        return '#/cid/' + $scope.course._id + '/nid/' + d._id;
+        return '/treeNode/' + d._id + '/#/cid/' + $scope.course._id + '/nid/' + d._id;
     };
 
     $scope.deleteNode = function (data) {

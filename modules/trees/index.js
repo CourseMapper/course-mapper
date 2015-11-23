@@ -255,6 +255,7 @@ catalog.prototype.getNodeAsync = function (params) {
     return async(function () {
         var nod = await(TreeNodes.findOne(params)
             .populate('createdBy', '_id username displayName')
+            .populate('courseId')
             .exec()
         );
 

@@ -1,4 +1,3 @@
-
 <!-- node edit form -->
 <div class="row">
     <div class="modal" id="editContentNodeModal" tabindex="-1" role="dialog"
@@ -14,5 +13,11 @@
         <div ng-include="'/widgets/gallery'"></div>
     </div>
 </div>
-
-
+ 
+<!-- course setting form -->
+<div class="row">
+    <div class="modal" id="configView" tabindex="-1" role="dialog"
+         aria-labelledby="config view" aria-hidden="true">
+        <% include nodeConfigModal %>
+    </div>
+</div>

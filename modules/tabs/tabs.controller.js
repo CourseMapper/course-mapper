@@ -56,7 +56,12 @@ TabsStore.prototype.updateTab = function (failed, params, updateParams, success)
     });
 };
 
-TabsStore.prototype.getActiveTabs = function (courseId, location) {
+/**
+ *
+ * @param location
+ * @returns {function(): Promise<TResult>}
+ */
+TabsStore.prototype.getActiveTabs = function (location) {
     return async(function () {
         var tabs = await(Tabs.find({location: location})
             .sort({orderNo: 1})
