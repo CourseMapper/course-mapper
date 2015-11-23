@@ -26,6 +26,7 @@ var treeNodesSchema = new mongoose.Schema({
 
     name: {type: String},
     description: {type: String},
+    settings: { type: mongoose.Schema.Types.Mixed},
     tabsActive: {type: mongoose.Schema.Types.Mixed},
 
     isDeleted: {type: Boolean, required: true, default: false},

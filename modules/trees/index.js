@@ -10,6 +10,7 @@ var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
+var _ = require('underscore')
 
 function catalog() {
 }
@@ -355,9 +356,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
             if (!tn)
                 error(helper.createError404("Node"));
             else {
-                if (paramsUpdate['name']) {
-                    tn.name = paramsUpdate['name'];
-                }
+                _.extend(tn, paramsUpdate);
 
                 tn.save(function (err) {
                     if (err) {

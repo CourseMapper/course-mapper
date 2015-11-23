@@ -55,11 +55,11 @@
                                         <%
                                         var dc = false;
                                         var dt = false;
-                                        if (course.settings && course.settings['disableControls'] !== undefined) {
-                                            dc = course.settings['disableControls'];
+                                        if (treeNode.settings && treeNode.settings['disableControls'] !== undefined) {
+                                            dc = treeNode.settings['disableControls'];
                                         }
-                                        if (course.settings && course.settings['disableTop'] !== undefined) {
-                                            dt = course.settings['disableTop'];
+                                        if (treeNode.settings && treeNode.settings['disableTop'] !== undefined) {
+                                            dt = treeNode.settings['disableTop'];
                                         }
                                         %>
                                         <label ng-init="settings.disableControls = <%= dc %>">
