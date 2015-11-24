@@ -22,7 +22,7 @@
                         ng-repeat="bookmark in links" ng-class="(pid==bookmark.link._id)?'active':''"
                         ng-hide="bookmark.isDeleted"
                         ng-click="initiateLink(bookmark.link._id)"
-                            >
+                    >
                         <div class="row">
                             <div class="col-xs-1">
                                 <voting vote-type="link" vote-type-id="{{bookmark.link._id}}" vote-value=""></voting>
@@ -45,6 +45,15 @@
                         </div>
                     </li>
                 </ul>
+
+                <pagination total-rows="linksLength()"
+                            limit="10"
+                            use-search="false"
+                            sort-by="dateAdded"
+                            order-by="desc"
+                            object-service="linkService"
+                            success-cb="newRowsFetched">
+                </pagination>
             </div>
         </div>
         <div class="col-md-8" id="linksContent" ng-hide="true">

@@ -8,13 +8,34 @@ var router = express.Router();
 var mongoose = require('mongoose');
 
 /**
- * return all posts
+ * return all posts of this node id
  */
 router.get('/:nodeId', function(req, res, next) {
     if (!req.user) {
         res.status(401).send('Unauthorized');
         return;
     }
+
+    var limit = 10;
+    if (req.query['limit']) {
+        var limitTemp = parseInt(req.query['limit']);
+        if (limitTemp != NaN)
+            limit = limitTemp;
+    }
+
+    var sortBy = 'dateAdded';
+    if (req.query['sortBy'])
+        sortBy = req.query['sortBy'];
+
+    var lastPage = false;
+    if (req.query['lastPage'])
+        lastPage = parseInt(req.query['lastPage']);
+
+    var pageParams = {
+        lastPage: lastPage,
+        limit: limit,
+        sortBy: sortBy
+    };
 
     //todo: check user auth / enrollement
 
@@ -30,6 +51,7 @@ router.get('/:nodeId', function(req, res, next) {
         // parameters
         mongoose.Types.ObjectId(req.params.nodeId)
         ,
+        pageParams,
         function(posts){
             res.status(200).json({
                 result:true, posts: posts
@@ -107,6 +129,25 @@ router.post('/:nodeId', function(req, res, next){
             });
         }
     );
+
+    /*for(var i = 0; i < 50;i++) {
+        cat.addPost(
+            function (err) {
+                helper.resReturn(err, res);
+            },
+            {
+                title: req.body.title + ' -- ' + i,
+                content: req.body.content,
+                createdBy: mongoose.Types.ObjectId(req.user._id),
+                nodeId: mongoose.Types.ObjectId(req.params.nodeId)
+            },
+            function (post) {
+                /!*res.status(200).json({
+                 result:true, post: post
+                 });*!/
+            }
+        );
+    }*/
 });
 
 /**

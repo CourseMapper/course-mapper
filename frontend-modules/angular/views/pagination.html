@@ -2,7 +2,7 @@
     <div class="showMore" ng-show="showMoreButton">
         <a ng-click="showMoreRows()" class="cursor btn btn-block btn-primary btn-sm">Show More</a>
     </div>
-    <div class="showMore" ng-cloak ng-hide="showMoreButton">
+    <div class="showMore" ng-cloak ng-hide="showMoreButton || currentPage == 1">
         <small>No More Rows</small>
     </div>
 </div>

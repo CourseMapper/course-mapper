@@ -23,6 +23,16 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     };
 
+    $scope.newRowsFetched = function (newRows, allRows) {
+        if (newRows) {
+            $scope.links = allRows;
+        }
+    };
+
+    $scope.linksLength = function () {
+        return $scope.links.length;
+    };
+
     $scope.initTab = function (node) {
         linkService.init(node._id,
 

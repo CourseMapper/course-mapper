@@ -6,7 +6,7 @@ var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
-function NodeLinks(){
+function NodeLinks() {
 }
 
 /**
@@ -17,19 +17,25 @@ function NodeLinks(){
  * @param params
  * @param success
  */
-NodeLinks.prototype.getNodeLinks = function(error, nodeId, success){
-    if(!nodeId)
+NodeLinks.prototype.getNodeLinks = function (error, nodeId, pageParams, success) {
+    if (!nodeId)
         return error(helper.createError(msg, 400));
 
+    if (!pageParams.lastPage || pageParams.lastPage == 'false') {
+        pageParams.lastPage = 0;
+    }
+
     Links.find({
-        contentNode: nodeId,
-        isDeleted: false
-    })
+            contentNode: nodeId,
+            isDeleted: false
+        })
         .sort({dateAdded: -1})
+        .skip(pageParams.lastPage)
+        .limit(pageParams.limit)
         .populate('link')
         .populate('createdBy', 'username displayName')
-        .exec(function(err, docs) {
-            if (err){
+        .exec(function (err, docs) {
+            if (err) {
                 error(err);
             } else {
                 success(docs);
@@ -37,21 +43,21 @@ NodeLinks.prototype.getNodeLinks = function(error, nodeId, success){
         });
 };
 
-NodeLinks.prototype.getNodeLink = function(error, pId, success){
-    if(!pId)
+NodeLinks.prototype.getNodeLink = function (error, pId, success) {
+    if (!pId)
         return error(helper.createError(msg, 400));
 
     Links.findOne({
-        _id: pId
-    })
+            _id: pId
+        })
         .sort({dateAdded: -1})
         .populate('link')
         .populate('createdBy', 'username displayName')
-        .exec(function(err, doc) {
+        .exec(function (err, doc) {
             if (err) {
                 error(err);
             } else {
-                if(!doc){
+                if (!doc) {
                     helper.createError404('Course')
                 } else {
                     success(doc);
@@ -60,7 +66,7 @@ NodeLinks.prototype.getNodeLink = function(error, pId, success){
         });
 };
 
-NodeLinks.prototype.editPost = function(error, params, success){
+NodeLinks.prototype.editPost = function (error, params, success) {
     Posts.findOneAndUpdate(
         {
             _id: params.postId,
@@ -73,15 +79,15 @@ NodeLinks.prototype.editPost = function(error, params, success){
             }
         },
         {safe: true, upsert: true},
-        function(err, doc){
-            if(err)
+        function (err, doc) {
+            if (err)
                 error(err);
             else
                 success(doc);
         });
 };
 
-NodeLinks.prototype.deletePost = function(error, params, success){
+NodeLinks.prototype.deletePost = function (error, params, success) {
     Posts.update(
         {
             _id: params.postId,
@@ -92,11 +98,11 @@ NodeLinks.prototype.deletePost = function(error, params, success){
                 isDeleted: true
             }
         },
-        function(err, doc){
-            if(err)
+        function (err, doc) {
+            if (err)
                 error(err);
             else {
-                if(params.nodeId){
+                if (params.nodeId) {
                     Links.update({
                             link: params.postId,
                             createdBy: params.userId
@@ -106,9 +112,9 @@ NodeLinks.prototype.deletePost = function(error, params, success){
                                 isDeleted: true
                             }
                         },
-                    function(){
-                        success(doc);
-                    });
+                        function () {
+                            success(doc);
+                        });
                 }
                 else
                     success(doc);
@@ -116,7 +122,7 @@ NodeLinks.prototype.deletePost = function(error, params, success){
         });
 };
 
-NodeLinks.prototype.addPost = function(error, params, success){
+NodeLinks.prototype.addPost = function (error, params, success) {
     var self = this;
 
     var newPost = new Posts({
@@ -127,7 +133,7 @@ NodeLinks.prototype.addPost = function(error, params, success){
     });
 
     newPost.setSlug(params.title);
-    newPost.save(function(err) {
+    newPost.save(function (err) {
         if (err) {
             error(err);
             return;
@@ -142,7 +148,7 @@ NodeLinks.prototype.addPost = function(error, params, success){
                 // put this guy as its child
                 Posts.findOne({_id: params.parentPost}, function (err, doc) {
                     if (!err) {
-                        if(doc) doc.childPosts.push(newPost._id);
+                        if (doc) doc.childPosts.push(newPost._id);
                     }
                 });
             }
@@ -154,7 +160,7 @@ NodeLinks.prototype.addPost = function(error, params, success){
         }
 
         // make a relation to NodeLinks
-        if(params.nodeId) {
+        if (params.nodeId) {
             var cd = new Links({
                 contentNode: params.nodeId,
                 createdBy: params.createdBy,
@@ -165,7 +171,7 @@ NodeLinks.prototype.addPost = function(error, params, success){
             cd.save(function (err) {
                 if (!err) {
                     //cd.link = newPost;
-                    self.getNodeLink(error, cd._id, function(b){
+                    self.getNodeLink(error, cd._id, function (b) {
                         success(b);
                     });
                 } else error(err);
