@@ -1,5 +1,8 @@
 <div class="pagination">
     <div class="showMore" ng-show="showMoreButton">
-        <a ng-click="showMoreRows()" class="cursor">More</a>
+        <a ng-click="showMoreRows()" class="cursor btn btn-block btn-primary btn-sm">Show More</a>
+    </div>
+    <div class="showMore" ng-cloak ng-hide="showMoreButton">
+        <small>No More Rows</small>
     </div>
 </div>

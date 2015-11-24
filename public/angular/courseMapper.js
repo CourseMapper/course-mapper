@@ -2036,48 +2036,61 @@ app.directive('movable', function() {
         return {
             restrict: 'E',
 
-            terminal: true,
-
             scope: {
-                lastId: '=',
                 totalRows: '=',
                 limit: '=',
                 useSearch: '=',
                 objectService: '@',
                 sortBy: '@',
-                orderBy: '@'
+                orderBy: '@',
+                successCb: '='
             },
 
             templateUrl: '/angular/views/pagination.html',
 
             link: function (scope, element, attrs) {
-                attrs.$observe('lastId', function(lastId){
+                attrs.$observe('objectService', function () {
                     var factoryInstance = element.injector().get(scope.objectService);
+                    scope.objectServiceInstance = factoryInstance;
                     factoryInstance.setPageParams(scope);
                 });
             },
 
             controller: function ($http, $scope, $location) {
                 $scope.showMoreButton = false;
+                $scope.currentPage = 1;
+                $scope.lastPage = $scope.currentPage * $scope.limit;
 
-                $scope.$watch('totalRows', function (newVal, oldVal) {
-                    if (newVal !== oldVal) {
-                        // show more button if it has possibilities of having more pages
-                        if ($scope.totalRows == $scope.limit) {
-                            $scope.showMoreButton = true;
-                        } else
-                            $scope.showMoreButton = false;
-                    }
+                $scope.$watch('totalRows', function () {
+                    if ($scope.totalRows / $scope.currentPage >= $scope.limit) {
+                        $scope.showMoreButton = true;
+                    } else
+                        $scope.showMoreButton = false;
                 });
 
                 $scope.showMoreRows = function () {
+                    $scope.objectServiceInstance.setPageParams($scope);
+                    $scope.objectServiceInstance.getMoreRows(function (newRows, allRows) {
+                        $scope.totalRows = newRows.length;
+                        // show more button if it has possibilities of having more pages
+                        if ($scope.totalRows >= $scope.limit) {
+                            $scope.showMoreButton = true;
+                        } else
+                            $scope.showMoreButton = false;
+
+                        $scope.successCb(newRows, allRows);
+                    });
+
+                    $scope.currentPage++;
+                    $scope.lastPage = $scope.currentPage * $scope.limit;
+
                     if (!$scope.useSearch)
                         return;
 
                     $location.search('limit', $scope.limit);
                     $location.search('sortBy', $scope.sortBy);
                     $location.search('orderBy', $scope.orderBy);
-                    $location.search('lastId', $scope.lastId);
+                    $location.search('lastPage', $scope.lastPage);
                 };
             }
         };
@@ -2707,11 +2720,15 @@ app.directive('timepicker', function($timeout) {
     $scope.isLoading = false;
     $scope.errors = [];
     $scope.topics = [];
+    $scope.topicsLength = 0;
     $scope.replies = [];
 
-    /*$scope.discussionService = function () {
-        return discussionService
-    };*/
+    $scope.newRowsFetched = function (newRows, allRows) {
+        if (newRows) {
+            $scope.topics = allRows;
+            $scope.topicsLength = $scope.topics.length;
+        }
+    };
 
     $scope.initiateTopic = function () {
         $scope.pid = $location.search().pid;
@@ -2958,6 +2975,7 @@ app.directive('timepicker', function($timeout) {
 
             function (posts) {
                 $scope.topics = posts;
+                $scope.topicsLength = $scope.topics.length;
                 $scope.pageTitleOnDiscussion = Page.title();
                 $scope.initiateTopic();
             },
@@ -3452,17 +3470,19 @@ app.directive('timepicker', function($timeout) {
         return {
             posts: null,
             pageUrl: '',
+            courseId: null,
 
             pageParams: {
                 limit: 10,
                 sortBy: '_id',
                 orderBy: 'desc',
-                lastId: false
+                lastPage: false
             },
 
             init: function (courseId, success, error, force) {
                 var self = this;
 
+                self.courseId = courseId;
                 self.setPageUrl();
 
                 if (!force && self.posts) {
@@ -3485,6 +3505,27 @@ app.directive('timepicker', function($timeout) {
                         });
             },
 
+            getMoreRows: function (success, error) {
+                var self = this;
+
+                self.setPageUrl();
+                $http.get('/api/discussions/' + self.courseId + self.pageUrl)
+                    .success(function (data) {
+                        if (data.result && data.posts && data.posts.length > 0) {
+                            self.posts = self.posts.concat(data.posts);
+
+                            if (success)
+                                success(data.posts, self.posts);
+                        }
+                        else
+                            success(false);
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
             setPageUrl: function () {
                 this.pageUrl = '?';
 
@@ -3502,7 +3543,7 @@ app.directive('timepicker', function($timeout) {
                 self.pageParams.limit = scp.limit;
                 self.pageParams.sortBy = scp.sortBy;
                 self.pageParams.orderBy = scp.orderBy;
-                self.pageParams.lastId = scp.lastId;
+                self.pageParams.lastPage = scp.lastPage;
             },
 
             isInitialized: function () {

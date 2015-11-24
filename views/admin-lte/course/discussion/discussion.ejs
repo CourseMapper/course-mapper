@@ -22,6 +22,7 @@
                 <ul class="posts">
                     <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''"
                         ng-hide="topic.isDeleted">
+                        <div class="changePage" ng-if="$index !=0 && $index % 10 == 0"></div>
                         <div class="row">
                             <div class="col-xs-1">
                                 <voting vote-type="discussion" vote-type-id="{{topic._id}}" vote-value=""></voting>
@@ -36,17 +37,16 @@
                                 </span>
                             </div>
                         </div>
-
                     </li>
                 </ul>
 
-                <pagination total-rows="topics.length"
+                <pagination total-rows="topicsLength"
                             limit="10"
-                            use-search="true"
-                            sort-by="_id"
+                            use-search="false"
+                            sort-by="dateAdded"
                             order-by="desc"
                             object-service="discussionService"
-                            last-id="topics[topics.length - 1]._id">
+                            success-cb="newRowsFetched">
                 </pagination>
             </div>
 

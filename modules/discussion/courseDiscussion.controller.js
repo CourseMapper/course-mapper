@@ -36,15 +36,13 @@ courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, pag
         isDeleted: false
     };
 
-    if (pageParams.lastId && pageParams.lastId != 'false') {
-        if (pageParams.orderBy == 'desc')
-            whereParams[pageParams.sortBy] = {$gt: pageParams.lastId};
-        else
-            whereParams[pageParams.sortBy] = {$lt: pageParams.lastId};
+    if (!pageParams.lastPage || pageParams.lastPage == 'false') {
+        pageParams.lastPage = 0;
     }
 
     Discussion.find(whereParams)
         .sort({dateAdded: -1})
+        .skip(pageParams.lastPage)
         .limit(pageParams.limit)
         .populate('discussion')
         .populate('createdBy', 'username displayName image')

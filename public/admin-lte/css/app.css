@@ -835,3 +835,9 @@ toastr custom*/
     font-weight: bold;
     font-size: 14px;
 }
+.changePage{
+    height: 10px;
+    background: aliceblue;
+    margin-bottom: 30px;
+    margin-top: 0px;
+}

@@ -28,9 +28,9 @@ router.get('/discussions/:courseId', function (req, res, next) {
     if (req.query['sortBy'])
         sortBy = req.query['sortBy'];
 
-    var lastId = false;
-    if (req.query['lastId'])
-        lastId = req.query['lastId'];
+    var lastPage = false;
+    if (req.query['lastPage'])
+        lastPage = parseInt(req.query['lastPage']);
 
     userHelper.isEnrolledAsync({
             userId: mongoose.Types.ObjectId(req.user._id),
@@ -53,7 +53,7 @@ router.get('/discussions/:courseId', function (req, res, next) {
                 mongoose.Types.ObjectId(req.params.courseId)
                 ,
                 {
-                    lastId: lastId,
+                    lastPage: lastPage,
                     limit: limit,
                     sortBy: sortBy
                 },

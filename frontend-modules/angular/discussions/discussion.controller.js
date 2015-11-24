@@ -16,11 +16,15 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     $scope.isLoading = false;
     $scope.errors = [];
     $scope.topics = [];
+    $scope.topicsLength = 0;
     $scope.replies = [];
 
-    /*$scope.discussionService = function () {
-        return discussionService
-    };*/
+    $scope.newRowsFetched = function (newRows, allRows) {
+        if (newRows) {
+            $scope.topics = allRows;
+            $scope.topicsLength = $scope.topics.length;
+        }
+    };
 
     $scope.initiateTopic = function () {
         $scope.pid = $location.search().pid;
@@ -267,6 +271,7 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
 
             function (posts) {
                 $scope.topics = posts;
+                $scope.topicsLength = $scope.topics.length;
                 $scope.pageTitleOnDiscussion = Page.title();
                 $scope.initiateTopic();
             },
