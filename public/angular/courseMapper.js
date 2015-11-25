@@ -586,7 +586,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.isEnrolled = courseService.isEnrolled();
         $scope.isManager = courseService.isManager(authService.user);
         $scope.isAdmin = authService.isAdmin();
-        $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
+        if(authService.user)
+            $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
+        else
+            $scope.isOwner = false;
     };
 
     $scope.$on('$routeUpdate', function () {

@@ -1,8 +1,8 @@
 <ul ng-controller="ActionBarController">
-    <li ng-show="isNodeOwner">
+    <li ng-show="isNodeOwner && !isOwner">
         You created this content node
     </li>
-    <li ng-show="isOwner">
+    <li ng-show="isOwner && isNodeOwner">
         You created the course
     </li>
     <li ng-show="isManager">

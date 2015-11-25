@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function votingSystem(){
 }
@@ -95,6 +96,7 @@ votingSystem.prototype.insertVote = function(error, createdBy, voteType, voteTyp
             if(err)
                 error(err);
             else {
+                Plugin.doAction('onAfterVote', doc);
                 success(doc);
             }
         });
