@@ -20,19 +20,7 @@ myCreatedNodesSchema.add({
 });
 
 
-myCreatedNodesSchema.pre('save', function(next){
-    var now = new Date();
-    this.dateUpdated = now;
-    if ( !this.dateAdded ) {
-        this.dateAdded = now;
-    }
-    next();
-});
 
-myCreatedNodesSchema.pre('update', function(next){
-    this.dateUpdated = new Date();
-    next();
-});
 
 var myCreatedNodes = mongoose.model('my-course-myCreatedNodes', myCreatedNodesSchema);
 
