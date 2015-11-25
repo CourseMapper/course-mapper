@@ -95,7 +95,7 @@ Comment.prototype.submitReplyAnnotation = function(err, params,done){
       } else {
         // call success callback
 
-        Plugin.doAction('onAfterPdfReply', annotationsPDF);
+        Plugin.doAction('onAfterPdfReplyCreated', annotationsPDF);
         done(annotationsPDF);
       }
     });
@@ -135,7 +135,7 @@ Comment.prototype.submitFirstLevelAnnotation = function(err, params,done){
                 err("Server Error: Unable to store annotation");
             } else {
                 // call success callback
-                Plugin.doAction('onAfterPdfAnnotation', annotationsPDF);
+                Plugin.doAction('onAfterPdfAnnotationCreated', annotationsPDF);
                 done(annotationsPDF);
 
             }

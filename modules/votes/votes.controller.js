@@ -96,7 +96,7 @@ votingSystem.prototype.insertVote = function(error, createdBy, voteType, voteTyp
             if(err)
                 error(err);
             else {
-                Plugin.doAction('onAfterVote', doc);
+                Plugin.doAction('onAfterVoted', doc);
                 success(doc);
             }
         });

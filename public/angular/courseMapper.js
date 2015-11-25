@@ -1719,6 +1719,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     },
                     function (err) {
                         toastr.error(err);
+
+                        $timeout(function () {
+                            if (!authService.isLoggedIn && $scope.course) {
+                                window.location.href = '/course/' + $scope.course.slug + '/#/cid/' + $scope.course._id + '?tab=preview';
+                            }
+                        });
                     }
                 );
             },
