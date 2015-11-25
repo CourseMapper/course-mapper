@@ -7,7 +7,7 @@ var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function NodeLinks() {
 }
@@ -84,8 +84,10 @@ NodeLinks.prototype.editPost = function (error, params, success) {
         function (err, doc) {
             if (err)
                 error(err);
-            else
+            else {
+                Plugin.doAction('onAfterLinkEdited', doc);
                 success(doc);
+            }
         });
 };
 
@@ -113,6 +115,7 @@ NodeLinks.prototype.deletePost = function (error, params, success) {
                             }
                         },
                         function () {
+                            Plugin.doAction('onAfterLinkDeleted', params.linkId);
                             success(doc);
                         });
                 }
@@ -158,6 +161,8 @@ NodeLinks.prototype.addPost = function (error, params, success) {
                 newPost.save();
             }
         }
+
+        Plugin.doAction('onAfterLinkCreated', newPost);
 
         // make a relation to NodeLinks
         if (params.nodeId) {
