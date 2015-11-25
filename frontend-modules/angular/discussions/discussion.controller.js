@@ -109,8 +109,8 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
 
                     $('#editTopicModal').modal('hide');
 
-                    var i = _.findIndex($scope.topics, {'discussion': {'_id': data.post._id}});
-                    $scope.topics[i].discussion = data.post;
+                    var i = _.findIndex($scope.topics, {'_id': data.post._id});
+                    $scope.topics[i] = data.post;
                     $timeout(function () {
                         $scope.$apply()
                     });
@@ -239,15 +239,15 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     };
 
     $scope.getReplies = function (postId) {
-        var i = _.findIndex($scope.topics, {'discussion': {'_id': postId}});
+        var i = _.findIndex($scope.topics, {'_id': postId});
         if ($scope.topics[i]) {
-            $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.currentTopic = cloneSimpleObject($scope.topics[i]);
 
             Page.setTitle($scope.pageTitleOnDiscussion + ' > ' + $scope.currentTopic.title);
 
             $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
 
-            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i]);
 
             $scope.currentReplyingTo = $scope.currentTopic._id;
 
@@ -334,7 +334,7 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     });
 
     $scope.$on('onAfterDeleteTopic', function (e, postId) {
-        var i = _.findIndex($scope.topics, {discussion: {'_id': postId}});
+        var i = _.findIndex($scope.topics, {'_id': postId});
         //$scope.topics[i].isDeleted = true;
         if (i >= 0) {
             $scope.topics.splice(i, 1);

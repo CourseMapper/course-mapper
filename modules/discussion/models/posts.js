@@ -4,19 +4,16 @@ var slug = require('slug');
 var postSchema = new mongoose.Schema();
 
 postSchema.add({
-    title: {
-        type: String,
-        required: true
-    },
+    title: {type: String},
 
-    slug: {
-        type: String
-    },
+    course: {type: mongoose.Schema.Types.ObjectId, ref: 'courses'},
+    slug: {type: String},
 
     content: {type: String, required: true},
     createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
 
     parentPost: {type: mongoose.Schema.Types.ObjectId, ref: 'posts'},
+
     // for level more than 1st
     parentPath: [{type: mongoose.Schema.Types.ObjectId, ref: 'posts'}],
     childPosts: [{type: mongoose.Schema.Types.ObjectId, ref: 'posts'}],
@@ -25,25 +22,25 @@ postSchema.add({
     totalPosts: Number,
     totalViews: Number,
 
-    dateAdded: { type: Date },
-    dateUpdated: { type: Date },
-    dateDeleted: { type: Date }
+    dateAdded: {type: Date},
+    dateUpdated: {type: Date},
+    dateDeleted: {type: Date}
 });
 
-postSchema.methods.setSlug = function(s) {
+postSchema.methods.setSlug = function (s) {
     this.slug = slug(s);
 };
 
-postSchema.pre('save', function(next){
+postSchema.pre('save', function (next) {
     var now = new Date();
     this.dateUpdated = now;
-    if ( !this.dateAdded ) {
+    if (!this.dateAdded) {
         this.dateAdded = now;
     }
     next();
 });
 
-postSchema.pre('update', function(next){
+postSchema.pre('update', function (next) {
     this.dateUpdated = new Date();
     next();
 });

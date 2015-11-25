@@ -1,6 +1,5 @@
 var config = require('config');
 var Posts = require('./models/posts.js');
-var Discussion = require('./models/courseDiscussions.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
@@ -41,11 +40,10 @@ courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, pag
         pageParams.lastPage = 0;
     }
 
-    Discussion.find(whereParams)
+    Posts.find(whereParams)
         .sort({dateAdded: -1})
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
-        .populate('discussion')
         .populate('createdBy', 'username displayName image')
         .exec(function (err, docs) {
             if (!err) {
@@ -57,11 +55,10 @@ courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, pag
 };
 
 courseDiscussion.prototype.getDiscussion = function (error, pId, success) {
-    Discussion.findOne({
+    Posts.findOne({
             _id: pId
         })
         .sort({dateAdded: -1})
-        .populate('discussion')
         .populate('createdBy', 'username displayName image')
         .exec(function (err, docs) {
             if (!err) {
@@ -164,23 +161,8 @@ courseDiscussion.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                if (params.courseId) {
-                    Discussion.update({
-                            discussion: params.postId
-                        },
-                        {
-                            $set: {
-                                isDeleted: true,
-                                dateDeleted: new Date()
-                            }
-                        },
-                        function () {
-                            Plugin.doAction('onAfterDiscussionDeleted', params.postId);
-                            success(doc);
-                        });
-                }
-                else
-                    success(doc);
+                Plugin.doAction('onAfterDiscussionDeleted', params.postId);
+                success(doc);
             }
         });
 };
@@ -195,14 +177,16 @@ courseDiscussion.prototype.addPost = function (error, params, success) {
         isDeleted: false
     });
 
+    if (params.courseId) {
+        newPost.course = params.courseId;
+    }
+
     newPost.setSlug(params.title);
     newPost.save(function (err) {
         if (err) {
             error(err);
             return;
         }
-
-        Plugin.doAction('onAfterDiscussionCreated', newPost);
 
         // set parent and parentsPath
         if (params.parentPost) {
@@ -223,29 +207,10 @@ courseDiscussion.prototype.addPost = function (error, params, success) {
             newPost.save();
         }
 
-        // make a relation to courseDiscussion
-        if (params.courseId) {
-            var cd = new Discussion({
-                course: params.courseId,
-                createdBy: params.createdBy,
-                discussion: newPost._id,
-                isDeleted: false
-            });
-
-            cd.save(function (err) {
-                if (!err) {
-                    cd.discussion = newPost;
-
-                    self.getDiscussion(error, cd._id, function (b) {
-                        success(b);
-                    });
-                } else error(err);
-            });
-
-        } else {
-            // there is no course id, maybe its a reply
-            success(newPost);
-        }
+        self.getDiscussion(error, newPost._id, function (b) {
+            Plugin.doAction('onAfterDiscussionCreated', b);
+            success(b);
+        });
     });
 };
 
@@ -255,32 +220,23 @@ courseDiscussion.prototype.addPost = function (error, params, success) {
  * @param params {postId:objectId, userId:objectId}
  */
 courseDiscussion.prototype.isPostEnrolled = async(function (params) {
-    // look for parentPost maybe it is a reply
+    // find post detail
     var rep = await(Posts.findOne({_id: params.postId})
         .populate('parentPost')
         .exec());
 
-    if (rep && rep.parentPost && rep.parentPost.courseId) {
-        var isenrld = await(userHelper
-            .isEnrolledAsync({
-                userId: params.userId,
-                courseId: rep.parentPost.courseId
-            }));
-        if (isenrld)
-            return true;
+    var cid = false;
+    if (rep && rep.parentPost && rep.parentPost.course) {
+        cid = rep.parentPost.course
+    }
+    else if (rep && rep.course) {
+        cid = rep.course;
     }
 
-    // maybe it is a main post
-    var findCourse = await(
-        Discussion.findOne({discussion: params.postId})
-            .populate('course')
-            .exec()
-    );
-
-    if (findCourse && findCourse.course) {
+    if (cid) {
         var isAllowd = await(userHelper.isEnrolledAsync({
             userId: params.userId,
-            courseId: findCourse.course._id
+            courseId: cid
         }));
         if (isAllowd)
             return isAllowd;
@@ -298,40 +254,26 @@ courseDiscussion.prototype.isPostAuthorized = async(function (params) {
     var isAllowd = await(this.isPostOwner(params));
     if (isAllowd) return true;
 
-    // look for parentPost maybe it is a reply
+    // look for post detail
     var rep = await(Posts.findOne({_id: params.postId})
         .populate('parentPost')
         .exec());
 
-    if (rep && rep.parentPost) {
-        var findCourse = await(
-            Discussion.findOne({discussion: rep.parentPost._id})
-                .populate('course')
-                .exec()
-        );
-
-        if (findCourse && findCourse.course) {
-            isAllowd = await(userHelper.isCourseAuthorizedAsync({
-                userId: params.userId, courseId: findCourse.course._id
-            }));
-
-            if (isAllowd) return true;
-        }
+    var cid = false;
+    if (rep && rep.parentPost && rep.parentPost.course) {
+        cid = rep.parentPost.course;
+    }
+    else if (rep && rep.course) {
+        cid = rep.course;
     }
 
-    // maybe it is a discussion post
-    var findCourse = await(
-        Discussion.findOne({discussion: params.postId})
-            .populate('course')
-            .exec()
-    );
-
-    if (findCourse && findCourse.course) {
+    if (cid) {
         isAllowd = await(userHelper.isCourseAuthorizedAsync({
-            userId: params.userId, courseId: findCourse.course._id
+            userId: params.userId, courseId: cid
         }));
 
-        if (isAllowd) return true;
+        if (isAllowd)
+            return true;
     }
 
     return false;
