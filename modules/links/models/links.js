@@ -5,30 +5,33 @@ var courseLinkSchema = new mongoose.Schema();
 
 courseLinkSchema.add({
     contentNode: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'treeNodes'},
+        type: mongoose.Schema.Types.ObjectId, ref: 'treeNodes'
+    },
 
     createdBy: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'users'},
+        type: mongoose.Schema.Types.ObjectId, ref: 'users'
+    },
 
     link: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'posts'},
+        type: mongoose.Schema.Types.ObjectId, ref: 'posts'
+    },
 
     isDeleted: Boolean,
 
-    dateAdded: { type: Date },
-    dateUpdated: { type: Date }
+    dateAdded: {type: Date},
+    dateUpdated: {type: Date}
 });
 
-courseLinkSchema.pre('save', function(next){
+courseLinkSchema.pre('save', function (next) {
     var now = new Date();
     this.dateUpdated = now;
-    if ( !this.dateAdded ) {
+    if (!this.dateAdded) {
         this.dateAdded = now;
     }
     next();
 });
 
-courseLinkSchema.pre('update', function(next){
+courseLinkSchema.pre('update', function (next) {
     this.dateUpdated = new Date();
     next();
 });

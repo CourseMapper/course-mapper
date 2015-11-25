@@ -1,10 +1,13 @@
-var config = require('config');
 var Posts = require('../discussion/models/posts.js');
 var Links = require('./models/links.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+
 
 function NodeLinks() {
 }
@@ -69,8 +72,7 @@ NodeLinks.prototype.getNodeLink = function (error, pId, success) {
 NodeLinks.prototype.editPost = function (error, params, success) {
     Posts.findOneAndUpdate(
         {
-            _id: params.postId,
-            createdBy: params.userId
+            _id: params.linkId
         },
         {
             $set: {
@@ -90,8 +92,7 @@ NodeLinks.prototype.editPost = function (error, params, success) {
 NodeLinks.prototype.deletePost = function (error, params, success) {
     Posts.update(
         {
-            _id: params.postId,
-            createdBy: params.userId
+            _id: params.linkId
         },
         {
             $set: {
@@ -104,8 +105,7 @@ NodeLinks.prototype.deletePost = function (error, params, success) {
             else {
                 if (params.nodeId) {
                     Links.update({
-                            link: params.postId,
-                            createdBy: params.userId
+                            link: params.linkId
                         },
                         {
                             $set: {
@@ -183,5 +183,74 @@ NodeLinks.prototype.addPost = function (error, params, success) {
         }
     });
 };
+
+
+/**
+ * check for enrollement, manager and admin always enrolled
+ *
+ * @param params {postId:objectId, userId:objectId}
+ */
+NodeLinks.prototype.isLinkEnrolled = async(function (params) {
+    // maybe it is a main post
+    var findCourse = await(
+        Links.findOne({_id: params.linkId})
+            .populate('contentNode')
+            .exec()
+    );
+
+    if (findCourse && findCourse.contentNode && findCourse.contentNode.courseId) {
+        var isAllowd = await(userHelper.isEnrolledAsync({
+            userId: params.userId,
+            courseId: findCourse.contentNode.courseId
+        }));
+        if (isAllowd)
+            return isAllowd;
+    }
+
+    return false;
+});
+
+/**
+ * check for permission, manager, admin, post owner
+ * @param params {userId: objectId, postId: objectId}
+ */
+NodeLinks.prototype.isLinkAuthorized = async(function (params) {
+    // check for admin and manager and crs owner or post owner
+    var isAllowd = await(this.isLinkOwner(params));
+    if (isAllowd) return true;
+
+    // maybe it is a discussion post
+    var findCourse = await(
+        Links.findOne({link: params.linkId})
+            .populate('contentNode')
+            .exec()
+    );
+
+    if (findCourse && findCourse.contentNode && findCourse.contentNode.courseId) {
+        isAllowd = await(userHelper.isCourseAuthorizedAsync({
+            userId: params.userId, courseId: findCourse.contentNode.courseId
+        }));
+
+        if (isAllowd) return true;
+    }
+
+    return false;
+});
+
+/**
+ * check is this user a post owner
+ * @param params {userId: objectId, postId: objectId}
+ */
+NodeLinks.prototype.isLinkOwner = async(function (params) {
+    var po = await(Links.findOne({
+        link: params.linkId,
+        createdBy: params.userId
+    }).exec());
+
+    if (po)
+        return true;
+
+    return false;
+});
 
 module.exports = NodeLinks;

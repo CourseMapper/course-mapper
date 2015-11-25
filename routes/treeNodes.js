@@ -31,7 +31,6 @@ router.get('/treeNode/actionBar/:tabName', function (req, res, next) {
  */
 router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
     var TC = new TabsController();
-    var crs = new CourseController();
     var nod = new NodeController();
     var nid = mongoose.Types.ObjectId(req.params.nid);
 

@@ -252,8 +252,8 @@ catalog.prototype.getTreeNode = function (error, params, success) {
     });
 };
 
-catalog.prototype.getNodeAsync = function (params) {
-    return async(function () {
+catalog.prototype.getNodeAsync = function () {
+    return async(function (params) {
         var nod = await(TreeNodes.findOne(params)
             .populate('createdBy', '_id username displayName')
             .populate('courseId')
