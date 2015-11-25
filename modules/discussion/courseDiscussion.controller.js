@@ -8,6 +8,7 @@ var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function courseDiscussion() {
 }
@@ -137,6 +138,7 @@ courseDiscussion.prototype.editPost = function (error, params, success) {
             doc.title = params.title;
             doc.content = params.content;
             doc.save(function () {
+                Plugin.doAction('onAfterDiscussionEdited', doc);
                 success(doc);
             });
 
@@ -173,6 +175,7 @@ courseDiscussion.prototype.deletePost = function (error, params, success) {
                             }
                         },
                         function () {
+                            Plugin.doAction('onAfterDiscussionDeleted', params.postId);
                             success(doc);
                         });
                 }
@@ -198,6 +201,8 @@ courseDiscussion.prototype.addPost = function (error, params, success) {
             error(err);
             return;
         }
+
+        Plugin.doAction('onAfterDiscussionCreated', newPost);
 
         // set parent and parentsPath
         if (params.parentPost) {
