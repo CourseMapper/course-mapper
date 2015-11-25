@@ -36,7 +36,7 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
 
     var op = async(function () {
         var ta = await(TC.getActiveTabs('contentNode')());
-        var nd = await(nod.getNodeAsync({_id: nid})());
+        var nd = await(nod.getNodeAsync()({_id: nid}));
 
         return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId, treeNode: nd};
     });
@@ -82,7 +82,7 @@ router.get('/treeNode/:nid', function (req, res, next) {
 
     var op = async(function () {
         var ta = await(TC.getActiveTabs('contentNode')());
-        var nd = await(nod.getNodeAsync({_id: nid})());
+        var nd = await(nod.getNodeAsync()({_id: nid}));
 
         return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId};
     });

@@ -87,7 +87,8 @@ votingSystem.prototype.insertVote = function(error, createdBy, voteType, voteTyp
             voteType: voteType
         },
         {
-            voteValue: voteValue
+            voteValue: voteValue,
+            dateUpdated: new Date()
         },
         {
             upsert:true
