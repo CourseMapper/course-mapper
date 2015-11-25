@@ -5,6 +5,8 @@ var async = require('asyncawait/async'),
   await = require('asyncawait/await'),
   VideoAnnotation = require('../modules/annotations/models/video-annotation');
 
+var Plugin = require('../modules/apps-gallery/backgroundPlugins.js');
+
 var checkSession = function (socket) {
   var hasSession = socket &&
     socket.request &&
@@ -58,12 +60,16 @@ module.exports = function (io) {
 
         // save to DB
         await(annotation.save());
+
+        Plugin.doAction('onAfterVideoAnnotationEdited', annotation);
       } else {
         //  set the author and
         // create new model in DB
         params.annotation.author = user.username;
         params.annotation.authorDisplayName = user.displayName;
         annotation = await(VideoAnnotation.create(params.annotation));
+
+        Plugin.doAction('onAfterVideoAnnotationCreated', annotation);
       }
       var videoId = annotation.video_id;
       var annotations = await(getAnnotationsAsync(videoId));
@@ -85,6 +91,8 @@ module.exports = function (io) {
 
         // remove annotation from db
         await(annotation.remove());
+        Plugin.doAction('onAfterVideoAnnotationDeleted', videoId);
+
         var annotations = await(getAnnotationsAsync(videoId));
 
         // notify all users about changes
