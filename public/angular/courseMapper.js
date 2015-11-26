@@ -2117,6 +2117,11 @@ app.directive('movable', function() {
             templateUrl: '/angular/views/pdf-annotation-zone.html',
 
             controller: function($http, $scope, $rootScope, $sce){
+              $scope.canMove = true;
+              $scope.switchShowAnnoZones = 'On';
+              $scope.annZoneName = rectPrefix + divCounter;
+              $scope.opacityFactorHighlight = "0.75";
+              $scope.tagName = ""
 
             }
         };
@@ -4378,7 +4383,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.editZoneValues = [];
 
 
-    $scope.annotationZoneList = [];
+    $scope.annotationZoneList = new Array();
 
     $scope.addAnnotationZone = function(relLeft,relTop, relWidth, relHeight, color, tagName, dragable, canBeEdited, annZoneId) {
       var newAnnZone = {
@@ -4395,7 +4400,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         dragable: dragable,
         canBeEdited: canBeEdited,
         annZoneId: annZoneId
-      }
+      };
+
+      $scope.annotationZoneList[annZoneId] = newAnnZone;
     };
 
 
