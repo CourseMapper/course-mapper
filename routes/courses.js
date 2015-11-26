@@ -80,7 +80,7 @@ router.get('/course/tab/:tabName', function (req, res, next) {
 });
 
 router.get('/course/actionBar/:tabName', function (req, res, next) {
-    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.tabName + 'actionBar');
+    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.tabName + 'ActionBar');
 });
 
 /**
