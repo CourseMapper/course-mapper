@@ -18,9 +18,27 @@
 .filter-header{
   margin-bottom:20px;
 }
+
+#inpFieldCurrPage{
+  width: 25pt;
+  color: #fff;
+  text-align: center;
+  background-color: #333;
+  border-width:0px;
+  border:none;
+
+}
+
+#annoZonesTriggersId{
+  color: #fff;
+  cursor: pointer;
+  font-size : 10pt;
+}
+
 input#searchInput{
   height: 34px;
   margin-top: 10px;
+
 }
 
 .cmtBx{
@@ -202,7 +220,7 @@ input#searchInput{
 {
   width:0%;
   height: 100%;
-  background-color: yellow;
+  background-color: #FFA500;
 }
 
 #slideNavigation,

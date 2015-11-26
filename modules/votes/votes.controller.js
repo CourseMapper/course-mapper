@@ -1,11 +1,12 @@
-var config = require('config');
 var Votes = require('./models/votes.js');
-var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
-function votingSystem(){
+function votingSystem() {
 }
 
 /**
@@ -18,40 +19,40 @@ function votingSystem(){
  * @param userIdForVoter
  * @param success
  */
-votingSystem.prototype.getVotesSumOfAnItem = function(error, voteType, voteTypeId, userIdForVoter, success){
+votingSystem.prototype.getVotesSumOfAnItem = function (error, voteType, voteTypeId, userIdForVoter, success) {
     Votes.aggregate([
-        {
-            $match: {
-                voteTypeId: voteTypeId,
-                voteType: voteType
-            }
-        }
-        ,
-        {
-            $group: {
-                _id : "$voteTypeId",
-                total: {
-                    $sum: "$voteValue"
+            {
+                $match: {
+                    voteTypeId: voteTypeId,
+                    voteType: voteType
                 }
             }
-        }
-    ])
-        .exec(function(err, summary) {
-            if (err){
+            ,
+            {
+                $group: {
+                    _id: "$voteTypeId",
+                    total: {
+                        $sum: "$voteValue"
+                    }
+                }
+            }
+        ])
+        .exec(function (err, summary) {
+            if (err) {
                 error(err);
             } else {
-                if(userIdForVoter){
+                if (userIdForVoter) {
 
                     // find whether this user is voting for this item
                     Votes.findOne({
                         createdBy: userIdForVoter,
                         voteTypeId: voteTypeId,
                         voteType: voteType
-                    }).exec(function(err, isVotingObject){
-                        if(err)
+                    }).exec(function (err, isVotingObject) {
+                        if (err)
                             error(err);
                         else {
-                            if(isVotingObject){
+                            if (isVotingObject) {
                                 summary[0].isVotingObject = isVotingObject;
                             }
 
@@ -65,13 +66,13 @@ votingSystem.prototype.getVotesSumOfAnItem = function(error, voteType, voteTypeI
         });
 };
 
-votingSystem.prototype.getVotesOfAnItem = function(error, voteType, voteTypeId, success){
+votingSystem.prototype.getVotesOfAnItem = function (error, voteType, voteTypeId, success) {
     Votes.find({
-        voteTypeId: voteTypeId,
-        voteType: voteType
-    })
-        .exec(function(err, docs) {
-            if (err){
+            voteTypeId: voteTypeId,
+            voteType: voteType
+        })
+        .exec(function (err, docs) {
+            if (err) {
                 error(err);
             } else {
                 success(docs);
@@ -79,24 +80,34 @@ votingSystem.prototype.getVotesOfAnItem = function(error, voteType, voteTypeId, 
         });
 };
 
-votingSystem.prototype.insertVote = function(error, createdBy, voteType, voteTypeId, voteValue, success){
-    Votes.findOneAndUpdate({
+votingSystem.prototype.insertVote = function (error, createdBy, voteType, voteTypeId, voteValue, success) {
+    var op = async(function () {
+        var vote = await(Votes.findOne({
             createdBy: createdBy,
             voteTypeId: voteTypeId,
             voteType: voteType
-        },
-        {
-            voteValue: voteValue
-        },
-        {
-            upsert:true
+        }).exec());
+
+        if (!vote) {
+            vote = new Votes({
+                createdBy: createdBy,
+                voteTypeId: voteTypeId,
+                voteType: voteType
+            });
+        }
+
+        vote.voteValue = voteValue;
+        vote.save();
+        return vote;
+    });
+
+    op()
+        .then(function (vote) {
+            Plugin.doAction('onAfterVoted', vote);
+            success(vote);
         })
-        .exec(function(err, doc){
-            if(err)
-                error(err);
-            else {
-                success(doc);
-            }
+        .catch(function (err) {
+            helper.resReturn(err, res);
         });
 };
 

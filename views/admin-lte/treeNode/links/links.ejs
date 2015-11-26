@@ -1,0 +1,83 @@
+<link href="/admin-lte/css/posts.css" rel="stylesheet" type="text/css"/>
+<div ng-controller="LinksController">
+
+    <div class="row">
+        <div class="col-xs-11" id="LinksList">
+            <h4>Links</h4>
+
+            <div ng-show="links.length == 0" class="posts-list">
+                <ul class="posts">
+                    <li class="post">
+                        <h5>There is no links to show, you can add a new one by clicking the
+                            "ADD NEW LINK" button on the top right of this page</h5>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="posts-list"
+                 ng-show="links.length > 0">
+
+                <ul class="posts">
+                    <li class="post cursor"
+                        ng-repeat="bookmark in links" ng-class="(pid==bookmark._id)?'active':''"
+                        ng-hide="bookmark.isDeleted"
+                        ng-click="initiateLink(bookmark._id)"
+                    >
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <voting vote-type="link" vote-type-id="{{bookmark._id}}" vote-value=""></voting>
+                            </div>
+                            <div class="col-xs-11">
+                                <h4> {{bookmark.title}} </h4>
+
+                                <br class="clear">
+                                <br class="clear">
+                                <a class="btn btn-primary btn-xs open-new-tab" title="Open in a New Tab"
+                                   href="{{bookmark.content}}" target="_blank">
+                                    <i class="fa fa-external-link"></i> Open in a new tab</a> {{bookmark.content}}
+                                <br class="clear">
+
+                                <span class="posted-at">
+                                    Posted <strong>{{bookmark.dateAdded | relativeDate}}</strong>
+                                    By <strong>{{bookmark.createdBy.displayName}}</strong>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <pagination total-rows="linksLength()"
+                            limit="10"
+                            use-search="false"
+                            sort-by="dateAdded"
+                            order-by="desc"
+                            object-service="linkService"
+                            success-cb="newRowsFetched">
+                </pagination>
+            </div>
+        </div>
+        <div class="col-md-8" id="linksContent" ng-hide="true">
+
+            <div ng-hide="pid || links.length == 0" class="hidden-sm hidden-xs">
+                <h4>Please pick one from the existing links</h4>
+            </div>
+
+            <div ng-show="pid" class="replies-wrapper">
+
+                <div ng-show="currentLink" class="currentTopic">
+                    <div class="box box-solid">
+                        <div class="box-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /. show when pid -->
+        </div>
+    </div>
+
+    <% var operation = 'Add'; var actionMethodName = 'saveNewPost'; var variableContainer = 'formData'; %>
+    <% include linksModal %>
+    <% var operation = 'Edit'; var actionMethodName = 'saveEditPost'; var variableContainer = 'currentLink'; %>
+    <% include linksModal %>
+
+</div>

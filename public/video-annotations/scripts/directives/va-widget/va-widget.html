@@ -1,13 +1,17 @@
 <div class="col-md-7">
-    <videogular class="embed-responsive embed-responsive-16by9" vg-youtube="rel=1;showinfo=0" vg-player-ready="onPlayerReady($API)" vg-cue-points="cuePoints">
+    <videogular class="embed-responsive embed-responsive-16by9" vg-youtube="rel=1;showinfo=0;iv_load_policy=3"
+                vg-player-ready="onPlayerReady($API)"
+                vg-cue-points="cuePoints" vg-update-state="onUpdateState($state)">
         <vg-media vg-src="sources"></vg-media>
         <vg-controls vg-autohide="true" vg-autohide-time="10000">
             <vg-play-pause-button></vg-play-pause-button>
             <vg-time-display>{{ currentTime | date:'HH:mm:ss':'UTC' }}</vg-time-display>
             <vg-scrub-bar>
-                <vg-scrub-bar-buffer></vg-scrub-bar-buffer>
-                <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
-                <vg-scrub-bar-cue-points class="default" vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
+                <!--<vg-scrub-bar-buffer></vg-scrub-bar-buffer>-->
+                <vg-scrub-bar-current-time ng-show="!isFpOn"></vg-scrub-bar-current-time>
+                <vg-scrub-bar-cue-points ng-show="!isFpOn" class="default"
+                                         vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
+                <div ng-class="{ invisible: !isFpOn }" class="fp-timeline" ng-style="timelineWidth"></div>
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
             <vg-volume>
@@ -15,10 +19,22 @@
                 <vg-volume-bar></vg-volume-bar>
             </vg-volume>
             <vg-fullscreen-button></vg-fullscreen-button>
+            <div class="fp-toggle-button" ng-click="isFpOn=!isFpOn">
+                <div ng-show="isFpOn">
+                    <img src="/video-annotations/img/fp.png">
+                </div>
+                <div ng-show="!isFpOn">
+                    <img src="/video-annotations/img/a.png">
+                </div>
+            </div>
+            <div class="fp-info-data" ng-show="isFpOn"></div>
         </vg-controls>
         <vg-overlay-play></vg-overlay-play>
         <div id="inline-va-container">
-            <div ng-mouseover="item.isHovered=true" ng-mouseleave="item.isHovered=false" movable can-move="{{item.isEditMode===true}}" on-moved="item.reposition" ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation" ng-show="item.showing" ng-style="getInlineAnnotationStyle(item)">
+            <div ng-mouseover="item.isHovered=true" ng-mouseleave="item.isHovered=false" movable
+                 can-move="{{item.isEditMode===true}}" on-moved="item.reposition"
+                 ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation"
+                 ng-show="item.showing" ng-style="getInlineAnnotationStyle(item)">
                 <span ng-show="item.isHovered">{{item.text}}</span>
             </div>
         </div>
@@ -36,7 +52,8 @@
                         <option value="text">Alphabetical</option>
                         <option value="author">Author</option>
                     </select>
-                    <input class="form-control" id="search-box" ng-hide="hideSearch" placeholder="Search..." ng-model="query">
+                    <input class="form-control" id="search-box" ng-hide="hideSearch" placeholder="Search..."
+                           ng-model="query">
                 </div>
             </div>
         </div>
@@ -45,7 +62,9 @@
         <section class="row" id="annotations-view" ng-show="annotations.length > 0">
             <div ng-repeat="annotation in annotations | filter:query | orderBy:sortBy">
                 <div class="col-xs-11">
-                    <video-annotation ng-mouseover="annotation.isHovered=true" ng-mouseleave="annotation.isHovered=false" source="annotation" ng-class="{showing: annotation.showing, completed: annotation.completed}">
+                    <video-annotation ng-mouseover="annotation.isHovered=true"
+                                      ng-mouseleave="annotation.isHovered=false" source="annotation"
+                                      ng-class="{showing: annotation.showing, completed: annotation.completed}">
                     </video-annotation>
                 </div>
                 <voting class="col-xs-1" vote-type="videoAnnotation" vote-type-id="{{annotation._id}}"></voting>

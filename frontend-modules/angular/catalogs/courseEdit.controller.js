@@ -1,5 +1,4 @@
-
-app.controller('CourseEditController', function($scope, $filter, $http, $location, Upload) {
+app.controller('CourseEditController', function ($scope, $filter, $http, $location, Upload, toastr) {
     $scope.createdDate = new Date();
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
@@ -12,26 +11,29 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
 
     $scope.progressPercentage = 0;
 
-    $scope.$on('onAfterInitCourse', function(event, course){
-        $scope.init();
+    $scope.$on('onAfterInitCourse', function (event, course) {
+        $scope.init(course);
     });
 
-    $scope.init = function(){
+    $scope.init = function (course) {
+        if (!course)
+            return;
+
         $scope.tagsRaw = [];
 
-        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+        $scope.courseEdit = cloneSimpleObject(course);
 
-        if($scope.courseEdit)
-        if($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0){
-            for(var i in $scope.courseEdit.courseTags) {
-                var t = $scope.courseEdit.courseTags[i];
-                $scope.tagsRaw.push( {"text": t.name} );
+        if ($scope.courseEdit)
+            if ($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0) {
+                for (var i in $scope.courseEdit.courseTags) {
+                    var t = $scope.courseEdit.courseTags[i];
+                    $scope.tagsRaw.push({"text": t.name});
+                }
             }
-        }
     };
 
-    $scope.saveCourse = function() {
-        if($scope.tagsRaw) {
+    $scope.saveCourse = function () {
+        if ($scope.tagsRaw) {
             $scope.courseEdit.tags = JSON.stringify($scope.tagsRaw);
         }
 
@@ -40,30 +42,31 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             fields: {
                 name: $scope.courseEdit.name,
                 description: $scope.courseEdit.description,
-                tags: $scope.courseEdit.tags,
+                tags: $scope.courseEdit.tags
             }
         };
 
         uploadParams.file = [];
         // we only take one picture file
-        if ($scope.filespicture && $scope.filespicture.length){
+        if ($scope.filespicture && $scope.filespicture.length) {
             uploadParams.file.push($scope.filespicture[0]);
         }
         // we only take one vid file
-        if ($scope.filesvideo && $scope.filesvideo.length){
+        if ($scope.filesvideo && $scope.filesvideo.length) {
             uploadParams.file.push($scope.filesvideo[0]);
         }
 
         $scope.isLoading = true;
         $scope.upload = Upload.upload(
             uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
 
-        ).progress(function (evt) {
-            if(!evt.config.file)
-                return;
+                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            })
 
-            $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-        })
             .success(function (data) {
                 $scope.$emit('onAfterEditCourse', data.course);
 
@@ -74,9 +77,11 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
                 $('#editView').modal('hide');
 
                 $scope.progressPercentage = 0;
+
+                window.location.reload();
             })
 
-            .error(function(){
+            .error(function (data) {
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
 
@@ -84,10 +89,40 @@ app.controller('CourseEditController', function($scope, $filter, $http, $locatio
             });
     };
 
-    $scope.cancel = function(){
+    $scope.deleteVideo = function () {
+        $http.post('/api/course/' + $scope.courseEdit._id, {
+                video: "delete",
+                name: $scope.courseEdit.name
+            })
+            .success(function (data) {
+                $scope.courseEdit.video = false;
+                $scope.$emit('onAfterEditCourse', data.course);
+                toastr.success('Video deleted');
+            })
+            .error(function () {
+                toastr.error('Video delete failed');
+            });
+    };
+
+    $scope.deletePicture = function () {
+        $http.post('/api/course/' + $scope.courseEdit._id, {
+                picture: "delete",
+                name: $scope.courseEdit.name
+            })
+            .success(function (data) {
+                $scope.courseEdit.video = false;
+                $scope.$emit('onAfterEditCourse', data.course);
+                toastr.success('Picture deleted');
+            })
+            .error(function () {
+                toastr.error('Picture delete failed');
+            });
+    };
+
+    $scope.cancel = function () {
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
 
-        if($scope.upload){
+        if ($scope.upload) {
             $scope.upload.abort();
         }
     };

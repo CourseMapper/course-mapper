@@ -4,6 +4,8 @@ var passport = require('passport');
 var mongoose = require('mongoose');
 var AnnZones = require('../annotationZones/index');
 var validator = require('validator');
+var appRoot = require('app-root-path');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function Comment(){
 }
@@ -92,6 +94,8 @@ Comment.prototype.submitReplyAnnotation = function(err, params,done){
         err("Server Error: Unable to store annotation");
       } else {
         // call success callback
+
+        Plugin.doAction('onAfterPdfReplyCreated', annotationsPDF);
         done(annotationsPDF);
       }
     });
@@ -131,7 +135,7 @@ Comment.prototype.submitFirstLevelAnnotation = function(err, params,done){
                 err("Server Error: Unable to store annotation");
             } else {
                 // call success callback
-
+                Plugin.doAction('onAfterPdfAnnotationCreated', annotationsPDF);
                 done(annotationsPDF);
 
             }

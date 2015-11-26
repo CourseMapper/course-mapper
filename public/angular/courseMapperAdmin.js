@@ -6,47 +6,50 @@ admin.filter('capitalize', function() {
     }
 });
 
-;admin.controller('applicationsController', function($scope, $route, $routeParams, $location, $http, $timeout) {
+;admin.controller('applicationsController', function ($scope, $route, $routeParams, $location, $http, $timeout) {
     $scope.route = $route;
     $scope.location = $location;
     $scope.routeParams = $routeParams;
     $scope.widgets = null;
 
-    $scope.init = function(){
-        $http.get('/api/widgets/all').success(function(res){
-            if(res.result && res.widgets){
-                $scope.widgets = res.widgets;
-            }
-        });
+    $scope.init = function () {
+        $http.get('/api/widgets/all')
+            .success(function (res) {
+                if (res.result && res.widgets) {
+                    $scope.widgets = res.widgets;
+                }
+            });
     };
 
-    function updateWidgetResult(updated, widgets){
-        for(var i in widgets){
+    function updateWidgetResult(updated, widgets) {
+        for (var i in widgets) {
             var wdg = widgets[i];
-            if(wdg.name == updated.name){
+            if (wdg.name == updated.name) {
                 wdg.isActive = updated.isActive;
             }
         }
 
-        $timeout(function(){$scope.$apply()});
+        $timeout(function () {
+            $scope.$apply()
+        });
     }
 
-    $scope.activate = function(app, widgetName){
+    $scope.activate = function (app, widgetName) {
         $http.put('/api/widgets/' + app + '/' + widgetName, {
-            isActive:true
-        }).success(function(res){
-            if(res.result && res.widget){
+            isActive: true
+        }).success(function (res) {
+            if (res.result && res.widget) {
                 res.widget.isActive = true;
                 updateWidgetResult(res.widget, $scope.widgets);
             }
         });
     };
 
-    $scope.deactivate = function(app, widgetName){
+    $scope.deactivate = function (app, widgetName) {
         $http.put('/api/widgets/' + app + '/' + widgetName, {
-            isActive:false
-        }).success(function(res){
-            if(res.result && res.widget){
+            isActive: false
+        }).success(function (res) {
+            if (res.result && res.widget) {
                 res.widget.isActive = false;
                 updateWidgetResult(res.widget, $scope.widgets);
             }
@@ -333,20 +336,20 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
                 }
             }).
 
-            /*when('/application/:appName', {
-                templateUrl: '/cm-admin/application',
-                controller: 'applicationController',
+            when('/tabs', {
+                templateUrl: '/cm-admin/tabs',
+                controller: 'tabsController',
                 resolve: {
                     pd: function( $q ) {
                         return( {
-                            title: 'Manage Applications',
+                            title: 'Manage Tabs',
                             breads: [
-                                {a: '#/applications', active: false, title: 'Applications'}
+                                {a: '#/tabs', active: false, title: 'Tabs'}
                             ]
                         });
                     }
                 }
-            }).*/
+            }).
 
             otherwise({
                 redirectTo: '/cm-admin'
@@ -354,3 +357,56 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
     }]);
 
 
+;admin.controller('tabsController', function ($scope, $route, $routeParams, $location, $http, $timeout) {
+    $scope.route = $route;
+    $scope.location = $location;
+    $scope.routeParams = $routeParams;
+    $scope.tabs = null;
+
+    $scope.init = function () {
+        $http.get('/api/tabs/all').success(function (res) {
+            if (res.result && res.tabs) {
+                $scope.tabs = res.tabs;
+            }
+        });
+    };
+
+    function updateTabResult(updated, tabs) {
+        for (var i in tabs) {
+            var wdg = tabs[i];
+            if (wdg.name == updated.name) {
+                wdg.isActive = updated.isActive;
+            }
+        }
+
+        $timeout(function () {
+            $scope.$apply()
+        });
+    }
+
+    $scope.activate = function (tabName) {
+        $http.put('/api/tabs/' + tabName, {
+            isActive: true
+        }).success(function (res) {
+            if (res.result && res.tab) {
+                res.tab.isActive = true;
+                updateTabResult(res.tab, $scope.tabs);
+            }
+        });
+    };
+
+    $scope.deactivate = function (tabName) {
+        $http.put('/api/tabs/' + tabName, {
+                isActive: false
+            })
+            .success(function (res) {
+                if (res.result && res.tab) {
+                    res.tab.isActive = false;
+                    updateTabResult(res.tab, $scope.tabs);
+                }
+            });
+    };
+
+    $scope.init();
+
+});

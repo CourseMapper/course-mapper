@@ -1,0 +1,116 @@
+<div ng-controller="CourseController">
+
+    <div class="col-xs-12 col-md-8">
+        <div class="row">
+            <div class="box box-solid excerpt">
+                <div class="box-header with-border">
+                    <h3 class="box-title"> {{course.name}} </h3>
+                </div><!-- /.box-header -->
+                <div class="box-body description">
+                    Started
+                    <strong>
+                        {{course.dateAdded | relativeDate}}
+                    </strong>
+
+                    By
+                    <strong>
+                        {{course.createdBy.displayName}}
+                    </strong>
+
+                    <p ng-show="course.courseTags.length > 0" class="filter">
+                        <a class="label label-primary" style="cursor: default"
+                           ng-repeat="tag in course.courseTags">
+                            {{tag.name}}</a>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 preview-image-container">
+                <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
+                <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
+            </div>
+        </div>
+        <div class="row" style="height: 15px;"></div>
+        <div class="row">
+            <div class="col-xs-12 col-md-5" ng-show="course.video">
+                <videogular vg-cue-points="cuePoints" vg-player-ready="onPlayerReady($API)">
+                    <vg-media vg-src="videoSources"></vg-media>
+                    <vg-controls>
+                        <vg-play-pause-button></vg-play-pause-button>
+                        <vg-time-display>{{ currentTime | date:'HH:mm:ss':'UTC' }}</vg-time-display>
+                        <vg-scrub-bar>
+                            <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                        </vg-scrub-bar>
+                        <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
+                        <vg-volume>
+                            <vg-mute-button></vg-mute-button>
+                            <vg-volume-bar></vg-volume-bar>
+                        </vg-volume>
+                        <vg-fullscreen-button></vg-fullscreen-button>
+                    </vg-controls>
+                </videogular>
+            </div>
+
+            <div class="col-xs-12" ng-class="{'col-md-7': (course.video)}">
+                <div class="box box-solid excerpt no-shadow">
+                    <div class="box-header with-border">
+                        <h3 class="box-title"> Description: </h3>
+                    </div><!-- /.box-header -->
+                    <div class="box-body description no-border">
+                        <p ng-bind-html="course.description | unsafe">
+                        </p>
+                    </div><!-- /.box-body -->
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- analytics-->
+    <div id="course-preview-widgets" class="grid-stack col-xs-12 col-md-3"
+         ng-controller="widgetCoursePreviewController">
+
+        <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
+            There is no registered widget here.
+        <span ng-show="isOwner" class="empty-widget">
+          Go to the widget store to add one.
+        </span>
+        </div>
+
+        <div class="grid-stack-item"
+             data-gs-locked="yes"
+             data-gs-no-resize="yes"
+             ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}">
+
+            <div class="grid-stack-item-content">
+                <div class="box no-shadow">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{wdg.widget}}</h3>
+
+                        <div class="box-tools pull-right" ng-show="checkOwnership(wdg.userId)">
+                            <button class="btn btn-box-tool" data-widget="remove"
+                                    data-toggle="tooltip" title="Remove"
+                                    ng-click="closeWidget(wdg._id);"
+                            >
+                                <i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="box-body-widget">
+
+                        <div ng-include src="wdg.widgetId.entryPoint"
+                             onload="initWidgetButton(wdg.widgetId._id)">
+                        </div>
+
+                    </div>
+                    <div class="box-footer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- analytics-->
+
+
+</div>

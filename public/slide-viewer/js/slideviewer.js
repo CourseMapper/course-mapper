@@ -277,6 +277,9 @@ function switchRegexFilter(attribute,value){
 function createMovableAnnZone() {
   var element = loadRect(0, 0, 0.3, 0.3, "ac725e", "", true, false, "");
   addAnnotationZoneElement(element);
+  var annZoneId = element.attr('id');
+
+  angular.element($("#annZoneList")).scope().tagNamesList[annZoneId] = "";
 };
 
 /*

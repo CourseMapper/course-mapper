@@ -16,8 +16,11 @@ var courseSchema = new mongoose.Schema({
     description: { type: String },
     picture: { type: String },
     video: { type: String },
+    settings: { type: mongoose.Schema.Types.Mixed},
+    tabsActive: { type: mongoose.Schema.Types.Mixed},
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'categories', required: true},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
+    managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users'}],
     courseTags:[{ type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
     dateAdded: { type: Date },
     dateUpdated: { type: Date }

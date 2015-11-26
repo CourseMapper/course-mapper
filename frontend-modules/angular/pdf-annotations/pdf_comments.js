@@ -1,5 +1,7 @@
 app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
+    $scope.recentSubmitOnAnnotation = "";
+
     $scope.comment = {};
 
     $scope.editRawText = [];
@@ -38,10 +40,12 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
 
 
-    $rootScope.$on('onPdfPageChange', function (e, params) {
+    var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function (e, params) {
         $scope.currentPageNumber = params[0];
         $scope.getComment($scope.orderType.id);
     });
+
+    $rootScope.$on('$destroy',pdfPageChangeListener);
 
     $scope.orderingOptions = [
         {id: 'dateOfCreation.descending', name: 'Newest First'},
@@ -182,6 +186,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
                 //TODO: reset everything
               }
               //console.log("commReplyEv");
+
+              $scope.recentSubmitOnAnnotation = id;
+
+              //console.log("Recent: "+ $scope.recentSubmitOnAnnotation);
+
               $rootScope.$broadcast('reloadTags');
 
               $scope.writeCommentMode = false;
@@ -666,6 +675,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
+        $rootScope.switchShowAnnoZones = "On"
         createMovableAnnZone();
     };
 

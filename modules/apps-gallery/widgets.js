@@ -13,6 +13,7 @@ var widgetSchema = new mongoose.Schema({
     icon: {type: String},
     runOn: {type: String},
 
+    allowMultipleInstallation: {type: Boolean, required: true, default:false},
     isActive: {type: Boolean, required: true, default:false},
 
     dateAdded: {type: Date},

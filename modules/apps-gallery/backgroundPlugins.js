@@ -55,7 +55,7 @@ var BackgroundPlugins = {
                             }
                         }
                     } catch (e) {
-                        debug('no hook logic file exist');
+                        //debug('no hook logic file exist');
                     }
                 }
             }

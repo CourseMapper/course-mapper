@@ -6,8 +6,11 @@ var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:db');
-
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
+var _ = require('underscore')
 
 function catalog() {
 }
@@ -87,7 +90,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     if (params.parent)
         node.parent = params.parent;
 
-    function insertNodeToParent(node, tn, success){
+    function insertNodeToParent(node, tn, success) {
         if (node.parent) {
             TreeNodes.findOne({_id: node.parent}, function (err, doc) {
                 if (doc) {
@@ -112,7 +115,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         }
     }
 
-    function attachLinkToNode(contentNode, type, url){
+    function attachLinkToNode(contentNode, type, url) {
         var Res = new Resources({
             type: type,
             createdBy: contentNode.createdBy,
@@ -148,12 +151,12 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         debug('success attaching files');
     }
 
-    function cbAfterSave(tn, files, self, node, params, success){
-        if(params.pdfHostLink){
+    function cbAfterSave(tn, files, self, node, params, success) {
+        if (params.pdfHostLink) {
             attachLinkToNode(tn, 'pdf', params.pdfHostLink);
         }
 
-        if(params.videoHostLink){
+        if (params.videoHostLink) {
             attachLinkToNode(tn, 'video', params.videoHostLink);
         }
 
@@ -173,24 +176,24 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     }
 
     // this is edit mode
-    if(params._id){
+    if (params._id) {
         node._id = params._id;
-        TreeNodes.findOne({_id: node._id, createdBy: params.createdBy}, function (err, tn){
-            if(err){
+        TreeNodes.findOne({_id: node._id, createdBy: params.createdBy}, function (err, tn) {
+            if (err) {
                 error(err);
             } else {
-                if(tn){
+                if (tn) {
                     tn.name = node.name;
-                    tn.save(function(err){
+                    tn.save(function (err) {
                         if (err) {
                             debug('failed adding Tree Node');
                             error(err);
                         } else {
-                            if(params.pdfHostLink){
+                            if (params.pdfHostLink) {
                                 attachLinkToNode(tn, 'pdf', params.pdfHostLink);
                             }
 
-                            if(params.videoHostLink){
+                            if (params.videoHostLink) {
                                 attachLinkToNode(tn, 'video', params.videoHostLink);
                             }
 
@@ -219,7 +222,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         node.positionFromRoot = {x: 40, y: 60};
 
         var tn = new TreeNodes(node);
-        tn.save(function(err){
+        tn.save(function (err) {
             if (err) {
                 debug('failed adding Tree Node');
                 error(err);
@@ -246,6 +249,18 @@ catalog.prototype.getTreeNode = function (error, params, success) {
                 error(helper.createError404("Tree Node"));
             }
         }
+    });
+};
+
+catalog.prototype.getNodeAsync = function () {
+    return async(function (params) {
+        var nod = await(TreeNodes.findOne(params)
+            .populate('createdBy', '_id username displayName')
+            .populate('courseId')
+            .exec()
+        );
+
+        return nod;
     });
 };
 
@@ -341,9 +356,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
             if (!tn)
                 error(helper.createError404("Node"));
             else {
-                if (paramsUpdate['name']) {
-                    tn.name = paramsUpdate['name'];
-                }
+                _.extend(tn, paramsUpdate);
 
                 tn.save(function (err) {
                     if (err) {
@@ -364,10 +377,27 @@ catalog.prototype.deleteNode = function (error, params, success) {
     TreeNodes.findById(params).exec(function (err, tn) {
         if (err) error(err);
         else {
-            if (!tn)
-                error(helper.createError404("Node"));
+            if (!tn) {
+                return error(helper.createError404("Node"));
+            }
 
-            else {
+            if (tn.isDeleted) {
+                if (tn.childrens.length == 0) {
+                    // find parent,
+                    // remove this tn from parent's children subdocs
+                    TreeNodes.findOneAndUpdate({_id: tn.parent}, {$pull: {childrens: tn._id}},
+                        function (err, data) {
+                        });
+
+                    // is already deleted, means we want to remove it forever
+                    tn.remove(function () {
+                        success(true)
+                    });
+                } else {
+                    error(helper.createError('Cannot delete node with childrens'));
+                }
+
+            } else {
                 tn.isDeleted = true;
                 tn.dateDeleted = new Date();
                 tn.save(
@@ -383,8 +413,42 @@ catalog.prototype.deleteNode = function (error, params, success) {
                 );
             }
         }
-
     });
 };
+
+/**
+ * check is this user a post owner
+ * @param params {userId: objectId, postId: objectId}
+ */
+catalog.prototype.isNodeOwner = async(function (params) {
+    var po = await(TreeNodes.findOne({
+        _id: params.nodeId,
+        createdBy: params.userId
+    }).exec());
+
+    if (po)
+        return true;
+
+    return false;
+});
+
+/**
+ * check for permission, manager, admin, post owner
+ * @param params {userId: objectId, nodeId: objectId}
+ */
+catalog.prototype.isNodeAuthorized = async(function (params) {
+    // check for admin and manager and crs owner or post owner
+    var isAllowd = await(this.isNodeOwner(params));
+    if (isAllowd) return true;
+
+    var sNode = await(TreeNodes.findById(params.nodeId).exec());
+    if (sNode) {
+        params.courseId = sNode.courseId;
+        isAllowd = await(userHelper.isCourseAuthorizedAsync(params));
+        if (isAllowd) return true;
+    }
+
+    return false;
+});
 
 module.exports = catalog;

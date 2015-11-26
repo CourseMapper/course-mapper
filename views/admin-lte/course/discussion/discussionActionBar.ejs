@@ -1,0 +1,16 @@
+<ul ng-controller="ActionBarController">
+    <li ng-show="isEnrolled || isOwner || isManager || isAdmin">
+        <a style="cursor: pointer;"
+           data-toggle="modal" data-target="#addNewTopicModal"
+           title="Add New Topic">
+            <i class="ionicons ion-android-add"></i> &nbsp; ADD NEW TOPIC</a>
+    </li>
+
+    <li ng-repeat="EAM in extraActionsMenu">
+        <a ng-if="EAM.html" ng-bind-html="EAM.html|unsafe"></a>
+        <i class="ionicons ion-android-more-vertical" ng-if="EAM.separator">&nbsp;</i>
+        <a class="cursor" title="EAM.aTitle" ng-show="EAM.clickAction" ng-click="EAM.clickAction(EAM.clickParams)"
+           ng-bind-html="EAM.title|unsafe">
+        </a>
+    </li>
+</ul>

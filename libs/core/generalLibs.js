@@ -23,8 +23,12 @@ var cmLibraries = {
 
         if (errors.length > 0) {
             var msg = 'Missing required parameters ' + errors.join(', ');
-            errorCallback(cmLibraries.createError(msg, 400));
-            return false;
+            if (errorCallback) {
+                errorCallback(cmLibraries.createError(msg, 400));
+                return false;
+            }
+            else
+                throw (cmLibraries.createError(msg, 400));
         }
 
         return true;
@@ -41,6 +45,17 @@ var cmLibraries = {
     createError404: function (objectName) {
         var error = new Error('Cannot find ' + objectName);
         error.httpCode = 404;
+
+        return error;
+    },
+
+    createError401: function (msg) {
+        if (!msg) {
+            msg = 'Not Authorized';
+        }
+
+        var error = new Error(msg);
+        error.httpCode = 401;
 
         return error;
     },
@@ -73,14 +88,14 @@ var cmLibraries = {
                 var ek = err.errors[i];
                 errMsg.push(i + ':' + ek.message);
             }
-        } else if(typeof err == 'string'){
+        } else if (typeof err == 'string') {
             errMsg.push(err);
-        } else if(err.message){
+        } else if (err.message) {
             errMsg.push(err.message);
         } else {
             try {
                 errMsg.push(JSON.stringify(err));
-            } catch(exc){
+            } catch (exc) {
                 errMsg.push(exc);
             }
         }

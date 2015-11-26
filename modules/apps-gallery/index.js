@@ -5,53 +5,18 @@ var mongoose = require('mongoose');
 var Widgets = require(appRoot + '/modules/apps-gallery/widgets.js');
 var WP = require(appRoot + '/modules/apps-gallery/widgetsPlacements.js');
 var Courses = require(appRoot + '/modules/catalogs/courses.js');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var _ = require('underscore');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
-function AppStore(){
+function AppStore() {
     this.directory = appRoot + '/modules/applications';
 }
 
-AppStore.prototype.init = function(){ };
-
-/**
- * getting app list and widgets inside
- * todo: make it get from DB instead of reading and parsing json files
-
-AppStore.prototype.getApps = function(failed, isActive, success){
-    var self = this;
-    fs.readdir(self.directory + p.sep, function(err, paths){
-        if (err) throw err;
-
-        var appsPool = [];
-
-        for(var i in paths){
-            var dir = paths[i];
-
-            // check if it exist
-            var configPath = self.directory + p.sep + dir + p.sep + 'config.json';
-            var stats = fs.lstatSync(configPath);
-
-            if(stats.isFile()){
-                // lets read the config file
-                var json = fs.readFileSync(configPath, 'utf8');
-                var app = JSON.parse(json);
-
-                // only add app that is activated by admin
-                if(isActive && app.isActive){
-                    appsPool.push(app);
-                }
-                // add all
-                else if(!isActive){
-                    appsPool.push(app);
-                }
-            }
-        }
-
-        success(appsPool);
-    });
-};*/
+AppStore.prototype.init = function () {
+};
 
 /**
  *
@@ -59,9 +24,9 @@ AppStore.prototype.getApps = function(failed, isActive, success){
  * @param params
  * @param success cb
  */
-AppStore.prototype.getWidgets = function(error, params, success){
-    Widgets.find(params, function(err, widgets){
-        if(err)
+AppStore.prototype.getWidgets = function (error, params, success) {
+    Widgets.find(params, function (err, widgets) {
+        if (err)
             error();
         else
             success(widgets, params);
@@ -74,9 +39,9 @@ AppStore.prototype.getWidgets = function(error, params, success){
  * @param params
  * @param success cb
  */
-AppStore.prototype.updateWidget = function(failed, params, updateParams, success){
-    Widgets.findOneAndUpdate(params, updateParams, {upsert:true}, function(err, wdg){
-        if(err)
+AppStore.prototype.updateWidget = function (failed, params, updateParams, success) {
+    Widgets.findOneAndUpdate(params, updateParams, {upsert: true}, function (err, wdg) {
+        if (err)
             failed(err);
         else
             success(wdg);
@@ -89,22 +54,22 @@ AppStore.prototype.updateWidget = function(failed, params, updateParams, success
  * @param failed
  * @param success
  */
-AppStore.prototype.readApps = function(failed, success){
+AppStore.prototype.readApps = function (failed, success) {
     var self = this;
 
-    fs.readdir(self.directory + p.sep, function(err, paths){
+    fs.readdir(self.directory + p.sep, function (err, paths) {
         if (err) throw err;
 
         var appsPool = [];
 
-        for(var i in paths){
+        for (var i in paths) {
             var dir = paths[i];
 
             // check if the config file exist
             var configPath = self.directory + p.sep + dir + p.sep + 'config.json';
             var stats = fs.lstatSync(configPath);
 
-            if(stats.isFile()){
+            if (stats.isFile()) {
                 // lets read the config file
                 var json = fs.readFileSync(configPath, 'utf8');
                 var app = JSON.parse(json);
@@ -123,14 +88,14 @@ AppStore.prototype.readApps = function(failed, success){
  * @param failed
  * @param success
  */
-AppStore.prototype.populateApplications = function(failed, success){
+AppStore.prototype.populateApplications = function (failed, success) {
     var self = this;
 
     // inner function to check if this widget exist in the db
-    function isWidgetExist(widget, widgetsInDB){
-        for(var i in widgetsInDB){
+    function isWidgetExist(widget, widgetsInDB) {
+        for (var i in widgetsInDB) {
             var wdb = widgetsInDB[i];
-            if(wdb.name == widget.name){
+            if (wdb.name == widget.name) {
                 return wdb;
             }
         }
@@ -138,19 +103,19 @@ AppStore.prototype.populateApplications = function(failed, success){
         return false;
     }
 
-    self.readApps(failed, function(apps){
-        if(apps){
-            for(var i in apps){
+    self.readApps(failed, function (apps) {
+        if (apps) {
+            for (var i in apps) {
                 var app = apps[i];
 
                 // get the widgets on the db that is in this app.
-                self.getWidgets(failed, {application: app.dir}, function(widgets, p){
+                self.getWidgets(failed, {application: app.dir}, function (widgets, p) {
 
-                    for(var j in this.app.widgets) {
+                    for (var j in this.app.widgets) {
                         var wdg = this.app.widgets[j];
 
                         // first we need to get the widget, is it in the db or not
-                        if(existing = isWidgetExist(wdg, widgets)){
+                        if (existing = isWidgetExist(wdg, widgets)) {
                             // this widget is already in DB
                             // update with the newest value
                             _.extend(existing, wdg);
@@ -166,13 +131,14 @@ AppStore.prototype.populateApplications = function(failed, success){
                     }
 
                     // now delete the widgets that are in db, but not in config.json
-                    for(var k in widgets){
+                    for (var k in widgets) {
                         var w = widgets[k];
-                        if(!isWidgetExist(w, this.app.widgets)){
-                            Widgets.findByIdAndRemove(w._id, function(err, success){});
+                        if (!isWidgetExist(w, this.app.widgets)) {
+                            Widgets.findByIdAndRemove(w._id, function (err, success) {
+                            });
                         }
                     }
-                }.bind({app:app}));
+                }.bind({app: app}));
             }
         }
 
@@ -180,24 +146,24 @@ AppStore.prototype.populateApplications = function(failed, success){
     });
 };
 
-AppStore.prototype.getServerWidgets = function(error, params, widgetParams, success){
+AppStore.prototype.getServerWidgets = function (error, params, widgetParams, success) {
     params.runOn = 'server';
     Widgets.find(params).exec(
-        function(err, docs){
-            if(err) error(err);
-            else{
+        function (err, docs) {
+            if (err) error(err);
+            else {
                 var resHtml = "";
-                var loopWidgets = async ( function(docs){
+                var loopWidgets = async(function (docs) {
 
-                    for(var i in docs){
-                        var widg = docs[i]; 
+                    for (var i in docs) {
+                        var widg = docs[i];
 
                         var ep = appRoot + ('/modules/applications' + widg.entryPoint);
                         var OBJ = require(ep);
                         var widgetInstance = new OBJ();
 
-                        await ( widgetInstance.init(widgetParams) );
-                        await ( widgetInstance.run() );
+                        await(widgetInstance.init(widgetParams));
+                        await(widgetInstance.run());
 
                         var resHtmlTemp = widgetInstance.render();
                         resHtml += resHtmlTemp;
@@ -207,10 +173,10 @@ AppStore.prototype.getServerWidgets = function(error, params, widgetParams, succ
                 });
 
                 loopWidgets(docs)
-                    .then(function(html){
+                    .then(function (html) {
                         success(html);
                     })
-                    .catch(function(err){
+                    .catch(function (err) {
                         console.log('getServerWidgets failed ' + err);
                         error(err);
                     })
@@ -223,21 +189,21 @@ AppStore.prototype.getServerWidgets = function(error, params, widgetParams, succ
 
 /**
  * get installed widget based on parameters
- * e.g {location, userId, courseId}
+ * e.g {location, userId, courseId, nodeId}
  * @param error
  * @param params
  * @param success
  */
-AppStore.prototype.getInstalledWidgets = function(error, params, success){
-    if(params.courseId)
+AppStore.prototype.getInstalledWidgets = function (error, params, success) {
+    if (params.courseId)
         params.courseId = mongoose.Types.ObjectId(params.courseId);
 
-    if(params.userId)
+    if (params.userId)
         params.userId = mongoose.Types.ObjectId(params.userId);
 
     WP.find(params).populate('widgetId').exec(
-        function(err, widgets){
-            if(err) error(err);
+        function (err, widgets) {
+            if (err) error(err);
             else {
                 success(widgets);
             }
@@ -245,30 +211,67 @@ AppStore.prototype.getInstalledWidgets = function(error, params, success){
     );
 };
 
-AppStore.prototype.setPosition = function(error, params, x, y, success){
-    if(x == null || y == null){
+AppStore.prototype.setPosition = function (error, params, x, y, success) {
+    if (x == null || y == null) {
         error(new Error('x or y position is not provided'));
         return;
     }
 
-    WP.findOne(params, function(err, doc){
-        if(err) error(err);
-        else {
-            doc.position = {
-                x: x,
-                y: y
-            };
+    function docSave(doc){
+        doc.save(function (err, w) {
+            if (err) {
+                error(err);
+            } else {
+                // call success callback
+                success(doc);
+            }
+        });
+    }
 
-            doc.save(function(err, w){
-                if (err) {
-                    error(err);
-                } else {
-                    // call success callback
-                    success(w);
+    WP.findOne({
+        _id: params.widgetId
+    }, function (err, doc) {
+        if (err) {
+            error(err);
+            return;
+        }
+
+        if (!doc) {
+            error(helper.createError404('Widget'));
+            return;
+        }
+
+        doc.position = {
+            x: x,
+            y: y
+        };
+
+        if (params.courseId) {
+            userHelper.isAuthorized(error,
+                {
+                    userId: params.userId,
+                    courseId: params.courseId
+                },
+
+                function (isAllowed) {
+                    if (isAllowed) {
+                        docSave(doc);
+                    } else {
+                        error(helper.createError401());
+                    }
                 }
-            });
+            );
+        }
+
+        else if (params.userId == doc.userId) {
+            docSave(doc);
+        }
+
+        else {
+            error(helper.createError401());
         }
     });
+
 };
 
 /**
@@ -278,22 +281,22 @@ AppStore.prototype.setPosition = function(error, params, x, y, success){
  * @param params
  * @param success
  */
-AppStore.prototype.installWidget = function(error, params, success){
+AppStore.prototype.installWidget = function (error, params, success) {
     var self = this;
 
-    function saveWidgetInstall(){
+    function saveWidgetInstall() {
         // get the widget config
         self.getWidgets(
             error,
             {
-                isActive:true,
+                isActive: true,
                 application: params.application,
                 name: params.widget,
                 location: params.location
             },
 
-            function(widgets){
-                if(widgets.length > 0){
+            function (widgets) {
+                if (widgets.length > 0) {
                     var wdg = widgets[0];
 
                     // create the installation information
@@ -308,75 +311,156 @@ AppStore.prototype.installWidget = function(error, params, success){
                         width: wdg.width,
                         height: wdg.height,
 
-                        position: {x:0, y:0}
+                        position: {x: 0, y: 0}
                     };
 
-                    if(params.userId)
-                        ins.userId = mongoose.Types.ObjectId(params.userId);
+                    if (params.userId)
+                        ins.userId = params.userId;
 
-                    if(params.courseId)
-                        ins.courseId = mongoose.Types.ObjectId(params.courseId);
+                    if (params.courseId)
+                        ins.courseId = params.courseId;
 
-                    if(params.categoryId)
-                        ins.categoryId = mongoose.Types.ObjectId(params.categoryId);
+                    if (params.categoryId)
+                        ins.categoryId = params.categoryId;
 
-                    if(params.location == 'course-preview' || params.location == 'course-analytics'){
+                    var where = {
+                        application: wdg.application,
+                        widget: wdg.name,
+                        location: wdg.location
+                    };
+
+                    if (params.userId) {
+                        where.userId = params.userId
+                    }
+
+                    // this widget can be installed multiple of times
+                    if (wdg.allowMultipleInstallation) {
+                        var newInstall = new WP(ins);
+                        newInstall.save(function (err) {
+                            if (err) {
+                                error(err);
+                            } else
+                                success(newInstall);
+                        });
+
+                    } else {
+                        // we only installation once per widget per user
                         WP.findOneAndUpdate(
-                            {
-                                application: wdg.application,
-                                widget: wdg.name,
-                                location: wdg.location
-                            },
+                            where,
                             ins,
-                            {upsert:true},
-                            function(err, doc){
-                                if(err) error(err);
-                                success(doc);
+
+                            {upsert: true},
+
+                            function (err, doc) {
+                                if (err)
+                                    error(err);
+                                else
+                                    success(doc);
                             }
                         );
                     }
-                    else if(params.location == 'user-profile'){
-                        WP.findOneAndUpdate(
-                            {
-                                application: wdg.application,
-                                widget: wdg.name,
-                                userId: params.userId,
-                                location: wdg.location
-                            },
-                            ins,
-                            {upsert:true},
-                            function(err, doc){
-                                if(err) error(err);
-                                success(doc);
-                            }
-                        );
-                    }
+
                 }
             }
         );
     }
 
     // check owner of this course and submitter
-    if(params.location == 'course-preview' || params.location == 'course-analytics'){
-        if(!params.courseId)
-            throw ("no course id when location is course-preview");
+    if (params.courseId) {
+        // there is a courseId in params, means this is a course widgets
+        if (!helper.checkRequiredParams(params, ['userId'], error)) {
+            return;
+        }
 
-        Courses.findOne({
-            _id: mongoose.Types.ObjectId(params.courseId),
-            createdBy:mongoose.Types.ObjectId(params.userId)
-        })
-        .exec(function(err, course){
-            if (err)
-                return error(err);
-            // this user is the owner of this course
-            if(course){
-                saveWidgetInstall();
+        userHelper.isAuthorized(
+            error,
+
+            {
+                userId: params.userId,
+                courseId: params.courseId
+            },
+
+            function (ret) {
+                // isOwnerOrManager
+                if (ret) {
+                    saveWidgetInstall();
+                } else {
+                    error(helper.createError('Cannot edit course', 401));
+                }
             }
-        });
+        );
     }
-    else if(params.location == 'user-profile'){
+
+    else {
+        // we are here means there is no course id. possible location: user-profile
+        if (!helper.checkRequiredParams(params, ['userId'], error)) {
+            return;
+        }
+
         saveWidgetInstall();
     }
+};
+
+/**
+ *
+ * @param error
+ * @param params{_id:widgetPlacementId, userId:personInstallingId}
+ * @param success
+ */
+AppStore.prototype.uninstallWidget = function (error, params, success) {
+    if (!helper.checkRequiredParams(params, ['_id', 'userId'], error)) {
+        return;
+    }
+
+    function deleteWidgetPlacement(deleteParams){
+        WP.findOneAndRemove(
+            deleteParams,
+
+            function (err, doc) {
+                if (err)
+                    error(err);
+                else if (doc)
+                    success(doc);
+                else {
+                    error(helper.createError404('Widget Installation'));
+                }
+            }
+        );
+    }
+
+    if(params.courseId) {
+        userHelper.isAuthorized(
+            function (err) {
+                error(err);
+            },
+            {
+                userId: params.userId,
+                courseId: params.courseId
+            },
+            function (isAllowed) {
+                if (isAllowed) {
+                    var deleteParams = {
+                        _id: params._id
+                    };
+
+                    deleteWidgetPlacement(deleteParams);
+                } else {
+                    error(helper.createError401());
+                }
+            }
+        );
+    }
+
+    else {
+        var deleteParams = {
+            _id: params._id,
+            userId: params.userId
+        };
+
+        deleteWidgetPlacement(deleteParams);
+    }
+
+
 };
 
 module.exports = AppStore;

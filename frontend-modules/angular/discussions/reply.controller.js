@@ -21,7 +21,6 @@ app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
         if (!isValid)
             return;
 
-        console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
         $scope.AddFormData.parentPost = $scope.$parent.currentReplyingTo;
 
         $scope.isLoading = true;

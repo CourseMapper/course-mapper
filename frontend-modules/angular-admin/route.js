@@ -46,20 +46,20 @@ admin.config(['$routeProvider',
                 }
             }).
 
-            /*when('/application/:appName', {
-                templateUrl: '/cm-admin/application',
-                controller: 'applicationController',
+            when('/tabs', {
+                templateUrl: '/cm-admin/tabs',
+                controller: 'tabsController',
                 resolve: {
                     pd: function( $q ) {
                         return( {
-                            title: 'Manage Applications',
+                            title: 'Manage Tabs',
                             breads: [
-                                {a: '#/applications', active: false, title: 'Applications'}
+                                {a: '#/tabs', active: false, title: 'Tabs'}
                             ]
                         });
                     }
                 }
-            }).*/
+            }).
 
             otherwise({
                 redirectTo: '/cm-admin'

@@ -166,7 +166,7 @@ app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLo
     };
 
     $scope.setPosition = function(wId, x, y){
-        $http.put('/api/widget/' + wId + '/setPosition/', {
+        $http.put('/api/widget/' + wId + '/setPosition', {
             x:x, y:y
         }).success(function(res){
             /*if(res.result)

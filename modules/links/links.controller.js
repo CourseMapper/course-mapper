@@ -1,12 +1,14 @@
-var config = require('config');
-var Posts = require('../discussion/models/posts.js');
 var Links = require('./models/links.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
-function NodeLinks(){
+function NodeLinks() {
 }
 
 /**
@@ -17,19 +19,24 @@ function NodeLinks(){
  * @param params
  * @param success
  */
-NodeLinks.prototype.getNodeLinks = function(error, nodeId, success){
-    if(!nodeId)
+NodeLinks.prototype.getNodeLinks = function (error, nodeId, pageParams, success) {
+    if (!nodeId)
         return error(helper.createError(msg, 400));
 
+    if (!pageParams.lastPage || pageParams.lastPage == 'false') {
+        pageParams.lastPage = 0;
+    }
+
     Links.find({
-        contentNode: nodeId,
-        isDeleted: false
-    })
+            contentNode: nodeId,
+            isDeleted: false
+        })
         .sort({dateAdded: -1})
-        .populate('link')
+        .skip(pageParams.lastPage)
+        .limit(pageParams.limit)
         .populate('createdBy', 'username displayName')
-        .exec(function(err, docs) {
-            if (err){
+        .exec(function (err, docs) {
+            if (err) {
                 error(err);
             } else {
                 success(docs);
@@ -37,22 +44,21 @@ NodeLinks.prototype.getNodeLinks = function(error, nodeId, success){
         });
 };
 
-NodeLinks.prototype.getNodeLink = function(error, pId, success){
-    if(!pId)
+NodeLinks.prototype.getNodeLink = function (error, pId, success) {
+    if (!pId)
         return error(helper.createError(msg, 400));
 
     Links.findOne({
-        _id: pId
-    })
+            _id: pId
+        })
         .sort({dateAdded: -1})
-        .populate('link')
         .populate('createdBy', 'username displayName')
-        .exec(function(err, doc) {
+        .exec(function (err, doc) {
             if (err) {
                 error(err);
             } else {
-                if(!doc){
-                    helper.createError404('Course')
+                if (!doc) {
+                    helper.createError404('Link')
                 } else {
                     success(doc);
                 }
@@ -60,11 +66,10 @@ NodeLinks.prototype.getNodeLink = function(error, pId, success){
         });
 };
 
-NodeLinks.prototype.editPost = function(error, params, success){
-    Posts.findOneAndUpdate(
+NodeLinks.prototype.editPost = function (error, params, success) {
+    Links.findOneAndUpdate(
         {
-            _id: params.postId,
-            createdBy: params.userId
+            _id: params.linkId
         },
         {
             $set: {
@@ -73,109 +78,126 @@ NodeLinks.prototype.editPost = function(error, params, success){
             }
         },
         {safe: true, upsert: true},
-        function(err, doc){
-            if(err)
+        function (err, doc) {
+            if (err)
                 error(err);
-            else
+            else {
+                Plugin.doAction('onAfterLinkEdited', doc);
                 success(doc);
+            }
         });
 };
 
-NodeLinks.prototype.deletePost = function(error, params, success){
-    Posts.update(
+NodeLinks.prototype.deletePost = function (error, params, success) {
+    Links.update(
         {
-            _id: params.postId,
-            createdBy: params.userId
+            _id: params.linkId
         },
         {
             $set: {
                 isDeleted: true
             }
         },
-        function(err, doc){
-            if(err)
+        function (err, doc) {
+            if (err)
                 error(err);
             else {
-                if(params.nodeId){
-                    Links.update({
-                            link: params.postId,
-                            createdBy: params.userId
-                        },
-                        {
-                            $set: {
-                                isDeleted: true
-                            }
-                        },
-                    function(){
-                        success(doc);
-                    });
-                }
-                else
-                    success(doc);
+                Plugin.doAction('onAfterLinkDeleted', params.linkId);
+                success(doc);
             }
         });
 };
 
-NodeLinks.prototype.addPost = function(error, params, success){
+NodeLinks.prototype.addPost = function (error, params, success) {
     var self = this;
 
-    var newPost = new Posts({
+    var newPost = new Links({
         title: params.title,
         content: params.content,
         createdBy: params.createdBy,
-        isDeleted: false
+        isDeleted: false,
+        contentNode: params.nodeId
     });
 
     newPost.setSlug(params.title);
-    newPost.save(function(err) {
+    newPost.save(function (err) {
         if (err) {
             error(err);
             return;
         }
 
-        // set parent and parentsPath
-        {
-            if (params.parentPost) {
-                newPost.parentPost = params.parentPost;
-                newPost.save();
-
-                // put this guy as its child
-                Posts.findOne({_id: params.parentPost}, function (err, doc) {
-                    if (!err) {
-                        if(doc) doc.childPosts.push(newPost._id);
-                    }
-                });
-            }
-
-            if (params.parentPath) {
-                newPost.parentPath = params.parentPath;
-                newPost.save();
-            }
-        }
-
-        // make a relation to NodeLinks
-        if(params.nodeId) {
-            var cd = new Links({
-                contentNode: params.nodeId,
-                createdBy: params.createdBy,
-                link: newPost._id,
-                isDeleted: false
-            });
-
-            cd.save(function (err) {
-                if (!err) {
-                    //cd.link = newPost;
-                    self.getNodeLink(error, cd._id, function(b){
-                        success(b);
-                    });
-                } else error(err);
-            });
-
-        } else {
-            // there is no course id, maybe its a reply
-            success(newPost);
-        }
+        Plugin.doAction('onAfterLinkCreated', newPost);
+        success(newPost);
     });
 };
+
+
+/**
+ * check for enrollement, manager and admin always enrolled
+ *
+ * @param params {postId:objectId, userId:objectId}
+ */
+NodeLinks.prototype.isLinkEnrolled = async(function (params) {
+    // maybe it is a main post
+    var findCourse = await(
+        Links.findOne({_id: params.linkId})
+            .populate('contentNode')
+            .exec()
+    );
+
+    if (findCourse && findCourse.contentNode && findCourse.contentNode.courseId) {
+        var isAllowd = await(userHelper.isEnrolledAsync({
+            userId: params.userId,
+            courseId: findCourse.contentNode.courseId
+        }));
+        if (isAllowd)
+            return isAllowd;
+    }
+
+    return false;
+});
+
+/**
+ * check for permission, manager, admin, post owner
+ * @param params {userId: objectId, postId: objectId}
+ */
+NodeLinks.prototype.isLinkAuthorized = async(function (params) {
+    // check for admin and manager and crs owner or post owner
+    var isAllowd = await(this.isLinkOwner(params));
+    if (isAllowd) return true;
+
+    // maybe it is a discussion post
+    var findCourse = await(
+        Links.findOne({_id: params.linkId})
+            .populate('contentNode')
+            .exec()
+    );
+
+    if (findCourse && findCourse.contentNode && findCourse.contentNode.courseId) {
+        isAllowd = await(userHelper.isCourseAuthorizedAsync({
+            userId: params.userId, courseId: findCourse.contentNode.courseId
+        }));
+
+        if (isAllowd) return true;
+    }
+
+    return false;
+});
+
+/**
+ * check is this user a post owner
+ * @param params {userId: objectId, postId: objectId}
+ */
+NodeLinks.prototype.isLinkOwner = async(function (params) {
+    var po = await(Links.findOne({
+        _id: params.linkId,
+        createdBy: params.userId
+    }).exec());
+
+    if (po)
+        return true;
+
+    return false;
+});
 
 module.exports = NodeLinks;
