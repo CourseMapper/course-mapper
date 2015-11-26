@@ -1,5 +1,5 @@
-app.controller('MapController', function ($scope, $http, $rootScope,
-                                          $timeout, $sce, $location,
+app.controller('MapController', function ($scope, $http, $rootScope, authService,
+                                          $timeout, $sce, $location, socket,
                                           toastr, mapService, courseService) {
 
     $scope.treeNodes = [];
@@ -78,6 +78,8 @@ app.controller('MapController', function ($scope, $http, $rootScope,
                     $scope.initJSPlumb();
                     $scope.showMapEmptyInfo();
                 }
+
+                socket.subscribe('map/' + course._id);
             },
 
             function (err) {
@@ -267,10 +269,6 @@ app.controller('MapController', function ($scope, $http, $rootScope,
         }
     };
 
-    $scope.goToDetail = function (categorySlug) {
-        window.location.href = "/courses/#/category/" + categorySlug;
-    };
-
     $scope.setMode = function (mode, type, parent) {
         switch (mode) {
             case 'add':
@@ -332,6 +330,15 @@ app.controller('MapController', function ($scope, $http, $rootScope,
         }
 
         $scope.jsPlumbConnections = [];
+    };
+
+    $scope.reInitiateJSPlumb = function () {
+        $scope.treeNodes = angular.copy($scope.treeNodes);
+        $timeout(
+            function () {
+                $scope.$apply();
+                $scope.initJSPlumb();
+            });
     };
 
     $scope.resourceIcon = function (filetype) {
@@ -399,12 +406,7 @@ app.controller('MapController', function ($scope, $http, $rootScope,
                         $scope.destroyJSPlumb();
 
                         // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.treeNodes = angular.copy($scope.treeNodes);
-                        $timeout(
-                            function () {
-                                $scope.$apply();
-                                $scope.initJSPlumb();
-                            });
+                        $scope.reInitiateJSPlumb();
 
                     } else {
                         if (data.result != null && !data.result) {
@@ -560,4 +562,40 @@ app.controller('MapController', function ($scope, $http, $rootScope,
     });
 
     $scope.tabOpened();
+
+    socket.on('joined', function (data) {
+        console.log(JSON.stringify(data));
+    });
+
+    socket.on('positionUpdated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        var nd = data.nodeId;
+        if (nd) {
+            var lv = Tree.leaves['t' + nd];
+            if (lv) {
+                lv.fromCenter.x = data.x;
+                lv.fromCenter.y = data.y;
+                lv.init(Tree.w, Tree.h);
+                $scope.destroyJSPlumb();
+                $scope.reInitiateJSPlumb();
+            }
+        }
+
+        /*var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
+         if (pNode) {
+         pNode.positionFromRoot = {x: data.x, y: data.y};
+         $timeout(function () {
+         $scope.$apply();
+         });
+
+         $scope.destroyJSPlumb();
+         $scope.reInitiateJSPlumb();
+
+
+         }*/
+
+        console.log(JSON.stringify(data));
+    });
 });

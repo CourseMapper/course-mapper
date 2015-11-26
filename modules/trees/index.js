@@ -4,13 +4,15 @@ var TreeNodes = require('./treeNodes.js');
 var Resources = require('./resources.js');
 var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
+var socketIoHelper = require(appRoot + '/libs/core/socketIoHelper.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:db');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
-var _ = require('underscore')
+var _ = require('underscore');
+
 
 function catalog() {
 }
@@ -329,21 +331,24 @@ catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdat
                 return error(helper.createError404('Node'));
             }
 
+            var updPos = {
+                x: parseInt(paramsUpdate.x),
+                y: parseInt(paramsUpdate.y)
+            };
+
             tn.update({
                 $set: {
-                    positionFromRoot: {
-                        x: paramsUpdate.x,
-                        y: paramsUpdate.y
-                    }
+                    positionFromRoot: updPos
                 }
             }, function (err) {
                 if (err) {
                     debug('failed update node position');
                     error(err);
                 }
-                else
-                // success saved the cat
-                    success(tn);
+                else {
+                    // success saved the node pos
+                    success(tn, updPos);
+                }
             });
         }
     });

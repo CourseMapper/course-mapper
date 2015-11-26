@@ -155,9 +155,14 @@
     var Tree = {
         center: null,
         leaves: {},
+        w: null,
+        h: null,
 
         init: function (w, h) {
             var self = this;
+            self.w = w;
+            self.h = h;
+
             self.center = new Leave($('.center-course'), {x: 0, y: 0});
             self.center.init(w, h);
 
@@ -176,6 +181,9 @@
 
         onWindowResize: function (w, h) {
             var self = this;
+
+            self.w = w;
+            self.h = h;
 
             self.center.onWindowResize(w, h);
             for (var i in self.leaves) {

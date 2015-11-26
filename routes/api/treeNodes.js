@@ -4,6 +4,7 @@ var appRoot = require('app-root-path');
 var Tree = require(appRoot + '/modules/trees/index.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
+var socketIoHelper = require(appRoot + '/libs/core/socketIoHelper.js');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var multiparty = require('connect-multiparty');
@@ -189,7 +190,11 @@ router.put('/treeNodes/:nodeId/positionFromRoot', function (req, res, next) {
                     x: req.body.x,
                     y: req.body.y
                 },
-                function (tn) {
+                function (tn, updPos) {
+                    updPos.nodeId = tn._id;
+                    updPos.userId = req.user._id;
+                    socketIoHelper.io.to('map/' + tn.courseId).emit('positionUpdated', updPos);
+
                     res.status(200).json({treeNode: tn});
                 }
             );
