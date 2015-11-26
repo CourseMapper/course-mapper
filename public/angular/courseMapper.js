@@ -3081,7 +3081,8 @@ app.directive('timepicker', function($timeout) {
     });
 
     $scope.tabOpened();
-});;app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
+});
+;app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
     $scope.isLoading = false;
     $scope.errors = [];
 
