@@ -2103,7 +2103,26 @@ app.directive('movable', function() {
                 };
             }
         };
-    });;app.directive('pdfComment',
+    });;app.directive('pdfAnnotationZone',
+    function ($compile, $timeout) {
+        return {
+            restrict: 'E',
+
+            terminal: true,
+
+            scope: {
+
+            },
+
+            templateUrl: '/angular/views/pdf-annotation-zone.html',
+
+            controller: function($http, $scope, $rootScope, $sce){
+
+            }
+        };
+    }
+);
+;app.directive('pdfComment',
     function ($compile, $timeout) {
         return {
             restrict: 'E',
@@ -4359,8 +4378,25 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.editZoneValues = [];
 
 
+    $scope.annotationZoneList = [];
 
-
+    $scope.addAnnotationZone = function(relLeft,relTop, relWidth, relHeight, color, tagName, dragable, canBeEdited, annZoneId) {
+      var newAnnZone = {
+        relativePosition: {
+          x: relLeft,
+          y: relTop
+        },
+        relativeSize: {
+          x: relWidth,
+          y: relHeight
+        },
+        color: color,
+        tagName: tagName,
+        dragable: dragable,
+        canBeEdited: canBeEdited,
+        annZoneId: annZoneId
+      }
+    };
 
 
     //$scope.annZoneMov = [];

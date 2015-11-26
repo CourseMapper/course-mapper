@@ -1,5 +1,7 @@
 <div class="row" ng-controller="PdfTabController">
 
+
+
     <div id="commentController" class="col-xs-11 container-fluid" ng-controller="CommentListController">
 
         <div class="slide-container col-sm-7 col-md-7">
@@ -52,6 +54,7 @@
 
                            <div id="annZoneList"
                                  ng-controller="AnnotationZoneListController">
+
                                 <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
                                     <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
@@ -97,6 +100,10 @@
                         </fieldset>
                     </form>
                 </div>
+
+                <pdf-annotation-zone>
+                </pdf-annotation-zone>
+                TEST2
 
                 <!--<div id="annotationZoneSubmitListMovables">
                     <button class="btn btn-default" onclick="createMovableAnnZone();">
