@@ -81,10 +81,7 @@ app.directive('pdfViewer',
 
                                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
-                                /*
-                                 todo: move this somewhere else
-                                 currentCanvasHeight = parseInt($('#annotationZone').height());
-                                 drawAnnZonesWhenPDFAndDBDone();*/
+                                
 
                                 return scope.pdfPageView.draw();
                             });

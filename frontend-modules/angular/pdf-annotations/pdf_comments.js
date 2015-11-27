@@ -103,6 +103,38 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         return true;
     };
 
+    /*TODO:ANGANNZONE
+    $scope.populateAnnotationZone = function () {
+        $scope.annotationZones = [];
+
+        var tagNamesList = $rootScope.getTagNamesList();
+        var annotationZoneList = $rootScope.getAnnotationZoneList();
+        for(var inputId in tagNamesList) {
+          var relPosX = annotationZoneList[inputId].relativePosition.x;
+          var relPosY = annotationZoneList[inputId].relativePosition.y;
+          var relWidth = annotationZoneList[inputId].relativeSize.x;
+          var relHeight = annotationZoneList[inputId].relativeSize.y;
+
+          var name = annotationZoneList[inputId].name;
+          var color = annotationZoneList[inputId].color;
+
+          if($rootScope.checkTagName(name) != "") {
+              return false;
+          }
+          else {
+              $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, $scope.currentPageNumber );
+          }
+        }
+
+        $scope.comment.tagNames = $scope.tagNames.join(',');
+        $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
+        $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
+        $scope.comment.tagColor = $scope.tagColor.join(',');
+
+        return true;
+    };
+    */
+
     $scope.addAnnotationZoneData = function (name, relPosX, relPosY, relWidth, relHeight, color, pdfId, pdfPageNumber) {
         $scope.tagNames.push(name);
         $scope.tagRelPos.push(relPosX + ";" + relPosY);
@@ -430,7 +462,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       $scope.$broadcast('onFiltersRawChange');
     };
 
-
+    //TODO:ANGANNZONE
     $scope.commentsLoaded = function () {
         var element = $("#commentList .annotationZoneReference").not('.hasOnClick');
         if ($("#commentList .annotationZoneReference").not('.hasOnClick').length != 0) {
