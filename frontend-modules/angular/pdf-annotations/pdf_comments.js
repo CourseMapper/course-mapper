@@ -773,6 +773,54 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       }
     };
 
+    /*TODO:ANGANNZONE
+
+    $scope.addReference = function(id) {
+      var annZoneList = $rootScope.getAnnotationZoneList();
+      var name = annZoneList[id];
+      //$rootScope.safeApply(function() {
+      if($rootScope.nameHasNoError(name)){
+        if(name !="#")
+        if($scope.writeCommentMode) {
+          if(typeof $scope.comment.rawText == 'undefined')
+            $scope.comment.rawText = name + ' ';
+          else {
+            var len = $scope.comment.rawText.length;
+            var firstPart = $scope.comment.rawText.substring(0,len-6);
+            var lastPart = $scope.comment.rawText.substring(len-6);
+            $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+          }
+        }
+        else if($scope.editMode != -1){
+          if(typeof $scope.editRawText[$scope.editMode] == 'undefined')
+            $scope.editRawText[$scope.editMode] = name + ' ';
+          else {
+            var len = $scope.editRawText[$scope.editMode].length;
+            var firstPart = $scope.editRawText[$scope.editMode].substring(0,len-6);
+            var lastPart = $scope.editRawText[$scope.editMode].substring(len-6);
+            $scope.editRawText[$scope.editMode] = firstPart + ' ' + name + ' ' + lastPart;
+          }
+        }
+        else if($scope.replyMode != -1){
+          if(typeof $scope.replyRawText[$scope.replyMode] == 'undefined')
+            $scope.replyRawText[$scope.replyMode] = name + ' ';
+          else {
+            var len = $scope.replyRawText[$scope.replyMode].length;
+            var firstPart = $scope.replyRawText[$scope.replyMode].substring(0,len-6);
+            var lastPart = $scope.replyRawText[$scope.replyMode].substring(len-6);
+            $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
+          }
+        }
+
+        $timeout(function () {
+            $scope.$apply();
+            $scope.commentsLoaded();
+        });
+      }
+    };
+
+    */
+
     $scope.setEditRawText = function(id,newText) {
       $scope.editRawText[id] = strip(newText);
       $timeout(function () {

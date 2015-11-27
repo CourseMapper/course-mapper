@@ -4,13 +4,14 @@ app.directive('pdfAnnotationZone',
             restrict: 'E',
 
             terminal: true,
-            require: 'movable',
+            require: 'movable-pdf',
             scope: {
 
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
-
+            //replace: true,
+            //transclude: true,
             controller: function($http, $scope, $rootScope, $sce){
               $scope.canMove = true;
               $scope.switchShowAnnoZones = 'On';
