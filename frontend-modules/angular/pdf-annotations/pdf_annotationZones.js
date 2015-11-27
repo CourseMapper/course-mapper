@@ -13,7 +13,16 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.annotationZoneList = new Array();
 
-    $scope.addAnnotationZone = function(relLeft,relTop, relWidth, relHeight, color, tagName, dragable, canBeEdited, annZoneId) {
+    $rootScope.getTagNamesList = function(){
+      return $scope.tagNamesList;
+    };
+
+    $rootScope.getAnnotationZoneList = function(){
+      return $scope.annotationZoneList;
+    };
+
+
+    $scope.addAnnotationZone = function(relLeft,relTop, relWidth, relHeight, color, tagName, isBeingCreated, canBeEdited, annZoneId) {
       var newAnnZone = {
         relativePosition: {
           x: relLeft,
@@ -25,7 +34,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         },
         color: color,
         tagName: tagName,
-        dragable: dragable,
+        dragable: isBeingCreated,
+        isBeingCreated: isBeingCreated,
         canBeEdited: canBeEdited,
         annZoneId: annZoneId
       };
@@ -168,66 +178,68 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       $rootScope.removeAllActiveAnnotationZones = function () {
         for(var inputId in $scope.tagNamesList) {
-            var element = $("#annotationZone #"+inputId);
+          var element = $("#annotationZone #"+inputId);
 
-            //var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
-
-          //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
-          //var inputId = element.attr("id");*/
-          //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-          //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-          //console.log(inputId);
           delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
           angular.element($("#annZoneList")).scope().timeout();
 
-          //annotationInList.parent().remove();
           element.remove();
 
           delete $scope.tagNameErrors[inputId];
           delete $scope.tagNamesList[inputId];
 
-
-          /*var element = $(childElement).parent();
-          var rectId = element.find("#rectangleId").val();
-          var rectElement = $("#"+rectId);
-          rectElement.remove();
-          element.remove();*/
         }
       };
+
+      /*TODO:ANGANNZONE
+      $rootScope.removeAllActiveAnnotationZones = function () {
+        for(var inputId in $scope.tagNamesList) {
+          delete $scope.annotationZoneList[inputId];
+
+          delete $scope.tagNameErrors[inputId];
+          delete $scope.tagNamesList[inputId];
+
+          $timeout(function(){
+            $scope.$apply();
+          });
+        }
+      };
+      */
 
     $rootScope.removeAnnotationZone = function (id) {
       var element = $("#annotationZone #"+id);
 
-      //var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
-      var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
+      //var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
 
-      //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
       var inputId = element.attr("id");
 
-      //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-      //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-      //console.log(inputId);
-      delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
-      angular.element($("#annZoneList")).scope().timeout();
+      //delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
+      delete $scope.tagNamesList[inputId];
+      $scope.timeout();
 
-      annotationInList.parent().remove();
+      //annotationInList.parent().remove();
       element.remove();
 
       delete $scope.tagNameErrors[id];
       delete $scope.tagNamesList[id];
 
-
-      /*var element = $(childElement).parent();
-      var rectId = element.find("#rectangleId").val();
-      var rectElement = $("#"+rectId);
-      rectElement.remove();
-      element.remove();*/
-
     };
 
-//    $scope.removeAnnotationZone = function (id) {
-      //$rootScope.removeAnnotationZone(id);
-    //};
+    /*TODO:ANGANNZONE
+    $rootScope.removeAnnotationZone = function (id) {
+
+      delete $scope.annotationZoneList[id];
+
+      delete $scope.tagNamesList[id];
+
+
+      delete $scope.tagNameErrors[id];
+      delete $scope.tagNamesList[id];
+
+      $scope.timeout();
+
+    };
+    */
 
     $scope.refreshTags = function() {
       //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
@@ -273,6 +285,18 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
     });
+
+    /*TODO:ANGANNZONE
+    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
+      $scope.annotationZoneList = new Array();
+
+      annotationZonesAreLoaded = false;
+
+      toDrawAnnotationZoneData = [];
+      $scope.refreshTags();
+    });
+    */
+
 
     $scope.$on('$destroy',reloadTagsEventListener);
 
