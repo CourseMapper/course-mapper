@@ -2040,6 +2040,80 @@ app.directive('movable', function() {
         }
     };
 });
+;/*jslint node: true */
+'use strict';
+
+app.directive('movablePdf', function() {
+    var getRelativePosition = function(position, parent) {
+        return {
+            left: Math.round((100 * position.left / parent.clientWidth)),
+            top: Math.round((100 * position.top / parent.clientHeight))
+        };
+    };
+
+    var getRelativeSize = function(size, parent) {
+        return {
+            width: Math.round((100 * size.width / parent.clientWidth)),
+            height: Math.round((100 * size.height / parent.clientHeight))
+        };
+    };
+
+      return {
+        restrict: 'A',
+        scope: {
+            onMoved: '=',
+            canMove: '@'
+        },
+        link: function(scope, element, attrs) {
+            attrs.$observe('canMove', function(value) {
+                if (value === 'false') {
+                    element.draggable({
+                        disabled: true
+                    }).resizable({
+                        disabled: true
+                    });
+                } else {
+                    element.draggable({
+                        disabled: false
+                    }).resizable({
+                        disabled: false
+                    });
+                }
+            });
+
+            element
+                .draggable({
+                    containment: $("#annotationZone"),
+                    cursor: 'move',
+                    stop: function(event, ui) {
+                        if (scope.onMoved) {
+                            scope.onMoved({
+                                position: getRelativePosition(ui.position, element.parent()[0])
+                            });
+                        }
+                    }
+                })
+                .resizable({
+                    containment: 'parent',
+                    handles: 'ne, se, sw, nw',
+                    stop: function(event, ui) {
+                        if (scope.onMoved) {
+                            var parent = element.parent()[0];
+                            scope.onMoved({
+                                position: getRelativePosition(ui.position, parent),
+                                size: getRelativeSize(ui.size, parent)
+                            });
+                        }
+                    }
+                });
+
+            // remove event handlers
+            scope.$on('$destroy', function() {
+                element.off('**');
+            });
+        }
+    };
+});
 ;app.directive('pagination',
     function ($compile, $timeout) {
         return {
@@ -2109,13 +2183,14 @@ app.directive('movable', function() {
             restrict: 'E',
 
             terminal: true,
-            require: 'movable',
+            require: 'movable-pdf',
             scope: {
 
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
-
+            //replace: true,
+            //transclude: true,
             controller: function($http, $scope, $rootScope, $sce){
               $scope.canMove = true;
               $scope.switchShowAnnoZones = 'On';
@@ -5560,6 +5635,54 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         });
       }
     };
+
+    /*TODO:ANGANNZONE
+
+    $scope.addReference = function(id) {
+      var annZoneList = $rootScope.getAnnotationZoneList();
+      var name = annZoneList[id];
+      //$rootScope.safeApply(function() {
+      if($rootScope.nameHasNoError(name)){
+        if(name !="#")
+        if($scope.writeCommentMode) {
+          if(typeof $scope.comment.rawText == 'undefined')
+            $scope.comment.rawText = name + ' ';
+          else {
+            var len = $scope.comment.rawText.length;
+            var firstPart = $scope.comment.rawText.substring(0,len-6);
+            var lastPart = $scope.comment.rawText.substring(len-6);
+            $scope.comment.rawText = firstPart + ' ' + name + ' ' + lastPart;
+          }
+        }
+        else if($scope.editMode != -1){
+          if(typeof $scope.editRawText[$scope.editMode] == 'undefined')
+            $scope.editRawText[$scope.editMode] = name + ' ';
+          else {
+            var len = $scope.editRawText[$scope.editMode].length;
+            var firstPart = $scope.editRawText[$scope.editMode].substring(0,len-6);
+            var lastPart = $scope.editRawText[$scope.editMode].substring(len-6);
+            $scope.editRawText[$scope.editMode] = firstPart + ' ' + name + ' ' + lastPart;
+          }
+        }
+        else if($scope.replyMode != -1){
+          if(typeof $scope.replyRawText[$scope.replyMode] == 'undefined')
+            $scope.replyRawText[$scope.replyMode] = name + ' ';
+          else {
+            var len = $scope.replyRawText[$scope.replyMode].length;
+            var firstPart = $scope.replyRawText[$scope.replyMode].substring(0,len-6);
+            var lastPart = $scope.replyRawText[$scope.replyMode].substring(len-6);
+            $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
+          }
+        }
+
+        $timeout(function () {
+            $scope.$apply();
+            $scope.commentsLoaded();
+        });
+      }
+    };
+
+    */
 
     $scope.setEditRawText = function(id,newText) {
       $scope.editRawText[id] = strip(newText);
