@@ -4,7 +4,7 @@ app.directive('pdfAnnotationZone',
             restrict: 'E',
 
             terminal: true,
-
+            require: 'movable',
             scope: {
 
             },

@@ -2109,7 +2109,7 @@ app.directive('movable', function() {
             restrict: 'E',
 
             terminal: true,
-
+            require: 'movable',
             scope: {
 
             },
