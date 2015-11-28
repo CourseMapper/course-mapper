@@ -1,7 +1,7 @@
 var debug = require('debug')('cm:server');
 var NewsfeedAgg = require('./models/newsfeed.model.js');
 var Votes = require('../../votes/models/votes.js');
-var Discussion = require('../../discussion/models/courseDiscussions.js');
+//var Discussion = require('../../discussion/models/courseDiscussions.js');
 var Post = require('../../discussion/models/posts.js');
 
 var NewsfeedListener = {
@@ -13,13 +13,13 @@ var NewsfeedListener = {
                 if (doc) {
                     var postId = doc.voteTypeId;
                     var voteType = doc.voteType;
-                    if (voteType == "discussion") {
-                        Discussion.findOne({_id: postId})
+                    if (voteType == "discussion"|| "discussionReply") {
+
+                        Post.findOne({_id: postId})
                             .exec(function (err, result) {
                                 if (result) {
                                     var courseId = result.course;
-
-                                    {
+                                    if (courseId) {
                                         var nf = new NewsfeedAgg(
                                             {
                                                 userId: newVote.createdBy,
@@ -37,24 +37,17 @@ var NewsfeedListener = {
                                                     debug(err);
                                             }
                                         );
-                                    }
-
-                                } else {
-
-                                    Post.findOne({_id: postId})
-                                        .exec(function (err, postDoc) {
-                                            if (postDoc) {
-                                                var postId = postDoc.parentPost;
-                                                Discussion.findOne({discussion: postId})
-                                                    .exec(function (err, resDoc) {
-                                                        var courseId = resDoc.course;
-                                                        var postId = postDoc._id;
+                                    } else {
+                                        if (result.parentPost) {
+                                            Post.findOne({_id: result.parentPost})
+                                                .exec(function (err, parentResult) {
+                                                    if (parentResult) {
                                                         var nf = new NewsfeedAgg(
                                                             {
                                                                 userId: newVote.createdBy,
                                                                 actionSubjectIds: postId,
                                                                 actionSubject: "vote",
-                                                                courseId: courseId,
+                                                                courseId: parentResult.course,
                                                                 actionType: "added",
                                                                 dateAdded: newVote.dateUpdated
                                                             }
@@ -66,9 +59,11 @@ var NewsfeedListener = {
                                                                     debug(err);
                                                             }
                                                         );
-                                                    })
-                                            }
-                                        })
+                                                    }
+                                                })
+                                        }
+                                    }
+
 
                                 }
                             })
