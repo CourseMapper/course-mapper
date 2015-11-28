@@ -46,17 +46,17 @@ app.directive('movablePdf', function() {
                     stop: function(event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
-                                position: getRelativePosition(ui.position, element.parent()[0])
+                                position: getRelativePosition(ui.position, $("#annotationZone"))
                             });
                         }
                     }
                 })
                 .resizable({
-                    containment: 'parent',
+                    containment: $("#annotationZone"),
                     handles: 'ne, se, sw, nw',
                     stop: function(event, ui) {
                         if (scope.onMoved) {
-                            var parent = element.parent()[0];
+                            var parent = $("#annotationZone");
                             scope.onMoved({
                                 position: getRelativePosition(ui.position, parent),
                                 size: getRelativeSize(ui.size, parent)

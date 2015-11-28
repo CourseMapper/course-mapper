@@ -2088,17 +2088,17 @@ app.directive('movablePdf', function() {
                     stop: function(event, ui) {
                         if (scope.onMoved) {
                             scope.onMoved({
-                                position: getRelativePosition(ui.position, element.parent()[0])
+                                position: getRelativePosition(ui.position, $("#annotationZone"))
                             });
                         }
                     }
                 })
                 .resizable({
-                    containment: 'parent',
+                    containment: $("#annotationZone"),
                     handles: 'ne, se, sw, nw',
                     stop: function(event, ui) {
                         if (scope.onMoved) {
-                            var parent = element.parent()[0];
+                            var parent = $("#annotationZone");
                             scope.onMoved({
                                 position: getRelativePosition(ui.position, parent),
                                 size: getRelativeSize(ui.size, parent)
@@ -4515,6 +4515,18 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
     $scope.annotationZoneList = new Array();
+    $scope.divCounter = 0;
+
+
+    $rootScope.createMovableAnnZone = function() {
+      var element = addAnnotationZone(0, 0, 0.3, 0.3, "ac725e", "", true, false, "");
+      //addAnnotationZoneElement(element);
+      var annZoneId = element.id;
+
+      $scope.tagNamesList[annZoneId] = "";
+    };
+
+
 
     $rootScope.getTagNamesList = function(){
       return $scope.tagNamesList;
@@ -4540,10 +4552,15 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         dragable: isBeingCreated,
         isBeingCreated: isBeingCreated,
         canBeEdited: canBeEdited,
-        annZoneId: annZoneId
+        annZoneId: annZoneId,
+        divCounter: $scope.divCounter,
+        id: 'rect-'+divCounter
       };
 
-      $scope.annotationZoneList[annZoneId] = newAnnZone;
+      $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
+      $scope.divCounter += 1;
+
+      return newAnnZone;
     };
 
 
@@ -4745,28 +4762,32 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     */
 
     $scope.refreshTags = function() {
-      //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
-      //$http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
-        //console.log("Loading AnnZones");
-        //console.log("PDF_ID: "+ $scope.pdfId);
-        //console.log("PageNumber: " + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
+        //TODO:ANGANNZONE
+        //$scope.tagListLoaded();
 
         $timeout(function(){
           $scope.$apply();
         });
 
-
-        /*$scope.$on('$stateChangeSuccess', function(){
-          console.log("ALL DONE AJS");
-        });
-        */
-
       });
     };
+
+    $scope.tagListLoaded = function() {
+      for(var i = 0; i < $scope.annZones.length; i++) {
+        var ele = $scope.annZones[i];
+        var isAuthor = (ele.author == angular.element($("#annZoneList")).scope().currentUser.username);
+        var isAdmin =  angular.element($("#annZoneList")).scope().$root.user.role == "admin";
+        var allowedToEdit = (isAdmin || isAuthor);
+
+        $scope.addAnnotationZone(ele.relPosX, ele.relPosY, ele.relWidth, ele.annZones[i].relHeight, ele.annZones[i].color, ele.name, false, allowedToEdit, ele.id)
+      }
+    };
+
+
 
 
 
@@ -5629,7 +5650,12 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         // in slideviewer.js
         $rootScope.switchShowAnnoZones = "On"
         createMovableAnnZone();
+        //$rootScope.createMovableAnnZone();
     };
+
+
+
+
 
     $scope.switchCommentSubmissionDisplay = function() {
         $scope.writeCommentMode = true;
