@@ -1,6 +1,7 @@
 app.directive('simplecolorpicker', function() {
   return {
     restrict: 'A',
+    require: 'ngModel',
 
     link: function(scope, element, attrs, ngModel) {
       var colorPicker = null;

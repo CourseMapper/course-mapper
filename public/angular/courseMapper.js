@@ -2196,10 +2196,10 @@ app.directive('movablePdf', function() {
               $scope.switchShowAnnoZones = 'On';
               $scope.annZoneID = rectPrefix + divCounter;
               $scope.opacityFactorHighlight = "0.75";
-              $scope.tagName = ""
-              $scope.color ="#444444"
-              $scope.dataRelCoord = "100;100"
-
+              $scope.tagName = "";
+              $scope.color ="#444444";
+              $scope.dataRelCoord = "100;100";
+              $scope.colorPickerId ="1";
             }
         };
     }
@@ -2568,6 +2568,7 @@ app.directive('pwCheck', [function () {
 }]);;app.directive('simplecolorpicker', function() {
   return {
     restrict: 'A',
+    require: 'ngModel',
 
     link: function(scope, element, attrs, ngModel) {
       var colorPicker = null;
