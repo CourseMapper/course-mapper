@@ -3,25 +3,30 @@
 
 
     <div id="commentController" class="col-xs-11 container-fluid" ng-controller="CommentListController">
-
         <div class="slide-container col-sm-7 col-md-7">
             <div id="viewerWrapper">
 
                 <pdf-viewer source="{{pdfFile.link}}" current-page-number="1" pdf-id="{{pdfFile._id}}"></pdf-viewer>
 
+                <!--
                 <div id="annotationZone">
                     <pdf-annotation-zone>
                     </pdf-annotation-zone>
-                    <!--<div movable style="background-color:yellow;height:100px;width:100px;" ></div>-->
-                </div>
-
-
-                <!--TODO:ANGANNZONE
-                <div id="annotationZone" ng-controller="AnnotationZoneListController">
-                      <pdf-annotation-zone  ng-repeat="annotationZone in annotationZoneList">
-                      </pdf-annotation-zone>
                 </div>
                 -->
+
+
+                <div id="annZoneList" ng-controller="AnnotationZoneListController">
+                  <div id="annotationZone">
+                      {{annotationZoneList['rect-0']}}
+                      {{annotationZoneList}}
+                      <div id="pawa" ng-repeat="(key, item) in annotationZoneList[]">
+                        <div> {{key}}
+                              {{item.color}}
+                        </div>
+                      </div>
+                  </div>
+                </div>
 
 
             </div>
@@ -63,8 +68,8 @@
                             <div id="annotationZoneSubmitList">
                             </div>
 
-                           <div id="annZoneList"
-                                 ng-controller="AnnotationZoneListController">
+                           <div id="annZoneListOld"
+                                 >
 
                                 <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
                                     <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">

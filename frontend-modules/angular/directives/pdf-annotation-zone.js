@@ -6,24 +6,33 @@ app.directive('pdfAnnotationZone',
             terminal: true,
             require: 'movable-pdf',
             scope: {
-
+              relativePosition: '=',
+              relativeSize: '=',
+              color: '=',
+              tagName: '=',
+              dragable: '@',
+              isBeingCreated: '@',
+              annZoneId: '@',
+              divCounter: '@',
+              id: '@'
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
             //replace: true,
             //transclude: true,
             controller: function($http, $scope, $rootScope, $sce, $timeout){
-              $scope.canMove = true;
+
+              console.log("Got called");
+              $scope.canMove = $scope.dragable;
               $scope.switchShowAnnoZones = 'On';
-              $scope.annZoneID = rectPrefix + divCounter;
-              $scope.annZoneId = "";
+              $scope.annZoneID = $scope.id;
+              //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";
-              $scope.tagName = "";
-              $scope.color ="#444444";
+              //$scope.tagName = "";
+              //$scope.color ="#444444";
               $scope.dataRelCoord = "100;100";
               $scope.colorPickerId ="1";
               $scope.divCounter = "1";
-              $scope.color = "";
               $scope.editZoneMode = "BLUB";
 
 

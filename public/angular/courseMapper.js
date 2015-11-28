@@ -2185,24 +2185,33 @@ app.directive('movablePdf', function() {
             terminal: true,
             require: 'movable-pdf',
             scope: {
-
+              relativePosition: '=',
+              relativeSize: '=',
+              color: '=',
+              tagName: '=',
+              dragable: '@',
+              isBeingCreated: '@',
+              annZoneId: '@',
+              divCounter: '@',
+              id: '@'
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
             //replace: true,
             //transclude: true,
             controller: function($http, $scope, $rootScope, $sce, $timeout){
-              $scope.canMove = true;
+
+              console.log("Got called");
+              $scope.canMove = $scope.dragable;
               $scope.switchShowAnnoZones = 'On';
-              $scope.annZoneID = rectPrefix + divCounter;
-              $scope.annZoneId = "";
+              $scope.annZoneID = $scope.id;
+              //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";
-              $scope.tagName = "";
-              $scope.color ="#444444";
+              //$scope.tagName = "";
+              //$scope.color ="#444444";
               $scope.dataRelCoord = "100;100";
               $scope.colorPickerId ="1";
               $scope.divCounter = "1";
-              $scope.color = "";
               $scope.editZoneMode = "BLUB";
 
 
@@ -4533,6 +4542,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.divCounter = 0;
 
 
+
+
     $rootScope.createMovableAnnZone = function() {
       var element = addAnnotationZone(0, 0, 0.3, 0.3, "ac725e", "", true, false, "");
       //addAnnotationZoneElement(element);
@@ -4553,32 +4564,40 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
     $scope.addAnnotationZone = function(relLeft,relTop, relWidth, relHeight, color, tagName, isBeingCreated, canBeEdited, annZoneId) {
-      var newAnnZone = {
-        relativePosition: {
-          x: relLeft,
-          y: relTop
-        },
-        relativeSize: {
-          x: relWidth,
-          y: relHeight
-        },
-        color: color,
-        tagName: tagName,
-        dragable: isBeingCreated,
-        isBeingCreated: isBeingCreated,
-        canBeEdited: canBeEdited,
-        annZoneId: annZoneId,
-        divCounter: $scope.divCounter,
-        id: 'rect-'+divCounter
-      };
 
-      $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
-      $scope.divCounter += 1;
 
-      console.log("ADDED ZONE");
-      console.log($scope.annotationZoneList);
 
-      return newAnnZone;
+      $timeout(function(){
+        var newAnnZone = {
+          relativePosition: {
+            x: relLeft,
+            y: relTop
+          },
+          relativeSize: {
+            x: relWidth,
+            y: relHeight
+          },
+          color: color,
+          tagName: tagName,
+          dragable: isBeingCreated,
+          isBeingCreated: isBeingCreated,
+          canBeEdited: canBeEdited,
+          annZoneId: annZoneId,
+          divCounter: $scope.divCounter,
+          id: 'rect-'+divCounter
+        };
+        $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
+        $scope.divCounter += 1;
+        console.log("ADDED ZONE");
+        console.log($scope.annotationZoneList);
+
+        $scope.$apply();
+        return newAnnZone;
+
+      });
+
+
+
     };
 
 
@@ -4783,14 +4802,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
         $scope.annZones = data.annZones;
 
-        tagListLoaded($scope.annZones);
+        //tagListLoaded($scope.annZones);
 
         $scope.tagListLoaded();
 
         $timeout(function(){
           $scope.$apply();
         });
-
+        console.log($scope.annotationZoneList);
       });
     };
 
@@ -4819,14 +4838,19 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
-      //console.log("Reload Tags called");
-      $(".slideRect").remove();
+      console.log("Reload Tags called");
+      //$(".slideRect").remove();
       $scope.annotationZoneList = new Array();
       $scope.divCounter = 0;
 
       annotationZonesAreLoaded = false;
 
       toDrawAnnotationZoneData = [];
+
+      $timeout(function(){
+        $scope.$apply();
+      });
+
       $scope.refreshTags();
     });
 
