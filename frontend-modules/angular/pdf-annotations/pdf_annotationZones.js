@@ -57,6 +57,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
       $scope.divCounter += 1;
 
+      console.log("ADDED ZONE");
+      console.log($scope.annotationZoneList);
+
       return newAnnZone;
     };
 
@@ -263,8 +266,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         $scope.annZones = data.annZones;
 
         tagListLoaded($scope.annZones);
-        //TODO:ANGANNZONE
-        //$scope.tagListLoaded();
+
+        $scope.tagListLoaded();
 
         $timeout(function(){
           $scope.$apply();
@@ -280,7 +283,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         var isAdmin =  angular.element($("#annZoneList")).scope().$root.user.role == "admin";
         var allowedToEdit = (isAdmin || isAuthor);
 
-        $scope.addAnnotationZone(ele.relPosX, ele.relPosY, ele.relWidth, ele.annZones[i].relHeight, ele.annZones[i].color, ele.name, false, allowedToEdit, ele.id)
+        $scope.addAnnotationZone(ele.relPosX, ele.relPosY, ele.relWidth, ele.relHeight, ele.color, ele.name, false, allowedToEdit, ele.id)
       }
     };
 
@@ -300,6 +303,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       //console.log("Reload Tags called");
       $(".slideRect").remove();
+      $scope.annotationZoneList = new Array();
+      $scope.divCounter = 0;
 
       annotationZonesAreLoaded = false;
 
@@ -310,6 +315,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     /*TODO:ANGANNZONE
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       $scope.annotationZoneList = new Array();
+      $scope.divCounter = 0;
 
       annotationZonesAreLoaded = false;
 

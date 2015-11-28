@@ -709,6 +709,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         // in slideviewer.js
         $rootScope.switchShowAnnoZones = "On"
         createMovableAnnZone();
+        //TODO:ANGANNZONE
         //$rootScope.createMovableAnnZone();
     };
 
