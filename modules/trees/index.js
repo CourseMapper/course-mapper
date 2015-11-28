@@ -4,7 +4,6 @@ var TreeNodes = require('./treeNodes.js');
 var Resources = require('./resources.js');
 var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
-var socketIoHelper = require(appRoot + '/libs/core/socketIoHelper.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var debug = require('debug')('cm:db');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
@@ -91,32 +90,29 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     if (params.parent)
         node.parent = params.parent;
 
-    function insertNodeToParent(node, tn, success) {
-        if (node.parent) {
-            TreeNodes.findOne({_id: node.parent}, function (err, doc) {
-                if (doc) {
-                    doc.childrens.push(tn._id);
-                    doc.save();
-                    debug('success saving this node as children');
+    var insertNodeToParentAsync = async(function (tn) {
+        if (tn.parent) {
+            var parentNode = await(TreeNodes.findOne({_id: tn.parent}).exec());
+            if (parentNode) {
+                parentNode.childrens.push(tn._id);
+                await(parentNode.save());
 
-                    // because we have a parent, lets alter its position, relative to its parent
-                    tn.positionFromRoot = {
-                        x: doc.positionFromRoot.x + 40,
-                        y: doc.positionFromRoot.y + 80
-                    };
+                // because we have a parent, lets alter its position, relative to its parent
+                tn.positionFromRoot = {
+                    x: parentNode.positionFromRoot.x + 40,
+                    y: parentNode.positionFromRoot.y + 80
+                };
 
-                    tn.save();
-                    debug('success altering starting position to its parent');
+                await(tn.save());
 
-                    success(tn);
-                }
-            });
-        } else {
-            success(tn);
+                return true;
+            }
         }
-    }
 
-    function attachLinkToNode(contentNode, type, url) {
+        return false;
+    });
+
+    var attachLinkToNodeAsync = async(function (contentNode, type, url) {
         var Res = new Resources({
             type: type,
             createdBy: contentNode.createdBy,
@@ -125,16 +121,17 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
             treeNodeId: contentNode._id
         });
 
-        Res.save(function () {
+        await(Res.save());
+
+        var upd = await(
             TreeNodes.update({_id: contentNode._id}, {
-                    $addToSet: {
-                        resources: Res._id
-                    }
-                },
-                function () {
-                });
-        });
-    }
+                $addToSet: {
+                    resources: Res._id
+                }
+            }));
+
+        return upd;
+    });
 
     function attachResourcesToNode(tn, files, self) {
         if (files) {
@@ -152,69 +149,53 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         debug('success attaching files');
     }
 
-    function cbAfterSave(tn, files, self, node, params, success) {
-        if (params.pdfHostLink) {
-            attachLinkToNode(tn, 'pdf', params.pdfHostLink);
-        }
-
-        if (params.videoHostLink) {
-            attachLinkToNode(tn, 'video', params.videoHostLink);
-        }
-
-        // process files
-        attachResourcesToNode(tn, files, self);
-
-        // put this object as the parent's child,
-        insertNodeToParent(node, tn, success);
-
-        if (params.type == 'contentNode') {
-            Plugin.doAction('onAfterContentNodeCreated', tn);
-        } else {
-            Plugin.doAction('onAfterSubTopicCreated', tn);
-        }
-
-        debug('success creating node');
-    }
-
     // this is edit mode
     if (params._id) {
         node._id = params._id;
-        TreeNodes.findOne({_id: node._id, createdBy: params.createdBy}, function (err, tn) {
-            if (err) {
-                error(err);
-            } else {
-                if (tn) {
-                    tn.name = node.name;
-                    tn.save(function (err) {
-                        if (err) {
-                            debug('failed adding Tree Node');
-                            error(err);
-                        } else {
-                            if (params.pdfHostLink) {
-                                attachLinkToNode(tn, 'pdf', params.pdfHostLink);
-                            }
+        var op = async(function () {
+            var tn = await(TreeNodes.findOne({_id: node._id})
+                .exec()
+            );
 
-                            if (params.videoHostLink) {
-                                attachLinkToNode(tn, 'video', params.videoHostLink);
-                            }
-
-                            attachResourcesToNode(tn, files, self);
-
-                            success(tn);
-
-                            if (params.type == 'contentNode') {
-                                Plugin.doAction('onAfterContentNodeEdited', tn);
-                            } else {
-                                Plugin.doAction('onAfterSubTopicEdited', tn);
-                            }
-                        }
-                    });
-                } else {
-                    // 404 cant find node
-                    error(helper.createError404('Content Node'));
+            if (tn) {
+                tn.name = node.name;
+                if (params.pdfHostLink) {
+                    await(attachLinkToNodeAsync(tn, 'pdf', params.pdfHostLink));
                 }
+
+                if (params.videoHostLink) {
+                    await(attachLinkToNodeAsync(tn, 'video', params.videoHostLink));
+                }
+
+                await(attachResourcesToNode(tn, files, self));
+
+                await(tn.save());
+
+                var newNode = await(TreeNodes.findOne({_id: node._id})
+                    .populate('resources')
+                    .exec());
+
+                return newNode;
+            } else {
+                // 404 cant find node
+                error(helper.createError404('Content Node'));
             }
         });
+
+        op()
+            .then(function (tn) {
+                success(tn);
+
+                if (params.type == 'contentNode') {
+                    Plugin.doAction('onAfterContentNodeEdited', tn);
+                } else {
+                    Plugin.doAction('onAfterSubTopicEdited', tn);
+                }
+
+            })
+            .catch(function (err) {
+                error(err);
+            });
     }
     else {
         ///
@@ -222,15 +203,48 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         ///
         node.positionFromRoot = {x: 40, y: 60};
 
-        var tn = new TreeNodes(node);
-        tn.save(function (err) {
-            if (err) {
+        var op = async(function () {
+            var tn = new TreeNodes(node);
+            await(tn.save());
+
+            if (params.pdfHostLink)
+                await(attachLinkToNodeAsync(tn, 'pdf', params.pdfHostLink));
+
+            if (params.videoHostLink)
+                await(attachLinkToNodeAsync(tn, 'video', params.videoHostLink));
+
+            // process files
+            await(attachResourcesToNode(tn, files, self));
+
+            // put this object as the parent's child,
+            await(insertNodeToParentAsync(tn));
+
+            await(tn.save());
+
+            return tn;
+        });
+
+        op()
+            .then(function (tn) {
+                if (params.type == 'contentNode') {
+                    Plugin.doAction('onAfterContentNodeCreated', tn);
+                } else {
+                    Plugin.doAction('onAfterSubTopicCreated', tn);
+                }
+
+                debug('success creating node');
+                TreeNodes.findById(tn._id).populate('resources').exec(function (err, doc) {
+                    if (doc)
+                        success(doc);
+                    else
+                        error(err);
+                });
+            })
+            .catch(function (err) {
                 debug('failed adding Tree Node');
                 error(err);
-            } else {
-                cbAfterSave(tn, files, self, node, params, success);
-            }
-        });
+            });
+
     }
 };
 
@@ -395,9 +409,12 @@ catalog.prototype.deleteNode = function (error, params, success) {
                         function (err, data) {
                         });
 
+                    var tempTn = tn.toObject();
+                    tempTn.isDeletedForever = true;
+
                     // is already deleted, means we want to remove it forever
                     tn.remove(function () {
-                        success(true)
+                        success(tempTn)
                     });
                 } else {
                     error(helper.createError('Cannot delete node with childrens'));
@@ -413,7 +430,7 @@ catalog.prototype.deleteNode = function (error, params, success) {
                             error(err);
                         }
                         else {
-                            success(true);
+                            success(tn);
                             Plugin.doAction('onAfterNodeDeleted', tn);
                         }
                     }

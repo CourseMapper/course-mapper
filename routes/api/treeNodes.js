@@ -113,11 +113,19 @@ router.post('/treeNodes', multipartyMiddleware, function (req, res, next) {
                 // files pdf and video
                 req.files,
 
-                function (course) {
+                function (tn) {
                     res.status(200).json({
                         result: true,
-                        treeNode: course
+                        treeNode: tn
                     });
+                    tn = tn.toObject();
+                    tn.nodeId = tn._id;
+                    tn.userId = req.user._id;
+                    if (req.body._id) {
+                        socketIoHelper.io.to('map/' + tn.courseId).emit('nodeUpdated', tn);
+                    }
+                    else
+                        socketIoHelper.io.to('map/' + tn.courseId).emit('nodeCreated', tn);
                 }
             );
         })
@@ -234,6 +242,10 @@ router.put('/treeNodes/:nodeId', function (req, res, next) {
                 req.body,
                 function (tn) {
                     res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
+                    tn = tn.toObject();
+                    tn.nodeId = tn._id;
+                    tn.userId = req.user._id;
+                    socketIoHelper.io.to('map/' + tn.courseId).emit('nodeUpdated', tn);
                 }
             );
         })
@@ -269,8 +281,15 @@ router.delete('/treeNodes/:nodeId', function (req, res, next) {
                     _id: nodeId
                 }
                 ,
-                function (ret) {
-                    res.status(200).json({result: ret});
+                function (tn) {
+                    res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
+                    if (!tn.isDeletedForever) {
+                        tn = tn.toObject();
+                    }
+
+                    tn.nodeId = nodeId;
+                    tn.userId = req.user._id;
+                    socketIoHelper.io.to('map/' + tn.courseId).emit('nodeDeleted', tn);
                 }
             );
         })

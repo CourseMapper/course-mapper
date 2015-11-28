@@ -1069,12 +1069,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.jsPlumbConnections = [];
     };
 
-    $scope.reInitiateJSPlumb = function () {
+    $scope.reInitiateJSPlumb = function (cb) {
         $scope.treeNodes = angular.copy($scope.treeNodes);
         $timeout(
             function () {
                 $scope.$apply();
                 $scope.initJSPlumb();
+
+                if (cb) {
+                    cb();
+                }
             });
     };
 
@@ -1179,13 +1183,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         $scope.destroyJSPlumb();
 
                         // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.treeNodes = angular.copy($scope.treeNodes);
-                        $timeout(
-                            function () {
-                                $scope.$apply();
-                                $scope.initJSPlumb();
-                            });
-
+                        $scope.reInitiateJSPlumb();
                     }
                 })
                 .error(function (data) {
@@ -1203,7 +1201,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
     };
 
-    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+    $scope.addNewNodeIntoPool = function (treeNode) {
         if (treeNode.parent) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
@@ -1219,20 +1217,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.destroyJSPlumb();
 
         // this will reinitiate the model, and thus also jsplumb connection
-        $scope.treeNodes = angular.copy($scope.treeNodes);
-        $timeout(
-            function () {
-                $scope.$apply();
-                $scope.initJSPlumb();
+        $scope.reInitiateJSPlumb(function () {
+            if ($('.open').length > 0) {
+                $('.open').removeClass('open');
+                return true;
+            }
+        });
+    };
 
-                if ($('.open').length > 0) {
-                    $('.open').removeClass('open');
-                    return true;
-                }
-            });
-    });
-
-    $scope.$on('onAfterEditNode', function (event, treeNode) {
+    $scope.afterEditNode = function (treeNode) {
         if (treeNode) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
@@ -1245,14 +1238,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function () {
                 $scope.$apply();
             });
-    });
+    };
 
-    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+    $scope.afterEditContentNode = function (treeNode) {
         if (treeNode) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
             if (pNode) {
                 pNode.name = treeNode.name;
+                pNode.resources = [];
                 if (treeNode.resources.length > 0) {
                     for (var i in treeNode.resources) {
                         pNode.resources.push(treeNode.resources[i]);
@@ -1265,6 +1259,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function () {
                 $scope.$apply();
             });
+    };
+
+    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+        $scope.addNewNodeIntoPool(treeNode);
+    });
+
+    $scope.$on('onAfterEditNode', function (event, treeNode) {
+        $scope.afterEditNode(treeNode);
+    });
+
+    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+        $scope.afterEditContentNode(treeNode);
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
@@ -1336,6 +1342,50 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         }
     });
+
+    socket.on('nodeCreated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        $scope.addNewNodeIntoPool(data);
+        console.log('nodeCreated');
+    });
+
+    socket.on('nodeUpdated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        if (data.type == 'contentNode') {
+            $scope.afterEditContentNode(data);
+        } else {
+            $scope.afterEditNode(data);
+        }
+
+        console.log('nodeUpdated');
+    });
+
+    socket.on('nodeDeleted', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        found = false;
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', data.nodeId);
+        if (pNode) {
+            pNode.isDeleted = true;
+            if (data.isDeletedForever)
+                pNode.isDeletedForever = true;
+
+            pNode.name = '[DELETED]';
+
+            // destroy the jsplumb instance and svg rendered
+            $scope.destroyJSPlumb();
+
+            // this will reinitiate the model, and thus also jsplumb connection
+            $scope.reInitiateJSPlumb();
+        }
+
+        console.log('nodeDeleted');
+    })
 });
 ;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
     $scope.nodeEdit = null;
