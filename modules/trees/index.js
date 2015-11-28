@@ -13,7 +13,6 @@ var await = require('asyncawait/await');
 var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 var _ = require('underscore');
 
-
 function catalog() {
 }
 

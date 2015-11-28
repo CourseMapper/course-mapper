@@ -8,31 +8,36 @@ var debug = require('debug')('cm:server');
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var crypto = require('crypto');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function hash(passwd, salt) {
     return crypto.createHmac('sha256', salt).update(passwd).digest('hex');
 }
 
-function account(){
+function account() {
 }
 
 /**
  * just a demo code to create an admin user
  */
-account.prototype.createAdmin = function(username){
+account.prototype.createAdmin = function (username) {
     var param = {
         username: "rpl",
         role: "admin",
         email: "r@rpl.im",
         password: "1"
     };
-    if(username)
+    if (username)
         param.username = username;
 
     this.signUp(
-        function(e){console.log(e)},
+        function (e) {
+            console.log(e)
+        },
         param,
-        function(u){console.log(u)}
+        function (u) {
+            console.log(u)
+        }
     );
 };
 
@@ -43,16 +48,16 @@ account.prototype.createAdmin = function(username){
  * @param params
  * @param done
  */
-account.prototype.signUp = function(err, params, done){
+account.prototype.signUp = function (err, params, done) {
     var self = this;
 
     this.userExist(params.username,
-        function isExist(){
+        function isExist() {
             //user is exist, so cannot register now
             debug("user is exist");
             err(new Error("user is exist"));
         },
-        function isNotExist(){
+        function isNotExist() {
             //user does not exist, so cool, add to our DB
             self.addUser(err, params, done);
         });
@@ -66,7 +71,7 @@ account.prototype.signUp = function(err, params, done){
  * @param params
  * @param done
  */
-account.prototype.addUser = function(errorCallback, params, done){
+account.prototype.addUser = function (errorCallback, params, done) {
     var self = this;
 
     var user = new User({
@@ -76,7 +81,7 @@ account.prototype.addUser = function(errorCallback, params, done){
 
     user.displayName = user.username;
 
-    if(params.role)
+    if (params.role)
         user.role = params.role;
 
     // hash the password first
@@ -86,7 +91,7 @@ account.prototype.addUser = function(errorCallback, params, done){
     user.setImage(params.email);
 
     // check whether need activation, if yes, generate new code, and default to deactivated
-    if(config.get('signUp.needActivation')){
+    if (config.get('signUp.needActivation')) {
         user.setActivationCode();
         user.deactivate();
     }
@@ -103,15 +108,17 @@ account.prototype.addUser = function(errorCallback, params, done){
 
             // send email to the new user
             self.sendEmail(params.email);
+
+            Plugin.doAction('onAfterUserCreated', user);
         }
     });
 };
 
-account.prototype.sendEmail = function(email){
+account.prototype.sendEmail = function (email) {
     // todo: send email properly
     return;
     //var message = view.get(email.ejs)
-    if(config.get('signUp.needActivation')){
+    if (config.get('signUp.needActivation')) {
 
     }
 };
@@ -123,7 +130,7 @@ account.prototype.sendEmail = function(email){
  * @param exist
  * @param notExist
  */
-account.prototype.userExist = function(username, exist , notExist) {
+account.prototype.userExist = function (username, exist, notExist) {
     User.count({
         username: username
     }, function (err, count) {
@@ -142,9 +149,9 @@ account.prototype.userExist = function(username, exist , notExist) {
  * @param res
  * @param next
  */
-account.prototype.handleLoginPost = function(req, res, next) {
+account.prototype.handleLoginPost = function (req, res, next) {
     // ask passport to authenticate
-    passport.authenticate('local', function(err, user, info) {
+    passport.authenticate('local', function (err, user, info) {
         if (err) {
             // if error happens
             return next(err);
@@ -159,7 +166,7 @@ account.prototype.handleLoginPost = function(req, res, next) {
         }
 
         // if everything is OK
-        req.logIn(user, function(err) {
+        req.logIn(user, function (err) {
             if (err) {
                 req.session.messages = "Error";
                 return next(err);
@@ -182,40 +189,40 @@ account.prototype.handleLoginPost = function(req, res, next) {
     })(req, res, next);
 };
 
-account.prototype.changePassword = function(error, params, success){
-    if(params.password == params.passwordConfirm){
+account.prototype.changePassword = function (error, params, success) {
+    if (params.password == params.passwordConfirm) {
         User.findOne({_id: params.userId})
-            .exec(function(err, doc){
-                if(err){
+            .exec(function (err, doc) {
+                if (err) {
                     error(err);
                 } else {
                     var hashedPwd = hash(params.oldPassword, doc.salt);
                     // check old pwd d
-                    if(hashedPwd == doc.password){
+                    if (hashedPwd == doc.password) {
                         doc.setPassword(params.password);
-                        doc.save(function(){
+                        doc.save(function () {
                             success();
                         });
                     } else {
-                        error (new Error("old password is not correct"));
+                        error(new Error("old password is not correct"));
                     }
                 }
             });
     }
 };
 
-account.prototype.editAccount = function(error, params, success){
+account.prototype.editAccount = function (error, params, success) {
     User.findOne({_id: params.userId})
-        .exec(function(err, doc){
-            if(err){
+        .exec(function (err, doc) {
+            if (err) {
                 error(err);
             }
 
-            if(doc){
-                if(params.password) {
+            if (doc) {
+                if (params.password) {
                     doc.setPassword(params.password);
                 }
-                if(params.displayName){
+                if (params.displayName) {
                     doc.displayName = params.displayName;
                     debug('edit displayname');
                 }
@@ -223,15 +230,16 @@ account.prototype.editAccount = function(error, params, success){
                 // generate gravater image url
                 doc.setImage(doc.email);
 
-                doc.save(function(err){
-                    if(err)
+                doc.save(function (err) {
+                    if (err)
                         error(err);
 
                     success(doc);
+                    Plugin.doAction('onAfterUserEdited', doc);
                 });
 
             } else {
-                error (new Error("old password is not correct"));
+                error(new Error("old password is not correct"));
             }
 
         });
@@ -244,32 +252,30 @@ account.prototype.editAccount = function(error, params, success){
  * @param res
  * @param next
  */
-account.prototype.handleRegisterPost = function(req, res, next) {
+account.prototype.handleRegisterPost = function (req, res, next) {
     this.signUp(
-        function error(err){
+        function error(err) {
             return next(err);
         },
         req.body,
         function done(user) {
-            // todo: implement flash
             return res.redirect('/accounts/login/#' + user.username);
-            // todo: implement redirect to previous screen.
         }
     );
 };
 
-account.prototype.getUser = function(error, params, success){
+account.prototype.getUser = function (error, params, success) {
     User.findOne(params)
         .select('-password -salt -activationCode -__v -isActivated -dateUpdated')
-        .exec(function(err, doc){
-            if(err)
+        .exec(function (err, doc) {
+            if (err)
                 error(err);
             else {
-                if(doc){
-                    if(!doc.displayName)
+                if (doc) {
+                    if (!doc.displayName)
                         doc.displayName = doc.username;
 
-                    if(!doc.image){
+                    if (!doc.image) {
                         // generate gravater image url
                         doc.setImage(doc.email);
                         doc.save();
