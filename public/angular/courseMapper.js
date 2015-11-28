@@ -728,6 +728,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.isCurrentTabIsMap = false;
     $scope.infoToast = null;
     $scope.infoEmptyToast = null;
+    $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
 
@@ -837,13 +838,26 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         var mapEl = jsPlumb.getSelector(".course-map .w.owned");
         jsPlumbInstance.draggable(mapEl, {
             // update position on drag stop
-            stop: function () {
-                var el = $(this);
+            stop: function (params) {
+                var el = $(params.el);
                 var pos = el.position();
                 var distanceFromCenter = {
                     x: pos.left - Canvas.w / 2,
                     y: pos.top - Canvas.h / 2
                 };
+
+                var simulated = el.attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    el.attr('is-simulated', '');
+                    //console.log('simulated');
+                    return;
+                }
+
+
+                console.log(JSON.stringify(distanceFromCenter));
+                console.log(JSON.stringify(pos));
+                console.log(JSON.stringify(params.pos));
+
 
                 var nId = el.attr('id').substring(1); // remove 't' from the node id
                 found = false;
@@ -865,26 +879,25 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.initJSPlumb = function () {
         Tree.init(Canvas.w, Canvas.h);
+        jsPlumb.ready(function () {
+            $scope.instance = jsPlumb.getInstance({
+                Endpoint: ["Blank", {radius: 2}],
+                HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+                PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+                ConnectionOverlays: [],
+                Container: "course-map"
+            });
 
-        var instance;
+            $scope.initDraggable($scope.instance);
 
-        $scope.instance = instance = jsPlumb.getInstance({
-            Endpoint: ["Blank", {radius: 2}],
-            HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-            PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-            ConnectionOverlays: [],
-            Container: "course-map"
-        });
+            // initialise all '.w' elements as connection targets.
+            $scope.instance.batch(function () {
+                /* connect center to first level cats recursively*/
+                $scope.interConnect('center', $scope.treeNodes, $scope.instance);
 
-        $scope.initDraggable(instance);
-
-        // initialise all '.w' elements as connection targets.
-        instance.batch(function () {
-            /* connect center to first level cats recursively*/
-            $scope.interConnect('center', $scope.treeNodes, instance);
-
-            /*blanket on click to close dropdown menu*/
-            $scope.initDropDownMenuHybrid();
+                /*blanket on click to close dropdown menu*/
+                $scope.initDropDownMenuHybrid();
+            });
         });
     };
 
@@ -960,7 +973,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.interConnect = function (parent, treeNodes, instance) {
         // added "t" in id because id cannot start with number
-        for (var i in treeNodes) {
+        for (var i = 0; i < treeNodes.length; i++) {
             var child = treeNodes[i];
             var childId = 't' + child._id;
 
@@ -977,10 +990,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape")}]
                 ],
+                deleteEndpointsOnDetach: true,
                 connector: ["Bezier", {curviness: 5}]
             });
 
-            $scope.jsPlumbConnections.push(conn);
+            var cc = {
+                source: parent,
+                target: childId,
+                conn: conn
+            };
+
+            $scope.jsPlumbConnections.push(cc);
 
             if (child.childrens) {
                 $scope.interConnect(childId, child.childrens, instance);
@@ -1044,7 +1064,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
      */
     $scope.destroyJSPlumb = function () {
         for (var i in $scope.jsPlumbConnections) {
-            var conn = $scope.jsPlumbConnections[i];
+            var conn = $scope.jsPlumbConnections[i].conn;
             jsPlumb.detach(conn);
         }
 
@@ -1185,6 +1205,54 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
     };
 
+    $scope.reConnect = function (elName) {
+        jsPlumb.detachAllConnections(elName);
+
+        for (var i in $scope.jsPlumbConnections) {
+            var kc = $scope.jsPlumbConnections[i];
+            if (kc.source == elName || kc.target == elName) {
+                var conn = $scope.jsPlumbConnections[i].conn;
+                var prm = {source: conn.sourceId, target: conn.targetId};
+                //jsPlumb.remove(elName);
+
+                var newConn = $scope.connect(prm.source, prm.target);
+                $scope.jsPlumbConnections[i].conn = newConn.conn;
+
+                /*var newConn = $scope.instance.connect({
+                 source: prm.source,
+                 target: prm.target,
+                 anchors: [
+                 ["Perimeter", {shape: jsPlumb.getSelector('#' + prm.source)[0].getAttribute("data-shape")}],
+                 ["Perimeter", {shape: jsPlumb.getSelector('#' + prm.target)[0].getAttribute("data-shape")}]
+                 ],
+                 deleteEndpointsOnDetach: true,
+                 connector: ["Bezier", {curviness: 5}]
+                 });*/
+                console.log('reconnecting ' + prm.source + ' -> ' + prm.target)
+            }
+        }
+    };
+
+    $scope.connect = function (source, target) {
+        var conn = jsPlumb.connect({
+            source: source, target: target,
+            anchors: [
+                ["Perimeter", {shape: jsPlumb.getSelector('#' + source)[0].getAttribute("data-shape")}],
+                ["Perimeter", {shape: jsPlumb.getSelector('#' + target)[0].getAttribute("data-shape")}]
+            ],
+            deleteEndpointsOnDetach: true,
+            connector: ["Bezier", {curviness: 5}]
+        });
+
+        var cc = {
+            source: source,
+            target: target,
+            conn: conn
+        };
+
+        return cc;
+    };
+
     $scope.$on('onAfterCreateNode', function (event, treeNode) {
         if (treeNode.parent) {
             found = false;
@@ -1292,30 +1360,34 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         var nd = data.nodeId;
         if (nd) {
-            var lv = Tree.leaves['t' + nd];
+            var elName = 't' + nd;
+            var lv = Tree.leaves[elName];
             if (lv) {
-                lv.fromCenter.x = data.x;
-                lv.fromCenter.y = data.y;
-                lv.init(Tree.w, Tree.h);
-                $scope.destroyJSPlumb();
-                $scope.reInitiateJSPlumb();
+                lv.fromCenter.x = data.x + 70;
+                lv.fromCenter.y = data.y + 5;
+                var oldPos = lv.el.position();
+                var newPos = lv.getNewPosition(Tree.w, Tree.h);
+                console.log(JSON.stringify(oldPos));
+                console.log(JSON.stringify(newPos));
+
+                var dx = newPos.x - oldPos.left;
+                var dy = newPos.y - oldPos.top;
+
+                //$scope.reConnect(elName);
+                $('#' + elName).attr("is-simulated", 'simulated');
+                $('#' + elName).simulate("drag-n-drop", {dx: dx, dy: dy})
             }
+
+            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
+            if (pNode) {
+                pNode.positionFromRoot = {x: data.x, y: data.y};
+
+                $timeout(function () {
+                    $scope.$apply();
+                });
+            }
+
         }
-
-        /*var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
-         if (pNode) {
-         pNode.positionFromRoot = {x: data.x, y: data.y};
-         $timeout(function () {
-         $scope.$apply();
-         });
-
-         $scope.destroyJSPlumb();
-         $scope.reInitiateJSPlumb();
-
-
-         }*/
-
-        console.log(JSON.stringify(data));
     });
 });
 ;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
@@ -5627,11 +5699,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $(document).on('click', function (event) {
             var target = $(event.target);
             var k = target.parents('div');
-            if(k.hasClass('ui-draggable')){
+            if (k.hasClass('ui-draggable')) {
                 return false;
             }
 
-            if ($('.open').length > 0) { 
+            if ($('.open').length > 0) {
                 $('.open').removeClass('open');
                 return false;
             }
@@ -5655,7 +5727,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                 return false;
             })
-            .on('mouseenter', function(){
+            .on('mouseenter', function () {
                 $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
                     function (res) {
                         if (res.result) {
@@ -5677,7 +5749,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                 anchors: [
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + child.slug)[0].getAttribute("data-shape")}]
-                ]
+                ],
+                connector: ["Bezier", {curviness: 5}]
             });
 
             if (child.subCategories) {

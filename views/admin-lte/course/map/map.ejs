@@ -150,6 +150,13 @@
                 top: top + "px"
             });
         };
+
+        self.getNewPosition = function (w, h) {
+            var left = w / 2 + ((self.fromCenter.x - self.w / 2)  );
+            var top = h / 2 + ((self.fromCenter.y - self.h / 2)  );
+
+            return {x: left, y: top}
+        }
     }
 
     var Tree = {
