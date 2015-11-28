@@ -1,32 +1,93 @@
 var debug = require('debug')('cm:server');
 var NewsfeedAgg = require('./models/newsfeed.model.js');
+var Votes = require('../../votes/models/votes.js');
+var Discussion = require('../../discussion/models/courseDiscussions.js');
+var Post = require('../../discussion/models/posts.js');
 
 var NewsfeedListener = {
 
-    onAfterSubTopicCreated: function(newSubTopic){
-        NewsfeedAgg.save(
-            {userId: newSubTopic.createdBy, actionSubjectIds: newSubTopic._id , actionSubject: "tree node" , actionType : "added", dateAdded: newSubTopic.dateAdded},
 
+    onAfterVoted: function (newVote) {
+        Votes.findOne({_id: newVote._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var postId = doc.voteTypeId;
+                    var voteType = doc.voteType;
+                    if (voteType == "discussion") {
+                        Discussion.findOne({_id: postId})
+                            .exec(function (err, result) {
+                                if (result) {
+                                    var courseId = result.course;
 
-            function(err, doc){
-                if(!err) debug('');
-                else
-                    debug(err);
+                                    {
+                                        var nf = new NewsfeedAgg(
+                                            {
+                                                userId: newVote.createdBy,
+                                                actionSubjectIds: postId,
+                                                actionSubject: "vote",
+                                                courseId: courseId,
+                                                actionType: "added",
+                                                dateAdded: newVote.dateUpdated
+                                            }
+                                        );
+                                        nf.save(
+                                            function (err, doc) {
+                                                if (!err) debug('');
+                                                else
+                                                    debug(err);
+                                            }
+                                        );
+                                    }
+
+                                } else {
+
+                                    Post.findOne({_id: postId})
+                                        .exec(function (err, postDoc) {
+                                            if (postDoc) {
+                                                var postId = postDoc.parentPost;
+                                                Discussion.findOne({discussion: postId})
+                                                    .exec(function (err, resDoc) {
+                                                        var courseId = resDoc.course;
+                                                        var postId = postDoc._id;
+                                                        var nf = new NewsfeedAgg(
+                                                            {
+                                                                userId: newVote.createdBy,
+                                                                actionSubjectIds: postId,
+                                                                actionSubject: "vote",
+                                                                courseId: courseId,
+                                                                actionType: "added",
+                                                                dateAdded: newVote.dateUpdated
+                                                            }
+                                                        );
+                                                        nf.save(
+                                                            function (err, doc) {
+                                                                if (!err) debug('');
+                                                                else
+                                                                    debug(err);
+                                                            }
+                                                        );
+                                                    })
+                                            }
+                                        })
+
+                                }
+                            })
+                    }
+
+                }
             });
+        /*
+         var nf = new NewsfeedAgg(
+         {userId: newVote.createdBy, actionSubjectIds: postId , actionSubject: "vote", courseId: courseId,  actionType : "added", dateAdded: newVote.dateUpdated}
+         );
+         nf.save(
 
-    },
-
-    onAfterVoted: function(newVote){
-        NewsfeedAgg.save(
-            {userId: newVote.createdBy, actionSubjectIds: newVote._id , actionSubject: "vote" , actionType : "added", dateAdded: newVote.dateUpdated},
-
-
-            function(err, doc){
-                if(!err) debug('');
-                else
-                    debug(err);
-            });
-
+         function(err, doc){
+         if(!err) debug('');
+         else
+         debug(err);
+         });
+         */
     }
 };
 
