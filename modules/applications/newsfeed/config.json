@@ -1,0 +1,13 @@
+{
+  "name": "Newsfeed",
+  "widgets": [
+    {
+      "name": "Newsfeed Aggregator",
+      "location": "background-plugin",
+      "description": "-",
+      "entryPoint": "-",
+      "icon": "/img/appPlaceholder.png",
+      "runOn": "server"
+    }
+  ]
+}
