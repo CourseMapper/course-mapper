@@ -10,6 +10,14 @@ newsfeedSchema.add({
     actionSubjectIds: {
         type: mongoose.Schema.Types.ObjectId
     },
+    courseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'courses'
+    },
+    nodeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'treeNodes'
+    },
     actionSubject: { type: String},
     actionType : { type: String},
     dateAdded: {type: Date}

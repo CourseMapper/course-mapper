@@ -10,9 +10,9 @@ function newsfeedSystem(){
 
 }
 
-newsfeedSystem.prototype.getNewsfeed = function (error,actionSubjectIds, success) {
+newsfeedSystem.prototype.getNewsfeed = function (error,courseId, success) {
     Newsfeed.find({
-        actionSubjectIds: actionSubjectIds
+        courseId: courseId
     })
         .exec(function(err, docs) {
             if (err){
