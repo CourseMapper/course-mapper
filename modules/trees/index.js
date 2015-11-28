@@ -99,8 +99,8 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
 
                 // because we have a parent, lets alter its position, relative to its parent
                 tn.positionFromRoot = {
-                    x: parentNode.positionFromRoot.x + 40,
-                    y: parentNode.positionFromRoot.y + 80
+                    x: parentNode.positionFromRoot.x + generateRandomPos(),
+                    y: parentNode.positionFromRoot.y + generateRandomPos()
                 };
 
                 await(tn.save());
@@ -147,6 +147,10 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         }
 
         debug('success attaching files');
+    }
+
+    function generateRandomPos(){
+        return Math.floor((Math.random() * 100) + 40);
     }
 
     // this is edit mode
@@ -201,7 +205,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         ///
         // saving new node
         ///
-        node.positionFromRoot = {x: 40, y: 60};
+        node.positionFromRoot = {x: generateRandomPos(), y: generateRandomPos()};
 
         var op = async(function () {
             var tn = new TreeNodes(node);
