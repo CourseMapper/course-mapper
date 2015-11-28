@@ -2200,6 +2200,13 @@ app.directive('movablePdf', function() {
               $scope.color ="#444444";
               $scope.dataRelCoord = "100;100";
               $scope.colorPickerId ="1";
+
+              $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+              $('#destroy').on('click', function() {
+                $('select').simplecolorpicker('destroy');
+              });
+              // By default, activate simplecolorpicker plugin on HTML selects
+              $('#init').trigger('click');
             }
         };
     }
