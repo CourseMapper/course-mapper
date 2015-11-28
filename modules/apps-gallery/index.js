@@ -10,6 +10,7 @@ var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var _ = require('underscore');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function AppStore() {
     this.directory = appRoot + '/modules/applications';
@@ -339,8 +340,10 @@ AppStore.prototype.installWidget = function (error, params, success) {
                         newInstall.save(function (err) {
                             if (err) {
                                 error(err);
-                            } else
+                            } else {
                                 success(newInstall);
+                                Plugin.doAction('onAfterWidgetInstalled', newInstall);
+                            }
                         });
 
                     } else {
@@ -354,8 +357,10 @@ AppStore.prototype.installWidget = function (error, params, success) {
                             function (err, doc) {
                                 if (err)
                                     error(err);
-                                else
+                                else {
                                     success(doc);
+                                    Plugin.doAction('onAfterWidgetInstalled', doc);
+                                }
                             }
                         );
                     }
@@ -419,8 +424,10 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
             function (err, doc) {
                 if (err)
                     error(err);
-                else if (doc)
+                else if (doc) {
                     success(doc);
+                    Plugin.doAction('onAfterWidgetUninstalled', doc);
+                }
                 else {
                     error(helper.createError404('Widget Installation'));
                 }

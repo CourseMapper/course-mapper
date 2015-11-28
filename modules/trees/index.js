@@ -348,6 +348,7 @@ catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdat
                 else {
                     // success saved the node pos
                     success(tn, updPos);
+                    Plugin.doAction('onAfterNodePositionEdited', tn);
                 }
             });
         }
@@ -371,6 +372,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
                     else {
                         // success saved the cat
                         success(tn);
+                        Plugin.doAction('onAfterNodeEdited', tn);
                     }
                 });
             }
@@ -413,6 +415,7 @@ catalog.prototype.deleteNode = function (error, params, success) {
                         }
                         else {
                             success(true);
+                            Plugin.doAction('onAfterNodeDeleted', tn);
                         }
                     }
                 );
