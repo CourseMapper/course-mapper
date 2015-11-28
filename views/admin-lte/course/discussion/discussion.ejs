@@ -20,7 +20,7 @@
                  ">
 
                 <ul class="posts">
-                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic.discussion._id)?'active':''"
+                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic._id)?'active':''"
                         ng-hide="topic.isDeleted">
                         <div class="changePage" ng-if="$index !=0 && $index % 10 == 0"></div>
                         <div class="row">
@@ -28,11 +28,11 @@
                                 <voting vote-type="discussion" vote-type-id="{{topic._id}}" vote-value=""></voting>
                             </div>
                             <div class="col-xs-11">
-                                <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic.discussion._id}}">
-                                        {{topic.discussion.title}}
+                                <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic._id}}">
+                                        {{topic.title}}
                                     </a></h4>
                                 <span class="posted-at">
-                                    Posted <strong>{{topic.discussion.dateAdded | relativeDate}}</strong>
+                                    Posted <strong>{{topic.dateAdded | relativeDate}}</strong>
                                     By <strong>{{topic.createdBy.displayName}}</strong>
                                 </span>
                             </div>

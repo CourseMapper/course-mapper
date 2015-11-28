@@ -2822,8 +2822,8 @@ app.directive('timepicker', function($timeout) {
 
                     $('#editTopicModal').modal('hide');
 
-                    var i = _.findIndex($scope.topics, {'discussion': {'_id': data.post._id}});
-                    $scope.topics[i].discussion = data.post;
+                    var i = _.findIndex($scope.topics, {'_id': data.post._id});
+                    $scope.topics[i] = data.post;
                     $timeout(function () {
                         $scope.$apply()
                     });
@@ -2952,15 +2952,15 @@ app.directive('timepicker', function($timeout) {
     };
 
     $scope.getReplies = function (postId) {
-        var i = _.findIndex($scope.topics, {'discussion': {'_id': postId}});
+        var i = _.findIndex($scope.topics, {'_id': postId});
         if ($scope.topics[i]) {
-            $scope.currentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.currentTopic = cloneSimpleObject($scope.topics[i]);
 
             Page.setTitle($scope.pageTitleOnDiscussion + ' > ' + $scope.currentTopic.title);
 
             $scope.currentTopic.createdBy = $scope.topics[i].createdBy;
 
-            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i].discussion);
+            $scope.originalCurrentTopic = cloneSimpleObject($scope.topics[i]);
 
             $scope.currentReplyingTo = $scope.currentTopic._id;
 
@@ -3047,7 +3047,7 @@ app.directive('timepicker', function($timeout) {
     });
 
     $scope.$on('onAfterDeleteTopic', function (e, postId) {
-        var i = _.findIndex($scope.topics, {discussion: {'_id': postId}});
+        var i = _.findIndex($scope.topics, {'_id': postId});
         //$scope.topics[i].isDeleted = true;
         if (i >= 0) {
             $scope.topics.splice(i, 1);
@@ -3104,7 +3104,6 @@ app.directive('timepicker', function($timeout) {
         if (!isValid)
             return;
 
-        console.log('saving reply to ' + $scope.$parent.currentReplyingTo);
         $scope.AddFormData.parentPost = $scope.$parent.currentReplyingTo;
 
         $scope.isLoading = true;
@@ -4223,8 +4222,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                     $('#EditLinksModal').modal('hide');
 
-                    var i = _.findIndex($scope.links, {'link': {'_id': data.post._id}});
-                    $scope.links[i].link = $scope.currentLink;
+                    var i = _.findIndex($scope.links, {'_id': data.post._id});
+                    $scope.links[i] = $scope.currentLink;
                     $timeout(function () {
                         $scope.$apply()
                     });
@@ -4298,11 +4297,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     };
 
     $scope.setCurrentLink = function (postId) {
-        var i = _.findIndex($scope.links, {'link': {'_id': postId}});
+        var i = _.findIndex($scope.links, {'_id': postId});
         if ($scope.links[i]) {
-            $scope.currentLink = cloneSimpleObject($scope.links[i].link);
+            $scope.currentLink = cloneSimpleObject($scope.links[i]);
             $scope.currentLink.createdBy = $scope.links[i].createdBy;
-            $scope.originalCurrentLink = cloneSimpleObject($scope.links[i].link);
+            $scope.originalCurrentLink = cloneSimpleObject($scope.links[i]);
             $scope.currentLinkUrl = $sce.trustAsResourceUrl($scope.currentLink.content);
         }
     };
@@ -4320,7 +4319,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     };
 
     $scope.$on('onAfterDeleteLink', function (e, postId) {
-        var i = _.findIndex($scope.links, {link: {'_id': postId}});
+        var i = _.findIndex($scope.links, {'_id': postId});
         if (i >= 0) {
             //$scope.links[i].isDeleted = true;
             $scope.links.splice(i, 1);

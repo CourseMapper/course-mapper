@@ -1,4 +1,3 @@
-var Posts = require('../discussion/models/posts.js');
 var Links = require('./models/links.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
@@ -35,7 +34,6 @@ NodeLinks.prototype.getNodeLinks = function (error, nodeId, pageParams, success)
         .sort({dateAdded: -1})
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
-        .populate('link')
         .populate('createdBy', 'username displayName')
         .exec(function (err, docs) {
             if (err) {
@@ -54,14 +52,13 @@ NodeLinks.prototype.getNodeLink = function (error, pId, success) {
             _id: pId
         })
         .sort({dateAdded: -1})
-        .populate('link')
         .populate('createdBy', 'username displayName')
         .exec(function (err, doc) {
             if (err) {
                 error(err);
             } else {
                 if (!doc) {
-                    helper.createError404('Course')
+                    helper.createError404('Link')
                 } else {
                     success(doc);
                 }
@@ -70,7 +67,7 @@ NodeLinks.prototype.getNodeLink = function (error, pId, success) {
 };
 
 NodeLinks.prototype.editPost = function (error, params, success) {
-    Posts.findOneAndUpdate(
+    Links.findOneAndUpdate(
         {
             _id: params.linkId
         },
@@ -92,7 +89,7 @@ NodeLinks.prototype.editPost = function (error, params, success) {
 };
 
 NodeLinks.prototype.deletePost = function (error, params, success) {
-    Posts.update(
+    Links.update(
         {
             _id: params.linkId
         },
@@ -105,22 +102,8 @@ NodeLinks.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                if (params.nodeId) {
-                    Links.update({
-                            link: params.linkId
-                        },
-                        {
-                            $set: {
-                                isDeleted: true
-                            }
-                        },
-                        function () {
-                            Plugin.doAction('onAfterLinkDeleted', params.linkId);
-                            success(doc);
-                        });
-                }
-                else
-                    success(doc);
+                Plugin.doAction('onAfterLinkDeleted', params.linkId);
+                success(doc);
             }
         });
 };
@@ -128,11 +111,12 @@ NodeLinks.prototype.deletePost = function (error, params, success) {
 NodeLinks.prototype.addPost = function (error, params, success) {
     var self = this;
 
-    var newPost = new Posts({
+    var newPost = new Links({
         title: params.title,
         content: params.content,
         createdBy: params.createdBy,
-        isDeleted: false
+        isDeleted: false,
+        contentNode: params.nodeId
     });
 
     newPost.setSlug(params.title);
@@ -142,50 +126,8 @@ NodeLinks.prototype.addPost = function (error, params, success) {
             return;
         }
 
-        // set parent and parentsPath
-        {
-            if (params.parentPost) {
-                newPost.parentPost = params.parentPost;
-                newPost.save();
-
-                // put this guy as its child
-                Posts.findOne({_id: params.parentPost}, function (err, doc) {
-                    if (!err) {
-                        if (doc) doc.childPosts.push(newPost._id);
-                    }
-                });
-            }
-
-            if (params.parentPath) {
-                newPost.parentPath = params.parentPath;
-                newPost.save();
-            }
-        }
-
         Plugin.doAction('onAfterLinkCreated', newPost);
-
-        // make a relation to NodeLinks
-        if (params.nodeId) {
-            var cd = new Links({
-                contentNode: params.nodeId,
-                createdBy: params.createdBy,
-                link: newPost._id,
-                isDeleted: false
-            });
-
-            cd.save(function (err) {
-                if (!err) {
-                    //cd.link = newPost;
-                    self.getNodeLink(error, cd._id, function (b) {
-                        success(b);
-                    });
-                } else error(err);
-            });
-
-        } else {
-            // there is no course id, maybe its a reply
-            success(newPost);
-        }
+        success(newPost);
     });
 };
 
@@ -226,7 +168,7 @@ NodeLinks.prototype.isLinkAuthorized = async(function (params) {
 
     // maybe it is a discussion post
     var findCourse = await(
-        Links.findOne({link: params.linkId})
+        Links.findOne({_id: params.linkId})
             .populate('contentNode')
             .exec()
     );
@@ -248,7 +190,7 @@ NodeLinks.prototype.isLinkAuthorized = async(function (params) {
  */
 NodeLinks.prototype.isLinkOwner = async(function (params) {
     var po = await(Links.findOne({
-        link: params.linkId,
+        _id: params.linkId,
         createdBy: params.userId
     }).exec());
 

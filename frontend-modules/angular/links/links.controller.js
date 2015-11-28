@@ -128,8 +128,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                     $('#EditLinksModal').modal('hide');
 
-                    var i = _.findIndex($scope.links, {'link': {'_id': data.post._id}});
-                    $scope.links[i].link = $scope.currentLink;
+                    var i = _.findIndex($scope.links, {'_id': data.post._id});
+                    $scope.links[i] = $scope.currentLink;
                     $timeout(function () {
                         $scope.$apply()
                     });
@@ -203,11 +203,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     };
 
     $scope.setCurrentLink = function (postId) {
-        var i = _.findIndex($scope.links, {'link': {'_id': postId}});
+        var i = _.findIndex($scope.links, {'_id': postId});
         if ($scope.links[i]) {
-            $scope.currentLink = cloneSimpleObject($scope.links[i].link);
+            $scope.currentLink = cloneSimpleObject($scope.links[i]);
             $scope.currentLink.createdBy = $scope.links[i].createdBy;
-            $scope.originalCurrentLink = cloneSimpleObject($scope.links[i].link);
+            $scope.originalCurrentLink = cloneSimpleObject($scope.links[i]);
             $scope.currentLinkUrl = $sce.trustAsResourceUrl($scope.currentLink.content);
         }
     };
@@ -225,7 +225,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     };
 
     $scope.$on('onAfterDeleteLink', function (e, postId) {
-        var i = _.findIndex($scope.links, {link: {'_id': postId}});
+        var i = _.findIndex($scope.links, {'_id': postId});
         if (i >= 0) {
             //$scope.links[i].isDeleted = true;
             $scope.links.splice(i, 1);

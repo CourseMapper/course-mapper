@@ -11,17 +11,18 @@ courseLinkSchema.add({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId, ref: 'users'
     },
-
-    link: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'posts'
-    },
+    slug: {type: String},
+    title: {type: String, required: true},
+    content: {type: String, required: true},
 
     isDeleted: Boolean,
 
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
 });
-
+courseLinkSchema.methods.setSlug = function(s) {
+    this.slug = slug(s);
+};
 courseLinkSchema.pre('save', function (next) {
     var now = new Date();
     this.dateUpdated = now;
