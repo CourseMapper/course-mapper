@@ -849,15 +849,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 var simulated = el.attr('is-simulated');
                 if (simulated && simulated == 'simulated') {
                     el.attr('is-simulated', '');
-                    //console.log('simulated');
                     return;
                 }
-
-
-                console.log(JSON.stringify(distanceFromCenter));
-                console.log(JSON.stringify(pos));
-                console.log(JSON.stringify(params.pos));
-
 
                 var nId = el.attr('id').substring(1); // remove 't' from the node id
                 found = false;
@@ -911,6 +904,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     $('.open').removeClass('open');
                     return false;
+                }
+
+                var simulated = $(this).attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    return true;
                 }
 
                 $('.open').not($(this).parents('ul')).removeClass('open');
