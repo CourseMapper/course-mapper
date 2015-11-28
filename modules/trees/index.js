@@ -150,7 +150,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     }
 
     function generateRandomPos(){
-        return Math.floor((Math.random() * 100) + 40);
+        return Math.floor((Math.random() * 110) + 50);
     }
 
     // this is edit mode
