@@ -1,1 +1,19 @@
-updates/newsfeeds
+<div ng-controller="NewsfeedController">
+    <div class="row">
+        <div class="col-md-8" id="newsfeedList">
+
+            <table class="table table-striped">
+                <tbody>
+                <tr>
+                    <th style="width:10px;">Nr.</th>
+                    <th>Newsfeed Activity</th>
+                </tr>
+                <tr ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'">
+                    <td>{{$index+1}}.</td>
+                    <td>{{nfData.userId.displayName}} {{nfData.actionType}} a {{nfData.actionSubject}} {{nfData.dateAdded | relativeDate}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
