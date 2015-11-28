@@ -563,6 +563,7 @@ ul.dropdown-menu.course{
     position: relative;
     left: 20px;
     z-index: 4;
+    display: table-cell;
 }
 .videoPlayerWrapper{
     position: fixed;

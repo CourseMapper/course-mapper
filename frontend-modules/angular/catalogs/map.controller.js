@@ -486,54 +486,6 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
     };
 
-    $scope.reConnect = function (elName) {
-        jsPlumb.detachAllConnections(elName);
-
-        for (var i in $scope.jsPlumbConnections) {
-            var kc = $scope.jsPlumbConnections[i];
-            if (kc.source == elName || kc.target == elName) {
-                var conn = $scope.jsPlumbConnections[i].conn;
-                var prm = {source: conn.sourceId, target: conn.targetId};
-                //jsPlumb.remove(elName);
-
-                var newConn = $scope.connect(prm.source, prm.target);
-                $scope.jsPlumbConnections[i].conn = newConn.conn;
-
-                /*var newConn = $scope.instance.connect({
-                 source: prm.source,
-                 target: prm.target,
-                 anchors: [
-                 ["Perimeter", {shape: jsPlumb.getSelector('#' + prm.source)[0].getAttribute("data-shape")}],
-                 ["Perimeter", {shape: jsPlumb.getSelector('#' + prm.target)[0].getAttribute("data-shape")}]
-                 ],
-                 deleteEndpointsOnDetach: true,
-                 connector: ["Bezier", {curviness: 5}]
-                 });*/
-                console.log('reconnecting ' + prm.source + ' -> ' + prm.target)
-            }
-        }
-    };
-
-    $scope.connect = function (source, target) {
-        var conn = jsPlumb.connect({
-            source: source, target: target,
-            anchors: [
-                ["Perimeter", {shape: jsPlumb.getSelector('#' + source)[0].getAttribute("data-shape")}],
-                ["Perimeter", {shape: jsPlumb.getSelector('#' + target)[0].getAttribute("data-shape")}]
-            ],
-            deleteEndpointsOnDetach: true,
-            connector: ["Bezier", {curviness: 5}]
-        });
-
-        var cc = {
-            source: source,
-            target: target,
-            conn: conn
-        };
-
-        return cc;
-    };
-
     $scope.$on('onAfterCreateNode', function (event, treeNode) {
         if (treeNode.parent) {
             found = false;
@@ -632,7 +584,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.tabOpened();
 
     socket.on('joined', function (data) {
-        console.log(JSON.stringify(data));
+        //console.log(JSON.stringify(data));
     });
 
     socket.on('positionUpdated', function (data) {
@@ -648,13 +600,10 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 lv.fromCenter.y = data.y + 5;
                 var oldPos = lv.el.position();
                 var newPos = lv.getNewPosition(Tree.w, Tree.h);
-                console.log(JSON.stringify(oldPos));
-                console.log(JSON.stringify(newPos));
 
                 var dx = newPos.x - oldPos.left;
                 var dy = newPos.y - oldPos.top;
 
-                //$scope.reConnect(elName);
                 $('#' + elName).attr("is-simulated", 'simulated');
                 $('#' + elName).simulate("drag-n-drop", {dx: dx, dy: dy})
             }
