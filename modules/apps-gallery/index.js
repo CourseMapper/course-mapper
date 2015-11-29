@@ -247,11 +247,11 @@ AppStore.prototype.setPosition = function (error, params, x, y, success) {
             y: y
         };
 
-        if (params.courseId) {
+        if (doc.courseId) {
             userHelper.isAuthorized(error,
                 {
                     userId: params.userId,
-                    courseId: params.courseId
+                    courseId: doc.courseId
                 },
 
                 function (isAllowed) {
@@ -264,7 +264,7 @@ AppStore.prototype.setPosition = function (error, params, x, y, success) {
             );
         }
 
-        else if (params.userId == doc.userId) {
+        else if (doc.userId.equals(params.userId)) {
             docSave(doc);
         }
 
