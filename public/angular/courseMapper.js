@@ -61,7 +61,7 @@ app.config(function(toastrConfig) {
         }
     });
 
-});;app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr) {
+});;app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr, $timeout) {
 
     $scope.loading = false;
 
@@ -72,6 +72,9 @@ app.config(function(toastrConfig) {
             function () {
                 $scope.loading = false;
                 toastr.success('You are now enrolled');
+                $timeout(function(){
+                    window.location.reload();
+                });
             },
 
             function (res) {
@@ -89,6 +92,9 @@ app.config(function(toastrConfig) {
             function () {
                 $scope.loading = false;
                 toastr.success('You left the course');
+                $timeout(function(){
+                    window.location.reload();
+                });
             },
 
             function () {
@@ -482,7 +488,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.isAdmin = false;
 
     $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
     $scope.currentTab = "preview";
     $scope.tabDisplayName = "preview";
@@ -586,7 +591,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.isEnrolled = courseService.isEnrolled();
         $scope.isManager = courseService.isManager(authService.user);
         $scope.isAdmin = authService.isAdmin();
-        if(authService.user)
+        if (authService.user)
             $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
         else
             $scope.isOwner = false;
