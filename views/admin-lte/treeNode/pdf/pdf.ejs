@@ -19,7 +19,17 @@
                         {{item}}
                         {{item.relativePosition}}
                         <pdf-annotation-zone
-                          relative-position="{{item.relativePosition}}"
+                          relative-position-x="annotationZoneList[key].relativePosition.x"
+                          relative-position-y="annotationZoneList[key].relativePosition.y"
+                          relative-size-x="annotationZoneList[key].relativeSize.x"
+                          relative-size-y="annotationZoneList[key].relativeSize.y"
+                          color="annotationZoneList[key].color"
+                          tag-name="annotationZoneList[key].tagName"
+                          dragable="annotationZoneList[key].dragable"
+                          is-being-created="annotationZoneList[key].isBeingCreated"
+                          ann-zone-id="annotationZoneList[key].annZoneId"
+                          div-counter="annotationZoneList[key].divCounter"
+                          list-id="annotationZoneList[key].id"
                         ></pdf-annotation-zone>
 
                       </div>

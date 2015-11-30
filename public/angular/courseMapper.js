@@ -2185,8 +2185,10 @@ app.directive('movablePdf', function() {
             terminal: true,
             require: 'movable-pdf',
             scope: {
-              relativePosition: '@',
-              relativeSize: '=',
+              relativePositionX: '=',
+              relativePositionY: '=',
+              relativeSizeX: '=',
+              relativeSizeY: '=',
               color: '=',
               tagName: '=',
               dragable: '@',
@@ -2202,7 +2204,7 @@ app.directive('movablePdf', function() {
             controller: function($http, $scope, $rootScope, $sce, $timeout){
 
               console.log("Got called");
-              console.log($scope.relativePosition);
+              //console.log($scope.relativePosition);
               $scope.canMove = $scope.dragable;
               $scope.switchShowAnnoZones = 'On';
               $scope.annZoneID = $scope.listId;
@@ -2210,7 +2212,7 @@ app.directive('movablePdf', function() {
               $scope.opacityFactorHighlight = "0.75";
               //$scope.tagName = "";
               //$scope.color ="#444444";
-              $scope.dataRelCoord = "{{"+$scope.relativePosition['x']+"}};{{"+$scope.relativePosition['y']+"}}";
+              $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.colorPickerId ="1";
               $scope.divCounter = "1";
               $scope.editZoneMode = "BLUB";
