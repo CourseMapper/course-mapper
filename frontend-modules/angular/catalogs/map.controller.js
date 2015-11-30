@@ -116,8 +116,21 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         var h = window.innerHeight;
 
         // let us drag and drop the cats
-        var mapEl = jsPlumb.getSelector(".course-map .w.owned");
+        var mapEl = jsPlumb.getSelector(".course-map .w");
         jsPlumbInstance.draggable(mapEl, {
+            start: function (params) {
+                var el = $(params.el);
+                var simulated = el.attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    return;
+                }
+
+                var owned = el.hasClass('owned');
+                if (!owned) {
+                    params.drag.abort();
+                }
+            },
+
             // update position on drag stop
             stop: function (params) {
                 var el = $(params.el);
