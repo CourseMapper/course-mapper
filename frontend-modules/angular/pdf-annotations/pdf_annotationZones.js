@@ -11,7 +11,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.editZoneValues = [];
 
 
-    $scope.annotationZoneList = new Array();
+    $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
     $scope.divCounter = 0;
 
 
@@ -313,7 +313,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       console.log("Reload Tags called");
       //$(".slideRect").remove();
-      $scope.annotationZoneList = new Array();
+      //$scope.annotationZoneList = new Array();
+      $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
       $scope.divCounter = 0;
 
       annotationZonesAreLoaded = false;

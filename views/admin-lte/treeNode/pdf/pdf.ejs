@@ -8,22 +8,20 @@
 
                 <pdf-viewer source="{{pdfFile.link}}" current-page-number="1" pdf-id="{{pdfFile._id}}"></pdf-viewer>
 
-                <!--
-                <div id="annotationZone">
-                    <pdf-annotation-zone>
-                    </pdf-annotation-zone>
-                </div>
-                -->
 
 
                 <div id="annZoneList" ng-controller="AnnotationZoneListController">
                   <div id="annotationZone">
-                      {{annotationZoneList['rect-0']}}
-                      {{annotationZoneList}}
-                      <div id="pawa" ng-repeat="(key, item) in annotationZoneList[]">
-                        <div> {{key}}
-                              {{item.color}}
-                        </div>
+                      {{annotationZoneList.length}}
+
+                      <div ng-repeat="(key, item) in annotationZoneList">
+                        {{key}}
+                        {{item}}
+                        {{item.relativePosition}}
+                        <pdf-annotation-zone
+                          relative-position="{{item.relativePosition}}"
+                        ></pdf-annotation-zone>
+
                       </div>
                   </div>
                 </div>

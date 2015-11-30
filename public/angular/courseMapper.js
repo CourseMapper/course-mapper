@@ -2185,7 +2185,7 @@ app.directive('movablePdf', function() {
             terminal: true,
             require: 'movable-pdf',
             scope: {
-              relativePosition: '=',
+              relativePosition: '@',
               relativeSize: '=',
               color: '=',
               tagName: '=',
@@ -2193,7 +2193,7 @@ app.directive('movablePdf', function() {
               isBeingCreated: '@',
               annZoneId: '@',
               divCounter: '@',
-              id: '@'
+              listId: '@'
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2202,14 +2202,15 @@ app.directive('movablePdf', function() {
             controller: function($http, $scope, $rootScope, $sce, $timeout){
 
               console.log("Got called");
+              console.log($scope.relativePosition);
               $scope.canMove = $scope.dragable;
               $scope.switchShowAnnoZones = 'On';
-              $scope.annZoneID = $scope.id;
+              $scope.annZoneID = $scope.listId;
               //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";
               //$scope.tagName = "";
               //$scope.color ="#444444";
-              $scope.dataRelCoord = "100;100";
+              $scope.dataRelCoord = "{{"+$scope.relativePosition['x']+"}};{{"+$scope.relativePosition['y']+"}}";
               $scope.colorPickerId ="1";
               $scope.divCounter = "1";
               $scope.editZoneMode = "BLUB";
@@ -4538,7 +4539,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.editZoneValues = [];
 
 
-    $scope.annotationZoneList = new Array();
+    $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
     $scope.divCounter = 0;
 
 
@@ -4840,7 +4841,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
       console.log("Reload Tags called");
       //$(".slideRect").remove();
-      $scope.annotationZoneList = new Array();
+      //$scope.annotationZoneList = new Array();
+      $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
       $scope.divCounter = 0;
 
       annotationZonesAreLoaded = false;
