@@ -20,6 +20,7 @@ newsfeedSchema.add({
     },
     actionSubject: { type: String},
     actionType : { type: String},
+    actionName : {type:String},
     dateAdded: {type: Date}
 });
 
