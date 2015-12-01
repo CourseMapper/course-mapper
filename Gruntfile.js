@@ -8,7 +8,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-ng-annotate');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
-
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     grunt.initConfig({
         bowercopy: {
@@ -101,7 +101,7 @@ module.exports = function (grunt) {
                 singleQuotes: true
             },
             cmscripts: {
-                files:{
+                files: {
                     'public/angular/courseMapper.js': ['public/angular/courseMapper.js'],
                     'public/angular/courseMapperAdmin.js': ['public/angular/courseMapperAdmin.js']
                 }
@@ -119,15 +119,25 @@ module.exports = function (grunt) {
                     'public/angular/courseMapperAdmin.js': ['public/angular/courseMapperAdmin.js']
                 }
             }
-        }
+        },
 
+        cssmin: {
+            target: {
+                files: [{
+                    expand: true,
+                    cwd: 'public/admin-lte/css',
+                    src: ['*.css', '!*.min.css'],
+                    dest: 'public/admin-lte/css',
+                    ext: '.css'
+                }]
+            }
+        }
     });
 
     // the default task (running "grunt" in console)
     grunt.registerTask('default', [
         'bowercopy:scripts',
         'bowercopy:views',
-        //'bowercopy:folders',
         'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va']
     );
 
@@ -135,6 +145,6 @@ module.exports = function (grunt) {
         'bowercopy',
         'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va',
         'ngAnnotate:cmscripts',
-        'uglify:courseMapper', 'uglify:courseMapperAdmin'
+        'uglify:courseMapper', 'uglify:courseMapperAdmin', 'cssmin'
     ]);
 };
