@@ -1,7 +1,7 @@
 <!-- Main content -->
 <section class="content">
     <div class="row row-centered">
-        <div class="col-xs-12 col-md-5 col-centered">
+        <div class="col-xs-12 col-md-7 col-centered">
             <div class="box no-border" ng-controller="CourseEditController" ng-init="init()">
                 <div class="box-header with-border">
                     <h3 class="box-title">Editing a course: {{courseEdit.name}}</h3>
@@ -42,7 +42,7 @@
 
                                     <div id="description" name="description"
                                          ng-model="courseEdit.description"
-                                         quill>
+                                         quill type="complete">
                                     </div>
 
                                     <p ng-show="editCourseForm.description.$invalid && !editCourseForm.$pristine"

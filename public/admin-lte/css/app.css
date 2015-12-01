@@ -688,8 +688,8 @@ a.videoButton:hover {
 }
 
 .preview-image-container {
-    height: 320px;
-    overflow: hidden
+    /*height: 320px;
+    overflow: hidden*/
 }
 
 .excerpt .description {
