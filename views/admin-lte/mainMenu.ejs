@@ -1,6 +1,9 @@
 <% if(
-        (typeof isInIframe != 'undefined' && isInIframe && course && course.settings && course.settings['disableTop']) ||
-        (typeof isInIframe != 'undefined' && isInIframe && treeNode && treeNode.settings && treeNode.settings['disableTop'])
+        (typeof isInIframe != 'undefined' && typeof course != 'undefined'
+        && isInIframe && course && course.settings && course.settings['disableTop']) ||
+        (
+        typeof isInIframe != 'undefined' && typeof treeNode != 'undefined'
+        && isInIframe && treeNode && treeNode.settings && treeNode.settings['disableTop'])
 ){ %>
 <div ng-controller="MainMenuController">
 </div>
