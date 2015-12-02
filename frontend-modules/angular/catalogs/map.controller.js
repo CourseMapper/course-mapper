@@ -122,6 +122,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         jsPlumbInstance.draggable(mapEl, {
             start: function (params) {
                 var el = $(params.el);
+                var nId = el.attr('id').substring(1);
                 var simulated = el.attr('is-simulated');
                 if (simulated && simulated == 'simulated') {
                     return;
@@ -129,6 +130,10 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
                 var owned = el.hasClass('owned');
                 if (!owned) {
+                    params.drag.abort();
+                }
+
+                if (collapseService.isCollapsed(nId) !== false) {
                     params.drag.abort();
                 }
             },
@@ -290,11 +295,6 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             $(conn.connector.canvas).attr('data-source', parent);
             $(conn.connector.canvas).attr('data-target', childId);
-            /*if (!window.lols)
-             window.lols = [];
-             if (!window.lols[childId])
-             window.lols[childId] = [];
-             window.lols[childId].push(conn.connector.canvas);*/
 
             var cc = {
                 source: parent,
@@ -575,6 +575,12 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             var hide = collapseService.toggle(nodeId);
             $scope.collapseStatus[nodeId] = hide;
             collapseService.affectVisual(hide, pNode, nodeId);
+
+            if (hide !== false) {
+                $('#' + el).addClass('aborted');
+            } else {
+                $('#' + el).removeClass('aborted');
+            }
         }
     };
 
