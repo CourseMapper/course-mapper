@@ -29,7 +29,10 @@ app.config(function(toastrConfig) {
 
         when('/cid/:courseId/nid/:nodeId', {
             templateUrl: function (params) {
-                return '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
+                var tUrl = '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
+                if (params.iframe === 'true' || params.iframe === 'false')
+                    tUrl += '?iframe=' + params.iframe;
+                return tUrl;
             },
             controller: 'NodeRootController',
             reloadOnSearch: false
@@ -37,7 +40,10 @@ app.config(function(toastrConfig) {
 
         when('/cid/:courseId', {
             templateUrl: function (params) {
-                return '/course/courseDetail/' + params.courseId;
+                var tUrl = '/course/courseDetail/' + params.courseId;
+                if (params.iframe === 'true' || params.iframe === 'false')
+                    tUrl += '?iframe=' + params.iframe;
+                return tUrl;
             },
             controller: 'CourseRootController',
             reloadOnSearch: false
