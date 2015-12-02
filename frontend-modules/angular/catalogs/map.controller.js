@@ -1,6 +1,7 @@
 app.controller('MapController', function ($scope, $http, $rootScope, authService,
                                           $timeout, $sce, $location, socket,
-                                          toastr, mapService, courseService) {
+                                          toastr, mapService, courseService,
+                                          collapseService) {
 
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
@@ -12,6 +13,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    $scope.collapseStatus = {};
 
     /**
      * find node recursively
@@ -286,6 +288,14 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 connector: ["Bezier", {curviness: 5}]
             });
 
+            $(conn.connector.canvas).attr('data-source', parent);
+            $(conn.connector.canvas).attr('data-target', childId);
+            /*if (!window.lols)
+             window.lols = [];
+             if (!window.lols[childId])
+             window.lols[childId] = [];
+             window.lols[childId].push(conn.connector.canvas);*/
+
             var cc = {
                 source: parent,
                 target: childId,
@@ -295,6 +305,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             $scope.jsPlumbConnections.push(cc);
 
             if (child.childrens) {
+                $('#' + parent + ' .collapse-button').addClass('hasChildren');
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
@@ -553,6 +564,18 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             function () {
                 $scope.$apply();
             });
+    };
+
+    $scope.collapse = function (el) {
+        var nodeId = el.substring(1);
+        found = false;
+
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
+        if (pNode) {
+            var hide = collapseService.toggle(nodeId);
+            $scope.collapseStatus[nodeId] = hide;
+            collapseService.affectVisual(hide, pNode, nodeId);
+        }
     };
 
     $scope.$on('onAfterCreateNode', function (event, treeNode) {

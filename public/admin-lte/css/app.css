@@ -833,3 +833,16 @@ li.active .voting .vote-total {
     -ms-user-select: none;
     user-select: none
 }
+
+.collapse-button {
+    display: none;
+    position: absolute;
+    top: 1px;
+    left: 10px;
+    height: 16px;
+    width: 16px;
+}
+
+.collapse-button.hasChildren {
+    display: table-cell !important;
+}

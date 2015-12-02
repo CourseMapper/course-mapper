@@ -730,7 +730,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 });
 ;app.controller('MapController', function ($scope, $http, $rootScope, authService,
                                           $timeout, $sce, $location, socket,
-                                          toastr, mapService, courseService) {
+                                          toastr, mapService, courseService,
+                                          collapseService) {
 
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
@@ -742,6 +743,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    $scope.collapseStatus = {};
 
     /**
      * find node recursively
@@ -1016,6 +1018,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 connector: ["Bezier", {curviness: 5}]
             });
 
+            $(conn.connector.canvas).attr('data-source', parent);
+            $(conn.connector.canvas).attr('data-target', childId);
+            /*if (!window.lols)
+             window.lols = [];
+             if (!window.lols[childId])
+             window.lols[childId] = [];
+             window.lols[childId].push(conn.connector.canvas);*/
+
             var cc = {
                 source: parent,
                 target: childId,
@@ -1025,6 +1035,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.jsPlumbConnections.push(cc);
 
             if (child.childrens) {
+                $('#' + parent + ' .collapse-button').addClass('hasChildren');
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
@@ -1283,6 +1294,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function () {
                 $scope.$apply();
             });
+    };
+
+    $scope.collapse = function (el) {
+        var nodeId = el.substring(1);
+        found = false;
+
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
+        if (pNode) {
+            var hide = collapseService.toggle(nodeId);
+            $scope.collapseStatus[nodeId] = hide;
+            collapseService.affectVisual(hide, pNode, nodeId);
+        }
     };
 
     $scope.$on('onAfterCreateNode', function (event, treeNode) {
@@ -3487,6 +3510,73 @@ app.directive('timepicker', function($timeout) {
                     }
                 );
             }
+        }
+    }
+]);;app.factory('collapseService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            collapsed: [],
+
+            isCollapsed: function (nodeId) {
+                var idx = this.collapsed.indexOf(nodeId);
+                if (idx != -1) {
+                    return idx;
+                }
+
+                return false;
+            }, 
+
+            /**
+             *
+             * @param nodeId
+             * @returns {boolean} true: hide, false: show
+             */
+            toggle: function (nodeId) {
+                var idx = this.isCollapsed(nodeId);
+                if (idx === false) {
+                    // hidden, now set it to hide
+                    this.collapsed.push(nodeId);
+                    // true means hide
+                    return true;
+                } else {
+                    // show back
+                    this.collapsed.splice(idx, 1);
+                    return false;
+                }
+            },
+
+            affectVisual: function (hide, pNode, nodeId) {
+                var self = this;
+
+                for (var i in pNode.childrens) {
+                    var chs = pNode.childrens[i];
+                    if (hide) {
+                        $('#t' + chs._id).hide();
+                        if (chs.childrens.length > 0) {
+                            self.affectVisual(hide, chs, chs._id);
+                        }
+                    }
+                    else {
+                        $('#t' + chs._id).show();
+                        if (chs.childrens.length > 0) {
+                            var isChildrenCollapsed = self.isCollapsed(chs._id);
+                            if (isChildrenCollapsed === false)
+                                self.affectVisual(false, chs, chs._id);
+                            else
+                                self.affectVisual(true, chs, chs._id);
+                        }
+                    }
+                }
+
+                // hide svg
+                if (hide)
+                    $("svg[data-source='t" + nodeId + "'").hide();
+                else
+                    $("svg[data-source='t" + nodeId + "'").show();
+            }
+
         }
     }
 ]);;app.factory('courseService', [
