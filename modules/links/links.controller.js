@@ -74,7 +74,8 @@ NodeLinks.prototype.editPost = function (error, params, success) {
         {
             $set: {
                 title: params.title,
-                content: params.content
+                content: params.content,
+                description: params.description
             }
         },
         {safe: true, upsert: true},
@@ -115,6 +116,7 @@ NodeLinks.prototype.addPost = function (error, params, success) {
         title: params.title,
         content: params.content,
         createdBy: params.createdBy,
+        description: params.description,
         isDeleted: false,
         contentNode: params.nodeId
     });

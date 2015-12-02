@@ -852,6 +852,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         jsPlumbInstance.draggable(mapEl, {
             start: function (params) {
                 var el = $(params.el);
+                var nId = el.attr('id').substring(1);
                 var simulated = el.attr('is-simulated');
                 if (simulated && simulated == 'simulated') {
                     return;
@@ -859,6 +860,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 var owned = el.hasClass('owned');
                 if (!owned) {
+                    params.drag.abort();
+                }
+
+                if (collapseService.isCollapsed(nId) !== false) {
                     params.drag.abort();
                 }
             },
@@ -1020,11 +1025,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $(conn.connector.canvas).attr('data-source', parent);
             $(conn.connector.canvas).attr('data-target', childId);
-            /*if (!window.lols)
-             window.lols = [];
-             if (!window.lols[childId])
-             window.lols[childId] = [];
-             window.lols[childId].push(conn.connector.canvas);*/
 
             var cc = {
                 source: parent,
@@ -1305,6 +1305,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             var hide = collapseService.toggle(nodeId);
             $scope.collapseStatus[nodeId] = hide;
             collapseService.affectVisual(hide, pNode, nodeId);
+
+            if (hide !== false) {
+                $('#' + el).addClass('aborted');
+            } else {
+                $('#' + el).removeClass('aborted');
+            }
         }
     };
 
@@ -4424,6 +4430,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                 if (data.result) {
                     $scope.$emit('onAfterCreateNewLink', data.post);
+                    data.post.createdBy = authService.user;
                     $scope.links.unshift(data.post);
                     $timeout(function () {
                         $scope.$apply()
@@ -4517,7 +4524,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         if ($scope.pid) {
             ActionBarService.extraActionsMenu = [];
 
-            if ( $scope.isAdmin || $scope.isOwner || $scope.isManager ||
+            if ($scope.isAdmin || $scope.isOwner || $scope.isManager ||
                 $scope.currentLink.createdBy._id == authService.user._id ||
                 $scope.currentLink.createdBy == authService.user._id
             ) {

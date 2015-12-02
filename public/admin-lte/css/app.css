@@ -846,3 +846,7 @@ li.active .voting .vote-total {
 .collapse-button.hasChildren {
     display: table-cell !important;
 }
+
+.aborted {
+    cursor: default !important;
+}

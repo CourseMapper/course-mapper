@@ -86,6 +86,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                 if (data.result) {
                     $scope.$emit('onAfterCreateNewLink', data.post);
+                    data.post.createdBy = authService.user;
                     $scope.links.unshift(data.post);
                     $timeout(function () {
                         $scope.$apply()
@@ -179,7 +180,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         if ($scope.pid) {
             ActionBarService.extraActionsMenu = [];
 
-            if ( $scope.isAdmin || $scope.isOwner || $scope.isManager ||
+            if ($scope.isAdmin || $scope.isOwner || $scope.isManager ||
                 $scope.currentLink.createdBy._id == authService.user._id ||
                 $scope.currentLink.createdBy == authService.user._id
             ) {

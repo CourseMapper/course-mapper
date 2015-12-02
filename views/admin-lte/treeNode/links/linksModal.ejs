@@ -12,7 +12,8 @@
                             <modal-close></modal-close>
                         </div>
                         <div class="box-body">
-                            <form name="<%= operation %>LinkForm" role="form" ng-submit="<%= actionMethodName %>(<%= operation %>LinkForm.$valid)"
+                            <form name="<%= operation %>LinkForm" role="form"
+                                  ng-submit="<%= actionMethodName %>(<%= operation %>LinkForm.$valid)"
                                   novalidate>
                                 <fieldset>
                                     <div class="control-group">
@@ -32,7 +33,19 @@
                                         </div>
                                     </div>
                                     <br>
+                                    <div class="control-group">
+                                        <label class="control-label" for="title">Description</label>
 
+                                        <p class="help-block">Small description about this link</p>
+
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : <%= operation %>LinkForm.description.$invalid && !<%= operation %>LinkForm.$pristine }">
+                                            <input type="text" id="description" name="description" placeholder=""
+                                                   class="form-control"
+                                                   ng-model="<%= variableContainer %>.description">
+                                        </div>
+                                    </div>
+                                    <br>
                                     <div class="control-group">
                                         <label class="control-label">Link</label>
 
@@ -41,10 +54,10 @@
                                         <div class="controls"
                                              ng-class="{ 'has-error' : (<%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine )}">
 
-                                        <input type="url" id="link" name="content" placeholder="http://"
+                                            <input type="url" id="link" name="content" placeholder="http://"
                                                    class="form-control"
                                                    ng-model="<%= variableContainer %>.content"
-                                               ng-required="true" required>
+                                                   ng-required="true" required>
 
                                             <p ng-show="<%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine "
                                                class="help-block">A link must contain a URL</p>
@@ -56,7 +69,8 @@
                                         <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                         <!-- Button -->
                                         <div class="controls">
-                                            <button class="btn btn-primary" ng-click="<%= operation %>LinkForm.$setDirty()">Save
+                                            <button class="btn btn-primary"
+                                                    ng-click="<%= operation %>LinkForm.$setDirty()">Save
                                                 <spinner show="isLoading"></spinner>
                                             </button>
                                             <cancel></cancel>
