@@ -14,6 +14,13 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
     $scope.divCounter = 0;
 
+    //$rootScope.annZoneBoxSizeX = 0;
+    //$rootScope.annZoneBoxSizeY = 0;
+
+
+    $scope.updateAnnZonePos = function(posObj) {
+      console.log(posObj);
+    };
 
 
 
@@ -52,6 +59,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           },
           color: color,
           tagName: tagName,
+          editTagNameTemp: tagName,
           dragable: isBeingCreated,
           isBeingCreated: isBeingCreated,
           canBeEdited: canBeEdited,

@@ -1,7 +1,7 @@
-<div movable-pdf="" can-move={{canMove}} ng-hide="(switchShowAnnoZones == 'Off')" id={{annZoneID}} class="slideRect1" position="absolute" opacity={{opacityFactorHighlight}} data-tagName={{tagName}} data-relstartcoord="{{dataRelCoord}}" style="position:absolute;background-color:{{color}};'transition': 'background 0.1s linear'">
+<div movable-pdf="" can-move="{{canMove}}" on-moved="update-ann-zone-pos" ng-hide="(switchShowAnnoZones == 'Off')" id={{annZoneID}} class="slideRect1" position="absolute" opacity={{opacityFactorHighlight}} data-tagName={{tagName}} data-relstartcoord="{{dataRelCoord}}" style="position:absolute;background-color:#{{color}};'transition': 'background 0.1s linear'" ng-style="'width':'{{relativeSizeX*currCanWidth}}px','height':'{{relativeSizeY*currCanHeight}}px'">
   <div id ="caRect-{{divCounter}}" class="caRect" style= "width:'100%';height:'100%'" ng-click="addReference(annZoneID)">
-    <div>
-      <select id="colorPicker-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker" value= "#ac725e">
+    <div  ng-hide="!dragable">
+      <select id="colorPicker-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker" ng-model= "color">
         <option value="#ac725e">#ac725e</option>
         <option value="#d06b64">#d06b64</option>
         <option value="#f83a22">#f83a22</option>
@@ -31,13 +31,13 @@
     <div id="slideRectWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:'1px'; padding-top:'1px';">
       <span id="slideRectSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt';">
         <span>#</span>
-        <span ng-hide="(editZoneMode == annZoneId)">{{tagName}}</span>
+        <span ng-hide="(editZoneMode == '{{annZoneID}}')">{{tagName}}</span>
       </span>
     </div>
-    <div id="slideRectEditWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px">
+    <div id="slideRectEditWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px" ng-hide="editZoneMode != '{{annZoneID}}'">
       <span id="slideRectEditSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
-        <span>#</span><span ng-hide="(editZoneMode == annZoneId)">{{tagName}}</span>
-        <input type="text" id="rectEditInputField-{{divCounter}}" name = "{{rectEditInputFieldName}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editZoneValues['{{id}}'].name" ng-hide="(editZoneMode != '{{id}}')">
+        <span>#</span><span ng-hide="(editZoneMode == '{{annZoneID}}')">{{tagName}}</span>
+        <input type="text" id="rectEditInputField-{{divCounter}}" name = "{{rectEditInputFieldName}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(editZoneMode != '{{id}}')">
         </input>
       </span>
       <span id="editSpan-{{divCounter}}" class="glyphicon glyphicon-pencil" aria-hidden="true" ng-click="setEditZoneMode(annZoneId,divCounter,color);" ng-hide="(editZoneMode == '{{annZoneId}}')" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
@@ -52,7 +52,7 @@
           <input type="text" id="rectInputField-{{divCounter}}" class="slideRectInput" ng-model="tagNameList['rect-{{divCounter}}']" style="color:'black';transition:'width 0-25s';border:'0'"/>
         </span>
       </span>
-      <div>
+      <div ng-hide="editZoneMode != '{{annZoneID}}'">
         <select id="colorPickerEdit-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker" value= "#ac725e">
           <option value="#ac725e">#ac725e</option>
           <option value="#d06b64">#d06b64</option>

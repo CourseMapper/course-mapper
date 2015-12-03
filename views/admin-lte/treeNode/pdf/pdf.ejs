@@ -14,25 +14,24 @@
                   <div id="annotationZone">
                       {{annotationZoneList.length}}
 
-                      <div ng-repeat="(key, item) in annotationZoneList">
-                        {{key}}
-                        {{item}}
-                        {{item.relativePosition}}
                         <pdf-annotation-zone
+                          ng-repeat="(key, item) in annotationZoneList"
                           relative-position-x="annotationZoneList[key].relativePosition.x"
                           relative-position-y="annotationZoneList[key].relativePosition.y"
                           relative-size-x="annotationZoneList[key].relativeSize.x"
                           relative-size-y="annotationZoneList[key].relativeSize.y"
                           color="annotationZoneList[key].color"
                           tag-name="annotationZoneList[key].tagName"
+                          edit-tag-name-temp="annotationZoneList[key].editTagNameTemp"
                           dragable="annotationZoneList[key].dragable"
                           is-being-created="annotationZoneList[key].isBeingCreated"
+                          can-be-edited="annotationZoneList[key].canBeEdited"
                           ann-zone-id="annotationZoneList[key].annZoneId"
                           div-counter="annotationZoneList[key].divCounter"
                           list-id="annotationZoneList[key].id"
                         ></pdf-annotation-zone>
 
-                      </div>
+
                   </div>
                 </div>
 

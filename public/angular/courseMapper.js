@@ -2046,15 +2046,15 @@ app.directive('movable', function() {
 app.directive('movablePdf', function() {
     var getRelativePosition = function(position, parent) {
         return {
-            left: Math.round((100 * position.left / parent.clientWidth)),
-            top: Math.round((100 * position.top / parent.clientHeight))
+            left: 1.0 * position.left / $("#annotationZone").clientWidth,
+            top: 1.0 * position.top / $("#annotationZone").clientHeight
         };
     };
 
     var getRelativeSize = function(size, parent) {
         return {
-            width: Math.round((100 * size.width / parent.clientWidth)),
-            height: Math.round((100 * size.height / parent.clientHeight))
+            width: 1.0 * size.width / $("#annotationZone").clientWidth,
+            height: 1.0 * size.height / $("#annotationZone").clientHeight
         };
     };
 
@@ -2191,11 +2191,13 @@ app.directive('movablePdf', function() {
               relativeSizeY: '=',
               color: '=',
               tagName: '=',
-              dragable: '@',
-              isBeingCreated: '@',
-              annZoneId: '@',
-              divCounter: '@',
-              listId: '@'
+              editTagNameTemp: '=',
+              dragable: '=',
+              isBeingCreated: '=',
+              canBeEdited: '=',
+              annZoneId: '=',
+              divCounter: '=',
+              listId: '='
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2203,7 +2205,14 @@ app.directive('movablePdf', function() {
             //transclude: true,
             controller: function($http, $scope, $rootScope, $sce, $timeout){
 
+
+
               console.log("Got called");
+              $scope.currCanWidth = $('#annotationZone').width();
+
+              $scope.currCanHeight = $('#annotationZone').height();
+
+
               //console.log($scope.relativePosition);
               $scope.canMove = $scope.dragable;
               $scope.switchShowAnnoZones = 'On';
@@ -2214,7 +2223,7 @@ app.directive('movablePdf', function() {
               //$scope.color ="#444444";
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.colorPickerId ="1";
-              $scope.divCounter = "1";
+              //$scope.divCounter = "1";
               $scope.editZoneMode = "BLUB";
 
 
@@ -4544,6 +4553,13 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
     $scope.divCounter = 0;
 
+    //$rootScope.annZoneBoxSizeX = 0;
+    //$rootScope.annZoneBoxSizeY = 0;
+
+
+    $scope.updateAnnZonePos = function(posObj) {
+      console.log(posObj);
+    };
 
 
 
@@ -4582,6 +4598,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
           },
           color: color,
           tagName: tagName,
+          editTagNameTemp: tagName,
           dragable: isBeingCreated,
           isBeingCreated: isBeingCreated,
           canBeEdited: canBeEdited,
