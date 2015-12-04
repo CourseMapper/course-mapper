@@ -220,8 +220,18 @@ account.prototype.editAccount = function (error, params, success) {
 
             if (doc) {
                 if (params.password) {
-                    doc.setPassword(params.password);
+                    if (params.password == params.passwordConfirm) {
+                        var hashedPwd = hash(params.oldPassword, doc.salt);
+                        if (hashedPwd == doc.password)
+                            doc.setPassword(params.password);
+                        else {
+                            return error(new Error("Old password is not correct."));
+                        }
+                    } else {
+                        return error(new Error("Password and password confirmation does not match."));
+                    }
                 }
+
                 if (params.displayName) {
                     doc.displayName = params.displayName;
                     debug('edit displayname');

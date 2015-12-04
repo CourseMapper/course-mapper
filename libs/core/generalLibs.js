@@ -1,3 +1,5 @@
+var passport = require('passport');
+
 var cmLibraries = {
     /**
      * do validation of required parameters before sending them to query
@@ -104,7 +106,34 @@ var cmLibraries = {
             result: false,
             errors: errMsg
         });
+    },
+
+    ensureAuthenticated: function (req, res, next) {
+        // local strategy
+        if (req.isAuthenticated()) {
+            return next();
+        } else {
+            // basic strategy
+            passport.authenticate('basic', {session: false}, function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    cmLibraries.resReturn(cmLibraries.createError401(), res);
+                }
+                else {
+                    req.logIn(user, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        return next();
+                    });
+                }
+            })(req, res, next);
+        }
     }
+
 };
 
 module.exports = cmLibraries;
