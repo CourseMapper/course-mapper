@@ -22,7 +22,7 @@ app.controller('UserEditController', function ($scope, $http, $rootScope, $timeo
         var d = transformRequest($scope.formData);
         $http({
             method: 'PUT',
-            url: '/api/accounts/' + $scope.user._id,
+            url: '/api/account/' + $scope.user._id,
             data: d, // pass in data as strings
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

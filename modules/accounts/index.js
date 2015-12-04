@@ -1,5 +1,4 @@
 var User = require('./users.js');
-var Course = require('../catalogs/courses.js');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
@@ -189,7 +188,7 @@ account.prototype.handleLoginPost = function (req, res, next) {
     })(req, res, next);
 };
 
-account.prototype.changePassword = function (error, params, success) {
+/*account.prototype.changePassword = function (error, params, success) {
     if (params.password == params.passwordConfirm) {
         User.findOne({_id: params.userId})
             .exec(function (err, doc) {
@@ -209,7 +208,7 @@ account.prototype.changePassword = function (error, params, success) {
                 }
             });
     }
-};
+};*/
 
 account.prototype.editAccount = function (error, params, success) {
     User.findOne({_id: params.userId})

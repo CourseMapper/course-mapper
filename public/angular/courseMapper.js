@@ -3428,7 +3428,7 @@ app.directive('timepicker', function($timeout) {
 
                     self.isCheckingForLogin = true;
 
-                    $http.get('/api/accounts').success(function (data) {
+                    $http.get('/api/account').success(function (data) {
                         self.isCheckingForLogin = false;
 
                         self.hasTriedToLogin = true;
@@ -6068,7 +6068,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         var d = transformRequest($scope.formData);
         $http({
             method: 'PUT',
-            url: '/api/accounts/' + $scope.user._id,
+            url: '/api/account/' + $scope.user._id,
             data: d, // pass in data as strings
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

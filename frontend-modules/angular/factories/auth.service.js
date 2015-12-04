@@ -29,7 +29,7 @@ app.factory('authService', [
 
                     self.isCheckingForLogin = true;
 
-                    $http.get('/api/accounts').success(function (data) {
+                    $http.get('/api/account').success(function (data) {
                         self.isCheckingForLogin = false;
 
                         self.hasTriedToLogin = true;

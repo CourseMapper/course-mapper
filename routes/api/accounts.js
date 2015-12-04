@@ -19,9 +19,9 @@ router.get('/accounts/logout', function (req, res, next) {
     res.status(200).json({result: true, message: 'Logged out'});
 });
 
-router.get('/accounts', function (req, res, next) {
+router.get('/account', function (req, res, next) {
     if (req.user)
-        res.redirect('/api/accounts/' + req.user.username);
+        res.redirect('/api/account/' + req.user.username);
     else
         res.status(401).json({message: 'Not authorized'});
 });
@@ -53,7 +53,7 @@ router.get('/accounts/facebook/callback',
     }
 );
 
-router.get('/accounts/:username', helper.ensureAuthenticated, function (req, res, next) {
+router.get('/account/:username', helper.ensureAuthenticated, function (req, res, next) {
     var account = new Account();
     account.getUser(
         function (err) {
@@ -76,7 +76,7 @@ router.get('/accounts/:username', helper.ensureAuthenticated, function (req, res
     );
 });
 
-router.get('/accounts/:userId/courses', helper.ensureAuthenticated, function (req, res, next) {
+router.get('/account/:userId/courses', helper.ensureAuthenticated, function (req, res, next) {
     var crs = new Course();
 
     var userId = mongoose.Types.ObjectId(req.params.userId);
@@ -92,7 +92,7 @@ router.get('/accounts/:userId/courses', helper.ensureAuthenticated, function (re
     );
 });
 
-router.get('/accounts/:userId/course/:courseId', helper.ensureAuthenticated, function (req, res, next) {
+router.get('/account/:userId/course/:courseId', helper.ensureAuthenticated, function (req, res, next) {
     var crs = new Course();
 
     var userId = mongoose.Types.ObjectId(req.params.userId);
@@ -198,8 +198,8 @@ router.post('/accounts/login',
 
 /**
  * change password only
- */
-router.put('/accounts/:userId/changePassword', helper.ensureAuthenticated, function (req, res, next) {
+
+ router.put('/accounts/:userId/changePassword', helper.ensureAuthenticated, function (req, res, next) {
 
     req.body.userId = mongoose.Types.ObjectId(req.user._id);
 
@@ -219,9 +219,9 @@ router.put('/accounts/:userId/changePassword', helper.ensureAuthenticated, funct
             }
         );
     }
-});
+}); */
 
-router.put('/accounts/:userId', helper.ensureAuthenticated, function (req, res, next) {
+router.put('/account/:userId', helper.ensureAuthenticated, function (req, res, next) {
 
     req.body.userId = mongoose.Types.ObjectId(req.user._id);
 
