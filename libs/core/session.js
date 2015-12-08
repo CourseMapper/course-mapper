@@ -13,6 +13,9 @@ var FacebookStrategy = require('passport-facebook').Strategy;
 var BasicStrategy = require('passport-http').BasicStrategy;
 var appRoot = require('app-root-path');
 var User = require(appRoot + '/modules/accounts/users.js');
+var BearerStrategy = require('passport-http-bearer').Strategy;
+var Token = require(appRoot + '/modules/oauth2/models/accessTokens.js');
+
 var flash = require('flash');
 var debug = require('debug')('cm:server');
 
@@ -23,7 +26,7 @@ function session(app, db, io) {
 
     var sessionMiddleware = expressSession({
         saveUninitialized: true, // saved new sessions
-        resave: false, // do not automatically write to the session store
+        resave: true, // do not automatically write to the session store
         secret: config.get('session.secret'),
         cookie: {
             httpOnly: true,
@@ -164,12 +167,40 @@ function session(app, db, io) {
                 if (!user.isValidPassword(password)) {
                     return done(null, false);
                 }
-                
+
                 return done(null, user);
             });
         }
     ));
 
+    passport.use(new BearerStrategy(
+        function (accessToken, callback) {
+            Token.findOne({token: accessToken}, function (err, token) {
+                if (err) {
+                    return callback(err);
+                }
+
+                // No token found
+                if (!token) {
+                    return callback(null, false);
+                }
+
+                User.findOne({_id: token.userId}, function (err, user) {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    // No user found
+                    if (!user) {
+                        return callback(null, false);
+                    }
+
+                    // Simple example with no scope
+                    callback(null, user, {scope: '*'});
+                });
+            });
+        }
+    ));
 
     passport.serializeUser(function (user, done) {
         var sessionUser = {
