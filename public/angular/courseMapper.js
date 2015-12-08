@@ -303,8 +303,8 @@ app.config(function(toastrConfig) {
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
     $scope.files = [];
-    $scope.filespicture = [];
-    $scope.filesvideo = [];
+    $scope.filespicture = false;
+    $scope.filesvideo = false;
 
     $scope.isLoading = false;
     $scope.errors = [];
@@ -348,12 +348,12 @@ app.config(function(toastrConfig) {
 
         uploadParams.file = [];
         // we only take one picture file
-        if ($scope.filespicture && $scope.filespicture.length) {
-            uploadParams.file.push($scope.filespicture[0]);
+        if ($scope.filespicture) {
+            uploadParams.file.push($scope.filespicture);
         }
         // we only take one vid file
-        if ($scope.filesvideo && $scope.filesvideo.length) {
-            uploadParams.file.push($scope.filesvideo[0]);
+        if ($scope.filesvideo) {
+            uploadParams.file.push($scope.filesvideo);
         }
 
         $scope.isLoading = true;
@@ -370,8 +370,8 @@ app.config(function(toastrConfig) {
             .success(function (data) {
                 $scope.$emit('onAfterEditCourse', data.course);
 
-                $scope.filespicture = [];
-                $scope.filesvideo = [];
+                $scope.filespicture = false;
+                $scope.filesvideo = false;
 
                 $scope.isLoading = false;
                 $('#editView').modal('hide');
