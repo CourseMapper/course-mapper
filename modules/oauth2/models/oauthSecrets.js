@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 // Define our token schema
 var OauthSchema = new mongoose.Schema({
-    value: {type: String, required: true},
+    oauthSecret: {type: String, required: true},
     redirectUri: {type: String, required: true},
     userId: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'users'},
     clientId: {type: String, required: true}

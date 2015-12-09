@@ -1,7 +1,24 @@
-var oauth2orize = require('oauth2orize')
-var User = require('models/user');
-var Client = require('models/client');
-var Token = require('models/token');
+var oauth2orize = require('oauth2orize');
+
+var Client = require('./models/oauthClients.js');
+var Token = require('./models/accessTokens.js');
+var Secrets = require('./models/oauthSecrets.js');
+
+function uid(len) {
+    var buf = []
+        , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        , charlen = chars.length;
+
+    for (var i = 0; i < len; ++i) {
+        buf.push(chars[getRandomInt(0, charlen - 1)]);
+    }
+
+    return buf.join('');
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 var server = oauth2orize.createServer();
 
@@ -20,8 +37,8 @@ server.deserializeClient(function (id, callback) {
 
 server.grant(oauth2orize.grant.code(function (client, redirectUri, user, ares, callback) {
     // Create a new authorization code
-    var code = new Code({
-        value: uid(16),
+    var code = new Secrets({
+        token: uid(16),
         clientId: client._id,
         redirectUri: redirectUri,
         userId: user._id
@@ -38,7 +55,7 @@ server.grant(oauth2orize.grant.code(function (client, redirectUri, user, ares, c
 }));
 
 server.exchange(oauth2orize.exchange.code(function (client, code, redirectUri, callback) {
-    Code.findOne({value: code}, function (err, authCode) {
+    Secrets.findOne({oauthSecret: code}, function (err, authCode) {
         if (err) {
             return callback(err);
         }
@@ -60,7 +77,7 @@ server.exchange(oauth2orize.exchange.code(function (client, code, redirectUri, c
 
             // Create a new access token
             var token = new Token({
-                value: uid(256),
+                token: uid(256),
                 clientId: authCode.clientId,
                 userId: authCode.userId
             });
@@ -76,3 +93,36 @@ server.exchange(oauth2orize.exchange.code(function (client, code, redirectUri, c
         });
     });
 }));
+
+
+exports.authorization = [
+    server.authorization(function (clientId, redirectUri, callback) {
+
+        Client.findOne({clientId: clientId}, function (err, client) {
+            if (err) {
+                return callback(err);
+            }
+
+            return callback(null, client, redirectUri);
+        });
+    }),
+    function (req, res) {
+        res.render('dialog', {
+            transactionID: req.oauth2.transactionID,
+            user: req.user,
+            client: req.oauth2.client
+        });
+    }
+];
+
+exports.decision = [
+    server.decision()
+];
+
+exports.token = [
+    server.token(),
+    server.errorHandler()
+];
+
+
+

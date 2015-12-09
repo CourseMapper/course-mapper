@@ -114,7 +114,7 @@ var cmLibraries = {
             return next();
         } else {
             // basic strategy
-            passport.authenticate('basic', {session: false}, function (err, user, info) {
+            passport.authenticate(['basic', 'bearer'], {session: false}, function (err, user, info) {
                 if (err) {
                     return next(err);
                 }
