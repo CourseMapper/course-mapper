@@ -2,10 +2,10 @@ var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
     'relativeDate', 'wysiwyg.module', 'angular-quill',
-    'VideoAnnotations','SlideViewerAnnotationZones',
-    'ngAnimate', 'toastr']);
+    'VideoAnnotations', 'SlideViewerAnnotationZones',
+    'ngAnimate', 'toastr', 'externalApp']);
 
-app.config(function(toastrConfig) {
+app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
         positionClass: 'toast-top-center'
     });
@@ -2015,6 +2015,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 ;app.controller('ProfileController', function(  Page) {
     Page.setTitleWithPrefix('My Account');
 });
+app.controller('AppSettingController', function(  Page) {
+    Page.setTitleWithPrefix('3rd Party App Settings');
+});
 ;app.controller('VideoTabController', function ($scope, $rootScope, $filter, $http, $location,
                                                $routeParams, $timeout, ActionBarService) {
 
@@ -3397,6 +3400,33 @@ app.directive('timepicker', function($timeout) {
             });
     };
 
+});;var externalApp = angular.module('externalApp', [
+    'ngResource', 'ngRoute', 'ngCookies', 'oc.lazyLoad',
+    'relativeDate']);;externalApp.controller('ExternalAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                           $compile, ActionBarService, courseService,
+                                                           discussionService, $timeout,
+                                                           toastr, Page, $window) {
+
+});;externalApp.config(['$routeProvider', '$locationProvider',
+
+    function ($routeProvider, $locationProvider) {
+
+        $routeProvider.
+        when('/static/about', {
+            templateUrl: '/static/about',
+            controller: 'staticController',
+            reloadOnSearch: false
+        }).
+
+
+        otherwise({
+            redirectTo: '/'
+        });
+
+    }]);
+;externalApp.controller('MyAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                     $compile, $timeout,
+                                                     toastr, Page, $window) {
 });;app.factory('authService', [
     '$rootScope', '$http',
 
