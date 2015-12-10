@@ -2249,15 +2249,6 @@ app.directive('movablePdf', function() {
                                         'height':$scope.relativeSizeY*$scope.currCanHeight+'px'
                                       };
 
-              $scope.absPosY = parseInt($scope.relativePositionY*$scope.currCanWidth)+'px'
-              console.log($scope.absPosY);
-
-              //$scope.$watch("relativeSizeX", function (newValue, oldValue) {
-
-              //}
-
-
-
             }
         };
     }
