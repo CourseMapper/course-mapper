@@ -65,11 +65,12 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           canBeEdited: canBeEdited,
           annZoneId: annZoneId,
           divCounter: $scope.divCounter,
-          id: 'rect-'+divCounter
+          id: 'rect-'+$scope.divCounter
         };
         $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
         $scope.divCounter += 1;
         console.log("ADDED ZONE");
+        console.log("DivC after: "+ $scope.divCounter);
         console.log($scope.annotationZoneList);
 
         $scope.$apply();
