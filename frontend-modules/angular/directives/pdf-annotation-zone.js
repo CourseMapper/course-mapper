@@ -18,7 +18,7 @@ app.directive('pdfAnnotationZone',
               canBeEdited: '=',
               annZoneId: '=',
               divCounter: '=',
-              listId: '='
+              listId: '=',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -29,9 +29,34 @@ app.directive('pdfAnnotationZone',
 
 
               console.log("Got called");
-              $scope.currCanWidth = $('#annotationZone').width();
 
-              $scope.currCanHeight = $('#annotationZone').height();
+/*              $scope.$watch('currCanWidth', function(newVal, oldVal){
+                console.log("HERE");
+                $scope.localCanWidth = newVal;
+              });
+
+              $scope.$watch('currCanHeight', function(newVal, oldVal){
+                $scope.localCanHeight = newVal;
+              });
+*/
+
+              $scope.localCanWidth = $('#annotationZone').width();
+              $scope.localCanHeight = $('#annotationZone').height();
+
+
+
+
+              $rootScope.$on('pdfScaleChanged', function(event,params){
+                console.log("Blub");
+
+                $scope.localCanWidth = params[0];
+                $scope.localCanHeight = params[1];
+                console.log($scope.localCanWidth);
+                $timeout(function(){
+                  $scope.$apply();
+                });
+              });
+
 
 
               //console.log($scope.relativePosition);
@@ -64,10 +89,10 @@ app.directive('pdfAnnotationZone',
               $('#init').trigger('click');
 
 
-              $scope.positionStyle = {  'top' : $scope.relativePositionX*$scope.currCanWidth+'px',
-                                        'left' : $scope.relativePositionY*$scope.currCanWidth+'px',
-                                        'width': $scope.relativeSizeX*$scope.currCanWidth+'px',
-                                        'height':$scope.relativeSizeY*$scope.currCanHeight+'px'
+              $scope.positionStyle = {  'top' : $scope.relativePositionX*$scope.localCanWidth+"px",
+                                        'left' : $scope.relativePositionY*$scope.localCanWidth+'px',
+                                        'width': $scope.relativeSizeX*$scope.localCanWidth+'px',
+                                        'height':$scope.relativeSizeY*$scope.localCanHeight+'px'
                                       };
 
             }
