@@ -106,7 +106,7 @@ exports.authorization = [
         });
     }),
     function (req, res) {
-        res.render('dialog', {
+        res.render('oauth/permission', {
             transactionID: req.oauth2.transactionID,
             user: req.user,
             client: req.oauth2.client
