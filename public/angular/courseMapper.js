@@ -2199,6 +2199,7 @@ app.directive('movablePdf', function() {
               divCounter: '=',
               listId: '=',
               setEditZoneMode: '&',
+              localResetEditZoneMode: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2223,8 +2224,8 @@ app.directive('movablePdf', function() {
               $scope.localCanWidth = $('#annotationZone').width();
               $scope.localCanHeight = $('#annotationZone').height();
 
-              $scope.localSetEditZoneMode = function(annId,divCntr,divColor){
-                $scope.setEditZoneMode({id:annId, cntr:divCntr, color:divColor});
+              $scope.localSetEditZoneMode = function(annId){
+                $scope.setEditZoneMode({id:annId});
               };
 
 
@@ -4656,6 +4657,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
             y: relHeight
           },
           color: color,
+          colorBeforeEdit: color,
           tagName: tagName,
           editTagNameTemp: tagName.slice(1),
           dragable: isBeingCreated,
@@ -4695,12 +4697,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     };*/
 
-    $scope.setEditZoneMode = function(id,divCounter,color) {
+    $scope.setEditZoneMode = function(id) {
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
       console.log("setEditZoneMode");
       console.log(id);
+
+      $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
       $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
 
 
@@ -4749,7 +4753,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     };
 
-    $rootScope.resetEditZoneMode = function() {
+    $rootScope.resetEditZoneMode = function(id) {
       $rootScope.$broadcast('reloadTags');
 
       $scope.writeCommentMode = false;
@@ -4761,6 +4765,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       ele.parent().find(".simplecolorpicker").remove();
       ele.parent().css({"margin-left":"0px"});
       ele.remove();
+
+      $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName.slice(1);
+      $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
     };
 
     $scope.updateAnnZone = function (id) {

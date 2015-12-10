@@ -62,6 +62,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
             y: relHeight
           },
           color: color,
+          colorBeforeEdit: color,
           tagName: tagName,
           editTagNameTemp: tagName.slice(1),
           dragable: isBeingCreated,
@@ -101,12 +102,14 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         }
     };*/
 
-    $scope.setEditZoneMode = function(id,divCounter,color) {
+    $scope.setEditZoneMode = function(id) {
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
       console.log("setEditZoneMode");
       console.log(id);
+
+      $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
       $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
 
 
@@ -155,7 +158,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     };
 
-    $rootScope.resetEditZoneMode = function() {
+    $rootScope.resetEditZoneMode = function(id) {
       $rootScope.$broadcast('reloadTags');
 
       $scope.writeCommentMode = false;
@@ -167,6 +170,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       ele.parent().find(".simplecolorpicker").remove();
       ele.parent().css({"margin-left":"0px"});
       ele.remove();
+
+      $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName.slice(1);
+      $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
     };
 
     $scope.updateAnnZone = function (id) {
