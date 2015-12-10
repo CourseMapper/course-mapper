@@ -58,4 +58,11 @@ router.get('/settings/apps', function (req, res, next) {
         res.render(config.get('theme') + '/settings/appSettings.ejs', {user: req.user});
 });
 
+router.get('/settings/apps/:page', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+    } else
+        res.render(config.get('theme') + '/settings/' + req.params.page, {user: req.user});
+});
+
 module.exports = router;

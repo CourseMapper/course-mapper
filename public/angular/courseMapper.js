@@ -3402,32 +3402,198 @@ app.directive('timepicker', function($timeout) {
 
 });;var externalApp = angular.module('externalApp', [
     'ngResource', 'ngRoute', 'ngCookies', 'oc.lazyLoad',
-    'relativeDate']);;externalApp.controller('ExternalAppsController', function ($scope, $rootScope, $http, $location, $sce,
+    'relativeDate']);;externalApp.controller('CreateAppController', function ($scope, $rootScope, $http, $location, $sce,
+                                                        $compile, $timeout,
+                                                        toastr, Page, $window) {
+
+    $scope.name = "";
+    $scope.description = "";
+
+    $scope.saveApp = function (isValid) {
+        if (isValid) {
+            $scope.isLoading = true;
+            var params = {
+                name: $scope.name,
+                description: $scope.description
+            };
+
+            var d = transformRequest(params);
+            $http({
+                method: 'POST',
+                url: '/api/oauth2/apps',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function (data) {
+                    console.log(data);
+                    if (data.result) {
+                        $scope.$emit('onAfterCreateApplication');
+                    }
+
+                    $scope.isLoading = false;
+                    toastr.success('Application is created.');
+                    window.location.href = "/settings/apps/#/app/" + data.app._id;
+                })
+                .error(function (data) {
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
+                });
+        }
+    };
+});;externalApp.controller('CreatedAppController', function ($scope, $rootScope, $http, $location, $sce,
+                                                         $compile, $timeout, $routeParams,
+                                                         toastr, Page, externalAppService) {
+
+    $scope.app = false;
+    $scope.appId = $routeParams.appId;
+
+    externalAppService.getAppDetail($scope.appId, function (app) {
+        $scope.app = app;
+    }, function (err) {
+        $scope.errors = err;
+    })
+});
+;externalApp.controller('CreatedAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                     $compile, $timeout,
+                                                     toastr, Page, $window) {
+});;externalApp.factory('externalAppService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            installedApps: null,
+            createdApps: null,
+
+            getCreatedApps: function (success, error, force) {
+                var self = this;
+
+                if (!force && self.createdApps) {
+                    if (success)
+                        success(self.createdApps);
+                }
+
+                else if (force || !self.createdApps)
+                    $http.get('/api/oauth2/apps/created')
+                        .success(function (data) {
+                            if (data.result && data.apps) {
+                                self.createdApps = data.apps;
+                                if (success)
+                                    success(self.createdApps);
+                            }
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+            getInstalledApps: function (success, error, force) {
+                var self = this;
+
+
+                if (!force && self.installedApps) {
+                    if (success)
+                        success(self.installedApps);
+                }
+
+                else if (force || !self.installedApps)
+                    $http.get('/api/oauth2/apps/installed')
+                        .success(function (data) {
+                            if (data.result && data.apps) {
+                                self.installedApps = data.apps;
+                                if (success)
+                                    success(self.installedApps);
+                            }
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+            getAppDetail: function (appId, success, error) {
+                $http.get('/api/oauth2/app/' + appId)
+                    .success(function (data) {
+                        if (data.result && data.app) {
+                            if (success)
+                                success(data.app);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            }
+        }
+    }
+]);;externalApp.controller('ExternalAppsController', function ($scope, $rootScope, $http, $location, $sce,
                                                            $compile, ActionBarService, courseService,
                                                            discussionService, $timeout,
-                                                           toastr, Page, $window) {
+                                                           toastr, Page, $window, externalAppService) {
+    $scope.createdApps = [];
+    $scope.installedApps = [];
+    $scope.errors = [];
 
+    externalAppService.getCreatedApps(
+        function (apps) {
+            $scope.createdApps = apps;
+        },
+        function (err) {
+            $scope.errors = err;
+        }
+    );
+
+    externalAppService.getInstalledApps(
+        function (apps) {
+            $scope.installedApps = apps;
+        },
+        function (err) {
+            $scope.errors = err;
+        }
+    );
 });;externalApp.config(['$routeProvider', '$locationProvider',
 
     function ($routeProvider, $locationProvider) {
 
         $routeProvider.
-        when('/static/about', {
-            templateUrl: '/static/about',
-            controller: 'staticController',
+        when('/createExternalApp', {
+            templateUrl: '/settings/apps/createExternalApp',
+            controller: 'CreateAppController',
             reloadOnSearch: false
         }).
 
+        when('/createdApps', {
+            templateUrl: '/settings/apps/createdApps',
+            controller: 'CreatedAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/installed', {
+            templateUrl: '/settings/apps/installed',
+            controller: 'CreatedAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/documentation', {
+            templateUrl: '/settings/apps/documentation',
+            controller: 'CreatedAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/app/:appId', {
+            templateUrl: '/settings/apps/appDetail',
+            controller: 'CreatedAppController',
+            reloadOnSearch: false
+        }).
 
         otherwise({
             redirectTo: '/'
         });
 
     }]);
-;externalApp.controller('MyAppsController', function ($scope, $rootScope, $http, $location, $sce,
-                                                     $compile, $timeout,
-                                                     toastr, Page, $window) {
-});;app.factory('authService', [
+;app.factory('authService', [
     '$rootScope', '$http',
 
     function ($rootScope, $http) {

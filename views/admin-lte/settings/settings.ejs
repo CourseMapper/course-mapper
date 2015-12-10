@@ -1,58 +1,90 @@
-<!-- Main content -->
-<div class="col-lg-12" id="Applications">
-    <!-- Custom Tabs -->
-    <div class="nav-tabs-custom">
-        <ul class="nav nav-tabs">
-            <li class="active">
-                <a href="/#/installed" data-toggle="tab" class="cursor" data-target="#tab_1">3rd Party Apps</a></li>
-            <li>
-                <a href="/#/myapps" data-toggle="tab" class="cursor" data-target="#tab_2">My Apps</a></li>
+<div class="row" ng-controller="ExternalAppsController">
+    <div class="col-xs-12 col-md-3 col-sm-3 no-margin">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar" style="height: auto;">
+            <ul class="sidebar-menu" style="background: #2c3b41;">
+                <li class="treeview active">
+                    <a class="cursor">
+                        <i class="fa fa-dashboard"></i>
+                        <span>Menu</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="active">
+                            <a href="/settings/apps/#/installed" class="cursor">
+                                <i class="ionicons ion-android-apps"></i>&nbsp;&nbsp;
+                                3rd Party Apps</a></li>
 
-        </ul>
-        <div class="tab-content" ng-controller="ExternalAppsController">
-            <div class="tab-pane active" id="tab_1">
-                <p><i class="ionicons ion-information-circled"></i> You do not have any apps installed.</p>
-                <p></p>
+                        <li>
+                            <a href="/settings/apps/#/createExternalApp">
+                                <i class="ionicons ion-android-bulb"></i>&nbsp;
+                                Create External App</a>
+                        </li>
+                    </ul>
+                </li>
 
-                <p><br>
-                    <small>
-                        <a class="cursor" data-toggle="modal" data-target="#whatisanappmodal">
-                            <i class="ionicons ion-help-circled"></i> What is an app?</a></small>
-                </p>
-            </div>
-            <!-- /.tab-pane -->
-            <div class="tab-pane" id="tab_2" >
-                <% include myapps %>
-            </div>
-            <!-- /.tab-pane -->
-        </div>
+
+                <li class="treeview" ng-class="{active: (createdApps.length >0)}">
+                    <a class="cursor">
+                        <i class="fa fa-dashboard"></i>
+                        <span>My Created Apps</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="" ng-repeat="app in createdApps">
+                            <a href="/settings/apps/#/app/{{app._id}}">
+                                {{app.name}}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="/settings/apps/#/documentation">
+                        <i class="fa fa-book"></i> Documentation</a>
+                </li>
+
+            </ul>
+        </section>
+        <!-- /.sidebar -->
     </div>
-    <!-- /.tab-content -->
-</div>
-<!-- nav-tabs-custom -->
+    <div class="col-xs-12 col-md-9 col-sm-9 no-padding">
+        <!-- Custom Tabs -->
+        <div class="nav-tabs-custom">
+            <div class="tab-content">
+                <div ng-view></div>
+                <!-- /.tab-pane -->
+            </div>
+        </div>
+        <!-- /.tab-content -->
+    </div>
 
-<!-- course edit form -->
-<div class="row">
-    <div class="modal" id="whatisanappmodal" tabindex="-1" role="dialog" aria-hidden="true">
-        <section class="content">
-            <div class="row row-centered">
-                <div class="col-xs-12 col-sm-8 col col-centered">
-                    <div class="widget-item box no-border no-round">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">What is an app?</h3>
 
-                            <div class="box-tools pull-right">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                            aria-hidden="true">&times;</span></button>
+    <!-- course edit form -->
+    <div class="row">
+        <div class="modal" id="whatisanappmodal" tabindex="-1" role="dialog" aria-hidden="true">
+            <section class="content">
+                <div class="row row-centered">
+                    <div class="col-xs-12 col-sm-8 col col-centered">
+                        <div class="widget-item box no-border no-round">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">What is an app?</h3>
+
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                                aria-hidden="true">&times;</span></button>
+                                </div>
                             </div>
-                        </div>
-                        <div class="box-body">
-                            An app is ...
+                            <div class="box-body">
+                                An app is ...
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
+    <div class="clear"></div>
 </div>
-<div class="clear"></div>
+<!-- nav-tabs-custom -->
+
