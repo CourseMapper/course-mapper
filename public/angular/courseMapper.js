@@ -2219,7 +2219,7 @@ app.directive('movablePdf', function() {
               $scope.annZoneID = $scope.listId;
               //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";
-              //$scope.tagName = "";
+              $scope.tagName = $scope.tagName.slice(1);
               //$scope.color ="#444444";
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.colorPickerId ="1";
