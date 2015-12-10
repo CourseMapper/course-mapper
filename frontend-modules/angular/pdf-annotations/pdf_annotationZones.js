@@ -52,6 +52,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
       $timeout(function(){
+
         var newAnnZone = {
           relativePosition: {
             x: relLeft,
@@ -159,20 +160,28 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };
 
     $rootScope.resetEditZoneMode = function(id) {
-      $rootScope.$broadcast('reloadTags');
+      //$rootScope.$broadcast('reloadTags');
 
       $scope.writeCommentMode = false;
       $scope.replyRawText = [];
       $scope.replyMode = -1;
       $scope.editZoneMode = -1;
+      $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
 
-      var ele = $('select[name="colorpicker-change-background-color2"]');
+
+      /*var ele = $('select[name="colorpicker-change-background-color2"]');
       ele.parent().find(".simplecolorpicker").remove();
       ele.parent().css({"margin-left":"0px"});
       ele.remove();
+      */
 
-      $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName.slice(1);
+      $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
       $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
+
+      $timeout(function(){
+        $scope.$apply();
+      });
+
     };
 
     $scope.updateAnnZone = function (id) {
@@ -305,6 +314,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         var isAuthor = (ele.author == angular.element($("#annZoneList")).scope().currentUser.username);
         var isAdmin =  angular.element($("#annZoneList")).scope().$root.user.role == "admin";
         var allowedToEdit = (isAdmin || isAuthor);
+
+        if(ele.color[0] != '#')
+          ele.color = '#'+ele.color;
 
         $scope.addAnnotationZone(ele.relPosX, ele.relPosY, ele.relWidth, ele.relHeight, ele.color, ele.name, false, allowedToEdit, ele.id)
       }
