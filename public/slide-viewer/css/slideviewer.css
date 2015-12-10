@@ -10,10 +10,14 @@
 }
 
 .slideRectWrapper{
-  padding-top: "1px";
-  padding-bottom: "1px";
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
 
-
+.colorPickerWrapper{
+  float:left;
+  margin-left: -20px;
+  width: 20px;
 }
 
 .slideEditIcon{
