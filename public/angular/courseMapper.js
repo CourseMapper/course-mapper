@@ -2243,6 +2243,21 @@ app.directive('movablePdf', function() {
               $('#init').trigger('click');
 
 
+              $scope.positionStyle = {  'top' : $scope.relativePositionX*$scope.currCanWidth+'px',
+                                        'left' : $scope.relativePositionY*$scope.currCanWidth+'px',
+                                        'width': $scope.relativeSizeX*$scope.currCanWidth+'px',
+                                        'height':$scope.relativeSizeY*$scope.currCanHeight+'px'
+                                      };
+
+              $scope.absPosY = parseInt($scope.relativePositionY*$scope.currCanWidth)+'px'
+              console.log($scope.absPosY);
+
+              //$scope.$watch("relativeSizeX", function (newValue, oldValue) {
+
+              //}
+
+
+
             }
         };
     }
