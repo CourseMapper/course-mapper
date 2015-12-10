@@ -63,7 +63,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           },
           color: color,
           tagName: tagName,
-          editTagNameTemp: tagName,
+          editTagNameTemp: tagName.slice(1),
           dragable: isBeingCreated,
           isBeingCreated: isBeingCreated,
           canBeEdited: canBeEdited,

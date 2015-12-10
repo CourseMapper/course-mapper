@@ -34,7 +34,7 @@
         <span>#</span><span ng-hide="(inEditMode)">{{tagName}}</span>
       </span>
     </div>-->
-    <div id="slideRectWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px" ng-hide="inEditMode">
+    <div id="slideRectWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px">
       <span id="slideRectEditSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
         <span>#</span><span ng-hide="(inEditMode)">{{tagName}}</span>
         <input type="text" id="rectEditInputField-{{divCounter}}" name = "{{rectEditInputFieldName}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(!inEditMode)"></input>
