@@ -57,6 +57,16 @@ app.directive('pdfAnnotationZone',
                 });
               });
 
+              $scope.inEditMode = false;
+
+              $rootScope.$on('editZoneModeChanged', function(event,param){
+                if($scope.listId == param){
+                  $scope.inEditMode = true;
+                }
+                else {
+                  $scope.inEditMode = false;
+                }
+              });
 
 
               //console.log($scope.relativePosition);
