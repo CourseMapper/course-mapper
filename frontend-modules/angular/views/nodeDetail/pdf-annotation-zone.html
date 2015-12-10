@@ -34,15 +34,13 @@
     </div>
     <div id="slideRectWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:'1px'; padding-top:'1px';">
       <span id="slideRectSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt';">
-        <span>#</span>
-        <span ng-hide="(editZoneMode == '{{annZoneID}}')">{{tagName}}</span>
+        <span>#</span><span ng-hide="(editZoneMode == '{{annZoneID}}')">{{tagName}}</span>
       </span>
     </div>
     <div id="slideRectEditWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px" ng-hide="editZoneMode != '{{annZoneID}}'">
       <span id="slideRectEditSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
         <span>#</span><span ng-hide="(editZoneMode == '{{annZoneID}}')">{{tagName}}</span>
-        <input type="text" id="rectEditInputField-{{divCounter}}" name = "{{rectEditInputFieldName}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(editZoneMode != '{{id}}')">
-        </input>
+        <input type="text" id="rectEditInputField-{{divCounter}}" name = "{{rectEditInputFieldName}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(editZoneMode != '{{id}}')"></input>
       </span>
       <span id="editSpan-{{divCounter}}" class="glyphicon glyphicon-pencil" aria-hidden="true" ng-click="setEditZoneMode(annZoneId,divCounter,color);" ng-hide="(editZoneMode == '{{annZoneId}}')" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
       <span id="cancelSaveSpan-{{divCounter}}" class="glyphicon glyphicon-floppy-remove" aria-hidden="true" ng-click="resetEditZoneMode()"
@@ -52,9 +50,7 @@
     </div>
     <div id="slideRectCreateWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px;'margin-left':'-20px'">
       <span id="slideRectCreateSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
-        <span>#
-          <input type="text" id="rectInputField-{{divCounter}}" class="slideRectInput" ng-model="tagNameList['rect-{{divCounter}}']" style="color:'black';transition:'width 0-25s';border:'0'"/>
-        </span>
+        <span>#</span><input type="text" id="rectInputField-{{divCounter}}" class="slideRectInput" ng-model="tagNameList['rect-{{divCounter}}']" style="color:'black';transition:'width 0-25s';border:'0'"/>
       </span>
       <div ng-hide="editZoneMode != '{{annZoneID}}'">
         <select id="colorPickerEdit-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker" value= "#ac725e">
