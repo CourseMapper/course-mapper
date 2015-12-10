@@ -19,6 +19,7 @@ app.directive('pdfAnnotationZone',
               annZoneId: '=',
               divCounter: '=',
               listId: '=',
+              setEditZoneMode: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -43,6 +44,9 @@ app.directive('pdfAnnotationZone',
               $scope.localCanWidth = $('#annotationZone').width();
               $scope.localCanHeight = $('#annotationZone').height();
 
+              $scope.localSetEditZoneMode = function(annId,divCntr,divColor){
+                $scope.setEditZoneMode({id:annId, cntr:divCntr, color:divColor});
+              };
 
 
 
@@ -80,11 +84,10 @@ app.directive('pdfAnnotationZone',
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.colorPickerId ="1";
               //$scope.divCounter = "1";
-              $scope.editZoneMode = "BLUB";
 
 
 
-              $scope.setEditZoneMode = function(a,b,c){;};
+              //$scope.setEditZoneMode = function(a,b,c){;};
 
               $timeout(function(){
                 $scope.$apply();

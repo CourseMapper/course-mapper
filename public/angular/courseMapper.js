@@ -2198,6 +2198,7 @@ app.directive('movablePdf', function() {
               annZoneId: '=',
               divCounter: '=',
               listId: '=',
+              setEditZoneMode: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2222,6 +2223,9 @@ app.directive('movablePdf', function() {
               $scope.localCanWidth = $('#annotationZone').width();
               $scope.localCanHeight = $('#annotationZone').height();
 
+              $scope.localSetEditZoneMode = function(annId,divCntr,divColor){
+                $scope.setEditZoneMode({id:annId, cntr:divCntr, color:divColor});
+              };
 
 
 
@@ -2259,11 +2263,10 @@ app.directive('movablePdf', function() {
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.colorPickerId ="1";
               //$scope.divCounter = "1";
-              $scope.editZoneMode = "BLUB";
 
 
 
-              $scope.setEditZoneMode = function(a,b,c){;};
+              //$scope.setEditZoneMode = function(a,b,c){;};
 
               $timeout(function(){
                 $scope.$apply();
@@ -4696,8 +4699,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
-
-      $rootScope.$broadCast('editZoneModeChanged',$scope.editZoneMode);
+      console.log("setEditZoneMode");
+      console.log(id);
+      $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
 
 
 /*      var ele = $('select[name="colorpicker-change-background-color2"]');

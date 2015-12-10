@@ -105,8 +105,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
-
-      $rootScope.$broadCast('editZoneModeChanged',$scope.editZoneMode);
+      console.log("setEditZoneMode");
+      console.log(id);
+      $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
 
 
 /*      var ele = $('select[name="colorpicker-change-background-color2"]');

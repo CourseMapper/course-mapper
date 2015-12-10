@@ -12,7 +12,7 @@
 
                 <div id="annZoneList" ng-controller="AnnotationZoneListController">
                   <div id="annotationZone">
-                      {{annotationZoneList.length}}
+
 
                         <pdf-annotation-zone
                           ng-repeat="(key, item) in annotationZoneList"
@@ -29,6 +29,7 @@
                           ann-zone-id="annotationZoneList[key].annZoneId"
                           div-counter="annotationZoneList[key].divCounter"
                           list-id="annotationZoneList[key].id"
+                          set-edit-zone-mode="setEditZoneMode(id,cntr,color)"
                         ></pdf-annotation-zone>
 
 
