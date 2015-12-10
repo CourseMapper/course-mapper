@@ -17,6 +17,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     //$rootScope.annZoneBoxSizeX = 0;
     //$rootScope.annZoneBoxSizeY = 0;
 
+    $rootScope.currCanWidth = 0;
+
+    $rootScope.currCanHeight = 0;
+
 
     $scope.updateAnnZonePos = function(posObj) {
       console.log(posObj);

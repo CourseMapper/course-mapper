@@ -81,7 +81,7 @@ app.directive('pdfViewer',
 
                                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
-                                
+
 
                                 return scope.pdfPageView.draw();
                             });
@@ -206,7 +206,7 @@ app.directive('pdfViewer',
 
 
                 function adjustPdfScale () {
-                  //console.log($scope.pdfPageView);
+                  console.log("Adjusting PDF Scale");
                   if(typeof $scope.pdfPageView != 'undefined'){
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
@@ -215,14 +215,19 @@ app.directive('pdfViewer',
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
 
+                    $rootScope.currCanWidth = $('#annotationZone').width();
+
+                    $rootScope.currCanHeight = $('#annotationZone').height();
+
+                    $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
 
                   }
                 };
 
                 $(window).resize(function (event) {
                   //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
-                  //console.log(event)
-                  if($scope.currentTab == "pdf" && $.isWindow(event.target)) {
+                  console.log($location.search().tab)
+                  if(($location.search().tab == "pdf" || $location.search().tab == undefined || $location.search().tab == "no") && $.isWindow(event.target)) {
                     //console.log("Got called on resize");
                     adjustPdfScale();
                   }
@@ -246,6 +251,12 @@ app.directive('pdfViewer',
 
                 $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
+
+                    $rootScope.currCanWidth = $('#annotationZone').width();
+
+                    $rootScope.currCanHeight = $('#annotationZone').height();
+
+                    $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
                 });
 
 

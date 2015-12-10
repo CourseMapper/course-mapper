@@ -1,4 +1,5 @@
-<div movable-pdf="" can-move="{{canMove}}" on-moved="update-ann-zone-pos" ng-hide="(switchShowAnnoZones == 'Off')" id={{annZoneID}} class="slideRect1" position="absolute" opacity={{opacityFactorHighlight}} data-tagName={{tagName}} data-relstartcoord="{{dataRelCoord}}" style="position:absolute;background-color:#{{color}};'transition': 'background 0.1s linear'" ng-style="positionStyle">
+
+<div movable-pdf="" can-move="{{canMove}}" on-moved="update-ann-zone-pos" ng-hide="(switchShowAnnoZones == 'Off')" id={{annZoneID}} class="slideRect1" position="absolute" opacity={{opacityFactorHighlight}} data-tagName={{tagName}} data-relstartcoord="{{dataRelCoord}}" style="position:absolute;background-color:#{{color}};'transition': 'background 0.1s linear'" ng-style="{  'top' : relativePositionY * localCanHeight+'px','left' : relativePositionX * localCanWidth+'px','width' : relativeSizeX * localCanWidth+'px', 'height' : relativeSizeY * localCanWidth+'px'}">
   <div id ="caRect-{{divCounter}}" class="caRect" style= "width:'100%';height:'100%'" ng-click="addReference(annZoneID)">
     <div  ng-hide="!dragable">
       <select id="colorPicker-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker" ng-model= "color">

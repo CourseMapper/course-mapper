@@ -2197,7 +2197,7 @@ app.directive('movablePdf', function() {
               canBeEdited: '=',
               annZoneId: '=',
               divCounter: '=',
-              listId: '='
+              listId: '=',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2208,9 +2208,34 @@ app.directive('movablePdf', function() {
 
 
               console.log("Got called");
-              $scope.currCanWidth = $('#annotationZone').width();
 
-              $scope.currCanHeight = $('#annotationZone').height();
+/*              $scope.$watch('currCanWidth', function(newVal, oldVal){
+                console.log("HERE");
+                $scope.localCanWidth = newVal;
+              });
+
+              $scope.$watch('currCanHeight', function(newVal, oldVal){
+                $scope.localCanHeight = newVal;
+              });
+*/
+
+              $scope.localCanWidth = $('#annotationZone').width();
+              $scope.localCanHeight = $('#annotationZone').height();
+
+
+
+
+              $rootScope.$on('pdfScaleChanged', function(event,params){
+                console.log("Blub");
+
+                $scope.localCanWidth = params[0];
+                $scope.localCanHeight = params[1];
+                console.log($scope.localCanWidth);
+                $timeout(function(){
+                  $scope.$apply();
+                });
+              });
+
 
 
               //console.log($scope.relativePosition);
@@ -2243,10 +2268,10 @@ app.directive('movablePdf', function() {
               $('#init').trigger('click');
 
 
-              $scope.positionStyle = {  'top' : $scope.relativePositionX*$scope.currCanWidth+'px',
-                                        'left' : $scope.relativePositionY*$scope.currCanWidth+'px',
-                                        'width': $scope.relativeSizeX*$scope.currCanWidth+'px',
-                                        'height':$scope.relativeSizeY*$scope.currCanHeight+'px'
+              $scope.positionStyle = {  'top' : $scope.relativePositionX*$scope.localCanWidth+"px",
+                                        'left' : $scope.relativePositionY*$scope.localCanWidth+'px',
+                                        'width': $scope.relativeSizeX*$scope.localCanWidth+'px',
+                                        'height':$scope.relativeSizeY*$scope.localCanHeight+'px'
                                       };
 
             }
@@ -2404,7 +2429,7 @@ app.directive('movablePdf', function() {
 
                                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
-                                
+
 
                                 return scope.pdfPageView.draw();
                             });
@@ -2529,7 +2554,7 @@ app.directive('movablePdf', function() {
 
 
                 function adjustPdfScale () {
-                  //console.log($scope.pdfPageView);
+                  console.log("Adjusting PDF Scale");
                   if(typeof $scope.pdfPageView != 'undefined'){
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
@@ -2538,14 +2563,19 @@ app.directive('movablePdf', function() {
                     $scope.pdfPageView.update($scope.scale, 0);
                     $scope.pdfPageView.draw().catch(function(){});
 
+                    $rootScope.currCanWidth = $('#annotationZone').width();
+
+                    $rootScope.currCanHeight = $('#annotationZone').height();
+
+                    $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
 
                   }
                 };
 
                 $(window).resize(function (event) {
                   //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
-                  //console.log(event)
-                  if($scope.currentTab == "pdf" && $.isWindow(event.target)) {
+                  console.log($location.search().tab)
+                  if(($location.search().tab == "pdf" || $location.search().tab == undefined || $location.search().tab == "no") && $.isWindow(event.target)) {
                     //console.log("Got called on resize");
                     adjustPdfScale();
                   }
@@ -2569,6 +2599,12 @@ app.directive('movablePdf', function() {
 
                 $scope.$on('onPdfPageChange', function (event, params) {
                     setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
+
+                    $rootScope.currCanWidth = $('#annotationZone').width();
+
+                    $rootScope.currCanHeight = $('#annotationZone').height();
+
+                    $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
                 });
 
 
@@ -4561,6 +4597,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     //$rootScope.annZoneBoxSizeX = 0;
     //$rootScope.annZoneBoxSizeY = 0;
+
+    $rootScope.currCanWidth = 0;
+
+    $rootScope.currCanHeight = 0;
 
 
     $scope.updateAnnZonePos = function(posObj) {
