@@ -40,10 +40,10 @@
         <input type="text" id="rectEditInputField-{{divCounter}}" name = "{{rectEditInputFieldName}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(!inEditMode)"></input>
       </span>
       <span id="editSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-pencil" aria-hidden="true" ng-click="localSetEditZoneMode(listId,divCounter,color);" ng-hide="(inEditMode || !canBeEdited)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
-      <span id="cancelSaveSpan-{{divCounter}}" class="glyphicon glyphicon-floppy-remove" aria-hidden="true" ng-click="resetEditZoneMode()"
-      ng-hide="(!inEditMode)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
-      <span id="saveSpan-{{divCounter}}" class="glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="updateAnnZone('{{annZoneId}}')"
-      ng-hide="(!inEditMode)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
+      <span id="cancelSaveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-remove" aria-hidden="true" ng-click="resetEditZoneMode()"
+      ng-hide="(!inEditMode)" />
+      <span id="saveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="updateAnnZone('{{annZoneId}}')"
+      ng-hide="(!inEditMode)" />
     </div>
     <!--<div id="slideRectCreateWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px;'margin-left':'-20px'">
       <span id="slideRectCreateSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
