@@ -16,6 +16,13 @@
 
 }
 
+.slideEditIcon{
+  float: right;
+  color:#fff;
+  margin:2px;
+  cursor: pointer;
+}
+
 .filter-header{
   margin-bottom:20px;
 }
