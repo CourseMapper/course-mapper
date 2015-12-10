@@ -39,7 +39,7 @@
         <span>#</span><span ng-hide="(inEditMode)">{{tagName}}</span>
         <input type="text" id="rectEditInputField-{{divCounter}}" name = "{{rectEditInputFieldName}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(!inEditMode)"></input>
       </span>
-      <span id="editSpan-{{divCounter}}" class="glyphicon glyphicon-pencil" aria-hidden="true" ng-click="setEditZoneMode(annZoneId,divCounter,color);" ng-hide="(inEditMode)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
+      <span id="editSpan-{{divCounter}}" class="glyphicon glyphicon-pencil" aria-hidden="true" ng-click="setEditZoneMode(annZoneId,divCounter,color);" ng-hide="(inEditMode || !canBeEdited)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
       <span id="cancelSaveSpan-{{divCounter}}" class="glyphicon glyphicon-floppy-remove" aria-hidden="true" ng-click="resetEditZoneMode()"
       ng-hide="(!inEditMode)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
       <span id="saveSpan-{{divCounter}}" class="glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="updateAnnZone('{{annZoneId}}')"
