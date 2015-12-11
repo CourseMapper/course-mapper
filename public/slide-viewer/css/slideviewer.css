@@ -35,6 +35,9 @@
 .annoEditEffect {
     opacity: 0.75;
     border:1px dashed white;
+    transition: background-color .1s linear;
+    -moz-transition: background-color .1s linear;
+    -webkit-transition: background-color .1s linear;
 }
 
 
@@ -205,7 +208,10 @@ input#searchInput{
 }
 
 
-.slideRect{
+.slideRect1{
+  min-width: 126px;
+  min-height: 30px;
+
 }
 .btn-white{
      color: #FFF;
@@ -215,8 +221,6 @@ input#searchInput{
    color: #FFF;
 }
 
-.slideRect:hover{
-}
 
 #viewerContainer{
 }
