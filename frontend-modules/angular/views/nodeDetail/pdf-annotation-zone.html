@@ -42,7 +42,7 @@
       <span id="editSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-pencil" aria-hidden="true" ng-click="localSetEditZoneMode(listId);" ng-hide="(inEditMode || !canBeEdited)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
       <span id="cancelSaveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-remove" aria-hidden="true" ng-click="localResetEditZoneMode(listId)"
       ng-hide="(!inEditMode)" />
-      <span id="saveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="updateAnnZone('{{annZoneId}}')"
+      <span id="saveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="localUpdateAnnZone(listId)"
       ng-hide="(!inEditMode)" />
     </div>
     <!--<div id="slideRectCreateWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px;'margin-left':'-20px'">

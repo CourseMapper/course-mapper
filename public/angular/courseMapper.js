@@ -2200,6 +2200,7 @@ app.directive('movablePdf', function() {
               listId: '=',
               setEditZoneMode: '&',
               resetEditZoneMode: '&',
+              updateAnnZone: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2232,6 +2233,9 @@ app.directive('movablePdf', function() {
                 $scope.resetEditZoneMode({id:annId});
               };
 
+              $scope.localUpdateAnnZone = function(annId){
+                $scope.updateAnnZone({id:annId});
+              };
 
 
               $rootScope.$on('pdfScaleChanged', function(event,params){
@@ -4785,15 +4789,17 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.updateAnnZone = function (id) {
 
+      $scope.annotationZoneList[id].tagName = $scope.annotationZoneList[id].editTagNameTemp;
+
       var config = {
         params: {
-          updateId: id,
+          updateId: $scope.annotationZoneList[id].annZoneId,
           author: $scope.currentUser.username,
           authorId: $scope.currentUser._id,
           updatedAnnZone:
           {
-            annotationZoneName: "#"+$scope.editZoneValues[$scope.editZoneMode].name,
-            color: $scope.editZoneValues[$scope.editZoneMode].color.substring(1)
+            annotationZoneName: "#"+$scope.annotationZoneList[id].tagName,
+            color: $scope.annotationZoneList[id].color.substring(1)
           },
           pdfId: $scope.pdfFile._id,
         }
@@ -4819,7 +4825,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
               //console.log("updateAnnZoneEv");
 
-              $rootScope.resetEditZoneMode();
+              $rootScope.resetEditZoneMode(id);
+              $scope.$emit('reloadTags');
 
           })
           .error(function (data, status, headers, config) {
