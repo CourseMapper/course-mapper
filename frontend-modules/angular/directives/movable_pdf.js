@@ -4,15 +4,15 @@
 app.directive('movablePdf', function() {
     var getRelativePosition = function(position, parent) {
         return {
-            left: 1.0 * position.left / $("#annotationZone").clientWidth,
-            top: 1.0 * position.top / $("#annotationZone").clientHeight
+            left: 1.0 * position.left / $("#annotationZone").width(),
+            top: 1.0 * position.top / $("#annotationZone").height()
         };
     };
 
     var getRelativeSize = function(size, parent) {
         return {
-            width: 1.0 * size.width / $("#annotationZone").clientWidth,
-            height: 1.0 * size.height / $("#annotationZone").clientHeight
+            width: 1.0 * size.width / $("#annotationZone").width(),
+            height: 1.0 * size.height / $("#annotationZone").height()
         };
     };
 

@@ -2046,15 +2046,15 @@ app.directive('movable', function() {
 app.directive('movablePdf', function() {
     var getRelativePosition = function(position, parent) {
         return {
-            left: 1.0 * position.left / $("#annotationZone").clientWidth,
-            top: 1.0 * position.top / $("#annotationZone").clientHeight
+            left: 1.0 * position.left / $("#annotationZone").width(),
+            top: 1.0 * position.top / $("#annotationZone").height()
         };
     };
 
     var getRelativeSize = function(size, parent) {
         return {
-            width: 1.0 * size.width / $("#annotationZone").clientWidth,
-            height: 1.0 * size.height / $("#annotationZone").clientHeight
+            width: 1.0 * size.width / $("#annotationZone").width(),
+            height: 1.0 * size.height / $("#annotationZone").height()
         };
     };
 
@@ -2210,7 +2210,7 @@ app.directive('movablePdf', function() {
             templateUrl: '/angular/views/pdf-annotation-zone.html',
             //replace: true,
             //transclude: true,
-            controller: function($http, $scope, $rootScope, $sce, $timeout){
+            controller: function($http, $scope, $rootScope, $sce, $timeout, $parse){
 
 
 
@@ -2247,6 +2247,19 @@ app.directive('movablePdf', function() {
 
               $scope.localAddReference = function(annId){
                 $scope.addReference({id:annId});
+              };
+
+
+              $scope.updateAnnZonePos = function(posSize){
+                $scope.relativePositionY=posSize.position.top;
+                $scope.relativePositionX= posSize.position.left;
+                if(posSize.size != undefined){
+                  $scope.relativeSizeX = posSize.size.width;
+                  $scope.relativeSizeY = posSize.size.height;
+                }
+                $timeout(function(){
+                  $scope.$apply();
+                });
               };
 
 

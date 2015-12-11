@@ -31,7 +31,7 @@ app.directive('pdfAnnotationZone',
             templateUrl: '/angular/views/pdf-annotation-zone.html',
             //replace: true,
             //transclude: true,
-            controller: function($http, $scope, $rootScope, $sce, $timeout){
+            controller: function($http, $scope, $rootScope, $sce, $timeout, $parse){
 
 
 
@@ -68,6 +68,19 @@ app.directive('pdfAnnotationZone',
 
               $scope.localAddReference = function(annId){
                 $scope.addReference({id:annId});
+              };
+
+
+              $scope.updateAnnZonePos = function(posSize){
+                $scope.relativePositionY=posSize.position.top;
+                $scope.relativePositionX= posSize.position.left;
+                if(posSize.size != undefined){
+                  $scope.relativeSizeX = posSize.size.width;
+                  $scope.relativeSizeY = posSize.size.height;
+                }
+                $timeout(function(){
+                  $scope.$apply();
+                });
               };
 
 
