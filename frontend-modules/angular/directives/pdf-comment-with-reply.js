@@ -27,7 +27,7 @@ app.directive('pdfComment',
                 postComment: '&',
                 recentSubmitOnAnnotation: '=',
                 commentText: '=',
-                removeFunction: '&'
+                removeFunction: '&',
             },
 
             templateUrl: '/angular/views/pdf-comment.html',

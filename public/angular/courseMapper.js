@@ -2204,6 +2204,7 @@ app.directive('movablePdf', function() {
               resetEditZoneMode: '&',
               updateAnnZone: '&',
               removeAnnotationZone: '&',
+              addReference: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2243,6 +2244,11 @@ app.directive('movablePdf', function() {
               $scope.localRemoveAnnotationZone = function(annId){
                 $scope.removeAnnotationZone({id:annId});
               };
+
+              $scope.localAddReference = function(annId){
+                $scope.addReference({id:annId});
+              };
+
 
 
               $rootScope.$on('pdfScaleChanged', function(event,params){
@@ -2341,7 +2347,7 @@ app.directive('movablePdf', function() {
                 postComment: '&',
                 recentSubmitOnAnnotation: '=',
                 commentText: '=',
-                removeFunction: '&'
+                removeFunction: '&',
             },
 
             templateUrl: '/angular/views/pdf-comment.html',
@@ -5839,6 +5845,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.manageActionBar();
     });
 
+    /*
     $scope.addReference = function(name) {
       //$rootScope.safeApply(function() {
       if($rootScope.nameHasNoError(name)){
@@ -5880,12 +5887,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         });
       }
     };
-
-    /*TODO:ANGANNZONE
-
-    $scope.addReference = function(id) {
+    */
+    $rootScope.addReference = function(id) {
       var annZoneList = $rootScope.getAnnotationZoneList();
-      var name = annZoneList[id];
+      var name = "#"+annZoneList[id].tagName;
       //$rootScope.safeApply(function() {
       if($rootScope.nameHasNoError(name)){
         if(name !="#")
@@ -5927,7 +5932,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       }
     };
 
-    */
+
 
     $scope.setEditRawText = function(id,newText) {
       $scope.editRawText[id] = strip(newText);
