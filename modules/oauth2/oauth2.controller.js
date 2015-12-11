@@ -40,8 +40,8 @@ server.deserializeClient(function (id, callback) {
 server.grant(oauth2orize.grant.code(function (client, redirectUri, user, ares, callback) {
     // Create a new authorization code
     var code = new Secrets({
-        token: uid(16),
-        clientId: client._id,
+        oauthSecret: uid(16),
+        clientId: client.clientId,
         redirectUri: redirectUri,
         userId: user._id
     });
@@ -52,7 +52,7 @@ server.grant(oauth2orize.grant.code(function (client, redirectUri, user, ares, c
             return callback(err);
         }
 
-        callback(null, code.value);
+        callback(null, code.oauthSecret);
     });
 }));
 
@@ -64,7 +64,7 @@ server.exchange(oauth2orize.exchange.code(function (client, code, redirectUri, c
         if (authCode === undefined) {
             return callback(null, false);
         }
-        if (client._id.toString() !== authCode.clientId) {
+        if (client.clientId.toString() !== authCode.clientId) {
             return callback(null, false);
         }
         if (redirectUri !== authCode.redirectUri) {
