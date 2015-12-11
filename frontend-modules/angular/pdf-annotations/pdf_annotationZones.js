@@ -2,7 +2,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNameErrors = {};
+    $rootScope.tagNameErrors = {};
     //$rootScope.pdfId = "";
 
     $scope.tagNamesList = JSON.parse(JSON.stringify({}));
@@ -68,7 +68,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         canBeEdited: canBeEdited,
         annZoneId: annZoneId,
         divCounter: $scope.divCounter,
-        id: 'rect-'+$scope.divCounter
+        id: 'rect-'+$scope.divCounter,
+        tagNameIsValidated: false,
       };
       $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
       $scope.divCounter += 1;
@@ -82,9 +83,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       });
       return newAnnZone;
-
-
-
     };
 
 
@@ -241,7 +239,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
           element.remove();
 
-          delete $scope.tagNameErrors[inputId];
+          delete $rootScope.tagNameErrors[inputId];
           delete $scope.tagNamesList[inputId];
 
         }
@@ -288,7 +286,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       delete $scope.tagNamesList[id];
 
 
-      delete $scope.tagNameErrors[id];
+      delete $rootScope.tagNameErrors[id];
 
       $scope.timeout();
 
@@ -378,17 +376,23 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       );
     };
 
-    $scope.$watch("tagNamesList", function (newValue, oldValue) {
+    //Check if names of new annZones are correct
+    $scope.$watch("annotationZoneList", function (newValue, oldValue) {
       if(newValue != oldValue) {
-        if(typeof $scope.annZones != "undefined") {
+        if(typeof $scope.annotationZoneList != "undefined") {
           for(var key in newValue) {
-            //console.log(newValue[key]);
-            var response = $rootScope.checkTagName(newValue[key]);
-            if(response.length != 0) {
-              changeValidationDisplay(key, newValue[key], false, response)
-            }
-            else {
-              changeValidationDisplay(key, newValue[key], true, response)
+            var annZone = newValue[key];
+            if(annZone.isBeingCreated){
+
+              var tName = newValue[key].tagName;
+              //console.log(newValue[key]);
+              var response = $rootScope.checkTagName(tName);
+              if(response.length != 0) {
+                changeValidationDisplay(key, tName, false, response);
+              }
+              else {
+                changeValidationDisplay(key, tName, true, response);
+              }
             }
           }
         }
@@ -423,37 +427,32 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     }
 
     function changeValidationDisplay (key, name, success, text) {
+      $scope.annotationZoneList[key].tagNameIsValidated = success;
+
       if(success){
-        //console.log("VAL SUCCESS ON " + key);
-        $("#"+key).find(".validationIcon").addClass("glyphicon");
+        /*$("#"+key).find(".validationIcon").addClass("glyphicon");
         $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
         $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
-        delete $scope.tagNameErrors[key];
+        */
+        delete $rootScope.tagNameErrors[key];
         $timeout(function(){
-          $scope.$apply($scope.tagNameErrors);
+          $scope.$apply($rootScope.tagNameErrors);
         });
-        //TODO: success
       }
       else {
-        //console.log("VAL ERROR ON " + key + ": "+text);
-        $("#"+key).find(".validationIcon").addClass("glyphicon");
-        $("#"+key).find(".validationIcon").removeClass("glyphicon-ok-sign");
-        $("#"+key).find(".validationIcon").addClass("glyphicon-remove-sign");
-        $scope.tagNameErrors[key] = {name : name, text : text};
-        //console.log($scope.tagNameErrors);
-        //console.log($scope.tagNameErrors[key]);
+        $rootScope.tagNameErrors[key] = {name : name, text : text};
+
         $timeout(function(){
-          $scope.$apply($scope.tagNameErrors);
+          $scope.$apply($rootScope.tagNameErrors);
         });
-        //TODO: failure
       }
     }
 
     $rootScope.nameHasNoError = function (name) {
 
-      for(var key in $scope.tagNameErrors) {
-        if($scope.tagNameErrors[key].name == name.substring(1)) {
-          if($scope.tagNameErrors[key].text == "") {
+      for(var key in $rootScope.tagNameErrors) {
+        if($rootScope.tagNameErrors[key].name == name.substring(1)) {
+          if($rootScope.tagNameErrors[key].text == "") {
             return true;
           }
           else {
@@ -470,17 +469,17 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         delete $scope.tagNameErrors[key];
         //console.log($scope.tagNameErrors[key]);
       }*/
-      $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
+      $rootScope.tagNameErrors = JSON.parse(JSON.stringify({}));
       $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
       $timeout(function(){
-        $scope.$apply($scope.tagNameErrors);
+        $scope.$apply($rootScope.tagNameErrors);
       });
     };
 
     $scope.timeout = function () {
       $timeout(function(){
-        $scope.$apply($scope.tagNameErrors);
+        $scope.$apply($rootScope.tagNameErrors);
       });
     };
 

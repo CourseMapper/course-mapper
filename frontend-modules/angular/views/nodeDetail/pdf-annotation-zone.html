@@ -46,7 +46,7 @@
       <span id="saveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="localUpdateAnnZone(listId)"
       ng-hide="(!inEditMode)" />
     </div>
-    <span id="validationIcon-{{divCounter}}" class="validationIcon" aria-hidden="true" style="color:'white'"></span>
+    <span id="validationIcon-{{divCounter}}" ng-hide="!isBeingCreated" class="validationIcon glyphicon" ng-class="{true: 'glyphicon-ok-sign', false: 'glyphicon-remove-sign'}[tagNameIsValidated]" aria-hidden="true" style="color:'white'"></span>
     <button class ="btn btn-white btn-link" ng-click="localRemoveAnnotationZone(listId)" style="float:right" ng-hide="!isBeingCreated">X</button>
 
     <!--<div id="slideRectCreateWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px;'margin-left':'-20px'">
