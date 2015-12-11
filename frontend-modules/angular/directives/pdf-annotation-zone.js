@@ -23,6 +23,7 @@ app.directive('pdfAnnotationZone',
               setEditZoneMode: '&',
               resetEditZoneMode: '&',
               updateAnnZone: '&',
+              removeAnnotationZone: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -51,12 +52,16 @@ app.directive('pdfAnnotationZone',
                 $scope.setEditZoneMode({id:annId});
               };
 
-              $scope.localResetEditZoneMode = function(annId){
-                $scope.resetEditZoneMode({id:annId});
+              $scope.localResetEditZoneMode = function(){
+                $scope.resetEditZoneMode();
               };
 
               $scope.localUpdateAnnZone = function(annId){
                 $scope.updateAnnZone({id:annId});
+              };
+
+              $scope.localRemoveAnnotationZone = function(annId){
+                $scope.removeAnnotationZone({id:annId});
               };
 
 

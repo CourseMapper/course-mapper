@@ -2202,6 +2202,7 @@ app.directive('movablePdf', function() {
               setEditZoneMode: '&',
               resetEditZoneMode: '&',
               updateAnnZone: '&',
+              removeAnnotationZone: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -2230,12 +2231,16 @@ app.directive('movablePdf', function() {
                 $scope.setEditZoneMode({id:annId});
               };
 
-              $scope.localResetEditZoneMode = function(annId){
-                $scope.resetEditZoneMode({id:annId});
+              $scope.localResetEditZoneMode = function(){
+                $scope.resetEditZoneMode();
               };
 
               $scope.localUpdateAnnZone = function(annId){
                 $scope.updateAnnZone({id:annId});
+              };
+
+              $scope.localRemoveAnnotationZone = function(annId){
+                $scope.removeAnnotationZone({id:annId});
               };
 
 
@@ -4633,7 +4638,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
     $rootScope.createMovableAnnZone = function() {
-      var element = addAnnotationZone(0, 0, 0.3, 0.3, "ac725e", "", true, false, "");
+      var element = $scope.addAnnotationZone(0, 0, 0.3, 0.3, "#ac725e", "", true, false, "");
       //addAnnotationZoneElement(element);
       var annZoneId = element.id;
 
@@ -4655,38 +4660,39 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
 
+
+      var newAnnZone = {
+        relativePosition: {
+          x: relLeft,
+          y: relTop
+        },
+        relativeSize: {
+          x: relWidth,
+          y: relHeight
+        },
+        color: color,
+        colorBeforeEdit: color,
+        tagName: tagName,
+        editTagNameTemp: tagName.slice(1),
+        dragable: isBeingCreated,
+        isBeingCreated: isBeingCreated,
+        canBeEdited: canBeEdited,
+        annZoneId: annZoneId,
+        divCounter: $scope.divCounter,
+        id: 'rect-'+$scope.divCounter
+      };
+      $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
+      $scope.divCounter += 1;
+      console.log("ADDED ZONE");
+      console.log("DivC after: "+ $scope.divCounter);
+      console.log($scope.annotationZoneList);
+
       $timeout(function(){
 
-        var newAnnZone = {
-          relativePosition: {
-            x: relLeft,
-            y: relTop
-          },
-          relativeSize: {
-            x: relWidth,
-            y: relHeight
-          },
-          color: color,
-          colorBeforeEdit: color,
-          tagName: tagName,
-          editTagNameTemp: tagName.slice(1),
-          dragable: isBeingCreated,
-          isBeingCreated: isBeingCreated,
-          canBeEdited: canBeEdited,
-          annZoneId: annZoneId,
-          divCounter: $scope.divCounter,
-          id: 'rect-'+$scope.divCounter
-        };
-        $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
-        $scope.divCounter += 1;
-        console.log("ADDED ZONE");
-        console.log("DivC after: "+ $scope.divCounter);
-        console.log($scope.annotationZoneList);
-
         $scope.$apply();
-        return newAnnZone;
 
       });
+      return newAnnZone;
 
 
 
@@ -4763,8 +4769,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     };
 
-    $rootScope.resetEditZoneMode = function(id) {
+    $rootScope.resetEditZoneMode = function() {
       //$rootScope.$broadcast('reloadTags');
+
+      var id = $scope.editZoneMode;
 
       $scope.writeCommentMode = false;
       $scope.replyRawText = [];
@@ -4778,14 +4786,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       ele.parent().css({"margin-left":"0px"});
       ele.remove();
       */
+      if(id != -1){
+        $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
+        $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
 
-      $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
-      $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
-
-      $timeout(function(){
-        $scope.$apply();
-      });
-
+        $timeout(function(){
+          $scope.$apply();
+        });
+      }
     };
 
     $scope.updateAnnZone = function (id) {
@@ -4826,7 +4834,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
               //console.log("updateAnnZoneEv");
 
-              $rootScope.resetEditZoneMode(id);
+              $rootScope.resetEditZoneMode();
               $scope.$emit('reloadTags');
 
           })
@@ -4865,7 +4873,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       };
       */
 
-    $rootScope.removeAnnotationZone = function (id) {
+    /*$rootScope.removeAnnotationZone = function (id) {
       var element = $("#annotationZone #"+id);
 
       //var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
@@ -4883,8 +4891,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       delete $scope.tagNamesList[id];
 
     };
-
-    /*TODO:ANGANNZONE
+    */
     $rootScope.removeAnnotationZone = function (id) {
 
       delete $scope.annotationZoneList[id];
@@ -4893,12 +4900,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
       delete $scope.tagNameErrors[id];
-      delete $scope.tagNamesList[id];
 
       $scope.timeout();
 
     };
-    */
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
@@ -5800,9 +5805,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.annotationZoneAction = function(){
         // in slideviewer.js
         $rootScope.switchShowAnnoZones = "On"
-        createMovableAnnZone();
+        //createMovableAnnZone();
         //TODO:ANGANNZONE
-        //$rootScope.createMovableAnnZone();
+        $rootScope.createMovableAnnZone();
     };
 
 

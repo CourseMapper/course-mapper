@@ -29,7 +29,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
     $rootScope.createMovableAnnZone = function() {
-      var element = addAnnotationZone(0, 0, 0.3, 0.3, "ac725e", "", true, false, "");
+      var element = $scope.addAnnotationZone(0, 0, 0.3, 0.3, "#ac725e", "", true, false, "");
       //addAnnotationZoneElement(element);
       var annZoneId = element.id;
 
@@ -51,38 +51,39 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
 
+
+      var newAnnZone = {
+        relativePosition: {
+          x: relLeft,
+          y: relTop
+        },
+        relativeSize: {
+          x: relWidth,
+          y: relHeight
+        },
+        color: color,
+        colorBeforeEdit: color,
+        tagName: tagName,
+        editTagNameTemp: tagName.slice(1),
+        dragable: isBeingCreated,
+        isBeingCreated: isBeingCreated,
+        canBeEdited: canBeEdited,
+        annZoneId: annZoneId,
+        divCounter: $scope.divCounter,
+        id: 'rect-'+$scope.divCounter
+      };
+      $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
+      $scope.divCounter += 1;
+      console.log("ADDED ZONE");
+      console.log("DivC after: "+ $scope.divCounter);
+      console.log($scope.annotationZoneList);
+
       $timeout(function(){
 
-        var newAnnZone = {
-          relativePosition: {
-            x: relLeft,
-            y: relTop
-          },
-          relativeSize: {
-            x: relWidth,
-            y: relHeight
-          },
-          color: color,
-          colorBeforeEdit: color,
-          tagName: tagName,
-          editTagNameTemp: tagName.slice(1),
-          dragable: isBeingCreated,
-          isBeingCreated: isBeingCreated,
-          canBeEdited: canBeEdited,
-          annZoneId: annZoneId,
-          divCounter: $scope.divCounter,
-          id: 'rect-'+$scope.divCounter
-        };
-        $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
-        $scope.divCounter += 1;
-        console.log("ADDED ZONE");
-        console.log("DivC after: "+ $scope.divCounter);
-        console.log($scope.annotationZoneList);
-
         $scope.$apply();
-        return newAnnZone;
 
       });
+      return newAnnZone;
 
 
 
@@ -159,8 +160,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     };
 
-    $rootScope.resetEditZoneMode = function(id) {
+    $rootScope.resetEditZoneMode = function() {
       //$rootScope.$broadcast('reloadTags');
+
+      var id = $scope.editZoneMode;
 
       $scope.writeCommentMode = false;
       $scope.replyRawText = [];
@@ -174,14 +177,14 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       ele.parent().css({"margin-left":"0px"});
       ele.remove();
       */
+      if(id != -1){
+        $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
+        $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
 
-      $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
-      $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
-
-      $timeout(function(){
-        $scope.$apply();
-      });
-
+        $timeout(function(){
+          $scope.$apply();
+        });
+      }
     };
 
     $scope.updateAnnZone = function (id) {
@@ -222,7 +225,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
               //console.log("updateAnnZoneEv");
 
-              $rootScope.resetEditZoneMode(id);
+              $rootScope.resetEditZoneMode();
               $scope.$emit('reloadTags');
 
           })
@@ -261,7 +264,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       };
       */
 
-    $rootScope.removeAnnotationZone = function (id) {
+    /*$rootScope.removeAnnotationZone = function (id) {
       var element = $("#annotationZone #"+id);
 
       //var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
@@ -279,8 +282,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       delete $scope.tagNamesList[id];
 
     };
-
-    /*TODO:ANGANNZONE
+    */
     $rootScope.removeAnnotationZone = function (id) {
 
       delete $scope.annotationZoneList[id];
@@ -289,12 +291,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
       delete $scope.tagNameErrors[id];
-      delete $scope.tagNamesList[id];
 
       $scope.timeout();
 
     };
-    */
 
     $scope.refreshTags = function() {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
