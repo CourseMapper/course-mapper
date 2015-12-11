@@ -4,12 +4,22 @@ var express = require('express');
 var router = express.Router();
 var helper = require('../../../libs/core/generalLibs.js');
 var mongoose = require('mongoose');
+var config = require('config');
 
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
 // Create endpoint handlers for oauth2 authorize
-router.get('/authorize', helper.ensureAuthenticated, oauth2Controller.authorization);
+router.get('/authorize',
+    /*helper.ensureAuthenticated,*/
+    function (req, res, next) {
+        helper.ensureAuthenticated2(req, res, function (err) {
+            if (err) {
+                res.render(config.get('theme') + '/oauth/oLogin');
+            }
+        });
+    },
+    oauth2Controller.authorization);
 
 router.get('/apps/:mode', function (req, res, next) {
     if (!req.user) {

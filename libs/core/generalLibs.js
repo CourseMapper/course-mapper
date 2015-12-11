@@ -134,6 +134,32 @@ var cmLibraries = {
         }
     },
 
+    ensureAuthenticated2: function (req, res, next) {
+        // local strategy
+        if (req.isAuthenticated()) {
+            return next();
+        } else {
+            // basic strategy
+            passport.authenticate(['basic', 'bearer'], {session: false}, function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    return next(new Error('401'));
+                }
+                else {
+                    req.logIn(user, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        return next();
+                    });
+                }
+            })(req, res, next);
+        }
+    },
+
     uid: function (len) {
         var buf = []
             , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
