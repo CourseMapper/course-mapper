@@ -36,8 +36,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $scope.tagNamesList[annZoneId] = "";
     };
 
-
-
     $rootScope.getTagNamesList = function(){
       return $scope.tagNamesList;
     };
@@ -482,4 +480,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         $scope.$apply($scope.tagNameErrors);
       });
     };
+
+
 });
