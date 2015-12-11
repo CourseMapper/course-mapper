@@ -205,7 +205,9 @@ input#searchInput{
 }
 
 
-.slideRect{
+.slideRect1{
+  min-width: 126px;
+  min-height: 30px;
 }
 .btn-white{
      color: #FFF;
@@ -215,8 +217,6 @@ input#searchInput{
    color: #FFF;
 }
 
-.slideRect:hover{
-}
 
 #viewerContainer{
 }
