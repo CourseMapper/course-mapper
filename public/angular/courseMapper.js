@@ -2198,6 +2198,7 @@ app.directive('movablePdf', function() {
               annZoneId: '=',
               divCounter: '=',
               listId: '=',
+              switchShowAnnoZones: '=',
               setEditZoneMode: '&',
               resetEditZoneMode: '&',
               updateAnnZone: '&',
@@ -2263,7 +2264,7 @@ app.directive('movablePdf', function() {
 
               //console.log($scope.relativePosition);
               $scope.canMove = $scope.dragable;
-              $scope.switchShowAnnoZones = 'On';
+              //$scope.switchShowAnnoZones = 'On';
               $scope.annZoneID = $scope.listId;
               //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";

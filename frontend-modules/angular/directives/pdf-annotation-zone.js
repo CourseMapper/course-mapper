@@ -19,6 +19,7 @@ app.directive('pdfAnnotationZone',
               annZoneId: '=',
               divCounter: '=',
               listId: '=',
+              switchShowAnnoZones: '=',
               setEditZoneMode: '&',
               resetEditZoneMode: '&',
               updateAnnZone: '&',
@@ -84,7 +85,7 @@ app.directive('pdfAnnotationZone',
 
               //console.log($scope.relativePosition);
               $scope.canMove = $scope.dragable;
-              $scope.switchShowAnnoZones = 'On';
+              //$scope.switchShowAnnoZones = 'On';
               $scope.annZoneID = $scope.listId;
               //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";
