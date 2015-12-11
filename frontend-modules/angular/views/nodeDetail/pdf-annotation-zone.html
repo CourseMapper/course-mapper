@@ -8,7 +8,7 @@
     </div>-->
     <div id="slideRectWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px">
       <div  class="colorPickerWrapper" ng-hide="!dragable && !inEditMode">
-        <select id="colorPicker-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker" ng-model= "color">
+        <select id="colorPicker-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker colorPickerSingleSelector-{{divCounter}}" ng-model= "color">
           <option value="#ac725e">#ac725e</option>
           <option value="#d06b64">#d06b64</option>
           <option value="#f83a22">#f83a22</option>
@@ -45,7 +45,7 @@
       ng-hide="(!inEditMode)" />
       <span id="saveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="localUpdateAnnZone(listId)"
       ng-hide="(!inEditMode)" />
-      <span id="validationIcon-{{divCounter}}" ng-hide="!isBeingCreated" class="validationIcon glyphicon" ng-class="{true: 'glyphicon-ok-sign', false: 'glyphicon-remove-sign'}[tagNameIsValidated]" aria-hidden="true" style="color:'white'"></span>
+      <span id="validationIcon-{{divCounter}}" ng-hide="!isBeingCreated" class="slideValidationIcon validationIcon glyphicon" ng-class="{true: 'glyphicon-ok-sign', false: 'glyphicon-remove-sign'}[tagNameIsValidated]" aria-hidden="true" style="color:'white'"></span>
     <button class ="btn btn-white btn-link" ng-click="localRemoveAnnotationZone(listId)" style="float:right" ng-hide="!isBeingCreated">X</button>
     </div>
 
