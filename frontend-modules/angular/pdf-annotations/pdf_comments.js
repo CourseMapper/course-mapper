@@ -737,6 +737,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $scope.manageActionBar();
     });
 
+    /*
     $scope.addReference = function(name) {
       //$rootScope.safeApply(function() {
       if($rootScope.nameHasNoError(name)){
@@ -778,12 +779,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         });
       }
     };
-
-    /*TODO:ANGANNZONE
-
-    $scope.addReference = function(id) {
+    */
+    $rootScope.addReference = function(id) {
       var annZoneList = $rootScope.getAnnotationZoneList();
-      var name = annZoneList[id];
+      var name = "#"+annZoneList[id].tagName;
       //$rootScope.safeApply(function() {
       if($rootScope.nameHasNoError(name)){
         if(name !="#")
@@ -825,7 +824,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       }
     };
 
-    */
+
 
     $scope.setEditRawText = function(id,newText) {
       $scope.editRawText[id] = strip(newText);

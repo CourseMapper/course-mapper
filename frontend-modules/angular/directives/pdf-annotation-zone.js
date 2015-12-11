@@ -25,6 +25,7 @@ app.directive('pdfAnnotationZone',
               resetEditZoneMode: '&',
               updateAnnZone: '&',
               removeAnnotationZone: '&',
+              addReference: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -64,6 +65,11 @@ app.directive('pdfAnnotationZone',
               $scope.localRemoveAnnotationZone = function(annId){
                 $scope.removeAnnotationZone({id:annId});
               };
+
+              $scope.localAddReference = function(annId){
+                $scope.addReference({id:annId});
+              };
+
 
 
               $rootScope.$on('pdfScaleChanged', function(event,params){
