@@ -19,8 +19,10 @@ app.directive('pdfAnnotationZone',
               annZoneId: '=',
               divCounter: '=',
               listId: '=',
+              switchShowAnnoZones: '=',
               setEditZoneMode: '&',
               resetEditZoneMode: '&',
+              updateAnnZone: '&',
             },
 
             templateUrl: '/angular/views/pdf-annotation-zone.html',
@@ -53,6 +55,9 @@ app.directive('pdfAnnotationZone',
                 $scope.resetEditZoneMode({id:annId});
               };
 
+              $scope.localUpdateAnnZone = function(annId){
+                $scope.updateAnnZone({id:annId});
+              };
 
 
               $rootScope.$on('pdfScaleChanged', function(event,params){
@@ -80,7 +85,7 @@ app.directive('pdfAnnotationZone',
 
               //console.log($scope.relativePosition);
               $scope.canMove = $scope.dragable;
-              $scope.switchShowAnnoZones = 'On';
+              //$scope.switchShowAnnoZones = 'On';
               $scope.annZoneID = $scope.listId;
               //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";

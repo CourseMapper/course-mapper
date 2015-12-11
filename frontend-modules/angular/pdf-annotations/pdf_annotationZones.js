@@ -184,15 +184,17 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.updateAnnZone = function (id) {
 
+      $scope.annotationZoneList[id].tagName = $scope.annotationZoneList[id].editTagNameTemp;
+
       var config = {
         params: {
-          updateId: id,
+          updateId: $scope.annotationZoneList[id].annZoneId,
           author: $scope.currentUser.username,
           authorId: $scope.currentUser._id,
           updatedAnnZone:
           {
-            annotationZoneName: "#"+$scope.editZoneValues[$scope.editZoneMode].name,
-            color: $scope.editZoneValues[$scope.editZoneMode].color.substring(1)
+            annotationZoneName: "#"+$scope.annotationZoneList[id].tagName,
+            color: $scope.annotationZoneList[id].color.substring(1)
           },
           pdfId: $scope.pdfFile._id,
         }
@@ -218,7 +220,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
               //console.log("updateAnnZoneEv");
 
-              $rootScope.resetEditZoneMode();
+              $rootScope.resetEditZoneMode(id);
+              $scope.$emit('reloadTags');
 
           })
           .error(function (data, status, headers, config) {
