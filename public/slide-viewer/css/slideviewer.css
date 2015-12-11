@@ -49,6 +49,10 @@
   margin:2px;
   cursor: pointer;
 }
+.slideValidationIcon{
+  color:#fff;
+  margin:2px;
+}
 
 .filter-header{
   margin-bottom:20px;

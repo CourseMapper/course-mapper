@@ -2310,7 +2310,11 @@ app.directive('movablePdf', function() {
 
 
               $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+              //console.log("TESTTTTTTTTTTTT______"+"#colorPickerSingleSelector-"+$scope.divCounter);
+
+              //$().simplecolorpicker("selectColor",$scope.color);
               $('#destroy').on('click', function() {
+
                 $('select').simplecolorpicker('destroy');
               });
               // By default, activate simplecolorpicker plugin on HTML selects
