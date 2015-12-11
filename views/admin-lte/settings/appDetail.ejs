@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box-body no-border">
-            <form role="form" ng-submit="saveApp(editAppForm.$valid)" name="editAppForm" novalidate>
+            <form role="form" ng-submit="editApp(editAppForm.$valid)" name="editAppForm" novalidate>
                 <fieldset>
                     <div class="control-group">
                         <label class="control-label" for="name">Application Name</label>
@@ -70,18 +70,19 @@
                         <!-- Button -->
                         <div class="controls">
                             <button class="btn btn-md btn-primary"
-                                    ng-click="editAppForm.$pristine=false">Edit Application
+                                    ng-click="editAppForm.$pristine=false">Save
                                 <spinner show="isLoading"></spinner>
                             </button>
 
                             <button type="button" class="btn btn btn-warning"
-                                    data-dismiss="modal" aria-label="Close" ng-click="cancel()">
-                                <span aria-hidden="true">Cancel</span>
+                                    data-dismiss="modal" aria-label="Cancel" ng-click="cancel()">
+                                Cancel
                             </button>
 
                             <button type="button" class="btn btn btn-danger" style="float: right;"
-                                    data-dismiss="modal" aria-label="Close" ng-click="cancel()">
-                                <span aria-hidden="true">Delete Application</span>
+                                    data-dismiss="modal" aria-label="Delete" ng-click="deleteApp()">
+                                Delete Application
+                                <spinner show="isLoadingDelete"></spinner>
                             </button>
                         </div>
                     </div>
@@ -128,3 +129,8 @@
         </div>
     </div>
 </div>
+<br>
+<h3>Test</h3>
+<a target="_blank" href="/api/oauth2/authorize?client_id={{app.clientId}}&response_type=code&redirect_uri={{app.callbackUrl}}">
+    login
+</a>

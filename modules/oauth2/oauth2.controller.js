@@ -4,6 +4,8 @@ var Client = require('./models/oauthClients.js');
 var Token = require('./models/accessTokens.js');
 var Secrets = require('./models/oauthSecrets.js');
 
+var config = require('config');
+
 function uid(len) {
     var buf = []
         , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
@@ -106,7 +108,7 @@ exports.authorization = [
         });
     }),
     function (req, res) {
-        res.render('oauth/permission', {
+        res.render(config.get('theme') + '/oauth/permission', {
             transactionID: req.oauth2.transactionID,
             user: req.user,
             client: req.oauth2.client

@@ -22,6 +22,22 @@ ApplicationOauth.prototype.createApp = async(function (params) {
     return false;
 });
 
+ApplicationOauth.prototype.editApp = async(function (where, params) {
+    var ret = await(Client.findOneAndUpdate(where, params, {'new': true}).exec());
+    if (ret)
+        return ret;
+
+    return false;
+});
+
+ApplicationOauth.prototype.deleteApp = async(function (where) {
+    var ret = await(Client.findOneAndRemove(where).exec());
+    if (ret)
+        return ret;
+
+    return false;
+});
+
 ApplicationOauth.prototype.getCreatedApps = async(function (params) {
     if (!helper.checkRequiredParams(params, ['userId'], function (err) {
             throw new Error(err);
@@ -32,7 +48,6 @@ ApplicationOauth.prototype.getCreatedApps = async(function (params) {
     var apps = await(Client.find(params).exec());
     return apps;
 });
-
 
 ApplicationOauth.prototype.getInstalledApps = async(function (params) {
     if (!helper.checkRequiredParams(params, ['userId'], function (err) {

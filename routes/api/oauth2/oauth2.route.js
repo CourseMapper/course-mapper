@@ -101,4 +101,68 @@ router.post('/apps', helper.ensureAuthenticated, function (req, res, next) {
 // Create endpoint handlers for oauth2 token
 router.post('/token', helper.ensureAuthenticated, oauth2Controller.token);
 
+router.put('/app/:appId', helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    var params = {
+        name: req.body.name,
+        description: req.body.description,
+        callbackUrl: req.body.callbackUrl
+    };
+
+    var where = {
+        _id: req.params.appId,
+        userId: req.user._id
+    };
+
+    if (!helper.checkRequiredParams(where, ['_id', 'userId'], function (err) {
+            helper.resReturn(err, res);
+        })) return;
+
+    var op = async(
+        function () {
+            var oa = new appController();
+            return await(oa.editApp(where, params));
+        });
+
+    op(where, params).then(function (app) {
+            res.status(200).json({
+                result: true, app: app
+            });
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
+});
+
+router.delete('/app/:appId', helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    var where = {
+        _id: req.params.appId,
+        userId: req.user._id
+    };
+
+    if (!helper.checkRequiredParams(where, ['_id', 'userId'], function (err) {
+            helper.resReturn(err, res);
+        })) return;
+
+    var op = async(
+        function () {
+            var oa = new appController();
+            return await(oa.deleteApp(where));
+        });
+
+    op(where).then(function (app) {
+            res.status(200).json({
+                result: true, app: app
+            });
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
+});
+
 module.exports = router;
