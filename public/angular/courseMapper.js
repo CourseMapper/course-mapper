@@ -2277,6 +2277,7 @@ app.directive('movablePdf', function() {
               //$scope.color ="#444444";
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.colorPickerId ="1";
+
               //$scope.divCounter = "1";
 
 
@@ -4645,8 +4646,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       $scope.tagNamesList[annZoneId] = "";
     };
 
-
-
     $rootScope.getTagNamesList = function(){
       return $scope.tagNamesList;
     };
@@ -5094,6 +5093,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.$apply($scope.tagNameErrors);
       });
     };
+
+
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 

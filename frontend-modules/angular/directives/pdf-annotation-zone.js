@@ -98,6 +98,7 @@ app.directive('pdfAnnotationZone',
               //$scope.color ="#444444";
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.colorPickerId ="1";
+
               //$scope.divCounter = "1";
 
 

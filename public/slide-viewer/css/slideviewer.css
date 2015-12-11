@@ -20,6 +20,26 @@
   width: 20px;
 }
 
+
+.annoFadeEffect {
+   opacity: 0.125;
+   transition: opacity .2s ease-in-out;
+   -moz-transition: opacity .2s ease-in-out;
+   -webkit-transition: opacity .2s ease-in-out;
+   }
+
+   .annoFadeEffect:hover {
+      opacity: 0.75;
+      }
+
+.annoEditEffect {
+    opacity: 0.75;
+    border:1px dashed white;
+}
+
+
+
+
 .slideEditIcon{
   float: right;
   color:#fff;
