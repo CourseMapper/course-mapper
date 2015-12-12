@@ -1,17 +1,61 @@
 <% include oHeader %>
-<section class="content">
+<script>
+    function transformRequest(obj) {
+        var str = [];
+        for (var p in obj)
+            str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+        return str.join("&");
+    }
+
+    var oLogin = angular.module('oLoginApp', [
+        'ngResource', 'ngRoute', 'ngCookies']);
+
+    oLogin.controller('OauthLoginController',
+            function ($scope, $http) {
+                $scope.loginData = {};
+                $scope.login = function (isValid) {
+                    if (isValid) {
+                        $scope.isLoading = true;
+                        var self = this;
+
+                        var d = transformRequest($scope.loginData);
+                        $http({
+                            method: 'POST',
+                            url: '/api/accounts/login',
+                            data: d,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        })
+                                .success(
+                                        function success(data) {
+                                            if (data.result) {
+                                                window.location.reload();
+                                            }
+                                        })
+                                .error(
+                                        function (data) {
+                                            self.isLoggedIn = false;
+                                            $scope.errors = data.errors;
+                                        });
+                    }
+                }
+            });
+</script>
+<section class="content" ng-app="oLoginApp">
     <div class="row">
         <div class="col-xs-12">
-            <div class="box no-border" ng-init="init()">
+            <div class="box no-border">
                 <div class="box-header with-border">
                     <h3 class="box-title">Permission Request</h3>
                 </div>
 
-                <div class="box-body with-border">
-                    You are not logged in, please login using the form below.
+                <div class="box-body with-border" ng-controller="OauthLoginController">
+                    <p>You are not logged in, please login using the form below.</p>
                     <form name="loginForm" ng-submit="login(loginForm.$valid)" novalidate>
                         <fieldset>
-                            <div class="control-group" ng-class="{ 'has-error' : loginForm.username.$invalid && !loginForm.username.$pristine }">
+                            <div class="control-group"
+                                 ng-class="{ 'has-error' : loginForm.username.$invalid && !loginForm.username.$pristine }">
                                 <!-- Username -->
                                 <label class="control-label" for="username">Username</label>
 
@@ -21,44 +65,40 @@
                                            required ng-required="true"
                                     >
 
-                                    <p ng-show="loginForm.username.$invalid && !loginForm.username.$pristine" class="help-block">Username is
+                                    <p ng-show="loginForm.username.$invalid && !loginForm.username.$pristine"
+                                       class="help-block">Username is
                                         required.</p>
 
                                 </div>
                             </div>
-
-                            <div class="control-group" ng-class="{ 'has-error' : loginForm.password.$invalid && !loginForm.password.$pristine }">
+                            <br>
+                            <div class="control-group"
+                                 ng-class="{ 'has-error' : loginForm.password.$invalid && !loginForm.password.$pristine }">
                                 <!-- Password-->
                                 <label class="control-label" for="password">Password</label>
 
                                 <div class="controls">
                                     <input type="password" id="password" name="password" placeholder=""
                                            class="form-control" ng-model="loginData.password"
-                                           required ng-required="true"
-                                    >
+                                           required ng-required="true">
 
-                                    <p ng-show="loginForm.password.$invalid && !loginForm.password.$pristine" class="help-block">Password is
+                                    <p ng-show="loginForm.password.$invalid && !loginForm.password.$pristine"
+                                       class="help-block">Password is
                                         required.</p>
 
                                 </div>
                             </div>
 
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" value="yes" name="rememberMe" ng-model="rememberMe"
-                                           ng-checked="rememberMe"> Remember me
-                                </label>
-
-                                <p class="help-block"></p>
-                            </div>
-
                             <div class="control-group">
                                 <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                             </div>
+                            <br>
                             <div class="control-group">
                                 <!-- Button -->
                                 <div class="controls">
-                                    <button class="btn btn-primary btn-block">Login <spinner show="isLoading"></spinner></button>
+                                    <button class="btn btn-primary btn-block">Login
+                                        <spinner show="isLoading"></spinner>
+                                    </button>
                                 </div>
                             </div>
                         </fieldset>

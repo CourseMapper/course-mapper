@@ -56,7 +56,7 @@ server.grant(oauth2orize.grant.code(function (client, redirectUri, user, ares, c
     });
 }));
 
-server.exchange(oauth2orize.exchange.code(function (client, code, redirectUri, callback) {
+server.exchange(oauth2orize.exchange.code(function (user, code, redirectUri, callback) {
     Secrets.findOne({oauthSecret: code}, function (err, authCode) {
         if (err) {
             return callback(err);
@@ -64,7 +64,7 @@ server.exchange(oauth2orize.exchange.code(function (client, code, redirectUri, c
         if (authCode === undefined) {
             return callback(null, false);
         }
-        if (client.clientId.toString() !== authCode.clientId) {
+        if (user._id.toString() !== authCode.userId.toString()) {
             return callback(null, false);
         }
         if (redirectUri !== authCode.redirectUri) {

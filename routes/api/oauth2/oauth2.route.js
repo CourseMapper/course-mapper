@@ -16,6 +16,8 @@ router.get('/authorize',
         helper.ensureAuthenticated2(req, res, function (err) {
             if (err) {
                 res.render(config.get('theme') + '/oauth/oLogin');
+            } else {
+                next();
             }
         });
     },

@@ -122,13 +122,14 @@ var cmLibraries = {
                     cmLibraries.resReturn(cmLibraries.createError401(), res);
                 }
                 else {
-                    req.logIn(user, function (err) {
+                    /*req.logIn(user, function (err) {
                         if (err) {
                             return next(err);
                         }
 
                         return next();
-                    });
+                    });*/
+                    return next();
                 }
             })(req, res, next);
         }
