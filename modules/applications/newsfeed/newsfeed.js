@@ -4,6 +4,8 @@ var Votes = require('../../votes/models/votes.js');
 var SubTopics = require('../../trees/treeNodes.js');
 var Post = require('../../discussion/models/posts.js');
 var Courses = require('../../catalogs/courses.js');
+var PdfAnnotation = require('../../slide-viewer/annotation.js');
+var Resources = require('../../trees/resources.js');
 
 var NewsfeedListener = {
 
@@ -77,6 +79,14 @@ var NewsfeedListener = {
                 if (doc) {
                     var postId = doc.voteTypeId;
                     var voteType = doc.voteType;
+                    var voteValue = "";
+                    if (doc.voteValue == 1) {
+                        voteValue = "up vote";
+                    } else if (doc.voteValue == -1) {
+                        voteValue = "down vote";
+                    } else {
+                        voteValue = "cancel vote";
+                    }
                     if (voteType == "discussion"|| "discussionReply") {
 
                         Post.findOne({_id: postId})
@@ -89,7 +99,7 @@ var NewsfeedListener = {
                                             {
                                                 userId: newVote.createdBy,
                                                 actionSubjectIds: postId,
-                                                actionSubject: "vote",
+                                                actionSubject: voteValue,
                                                 actionName: postName,
                                                 courseId: courseId,
                                                 actionType: "added",
@@ -112,7 +122,7 @@ var NewsfeedListener = {
                                                             {
                                                                 userId: newVote.createdBy,
                                                                 actionSubjectIds: postId,
-                                                                actionSubject: "vote",
+                                                                actionSubject: voteValue,
                                                                 actionName: parentResult.title,
                                                                 courseId: parentResult.course,
                                                                 actionType: "added",
@@ -325,6 +335,103 @@ var NewsfeedListener = {
                         );
                     }
 
+                }
+            });
+
+    },
+
+    //Listener for PDF
+    onAfterPdfAnnotationCreated: function (newPdfAnnotation) {
+        PdfAnnotation.findOne({_id: newPdfAnnotation._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var pdfId = doc.pdfId;
+                    if (pdfId) {
+                        Resources.findOne({_id: pdfId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId){
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorID,
+                                                            actionSubjectIds: pdfId,
+                                                            actionSubject: "pdf annotation",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            actionType: "added",
+                                                            dateAdded: doc.dateOfCreation
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+
+                                        })
+
+
+
+                                    }
+
+                                }
+                            })
+                    }
+                }
+            });
+
+    },
+
+    onAfterPdfReplyCreated: function (newPdfAnnotationReply) {
+        PdfAnnotation.findOne({_id: newPdfAnnotationReply._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var pdfId = doc.pdfId;
+                    if (pdfId) {
+                        Resources.findOne({_id: pdfId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId){
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorID,
+                                                            actionSubjectIds: pdfId,
+                                                            actionSubject: "pdf annotation",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            actionType: "replied",
+                                                            dateAdded: doc.dateOfCreation
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+
+                                            })
+
+
+
+                                    }
+
+                                }
+                            })
+                    }
                 }
             });
 

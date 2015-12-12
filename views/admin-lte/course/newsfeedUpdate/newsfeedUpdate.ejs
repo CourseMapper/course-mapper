@@ -8,7 +8,7 @@
                     <th>Newsfeed Activity</th>
                 </tr>
                 <tr ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'">
-                    <td><b>{{nfData.userId.displayName}}</b> {{nfData.actionType}} a {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> in </span> <b>{{nfData.actionName}}</b> -- <i>{{nfData.dateAdded | relativeDate}}</i></td>
+                    <td><b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'cancel vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> in </span> <b>{{nfData.actionName}}</b> -- <i>{{nfData.dateAdded | relativeDate}}</i></td>
                 </tr>
                 </tbody>
             </table>
