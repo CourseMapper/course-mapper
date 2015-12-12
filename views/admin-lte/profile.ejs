@@ -50,7 +50,7 @@
                     <div class="grid-stack-item"
                          data-gs-no-resize="yes"
                          data-gs-locked="yes"
-                         ng-repeat="wdg in widgets" id="w{{wdg.widgetId._id}}">
+                         ng-repeat="wdg in widgets" id="w{{wdg._id}}">
                         <div class="grid-stack-item-content">
                             <div class="box no-shadow">
                                 <div class="box-header with-border">
@@ -59,7 +59,7 @@
                                     <div class="box-tools pull-right">
                                         <button class="btn btn-box-tool" data-widget="remove"
                                                 data-toggle="tooltip" title="Remove"
-                                                ng-click="closeWidget(wdg.widgetId._id);"
+                                                ng-click="closeWidget(wdg._id);"
                                                 >
                                             <i class="fa fa-times"></i></button>
                                     </div>
@@ -68,7 +68,7 @@
 
                                     <!-- start widget render -->
                                     <div ng-include src="wdg.widgetId.entryPoint"
-                                         onload="initWidgetButton(wdg.widgetId._id)"></div>
+                                         onload="initWidgetButton(wdg._id)"></div>
                                     <!-- start widget render -->
 
                                 </div>

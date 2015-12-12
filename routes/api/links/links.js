@@ -143,6 +143,7 @@ router.post('/:nodeId', function (req, res, next) {
                         {
                             title: req.body.title,
                             content: req.body.content,
+                            description: req.body.description,
                             createdBy: userId,
                             nodeId: nodeId
                         },
@@ -192,6 +193,7 @@ router.put('/:postId', function (req, res, next) {
                 {
                     title: req.body.title,
                     content: req.body.content,
+                    description: req.body.description,
                     userId: userId,
                     linkId: linkId
                 },

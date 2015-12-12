@@ -16,11 +16,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.pid = pid;
         $location.search('pid', pid);
 
-        $scope.manageActionBar();
-
         if ($scope.pid) {
             $scope.setCurrentLink($scope.pid)
         }
+
+        $scope.manageActionBar();
     };
 
     $scope.newRowsFetched = function (newRows, allRows) {
@@ -86,6 +86,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                 if (data.result) {
                     $scope.$emit('onAfterCreateNewLink', data.post);
+                    data.post.createdBy = authService.user;
                     $scope.links.unshift(data.post);
                     $timeout(function () {
                         $scope.$apply()
@@ -178,23 +179,29 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
         if ($scope.pid) {
             ActionBarService.extraActionsMenu = [];
-            ActionBarService.extraActionsMenu.unshift({
-                separator: true
-            });
 
-            ActionBarService.extraActionsMenu.push({
-                'html': '<a style="cursor: pointer;"' +
-                ' data-toggle="modal" data-target="#EditLinksModal"' +
-                ' title="Edit">' +
-                '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
-            });
+            if ($scope.isAdmin || $scope.isOwner || $scope.isManager ||
+                $scope.currentLink.createdBy._id == authService.user._id ||
+                $scope.currentLink.createdBy == authService.user._id
+            ) {
+                ActionBarService.extraActionsMenu.unshift({
+                    separator: true
+                });
 
-            ActionBarService.extraActionsMenu.push({
-                clickAction: $scope.deletePost,
-                clickParams: $scope.pid,
-                title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
-                aTitle: 'DELETE'
-            });
+                ActionBarService.extraActionsMenu.push({
+                    'html': '<a style="cursor: pointer;"' +
+                    ' data-toggle="modal" data-target="#EditLinksModal"' +
+                    ' title="Edit">' +
+                    '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                });
+
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deletePost,
+                    clickParams: $scope.pid,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE'
+                });
+            }
         }
         else if (!$scope.pid) {
             $scope.currentLink = {};

@@ -98,7 +98,7 @@ app.factory('widgetService', [
                 var el = '#w' + id;
 
                 // get width and height
-                var i = _.findIndex(self.widgets[location], {'widgetId': {'_id': id}});
+                var i = _.findIndex(self.widgets[location], {'_id': id});
                 var wdg = self.widgets[location][i];
 
                 //add_widget(el, x, y, width, height, auto_position)

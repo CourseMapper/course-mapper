@@ -7,14 +7,14 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper content-wrapper-admin" >
         <section class="content-header">
-            <ol class="breadcrumb">
+            <ol class="breadcrumb" ng-cloak ng-show="$route.current.locals">
                 <li><a href="/cm-admin/"><i class="fa fa-home"></i> Admin Home</a></li>
                 <li ng-repeat="bread in $route.current.locals.pd.breads">
-                    <a ng-href="{{bread.a}}" ng-class="{'active':bread.active}">{{bread.title}}</a>
+                    <a ng-href="{{bread.a}}" ng-class="{'active':bread.active}" ng-show="bread.title">{{bread.title}}</a>
                 </li>
-                <li>{{$routeParams.category}}</li>
+                <li ng-show="$routeParams.category">{{$routeParams.category}}</li>
             </ol>
-            <h1>
+            <h1 ng-cloak ng-show="$route.current.locals.pd.title">
                 {{$route.current.locals.pd.title}}
             </h1>
         </section>
@@ -23,6 +23,14 @@
     </div><!-- /.content-wrapper -->
 
 </div><!-- ./wrapper -->
+
+<script type="text/ng-template" id="/cm-admin-html.tpl">
+    <ul  >
+        <li><a href="#/categories">Manage Categories</a></li>
+        <li><a href="#/widgets">Manage Widgets</a></li>
+        <li><a href="#/tabs">Manage Tabs</a></li>
+    </ul>
+</script>
 
 <% include ../jsfooter %>
 <script src="/angular/courseMapperAdmin.js"></script>

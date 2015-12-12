@@ -10,6 +10,13 @@
             </i>
         </span>
 
+        <div class="collapse-button" ng-show="data.type == 'subTopic'">
+            <a class="pointer" ng-click="collapse('t' + data._id )">
+                <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
+                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id]"></i>
+            </a>
+        </div>
+
         <a ng-show="data.type == 'contentNode' && !data.isDeleted"
            ng-href="{{getContentNodeLink(data)}}"> {{data.name}} </a>
 
@@ -150,14 +157,26 @@
                 top: top + "px"
             });
         };
+
+        self.getNewPosition = function (w, h) {
+            var left = w / 2 + ((self.fromCenter.x - self.w / 2)  );
+            var top = h / 2 + ((self.fromCenter.y - self.h / 2)  );
+
+            return {x: left, y: top}
+        }
     }
 
     var Tree = {
         center: null,
         leaves: {},
+        w: null,
+        h: null,
 
         init: function (w, h) {
             var self = this;
+            self.w = w;
+            self.h = h;
+
             self.center = new Leave($('.center-course'), {x: 0, y: 0});
             self.center.init(w, h);
 
@@ -177,6 +196,9 @@
         onWindowResize: function (w, h) {
             var self = this;
 
+            self.w = w;
+            self.h = h;
+
             self.center.onWindowResize(w, h);
             for (var i in self.leaves) {
                 var el = self.leaves[i];
@@ -188,8 +210,8 @@
     var Canvas = {
         el: null,
         draggable: null,
-        w: 2000,
-        h: 2000,
+        w: 4000,
+        h: 4000,
         centerCss: {},
 
         init: function (wWidth, wHeight) {

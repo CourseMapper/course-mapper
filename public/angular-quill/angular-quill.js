@@ -26,19 +26,18 @@
                     hideAnnZoneButton: '='
                 },
 
-                templateUrl:
-                    function(elem,attrs){
-                        var tmplt = currentScriptPath.replace('.js', '.html');
-                        if(attrs['type']){
-                          tmplt = tmplt.replace('.html', '-' + attrs['type'] + '.html');
-                        }
+                templateUrl: function (elem, attrs) {
+                    var tmplt = currentScriptPath.replace('.js', '.html');
+                    if (attrs['type']) {
+                        tmplt = tmplt.replace('.html', '-' + attrs['type'] + '.html');
+                    }
 
-                        return tmplt;
-                    },
+                    return tmplt;
+                },
 
                 link: function (scope, element, attrs, ngModel) {
                     var inputId = '';
-                    if(attrs.id) inputId = '#' + attrs.id;
+                    if (attrs.id) inputId = '#' + attrs.id;
 
                     var updateModel = function updateModel(value) {
                         scope.$apply(function () {
@@ -49,8 +48,8 @@
                     var options = {
                         modules: {
                             'toolbar': {container: inputId + ' .toolbar'},
-                            'image-tooltip': false,
-                            'link-tooltip': false
+                            'image-tooltip': true,
+                            'link-tooltip': true
                         },
                         theme: 'snow'
                     };
@@ -65,11 +64,23 @@
                         scope.editor = new Quill(element.children()[1], options);
                         scope.editor.quillId = inputId;
 
-                        $(inputId + ' .editor').click(function(){
-                            if(scope.editor.getLength() > 0){
+                        $(inputId + ' .editor').click(function () {
+                            var isToolTipOpened = false;
+                            $('.ql-tooltip').each(function () {
+                                var toolTipPos = $(this).position();
+                                if (typeof(toolTipPos.left) != 'undefined' && toolTipPos.left >= 0) {
+                                    isToolTipOpened = true;
+                                    return;
+                                }
+                            });
+
+                            if (isToolTipOpened)
+                                return;
+
+                            if (scope.editor.getLength() > 0) {
                                 var range = scope.editor.getSelection();
-                                if(!range){
-                                    scope.editor.setSelection(scope.editor.getLength() - 1, scope.editor.getLength() );
+                                if (!range) {
+                                    scope.editor.setSelection(scope.editor.getLength() - 1, scope.editor.getLength());
                                 }
                             }
                             else {

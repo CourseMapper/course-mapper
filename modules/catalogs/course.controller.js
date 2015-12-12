@@ -13,6 +13,7 @@ var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 function catalog() {
 }
@@ -127,6 +128,7 @@ catalog.prototype.enroll = function (error, userParam, courseParam, done, isEnro
             error(err)
         } else {
             done(doc);
+            Plugin.doAction('onAfterEnrollorLeaveCourse', doc);
         }
     });
 };
@@ -194,6 +196,7 @@ catalog.prototype.addCourse = function (error, params, success) {
                     }
 
                     success(crs);
+                    Plugin.doAction('onAfterCourseCreated', crs);
                 }
             );
         }
@@ -301,6 +304,7 @@ catalog.prototype.editCourse = function (error, params, files, success) {
         }
 
         success(course);
+        Plugin.doAction('onAfterCourseEdited', course);
     }
 
     self.getCourse(error,
@@ -373,9 +377,13 @@ catalog.prototype.saveSettings = function (params) {
             updt.tabsActive = params.tabsActive;
         }
 
-        return await(course.update({
+        var retQ = await(course.update({
             $set: updt
         }).exec());
+
+        Plugin.doAction('onAfterCourseSettingSaved', course);
+
+        return retQ;
 
     } else {
         return false;

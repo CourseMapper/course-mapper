@@ -242,8 +242,8 @@
             var mapEl = jsPlumb.getSelector(".category-map .w");
             jsPlumbInstance.draggable(mapEl,{
                 // update position on drag stop
-                stop: function() {
-                    var el = $(this);
+                stop: function(params) {
+                    var el = $(params.el);
                     var pos = el.position();
                     var distanceFromCenter = {
                         x: pos.left - Canvas.w/2,

@@ -11,7 +11,6 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
     $scope.isAdmin = false;
 
     $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
     $scope.currentTab = "preview";
     $scope.tabDisplayName = "preview";
@@ -115,7 +114,7 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         $scope.isEnrolled = courseService.isEnrolled();
         $scope.isManager = courseService.isManager(authService.user);
         $scope.isAdmin = authService.isAdmin();
-        if(authService.user)
+        if (authService.user)
             $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
         else
             $scope.isOwner = false;

@@ -1,7 +1,7 @@
 <!-- Main content -->
 <section class="content">
     <div class="row row-centered">
-        <div class="col-xs-12 col-md-5 col-centered">
+        <div class="col-xs-12 col-md-7 col-centered">
             <div class="box no-border" ng-controller="CourseEditController" ng-init="init()">
                 <div class="box-header with-border">
                     <h3 class="box-title">Editing a course: {{courseEdit.name}}</h3>
@@ -42,7 +42,7 @@
 
                                     <div id="description" name="description"
                                          ng-model="courseEdit.description"
-                                         quill>
+                                         quill type="complete">
                                     </div>
 
                                     <p ng-show="editCourseForm.description.$invalid && !editCourseForm.$pristine"
@@ -78,11 +78,13 @@
                                         </p>
 
                                         <div class="btn btn-sm btn-default"
-                                             ngf-select accept="image/*" ngf-accept="'image/jpg,image/jpeg,image/png'"
+                                             ngf-select accept="image/*"
                                              ng-model="filespicture" ngf-multiple="false" ngf-max-size='1000000'><i
                                                     class="ionicons ion-image"></i> &nbsp; Select a picture
                                         </div>
-                                        &nbsp; <span ng-repeat="f in filespicture">{{f.name}}</span>
+                                        <div class="label label-info" ng-show="filespicture"><br>
+                                            &nbsp; <span>{{filespicture.name}}</span>
+                                        </div>
 
                                         <div ng-show="courseEdit.picture">
                                             <p class="help-block" ng-show="courseEdit.picture">or delete the picture</p>
@@ -107,11 +109,13 @@
                                         </p>
 
                                         <div class="btn btn-sm btn-default"
-                                             ngf-select accept="video/*" ngf-accept="'video/*'"
+                                             ngf-select accept="video/mp4,video/x-m4v,video/*"
                                              ng-model="filesvideo" ngf-multiple="false" ngf-max-size='100000000'><i
                                                     class="`"></i> &nbsp; Select a video file
                                         </div>
-                                        &nbsp; <span ng-repeat="f in filesvideo">{{f.name}}</span>
+                                        <div class="label label-info" ng-show="filesvideo"><br>
+                                            <span>{{filesvideo.name}}</span>
+                                        </div>
 
                                         <div ng-show="courseEdit.video">
                                             <p class="help-block" ng-show="courseEdit.video">or delete the video</p>

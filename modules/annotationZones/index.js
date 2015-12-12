@@ -7,6 +7,8 @@ var async = require('asyncawait/async');
 var foreach = require('async-foreach').forEach;
 var await = require('asyncawait/await');
 var validator = require('validator');
+var appRoot = require('app-root-path');
+var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
 
 
 
@@ -29,6 +31,8 @@ AnnZones.prototype.submitAnnotationZone = function(err, params, done){
           // call success callback
 
           done(annotationZonePDF);
+
+          Plugin.doAction('onAfterAnnotationZonePdfCreated', annotationZonePDF);
       }
   });
 };
@@ -65,7 +69,7 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,isAdmin,done) {
                             err('Server Error: Unable to update annotation zone');
                         } else {
                             upAllRefs(oldName, newName, pdfId,err,function(){done();});
-
+                            Plugin.doAction('onAfterAnnotationZonePdfEdited', updatedAnnotationZonePDF);
                         }
                     });
                   }
