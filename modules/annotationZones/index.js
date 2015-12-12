@@ -333,8 +333,9 @@ var permArray;
 
 AnnZones.prototype.submitTagObjectList = function(err,tags, pdfId, callback){
   this.getAnnotationZonesById(pdfId, function(completed,data){
-    if(!completed)
+    if(!completed){
       return callback(false);
+    }
     else {
       var oldTagList = data;
       var currentIndex = 0;
@@ -345,8 +346,9 @@ AnnZones.prototype.submitTagObjectList = function(err,tags, pdfId, callback){
 
 function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
   var currentTag = JSON.parse(tags[currentIndex]);
-  if(!validateTagObject(currentTag,oldTagList,false))
+  if(!validateTagObject(currentTag,oldTagList,false)){
     callback(false);
+  }
   else {
     /*var annotationZonePDF = new AnnotationZonesPDF({
       annotationZoneName: currentTag.annotationZoneName,
@@ -392,7 +394,8 @@ function validateTagObject(currentTag,oldTagList,simple) {
   ret &= validator.isAlphanumeric(currentTag.annotationZoneName.substring(1));
   ret &= nameIsAvailable(currentTag.annotationZoneName,oldTagList);
 
-  ret &= validator.isHexadecimal(currentTag.color);
+  ret &= (currentTag.color[0] == '#');
+  ret &= validator.isHexadecimal(currentTag.color.substring(1));
 
   if(!simple) {
     ret &= validator.isFloat(currentTag.relativeCoordinates.X);

@@ -55,6 +55,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         //todo: {id: 'relevance', name: 'Relevance'}
     ];
 
+    /*
     $scope.populateAnnotationZone = function () {
         $scope.annotationZones = [];
 
@@ -102,27 +103,31 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         //console.log("got here");
         return true;
     };
-
-    /*TODO:ANGANNZONE
+    */
     $scope.populateAnnotationZone = function () {
         $scope.annotationZones = [];
+
 
         var tagNamesList = $rootScope.getTagNamesList();
         var annotationZoneList = $rootScope.getAnnotationZoneList();
         for(var inputId in tagNamesList) {
-          var relPosX = annotationZoneList[inputId].relativePosition.x;
-          var relPosY = annotationZoneList[inputId].relativePosition.y;
-          var relWidth = annotationZoneList[inputId].relativeSize.x;
-          var relHeight = annotationZoneList[inputId].relativeSize.y;
+          if(annotationZoneList[inputId].isBeingCreated == true){
+            var relPosX = annotationZoneList[inputId].relativePosition.x;
+            var relPosY = annotationZoneList[inputId].relativePosition.y;
+            var relWidth = annotationZoneList[inputId].relativeSize.x;
+            var relHeight = annotationZoneList[inputId].relativeSize.y;
 
-          var name = annotationZoneList[inputId].name;
-          var color = annotationZoneList[inputId].color;
+            var name = annotationZoneList[inputId].tagName;
+            var color = annotationZoneList[inputId].color;
 
-          if($rootScope.checkTagName(name) != "") {
-              return false;
-          }
-          else {
-              $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, $scope.currentPageNumber );
+            var errorText = $rootScope.checkTagName(name);
+
+            if(errorText != "") {
+                return errorText;
+            }
+            else {
+                $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, $scope.currentPageNumber );
+            }
           }
         }
 
@@ -131,9 +136,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
         $scope.comment.tagColor = $scope.tagColor.join(',');
 
-        return true;
+        return "";
     };
-    */
+
 
     $scope.addAnnotationZoneData = function (name, relPosX, relPosY, relWidth, relHeight, color, pdfId, pdfPageNumber) {
         $scope.tagNames.push(name);
@@ -267,8 +272,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.submitComment = function (resultVarName) {
         var annZoneCheckResult = $scope.populateAnnotationZone();
-        if(!annZoneCheckResult) {
-          displayCommentSubmissionResponse("Client Error: Some of the attached annotation zones are invalid");
+        if(annZoneCheckResult != "") {
+          displayCommentSubmissionResponse("Client Error: Some of the attached annotation zones are invalid: "+annZoneCheckResult);
           return false;
         }
 
