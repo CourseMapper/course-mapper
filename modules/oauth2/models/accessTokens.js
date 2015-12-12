@@ -4,7 +4,11 @@ var mongoose = require('mongoose');
 var TokenSchema = new mongoose.Schema({
     token: {type: String, required: true},
     clientId: {type: String, required: true},
-    userId: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'users'}
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'users'
+    }
 });
 
 // Export the Mongoose model

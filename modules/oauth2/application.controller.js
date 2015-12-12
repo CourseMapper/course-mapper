@@ -56,9 +56,23 @@ ApplicationOauth.prototype.getInstalledApps = async(function (params) {
         return;
     }
 
-    var apps = await(Token.find(params).exec());
+    var apps = await(
+        Token.find(params)
+            .select('-token -__v')
+            .exec());
 
-    return apps;
+    var rets = [];
+
+    for (var i in apps) {
+        var a = apps[i].toObject();
+        a.app = await(Client.findOne({
+            clientId: a.clientId
+        }));
+
+        rets.push(a)
+    }
+
+    return rets;
 });
 
 /**

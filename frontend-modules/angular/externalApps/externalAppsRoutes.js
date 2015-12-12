@@ -17,7 +17,7 @@ externalApp.config(['$routeProvider', '$locationProvider',
 
         when('/installed', {
             templateUrl: '/settings/apps/installed',
-            controller: 'CreatedAppsController',
+            controller: 'InstalledAppsController',
             reloadOnSearch: false
         }).
 

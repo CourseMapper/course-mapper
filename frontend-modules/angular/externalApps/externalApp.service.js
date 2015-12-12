@@ -32,12 +32,10 @@ externalApp.factory('externalAppService', [
             getInstalledApps: function (success, error, force) {
                 var self = this;
 
-
                 if (!force && self.installedApps) {
                     if (success)
                         success(self.installedApps);
                 }
-
                 else if (force || !self.installedApps)
                     $http.get('/api/oauth2/apps/installed')
                         .success(function (data) {
