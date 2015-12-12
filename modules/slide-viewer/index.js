@@ -329,7 +329,7 @@ Comment.prototype.convertRawText = function(rawText,callback){
         if(comm.checkTagName(x,tagNameList) != -1){
           //console.log("Checked tag with name: "+x);
 
-          var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[comm.checkTagName(x,tagNameList)] + "'>" + x + "</label>";
+          var ret = "<label class='annotationZoneReference' style='color: " + tagColorList[comm.checkTagName(x,tagNameList)] + "'>" + x + "</label>";
           return ret;
         }
         else {

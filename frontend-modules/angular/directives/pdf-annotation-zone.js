@@ -35,7 +35,6 @@ app.directive('pdfAnnotationZone',
 
 
 
-              console.log("Got called");
 
 /*              $scope.$watch('currCanWidth', function(newVal, oldVal){
                 console.log("HERE");
@@ -108,22 +107,15 @@ app.directive('pdfAnnotationZone',
               });
 
 
-              //console.log($scope.relativePosition);
               $scope.canMove = $scope.dragable;
-              //$scope.switchShowAnnoZones = 'On';
               $scope.annZoneID = $scope.listId;
-              //$scope.annZoneId = "";
               $scope.opacityFactorHighlight = "0.75";
               $scope.tagName = $scope.tagName.slice(1);
-              //$scope.color ="#444444";
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
-              $scope.colorPickerId ="1";
-
-              //$scope.divCounter = "1";
 
 
 
-              //$scope.setEditZoneMode = function(a,b,c){;};
+
 
               $timeout(function(){
                 $scope.$apply();
@@ -131,9 +123,7 @@ app.directive('pdfAnnotationZone',
 
 
               $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
-              //console.log("TESTTTTTTTTTTTT______"+"#colorPickerSingleSelector-"+$scope.divCounter);
 
-              //$().simplecolorpicker("selectColor",$scope.color);
               $('#destroy').on('click', function() {
 
                 $('select').simplecolorpicker('destroy');
@@ -142,11 +132,6 @@ app.directive('pdfAnnotationZone',
               $('#init').trigger('click');
 
 
-              $scope.positionStyle = {  'top' : $scope.relativePositionX*$scope.localCanWidth+"px",
-                                        'left' : $scope.relativePositionY*$scope.localCanWidth+'px',
-                                        'width': $scope.relativeSizeX*$scope.localCanWidth+'px',
-                                        'height':$scope.relativeSizeY*$scope.localCanHeight+'px'
-                                      };
 
             }
         };
