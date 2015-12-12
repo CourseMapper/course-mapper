@@ -3,10 +3,74 @@ var NewsfeedAgg = require('./models/newsfeed.model.js');
 var Votes = require('../../votes/models/votes.js');
 var SubTopics = require('../../trees/treeNodes.js');
 var Post = require('../../discussion/models/posts.js');
+var Courses = require('../../catalogs/courses.js');
 
 var NewsfeedListener = {
 
+    //Listener for Courses
+    onAfterCourseCreated: function (newCourse) {
+        Courses.findOne({_id: newCourse._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc._id;
+                    if (courseId) {
+                        var nf = new NewsfeedAgg(
+                            {
+                                userId: doc.createdBy,
+                                actionSubjectIds: doc.id,
+                                actionSubject: "course",
+                                actionName : doc.name,
+                                courseId: courseId,
+                                actionType: "created",
+                                dateAdded: doc.dateAdded
+                            }
+                        );
+                        nf.save(
+                            function (err, doc) {
+                                if (!err) debug('');
+                                else
+                                    debug(err);
+                            }
+                        );
+                    }
 
+                }
+            });
+
+    },
+
+    onAfterCourseEdited: function (editCourse) {
+        Courses.findOne({_id: editCourse._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc._id;
+                    if (courseId) {
+                        var nf = new NewsfeedAgg(
+                            {
+                                userId: doc.createdBy,
+                                actionSubjectIds: doc.id,
+                                actionSubject: "course",
+                                actionName : doc.name,
+                                courseId: courseId,
+                                actionType: "edited",
+                                dateAdded: doc.dateUpdated
+                            }
+                        );
+                        nf.save(
+                            function (err, doc) {
+                                if (!err) debug('');
+                                else
+                                    debug(err);
+                            }
+                        );
+                    }
+
+                }
+            });
+
+    },
+
+    //Listener for Votes
     onAfterVoted: function (newVote) {
         Votes.findOne({_id: newVote._id})
             .exec(function (err, doc) {
@@ -77,6 +141,7 @@ var NewsfeedListener = {
 
     },
 
+    //Listener for Treenodes - Subtopics
     onAfterSubTopicCreated: function (newSubTopic) {
         SubTopics.findOne({_id: newSubTopic._id})
             .exec(function (err, doc) {
@@ -91,7 +156,7 @@ var NewsfeedListener = {
                                 actionName : doc.name,
                                 courseId: courseId,
                                 actionType: "created",
-                                dateAdded: doc.dateUpdated
+                                dateAdded: doc.dateAdded
                             }
                         );
                         nf.save(
@@ -139,6 +204,7 @@ var NewsfeedListener = {
 
     },
 
+    //Listener for Treenodes - Content Node
     onAfterContentNodeCreated: function (newContentNode) {
         SubTopics.findOne({_id: newContentNode._id})
             .exec(function (err, doc) {
@@ -153,7 +219,7 @@ var NewsfeedListener = {
                                 actionName: doc.name,
                                 courseId: courseId,
                                 actionType: "created",
-                                dateAdded: doc.dateUpdated
+                                dateAdded: doc.dateAdded
                             }
                         );
                         nf.save(
@@ -199,7 +265,72 @@ var NewsfeedListener = {
                 }
             });
 
+    },
+
+    //Listener for Treenodes - Node (whats different with subtopics?)
+    onAfterNodeEdited: function (editNode) {
+        SubTopics.findOne({_id: editNode._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc.courseId;
+                    if (courseId) {
+                        var nf = new NewsfeedAgg(
+                            {
+                                userId: doc.createdBy,
+                                actionSubjectIds: doc.id,
+                                actionSubject: "node",
+                                actionName: doc.name,
+                                courseId: courseId,
+                                actionType: "edited",
+                                dateAdded: doc.dateUpdated
+                            }
+                        );
+                        nf.save(
+                            function (err, doc) {
+                                if (!err) debug('');
+                                else
+                                    debug(err);
+                            }
+                        );
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterNodeDeleted: function (deleteNode) {
+        SubTopics.findOne({_id: deleteNode._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc.courseId;
+                    if (courseId) {
+                        var nf = new NewsfeedAgg(
+                            {
+                                userId: doc.createdBy,
+                                actionSubjectIds: doc.id,
+                                actionSubject: "node",
+                                actionName: doc.name,
+                                courseId: courseId,
+                                actionType: "deleted",
+                                dateAdded: doc.dateUpdated
+                            }
+                        );
+                        nf.save(
+                            function (err, doc) {
+                                if (!err) debug('');
+                                else
+                                    debug(err);
+                            }
+                        );
+                    }
+
+                }
+            });
+
     }
+
+
 
 
 };
