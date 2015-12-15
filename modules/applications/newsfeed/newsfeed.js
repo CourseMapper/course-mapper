@@ -8,6 +8,7 @@ var PdfAnnotation = require('../../slide-viewer/annotation.js');
 var PdfAnnotationZone = require('../../annotationZones/annotationZones.js');
 var VideoAnnotation = require('../../annotations/models/video-annotation.js');
 var Resources = require('../../trees/resources.js');
+var Links = require('../../links/models/links.js');
 
 var NewsfeedListener = {
 
@@ -660,6 +661,124 @@ var NewsfeedListener = {
                     }
                 }
             });
+    },
+
+    //Listener for Link
+    onAfterLinkCreated: function (newLink) {
+        Links.findOne({_id: newLink._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentNode;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var courseId = result.courseId;
+                                    if (courseId) {
+                                        var nf = new NewsfeedAgg(
+                                            {
+                                                userId: doc.createdBy,
+                                                actionSubjectIds: doc.contentNode,
+                                                actionSubject: "link",
+                                                actionName : doc.title,
+                                                courseId:  courseId,
+                                                actionType: "added",
+                                                dateAdded: doc.dateAdded
+                                            }
+                                        );
+                                        nf.save(
+                                            function (err, doc) {
+                                                if (!err) debug('');
+                                                else
+                                                    debug(err);
+                                            }
+                                        );
+                                    }
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterLinkEdited: function (editLink) {
+        Links.findOne({_id: editLink._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentNode;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var courseId = result.courseId;
+                                    if (courseId) {
+                                        var nf = new NewsfeedAgg(
+                                            {
+                                                userId: doc.createdBy,
+                                                actionSubjectIds: doc.contentNode,
+                                                actionSubject: "link",
+                                                actionName : doc.title,
+                                                courseId:  courseId,
+                                                actionType: "edited",
+                                                dateAdded: doc.dateUpdated
+                                            }
+                                        );
+                                        nf.save(
+                                            function (err, doc) {
+                                                if (!err) debug('');
+                                                else
+                                                    debug(err);
+                                            }
+                                        );
+                                    }
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterLinkDeleted: function (deleteLink) {
+        Links.findOne({_id: deleteLink._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentNode;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var courseId = result.courseId;
+                                    if (courseId) {
+                                        var nf = new NewsfeedAgg(
+                                            {
+                                                userId: doc.createdBy,
+                                                actionSubjectIds: doc.contentNode,
+                                                actionSubject: "link",
+                                                actionName : doc.title,
+                                                courseId:  courseId,
+                                                actionType: "deleted",
+                                                dateAdded: doc.dateUpdated
+                                            }
+                                        );
+                                        nf.save(
+                                            function (err, doc) {
+                                                if (!err) debug('');
+                                                else
+                                                    debug(err);
+                                            }
+                                        );
+                                    }
+                                }
+                            })
+                    }
+
+                }
+            });
+
     }
 
 };
