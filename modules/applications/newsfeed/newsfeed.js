@@ -487,12 +487,178 @@ var NewsfeedListener = {
             });
     },
 
+    onAfterAnnotationZonePdfEdited: function (editPdfAnnotationZone) {
+        PdfAnnotationZone.findOne({_id: editPdfAnnotationZone._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var pdfId = doc.pdfId;
+                    if (pdfId) {
+                        Resources.findOne({_id: pdfId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId){
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var dateNow = Date.now();
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorID,
+                                                            actionSubjectIds: pdfId,
+                                                            actionSubject: "pdf annotation zone",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            actionType: "edited",
+                                                            dateAdded: dateNow
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+
+                                            })
+
+
+
+                                    }
+
+                                }
+                            })
+                    }
+                }
+            });
+    },
+
+    //Listener for Video
     onAfterVideoAnnotationCreated: function (newVideoAnnotation) {
         VideoAnnotation.findOne({_id:newVideoAnnotation})
             .exec(function(err, doc){
                 if (doc) {
-                   console.log(doc);
+                var videoId = doc.video_id;
+                if (videoId) {
+                    Resources.findOne({_id:videoId})
+                        .exec(function(err, result){
+                            if (result) {
+                                var treeNodeId = result.treeNodeId;
+                                if (treeNodeId) {
+                                    SubTopics.findOne({_id:treeNodeId})
+                                        .exec(function(err, res){
+                                            if (res) {
+                                                var nf = new NewsfeedAgg(
+                                                    {
+                                                        userId: doc.authorID, //still wrong, author based on authorName, not authorId
+                                                        actionSubjectIds: videoId,
+                                                        actionSubject: "video annotation",
+                                                        actionName: res.name,
+                                                        courseId: result.courseId,
+                                                        actionType: "added",
+                                                        dateAdded: doc.date_created
+                                                    }
+                                                );
+                                                nf.save(
+                                                    function (err, doc) {
+                                                        if (!err) debug('');
+                                                        else
+                                                            debug(err);
+                                                    }
+                                                );
+                                            }
+                                        })
+                                }
+                            }
+                        })
+                }
                }
+            });
+    },
+
+    onAfterVideoAnnotationEdited: function (editVideoAnnotation) {
+        VideoAnnotation.findOne({_id:editVideoAnnotation})
+            .exec(function(err, doc){
+                if (doc) {
+                    var videoId = doc.video_id;
+                    if (videoId) {
+                        Resources.findOne({_id:videoId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId) {
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorID, //still wrong, author based on authorName, not authorId
+                                                            actionSubjectIds: videoId,
+                                                            actionSubject: "video annotation",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            actionType: "edited",
+                                                            dateAdded: doc.date_modified
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+                                            })
+                                    }
+                                }
+                            })
+                    }
+                }
+            });
+    },
+
+    onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation) {
+        VideoAnnotation.findOne({_id:deleteVideoAnnotation})
+            .exec(function(err, doc){
+                if (doc) {
+                    var videoId = doc.video_id;
+                    if (videoId) {
+                        Resources.findOne({_id:videoId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId) {
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorID, //still wrong, author based on authorName, not authorId
+                                                            actionSubjectIds: videoId,
+                                                            actionSubject: "video annotation",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            actionType: "deleted",
+                                                            dateAdded: doc.date_modified
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+                                            })
+                                    }
+                                }
+                            })
+                    }
+                }
             });
     }
 
