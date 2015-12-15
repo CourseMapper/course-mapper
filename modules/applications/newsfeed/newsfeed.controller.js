@@ -11,17 +11,15 @@ function newsfeedSystem(){
 }
 
 newsfeedSystem.prototype.getNewsfeed = function (error,courseId, success) {
-    Newsfeed.find({
-        courseId: courseId
-    })
-        .populate('userId', 'username displayName')
-        .exec(function(err, docs) {
-            if (err){
-                error(err);
-            } else {
-                success(docs);
-            }
-        });
+    Newsfeed.find({courseId: courseId})
+            .populate('userId', 'username displayName')
+            .exec(function(err, docs) {
+                if (err){
+                    error(err);
+                } else {
+                    success(docs);
+                }
+            });
 };
 
 module.exports = newsfeedSystem;
