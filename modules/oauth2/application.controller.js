@@ -38,6 +38,12 @@ ApplicationOauth.prototype.deleteApp = async(function (where) {
     return false;
 });
 
+ApplicationOauth.prototype.deleteInstalledApp = async(function (where) {
+    var ret = await(Token.findOneAndRemove(where).exec());
+    var ret2 = await(Secrets.findOneAndRemove({userId: where.userId, clientId: ret.clientId}).exec());
+    return (ret && ret2);
+});
+
 ApplicationOauth.prototype.getCreatedApps = async(function (params) {
     if (!helper.checkRequiredParams(params, ['userId'], function (err) {
             throw new Error(err);

@@ -111,7 +111,7 @@ router.post('/apps', helper.ensureAuthenticated, function (req, res, next) {
 });
 
 // Create endpoint handlers for oauth2 token
-router.post('/token', helper.ensureAuthenticated, oauth2Controller.token);
+router.post('/token', oauth2Controller.isClientAuthenticated, oauth2Controller.token);
 
 router.put('/app/:appId', helper.ensureAuthenticated, function (req, res, next) {
     if (!req.user)
@@ -170,6 +170,35 @@ router.delete('/app/:appId', helper.ensureAuthenticated, function (req, res, nex
     op(where).then(function (app) {
             res.status(200).json({
                 result: true, app: app
+            });
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
+});
+
+router.delete('/installedApp/:installId', helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    var where = {
+        _id: req.params.installId,
+        userId: req.user._id
+    };
+
+    if (!helper.checkRequiredParams(where, ['_id', 'userId'], function (err) {
+            helper.resReturn(err, res);
+        })) return;
+
+    var op = async(
+        function () {
+            var oa = new appController();
+            return await(oa.deleteInstalledApp(where));
+        });
+
+    op(where).then(function (ret) {
+            res.status(200).json({
+                result: true
             });
         })
         .catch(function (err) {

@@ -3497,7 +3497,6 @@ app.directive('timepicker', function($timeout) {
 
         $scope.isLoadingDelete = true;
 
-
         $http({
             method: 'DELETE',
             url: '/api/oauth2/app/' + $scope.app._id,
@@ -3525,8 +3524,9 @@ app.directive('timepicker', function($timeout) {
     }
 });
 ;externalApp.controller('CreatedAppsController', function ($scope, $rootScope, $http, $location, $sce,
-                                                     $compile, $timeout,
-                                                     toastr, Page, $window) {
+                                                          $compile, $timeout,
+                                                          toastr, Page, $window) {
+
 });;externalApp.factory('externalAppService', [
     '$rootScope', '$http',
 
@@ -3561,12 +3561,10 @@ app.directive('timepicker', function($timeout) {
             getInstalledApps: function (success, error, force) {
                 var self = this;
 
-
                 if (!force && self.installedApps) {
                     if (success)
                         success(self.installedApps);
                 }
-
                 else if (force || !self.installedApps)
                     $http.get('/api/oauth2/apps/installed')
                         .success(function (data) {
@@ -3588,6 +3586,19 @@ app.directive('timepicker', function($timeout) {
                         if (data.result && data.app) {
                             if (success)
                                 success(data.app);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
+            deleteInstallation: function (installId, success, error) {
+                $http.delete('/api/oauth2/installedApp/' + installId)
+                    .success(function (data) {
+                        if (data.result) {
+                            success(data);
                         }
                     })
                     .error(function (data) {
@@ -3641,7 +3652,7 @@ app.directive('timepicker', function($timeout) {
 
         when('/installed', {
             templateUrl: '/settings/apps/installed',
-            controller: 'CreatedAppsController',
+            controller: 'InstalledAppsController',
             reloadOnSearch: false
         }).
 
@@ -3662,7 +3673,24 @@ app.directive('timepicker', function($timeout) {
         });
 
     }]);
-;app.factory('authService', [
+;externalApp.controller('InstalledAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                            $compile, $timeout,
+                                                            toastr, externalAppService) {
+
+    $scope.deleteInstallation = function (installId) {
+        if (confirm('This application will not have access to your data anymore.')) {
+            externalAppService.deleteInstallation(installId,
+                function () {
+                    toastr.success('Application deleted.');
+                    var deleted = _.remove($scope.$parent.installedApps, {_id: installId});
+                },
+                function () {
+                    toastr.error('Delete failed.');
+                }
+            );
+        }
+    }
+});;app.factory('authService', [
     '$rootScope', '$http',
 
     function ($rootScope, $http) {

@@ -53,7 +53,6 @@ externalApp.controller('CreatedAppController', function ($scope, $rootScope, $ht
 
         $scope.isLoadingDelete = true;
 
-
         $http({
             method: 'DELETE',
             url: '/api/oauth2/app/' + $scope.app._id,

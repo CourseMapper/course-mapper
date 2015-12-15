@@ -15,6 +15,7 @@ var appRoot = require('app-root-path');
 var User = require(appRoot + '/modules/accounts/users.js');
 var BearerStrategy = require('passport-http-bearer').Strategy;
 var Token = require(appRoot + '/modules/oauth2/models/accessTokens.js');
+var Client = require(appRoot + '/modules/oauth2/models/oauthClients.js');
 
 var flash = require('flash');
 var debug = require('debug')('cm:server');
@@ -213,6 +214,24 @@ function session(app, db, io) {
 
         done(null, sessionUser);
     });
+
+    passport.use('client-basic', new BasicStrategy(
+        function (username, password, callback) {
+            Client.findOne({clientId: username}, function (err, client) {
+                if (err) {
+                    return callback(err);
+                }
+
+                // No client found with that id or bad password
+                if (!client || client.clientSecret !== password) {
+                    return callback(null, false);
+                }
+
+                // Success
+                return callback(null, client);
+            });
+        }
+    ));
 
     passport.deserializeUser(function (sessionUser, done) {
         done(null, sessionUser);

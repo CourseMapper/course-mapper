@@ -63,6 +63,19 @@ externalApp.factory('externalAppService', [
                         if (error)
                             error(data.errors);
                     });
+            },
+
+            deleteInstallation: function (installId, success, error) {
+                $http.delete('/api/oauth2/installedApp/' + installId)
+                    .success(function (data) {
+                        if (data.result) {
+                            success(data);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
             }
         }
     }

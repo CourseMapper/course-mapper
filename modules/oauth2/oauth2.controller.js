@@ -3,6 +3,9 @@ var oauth2orize = require('oauth2orize');
 var Client = require('./models/oauthClients.js');
 var Token = require('./models/accessTokens.js');
 var Secrets = require('./models/oauthSecrets.js');
+var mongoose = require('mongoose');
+
+var passport = require('passport');
 
 var config = require('config');
 
@@ -43,7 +46,7 @@ server.grant(oauth2orize.grant.code(function (client, redirectUri, user, ares, c
         oauthSecret: uid(16),
         clientId: client.clientId,
         redirectUri: redirectUri,
-        userId: user._id
+        userId: mongoose.Types.ObjectId(user._id)
     });
 
     // Save the auth code and check for errors
@@ -64,9 +67,11 @@ server.exchange(oauth2orize.exchange.code(function (user, code, redirectUri, cal
         if (authCode === undefined) {
             return callback(null, false);
         }
-        if (user._id.toString() !== authCode.userId.toString()) {
+
+        if (user.clientId != authCode.clientId) {
             return callback(null, false);
         }
+
         if (redirectUri !== authCode.redirectUri) {
             return callback(null, false);
         }
@@ -115,6 +120,8 @@ exports.authorization = [
         });
     }
 ];
+
+exports.isClientAuthenticated = passport.authenticate('client-basic', {session: false});
 
 exports.decision = [
     server.decision()
