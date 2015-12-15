@@ -75,13 +75,11 @@ app.factory('authService', [
                     .success(
                         function success(data) {
                             if (data.result) {
-                                /*$rootScope.user = data.user;
-                                 self.user = data.user;
-                                 self.isLoggedIn = true;
-                                 $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
-                                 successCallback($rootScope.user);*/
-
-                                window.location.reload();
+                                $rootScope.user = data.user;
+                                self.user = data.user;
+                                self.isLoggedIn = true;
+                                $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+                                successCallback($rootScope.user);
                             }
                         })
                     .error(

@@ -3767,13 +3767,11 @@ app.directive('timepicker', function($timeout) {
                     .success(
                         function success(data) {
                             if (data.result) {
-                                /*$rootScope.user = data.user;
-                                 self.user = data.user;
-                                 self.isLoggedIn = true;
-                                 $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
-                                 successCallback($rootScope.user);*/
-
-                                window.location.reload();
+                                $rootScope.user = data.user;
+                                self.user = data.user;
+                                self.isLoggedIn = true;
+                                $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+                                successCallback($rootScope.user);
                             }
                         })
                     .error(
@@ -6194,7 +6192,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     };
 
 });
-;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
+;app.controller('LoginPageController', function ($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -6202,45 +6200,46 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.referer = false;
     $scope.isLoading = false;
 
-    authService.loginCheck(function(user){
+    authService.loginCheck(function (user) {
         $scope.user = user;
-        if($scope.user){
+        if ($scope.user) {
             window.location = '/accounts';
         }
     });
 
-    if($cookies.rememberMe) {
+    if ($cookies.rememberMe) {
         $scope.rememberMe = $cookies.rememberMe;
     }
 
-    $scope.$watch('rememberMe', function(newVal, oldVal){
-        if(newVal !== oldVal){
+    $scope.$watch('rememberMe', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
 
-    $scope.noticeAfterSignUp = function(){
+    $scope.noticeAfterSignUp = function () {
         var k = $location.search();
-        if(k.referer && k.referer == 'signUp' && k.result && k.result == 'success'){
+        if (k.referer && k.referer == 'signUp' && k.result && k.result == 'success') {
             toastr.success('Please login using your new username and password!', 'Sign Up Success');
         }
     };
 
     $scope.noticeAfterSignUp();
 
-    $scope.login = function(isValid){
-        if(isValid){
+    $scope.login = function (isValid) {
+        if (isValid) {
             $scope.isLoading = true;
             authService.login($scope.loginData,
-                function(user){
+                function (user) {
                     $scope.user = user;
-                    if(!$scope.referer) {
+                    if (!$scope.referer) {
                         window.location = '/accounts';
                     }
+
                     $scope.isLoading = false;
                 },
                 function error(data) {
-                    if(data.errors){
+                    if (data.errors) {
                         $scope.errors = data.errors;
                     }
                     $scope.isLoading = false;
@@ -6252,7 +6251,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 });;app.controller('MainController', function($scope, Page) {
     $scope.Page = Page;
 });
-;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService, toastr) {
+;app.controller('MainMenuController', function ($scope, $http, $rootScope, $cookies, authService, toastr) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -6260,31 +6259,33 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.referer = false;
     $scope.isLoading = false;
 
-    authService.loginCheck(function(user){
+    authService.loginCheck(function (user) {
         $scope.user = user;
     });
 
-    if($cookies.rememberMe) {
+    if ($cookies.rememberMe) {
         $scope.rememberMe = $cookies.rememberMe;
     }
 
-    $scope.$watch('rememberMe', function(newVal, oldVal){
-        if(newVal !== oldVal){
+    $scope.$watch('rememberMe', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
 
-    $scope.login = function(isValid){
-        if(isValid){
+    $scope.login = function (isValid) {
+        if (isValid) {
             $scope.isLoading = true;
             authService.login($scope.loginData,
-                function(user){
+                function (user) {
                     $scope.user = user;
                     toastr.success('', "You're now logged in!");
                     $scope.isLoading = false;
+
+                    window.location.reload();
                 },
                 function error(data) {
-                    if(data.errors){
+                    if (data.errors) {
                         $scope.errors = data.errors;
                         $scope.isLoading = false;
                     }
