@@ -2,13 +2,15 @@ var debug = require('debug')('cm:server');
 var NewsfeedAgg = require('./models/newsfeed.model.js');
 var Votes = require('../../votes/models/votes.js');
 var SubTopics = require('../../trees/treeNodes.js');
-var Post = require('../../discussion/models/posts.js');
+var Posts = require('../../discussion/models/posts.js');
 var Courses = require('../../catalogs/courses.js');
 var PdfAnnotation = require('../../slide-viewer/annotation.js');
 var PdfAnnotationZone = require('../../annotationZones/annotationZones.js');
 var VideoAnnotation = require('../../annotations/models/video-annotation.js');
 var Resources = require('../../trees/resources.js');
 var Links = require('../../links/models/links.js');
+//var Discussions = require('../../discussion/models/courseDiscussions.js');
+var UserCourses = require('../../catalogs/userCourses.js');
 
 var NewsfeedListener = {
 
@@ -92,7 +94,7 @@ var NewsfeedListener = {
                     }
                     if (voteType == "discussion"|| "discussionReply") {
 
-                        Post.findOne({_id: postId})
+                        Posts.findOne({_id: postId})
                             .exec(function (err, result) {
                                 if (result) {
                                     var courseId = result.course;
@@ -118,7 +120,7 @@ var NewsfeedListener = {
                                         );
                                     } else {
                                         if (result.parentPost) {
-                                            Post.findOne({_id: result.parentPost})
+                                            Posts.findOne({_id: result.parentPost})
                                                 .exec(function (err, parentResult) {
                                                     if (parentResult) {
                                                         var nf = new NewsfeedAgg(
@@ -678,7 +680,7 @@ var NewsfeedListener = {
                                         var nf = new NewsfeedAgg(
                                             {
                                                 userId: doc.createdBy,
-                                                actionSubjectIds: doc.contentNode,
+                                                actionSubjectIds: doc.id,
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
@@ -717,7 +719,7 @@ var NewsfeedListener = {
                                         var nf = new NewsfeedAgg(
                                             {
                                                 userId: doc.createdBy,
-                                                actionSubjectIds: doc.contentNode,
+                                                actionSubjectIds: doc.id,
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
@@ -756,7 +758,7 @@ var NewsfeedListener = {
                                         var nf = new NewsfeedAgg(
                                             {
                                                 userId: doc.createdBy,
-                                                actionSubjectIds: doc.contentNode,
+                                                actionSubjectIds: doc.id,
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
@@ -779,7 +781,139 @@ var NewsfeedListener = {
                 }
             });
 
-    }
+    },
+
+    //Listener for Discussion
+    onAfterDiscussionCreated: function (newDiscussion){
+        Posts.findOne({_id: newDiscussion._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc.course;
+                    if (courseId) {
+                        var nf = new NewsfeedAgg(
+                            {
+                                userId: doc.createdBy,
+                                actionSubjectIds: doc.id,
+                                actionSubject: "discussion",
+                                actionName : doc.title,
+                                courseId:  courseId,
+                                actionType: "added",
+                                dateAdded: doc.dateAdded
+                            }
+                        );
+                        nf.save(
+                            function (err, doc) {
+                                if (!err) debug('');
+                                else
+                                    debug(err);
+                            }
+                        );
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterDiscussionEdited: function (editDiscussion){
+        Posts.findOne({_id: editDiscussion._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc.course;
+                    if (courseId) {
+                        var nf = new NewsfeedAgg(
+                            {
+                                userId: doc.createdBy,
+                                actionSubjectIds: doc.id,
+                                actionSubject: "discussion",
+                                actionName : doc.title,
+                                courseId:  courseId,
+                                actionType: "edited",
+                                dateAdded: doc.dateUpdated
+                            }
+                        );
+                        nf.save(
+                            function (err, doc) {
+                                if (!err) debug('');
+                                else
+                                    debug(err);
+                            }
+                        );
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterDiscussionDeleted: function (deleteDiscussion){
+        Posts.findOne({_id: deleteDiscussion._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc.course;
+                    if (courseId) {
+                        var nf = new NewsfeedAgg(
+                            {
+                                userId: doc.createdBy,
+                                actionSubjectIds: doc.id,
+                                actionSubject: "discussion",
+                                actionName : doc.title,
+                                courseId:  courseId,
+                                actionType: "deleted",
+                                dateAdded: doc.dateUpdated
+                            }
+                        );
+                        nf.save(
+                            function (err, doc) {
+                                if (!err) debug('');
+                                else
+                                    debug(err);
+                            }
+                        );
+                    }
+
+                }
+            });
+
+    },
+
+    //Listener when user enroll or leave course
+    onAfterEnrollorLeaveCourse: function (userEnrollment){
+    UserCourses.findOne({_id: userEnrollment._id})
+        .exec(function (err, doc) {
+            if (doc) {
+                var userStatus = (doc.isEnrolled === true)? 'enrolled':'left';
+                var curDate = Date.now();
+                var courseId = doc.course;
+                if (courseId) {
+                    Courses.findOne({_id:courseId})
+                        .exec(function(err, result){
+                            if (result){
+                                var nf = new NewsfeedAgg(
+                                    {
+                                        userId: doc.user,
+                                        actionSubjectIds: doc.id,
+                                        actionSubject: result.name,
+                                        courseId:  courseId,
+                                        actionType: userStatus,
+                                        dateAdded: curDate
+                                    }
+                                );
+                                nf.save(
+                                    function (err, doc) {
+                                        if (!err) debug('');
+                                        else
+                                            debug(err);
+                                    }
+                                );
+                            }
+                        })
+                }
+
+            }
+        });
+
+}
 
 };
 
