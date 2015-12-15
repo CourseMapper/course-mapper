@@ -5,6 +5,8 @@ var SubTopics = require('../../trees/treeNodes.js');
 var Post = require('../../discussion/models/posts.js');
 var Courses = require('../../catalogs/courses.js');
 var PdfAnnotation = require('../../slide-viewer/annotation.js');
+var PdfAnnotationZone = require('../../annotationZones/annotationZones.js');
+var VideoAnnotation = require('../../annotations/models/video-annotation.js');
 var Resources = require('../../trees/resources.js');
 
 var NewsfeedListener = {
@@ -435,10 +437,64 @@ var NewsfeedListener = {
                 }
             });
 
+    },
+
+    onAfterAnnotationZonePdfCreated: function (newPdfAnnotationZone) {
+        PdfAnnotationZone.findOne({_id: newPdfAnnotationZone._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var pdfId = doc.pdfId;
+                    if (pdfId) {
+                        Resources.findOne({_id: pdfId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId){
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var dateNow = Date.now();
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorID,
+                                                            actionSubjectIds: pdfId,
+                                                            actionSubject: "pdf annotation zone",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            actionType: "created",
+                                                            dateAdded: dateNow
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+
+                                            })
+
+
+
+                                    }
+
+                                }
+                            })
+                    }
+                }
+            });
+    },
+
+    onAfterVideoAnnotationCreated: function (newVideoAnnotation) {
+        VideoAnnotation.findOne({_id:newVideoAnnotation})
+            .exec(function(err, doc){
+                if (doc) {
+                   console.log(doc);
+               }
+            });
     }
-
-
-
 
 };
 
