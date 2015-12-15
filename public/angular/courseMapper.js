@@ -2,10 +2,10 @@ var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
     'relativeDate', 'wysiwyg.module', 'angular-quill',
-    'VideoAnnotations','SlideViewerAnnotationZones',
-    'ngAnimate', 'toastr']);
+    'VideoAnnotations', 'SlideViewerAnnotationZones',
+    'ngAnimate', 'toastr', 'externalApp']);
 
-app.config(function(toastrConfig) {
+app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
         positionClass: 'toast-top-center'
     });
@@ -2015,6 +2015,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 ;app.controller('ProfileController', function(  Page) {
     Page.setTitleWithPrefix('My Account');
 });
+app.controller('AppSettingController', function(  Page) {
+    Page.setTitleWithPrefix('3rd Party App Settings');
+});
 ;app.controller('VideoTabController', function ($scope, $rootScope, $filter, $http, $location,
                                                $routeParams, $timeout, ActionBarService) {
 
@@ -2765,24 +2768,24 @@ app.directive('timepicker', function($timeout) {
                 voteTypeId: '@',
                 voteValue: '@',
                 voteTotal: '@',
-                voteDisplay: '@'
+                voteDisplay: '@',
+                mode: '@'
             },
-            template: '<div class="voting">' +
-            '<a class="cursor" ng-click="sendVote(\'up\')"><div class="btn-up" ng-class="getClassUp()">' +
-            '<i class="ionicons ion-ios-arrow-up" ng-hide="(voteValue == 1)"></i>' +
-            '<i class="ionicons ion-arrow-up-b" ng-show="(voteValue == 1)"></i>' +
-            '</div></a>' +
-            '<div class="vote-total">{{voteDisplay}}</div>' +
-            '<a class="cursor"><div class="btn-down" ng-class="getClassDown()" ng-click="sendVote(\'down\')">' +
-            '<i class="ionicons ion-ios-arrow-down" ng-hide="(voteValue == -1)"></i>' +
-            '<i class="ionicons ion-arrow-down-b" ng-show="(voteValue == -1)"></i>' +
-            '</div></a>' +
-            '</div>',
+
+            templateUrl: function (elem, attrs) {
+                var mode = 'vertical';
+                if (attrs['mode'])
+                    mode = attrs['mode'];
+
+                var tmplt = '/angular/views/vote-' + mode + '.html';
+
+                return tmplt;
+            },
 
             controller: function ($scope, $compile, $http, $attrs, toastr) {
                 $scope.errors = [];
 
-                if($attrs.voteTotal)
+                if ($attrs.voteTotal)
                     $scope.voteDisplay = $attrs.voteTotal;
                 else
                     $scope.voteDisplay = 0;
@@ -2796,16 +2799,16 @@ app.directive('timepicker', function($timeout) {
                 $scope.getVoteTotal = function () {
                     $scope.isLoading = true;
                     $http.get('/api/votes/' + $scope.voteType + '/id/' + $scope.voteTypeId)
-                        .success(function(data){
-                            if(data.result && data.vote.length > 0){
+                        .success(function (data) {
+                            if (data.result && data.vote.length > 0) {
                                 $scope.voteTotal = data.vote[0].total;
                                 $scope.voteDisplay = data.vote[0].total;
 
-                                if(data.vote[0].isVotingObject){
+                                if (data.vote[0].isVotingObject) {
                                     $scope.voteValue = data.vote[0].isVotingObject.voteValue;
-                                    if($scope.voteValue == 1)
+                                    if ($scope.voteValue == 1)
                                         $scope.voteTotal -= 1;
-                                    else if($scope.voteValue == -1)
+                                    else if ($scope.voteValue == -1)
                                         $scope.voteTotal += 1;
 
                                     $scope.voteDisplay = $scope.voteTotal + $scope.voteValue;
@@ -2813,7 +2816,7 @@ app.directive('timepicker', function($timeout) {
                             }
                             $scope.isLoading = false;
                         })
-                        .error(function(data){
+                        .error(function (data) {
                             $scope.errors = data.errors;
                             $scope.isLoading = false;
                         });
@@ -2849,7 +2852,7 @@ app.directive('timepicker', function($timeout) {
                     })
                         .success(function (data) {
                             if (data.result) {
-                                if (val == 'up') { 
+                                if (val == 'up') {
                                     $scope.voteValue = 1;
 
                                 } else if (val == 'down') {
@@ -2859,10 +2862,10 @@ app.directive('timepicker', function($timeout) {
                                     $scope.voteValue = 0;
                                 }
 
-                                if(typeof($scope.voteTotal) == 'undefined')
+                                if (typeof($scope.voteTotal) == 'undefined')
                                     $scope.voteTotal = 0;
 
-                                if(val == 'reset'){
+                                if (val == 'reset') {
                                     toastr.success('Vote Removed');
                                 }
                                 else {
@@ -3397,6 +3400,296 @@ app.directive('timepicker', function($timeout) {
             });
     };
 
+});;var externalApp = angular.module('externalApp', [
+    'ngResource', 'ngRoute', 'ngCookies', 'oc.lazyLoad',
+    'relativeDate']);;externalApp.controller('CreateAppController', function ($scope, $rootScope, $http, $location, $sce,
+                                                        $compile, $timeout,
+                                                        toastr, Page, $window) {
+
+    $scope.name = "";
+    $scope.description = "";
+
+    $scope.saveApp = function (isValid) {
+        if (isValid) {
+            $scope.isLoading = true;
+            var params = {
+                name: $scope.name,
+                description: $scope.description
+            };
+
+            var d = transformRequest(params);
+            $http({
+                method: 'POST',
+                url: '/api/oauth2/apps',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function (data) {
+                    console.log(data);
+                    if (data.result) {
+                        $scope.$emit('onAfterCreateApplication');
+                    }
+
+                    $scope.isLoading = false;
+                    toastr.success('Application is created.');
+                    window.location.href = "/settings/apps/#/app/" + data.app._id;
+                })
+                .error(function (data) {
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
+                });
+        }
+    };
+});;externalApp.controller('CreatedAppController', function ($scope, $rootScope, $http, $location, $sce,
+                                                         $compile, $timeout, $routeParams,
+                                                         toastr, Page, externalAppService) {
+
+    $scope.app = false;
+    $scope.originalApp = false;
+    $scope.appId = $routeParams.appId;
+
+    externalAppService.getAppDetail($scope.appId, function (app) {
+        $scope.originalApp = app;
+        $scope.app = angular.copy(app);
+    }, function (err) {
+        $scope.errors = err;
+    });
+
+    $scope.editApp = function (isValid) {
+        if (!isValid)
+            return;
+
+        $scope.isLoading = true;
+        var params = {
+            name: $scope.app.name,
+            description: $scope.app.description,
+            callbackUrl: $scope.app.callbackUrl
+        };
+
+        var d = transformRequest(params);
+        $http({
+            method: 'PUT',
+            url: '/api/oauth2/app/' + $scope.app._id,
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                if (data.result) {
+                    $scope.$emit('onAfterEditApplication');
+                }
+
+                $scope.isLoading = false;
+                toastr.success('Application saved.');
+            })
+            .error(function (data) {
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
+            });
+    };
+
+    $scope.deleteApp = function () {
+        if (!window.confirm('Are you sure you want to delete this application?'))
+            return;
+
+        $scope.isLoadingDelete = true;
+
+        $http({
+            method: 'DELETE',
+            url: '/api/oauth2/app/' + $scope.app._id,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                if (data.result) {
+                    $scope.$emit('onAfterDeleteApplication');
+                }
+
+                $scope.isLoadingDelete = false;
+                toastr.success('Application Deleted.');
+                $location.path('/installed').replace();
+            })
+            .error(function (data) {
+                $scope.isLoadingDelete = false;
+                $scope.errors = data.errors;
+            });
+    };
+
+    $scope.cancel = function () {
+        $scope.app = angular.copy($scope.originalApp);
+    }
+});
+;externalApp.controller('CreatedAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                          $compile, $timeout,
+                                                          toastr, Page, $window) {
+
+});;externalApp.factory('externalAppService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            installedApps: null,
+            createdApps: null,
+
+            getCreatedApps: function (success, error, force) {
+                var self = this;
+
+                if (!force && self.createdApps) {
+                    if (success)
+                        success(self.createdApps);
+                }
+
+                else if (force || !self.createdApps)
+                    $http.get('/api/oauth2/apps/created')
+                        .success(function (data) {
+                            if (data.result && data.apps) {
+                                self.createdApps = data.apps;
+                                if (success)
+                                    success(self.createdApps);
+                            }
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+            getInstalledApps: function (success, error, force) {
+                var self = this;
+
+                if (!force && self.installedApps) {
+                    if (success)
+                        success(self.installedApps);
+                }
+                else if (force || !self.installedApps)
+                    $http.get('/api/oauth2/apps/installed')
+                        .success(function (data) {
+                            if (data.result && data.apps) {
+                                self.installedApps = data.apps;
+                                if (success)
+                                    success(self.installedApps);
+                            }
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+            getAppDetail: function (appId, success, error) {
+                $http.get('/api/oauth2/app/' + appId)
+                    .success(function (data) {
+                        if (data.result && data.app) {
+                            if (success)
+                                success(data.app);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
+            deleteInstallation: function (installId, success, error) {
+                $http.delete('/api/oauth2/installedApp/' + installId)
+                    .success(function (data) {
+                        if (data.result) {
+                            success(data);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            }
+        }
+    }
+]);;externalApp.controller('ExternalAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                           $compile, ActionBarService, courseService,
+                                                           discussionService, $timeout,
+                                                           toastr, Page, $window, externalAppService) {
+    $scope.createdApps = [];
+    $scope.installedApps = [];
+    $scope.errors = [];
+
+    externalAppService.getCreatedApps(
+        function (apps) {
+            $scope.createdApps = apps;
+        },
+        function (err) {
+            $scope.errors = err;
+        }
+    );
+
+    externalAppService.getInstalledApps(
+        function (apps) {
+            $scope.installedApps = apps;
+        },
+        function (err) {
+            $scope.errors = err;
+        }
+    );
+});;externalApp.config(['$routeProvider', '$locationProvider',
+
+    function ($routeProvider, $locationProvider) {
+
+        $routeProvider.
+        when('/createExternalApp', {
+            templateUrl: '/settings/apps/createExternalApp',
+            controller: 'CreateAppController',
+            reloadOnSearch: false
+        }).
+
+        when('/createdApps', {
+            templateUrl: '/settings/apps/createdApps',
+            controller: 'CreatedAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/installed', {
+            templateUrl: '/settings/apps/installed',
+            controller: 'InstalledAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/documentation', {
+            templateUrl: '/settings/apps/documentation',
+            controller: 'CreatedAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/app/:appId', {
+            templateUrl: '/settings/apps/appDetail',
+            controller: 'CreatedAppController',
+            reloadOnSearch: false
+        }).
+
+        otherwise({
+            redirectTo: '/'
+        });
+
+    }]);
+;externalApp.controller('InstalledAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                            $compile, $timeout,
+                                                            toastr, externalAppService) {
+
+    $scope.deleteInstallation = function (installId) {
+        if (confirm('This application will not have access to your data anymore.')) {
+            externalAppService.deleteInstallation(installId,
+                function () {
+                    toastr.success('Application deleted.');
+                    var deleted = _.remove($scope.$parent.installedApps, {_id: installId});
+                },
+                function () {
+                    toastr.error('Delete failed.');
+                }
+            );
+        }
+    }
 });;app.factory('authService', [
     '$rootScope', '$http',
 
@@ -3428,7 +3721,7 @@ app.directive('timepicker', function($timeout) {
 
                     self.isCheckingForLogin = true;
 
-                    $http.get('/api/accounts').success(function (data) {
+                    $http.get('/api/account').success(function (data) {
                         self.isCheckingForLogin = false;
 
                         self.hasTriedToLogin = true;
@@ -6044,57 +6337,64 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
-;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout, authService) {
+;app.controller('UserEditController', function ($scope, $http, $rootScope, $timeout, authService, toastr) {
     $scope.user = {};
     $scope.formData = {};
     $scope.errors = null;
 
-    $scope.$on('onAfterInitUser', function(event, user){
+    $scope.$on('onAfterInitUser', function (event, user) {
         $scope.user = user;
         $scope.formData.displayName = $scope.user.displayName;
     });
 
-    $scope.saveEditUser = function(){
-        if($scope.user.displayName)
+    $scope.saveEditUser = function () {
+        if ($scope.user.displayName)
             $scope.formData.displayName = $scope.user.displayName;
 
-        if($scope.formData.password ) {
+        if ($scope.formData.password) {
             if ($scope.formData.password != $scope.formData.passwordConfirm) {
-
+                $scope.errors = ['Password and password confirmation does not match.'];
+                return;
             }
         }
 
         var d = transformRequest($scope.formData);
         $http({
             method: 'PUT',
-            url: '/api/accounts/' + $scope.user._id,
+            url: '/api/account/' + $scope.user._id,
             data: d, // pass in data as strings
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
-            .success(function(data) {
-                if(data.result) {
+            .success(function (data) {
+                if (data.result) {
                     $scope.$emit('init');
-                    authService.loginCheck(function(user){
+                    authService.loginCheck(function (user) {
                         $scope.user = user;
-                        $timeout(function(){
+                        $timeout(function () {
                             $scope.$apply();
                             $('.user-image').attr('src', $scope.user.image);
                         });
                     });
+
+                    $scope.formData.password = '';
+                    $scope.formData.passwordConfirm = '';
+                    $scope.formData.oldPassword = '';
+
+                    toastr.success('Your profile is updated');
+
                     $('#editAccountModal').modal('hide');
                 }
             })
-            .error(function(data){
-                if(!data.result){
+            .error(function (data) {
+                if (!data.result) {
                     $scope.errors = data.errors;
-                    console.log(data.errors);
                 }
             });
     };
 
-    $scope.cancel = function(){
+    $scope.cancel = function () {
         $('#editAccountModal').modal('hide');
     }
 

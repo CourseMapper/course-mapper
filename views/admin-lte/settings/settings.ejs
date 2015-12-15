@@ -1,0 +1,90 @@
+<div class="row" ng-controller="ExternalAppsController">
+    <div class="col-xs-12 col-md-3 col-sm-3 no-margin">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar" style="height: auto;">
+            <ul class="sidebar-menu" style="background: #2c3b41;">
+                <li class="treeview active">
+                    <a class="cursor">
+                        <i class="fa fa-dashboard"></i>
+                        <span>Menu</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="active">
+                            <a href="/settings/apps/#/installed" class="cursor">
+                                <i class="ionicons ion-android-apps"></i>&nbsp;&nbsp;
+                                3rd Party Apps</a></li>
+
+                        <li>
+                            <a href="/settings/apps/#/createExternalApp">
+                                <i class="ionicons ion-android-bulb"></i>&nbsp;
+                                Create External App</a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="treeview" ng-class="{active: (createdApps.length >0)}">
+                    <a class="cursor">
+                        <i class="fa fa-dashboard"></i>
+                        <span>My Created Apps</span>
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="" ng-repeat="app in createdApps">
+                            <a href="/settings/apps/#/app/{{app._id}}">
+                                {{app.name}}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="/settings/apps/#/documentation">
+                        <i class="fa fa-book"></i> Documentation</a>
+                </li>
+
+            </ul>
+        </section>
+        <!-- /.sidebar -->
+    </div>
+    <div class="col-xs-12 col-md-9 col-sm-9 no-padding">
+        <!-- Custom Tabs -->
+        <div class="nav-tabs-custom">
+            <div class="tab-content">
+                <div ng-view></div>
+                <!-- /.tab-pane -->
+            </div>
+        </div>
+        <!-- /.tab-content -->
+    </div>
+
+
+    <!-- course edit form -->
+    <div class="row">
+        <div class="modal" id="whatisanappmodal" tabindex="-1" role="dialog" aria-hidden="true">
+            <section class="content">
+                <div class="row row-centered">
+                    <div class="col-xs-12 col-sm-8 col col-centered">
+                        <div class="widget-item box no-border no-round">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">What is an app?</h3>
+
+                                <div class="box-tools pull-right">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                                aria-hidden="true">&times;</span></button>
+                                </div>
+                            </div>
+                            <div class="box-body">
+                                An app is ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<!-- nav-tabs-custom -->
+

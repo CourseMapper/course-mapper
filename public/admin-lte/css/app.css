@@ -698,8 +698,13 @@ a.videoButton:hover {
 }
 
 #description.quill-wrapper {
-    min-height: 150px;
+    min-height: 300px;
     height: auto
+}
+
+#description .ql-container {
+    min-height: 300px;
+    max-height: none !important
 }
 
 .preview h1 {

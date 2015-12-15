@@ -19,18 +19,12 @@ router.get('/accounts/logout', function (req, res, next) {
     res.status(200).json({result: true, message: 'Logged out'});
 });
 
-router.get('/accounts', function (req, res, next) {
+router.get('/account', function (req, res, next) {
     if (req.user)
-        res.redirect('/api/accounts/' + req.user.username);
+        res.redirect('/api/account/' + req.user.username);
     else
         res.status(401).json({message: 'Not authorized'});
 });
-
-/*router.get('/accounts/req', function (req, res, next) {
-    res.status(200).json({
-        result: true, user: req.user
-    });
-});*/
 
 router.get('/accounts/login/facebook',
     passport.authenticate('facebook', {scope: ['email', 'public_profile']})
@@ -59,21 +53,14 @@ router.get('/accounts/facebook/callback',
     }
 );
 
-router.get('/accounts/:username', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    // todo: if admin, can get val from url param
-
+router.get('/account/:username', helper.ensureAuthenticated, function (req, res, next) {
     var account = new Account();
     account.getUser(
         function (err) {
             helper.resReturn(err, res);
         },
 
-        {username: req.session.passport.user.username},
+        {username: req.user.username},
 
         function (doc) {
             if (doc) {
@@ -89,17 +76,10 @@ router.get('/accounts/:username', function (req, res, next) {
     );
 });
 
-router.get('/accounts/:userId/courses', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
+router.get('/account/:userId/courses', helper.ensureAuthenticated, function (req, res, next) {
     var crs = new Course();
 
     var userId = mongoose.Types.ObjectId(req.params.userId);
-
-    // todo: if admin, can put val from url param
 
     crs.getUserCourses(
         function error(err) {
@@ -112,18 +92,11 @@ router.get('/accounts/:userId/courses', function (req, res, next) {
     );
 });
 
-router.get('/accounts/:userId/course/:courseId', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
+router.get('/account/:userId/course/:courseId', helper.ensureAuthenticated, function (req, res, next) {
     var crs = new Course();
 
     var userId = mongoose.Types.ObjectId(req.params.userId);
     var courseId = mongoose.Types.ObjectId(req.params.courseId);
-
-    // todo: if admin, can put val from url param
 
     crs.getUserCourses(
         function error(err) {
@@ -147,7 +120,6 @@ router.get('/accounts/:userId/course/:courseId', function (req, res, next) {
  */
 
 router.post('/accounts/signUp', function (req, res, next) {
-
     if (!helper.checkRequiredParams(req.body, ['username', 'email', 'password'], function (err) {
             helper.resReturn(err, res);
         }))return;
@@ -172,6 +144,9 @@ router.post('/accounts/signUp', function (req, res, next) {
     );
 });
 
+/**
+ * login
+ */
 router.post('/accounts/login',
     function (req, res, next) {
         passport.authenticate('local', function (err, user, info) {
@@ -223,16 +198,10 @@ router.post('/accounts/login',
 
 /**
  * change password only
- */
-router.put('/accounts/:userId/changePassword', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
+
+ router.put('/accounts/:userId/changePassword', helper.ensureAuthenticated, function (req, res, next) {
 
     req.body.userId = mongoose.Types.ObjectId(req.user._id);
-
-    // todo: if admin, can put val from url param
 
     if (!req.body.password || !req.body.passwordConfirm) {
         res.status(400).json({result: false, errors: ["parameter not complete"]});
@@ -250,17 +219,11 @@ router.put('/accounts/:userId/changePassword', function (req, res, next) {
             }
         );
     }
-});
+}); */
 
-router.put('/accounts/:userId', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
+router.put('/account/:userId', helper.ensureAuthenticated, function (req, res, next) {
 
     req.body.userId = mongoose.Types.ObjectId(req.user._id);
-
-    // todo: if admin, can put val from url param
 
     var account = new Account();
     account.editAccount(

@@ -27,14 +27,20 @@
                             <i class="ionicons ion-ios-gear"></i> Account Settings</a></li>
 
                     <li>
+                        <a class="cursor"
+                           href="/settings/apps"
+                           title="Manage your permission to permited 3rd party apps">
+                            <i class="ionicons ion-settings"></i> App Settings</a></li>
+
+                    <li>
                         <a style="cursor: pointer;"
                            title="Add or remove dashboard widgets"
                            data-toggle="modal" data-target="#widgetGallery"><i
-                                class="ionicons ion-android-apps"></i> Widgets Store</a></li>
+                                    class="ionicons ion-android-apps"></i> Widgets Store</a></li>
 
                     <% if(user.role == 'admin'){ %>
                     <li><a href="/cm-admin/" title="admin"> Admin Panel</a></li>
-                    <% }%>
+                    <% } %>
                 </ul>
             </div>
         </section>
@@ -60,7 +66,7 @@
                                         <button class="btn btn-box-tool" data-widget="remove"
                                                 data-toggle="tooltip" title="Remove"
                                                 ng-click="closeWidget(wdg._id);"
-                                                >
+                                        >
                                             <i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
@@ -97,7 +103,6 @@
 </div><!-- ./wrapper -->
 
 <% include profiles/editAccountModal %>
-
 <% include jsfooter %>
 
 <script src="/gridstack/gridstack.js"></script>

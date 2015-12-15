@@ -66,7 +66,7 @@
 
                         $(inputId + ' .editor').click(function () {
                             var isToolTipOpened = false;
-                            $('.ql-tooltip').each(function () {
+                            $(this).find('.ql-tooltip').each(function () {
                                 var toolTipPos = $(this).position();
                                 if (typeof(toolTipPos.left) != 'undefined' && toolTipPos.left >= 0) {
                                     isToolTipOpened = true;
