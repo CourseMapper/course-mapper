@@ -5362,7 +5362,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
           updatedAnnZone:
           {
             annotationZoneName: "#"+$scope.annotationZoneList[id].tagName,
-            color: $scope.annotationZoneList[id].color.substring(1)
+            color: $scope.annotationZoneList[id].color
           },
           pdfId: $scope.pdfFile._id,
         }

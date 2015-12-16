@@ -389,6 +389,7 @@ function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
 };
 
 function validateTagObject(currentTag,oldTagList,simple) {
+  console.log(currentTag);
   var ret = true;
   if(!(currentTag.annotationZoneName.length >= 3))
     return false;
@@ -400,6 +401,7 @@ function validateTagObject(currentTag,oldTagList,simple) {
 
   ret &= (currentTag.color[0] == '#');
   ret &= validator.isHexadecimal(currentTag.color.substring(1));
+  //ret &= validator.isHexadecimal(currentTag.color);
 
   if(!simple) {
     ret &= validator.isFloat(currentTag.relativeCoordinates.X);
