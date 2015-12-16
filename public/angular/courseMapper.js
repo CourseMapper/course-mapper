@@ -1873,8 +1873,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                         Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
-                        if ($scope.treeNode.createdBy == $rootScope.user._id) {
-                            $scope.isNodeOwner = true;
+                        if ($scope.isAdmin || $scope.isManager) {
+                            if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                $scope.isNodeOwner = true;
+
                             $scope.setEditMode();
                         }
 
@@ -1991,12 +1993,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.initNode();
         }
     });
-
-    /*$scope.$watch(function () {
-        return courseService.isEnrolled();
-    }, function () {
-        $scope.isEnrolled = courseService.isEnrolled();
-    });*/
 });
 ;app.controller('PdfTabController', function ($scope, $rootScope, $filter, $http, $location,
                                              $routeParams, $timeout, ActionBarService) {

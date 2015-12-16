@@ -94,8 +94,10 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
 
                         Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
-                        if ($scope.treeNode.createdBy == $rootScope.user._id) {
-                            $scope.isNodeOwner = true;
+                        if ($scope.isAdmin || $scope.isManager) {
+                            if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                $scope.isNodeOwner = true;
+
                             $scope.setEditMode();
                         }
 
@@ -212,10 +214,4 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
             $scope.initNode();
         }
     });
-
-    /*$scope.$watch(function () {
-        return courseService.isEnrolled();
-    }, function () {
-        $scope.isEnrolled = courseService.isEnrolled();
-    });*/
 });
