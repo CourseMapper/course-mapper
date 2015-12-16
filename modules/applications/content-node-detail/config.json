@@ -1,0 +1,13 @@
+{
+  "name": "node detail",
+  "widgets": [
+    {
+      "name": "Node Detail",
+      "location": "topic-icon-analytics",
+      "description": "small details about this node",
+      "entryPoint": "/content-node-detail/node-detail.js",
+      "icon": "/img/appPlaceholder.png",
+      "runOn": "server"
+    }
+  ]
+}
