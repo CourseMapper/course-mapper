@@ -1,1 +1,32 @@
-updates/newsfeeds
+<div ng-controller="NewsfeedController">
+
+
+    <div class="row">
+        <div class="col-xs-12 col-md-11" id="newsfeedList" style="max-height: 600px; overflow: auto;">
+            <div class="content-header">
+                <h4>Newsfeed Timeline</h4>
+            </div>
+            <div class="content">
+                <ul class="timeline">
+                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'">
+                        <i class="fa fa-user bg-blue"></i>
+                        <div class="timeline-item">
+                                <span class="time">
+                                    <i class="fa fa-clock-o">{{nfData.dateAdded | relativeDate}}</i>
+                                </span>
+                            <div class="timeline-header bg-gray">
+                                <b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'cancel vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> in </span>
+                                <a><b>{{nfData.actionName}}</b></a>
+                            </div>
+                            <!--div class="timeline-footer">
+                                <a class="btn btn-primary btn-xs">View</a>
+                            </div-->
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+</div>

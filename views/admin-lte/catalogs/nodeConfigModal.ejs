@@ -46,13 +46,12 @@
                             </div>
 
                             <br>
-
+                            <% if(isInIframe){ %>
+                            <% } else { %>
                             <div class="control-group">
                                 <label class="control-label" for="description">Embed Settings</label>
-
                                 <div class="form-group">
-                                    <div class="checkbox">
-                                        <%
+                                    <%
                                         var dc = false;
                                         var dt = false;
                                         if (treeNode.settings && treeNode.settings['disableControls'] !== undefined) {
@@ -61,11 +60,12 @@
                                         if (treeNode.settings && treeNode.settings['disableTop'] !== undefined) {
                                             dt = treeNode.settings['disableTop'];
                                         }
-                                        %>
+                                    %>
+                                    <!--<div class="checkbox">
                                         <label ng-init="settings.disableControls = <%= dc %>">
                                             <input type="checkbox" name="disableControl"
                                                    ng-model="settings.disableControls"> Disable Controls</label>
-                                    </div>
+                                    </div>-->
                                     <div class="checkbox">
                                         <label ng-init="settings.disableTop = <%= dt %>">
                                             <input type="checkbox" name="disableTop" ng-model="settings.disableTop">
@@ -74,7 +74,7 @@
                                     </div>
                                 </div>
                             </div>
-
+                            <% } %>
                             <div class="control-group">
                                 <br class="clear">
 

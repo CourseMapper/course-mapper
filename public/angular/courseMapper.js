@@ -2,10 +2,10 @@ var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
     'relativeDate', 'wysiwyg.module', 'angular-quill',
-    'VideoAnnotations','SlideViewerAnnotationZones',
-    'ngAnimate', 'toastr']);
+    'VideoAnnotations', 'SlideViewerAnnotationZones',
+    'ngAnimate', 'toastr', 'externalApp']);
 
-app.config(function(toastrConfig) {
+app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
         positionClass: 'toast-top-center'
     });
@@ -29,7 +29,10 @@ app.config(function(toastrConfig) {
 
         when('/cid/:courseId/nid/:nodeId', {
             templateUrl: function (params) {
-                return '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
+                var tUrl = '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
+                if (params.iframe === 'true' || params.iframe === 'false')
+                    tUrl += '?iframe=' + params.iframe;
+                return tUrl;
             },
             controller: 'NodeRootController',
             reloadOnSearch: false
@@ -37,7 +40,10 @@ app.config(function(toastrConfig) {
 
         when('/cid/:courseId', {
             templateUrl: function (params) {
-                return '/course/courseDetail/' + params.courseId;
+                var tUrl = '/course/courseDetail/' + params.courseId;
+                if (params.iframe === 'true' || params.iframe === 'false')
+                    tUrl += '?iframe=' + params.iframe;
+                return tUrl;
             },
             controller: 'CourseRootController',
             reloadOnSearch: false
@@ -61,7 +67,7 @@ app.config(function(toastrConfig) {
         }
     });
 
-});;app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr) {
+});;app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr, $timeout) {
 
     $scope.loading = false;
 
@@ -72,6 +78,9 @@ app.config(function(toastrConfig) {
             function () {
                 $scope.loading = false;
                 toastr.success('You are now enrolled');
+                $timeout(function(){
+                    window.location.reload();
+                });
             },
 
             function (res) {
@@ -89,6 +98,9 @@ app.config(function(toastrConfig) {
             function () {
                 $scope.loading = false;
                 toastr.success('You left the course');
+                $timeout(function(){
+                    window.location.reload();
+                });
             },
 
             function () {
@@ -291,8 +303,8 @@ app.config(function(toastrConfig) {
     $scope.courseEdit = null;
     $scope.tagsRaw = [];
     $scope.files = [];
-    $scope.filespicture = [];
-    $scope.filesvideo = [];
+    $scope.filespicture = false;
+    $scope.filesvideo = false;
 
     $scope.isLoading = false;
     $scope.errors = [];
@@ -336,12 +348,12 @@ app.config(function(toastrConfig) {
 
         uploadParams.file = [];
         // we only take one picture file
-        if ($scope.filespicture && $scope.filespicture.length) {
-            uploadParams.file.push($scope.filespicture[0]);
+        if ($scope.filespicture) {
+            uploadParams.file.push($scope.filespicture);
         }
         // we only take one vid file
-        if ($scope.filesvideo && $scope.filesvideo.length) {
-            uploadParams.file.push($scope.filesvideo[0]);
+        if ($scope.filesvideo) {
+            uploadParams.file.push($scope.filesvideo);
         }
 
         $scope.isLoading = true;
@@ -358,8 +370,8 @@ app.config(function(toastrConfig) {
             .success(function (data) {
                 $scope.$emit('onAfterEditCourse', data.course);
 
-                $scope.filespicture = [];
-                $scope.filesvideo = [];
+                $scope.filespicture = false;
+                $scope.filesvideo = false;
 
                 $scope.isLoading = false;
                 $('#editView').modal('hide');
@@ -482,7 +494,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.isAdmin = false;
 
     $scope.currentUrl = window.location.href;
-    $scope.followUrl = $scope.currentUrl + '?enroll=1';
 
     $scope.currentTab = "preview";
     $scope.tabDisplayName = "preview";
@@ -586,7 +597,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.isEnrolled = courseService.isEnrolled();
         $scope.isManager = courseService.isManager(authService.user);
         $scope.isAdmin = authService.isAdmin();
-        if(authService.user)
+        if (authService.user)
             $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
         else
             $scope.isOwner = false;
@@ -717,9 +728,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         });
     });
 });
-;app.controller('MapController', function ($scope, $http, $rootScope,
-                                          $timeout, $sce, $location,
-                                          toastr, mapService, courseService) {
+;app.controller('MapController', function ($scope, $http, $rootScope, authService,
+                                          $timeout, $sce, $location, socket,
+                                          toastr, mapService, courseService,
+                                          collapseService) {
 
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
@@ -728,8 +740,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.isCurrentTabIsMap = false;
     $scope.infoToast = null;
     $scope.infoEmptyToast = null;
+    $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    $scope.collapseStatus = {};
 
     /**
      * find node recursively
@@ -797,6 +811,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     $scope.initJSPlumb();
                     $scope.showMapEmptyInfo();
                 }
+
+                socket.subscribe('map/' + course._id);
             },
 
             function (err) {
@@ -832,16 +848,40 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         var h = window.innerHeight;
 
         // let us drag and drop the cats
-        var mapEl = jsPlumb.getSelector(".course-map .w.owned");
+        var mapEl = jsPlumb.getSelector(".course-map .w");
         jsPlumbInstance.draggable(mapEl, {
+            start: function (params) {
+                var el = $(params.el);
+                var nId = el.attr('id').substring(1);
+                var simulated = el.attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    return;
+                }
+
+                var owned = el.hasClass('owned');
+                if (!owned) {
+                    params.drag.abort();
+                }
+
+                if (collapseService.isCollapsed(nId) !== false) {
+                    params.drag.abort();
+                }
+            },
+
             // update position on drag stop
-            stop: function () {
-                var el = $(this);
+            stop: function (params) {
+                var el = $(params.el);
                 var pos = el.position();
                 var distanceFromCenter = {
                     x: pos.left - Canvas.w / 2,
                     y: pos.top - Canvas.h / 2
                 };
+
+                var simulated = el.attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    el.attr('is-simulated', '');
+                    return;
+                }
 
                 var nId = el.attr('id').substring(1); // remove 't' from the node id
                 found = false;
@@ -863,26 +903,25 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.initJSPlumb = function () {
         Tree.init(Canvas.w, Canvas.h);
+        jsPlumb.ready(function () {
+            $scope.instance = jsPlumb.getInstance({
+                Endpoint: ["Blank", {radius: 2}],
+                HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+                PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+                ConnectionOverlays: [],
+                Container: "course-map"
+            });
 
-        var instance;
+            $scope.initDraggable($scope.instance);
 
-        $scope.instance = instance = jsPlumb.getInstance({
-            Endpoint: ["Blank", {radius: 2}],
-            HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-            PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-            ConnectionOverlays: [],
-            Container: "course-map"
-        });
+            // initialise all '.w' elements as connection targets.
+            $scope.instance.batch(function () {
+                /* connect center to first level cats recursively*/
+                $scope.interConnect('center', $scope.treeNodes, $scope.instance);
 
-        $scope.initDraggable(instance);
-
-        // initialise all '.w' elements as connection targets.
-        instance.batch(function () {
-            /* connect center to first level cats recursively*/
-            $scope.interConnect('center', $scope.treeNodes, instance);
-
-            /*blanket on click to close dropdown menu*/
-            $scope.initDropDownMenuHybrid();
+                /*blanket on click to close dropdown menu*/
+                $scope.initDropDownMenuHybrid();
+            });
         });
     };
 
@@ -896,6 +935,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     $('.open').removeClass('open');
                     return false;
+                }
+
+                var simulated = $(this).attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    return true;
                 }
 
                 $('.open').not($(this).parents('ul')).removeClass('open');
@@ -958,7 +1002,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.interConnect = function (parent, treeNodes, instance) {
         // added "t" in id because id cannot start with number
-        for (var i in treeNodes) {
+        for (var i = 0; i < treeNodes.length; i++) {
             var child = treeNodes[i];
             var childId = 't' + child._id;
 
@@ -975,19 +1019,26 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape")}]
                 ],
+                deleteEndpointsOnDetach: true,
                 connector: ["Bezier", {curviness: 5}]
             });
 
-            $scope.jsPlumbConnections.push(conn);
+            $(conn.connector.canvas).attr('data-source', parent);
+            $(conn.connector.canvas).attr('data-target', childId);
+
+            var cc = {
+                source: parent,
+                target: childId,
+                conn: conn
+            };
+
+            $scope.jsPlumbConnections.push(cc);
 
             if (child.childrens) {
+                $('#' + parent + ' .collapse-button').addClass('hasChildren');
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
-    };
-
-    $scope.goToDetail = function (categorySlug) {
-        window.location.href = "/courses/#/category/" + categorySlug;
     };
 
     $scope.setMode = function (mode, type, parent) {
@@ -1046,11 +1097,24 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
      */
     $scope.destroyJSPlumb = function () {
         for (var i in $scope.jsPlumbConnections) {
-            var conn = $scope.jsPlumbConnections[i];
+            var conn = $scope.jsPlumbConnections[i].conn;
             jsPlumb.detach(conn);
         }
 
         $scope.jsPlumbConnections = [];
+    };
+
+    $scope.reInitiateJSPlumb = function (cb) {
+        $scope.treeNodes = angular.copy($scope.treeNodes);
+        $timeout(
+            function () {
+                $scope.$apply();
+                $scope.initJSPlumb();
+
+                if (cb) {
+                    cb();
+                }
+            });
     };
 
     $scope.resourceIcon = function (filetype) {
@@ -1118,12 +1182,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         $scope.destroyJSPlumb();
 
                         // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.treeNodes = angular.copy($scope.treeNodes);
-                        $timeout(
-                            function () {
-                                $scope.$apply();
-                                $scope.initJSPlumb();
-                            });
+                        $scope.reInitiateJSPlumb();
 
                     } else {
                         if (data.result != null && !data.result) {
@@ -1159,13 +1218,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         $scope.destroyJSPlumb();
 
                         // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.treeNodes = angular.copy($scope.treeNodes);
-                        $timeout(
-                            function () {
-                                $scope.$apply();
-                                $scope.initJSPlumb();
-                            });
-
+                        $scope.reInitiateJSPlumb();
                     }
                 })
                 .error(function (data) {
@@ -1183,7 +1236,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
     };
 
-    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+    $scope.addNewNodeIntoPool = function (treeNode) {
         if (treeNode.parent) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
@@ -1199,20 +1252,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.destroyJSPlumb();
 
         // this will reinitiate the model, and thus also jsplumb connection
-        $scope.treeNodes = angular.copy($scope.treeNodes);
-        $timeout(
-            function () {
-                $scope.$apply();
-                $scope.initJSPlumb();
+        $scope.reInitiateJSPlumb(function () {
+            if ($('.open').length > 0) {
+                $('.open').removeClass('open');
+                return true;
+            }
+        });
+    };
 
-                if ($('.open').length > 0) {
-                    $('.open').removeClass('open');
-                    return true;
-                }
-            });
-    });
-
-    $scope.$on('onAfterEditNode', function (event, treeNode) {
+    $scope.afterEditNode = function (treeNode) {
         if (treeNode) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
@@ -1225,14 +1273,15 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function () {
                 $scope.$apply();
             });
-    });
+    };
 
-    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+    $scope.afterEditContentNode = function (treeNode) {
         if (treeNode) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
             if (pNode) {
                 pNode.name = treeNode.name;
+                pNode.resources = [];
                 if (treeNode.resources.length > 0) {
                     for (var i in treeNode.resources) {
                         pNode.resources.push(treeNode.resources[i]);
@@ -1245,6 +1294,36 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function () {
                 $scope.$apply();
             });
+    };
+
+    $scope.collapse = function (el) {
+        var nodeId = el.substring(1);
+        found = false;
+
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
+        if (pNode) {
+            var hide = collapseService.toggle(nodeId);
+            $scope.collapseStatus[nodeId] = hide;
+            collapseService.affectVisual(hide, pNode, nodeId);
+
+            if (hide !== false) {
+                $('#' + el).addClass('aborted');
+            } else {
+                $('#' + el).removeClass('aborted');
+            }
+        }
+    };
+
+    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+        $scope.addNewNodeIntoPool(treeNode);
+    });
+
+    $scope.$on('onAfterEditNode', function (event, treeNode) {
+        $scope.afterEditNode(treeNode);
+    });
+
+    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+        $scope.afterEditContentNode(treeNode);
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
@@ -1279,6 +1358,87 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });
 
     $scope.tabOpened();
+
+    socket.on('joined', function (data) {
+        //console.log(JSON.stringify(data));
+    });
+
+    socket.on('positionUpdated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        var nd = data.nodeId;
+        if (nd) {
+            var elName = 't' + nd;
+            var lv = Tree.leaves[elName];
+            if (lv) {
+                lv.fromCenter.x = data.x + 70;
+                lv.fromCenter.y = data.y + 5;
+                var oldPos = lv.el.position();
+                var newPos = lv.getNewPosition(Tree.w, Tree.h);
+
+                var dx = newPos.x - oldPos.left;
+                var dy = newPos.y - oldPos.top;
+
+                $('#' + elName).attr("is-simulated", 'simulated');
+                $('#' + elName).simulate("drag-n-drop", {dx: dx, dy: dy})
+            }
+
+            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
+            if (pNode) {
+                pNode.positionFromRoot = {x: data.x, y: data.y};
+
+                $timeout(function () {
+                    $scope.$apply();
+                });
+            }
+
+        }
+    });
+
+    socket.on('nodeCreated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        $scope.addNewNodeIntoPool(data);
+        console.log('nodeCreated');
+    });
+
+    socket.on('nodeUpdated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        if (data.type == 'contentNode') {
+            $scope.afterEditContentNode(data);
+        } else {
+            $scope.afterEditNode(data);
+        }
+
+        console.log('nodeUpdated');
+    });
+
+    socket.on('nodeDeleted', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        found = false;
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', data.nodeId);
+        if (pNode) {
+            pNode.isDeleted = true;
+            if (data.isDeletedForever)
+                pNode.isDeletedForever = true;
+
+            pNode.name = '[DELETED]';
+
+            // destroy the jsplumb instance and svg rendered
+            $scope.destroyJSPlumb();
+
+            // this will reinitiate the model, and thus also jsplumb connection
+            $scope.reInitiateJSPlumb();
+        }
+
+        console.log('nodeDeleted');
+    })
 });
 ;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
     $scope.nodeEdit = null;
@@ -1341,11 +1501,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 });
 ;
-;app.controller('NodeEditController', function($scope, $http, $rootScope, Upload, toastr, $timeout) {
+;app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
     $scope.formData = {};
-    $scope.filespdf = [];
-    $scope.filesvideo = [];
+    $scope.filespdf = false;
+    $scope.filesvideo = false;
     $scope.currentEditNode = false;
     $scope.progressPercentage = 0;
     $scope.videoHostLink = '';
@@ -1354,16 +1514,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.isLoading = false;
     $scope.errors = [];
 
-    $scope.init = function(){
+    $scope.init = function () {
     };
 
-    $scope.$on('onAfterSetMode', function(event, course, treeNode){
+    $scope.$on('onAfterSetMode', function (event, course, treeNode) {
         $scope.formData.courseId = course._id;
 
-        if($scope.currentNodeAction.parent)
+        if ($scope.currentNodeAction.parent)
             $scope.formData.parent = $scope.currentNodeAction.parent._id;
         else {
-            if($scope.formData.parent)
+            if ($scope.formData.parent)
                 delete $scope.formData.parent;
         }
 
@@ -1371,14 +1531,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentEditNodeOriginal = cloneSimpleObject($scope.currentNodeAction.parent);
         $scope.formData.type = $scope.currentNodeAction.type;
 
-        if(treeNode){
+        if (treeNode) {
             $scope.formData.name = treeNode.name;
             $scope.formData.nodeId = treeNode._id;
             $scope.currentEditNode = treeNode;
         }
     });
 
-    $scope.parseNgFile = function(ngFile){
+    $scope.parseNgFile = function (ngFile) {
         var t = ngFile.type.split('/')[1];
 
         var ret = {
@@ -1391,8 +1551,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * save add sub topic node
      */
-    $scope.saveNode = function(isValid){
-        if(!isValid)
+    $scope.saveNode = function (isValid) {
+        if (!isValid)
             return;
 
         $scope.isLoading = true;
@@ -1405,17 +1565,19 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
-            .success(function(data) {
-                if(data.result) {
+            .success(function (data) {
+                if (data.result) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
                     $('#addSubTopicModal').modal('hide');
                     $('#addContentNodeModal').modal('hide');
 
                     // cleaining up formData
-                    if($scope.formData.parent) {
+                    if ($scope.formData.parent) {
                         delete $scope.formData.parent;
-                        $timeout(function(){$scope.$apply()});
+                        $timeout(function () {
+                            $scope.$apply()
+                        });
                     }
                     $scope.formData.name = "";
 
@@ -1425,7 +1587,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     toastr.success('Successfully Saved, You can move it away from its default position');
                 }
             })
-            .error(function(data){
+            .error(function (data) {
                 $scope.errors = data.errors;
                 $scope.isLoading = false;
 
@@ -1437,8 +1599,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * save edit sub topic node
      */
-    $scope.saveEditNode = function(isValid){
-        if(!isValid)
+    $scope.saveEditNode = function (isValid) {
+        if (!isValid)
             return;
 
         var updateValue = {
@@ -1456,15 +1618,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
-            .success(function(data) {
+            .success(function (data) {
                 $scope.isLoading = false;
-                if(data.result) {
+                if (data.result) {
                     $rootScope.$broadcast('onAfterEditNode', data.treeNode);
 
-                    if($scope.formData.parent) {
+                    if ($scope.formData.parent) {
                         $scope.currentEditNode = {};
                         delete $scope.formData.parent;
-                        $timeout(function(){$scope.$apply()});
+                        $timeout(function () {
+                            $scope.$apply()
+                        });
                     }
 
                     $('#editSubTopicModal').modal('hide');
@@ -1474,7 +1638,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     toastr.success('Successfully Saved');
                 }
             })
-            .error(function(data){
+            .error(function (data) {
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
                 toastr.error('Saving Failed');
@@ -1485,18 +1649,18 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
      * save add content node
      * save edit content node
      */
-    $scope.saveContentNode = function(isValid){
-        if(!isValid)
+    $scope.saveContentNode = function (isValid) {
+        if (!isValid)
             return;
 
-        if($scope.currentNodeAction.mode == 'edit'){
+        if ($scope.currentNodeAction.mode == 'edit') {
             $scope.formData = $scope.currentEditNode;
         }
 
-        if($scope.videoHostLink.trim() != ''){
+        if ($scope.videoHostLink.trim() != '') {
             $scope.formData.videoHostLink = $scope.videoHostLink;
         }
-        if($scope.pdfHostLink.trim() != ''){
+        if ($scope.pdfHostLink.trim() != '') {
             $scope.formData.pdfHostLink = $scope.pdfHostLink;
         }
 
@@ -1508,49 +1672,48 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         uploadParams.file = [];
 
         // we only take one pdf file
-        if ($scope.filespdf && $scope.filespdf.length){
-            uploadParams.file.push($scope.filespdf[0]);
+        if ($scope.filespdf) {
+            uploadParams.file.push($scope.filespdf);
         }
         // we only take one vid file
-        if ($scope.filesvideo && $scope.filesvideo.length){
-            uploadParams.file.push($scope.filesvideo[0]);
+        if ($scope.filesvideo) {
+            uploadParams.file.push($scope.filesvideo);
         }
 
         $scope.isLoading = true;
 
         $scope.upload = Upload.upload(
             uploadParams
-
         ).progress(function (evt) {
-                if(!evt.config.file)
-                    return;
+            if (!evt.config.file)
+                return;
 
-                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+            $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
 
-            }).success(function (data, status, headers, config) {
+        }).success(function (data, status, headers, config) {
 
-                if(data.result) {
+                if (data.result) {
                     data.treeNode['resources'] = [];
-                    for(var i in uploadParams.file){
+                    for (var i in uploadParams.file) {
                         var f = uploadParams.file[i];
                         var resTemp = $scope.parseNgFile(f);
                         data.treeNode['resources'].push(resTemp);
                     }
 
-                    if($scope.videoHostLink != ''){
+                    if ($scope.videoHostLink != '') {
                         data.treeNode['resources'].push({
                             type: 'videoLink'
                         });
                     }
 
-                    if($scope.pdfHostLink != ''){
+                    if ($scope.pdfHostLink != '') {
                         data.treeNode['resources'].push({
                             type: 'pdfLink'
                         });
                     }
                 }
 
-                if($scope.addContentNodeForm) {
+                if ($scope.addContentNodeForm) {
                     $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
                     $('#addSubTopicModal').modal('hide');
@@ -1558,16 +1721,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                     // cleaning up formData
                     $scope.formData.name = "";
-                    $scope.filespdf = [];
-                    $scope.filesvideo = [];
+                    $scope.filespdf = false;
+                    $scope.filesvideo = false;
 
-                    if($scope.formData.parent)
+                    if ($scope.formData.parent)
                         delete $scope.formData.parent;
 
                     $scope.addContentNodeForm.$setPristine();
 
                     toastr.success('Content Node has been created, You can move it away from its default position');
-                } else if($scope.editContentNodeForm){
+                } else if ($scope.editContentNodeForm) {
                     $rootScope.$broadcast('onAfterEditContentNode', data.treeNode);
 
                     $('#editContentNodeModal').modal('hide');
@@ -1581,7 +1744,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 $scope.progressPercentage = 0;
                 $scope.isLoading = false;
             })
-            .error(function(data){
+            .error(function (data) {
                 $scope.isLoading = false;
                 $scope.errors = data.errors;
 
@@ -1592,22 +1755,26 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     };
 
-    $scope.cancel = function(){
-        if($scope.upload){
+    $scope.cancel = function () {
+        if ($scope.upload) {
             $scope.upload.abort();
         }
 
         $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
     };
 
-    $scope.clearVideo = function(){
-        $scope.filesvideo=[];
-        $timeout(function(){$scope.$apply()});
+    $scope.clearVideo = function () {
+        $scope.filesvideo = false;
+        $timeout(function () {
+            $scope.$apply()
+        });
     };
 
-    $scope.clearPdf = function(){
-        $scope.filespdf=[];
-        $timeout(function(){$scope.$apply()});
+    $scope.clearPdf = function () {
+        $scope.filespdf = false;
+        $timeout(function () {
+            $scope.$apply()
+        });
     };
 });
 ;app.controller('NodeRootController', function ($scope, $rootScope, $filter, $http, $location,
@@ -1824,6 +1991,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.initNode();
         }
     });
+
+    /*$scope.$watch(function () {
+        return courseService.isEnrolled();
+    }, function () {
+        $scope.isEnrolled = courseService.isEnrolled();
+    });*/
 });
 ;app.controller('PdfTabController', function ($scope, $rootScope, $filter, $http, $location,
                                              $routeParams, $timeout, ActionBarService) {
@@ -1841,6 +2014,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 });
 ;app.controller('ProfileController', function(  Page) {
     Page.setTitleWithPrefix('My Account');
+});
+app.controller('AppSettingController', function(  Page) {
+    Page.setTitleWithPrefix('3rd Party App Settings');
 });
 ;app.controller('VideoTabController', function ($scope, $rootScope, $filter, $http, $location,
                                                $routeParams, $timeout, ActionBarService) {
@@ -2863,24 +3039,24 @@ app.directive('timepicker', function($timeout) {
                 voteTypeId: '@',
                 voteValue: '@',
                 voteTotal: '@',
-                voteDisplay: '@'
+                voteDisplay: '@',
+                mode: '@'
             },
-            template: '<div class="voting">' +
-            '<a class="cursor" ng-click="sendVote(\'up\')"><div class="btn-up" ng-class="getClassUp()">' +
-            '<i class="ionicons ion-ios-arrow-up" ng-hide="(voteValue == 1)"></i>' +
-            '<i class="ionicons ion-arrow-up-b" ng-show="(voteValue == 1)"></i>' +
-            '</div></a>' +
-            '<div class="vote-total">{{voteDisplay}}</div>' +
-            '<a class="cursor"><div class="btn-down" ng-class="getClassDown()" ng-click="sendVote(\'down\')">' +
-            '<i class="ionicons ion-ios-arrow-down" ng-hide="(voteValue == -1)"></i>' +
-            '<i class="ionicons ion-arrow-down-b" ng-show="(voteValue == -1)"></i>' +
-            '</div></a>' +
-            '</div>',
+
+            templateUrl: function (elem, attrs) {
+                var mode = 'vertical';
+                if (attrs['mode'])
+                    mode = attrs['mode'];
+
+                var tmplt = '/angular/views/vote-' + mode + '.html';
+
+                return tmplt;
+            },
 
             controller: function ($scope, $compile, $http, $attrs, toastr) {
                 $scope.errors = [];
 
-                if($attrs.voteTotal)
+                if ($attrs.voteTotal)
                     $scope.voteDisplay = $attrs.voteTotal;
                 else
                     $scope.voteDisplay = 0;
@@ -2894,16 +3070,16 @@ app.directive('timepicker', function($timeout) {
                 $scope.getVoteTotal = function () {
                     $scope.isLoading = true;
                     $http.get('/api/votes/' + $scope.voteType + '/id/' + $scope.voteTypeId)
-                        .success(function(data){
-                            if(data.result && data.vote.length > 0){
+                        .success(function (data) {
+                            if (data.result && data.vote.length > 0) {
                                 $scope.voteTotal = data.vote[0].total;
                                 $scope.voteDisplay = data.vote[0].total;
 
-                                if(data.vote[0].isVotingObject){
+                                if (data.vote[0].isVotingObject) {
                                     $scope.voteValue = data.vote[0].isVotingObject.voteValue;
-                                    if($scope.voteValue == 1)
+                                    if ($scope.voteValue == 1)
                                         $scope.voteTotal -= 1;
-                                    else if($scope.voteValue == -1)
+                                    else if ($scope.voteValue == -1)
                                         $scope.voteTotal += 1;
 
                                     $scope.voteDisplay = $scope.voteTotal + $scope.voteValue;
@@ -2911,7 +3087,7 @@ app.directive('timepicker', function($timeout) {
                             }
                             $scope.isLoading = false;
                         })
-                        .error(function(data){
+                        .error(function (data) {
                             $scope.errors = data.errors;
                             $scope.isLoading = false;
                         });
@@ -2947,7 +3123,7 @@ app.directive('timepicker', function($timeout) {
                     })
                         .success(function (data) {
                             if (data.result) {
-                                if (val == 'up') { 
+                                if (val == 'up') {
                                     $scope.voteValue = 1;
 
                                 } else if (val == 'down') {
@@ -2957,10 +3133,10 @@ app.directive('timepicker', function($timeout) {
                                     $scope.voteValue = 0;
                                 }
 
-                                if(typeof($scope.voteTotal) == 'undefined')
+                                if (typeof($scope.voteTotal) == 'undefined')
                                     $scope.voteTotal = 0;
 
-                                if(val == 'reset'){
+                                if (val == 'reset') {
                                     toastr.success('Vote Removed');
                                 }
                                 else {
@@ -3352,7 +3528,8 @@ app.directive('timepicker', function($timeout) {
     });
 
     $scope.tabOpened();
-});;app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
+});
+;app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
     $scope.isLoading = false;
     $scope.errors = [];
 
@@ -3494,6 +3671,296 @@ app.directive('timepicker', function($timeout) {
             });
     };
 
+});;var externalApp = angular.module('externalApp', [
+    'ngResource', 'ngRoute', 'ngCookies', 'oc.lazyLoad',
+    'relativeDate']);;externalApp.controller('CreateAppController', function ($scope, $rootScope, $http, $location, $sce,
+                                                        $compile, $timeout,
+                                                        toastr, Page, $window) {
+
+    $scope.name = "";
+    $scope.description = "";
+
+    $scope.saveApp = function (isValid) {
+        if (isValid) {
+            $scope.isLoading = true;
+            var params = {
+                name: $scope.name,
+                description: $scope.description
+            };
+
+            var d = transformRequest(params);
+            $http({
+                method: 'POST',
+                url: '/api/oauth2/apps',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function (data) {
+                    console.log(data);
+                    if (data.result) {
+                        $scope.$emit('onAfterCreateApplication');
+                    }
+
+                    $scope.isLoading = false;
+                    toastr.success('Application is created.');
+                    window.location.href = "/settings/apps/#/app/" + data.app._id;
+                })
+                .error(function (data) {
+                    $scope.isLoading = false;
+                    $scope.errors = data.errors;
+                });
+        }
+    };
+});;externalApp.controller('CreatedAppController', function ($scope, $rootScope, $http, $location, $sce,
+                                                         $compile, $timeout, $routeParams,
+                                                         toastr, Page, externalAppService) {
+
+    $scope.app = false;
+    $scope.originalApp = false;
+    $scope.appId = $routeParams.appId;
+
+    externalAppService.getAppDetail($scope.appId, function (app) {
+        $scope.originalApp = app;
+        $scope.app = angular.copy(app);
+    }, function (err) {
+        $scope.errors = err;
+    });
+
+    $scope.editApp = function (isValid) {
+        if (!isValid)
+            return;
+
+        $scope.isLoading = true;
+        var params = {
+            name: $scope.app.name,
+            description: $scope.app.description,
+            callbackUrl: $scope.app.callbackUrl
+        };
+
+        var d = transformRequest(params);
+        $http({
+            method: 'PUT',
+            url: '/api/oauth2/app/' + $scope.app._id,
+            data: d,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                if (data.result) {
+                    $scope.$emit('onAfterEditApplication');
+                }
+
+                $scope.isLoading = false;
+                toastr.success('Application saved.');
+            })
+            .error(function (data) {
+                $scope.isLoading = false;
+                $scope.errors = data.errors;
+            });
+    };
+
+    $scope.deleteApp = function () {
+        if (!window.confirm('Are you sure you want to delete this application?'))
+            return;
+
+        $scope.isLoadingDelete = true;
+
+        $http({
+            method: 'DELETE',
+            url: '/api/oauth2/app/' + $scope.app._id,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+            .success(function (data) {
+                if (data.result) {
+                    $scope.$emit('onAfterDeleteApplication');
+                }
+
+                $scope.isLoadingDelete = false;
+                toastr.success('Application Deleted.');
+                $location.path('/installed').replace();
+            })
+            .error(function (data) {
+                $scope.isLoadingDelete = false;
+                $scope.errors = data.errors;
+            });
+    };
+
+    $scope.cancel = function () {
+        $scope.app = angular.copy($scope.originalApp);
+    }
+});
+;externalApp.controller('CreatedAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                          $compile, $timeout,
+                                                          toastr, Page, $window) {
+
+});;externalApp.factory('externalAppService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            installedApps: null,
+            createdApps: null,
+
+            getCreatedApps: function (success, error, force) {
+                var self = this;
+
+                if (!force && self.createdApps) {
+                    if (success)
+                        success(self.createdApps);
+                }
+
+                else if (force || !self.createdApps)
+                    $http.get('/api/oauth2/apps/created')
+                        .success(function (data) {
+                            if (data.result && data.apps) {
+                                self.createdApps = data.apps;
+                                if (success)
+                                    success(self.createdApps);
+                            }
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+            getInstalledApps: function (success, error, force) {
+                var self = this;
+
+                if (!force && self.installedApps) {
+                    if (success)
+                        success(self.installedApps);
+                }
+                else if (force || !self.installedApps)
+                    $http.get('/api/oauth2/apps/installed')
+                        .success(function (data) {
+                            if (data.result && data.apps) {
+                                self.installedApps = data.apps;
+                                if (success)
+                                    success(self.installedApps);
+                            }
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+            },
+
+            getAppDetail: function (appId, success, error) {
+                $http.get('/api/oauth2/app/' + appId)
+                    .success(function (data) {
+                        if (data.result && data.app) {
+                            if (success)
+                                success(data.app);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
+            deleteInstallation: function (installId, success, error) {
+                $http.delete('/api/oauth2/installedApp/' + installId)
+                    .success(function (data) {
+                        if (data.result) {
+                            success(data);
+                        }
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            }
+        }
+    }
+]);;externalApp.controller('ExternalAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                           $compile, ActionBarService, courseService,
+                                                           discussionService, $timeout,
+                                                           toastr, Page, $window, externalAppService) {
+    $scope.createdApps = [];
+    $scope.installedApps = [];
+    $scope.errors = [];
+
+    externalAppService.getCreatedApps(
+        function (apps) {
+            $scope.createdApps = apps;
+        },
+        function (err) {
+            $scope.errors = err;
+        }
+    );
+
+    externalAppService.getInstalledApps(
+        function (apps) {
+            $scope.installedApps = apps;
+        },
+        function (err) {
+            $scope.errors = err;
+        }
+    );
+});;externalApp.config(['$routeProvider', '$locationProvider',
+
+    function ($routeProvider, $locationProvider) {
+
+        $routeProvider.
+        when('/createExternalApp', {
+            templateUrl: '/settings/apps/createExternalApp',
+            controller: 'CreateAppController',
+            reloadOnSearch: false
+        }).
+
+        when('/createdApps', {
+            templateUrl: '/settings/apps/createdApps',
+            controller: 'CreatedAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/installed', {
+            templateUrl: '/settings/apps/installed',
+            controller: 'InstalledAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/documentation', {
+            templateUrl: '/settings/apps/documentation',
+            controller: 'CreatedAppsController',
+            reloadOnSearch: false
+        }).
+
+        when('/app/:appId', {
+            templateUrl: '/settings/apps/appDetail',
+            controller: 'CreatedAppController',
+            reloadOnSearch: false
+        }).
+
+        otherwise({
+            redirectTo: '/'
+        });
+
+    }]);
+;externalApp.controller('InstalledAppsController', function ($scope, $rootScope, $http, $location, $sce,
+                                                            $compile, $timeout,
+                                                            toastr, externalAppService) {
+
+    $scope.deleteInstallation = function (installId) {
+        if (confirm('This application will not have access to your data anymore.')) {
+            externalAppService.deleteInstallation(installId,
+                function () {
+                    toastr.success('Application deleted.');
+                    var deleted = _.remove($scope.$parent.installedApps, {_id: installId});
+                },
+                function () {
+                    toastr.error('Delete failed.');
+                }
+            );
+        }
+    }
 });;app.factory('authService', [
     '$rootScope', '$http',
 
@@ -3525,7 +3992,7 @@ app.directive('timepicker', function($timeout) {
 
                     self.isCheckingForLogin = true;
 
-                    $http.get('/api/accounts').success(function (data) {
+                    $http.get('/api/account').success(function (data) {
                         self.isCheckingForLogin = false;
 
                         self.hasTriedToLogin = true;
@@ -3571,13 +4038,11 @@ app.directive('timepicker', function($timeout) {
                     .success(
                         function success(data) {
                             if (data.result) {
-                                /*$rootScope.user = data.user;
-                                 self.user = data.user;
-                                 self.isLoggedIn = true;
-                                 $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
-                                 successCallback($rootScope.user);*/
-
-                                window.location.reload();
+                                $rootScope.user = data.user;
+                                self.user = data.user;
+                                self.isLoggedIn = true;
+                                $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+                                successCallback($rootScope.user);
                             }
                         })
                     .error(
@@ -3613,6 +4078,73 @@ app.directive('timepicker', function($timeout) {
                     }
                 );
             }
+        }
+    }
+]);;app.factory('collapseService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            collapsed: [],
+
+            isCollapsed: function (nodeId) {
+                var idx = this.collapsed.indexOf(nodeId);
+                if (idx != -1) {
+                    return idx;
+                }
+
+                return false;
+            }, 
+
+            /**
+             *
+             * @param nodeId
+             * @returns {boolean} true: hide, false: show
+             */
+            toggle: function (nodeId) {
+                var idx = this.isCollapsed(nodeId);
+                if (idx === false) {
+                    // hidden, now set it to hide
+                    this.collapsed.push(nodeId);
+                    // true means hide
+                    return true;
+                } else {
+                    // show back
+                    this.collapsed.splice(idx, 1);
+                    return false;
+                }
+            },
+
+            affectVisual: function (hide, pNode, nodeId) {
+                var self = this;
+
+                for (var i in pNode.childrens) {
+                    var chs = pNode.childrens[i];
+                    if (hide) {
+                        $('#t' + chs._id).hide();
+                        if (chs.childrens.length > 0) {
+                            self.affectVisual(hide, chs, chs._id);
+                        }
+                    }
+                    else {
+                        $('#t' + chs._id).show();
+                        if (chs.childrens.length > 0) {
+                            var isChildrenCollapsed = self.isCollapsed(chs._id);
+                            if (isChildrenCollapsed === false)
+                                self.affectVisual(false, chs, chs._id);
+                            else
+                                self.affectVisual(true, chs, chs._id);
+                        }
+                    }
+                }
+
+                // hide svg
+                if (hide)
+                    $("svg[data-source='t" + nodeId + "'").hide();
+                else
+                    $("svg[data-source='t" + nodeId + "'").show();
+            }
+
         }
     }
 ]);;app.factory('courseService', [
@@ -4002,27 +4534,36 @@ app.directive('timepicker', function($timeout) {
 });;/*jslint node: true */
 'use strict';
 
-app.factory('socket', function($rootScope) {
+app.factory('socket', function ($rootScope) {
     var socket = io.connect();
 
     return {
-        on: function(eventName, callback) {
-            socket.on(eventName, function() {
+        on: function (eventName, callback) {
+            socket.on(eventName, function () {
                 var args = arguments;
-                $rootScope.$apply(function() {
+                $rootScope.$apply(function () {
                     callback.apply(socket, args);
                 });
             });
         },
-        emit: function(eventName, data, callback) {
-            socket.emit(eventName, data, function() {
+
+        emit: function (eventName, data, callback) {
+            socket.emit(eventName, data, function () {
                 var args = arguments;
-                $rootScope.$apply(function() {
+                $rootScope.$apply(function () {
                     if (callback) {
                         callback.apply(socket, args);
                     }
                 });
             });
+        },
+
+        subscribe: function (room) {
+            socket.emit("subscribe", {room: room});
+        },
+
+        unSubscribe: function (room) {
+            socket.emit("unSubscribe", {room: room});
         }
     };
 });
@@ -4200,7 +4741,7 @@ app.factory('socket', function($rootScope) {
                 var el = '#w' + id;
 
                 // get width and height
-                var i = _.findIndex(self.widgets[location], {'widgetId': {'_id': id}});
+                var i = _.findIndex(self.widgets[location], {'_id': id});
                 var wdg = self.widgets[location][i];
 
                 //add_widget(el, x, y, width, height, auto_position)
@@ -4381,11 +4922,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.pid = pid;
         $location.search('pid', pid);
 
-        $scope.manageActionBar();
-
         if ($scope.pid) {
             $scope.setCurrentLink($scope.pid)
         }
+
+        $scope.manageActionBar();
     };
 
     $scope.newRowsFetched = function (newRows, allRows) {
@@ -4451,6 +4992,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                 if (data.result) {
                     $scope.$emit('onAfterCreateNewLink', data.post);
+                    data.post.createdBy = authService.user;
                     $scope.links.unshift(data.post);
                     $timeout(function () {
                         $scope.$apply()
@@ -4543,23 +5085,29 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
         if ($scope.pid) {
             ActionBarService.extraActionsMenu = [];
-            ActionBarService.extraActionsMenu.unshift({
-                separator: true
-            });
 
-            ActionBarService.extraActionsMenu.push({
-                'html': '<a style="cursor: pointer;"' +
-                ' data-toggle="modal" data-target="#EditLinksModal"' +
-                ' title="Edit">' +
-                '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
-            });
+            if ($scope.isAdmin || $scope.isOwner || $scope.isManager ||
+                $scope.currentLink.createdBy._id == authService.user._id ||
+                $scope.currentLink.createdBy == authService.user._id
+            ) {
+                ActionBarService.extraActionsMenu.unshift({
+                    separator: true
+                });
 
-            ActionBarService.extraActionsMenu.push({
-                clickAction: $scope.deletePost,
-                clickParams: $scope.pid,
-                title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
-                aTitle: 'DELETE'
-            });
+                ActionBarService.extraActionsMenu.push({
+                    'html': '<a style="cursor: pointer;"' +
+                    ' data-toggle="modal" data-target="#EditLinksModal"' +
+                    ' title="Edit">' +
+                    '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>'
+                });
+
+                ActionBarService.extraActionsMenu.push({
+                    clickAction: $scope.deletePost,
+                    clickParams: $scope.pid,
+                    title: '<i class="ionicons ion-close"></i> &nbsp;DELETE',
+                    aTitle: 'DELETE'
+                });
+            }
         }
         else if (!$scope.pid) {
             $scope.currentLink = {};
@@ -6053,11 +6601,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $(document).on('click', function (event) {
             var target = $(event.target);
             var k = target.parents('div');
-            if(k.hasClass('ui-draggable')){
+            if (k.hasClass('ui-draggable')) {
                 return false;
             }
 
-            if ($('.open').length > 0) { 
+            if ($('.open').length > 0) {
                 $('.open').removeClass('open');
                 return false;
             }
@@ -6081,7 +6629,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                 return false;
             })
-            .on('mouseenter', function(){
+            .on('mouseenter', function () {
                 $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
                     function (res) {
                         if (res.result) {
@@ -6103,7 +6651,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                 anchors: [
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + child.slug)[0].getAttribute("data-shape")}]
-                ]
+                ],
+                connector: ["Bezier", {curviness: 5}]
             });
 
             if (child.subCategories) {
@@ -6117,7 +6666,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     };
 
 });
-;app.controller('LoginPageController', function($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
+;app.controller('LoginPageController', function ($scope, $http, $rootScope, $cookies, authService, toastr, $location) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -6125,45 +6674,46 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.referer = false;
     $scope.isLoading = false;
 
-    authService.loginCheck(function(user){
+    authService.loginCheck(function (user) {
         $scope.user = user;
-        if($scope.user){
+        if ($scope.user) {
             window.location = '/accounts';
         }
     });
 
-    if($cookies.rememberMe) {
+    if ($cookies.rememberMe) {
         $scope.rememberMe = $cookies.rememberMe;
     }
 
-    $scope.$watch('rememberMe', function(newVal, oldVal){
-        if(newVal !== oldVal){
+    $scope.$watch('rememberMe', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
 
-    $scope.noticeAfterSignUp = function(){
+    $scope.noticeAfterSignUp = function () {
         var k = $location.search();
-        if(k.referer && k.referer == 'signUp' && k.result && k.result == 'success'){
+        if (k.referer && k.referer == 'signUp' && k.result && k.result == 'success') {
             toastr.success('Please login using your new username and password!', 'Sign Up Success');
         }
     };
 
     $scope.noticeAfterSignUp();
 
-    $scope.login = function(isValid){
-        if(isValid){
+    $scope.login = function (isValid) {
+        if (isValid) {
             $scope.isLoading = true;
             authService.login($scope.loginData,
-                function(user){
+                function (user) {
                     $scope.user = user;
-                    if(!$scope.referer) {
+                    if (!$scope.referer) {
                         window.location = '/accounts';
                     }
+
                     $scope.isLoading = false;
                 },
                 function error(data) {
-                    if(data.errors){
+                    if (data.errors) {
                         $scope.errors = data.errors;
                     }
                     $scope.isLoading = false;
@@ -6175,7 +6725,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 });;app.controller('MainController', function($scope, Page) {
     $scope.Page = Page;
 });
-;app.controller('MainMenuController', function($scope, $http, $rootScope, $cookies, authService, toastr) {
+;app.controller('MainMenuController', function ($scope, $http, $rootScope, $cookies, authService, toastr) {
     $scope.rememberMe = false;
     $scope.loginData = {};
     $scope.errors = [];
@@ -6183,31 +6733,33 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.referer = false;
     $scope.isLoading = false;
 
-    authService.loginCheck(function(user){
+    authService.loginCheck(function (user) {
         $scope.user = user;
     });
 
-    if($cookies.rememberMe) {
+    if ($cookies.rememberMe) {
         $scope.rememberMe = $cookies.rememberMe;
     }
 
-    $scope.$watch('rememberMe', function(newVal, oldVal){
-        if(newVal !== oldVal){
+    $scope.$watch('rememberMe', function (newVal, oldVal) {
+        if (newVal !== oldVal) {
             $cookies.rememberMe = $scope.rememberMe;
         }
     });
 
-    $scope.login = function(isValid){
-        if(isValid){
+    $scope.login = function (isValid) {
+        if (isValid) {
             $scope.isLoading = true;
             authService.login($scope.loginData,
-                function(user){
+                function (user) {
                     $scope.user = user;
                     toastr.success('', "You're now logged in!");
                     $scope.isLoading = false;
+
+                    window.location.reload();
                 },
                 function error(data) {
-                    if(data.errors){
+                    if (data.errors) {
                         $scope.errors = data.errors;
                         $scope.isLoading = false;
                     }
@@ -6260,67 +6812,74 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
-;app.controller('UserEditController', function($scope, $http, $rootScope, $timeout, authService) {
+;app.controller('UserEditController', function ($scope, $http, $rootScope, $timeout, authService, toastr) {
     $scope.user = {};
     $scope.formData = {};
     $scope.errors = null;
 
-    $scope.$on('onAfterInitUser', function(event, user){
+    $scope.$on('onAfterInitUser', function (event, user) {
         $scope.user = user;
         $scope.formData.displayName = $scope.user.displayName;
     });
 
-    $scope.saveEditUser = function(){
-        if($scope.user.displayName)
+    $scope.saveEditUser = function () {
+        if ($scope.user.displayName)
             $scope.formData.displayName = $scope.user.displayName;
 
-        if($scope.formData.password ) {
+        if ($scope.formData.password) {
             if ($scope.formData.password != $scope.formData.passwordConfirm) {
-
+                $scope.errors = ['Password and password confirmation does not match.'];
+                return;
             }
         }
 
         var d = transformRequest($scope.formData);
         $http({
             method: 'PUT',
-            url: '/api/accounts/' + $scope.user._id,
+            url: '/api/account/' + $scope.user._id,
             data: d, // pass in data as strings
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         })
-            .success(function(data) {
-                if(data.result) {
+            .success(function (data) {
+                if (data.result) {
                     $scope.$emit('init');
-                    authService.loginCheck(function(user){
+                    authService.loginCheck(function (user) {
                         $scope.user = user;
-                        $timeout(function(){
+                        $timeout(function () {
                             $scope.$apply();
                             $('.user-image').attr('src', $scope.user.image);
                         });
                     });
+
+                    $scope.formData.password = '';
+                    $scope.formData.passwordConfirm = '';
+                    $scope.formData.oldPassword = '';
+
+                    toastr.success('Your profile is updated');
+
                     $('#editAccountModal').modal('hide');
                 }
             })
-            .error(function(data){
-                if(!data.result){
+            .error(function (data) {
+                if (!data.result) {
                     $scope.errors = data.errors;
-                    console.log(data.errors);
                 }
             });
     };
 
-    $scope.cancel = function(){
+    $scope.cancel = function () {
         $('#editAccountModal').modal('hide');
     }
 
 });
-;app.controller('widgetController', function($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
+;app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
     $scope.location = "";
     $scope.widgets = [];
     $scope.widgetsTemp = [];
 
-    $scope.initWidgetButton = function(id){
+    $scope.initWidgetButton = function (id) {
         $.AdminLTE.boxWidget.activate();
         $scope.addWidget(id);
 
@@ -6328,21 +6887,21 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
     };
 
-    $scope.$on('onAfterInitUser', function(event, user){
-        $scope.$watch('location', function(newVal, oldVal){
-            if($scope.location == 'user-profile'){
+    $scope.$on('onAfterInitUser', function (event, user) {
+        $scope.$watch('location', function (newVal, oldVal) {
+            if ($scope.location == 'user-profile') {
                 $scope.getWidgets();
             }
         });
     });
 
-    $scope.$on('onAfterInitCourse', function(event, course){
+    $scope.$on('onAfterInitCourse', function (event, course) {
         $scope.course = course;
         $scope.getWidgets();
     });
 
-    $scope.$watch('location', function(newVal, oldVal) {
-        if($scope.location == '')
+    $scope.$watch('location', function (newVal, oldVal) {
+        if ($scope.location == '')
             return;
 
         var onafter = 'onAfterInstall' + $scope.location;
@@ -6355,7 +6914,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         });
 
         var onafter2 = 'onAfterUninstall' + $scope.location;
-        $scope.$on( onafter2, function(event, newWidget){
+        $scope.$on(onafter2, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
             grid.remove_all();
@@ -6365,14 +6924,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     });
 
-    $scope.lazyLoad = function(wdg, currentIndex, widgetJsArray, fileToLoad){
-        (function(wdg) {
+    $scope.lazyLoad = function (wdg, currentIndex, widgetJsArray, fileToLoad) {
+        (function (wdg) {
             var jsfn = '/' + wdg.application + '/' + fileToLoad;
 
-            $ocLazyLoad.load(jsfn).then(function() {
+            $ocLazyLoad.load(jsfn).then(function () {
                 // the last one has been loaded
                 var l = wdg.widgetId.widgetJavascript.length - 1;
-                if(fileToLoad == wdg.widgetId.widgetJavascript[l]){
+                if (fileToLoad == wdg.widgetId.widgetJavascript[l]) {
                     // only push to main widgets array when it is the last js to load
                     $scope.widgets.push(wdg);
                 } else {
@@ -6383,13 +6942,13 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         })(wdg);
     };
 
-    $scope.getWidgets = function(){
+    $scope.getWidgets = function () {
         var id = "";
 
-        if($scope.location == 'user-profile')
+        if ($scope.location == 'user-profile')
             id = $rootScope.user._id;
 
-        else if($scope.location == 'course-preview' || $scope.location == 'course-analytics')
+        else if ($scope.location == 'course-preview' || $scope.location == 'course-analytics')
             id = $scope.course._id;
 
         $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
@@ -6398,11 +6957,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
             $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgetsTemp);
 
-            for(var i in $scope.widgetsTemp){
+            for (var i in $scope.widgetsTemp) {
                 var wdg = $scope.widgetsTemp[i];
 
                 // loop to load the js (if exist)
-                if(wdg.widgetId.widgetJavascript) {
+                if (wdg.widgetId.widgetJavascript) {
                     //if(wdg.widgetId.widgetJavascript.type() == 'Array'){
                     //for(var j = 0; j < wdg.widgetId.widgetJavascript.length; j++)
                     //var loading = true;
@@ -6418,34 +6977,34 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         });
     };
 
-    $scope.addWidget = function(id){
+    $scope.addWidget = function (id) {
         var loc = '#' + $scope.location + '-widgets';
         var grid = $(loc).data('gridstack');
 
         var el = '#w' + id;
 
         // get width and height
-        var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
+        var i = _.findIndex($scope.widgets, {'_id': id});
         var wdg = $scope.widgets[i];
 
         //add_widget(el, x, y, width, height, auto_position)
         var x = 0;
         var y = 0;
-        if(wdg.position){
+        if (wdg.position) {
             x = wdg.position.x;
             y = wdg.position.y;
         }
         grid.add_widget(el, x, y, wdg.width, wdg.height, false);
     };
 
-    $scope.closeWidget = function(id){
-        var i = _.findIndex($scope.widgets, { 'widgetId': {'_id' : id}});
+    $scope.closeWidget = function (id) {
+        var i = _.findIndex($scope.widgets, {'widgetId': {'_id': id}});
         var wdg = $scope.widgets[i];
 
         $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
     };
 
-    $scope.initiateDraggableGrid = function(locs){
+    $scope.initiateDraggableGrid = function (locs) {
         $scope.location = locs;
         var loc = '#' + locs + '-widgets';
 
@@ -6456,7 +7015,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
             //allowed_grids: [0, 4, 8]
         };
 
-        var curNode = {x:0, y:0};
+        var curNode = {x: 0, y: 0};
 
         var $gs = $(loc);
         $gs.gridstack(options);
@@ -6473,7 +7032,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $gs.on('onFinishDrop', function (e, node) {
             var o = $(node.el);
 
-            if(options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0){
+            if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
                 o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
             }
 
@@ -6482,14 +7041,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         });
     };
 
-    $scope.setPosition = function(wId, x, y){
+    $scope.setPosition = function (wId, x, y) {
         $http.put('/api/widget/' + wId + '/setPosition', {
-            x:x, y:y
-        }).success(function(res){
+            x: x, y: y
+        }).success(function (res) {
             /*if(res.result)
-            {
-                console.log('set position success');
-            }*/
+             {
+             console.log('set position success');
+             }*/
         });
     };
 

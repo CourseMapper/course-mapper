@@ -212,4 +212,10 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
             $scope.initNode();
         }
     });
+
+    /*$scope.$watch(function () {
+        return courseService.isEnrolled();
+    }, function () {
+        $scope.isEnrolled = courseService.isEnrolled();
+    });*/
 });

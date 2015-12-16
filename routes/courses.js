@@ -14,6 +14,30 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var _ = require('underscore');
 
+// set a cookie
+router.use(function (req, res, next) {
+    var isInIframe = false;
+    var setCookie = false;
+    if (req.query.iframe === 'true') {
+        isInIframe = true;
+        setCookie = true;
+    }
+    else if (req.query.iframe === 'false') {
+        isInIframe = false;
+        setCookie = true;
+    }
+
+    // check if client sent cookie
+    var cookie = req.cookies.isInIframe;
+
+    // set if not set
+    if (setCookie || cookie === undefined) {
+        res.cookie('isInIframe', isInIframe, {maxAge: 900000, httpOnly: true});
+    }
+
+    next();
+});
+
 /**
  * get courses based on category slug
  * return: html view
@@ -27,7 +51,6 @@ router.get('/courses', function (req, res, next) {
     });
 });
 
-
 router.get('/course/courseDetail/:courseId', function (req, res, next) {
     var TC = new TabsController();
     var crs = new CourseController();
@@ -39,6 +62,14 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
 
         return {tabs: tabs, course: cr, tabsActive: cr.tabsActive};
     });
+
+    var isInIframe = (req.cookies.isInIframe === 'true');
+    if (!isInIframe)
+        if (req.query.iframe === 'true') {
+            isInIframe = true;
+        } else if (req.query.iframe === 'false') {
+            isInIframe = false;
+        }
 
     op()
         .then(function (ret) {
@@ -64,7 +95,8 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
 
             res.render(theme + '/catalogs/courseDetail', {
                 tabs: ret.tabs, tabsActive: ret.tabsActive, _: _,
-                course: ret.course, activeTabs: activeTabs
+                course: ret.course, activeTabs: activeTabs,
+                isInIframe: isInIframe
             });
         })
         .catch(function (err) {
@@ -80,7 +112,7 @@ router.get('/course/tab/:tabName', function (req, res, next) {
 });
 
 router.get('/course/actionBar/:tabName', function (req, res, next) {
-    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.tabName + 'actionBar');
+    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.tabName + 'ActionBar');
 });
 
 /**
@@ -126,6 +158,14 @@ router.get('/course/:slug', function (req, res, next) {
     var params = {
         slug: req.params.slug
     };
+
+    var isInIframe = (req.cookies.isInIframe === 'true');
+    if (!isInIframe)
+        if (req.query.iframe === 'true') {
+            isInIframe = true;
+        } else if (req.query.iframe === 'false') {
+            isInIframe = false;
+        }
 
     var c = new CourseController();
     c.getCourse(
@@ -174,7 +214,8 @@ router.get('/course/:slug', function (req, res, next) {
                             user: req.user,
                             moment: moment,
                             isInNodeDetailPage: false,
-                            activeTabs: activeTabs
+                            activeTabs: activeTabs,
+                            isInIframe: isInIframe
                         });
                     })
                     .catch(function (err) {

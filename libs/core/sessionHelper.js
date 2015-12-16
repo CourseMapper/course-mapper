@@ -1,5 +1,3 @@
-var helper = require('./generalLibs.js');
-
 var sessionHelper = {
     /**
      * check for user logged in for API uses

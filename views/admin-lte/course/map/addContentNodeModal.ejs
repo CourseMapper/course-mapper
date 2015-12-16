@@ -1,14 +1,14 @@
 <!-- Main content -->
 <section class="content" ng-controller="NodeEditController">
     <div class="row row-centered">
-        <div class="col-xs-12 col-md-5 col-centered">
+        <div class="col-xs-12 col-md-6 col-centered">
             <div class="box no-border" ng-init="init()">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{nodeModaltitle}}</h3>
 
                     <div class="box-tools pull-right">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                                    aria-hidden="true">&times;</span></button>
                     </div>
                 </div>
 
@@ -27,7 +27,7 @@
                                     <input type="text" id="name" name="name" placeholder="" class="form-control"
                                            ng-model="formData.name"
                                            required ng-required="true"
-                                            >
+                                    >
 
                                     <p ng-show="addContentNodeForm.name.$invalid && !addContentNodeForm.$pristine"
                                        class="help-block">Content Node Name is required.</p>
@@ -63,37 +63,39 @@
                                                 </div>
 
                                                 <div class="btn btn-sm btn-default"
-                                                     ngf-select accept="application/pdf" ngf-accept="'application/pdf'"
+                                                     ngf-select accept="application/pdf"
                                                      ng-model="filespdf" ngf-multiple="false" ngf-max-size='50000000'
                                                      ng-hide="pdfHostLink.trim()!=''">
                                                     <i class="fa fa-file-pdf-o"></i> &nbsp; Select a pdf file (Max 24MB)
                                                 </div>
                                                 <br>
-                                                <span ng-repeat="f in filespdf">
+                                                <span ng-show="filespdf">
                                                     <div class="label label-info ">
-                                                        {{f.name}}
+                                                        {{filespdf.name}}
                                                         <a ng-click="clearPdf()">
-                                                        <i class="fa fa-close"></i>
+                                                            <i class="fa fa-close"></i>
                                                         </a>
-                                                        </div>
+                                                    </div>
                                                 </span>
                                             </div>
                                         </div>
 
                                         <div id="upload-pdf-link" class="tab-pane fade in">
-                                            <div ng-hide="filespdf.length > 0">
+                                            <div ng-hide="!filespdf">
                                                 <br>
                                                 <div class="input-group">
                                                     <span class="input-group-addon"><i class="fa fa-chain"></i></span>
-                                                    <input type="url" class="form-control" placeholder="http://" ng-model="pdfHostLink">
+                                                    <input type="url" class="form-control" placeholder="http://"
+                                                           ng-model="pdfHostLink">
                                                 </div>
 
                                                 <span class="error" ng-show="addContentNodeForm.pdfHostLink.$error.url">
                                                     Not a valid url!</span>
                                             </div>
-                                            <div ng-show="filespdf.length > 0">
+                                            <div ng-show="filespdf">
                                                 <br>
-                                                You have added a pdf, please remove it if you want to use an external link
+                                                You have added a pdf, please remove it if you want to use an external
+                                                link
                                             </div>
                                         </div>
                                     </div>
@@ -122,39 +124,44 @@
                                         <div id="upload-video" class="tab-pane fade in active">
                                             <br>
                                             <div ng-show="videoHostLink.trim()!=''">
-                                                You have added a link to an external video, please remove it if you want to upload from local drive.
+                                                You have added a link to an external video, please remove it if you want
+                                                to upload from local drive.
                                             </div>
                                             <div class="controls" ng-hide="videoHostLink.trim() != ''">
                                                 <div class="btn btn-sm btn-default"
-                                                     ngf-select accept="video/*" ngf-accept="'video/*'"
+                                                     ngf-select accept="video/mp4,video/x-m4v,video/*"
                                                      ng-model="filesvideo" ngf-multiple="false"
                                                      ngf-max-size='100000000'><i
-                                                        class="fa fa-file-video-o"></i> &nbsp; Select a video file (Max
-                                                    75MB)
+                                                            class="fa fa-file-video-o"></i> &nbsp; Select a video file
+                                                    (Max 75MB)
                                                 </div>
                                                 <br>
-                                                <span ng-repeat="f in filesvideo">
+                                                <span ng-show="filesvideo">
                                                 <div class="label label-info ">
-                                                {{f.name}}
-                                                    <a ng-click="clearVideo()" class="cursor"> <i class="fa fa-close"></i> </a>
+                                                    {{filesvideo.name}}
+                                                    <a ng-click="clearVideo()" class="cursor"> <i
+                                                                class="fa fa-close"></i> </a>
                                                 </div>
                                                 </span>
                                             </div>
                                         </div>
                                         <div id="upload-link" class="tab-pane fade">
-                                            <div ng-hide="filesvideo.length > 0">
+                                            <div ng-hide="filesvideo">
                                                 <br>
                                                 <div class="input-group">
                                                     <span class="input-group-addon"><i class="fa fa-chain"></i></span>
-                                                    <input type="url" class="form-control" placeholder="http://youtube.com/" ng-model="videoHostLink">
+                                                    <input type="url" class="form-control"
+                                                           placeholder="http://youtube.com/" ng-model="videoHostLink">
                                                 </div>
 
-                                                <span class="error" ng-show="addContentNodeForm.videoHostLink.$error.url">
+                                                <span class="error"
+                                                      ng-show="addContentNodeForm.videoHostLink.$error.url">
                                                     Not a valid url!</span>
                                             </div>
-                                            <div ng-show="filesvideo.length > 0">
+                                            <div ng-show="filesvideo">
                                                 <br>
-                                                You have added a file video, please remove it if you want to use an external link
+                                                You have added a file video, please remove it if you want to use an
+                                                external link
                                             </div>
                                         </div>
 

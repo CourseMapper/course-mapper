@@ -29,7 +29,7 @@ app.factory('authService', [
 
                     self.isCheckingForLogin = true;
 
-                    $http.get('/api/accounts').success(function (data) {
+                    $http.get('/api/account').success(function (data) {
                         self.isCheckingForLogin = false;
 
                         self.hasTriedToLogin = true;
@@ -75,13 +75,11 @@ app.factory('authService', [
                     .success(
                         function success(data) {
                             if (data.result) {
-                                /*$rootScope.user = data.user;
-                                 self.user = data.user;
-                                 self.isLoggedIn = true;
-                                 $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
-                                 successCallback($rootScope.user);*/
-
-                                window.location.reload();
+                                $rootScope.user = data.user;
+                                self.user = data.user;
+                                self.isLoggedIn = true;
+                                $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
+                                successCallback($rootScope.user);
                             }
                         })
                     .error(

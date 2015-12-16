@@ -1,27 +1,36 @@
 /*jslint node: true */
 'use strict';
 
-app.factory('socket', function($rootScope) {
+app.factory('socket', function ($rootScope) {
     var socket = io.connect();
 
     return {
-        on: function(eventName, callback) {
-            socket.on(eventName, function() {
+        on: function (eventName, callback) {
+            socket.on(eventName, function () {
                 var args = arguments;
-                $rootScope.$apply(function() {
+                $rootScope.$apply(function () {
                     callback.apply(socket, args);
                 });
             });
         },
-        emit: function(eventName, data, callback) {
-            socket.emit(eventName, data, function() {
+
+        emit: function (eventName, data, callback) {
+            socket.emit(eventName, data, function () {
                 var args = arguments;
-                $rootScope.$apply(function() {
+                $rootScope.$apply(function () {
                     if (callback) {
                         callback.apply(socket, args);
                     }
                 });
             });
+        },
+
+        subscribe: function (room) {
+            socket.emit("subscribe", {room: room});
+        },
+
+        unSubscribe: function (room) {
+            socket.emit("unSubscribe", {room: room});
         }
     };
 });

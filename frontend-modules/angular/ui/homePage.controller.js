@@ -72,11 +72,11 @@ app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, 
         $(document).on('click', function (event) {
             var target = $(event.target);
             var k = target.parents('div');
-            if(k.hasClass('ui-draggable')){
+            if (k.hasClass('ui-draggable')) {
                 return false;
             }
 
-            if ($('.open').length > 0) { 
+            if ($('.open').length > 0) {
                 $('.open').removeClass('open');
                 return false;
             }
@@ -100,7 +100,7 @@ app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, 
 
                 return false;
             })
-            .on('mouseenter', function(){
+            .on('mouseenter', function () {
                 $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
                     function (res) {
                         if (res.result) {
@@ -122,7 +122,8 @@ app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, 
                 anchors: [
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + child.slug)[0].getAttribute("data-shape")}]
-                ]
+                ],
+                connector: ["Bezier", {curviness: 5}]
             });
 
             if (child.subCategories) {

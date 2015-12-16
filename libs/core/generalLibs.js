@@ -1,3 +1,5 @@
+var passport = require('passport');
+
 var cmLibraries = {
     /**
      * do validation of required parameters before sending them to query
@@ -104,6 +106,75 @@ var cmLibraries = {
             result: false,
             errors: errMsg
         });
+    },
+
+    ensureAuthenticated: function (req, res, next) {
+        // local strategy
+        if (req.isAuthenticated()) {
+            return next();
+        } else {
+            // basic strategy
+            passport.authenticate(['basic', 'bearer'], {session: false}, function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    cmLibraries.resReturn(cmLibraries.createError401(), res);
+                }
+                else {
+                    /*req.logIn(user, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        return next();
+                    });*/
+                    return next();
+                }
+            })(req, res, next);
+        }
+    },
+
+    ensureAuthenticated2: function (req, res, next) {
+        // local strategy
+        if (req.isAuthenticated()) {
+            return next();
+        } else {
+            // basic strategy
+            passport.authenticate(['basic', 'bearer'], {session: false}, function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    return next(new Error('401'));
+                }
+                else {
+                    req.logIn(user, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        return next();
+                    });
+                }
+            })(req, res, next);
+        }
+    },
+
+    uid: function (len) {
+        var buf = []
+            , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+            , charlen = chars.length;
+
+        for (var i = 0; i < len; ++i) {
+            buf.push(chars[cmLibraries.getRandomInt(0, charlen - 1)]);
+        }
+
+        return buf.join('');
+    },
+
+    getRandomInt: function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 };
 

@@ -14,6 +14,30 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var _ = require('underscore');
 
+// set a cookie
+router.use(function (req, res, next) {
+    var isInIframe = false;
+    var setCookie = false;
+
+    if (req.query.iframe === 'true') {
+        isInIframe = true;
+        setCookie = true;
+    }
+    else if (req.query.iframe === 'false') {
+        isInIframe = false;
+        setCookie = true;
+    }
+
+    // check if client sent cookie
+    var cookie = req.cookies.isInIframe;
+
+    // set if not set
+    if (setCookie || cookie === undefined) {
+        res.cookie('isInIframe', isInIframe, {maxAge: 900000, httpOnly: true});
+    }
+
+    next();
+});
 
 /**
  * partials related to tab and actionbars
@@ -41,6 +65,14 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
         return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId, treeNode: nd};
     });
 
+    var isInIframe = (req.cookies.isInIframe === 'true');
+    if (!isInIframe)
+        if (req.query.iframe === 'true') {
+            isInIframe = true;
+        } else if (req.query.iframe === 'false') {
+            isInIframe = false;
+        }
+
     op()
         .then(function (ret) {
             var activeTabs = [];
@@ -63,7 +95,7 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
                 activeTabs.push(tap);
             }
 
-            var le = _.extend(ret, {activeTabs: activeTabs});
+            var le = _.extend(ret, {activeTabs: activeTabs, isInIframe: isInIframe});
             res.render(theme + '/catalogs/nodeDetail', le);
         })
         .catch(function (err) {
@@ -86,6 +118,14 @@ router.get('/treeNode/:nid', function (req, res, next) {
 
         return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId};
     });
+
+    var isInIframe = (req.cookies.isInIframe === 'true');
+    if (!isInIframe)
+        if (req.query.iframe === 'true') {
+            isInIframe = true;
+        } else if (req.query.iframe === 'false') {
+            isInIframe = false;
+        }
 
     op()
         .then(function (ret) {
@@ -115,7 +155,8 @@ router.get('/treeNode/:nid', function (req, res, next) {
                 user: req.user,
                 moment: moment,
                 isInNodeDetailPage: true,
-                activeTabs: activeTabs
+                activeTabs: activeTabs,
+                isInIframe: isInIframe
             });
         })
         .catch(function (err) {

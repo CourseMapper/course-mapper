@@ -1,6 +1,7 @@
-app.controller('MapController', function ($scope, $http, $rootScope,
-                                          $timeout, $sce, $location,
-                                          toastr, mapService, courseService) {
+app.controller('MapController', function ($scope, $http, $rootScope, authService,
+                                          $timeout, $sce, $location, socket,
+                                          toastr, mapService, courseService,
+                                          collapseService) {
 
     $scope.treeNodes = [];
     $scope.jsPlumbConnections = [];
@@ -9,8 +10,10 @@ app.controller('MapController', function ($scope, $http, $rootScope,
     $scope.isCurrentTabIsMap = false;
     $scope.infoToast = null;
     $scope.infoEmptyToast = null;
+    $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    $scope.collapseStatus = {};
 
     /**
      * find node recursively
@@ -78,6 +81,8 @@ app.controller('MapController', function ($scope, $http, $rootScope,
                     $scope.initJSPlumb();
                     $scope.showMapEmptyInfo();
                 }
+
+                socket.subscribe('map/' + course._id);
             },
 
             function (err) {
@@ -113,16 +118,40 @@ app.controller('MapController', function ($scope, $http, $rootScope,
         var h = window.innerHeight;
 
         // let us drag and drop the cats
-        var mapEl = jsPlumb.getSelector(".course-map .w.owned");
+        var mapEl = jsPlumb.getSelector(".course-map .w");
         jsPlumbInstance.draggable(mapEl, {
+            start: function (params) {
+                var el = $(params.el);
+                var nId = el.attr('id').substring(1);
+                var simulated = el.attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    return;
+                }
+
+                var owned = el.hasClass('owned');
+                if (!owned) {
+                    params.drag.abort();
+                }
+
+                if (collapseService.isCollapsed(nId) !== false) {
+                    params.drag.abort();
+                }
+            },
+
             // update position on drag stop
-            stop: function () {
-                var el = $(this);
+            stop: function (params) {
+                var el = $(params.el);
                 var pos = el.position();
                 var distanceFromCenter = {
                     x: pos.left - Canvas.w / 2,
                     y: pos.top - Canvas.h / 2
                 };
+
+                var simulated = el.attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    el.attr('is-simulated', '');
+                    return;
+                }
 
                 var nId = el.attr('id').substring(1); // remove 't' from the node id
                 found = false;
@@ -144,26 +173,25 @@ app.controller('MapController', function ($scope, $http, $rootScope,
 
     $scope.initJSPlumb = function () {
         Tree.init(Canvas.w, Canvas.h);
+        jsPlumb.ready(function () {
+            $scope.instance = jsPlumb.getInstance({
+                Endpoint: ["Blank", {radius: 2}],
+                HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+                PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+                ConnectionOverlays: [],
+                Container: "course-map"
+            });
 
-        var instance;
+            $scope.initDraggable($scope.instance);
 
-        $scope.instance = instance = jsPlumb.getInstance({
-            Endpoint: ["Blank", {radius: 2}],
-            HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-            PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-            ConnectionOverlays: [],
-            Container: "course-map"
-        });
+            // initialise all '.w' elements as connection targets.
+            $scope.instance.batch(function () {
+                /* connect center to first level cats recursively*/
+                $scope.interConnect('center', $scope.treeNodes, $scope.instance);
 
-        $scope.initDraggable(instance);
-
-        // initialise all '.w' elements as connection targets.
-        instance.batch(function () {
-            /* connect center to first level cats recursively*/
-            $scope.interConnect('center', $scope.treeNodes, instance);
-
-            /*blanket on click to close dropdown menu*/
-            $scope.initDropDownMenuHybrid();
+                /*blanket on click to close dropdown menu*/
+                $scope.initDropDownMenuHybrid();
+            });
         });
     };
 
@@ -177,6 +205,11 @@ app.controller('MapController', function ($scope, $http, $rootScope,
 
                     $('.open').removeClass('open');
                     return false;
+                }
+
+                var simulated = $(this).attr('is-simulated');
+                if (simulated && simulated == 'simulated') {
+                    return true;
                 }
 
                 $('.open').not($(this).parents('ul')).removeClass('open');
@@ -239,7 +272,7 @@ app.controller('MapController', function ($scope, $http, $rootScope,
 
     $scope.interConnect = function (parent, treeNodes, instance) {
         // added "t" in id because id cannot start with number
-        for (var i in treeNodes) {
+        for (var i = 0; i < treeNodes.length; i++) {
             var child = treeNodes[i];
             var childId = 't' + child._id;
 
@@ -256,19 +289,26 @@ app.controller('MapController', function ($scope, $http, $rootScope,
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
                     ["Perimeter", {shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape")}]
                 ],
+                deleteEndpointsOnDetach: true,
                 connector: ["Bezier", {curviness: 5}]
             });
 
-            $scope.jsPlumbConnections.push(conn);
+            $(conn.connector.canvas).attr('data-source', parent);
+            $(conn.connector.canvas).attr('data-target', childId);
+
+            var cc = {
+                source: parent,
+                target: childId,
+                conn: conn
+            };
+
+            $scope.jsPlumbConnections.push(cc);
 
             if (child.childrens) {
+                $('#' + parent + ' .collapse-button').addClass('hasChildren');
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
-    };
-
-    $scope.goToDetail = function (categorySlug) {
-        window.location.href = "/courses/#/category/" + categorySlug;
     };
 
     $scope.setMode = function (mode, type, parent) {
@@ -327,11 +367,24 @@ app.controller('MapController', function ($scope, $http, $rootScope,
      */
     $scope.destroyJSPlumb = function () {
         for (var i in $scope.jsPlumbConnections) {
-            var conn = $scope.jsPlumbConnections[i];
+            var conn = $scope.jsPlumbConnections[i].conn;
             jsPlumb.detach(conn);
         }
 
         $scope.jsPlumbConnections = [];
+    };
+
+    $scope.reInitiateJSPlumb = function (cb) {
+        $scope.treeNodes = angular.copy($scope.treeNodes);
+        $timeout(
+            function () {
+                $scope.$apply();
+                $scope.initJSPlumb();
+
+                if (cb) {
+                    cb();
+                }
+            });
     };
 
     $scope.resourceIcon = function (filetype) {
@@ -399,12 +452,7 @@ app.controller('MapController', function ($scope, $http, $rootScope,
                         $scope.destroyJSPlumb();
 
                         // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.treeNodes = angular.copy($scope.treeNodes);
-                        $timeout(
-                            function () {
-                                $scope.$apply();
-                                $scope.initJSPlumb();
-                            });
+                        $scope.reInitiateJSPlumb();
 
                     } else {
                         if (data.result != null && !data.result) {
@@ -440,13 +488,7 @@ app.controller('MapController', function ($scope, $http, $rootScope,
                         $scope.destroyJSPlumb();
 
                         // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.treeNodes = angular.copy($scope.treeNodes);
-                        $timeout(
-                            function () {
-                                $scope.$apply();
-                                $scope.initJSPlumb();
-                            });
-
+                        $scope.reInitiateJSPlumb();
                     }
                 })
                 .error(function (data) {
@@ -464,7 +506,7 @@ app.controller('MapController', function ($scope, $http, $rootScope,
         return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
     };
 
-    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+    $scope.addNewNodeIntoPool = function (treeNode) {
         if (treeNode.parent) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
@@ -480,20 +522,15 @@ app.controller('MapController', function ($scope, $http, $rootScope,
         $scope.destroyJSPlumb();
 
         // this will reinitiate the model, and thus also jsplumb connection
-        $scope.treeNodes = angular.copy($scope.treeNodes);
-        $timeout(
-            function () {
-                $scope.$apply();
-                $scope.initJSPlumb();
+        $scope.reInitiateJSPlumb(function () {
+            if ($('.open').length > 0) {
+                $('.open').removeClass('open');
+                return true;
+            }
+        });
+    };
 
-                if ($('.open').length > 0) {
-                    $('.open').removeClass('open');
-                    return true;
-                }
-            });
-    });
-
-    $scope.$on('onAfterEditNode', function (event, treeNode) {
+    $scope.afterEditNode = function (treeNode) {
         if (treeNode) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
@@ -506,14 +543,15 @@ app.controller('MapController', function ($scope, $http, $rootScope,
             function () {
                 $scope.$apply();
             });
-    });
+    };
 
-    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+    $scope.afterEditContentNode = function (treeNode) {
         if (treeNode) {
             found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
             if (pNode) {
                 pNode.name = treeNode.name;
+                pNode.resources = [];
                 if (treeNode.resources.length > 0) {
                     for (var i in treeNode.resources) {
                         pNode.resources.push(treeNode.resources[i]);
@@ -526,6 +564,36 @@ app.controller('MapController', function ($scope, $http, $rootScope,
             function () {
                 $scope.$apply();
             });
+    };
+
+    $scope.collapse = function (el) {
+        var nodeId = el.substring(1);
+        found = false;
+
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
+        if (pNode) {
+            var hide = collapseService.toggle(nodeId);
+            $scope.collapseStatus[nodeId] = hide;
+            collapseService.affectVisual(hide, pNode, nodeId);
+
+            if (hide !== false) {
+                $('#' + el).addClass('aborted');
+            } else {
+                $('#' + el).removeClass('aborted');
+            }
+        }
+    };
+
+    $scope.$on('onAfterCreateNode', function (event, treeNode) {
+        $scope.addNewNodeIntoPool(treeNode);
+    });
+
+    $scope.$on('onAfterEditNode', function (event, treeNode) {
+        $scope.afterEditNode(treeNode);
+    });
+
+    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+        $scope.afterEditContentNode(treeNode);
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
@@ -560,4 +628,85 @@ app.controller('MapController', function ($scope, $http, $rootScope,
     });
 
     $scope.tabOpened();
+
+    socket.on('joined', function (data) {
+        //console.log(JSON.stringify(data));
+    });
+
+    socket.on('positionUpdated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        var nd = data.nodeId;
+        if (nd) {
+            var elName = 't' + nd;
+            var lv = Tree.leaves[elName];
+            if (lv) {
+                lv.fromCenter.x = data.x + 70;
+                lv.fromCenter.y = data.y + 5;
+                var oldPos = lv.el.position();
+                var newPos = lv.getNewPosition(Tree.w, Tree.h);
+
+                var dx = newPos.x - oldPos.left;
+                var dy = newPos.y - oldPos.top;
+
+                $('#' + elName).attr("is-simulated", 'simulated');
+                $('#' + elName).simulate("drag-n-drop", {dx: dx, dy: dy})
+            }
+
+            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
+            if (pNode) {
+                pNode.positionFromRoot = {x: data.x, y: data.y};
+
+                $timeout(function () {
+                    $scope.$apply();
+                });
+            }
+
+        }
+    });
+
+    socket.on('nodeCreated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        $scope.addNewNodeIntoPool(data);
+        console.log('nodeCreated');
+    });
+
+    socket.on('nodeUpdated', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        if (data.type == 'contentNode') {
+            $scope.afterEditContentNode(data);
+        } else {
+            $scope.afterEditNode(data);
+        }
+
+        console.log('nodeUpdated');
+    });
+
+    socket.on('nodeDeleted', function (data) {
+        if (authService.user && data.userId == authService.user._id)
+            return;
+
+        found = false;
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', data.nodeId);
+        if (pNode) {
+            pNode.isDeleted = true;
+            if (data.isDeletedForever)
+                pNode.isDeletedForever = true;
+
+            pNode.name = '[DELETED]';
+
+            // destroy the jsplumb instance and svg rendered
+            $scope.destroyJSPlumb();
+
+            // this will reinitiate the model, and thus also jsplumb connection
+            $scope.reInitiateJSPlumb();
+        }
+
+        console.log('nodeDeleted');
+    })
 });

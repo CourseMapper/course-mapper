@@ -13,6 +13,7 @@ courseLinkSchema.add({
     },
     slug: {type: String},
     title: {type: String, required: true},
+    description: {type: String},
     content: {type: String, required: true},
 
     isDeleted: Boolean,

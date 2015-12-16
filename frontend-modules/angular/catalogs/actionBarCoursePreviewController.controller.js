@@ -1,4 +1,4 @@
-app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr) {
+app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr, $timeout) {
 
     $scope.loading = false;
 
@@ -9,6 +9,9 @@ app.controller('actionBarCoursePreviewController', function ($scope, courseServi
             function () {
                 $scope.loading = false;
                 toastr.success('You are now enrolled');
+                $timeout(function(){
+                    window.location.reload();
+                });
             },
 
             function (res) {
@@ -26,6 +29,9 @@ app.controller('actionBarCoursePreviewController', function ($scope, courseServi
             function () {
                 $scope.loading = false;
                 toastr.success('You left the course');
+                $timeout(function(){
+                    window.location.reload();
+                });
             },
 
             function () {
