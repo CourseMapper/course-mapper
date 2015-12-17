@@ -26,6 +26,11 @@
 
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
+            <li style="text-align: center">
+                <small>
+                    Created {{data.dateAdded | relativeDate}} <br>by {{data.createdBy.displayName}}
+                </small>
+            </li>
             <li>
                 <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
                    ng-click="setMode('add', 'subTopic', data)">

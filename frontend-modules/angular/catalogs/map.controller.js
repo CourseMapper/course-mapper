@@ -218,6 +218,12 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 return false;
             })
             .on('mouseenter', function () {
+                if ($(this).hasClass('subTopic')) {
+                    return true;
+                }
+                if ($(this).hasClass('deleted')) {
+                    return true;
+                }
                 $scope.requestIconAnalyitics(slug);
             });
     };
@@ -409,6 +415,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
     $scope.requestIconAnalyitics = function (nodeId) {
         nodeId = nodeId.substring(1);
+        if (nodeId == 'enter')
+            return;
+
         $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
             function (res) {
                 $scope.isRequesting = false;

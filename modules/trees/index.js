@@ -291,7 +291,10 @@ catalog.prototype.getNodeAsync = function () {
  * @param success
  */
 catalog.prototype.getTreeNodes = function (error, params, success) {
-    TreeNodes.find(params).populate('resources').exec(function (err, docs) {
+    TreeNodes.find(params)
+        .populate('resources')
+        .populate('createdBy', 'displayName _id')
+        .exec(function (err, docs) {
         if (!err) {
             var cats = helper.convertToDictionary(docs);
 

@@ -948,6 +948,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 return false;
             })
             .on('mouseenter', function () {
+                if ($(this).hasClass('subTopic')) {
+                    return true;
+                }
+                if ($(this).hasClass('deleted')) {
+                    return true;
+                }
                 $scope.requestIconAnalyitics(slug);
             });
     };
@@ -1139,6 +1145,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.requestIconAnalyitics = function (nodeId) {
         nodeId = nodeId.substring(1);
+        if (nodeId == 'enter')
+            return;
+
         $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
             function (res) {
                 $scope.isRequesting = false;
