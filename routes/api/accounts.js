@@ -53,7 +53,7 @@ router.get('/accounts/facebook/callback',
     }
 );
 
-router.get('/account/:username', helper.ensureAuthenticated, function (req, res, next) {
+router.get('/account/:username', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
     var account = new Account();
     account.getUser(
         function (err) {

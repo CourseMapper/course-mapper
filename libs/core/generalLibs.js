@@ -108,6 +108,28 @@ var cmLibraries = {
         });
     },
 
+    l2pAuth: function (req, res, next) {
+        if (req.query.accessToken != undefined) {
+            passport.authenticate('custom', function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+
+                if (user) {
+                    req.logIn(user, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        return next();
+                    });
+                } else
+                    next();
+            })(req, res, next);
+        } else
+            next();
+    },
+
     ensureAuthenticated: function (req, res, next) {
         // local strategy
         if (req.isAuthenticated()) {
@@ -122,13 +144,6 @@ var cmLibraries = {
                     cmLibraries.resReturn(cmLibraries.createError401(), res);
                 }
                 else {
-                    /*req.logIn(user, function (err) {
-                        if (err) {
-                            return next(err);
-                        }
-
-                        return next();
-                    });*/
                     return next();
                 }
             })(req, res, next);
