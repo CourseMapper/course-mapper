@@ -157,18 +157,22 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 found = false;
                 var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nId);
 
-                $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
-                    .success(function (res, status) {
-                        //console.log(res);
-                        if (pNode)
-                            pNode.positionFromRoot = distanceFromCenter;
-                    })
-                    .error(function (res, status) {
-                        console.log('err');
-                        console.log(res);
-                    });
+                $scope.sendPosition(nId, distanceFromCenter, pNode);
             }
         });
+    };
+
+    $scope.sendPosition = function (nId, distanceFromCenter, pNode) {
+        $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
+            .success(function (res, status) {
+                //console.log(res);
+                if (pNode)
+                    pNode.positionFromRoot = distanceFromCenter;
+            })
+            .error(function (res, status) {
+                console.log('err');
+                console.log(res);
+            });
     };
 
     $scope.initJSPlumb = function () {
