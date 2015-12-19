@@ -2091,7 +2091,26 @@ app.controller('AppSettingController', function(  Page) {
                 $compile(element.contents())(scope.$new());
             }*/
         };
-    });;app.directive('errorBlock',
+    });;app
+    .directive('dynamicController', ['$controller', function ($controller) {
+        return {
+            restrict: 'A',
+            scope: true,
+            link: function (scope, element, attrs) {
+
+                var locals = {
+                    $scope: scope,
+                    $element: element,
+                    $attrs: attrs
+                };
+
+                var kol = scope.$eval(attrs.dynamicController);
+                if (kol)
+                    element.data('$Controller', $controller(kol, locals));
+            }
+        };
+    }
+    ]);;app.directive('errorBlock',
     function () {
         return {
             restrict: 'E',
@@ -3192,7 +3211,28 @@ app.directive('timepicker', function($timeout) {
             }
 
         };
-    });;app.controller('DiscussionController', function ($scope, $rootScope, $http, $location, $sce,
+    });;app.directive('widgetBox',
+    function ($compile, $timeout, $rootScope, $parse) {
+        return {
+            restrict: 'E',
+
+            terminal: true,
+            transclude: true,
+
+            scope: {
+                showTools: '=',
+                showConfigButton: '=',
+                title: '@',
+                entryPoint: '@',
+                closeAction: '&',
+                editAction: '&',
+                onloadAction: '&'
+            },
+
+            templateUrl: '/angular/views/widget-box.html'
+        };
+    });
+;app.controller('DiscussionController', function ($scope, $rootScope, $http, $location, $sce,
                                                  $compile, ActionBarService, courseService,
                                                  discussionService, $timeout,
                                                  toastr, Page, $window) {
@@ -7444,3 +7484,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.initWidgets();
 });
+;/*
+app.controller('HtmlSidebarController2', function($scope){
+    console.log('abcef');
+});*/

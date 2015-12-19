@@ -15,7 +15,7 @@
                    title="Play Intro Video">
                 </a>
             </div>
-            <div class="col-xs-6 preview-image-container">  <br>
+            <div class="col-xs-6 preview-image-container"><br>
                 <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
                 <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
             </div>
@@ -81,29 +81,16 @@
              data-gs-no-resize="yes"
              ng-repeat="wdg in widgets" id="w{{wdg._id}}">
 
-            <div class="grid-stack-item-content">
-                <div class="box no-shadow">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">{{wdg.widget}}</h3>
-
-                        <div class="box-tools pull-right" ng-show="checkOwnership(wdg.userId)">
-                            <button class="btn btn-box-tool" data-widget="remove"
-                                    data-toggle="tooltip" title="Remove"
-                                    ng-click="closeWidget(wdg._id);"
-                            >
-                                <i class="fa fa-times"></i></button>
-                        </div>
-                    </div>
-                    <div class="box-body-widget">
-
-                        <div ng-include src="wdg.widgetId.entryPoint"
-                             onload="initWidgetButton(wdg._id)">
-                        </div>
-
-                    </div>
-                    <div class="box-footer"></div>
-                </div>
-            </div>
+            <widget-box onload-action="initWidgetButton(wdg._id)"
+                        entry-point="{{wdg.widgetId.entryPoint}}"
+                        title="{{wdg.widget}}"
+                        show-tools="checkOwnership(wdg.userId);"
+                        show-config-button="wdg.widgetId.hasConfigButton"
+                        close-action="closeWidget(wdg._id);"
+                        dynamic-controller="wdg.widgetId.controller"
+                        edit-action="editAction()"
+            >
+            </widget-box>
         </div>
     </div>
 
