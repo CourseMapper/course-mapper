@@ -23,6 +23,10 @@ router.get('/accounts/login', function (req, res, next) {
     res.render(config.get('theme') + '/login', {title: 'Log In Page'});
 });
 
+router.get('/accounts/loginform', function (req, res, next) {
+    res.render(config.get('theme') + '/modalLoginForm');
+});
+
 router.post('/accounts/login', function (req, res, next) {
     var account = new Account();
     account.handleLoginPost(req, res, next);
