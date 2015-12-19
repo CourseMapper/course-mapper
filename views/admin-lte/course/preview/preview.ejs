@@ -6,24 +6,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title"> {{course.name}} </h3>
                 </div><!-- /.box-header -->
-                <div class="box-body description">
-                    Started
-                    <strong>
-                        {{course.dateAdded | relativeDate}}
-                    </strong>
 
-                    By
-                    <strong>
-                        {{course.createdBy.displayName}}
-                    </strong>
-
-                    <p ng-show="course.courseTags.length > 0" class="filter">
-                        <a class="label label-primary" style="cursor: default"
-                           ng-repeat="tag in course.courseTags">
-                            {{tag.name}}</a>
-                    </p>
-
-                </div>
             </div>
         </div>
         <div class="row">
@@ -32,9 +15,36 @@
                    title="Play Intro Video">
                 </a>
             </div>
-            <div class="col-xs-12 preview-image-container">
+            <div class="col-xs-6 preview-image-container">  <br>
                 <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
                 <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
+            </div>
+            <div class="col-xs-6 small-description">
+                <br>
+                Started
+                <strong>
+                    {{course.dateAdded | relativeDate}}
+                </strong>
+
+                By
+                <strong>
+                    {{course.createdBy.displayName}}
+                </strong>
+
+                <p ng-show="course.courseTags.length > 0" class="filter">
+                    <a class="label label-primary" style="cursor: default"
+                       ng-repeat="tag in course.courseTags">
+                        {{tag.name}}</a>
+                </p>
+
+                <br>
+                <p ng-show="course.smallDescription">
+                    {{course.smallDescription}}
+                </p>
+                <p ng-show="!isEnrolled && !isOwner && !isAuthorized()">
+                    <button class="btn btn-primary btn-block" ng-click="enroll()">Enroll</button>
+
+                </p>
             </div>
         </div>
         <div class="row" style="height: 15px;"></div>

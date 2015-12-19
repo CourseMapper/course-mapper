@@ -147,8 +147,9 @@ app.config(function (toastrConfig) {
         $scope.course = course;
 
         if (refreshPicture) {
-            if ($scope.course.picture)
+            if ($scope.course.picture) {
                 $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+            }
         }
 
         if ($scope.course.video) {
@@ -342,6 +343,7 @@ app.config(function (toastrConfig) {
             fields: {
                 name: $scope.courseEdit.name,
                 description: $scope.courseEdit.description,
+                smallDescription: $scope.courseEdit.smallDescription,
                 tags: $scope.courseEdit.tags
             }
         };
@@ -436,7 +438,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.course = {
         name: null,
         category: null,
-        description: ''
+        description: '',
+        smallDescription: ''
     };
 
     $scope.tagsRaw = null;
@@ -590,10 +593,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     tapToDismiss: false,
                     toastClass: 'toast wide',
                     extendedTimeOut: 30000,
-                    timeOut: 30000
+                    timeOut: 30000,
+                    onHidden: function () {
+                        $location.search('new', null);
+                        $timeout(function () {
+                            $rootScope.$apply();
+                        });
+                        //$location.url($location.path())
+                    }
                 });
         }
-
     };
 
     /**

@@ -590,7 +590,7 @@ ul.dropdown-menu.category, ul.dropdown-menu.course {
 
 a.videoButton {
     position: relative;
-    left: 45%;
+    left: 20%;
     width: 100px;
     height: 100px;
     background: url(../images/playButton.png) no-repeat;

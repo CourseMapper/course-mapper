@@ -107,10 +107,16 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
                     tapToDismiss: false,
                     toastClass: 'toast wide',
                     extendedTimeOut: 30000,
-                    timeOut: 30000
+                    timeOut: 30000,
+                    onHidden: function () {
+                        $location.search('new', null);
+                        $timeout(function () {
+                            $rootScope.$apply();
+                        });
+                        //$location.url($location.path())
+                    }
                 });
         }
-
     };
 
     /**

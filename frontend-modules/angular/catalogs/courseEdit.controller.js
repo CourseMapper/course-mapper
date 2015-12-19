@@ -42,6 +42,7 @@ app.controller('CourseEditController', function ($scope, $filter, $http, $locati
             fields: {
                 name: $scope.courseEdit.name,
                 description: $scope.courseEdit.description,
+                smallDescription: $scope.courseEdit.smallDescription,
                 tags: $scope.courseEdit.tags
             }
         };
