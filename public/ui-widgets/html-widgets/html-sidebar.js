@@ -56,6 +56,9 @@ angular.module('UIWidgets', ['toastr'])
                     var grid = $('.grid-stack').data('gridstack');
                     grid.movable('.grid-stack-item', true);
 
+                    if (!$scope.originalWidget.options)
+                        $scope.originalWidget.options = {};
+                    
                     $scope.originalWidget.options.content = res.widget.options.content;
                     $scope.originalWidget.widget = res.widget.widget;
                 })
