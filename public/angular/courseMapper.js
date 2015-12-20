@@ -1067,8 +1067,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens && child.childrens.length > 0) {
+            if (child.childrens)
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
+
+            if (child.childrens && child.childrens.length > 0) {
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
