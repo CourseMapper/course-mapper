@@ -3226,7 +3226,8 @@ app.directive('timepicker', function($timeout) {
                 entryPoint: '@',
                 closeAction: '&',
                 editAction: '&',
-                onloadAction: '&'
+                onloadAction: '&',
+                widget: '='
             },
 
             templateUrl: '/angular/views/widget-box.html'
@@ -4838,8 +4839,8 @@ app.factory('socket', function ($rootScope) {
                 $.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
-                var h = $('#w' + id + ' .grid-stack-item-content');
-                $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
+                //var h = $('#w' + id + ' .grid-stack-item-content');
+                //$('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
             install: function (location, application, name, extraParams, successCb, errorCb) {

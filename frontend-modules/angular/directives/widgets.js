@@ -13,7 +13,8 @@ app.directive('widgetBox',
                 entryPoint: '@',
                 closeAction: '&',
                 editAction: '&',
-                onloadAction: '&'
+                onloadAction: '&',
+                widget: '='
             },
 
             templateUrl: '/angular/views/widget-box.html'

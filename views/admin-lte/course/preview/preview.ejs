@@ -79,16 +79,18 @@
         <div class="grid-stack-item"
              data-gs-locked="yes"
              data-gs-no-resize="yes"
-             ng-repeat="wdg in widgets" id="w{{wdg._id}}">
+             ng-repeat="wdg in widgets" id="w{{wdg._id}}"
+        >
 
-            <widget-box onload-action="initWidgetButton(wdg._id)"
-                        entry-point="{{wdg.widgetId.entryPoint}}"
+            <widget-box onload-action="initWidgetButton(wdg._id);"
+                        entry-point="{{wdg.widgetId.entryPoint + '?cid=' + course._id}}"
                         title="{{wdg.widget}}"
                         show-tools="checkOwnership(wdg.userId);"
-                        show-config-button="wdg.widgetId.hasConfigButton"
-                        close-action="closeWidget(wdg._id);"
+                        show-config-button="checkOwnership(wdg.userId) && wdg.widgetId.hasConfigButton"
+                        close-action="closeWidget(wdg._id)"
+                        edit-action="editAction(wdg)"
+                        widget="wdg"
                         dynamic-controller="wdg.widgetId.controller"
-                        edit-action="editAction()"
             >
             </widget-box>
         </div>

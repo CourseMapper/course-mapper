@@ -13,7 +13,7 @@
       "hasConfigButton": true,
       "height": 1,
       "icon": "/img/appPlaceholder.png",
-      "controller": "HtmlSidebarController"
+      "controller": "HtmlSidebarToolController"
     }
   ]
 }

@@ -116,8 +116,8 @@ app.factory('widgetService', [
                 $.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
-                var h = $('#w' + id + ' .grid-stack-item-content');
-                $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
+                //var h = $('#w' + id + ' .grid-stack-item-content');
+                //$('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
             install: function (location, application, name, extraParams, successCb, errorCb) {
