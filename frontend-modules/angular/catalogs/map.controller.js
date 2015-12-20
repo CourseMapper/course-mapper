@@ -176,6 +176,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     };
 
     $scope.initJSPlumb = function () {
+        jQuery('.tree-container').css('visibility', 'hidden');
         Tree.init(Canvas.w, Canvas.h);
         jsPlumb.ready(function () {
             $scope.instance = jsPlumb.getInstance({
@@ -196,7 +197,19 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 /*blanket on click to close dropdown menu*/
                 $scope.initDropDownMenuHybrid();
             });
+
+            $timeout(function () {
+                $scope.initiateCollapse();
+                jQuery('.tree-container').css('visibility', 'visible');
+            })
         });
+    };
+
+    $scope.initiateCollapse = function () {
+        for (var i in collapseService.collapsed) {
+            var colEl = 't' + collapseService.collapsed[i];
+            $scope.collapse(colEl, true);
+        }
     };
 
     $scope.initDropDown = function (slug) {
@@ -314,8 +327,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens)
+            if (child.childrens) {
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
+            }
 
             if (child.childrens && child.childrens.length > 0) {
                 $scope.interConnect(childId, child.childrens, instance);
@@ -581,14 +595,20 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             });
     };
 
-    $scope.collapse = function (el) {
+    $scope.collapse = function (el, isInit) {
         var nodeId = el.substring(1);
         found = false;
 
         var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
         if (pNode) {
-            var hide = collapseService.toggle(nodeId);
-            $scope.collapseStatus[nodeId] = hide;
+            var hide = false;
+
+            if (isInit === true)
+                hide = collapseService.isCollapsed(nodeId);
+            else
+                hide = collapseService.toggle(nodeId);
+
+            $scope.collapseStatus[nodeId] = (hide !== false);
             collapseService.affectVisual(hide, pNode, nodeId);
 
             if (hide !== false) {

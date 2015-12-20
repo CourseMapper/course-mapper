@@ -929,6 +929,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.initJSPlumb = function () {
+        jQuery('.tree-container').css('visibility', 'hidden');
         Tree.init(Canvas.w, Canvas.h);
         jsPlumb.ready(function () {
             $scope.instance = jsPlumb.getInstance({
@@ -949,7 +950,19 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 /*blanket on click to close dropdown menu*/
                 $scope.initDropDownMenuHybrid();
             });
+
+            $timeout(function () {
+                $scope.initiateCollapse();
+                jQuery('.tree-container').css('visibility', 'visible');
+            })
         });
+    };
+
+    $scope.initiateCollapse = function () {
+        for (var i in collapseService.collapsed) {
+            var colEl = 't' + collapseService.collapsed[i];
+            $scope.collapse(colEl, true);
+        }
     };
 
     $scope.initDropDown = function (slug) {
@@ -1067,8 +1080,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens)
+            if (child.childrens) {
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
+            }
 
             if (child.childrens && child.childrens.length > 0) {
                 $scope.interConnect(childId, child.childrens, instance);
@@ -1334,14 +1348,20 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     };
 
-    $scope.collapse = function (el) {
+    $scope.collapse = function (el, isInit) {
         var nodeId = el.substring(1);
         found = false;
 
         var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
         if (pNode) {
-            var hide = collapseService.toggle(nodeId);
-            $scope.collapseStatus[nodeId] = hide;
+            var hide = false;
+
+            if (isInit === true)
+                hide = collapseService.isCollapsed(nodeId);
+            else
+                hide = collapseService.toggle(nodeId);
+
+            $scope.collapseStatus[nodeId] = (hide !== false);
             collapseService.affectVisual(hide, pNode, nodeId);
 
             if (hide !== false) {
@@ -4176,7 +4196,7 @@ app.directive('timepicker', function($timeout) {
                 }
 
                 return false;
-            }, 
+            },
 
             /**
              *
@@ -4202,10 +4222,10 @@ app.directive('timepicker', function($timeout) {
 
                 for (var i in pNode.childrens) {
                     var chs = pNode.childrens[i];
-                    if (hide) {
+                    if (hide !== false) {
                         $('#t' + chs._id).hide();
                         if (chs.childrens.length > 0) {
-                            self.affectVisual(hide, chs, chs._id);
+                            self.affectVisual(true, chs, chs._id);
                         }
                     }
                     else {
@@ -4221,10 +4241,10 @@ app.directive('timepicker', function($timeout) {
                 }
 
                 // hide svg
-                if (hide)
-                    $("svg[data-source='t" + nodeId + "'").hide();
-                else
+                if (hide === false)
                     $("svg[data-source='t" + nodeId + "'").show();
+                else
+                    $("svg[data-source='t" + nodeId + "'").hide();
             }
 
         }

@@ -12,7 +12,7 @@ app.factory('collapseService', [
                 }
 
                 return false;
-            }, 
+            },
 
             /**
              *
@@ -38,10 +38,10 @@ app.factory('collapseService', [
 
                 for (var i in pNode.childrens) {
                     var chs = pNode.childrens[i];
-                    if (hide) {
+                    if (hide !== false) {
                         $('#t' + chs._id).hide();
                         if (chs.childrens.length > 0) {
-                            self.affectVisual(hide, chs, chs._id);
+                            self.affectVisual(true, chs, chs._id);
                         }
                     }
                     else {
@@ -57,10 +57,10 @@ app.factory('collapseService', [
                 }
 
                 // hide svg
-                if (hide)
-                    $("svg[data-source='t" + nodeId + "'").hide();
-                else
+                if (hide === false)
                     $("svg[data-source='t" + nodeId + "'").show();
+                else
+                    $("svg[data-source='t" + nodeId + "'").hide();
             }
 
         }
