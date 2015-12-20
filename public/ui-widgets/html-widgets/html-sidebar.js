@@ -58,7 +58,7 @@ angular.module('UIWidgets', ['toastr'])
 
                     if (!$scope.originalWidget.options)
                         $scope.originalWidget.options = {};
-                    
+
                     $scope.originalWidget.options.content = res.widget.options.content;
                     $scope.originalWidget.widget = res.widget.widget;
                 })

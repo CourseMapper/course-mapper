@@ -314,7 +314,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens) {
+            if (child.childrens && child.childrens.length > 0) {
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
                 $scope.interConnect(childId, child.childrens, instance);
             }

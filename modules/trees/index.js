@@ -149,7 +149,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         debug('success attaching files');
     }
 
-    function generateRandomPos(){
+    function generateRandomPos() {
         return Math.floor((Math.random() * 110) + 50);
     }
 
@@ -237,12 +237,16 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
                 }
 
                 debug('success creating node');
-                TreeNodes.findById(tn._id).populate('resources').exec(function (err, doc) {
-                    if (doc)
-                        success(doc);
-                    else
-                        error(err);
-                });
+
+                TreeNodes.findById(tn._id)
+                    .populate('resources')
+                    .populate('createdBy', '_id displayName username')
+                    .exec(function (err, doc) {
+                        if (doc)
+                            success(doc);
+                        else
+                            error(err);
+                    });
             })
             .catch(function (err) {
                 debug('failed adding Tree Node');
@@ -295,48 +299,48 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
         .populate('resources')
         .populate('createdBy', 'displayName _id')
         .exec(function (err, docs) {
-        if (!err) {
-            var cats = helper.convertToDictionary(docs);
+            if (!err) {
+                var cats = helper.convertToDictionary(docs);
 
-            // keys for the ref ids of parent and childrens
-            var parent = 'parent';
-            var children = 'childrens';
+                // keys for the ref ids of parent and childrens
+                var parent = 'parent';
+                var children = 'childrens';
 
-            var tree = [];
+                var tree = [];
 
-            function again(cat) {
-                if (cat[children]) {
-                    var childrens = [];
-                    for (var e in cat[children]) {
-                        var catId = cat[children][e];
-                        var childCat = cats[catId];
-                        childrens.push(childCat);
-                        again(childCat);
+                function again(cat) {
+                    if (cat[children]) {
+                        var childrens = [];
+                        for (var e in cat[children]) {
+                            var catId = cat[children][e];
+                            var childCat = cats[catId];
+                            childrens.push(childCat);
+                            again(childCat);
+                        }
+
+                        cat[children] = childrens;
+                    }
+                }
+
+                for (var i in cats) {
+                    // get the root
+                    var doc = cats[i];
+
+                    if (doc.isDeleted) {
+                        doc.name = "[DELETED]";
                     }
 
-                    cat[children] = childrens;
+                    if (!doc[parent]) {
+                        again(doc);
+                        tree.push(doc);
+                    }
                 }
+
+                success(tree);
+            } else {
+                error(err);
             }
-
-            for (var i in cats) {
-                // get the root
-                var doc = cats[i];
-
-                if (doc.isDeleted) {
-                    doc.name = "[DELETED]";
-                }
-
-                if (!doc[parent]) {
-                    again(doc);
-                    tree.push(doc);
-                }
-            }
-
-            success(tree);
-        } else {
-            error(err);
-        }
-    });
+        });
 };
 
 catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdate, success) {
