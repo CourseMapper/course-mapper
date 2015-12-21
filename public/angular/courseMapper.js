@@ -968,10 +968,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 continue;
 
             $scope.getChildLength(child._id, 0, child);
-
-            /*if (child.childrens && child.childrens.length > 0) {
-             $scope.firstCollapse(child.childrens);
-             }*/
         }
 
         for (var j in $scope.nodeChildrens[1]) {
@@ -1008,15 +1004,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.nodeChildrens[level][nid] += add;
 
-        /*if (level == 2) {
-         if ($scope.nodeChildrens[level][nid] > 0) {
-         collapseService.setCollapse(nid);
-         $scope.collapseStatus[nid] = true;
-         } else {
-         collapseService.setExpand(nid);
-         $scope.collapseStatus[nid] = false;
-         }
-         }*/
+        if (level > 1) {
+            if ($scope.nodeChildrens[level][nid] > 0) {
+                collapseService.setCollapse(nid);
+                $scope.collapseStatus[nid] = true;
+            }
+        }
 
         if (treeNodes.childrens && treeNodes.childrens.length > 0) {
             level++;
