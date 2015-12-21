@@ -33,6 +33,27 @@ app.factory('collapseService', [
                 }
             },
 
+            setCollapse: function (nodeId) {
+                var idx = this.isCollapsed(nodeId);
+                if (idx === false) {
+                    // hidden, now set it to hide
+                    this.collapsed.push(nodeId);
+                    // true means hide
+                    return true;
+                }
+                return false;
+            },
+
+            setExpand: function (nodeId) {
+                var idx = this.isCollapsed(nodeId);
+                if (idx !== false) {
+                    // show back
+                    this.collapsed.splice(idx, 1);
+                    return true;
+                }
+                return false;
+            },
+
             affectVisual: function (hide, pNode, nodeId) {
                 var self = this;
 

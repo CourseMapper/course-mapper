@@ -14,6 +14,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
     $scope.collapseStatus = {};
+    $scope.nodeChildrens = {};
 
     /**
      * find node recursively
@@ -199,16 +200,79 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             });
 
             $timeout(function () {
+                $scope.firstCollapse($scope.treeNodes);
                 $scope.initiateCollapse();
                 jQuery('.tree-container').css('visibility', 'visible');
             })
         });
     };
 
+    $scope.firstCollapse = function (treeNodes) {
+        for (var i = 0; i < treeNodes.length; i++) {
+            var child = treeNodes[i];
+
+            if (child.isDeletedForever)
+                continue;
+
+            $scope.getChildLength(child._id, 0, child);
+
+            /*if (child.childrens && child.childrens.length > 0) {
+             $scope.firstCollapse(child.childrens);
+             }*/
+        }
+
+        for (var j in $scope.nodeChildrens[1]) {
+            var beks = $scope.nodeChildrens[1][j];
+            if (beks > 0) {
+                collapseService.setCollapse(j);
+                $scope.collapseStatus[j] = true;
+            } else {
+                collapseService.setExpand(j);
+                $scope.collapseStatus[j] = false;
+            }
+        }
+    };
+
     $scope.initiateCollapse = function () {
         for (var i in collapseService.collapsed) {
             var colEl = 't' + collapseService.collapsed[i];
             $scope.collapse(colEl, true);
+        }
+    };
+
+    $scope.getChildLength = function (nid, level, treeNodes) {
+        if ($scope.nodeChildrens[level] == undefined) {
+            $scope.nodeChildrens[level] = {};
+        }
+
+        if ($scope.nodeChildrens[level][nid] == undefined) {
+            $scope.nodeChildrens[level][nid] = 0;
+        }
+
+        var add = 0;
+        if (treeNodes.childrens && treeNodes.childrens.length > 0)
+            add = 1;
+
+        $scope.nodeChildrens[level][nid] += add;
+
+        /*if (level == 2) {
+         if ($scope.nodeChildrens[level][nid] > 0) {
+         collapseService.setCollapse(nid);
+         $scope.collapseStatus[nid] = true;
+         } else {
+         collapseService.setExpand(nid);
+         $scope.collapseStatus[nid] = false;
+         }
+         }*/
+
+        if (treeNodes.childrens && treeNodes.childrens.length > 0) {
+            level++;
+            for (var e in treeNodes.childrens) {
+                var ch = treeNodes.childrens[e];
+                $scope.getChildLength(ch._id, level, ch);
+            }
+        } else {
+            console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
         }
     };
 
