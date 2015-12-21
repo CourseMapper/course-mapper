@@ -34,12 +34,12 @@ if (app.get('env') === 'development') {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Create HTTP and IO servers
-var server = http.createServer(app);
-//var options = {
-//  pfx: fs.readFileSync('./certs/ss.pfx'),
-//  passphrase: "123456"
-//};
-//var server = https.createServer(options, app);
+//var server = http.createServer(app);
+var options = {
+  pfx: fs.readFileSync('./certs/ss.pfx'),
+  passphrase: "123456"
+};
+var server = https.createServer(options, app);
 
 var SocketIOHelper = require('./libs/core/socketIoHelper.js');
 SocketIOHelper.init(server);
