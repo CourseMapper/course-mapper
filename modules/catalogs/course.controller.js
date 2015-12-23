@@ -392,14 +392,23 @@ catalog.prototype.saveSettings = function (params) {
     }
 };
 
-catalog.prototype.getCourses = function (error, params, success) {
-    Course.find(params, function (err, docs) {
-        if (!err) {
-            success(docs);
-        } else {
-            error(err);
-        }
-    });
+catalog.prototype.getCourses = function (error, params, pageParams, success) {
+
+    if (!pageParams.lastPage || pageParams.lastPage == 'false') {
+        pageParams.lastPage = 0;
+    }
+
+    Course
+        .find(params)
+        .skip(pageParams.lastPage)
+        .limit(pageParams.limit)
+        .exec(function (err, docs) {
+            if (!err) {
+                success(docs);
+            } else {
+                error(err);
+            }
+        });
 };
 
 /**
