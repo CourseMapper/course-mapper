@@ -59,7 +59,8 @@ app.factory('collapseService', [
 
                 for (var i in pNode.childrens) {
                     var chs = pNode.childrens[i];
-                    if (hide !== false) {
+                    if (hide === true) {
+
                         $('#t' + chs._id).hide();
                         if (chs.childrens.length > 0) {
                             self.affectVisual(true, chs, chs._id);
@@ -67,21 +68,22 @@ app.factory('collapseService', [
                     }
                     else {
                         $('#t' + chs._id).show();
+
                         if (chs.childrens.length > 0) {
                             var isChildrenCollapsed = self.isCollapsed(chs._id);
-                            if (isChildrenCollapsed === false)
-                                self.affectVisual(false, chs, chs._id);
-                            else
+                            if (isChildrenCollapsed === true)
                                 self.affectVisual(true, chs, chs._id);
+                            else
+                                self.affectVisual(false, chs, chs._id);
                         }
                     }
                 }
 
                 // hide svg
-                if (hide === false)
-                    $("svg[data-source='t" + nodeId + "'").show();
-                else
+                if (hide === true)
                     $("svg[data-source='t" + nodeId + "'").hide();
+                else
+                    $("svg[data-source='t" + nodeId + "'").show();
             }
 
         }

@@ -7,7 +7,9 @@ var app = angular.module('courseMapper', [
 
 app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
-        positionClass: 'toast-top-center'
+        positionClass: 'toast-top-center',
+        preventDuplicates: true,
+        preventOpenDuplicates: true
     });
 });
 ;app.config(['$routeProvider', '$locationProvider',
@@ -769,14 +771,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
     $scope.isTreeInitiated = false;
-    $scope.isCurrentTabIsMap = false;
     $scope.infoToast = null;
     $scope.infoEmptyToast = null;
     $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
     $scope.collapseStatus = {};
+
+    // {"0": {nodeId:isCollapsed},}
     $scope.nodeChildrens = {};
+    $scope.firstloaded = true;
 
     /**
      * find node recursively
@@ -963,6 +967,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $timeout(function () {
                 $scope.firstCollapse($scope.treeNodes);
+
                 $scope.initiateCollapse();
                 jQuery('.tree-container').css('visibility', 'visible');
             })
@@ -970,6 +975,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.firstCollapse = function (treeNodes) {
+        if (!$scope.firstloaded)
+            return;
+
+        $scope.firstloaded = false;
         for (var i = 0; i < treeNodes.length; i++) {
             var child = treeNodes[i];
 
@@ -979,9 +988,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.getChildLength(child._id, 0, child);
         }
 
+        // collapse on first level
         for (var j in $scope.nodeChildrens[1]) {
-            var beks = $scope.nodeChildrens[1][j];
-            if (beks > 0) {
+            var totalKids = $scope.nodeChildrens[1][j];
+            if (totalKids > 0) {
                 collapseService.setCollapse(j);
                 $scope.collapseStatus[j] = true;
             } else {
@@ -1090,6 +1100,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.showMapEmptyInfo = function () {
         if (!$scope.infoEmptyToast) {
+            toastr.clear();
             $scope.infoEmptyToast = toastr.info(
                 'Hi, this course is new, Please add a subtopic first, ' +
                 '<br>from there, you can add a content node, then upload a pdf or a video.' +
@@ -1104,10 +1115,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     tapToDismiss: true,
                     extendedTimeOut: 10000,
                     timeOut: 10000,
-                    toastClass: 'toast wide',
+                    toastClass: 'toast wide'
                 });
         } else {
-            toastr.clear();
             $scope.infoEmptyToast = null;
         }
     };
@@ -1146,11 +1156,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens) {
-                $('#' + parent + ' .collapse-button').addClass('hasChildren');
-            }
-
             if (child.childrens && child.childrens.length > 0) {
+                $('#' + parent + ' .collapse-button').addClass('hasChildren');
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
@@ -1366,16 +1373,22 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         else
             $scope.treeNodes.push(treeNode);
 
-        // destroy the jsplumb instance and svg rendered
-        $scope.destroyJSPlumb();
+        $timeout(function () {
+            $scope.$apply();
 
-        // this will reinitiate the model, and thus also jsplumb connection
-        $scope.reInitiateJSPlumb(function () {
-            if ($('.open').length > 0) {
-                $('.open').removeClass('open');
-                return true;
-            }
+            // destroy the jsplumb instance and svg rendered
+            $scope.destroyJSPlumb();
+
+            // this will reinitiate the model, and thus also jsplumb connection
+            $scope.reInitiateJSPlumb(function () {
+                $scope.donotInit = true;
+                if ($('.open').length > 0) {
+                    $('.open').removeClass('open');
+                    return true;
+                }
+            });
         });
+
     };
 
     $scope.afterEditNode = function (treeNode) {
@@ -1427,14 +1440,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             else
                 hide = collapseService.toggle(nodeId);
 
-            $scope.collapseStatus[nodeId] = (hide !== false);
-            collapseService.affectVisual(hide, pNode, nodeId);
-
-            if (hide !== false) {
+            if (hide === false) {
+                $scope.collapseStatus[nodeId] = false;
                 $('#' + el).addClass('aborted');
-            } else {
+                collapseService.affectVisual(false, pNode, nodeId);
+            }
+            else if (hide >= 0 || hide == true) {
+                $scope.collapseStatus[nodeId] = true;
+                collapseService.affectVisual(true, pNode, nodeId);
                 $('#' + el).removeClass('aborted');
             }
+
         }
     };
 
@@ -1451,7 +1467,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        $scope.isTreeInitiated = true;
+        if (!$scope.isTreeInitiated && !$scope.donotInit) {
+            $scope.isTreeInitiated = true;
+            $scope.initJSPlumb();
+        } else {
+            $scope.donotInit = true;
+        }
     });
 
     $scope.$on('onAfterSetMode', function (event, course) {
@@ -1459,21 +1480,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.parseResources();
         }
     });
-
-    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function (oldVal, newVal) {
-        if ($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
-            $scope.initJSPlumb();
-        }
-    });
-
-    $scope.$watch(function () {
-        return $location.search()
-    }, function (newVal, oldVal) {
-        var currentTab = $location.search().tab;
-        if (currentTab == 'map') {
-            $scope.isCurrentTabIsMap = true;
-        }
-    }, true);
 
     $(document).ready(function () {
         $scope.width = jQuery(window).width();
@@ -1525,6 +1531,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             return;
 
         $scope.addNewNodeIntoPool(data);
+
         console.log('nodeCreated');
     });
 
@@ -4309,7 +4316,8 @@ app.directive('timepicker', function($timeout) {
 
                 for (var i in pNode.childrens) {
                     var chs = pNode.childrens[i];
-                    if (hide !== false) {
+                    if (hide === true) {
+
                         $('#t' + chs._id).hide();
                         if (chs.childrens.length > 0) {
                             self.affectVisual(true, chs, chs._id);
@@ -4317,21 +4325,22 @@ app.directive('timepicker', function($timeout) {
                     }
                     else {
                         $('#t' + chs._id).show();
+
                         if (chs.childrens.length > 0) {
                             var isChildrenCollapsed = self.isCollapsed(chs._id);
-                            if (isChildrenCollapsed === false)
-                                self.affectVisual(false, chs, chs._id);
-                            else
+                            if (isChildrenCollapsed === true)
                                 self.affectVisual(true, chs, chs._id);
+                            else
+                                self.affectVisual(false, chs, chs._id);
                         }
                     }
                 }
 
                 // hide svg
-                if (hide === false)
-                    $("svg[data-source='t" + nodeId + "'").show();
-                else
+                if (hide === true)
                     $("svg[data-source='t" + nodeId + "'").hide();
+                else
+                    $("svg[data-source='t" + nodeId + "'").show();
             }
 
         }
@@ -4472,7 +4481,7 @@ app.directive('timepicker', function($timeout) {
             pageUrl: '',
 
             pageParams: {
-                limit: 10,
+                limit: 12,
                 sortBy: '_id',
                 orderBy: 'desc',
                 lastPage: false

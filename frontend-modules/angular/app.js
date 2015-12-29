@@ -7,6 +7,8 @@ var app = angular.module('courseMapper', [
 
 app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
-        positionClass: 'toast-top-center'
+        positionClass: 'toast-top-center',
+        preventDuplicates: true,
+        preventOpenDuplicates: true
     });
 });
