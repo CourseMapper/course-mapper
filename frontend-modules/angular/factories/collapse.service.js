@@ -60,7 +60,6 @@ app.factory('collapseService', [
                 for (var i in pNode.childrens) {
                     var chs = pNode.childrens[i];
                     if (hide === true) {
-
                         $('#t' + chs._id).hide();
                         if (chs.childrens.length > 0) {
                             self.affectVisual(true, chs, chs._id);
@@ -71,10 +70,10 @@ app.factory('collapseService', [
 
                         if (chs.childrens.length > 0) {
                             var isChildrenCollapsed = self.isCollapsed(chs._id);
-                            if (isChildrenCollapsed === true)
-                                self.affectVisual(true, chs, chs._id);
-                            else
+                            if (isChildrenCollapsed === false)
                                 self.affectVisual(false, chs, chs._id);
+                            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
+                                self.affectVisual(true, chs, chs._id);
                         }
                     }
                 }

@@ -776,6 +776,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    // for our view to show plus/minus button
     $scope.collapseStatus = {};
 
     // {"0": {nodeId:isCollapsed},}
@@ -1156,8 +1157,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens && child.childrens.length > 0) {
+            if (child.childrens)
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
+            if (child.childrens && child.childrens.length > 0) {
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
@@ -4317,7 +4319,6 @@ app.directive('timepicker', function($timeout) {
                 for (var i in pNode.childrens) {
                     var chs = pNode.childrens[i];
                     if (hide === true) {
-
                         $('#t' + chs._id).hide();
                         if (chs.childrens.length > 0) {
                             self.affectVisual(true, chs, chs._id);
@@ -4328,10 +4329,10 @@ app.directive('timepicker', function($timeout) {
 
                         if (chs.childrens.length > 0) {
                             var isChildrenCollapsed = self.isCollapsed(chs._id);
-                            if (isChildrenCollapsed === true)
-                                self.affectVisual(true, chs, chs._id);
-                            else
+                            if (isChildrenCollapsed === false)
                                 self.affectVisual(false, chs, chs._id);
+                            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
+                                self.affectVisual(true, chs, chs._id);
                         }
                     }
                 }

@@ -12,6 +12,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    // for our view to show plus/minus button
     $scope.collapseStatus = {};
 
     // {"0": {nodeId:isCollapsed},}
@@ -392,8 +393,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens && child.childrens.length > 0) {
+            if (child.childrens)
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
+            if (child.childrens && child.childrens.length > 0) {
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
