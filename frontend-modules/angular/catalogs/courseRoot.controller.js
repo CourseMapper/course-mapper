@@ -61,7 +61,8 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
 
                 if ($scope.currentTab != $scope.defaultPath) {
                     if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
-                        $scope.showEnrollForm();
+                        if (authService.isLoggedIn)
+                            $scope.showEnrollForm();
                     }
                 }
 
@@ -84,7 +85,7 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
     };
 
     $scope.showEnrollForm = function () {
-        $('#enrollForm').modal('show');
+        $('#enrollForm').modal({backdrop: 'static', keyboard: false});
     };
 
     /**

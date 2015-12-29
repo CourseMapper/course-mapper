@@ -91,7 +91,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             function (err) {
                 console.log(err);
-                toastr.error('cannot load course tree');
+                //toastr.error('cannot load course tree');
             }
         );
     };
@@ -274,7 +274,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 $scope.getChildLength(ch._id, level, ch);
             }
         } else {
-            console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
+            //console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
         }
     };
 
@@ -770,7 +770,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
         $scope.addNewNodeIntoPool(data);
 
-        console.log('nodeCreated');
+        //console.log('nodeCreated');
     });
 
     socket.on('nodeUpdated', function (data) {
@@ -783,7 +783,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             $scope.afterEditNode(data);
         }
 
-        console.log('nodeUpdated');
+        //console.log('nodeUpdated');
     });
 
     socket.on('nodeDeleted', function (data) {
@@ -806,6 +806,6 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             $scope.reInitiateJSPlumb();
         }
 
-        console.log('nodeDeleted');
+        //console.log('nodeDeleted');
     })
 });

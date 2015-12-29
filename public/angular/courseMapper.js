@@ -549,7 +549,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 if ($scope.currentTab != $scope.defaultPath) {
                     if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
-                        $scope.showEnrollForm();
+                        if (authService.isLoggedIn)
+                            $scope.showEnrollForm();
                     }
                 }
 
@@ -572,7 +573,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.showEnrollForm = function () {
-        $('#enrollForm').modal('show');
+        $('#enrollForm').modal({backdrop: 'static', keyboard: false});
     };
 
     /**
@@ -855,7 +856,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             function (err) {
                 console.log(err);
-                toastr.error('cannot load course tree');
+                //toastr.error('cannot load course tree');
             }
         );
     };
@@ -1038,7 +1039,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 $scope.getChildLength(ch._id, level, ch);
             }
         } else {
-            console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
+            //console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
         }
     };
 
@@ -1534,7 +1535,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.addNewNodeIntoPool(data);
 
-        console.log('nodeCreated');
+        //console.log('nodeCreated');
     });
 
     socket.on('nodeUpdated', function (data) {
@@ -1547,7 +1548,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.afterEditNode(data);
         }
 
-        console.log('nodeUpdated');
+        //console.log('nodeUpdated');
     });
 
     socket.on('nodeDeleted', function (data) {
@@ -1570,7 +1571,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.reInitiateJSPlumb();
         }
 
-        console.log('nodeDeleted');
+        //console.log('nodeDeleted');
     })
 });
 ;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
@@ -4253,7 +4254,7 @@ app.directive('timepicker', function($timeout) {
             },
 
             showLoginForm: function () {
-                $('#loginFormModal').modal('show');
+                $('#loginFormModal').modal({backdrop: 'static', keyboard: false});
             }
         }
     }

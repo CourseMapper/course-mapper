@@ -118,7 +118,7 @@ app.factory('authService', [
             },
 
             showLoginForm: function () {
-                $('#loginFormModal').modal('show');
+                $('#loginFormModal').modal({backdrop: 'static', keyboard: false});
             }
         }
     }
