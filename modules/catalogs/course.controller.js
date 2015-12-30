@@ -37,8 +37,8 @@ catalog.prototype.getCourse = function (error, params, success) {
         });
 };
 
-catalog.prototype.getCourseAsync = function(params){
-    return async(function(){
+catalog.prototype.getCourseAsync = function (params) {
+    return async(function () {
         var crs = await(Course.findOne(params)
             .populate('category courseTags')
             .populate('createdBy', '_id username displayName')
@@ -155,7 +155,8 @@ catalog.prototype.addCourse = function (error, params, success) {
         name: params.name,
         createdBy: mongoose.Types.ObjectId(params.userId),
         category: mongoose.Types.ObjectId(params.category),
-        description: params.description
+        description: params.description,
+        smallDescription: params.smallDescription
     });
 
     course.setSlug(params.name);
@@ -251,6 +252,7 @@ catalog.prototype.editCourse = function (error, params, files, success) {
     function saveEditCourse(course) {
         course.name = params.name;
         course.description = params.description;
+        course.smallDescription = params.smallDescription;
         course.courseTags = [];
 
         // save the update
@@ -390,14 +392,23 @@ catalog.prototype.saveSettings = function (params) {
     }
 };
 
-catalog.prototype.getCourses = function (error, params, success) {
-    Course.find(params, function (err, docs) {
-        if (!err) {
-            success(docs);
-        } else {
-            error(err);
-        }
-    });
+catalog.prototype.getCourses = function (error, params, pageParams, success) {
+
+    if (!pageParams.lastPage || pageParams.lastPage == 'false') {
+        pageParams.lastPage = 0;
+    }
+
+    Course
+        .find(params)
+        .skip(pageParams.lastPage)
+        .limit(pageParams.limit)
+        .exec(function (err, docs) {
+            if (!err) {
+                success(docs);
+            } else {
+                error(err);
+            }
+        });
 };
 
 /**

@@ -10,33 +10,102 @@ var router = express.Router();
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
-router.get('/categories', function(req, res, next) {
+router.get('/categories', function (req, res, next) {
     var cat = new Category();
     cat.getCategories(
-        function(err){
+        function (err) {
             res.status(500).json({});
         },
         // to get all categories in flat format
         {}
         ,
-        function(categories){
+        function (categories) {
             res.status(200).json({categories: categories});
         }
     );
 });
 
-router.get('/category/:category', function(req, res, next) {
+router.get('/category/:category/courseTags', function (req, res, next) {
+    var cat = new Category();
+    cat.getCategoryTags(
+        function (err) {
+            res.status(500).json({});
+        },
+        {
+            _id: req.params.category
+        }
+        ,
+        function (tags) {
+            res.status(200).json({courseTags: tags});
+        }
+    );
+});
+
+/**
+ * get courses based on category id
+ * return: json
+ */
+router.get('/category/:category/courses', function (req, res, next) {
+    var getCParam = {category: req.params.category};
+
+    // converting tag ids csv into tag (object ids)
+    var tags = req.query.tags;
+    if (tags) {
+        tags = tags.split(',');
+        if (tags.length > 0) {
+            for (var i in tags)
+                tags[i] = mongoose.Types.ObjectId(tags[i]);
+
+            getCParam.courseTags = {$in: tags};
+        }
+    }
+
+    var limit = 12;
+    if (req.query['limit']) {
+        var limitTemp = parseInt(req.query['limit']);
+        if (limitTemp != NaN)
+            limit = limitTemp;
+    }
+
+    var sortBy = 'dateAdded';
+    if (req.query['sortBy'])
+        sortBy = req.query['sortBy'];
+
+    var lastPage = false;
+    if (req.query['lastPage'])
+        lastPage = parseInt(req.query['lastPage']);
+
+    var pageParams = {
+        lastPage: lastPage,
+        limit: limit,
+        sortBy: sortBy
+    };
+
+    var cat = new Course();
+    cat.getCourses(
+        function (err) {
+            res.status(500).json({result: false, errors: err});
+        },
+        getCParam,
+        pageParams,
+        function (courses) {
+            res.status(200).json({result: true, courses: courses});
+        }
+    );
+});
+
+router.get('/category/:category', function (req, res, next) {
     var cat = new Category();
     cat.getCategory(
-        function(err){
-            res.status(500).json({});
+        function (err) {
+            res.status(500).json({result: false, errors: err});
         },
         {
             slug: req.params.category
         }
         ,
-        function(categories){
-            res.status(200).json({category: categories});
+        function (categories) {
+            res.status(200).json({result: true, category: categories});
         }
     );
 });
@@ -44,7 +113,7 @@ router.get('/category/:category', function(req, res, next) {
 /**
  * update category.positionFromRoot value
  */
-router.put('/category/:category/positionFromRoot', function(req, res, next) {
+router.put('/category/:category/positionFromRoot', function (req, res, next) {
     // check for user rights, only admin can edit cats positions on the homepage
     if (!req.user || (req.user && req.user.role != 'admin')) {
         res.status(401).send('Unauthorized');
@@ -54,7 +123,7 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
     var cat = new Category();
 
     cat.updateCategoryPosition(
-        function(err){
+        function (err) {
             res.status(500).json({});
         },
         {
@@ -65,7 +134,7 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
             x: req.body.x,
             y: req.body.y
         },
-        function(cat){
+        function (cat) {
             res.status(200).json({category: cat});
         }
     );
@@ -75,16 +144,16 @@ router.put('/category/:category/positionFromRoot', function(req, res, next) {
 /**
  * update category.positionFromRoot value
  */
-router.put('/category/:categoryId', function(req, res, next) {
+router.put('/category/:categoryId', function (req, res, next) {
     // check for user rights, only admin can edit cats positions on the homepage
     if (!req.user || (req.user && req.user.role != 'admin')) {
         res.status(401).send('Unauthorized');
         return;
     }
 
-    try{
+    try {
         req.params.categoryId = mongoose.Types.ObjectId(req.params.categoryId);
-    } catch(exc) {
+    } catch (exc) {
         helper.createError('wrong category id format', 500);
         return;
     }
@@ -92,7 +161,7 @@ router.put('/category/:categoryId', function(req, res, next) {
     var cat = new Category();
 
     cat.updateCategory(
-        function(err){
+        function (err) {
             res.status(500).json({
                 result: false,
                 errors: err
@@ -103,57 +172,10 @@ router.put('/category/:categoryId', function(req, res, next) {
         }
         ,
         req.body,
-        function(cat){
+        function (cat) {
             res.status(200).json({
-                result:true });
-        }
-    );
-});
-
-router.get('/category/:category/courseTags', function(req, res, next) {
-    var cat = new Category();
-    cat.getCategoryTags(
-        function(err){
-            res.status(500).json({});
-        },
-        {
-            _id: req.params.category
-        }
-        ,
-        function(tags){
-            res.status(200).json({courseTags: tags});
-        }
-    );
-});
-
-/**
- * get courses based on category id
- * return: json
- */
-router.get('/category/:category/courses', function(req, res, next) {
-    var getCParam = { category: req.params.category };
-
-    // converting tag ids csv into tag (object ids)
-    var tags = req.query.tags;
-    if(tags) {
-        tags = tags.split(',');
-        if(tags.length > 0) {
-            for (var i in tags)
-                tags[i] = mongoose.Types.ObjectId(tags[i]);
-
-            getCParam.courseTags = {$in: tags};
-        }
-    }
-
-    var cat = new Course();
-    cat.getCourses(
-        function(err){
-            res.status(500).json({errors:err});
-        },
-        getCParam
-        ,
-        function(courses){
-            res.status(200).json({courses: courses});
+                result: true
+            });
         }
     );
 });
@@ -161,7 +183,7 @@ router.get('/category/:category/courses', function(req, res, next) {
 /**
  * save category into mongo
  */
-router.post('/categories', function(req, res, next){
+router.post('/categories', function (req, res, next) {
     if (req.user && req.user.role != 'admin') {
         res.status(401).send('Unauthorized');
     }
@@ -169,30 +191,30 @@ router.post('/categories', function(req, res, next){
         var cat = new Category();
         cat.addCategory(
             function (err) {
-                res.status(500).json({result:false, errors: err});
+                res.status(500).json({result: false, errors: err});
             },
 
             // parameters
             req.body,
 
             function (cat) {
-                res.status(200).json({result:true, category: cat});
+                res.status(200).json({result: true, category: cat});
             }
         );
     }
 });
 
 
-router.delete('/category/:categoryId', function(req, res, next) {
+router.delete('/category/:categoryId', function (req, res, next) {
     // check for user rights, only admin can delete cats positions on the homepage
     if (!req.user || (req.user && req.user.role != 'admin')) {
         res.status(401).send('Unauthorized');
         return;
     }
 
-    try{
+    try {
         req.params.categoryId = mongoose.Types.ObjectId(req.params.categoryId);
-    } catch(exc) {
+    } catch (exc) {
         helper.createError('wrong category id format', 500);
         return;
     }
@@ -200,14 +222,14 @@ router.delete('/category/:categoryId', function(req, res, next) {
     var cat = new Category();
 
     cat.deleteCategory(
-        function(err){
+        function (err) {
             res.status(500).json({
                 result: false,
                 errors: err
             });
         },
         req.params,
-        function(cat){
+        function (cat) {
             res.status(200).json({result: true});
         }
     );

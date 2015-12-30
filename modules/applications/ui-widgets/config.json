@@ -1,0 +1,19 @@
+{
+  "name": "UI-Widgets",
+  "widgets": [
+    {
+      "name": "HTML Widget",
+      "location": "course-preview",
+      "description": "Write HTML formatted content",
+      "entryPoint": "/ui-widgets/html-sidebar",
+      "widgetJavascript": [
+        "html-widgets/html-sidebar.js"
+      ],
+      "width": 12,
+      "hasConfigButton": true,
+      "height": 1,
+      "icon": "/img/appPlaceholder.png",
+      "controller": "HtmlSidebarToolController"
+    }
+  ]
+}

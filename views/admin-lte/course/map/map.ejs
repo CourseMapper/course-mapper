@@ -13,7 +13,7 @@
         <div class="collapse-button" ng-show="data.type == 'subTopic'">
             <a class="pointer" ng-click="collapse('t' + data._id )">
                 <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
-                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id]"></i>
+                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
             </a>
         </div>
 
@@ -26,6 +26,11 @@
 
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
+            <li style="text-align: center">
+                <small>
+                    Created {{data.dateAdded | relativeDate}} <br>by {{data.createdBy.displayName}}
+                </small>
+            </li>
             <li>
                 <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
                    ng-click="setMode('add', 'subTopic', data)">
@@ -149,8 +154,8 @@
         };
 
         self.rePosition = function (w, h) {
-            var left = w / 2 + ((self.fromCenter.x - self.w / 2)  );
-            var top = h / 2 + ((self.fromCenter.y - self.h / 2)  );
+            var left = w / 2 + ((self.fromCenter.x));
+            var top = h / 2 + ((self.fromCenter.y));
 
             self.el.css({
                 left: left + "px",

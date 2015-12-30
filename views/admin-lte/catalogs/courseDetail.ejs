@@ -10,7 +10,9 @@
 
 <section class="content-header action-header blue">
     <li class="visible-sm-inline-block visible-xs-inline-block draw-tab-button">
-        <a class="cursor" onclick="toggleTabMenu()" style="color: white"><i class="ionicons ion-navicon-round"></i></a>
+        <a class="cursor" onclick="toggleTabMenu()" style="color: white">
+            <i class="ionicons ion-navicon-round"></i>
+        </a>
     </li>
     <ol class="breadcrumb">
         <li class="home"><a href="#/cid/{{course._id}}?tab=preview">{{course.name}}</a></li>
@@ -47,6 +49,7 @@
 
 <!-- modal contents -->
 <% include courseDetailModals %>
+<div ng-include="'/accounts/loginform'"></div>
 <!-- /.modal contents -->
 
 <script>

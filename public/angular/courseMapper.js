@@ -7,7 +7,9 @@ var app = angular.module('courseMapper', [
 
 app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
-        positionClass: 'toast-top-center'
+        positionClass: 'toast-top-center',
+        preventDuplicates: true,
+        preventOpenDuplicates: true
     });
 });
 ;app.config(['$routeProvider', '$locationProvider',
@@ -147,8 +149,9 @@ app.config(function (toastrConfig) {
         $scope.course = course;
 
         if (refreshPicture) {
-            if ($scope.course.picture)
+            if ($scope.course.picture) {
                 $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+            }
         }
 
         if ($scope.course.video) {
@@ -342,6 +345,7 @@ app.config(function (toastrConfig) {
             fields: {
                 name: $scope.courseEdit.name,
                 description: $scope.courseEdit.description,
+                smallDescription: $scope.courseEdit.smallDescription,
                 tags: $scope.courseEdit.tags
             }
         };
@@ -436,7 +440,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.course = {
         name: null,
         category: null,
-        description: ''
+        description: '',
+        smallDescription: ''
     };
 
     $scope.tagsRaw = null;
@@ -497,23 +502,23 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.currentTab = "preview";
     $scope.tabDisplayName = "preview";
+    $scope.defaultPath = "preview";
+
     $scope.include = null;
     $scope.includeActionBar = null;
 
     $scope.changeTab = function () {
-        var defaultPath = "preview";
         var q = $location.search();
 
         if (!q.tab) {
-            q.tab = defaultPath;
+            q.tab = $scope.defaultPath;
         }
 
         $scope.currentTab = q.tab;
 
         $timeout(function () {
             if (!authService.isLoggedIn) {
-                if ($scope.currentTab != defaultPath)
-                    $location.search('tab', defaultPath);
+                authService.showLoginForm();
             }
         });
 
@@ -542,6 +547,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 $scope.setCapabilities();
 
+                if ($scope.currentTab != $scope.defaultPath) {
+                    if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
+                        $scope.showEnrollForm();
+                    }
+                }
+
                 $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
             },
 
@@ -554,6 +565,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         );
 
         $scope.changeTab();
+    };
+
+    $scope.isAuthorized = function () {
+        return ($scope.isAdmin || $scope.isOwner || $scope.isManager);
+    };
+
+    $scope.showEnrollForm = function () {
+        $('#enrollForm').modal('show');
     };
 
     /**
@@ -576,10 +595,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     tapToDismiss: false,
                     toastClass: 'toast wide',
                     extendedTimeOut: 30000,
-                    timeOut: 30000
+                    timeOut: 30000,
+                    onHidden: function () {
+                        $location.search('new', null);
+                        $timeout(function () {
+                            $rootScope.$apply();
+                        });
+                        //$location.url($location.path())
+                    }
                 });
         }
-
     };
 
     /**
@@ -613,7 +638,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.newCourseNotification();
 });
-;app.controller('CourseListController', function($scope, $rootScope, $http, $routeParams, $location, $sce, Page ) {
+;app.controller('CourseListController', function ($scope, $rootScope, $http,
+                                                 $routeParams, $location, $sce,
+                                                 Page, courseListService) {
     $scope.slug = $routeParams.slug;
 
     // chosen filter
@@ -625,33 +652,38 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.courseTags = [];
     $scope.category = null;
     $scope.courses = null;
+    $scope.coursesLength = 0;
 
     $scope.widgets = [];
 
-    $scope.getCoursesFromThisCategory = function(){
-        var url = '/api/category/' + $scope.category._id + '/courses';
-        var t = [];
-        if($scope.filterTags.length > 0) {
-            for (var i in $scope.filterTags)
-                t.push($scope.filterTags[i]._id);
-
-            url += '?tags=' + t.join(',');
-        }
-
-        $http.get(url).success(function(data) {
-            $scope.courses = data.courses;
-        });
+    $scope.getCoursesFromThisCategory = function () {
+        courseListService.init($scope.category._id, $scope.filterTags,
+            function (courses) {
+                $scope.courses = courses;
+                $scope.coursesLength = courses.length;
+            },
+            function (errors) {
+                console.log(JSON.stringify(errors));
+            }
+        );
     };
 
-    $scope.initTagFromSearch = function(){
+    $scope.newRowsFetched = function (newRows, allRows) {
+        if (newRows) {
+            $scope.courses = allRows;
+            $scope.coursesLength = $scope.courses.length;
+        }
+    };
+
+    $scope.initTagFromSearch = function () {
         var tagSearch = $location.search();
-        if(tagSearch && tagSearch.tags){
+        if (tagSearch && tagSearch.tags) {
             var tags = tagSearch.tags.split(',');
-            if(tags)
-                for(var i in tags){
+            if (tags)
+                for (var i in tags) {
                     var tag = tags[i];
-                    if($scope.availableTags)
-                        for(var j in $scope.availableTags) {
+                    if ($scope.availableTags)
+                        for (var j in $scope.availableTags) {
                             var t = $scope.availableTags[j];
                             if (t.slug == tag)
                                 $scope.applyFilter(t, true);
@@ -661,47 +693,49 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         $scope.getCoursesFromThisCategory();
 
-        $scope.$watch(function(){ return $location.search() }, function(newVal, oldVal){
-            if(newVal && newVal !== oldVal)
+        $scope.$watch(function () {
+            return $location.search()
+        }, function (newVal, oldVal) {
+            if (newVal && newVal !== oldVal)
                 $scope.getCoursesFromThisCategory();
         }, true);
     };
 
-    $scope.getCourseAnalytics = function(cid){
+    $scope.getCourseAnalytics = function (cid) {
         $http.get('/api/server-widgets/course-listing/?cid=' + cid).success(
-            function(res){
-                if(res.result){
+            function (res) {
+                if (res.result) {
                     $scope.widgets[cid] = $sce.trustAsHtml(res.widgets);
                 }
             }
-        ).error(function(){
+        ).error(function () {
 
         });
     };
 
-    $scope.applyFilter = function(tag, dontgo){
-        if(arrayObjectIndexOf($scope.filterTags, tag, 'name') < 0){
+    $scope.applyFilter = function (tag, dontgo) {
+        if (arrayObjectIndexOf($scope.filterTags, tag, 'name') < 0) {
             $scope.filterTags.push(tag);
             $scope.filterTagsText.push(tag.slug);
             removeObjectFromArray($scope.availableTags, tag, 'name');
-            if(!dontgo)
+            if (!dontgo)
                 $scope.go();
         }
     };
 
-    $scope.go = function(){
-        if($scope.filterTags.length > 0)
-            $location.search({tags: $scope.filterTagsText.join(',')} );
+    $scope.go = function () {
+        if ($scope.filterTags.length > 0)
+            $location.search({tags: $scope.filterTagsText.join(',')});
         else
             $location.search({});
     };
 
-    $scope.removeFilter = function(tag){
-        if(arrayObjectIndexOf($scope.availableTags, tag, 'name') < 0){
+    $scope.removeFilter = function (tag) {
+        if (arrayObjectIndexOf($scope.availableTags, tag, 'name') < 0) {
             $scope.availableTags.push(tag);
             removeObjectFromArray($scope.filterTags, tag, 'name');
 
-            for (var i=$scope.filterTagsText.length-1; i>=0; i--) {
+            for (var i = $scope.filterTagsText.length - 1; i >= 0; i--) {
                 if ($scope.filterTagsText[i] === tag.slug) {
                     $scope.filterTagsText.splice(i, 1);
                     break;
@@ -714,13 +748,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     /**
      * init category data by slug
      */
-    $http.get('/api/category/' + $scope.slug ).success(function(data) {
+    $http.get('/api/category/' + $scope.slug).success(function (data) {
         $scope.category = data.category;
 
         Page.setTitleWithPrefix($scope.category.name);
 
         // once we get the complete category structure, we operate by id
-        $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function(data) {
+        $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function (data) {
             $scope.courseTags = data.courseTags;
             $scope.availableTags = data.courseTags;
 
@@ -737,13 +771,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
     $scope.isTreeInitiated = false;
-    $scope.isCurrentTabIsMap = false;
     $scope.infoToast = null;
     $scope.infoEmptyToast = null;
     $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    // for our view to show plus/minus button
     $scope.collapseStatus = {};
+
+    // {"0": {nodeId:isCollapsed},}
+    $scope.nodeChildrens = {};
+    $scope.firstloaded = true;
 
     /**
      * find node recursively
@@ -887,21 +925,26 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 found = false;
                 var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nId);
 
-                $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
-                    .success(function (res, status) {
-                        //console.log(res);
-                        if (pNode)
-                            pNode.positionFromRoot = distanceFromCenter;
-                    })
-                    .error(function (res, status) {
-                        console.log('err');
-                        console.log(res);
-                    });
+                $scope.sendPosition(nId, distanceFromCenter, pNode);
             }
         });
     };
 
+    $scope.sendPosition = function (nId, distanceFromCenter, pNode) {
+        $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
+            .success(function (res, status) {
+                //console.log(res);
+                if (pNode)
+                    pNode.positionFromRoot = distanceFromCenter;
+            })
+            .error(function (res, status) {
+                console.log('err');
+                console.log(res);
+            });
+    };
+
     $scope.initJSPlumb = function () {
+        jQuery('.tree-container').css('visibility', 'hidden');
         Tree.init(Canvas.w, Canvas.h);
         jsPlumb.ready(function () {
             $scope.instance = jsPlumb.getInstance({
@@ -922,7 +965,81 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 /*blanket on click to close dropdown menu*/
                 $scope.initDropDownMenuHybrid();
             });
+
+            $timeout(function () {
+                $scope.firstCollapse($scope.treeNodes);
+
+                $scope.initiateCollapse();
+                jQuery('.tree-container').css('visibility', 'visible');
+            })
         });
+    };
+
+    $scope.firstCollapse = function (treeNodes) {
+        if (!$scope.firstloaded)
+            return;
+
+        $scope.firstloaded = false;
+        for (var i = 0; i < treeNodes.length; i++) {
+            var child = treeNodes[i];
+
+            if (child.isDeletedForever)
+                continue;
+
+            $scope.getChildLength(child._id, 0, child);
+        }
+
+        // collapse on first level
+        for (var j in $scope.nodeChildrens[1]) {
+            var totalKids = $scope.nodeChildrens[1][j];
+            if (totalKids > 0) {
+                collapseService.setCollapse(j);
+                $scope.collapseStatus[j] = true;
+            } else {
+                collapseService.setExpand(j);
+                $scope.collapseStatus[j] = false;
+            }
+        }
+    };
+
+    $scope.initiateCollapse = function () {
+        for (var i in collapseService.collapsed) {
+            var colEl = 't' + collapseService.collapsed[i];
+            $scope.collapse(colEl, true);
+        }
+    };
+
+    $scope.getChildLength = function (nid, level, treeNodes) {
+        if ($scope.nodeChildrens[level] == undefined) {
+            $scope.nodeChildrens[level] = {};
+        }
+
+        if ($scope.nodeChildrens[level][nid] == undefined) {
+            $scope.nodeChildrens[level][nid] = 0;
+        }
+
+        var add = 0;
+        if (treeNodes.childrens && treeNodes.childrens.length > 0)
+            add = 1;
+
+        $scope.nodeChildrens[level][nid] += add;
+
+        if (level > 1) {
+            if ($scope.nodeChildrens[level][nid] > 0) {
+                collapseService.setCollapse(nid);
+                $scope.collapseStatus[nid] = true;
+            }
+        }
+
+        if (treeNodes.childrens && treeNodes.childrens.length > 0) {
+            level++;
+            for (var e in treeNodes.childrens) {
+                var ch = treeNodes.childrens[e];
+                $scope.getChildLength(ch._id, level, ch);
+            }
+        } else {
+            console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
+        }
     };
 
     $scope.initDropDown = function (slug) {
@@ -948,6 +1065,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 return false;
             })
             .on('mouseenter', function () {
+                if ($(this).hasClass('subTopic')) {
+                    return true;
+                }
+                if ($(this).hasClass('deleted')) {
+                    return true;
+                }
                 $scope.requestIconAnalyitics(slug);
             });
     };
@@ -978,6 +1101,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.showMapEmptyInfo = function () {
         if (!$scope.infoEmptyToast) {
+            toastr.clear();
             $scope.infoEmptyToast = toastr.info(
                 'Hi, this course is new, Please add a subtopic first, ' +
                 '<br>from there, you can add a content node, then upload a pdf or a video.' +
@@ -992,10 +1116,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                     tapToDismiss: true,
                     extendedTimeOut: 10000,
                     timeOut: 10000,
-                    toastClass: 'toast wide',
+                    toastClass: 'toast wide'
                 });
         } else {
-            toastr.clear();
             $scope.infoEmptyToast = null;
         }
     };
@@ -1034,8 +1157,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens) {
+            if (child.childrens)
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
+            if (child.childrens && child.childrens.length > 0) {
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
@@ -1139,6 +1263,9 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.requestIconAnalyitics = function (nodeId) {
         nodeId = nodeId.substring(1);
+        if (nodeId == 'enter')
+            return;
+
         $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
             function (res) {
                 $scope.isRequesting = false;
@@ -1248,16 +1375,22 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         else
             $scope.treeNodes.push(treeNode);
 
-        // destroy the jsplumb instance and svg rendered
-        $scope.destroyJSPlumb();
+        $timeout(function () {
+            $scope.$apply();
 
-        // this will reinitiate the model, and thus also jsplumb connection
-        $scope.reInitiateJSPlumb(function () {
-            if ($('.open').length > 0) {
-                $('.open').removeClass('open');
-                return true;
-            }
+            // destroy the jsplumb instance and svg rendered
+            $scope.destroyJSPlumb();
+
+            // this will reinitiate the model, and thus also jsplumb connection
+            $scope.reInitiateJSPlumb(function () {
+                $scope.donotInit = true;
+                if ($('.open').length > 0) {
+                    $('.open').removeClass('open');
+                    return true;
+                }
+            });
         });
+
     };
 
     $scope.afterEditNode = function (treeNode) {
@@ -1296,21 +1429,30 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
     };
 
-    $scope.collapse = function (el) {
+    $scope.collapse = function (el, isInit) {
         var nodeId = el.substring(1);
         found = false;
 
         var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
         if (pNode) {
-            var hide = collapseService.toggle(nodeId);
-            $scope.collapseStatus[nodeId] = hide;
-            collapseService.affectVisual(hide, pNode, nodeId);
+            var hide = false;
 
-            if (hide !== false) {
+            if (isInit === true)
+                hide = collapseService.isCollapsed(nodeId);
+            else
+                hide = collapseService.toggle(nodeId);
+
+            if (hide === false) {
+                $scope.collapseStatus[nodeId] = false;
                 $('#' + el).addClass('aborted');
-            } else {
+                collapseService.affectVisual(false, pNode, nodeId);
+            }
+            else if (hide >= 0 || hide == true) {
+                $scope.collapseStatus[nodeId] = true;
+                collapseService.affectVisual(true, pNode, nodeId);
                 $('#' + el).removeClass('aborted');
             }
+
         }
     };
 
@@ -1327,7 +1469,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        $scope.isTreeInitiated = true;
+        if (!$scope.isTreeInitiated && !$scope.donotInit) {
+            $scope.isTreeInitiated = true;
+            $scope.initJSPlumb();
+        } else {
+            $scope.donotInit = true;
+        }
     });
 
     $scope.$on('onAfterSetMode', function (event, course) {
@@ -1335,21 +1482,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.parseResources();
         }
     });
-
-    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function (oldVal, newVal) {
-        if ($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
-            $scope.initJSPlumb();
-        }
-    });
-
-    $scope.$watch(function () {
-        return $location.search()
-    }, function (newVal, oldVal) {
-        var currentTab = $location.search().tab;
-        if (currentTab == 'map') {
-            $scope.isCurrentTabIsMap = true;
-        }
-    }, true);
 
     $(document).ready(function () {
         $scope.width = jQuery(window).width();
@@ -1401,6 +1533,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             return;
 
         $scope.addNewNodeIntoPool(data);
+
         console.log('nodeCreated');
     });
 
@@ -1856,51 +1989,63 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.tabDisplayName = $('li.' + name).attr('data-displayName');
     };
 
+    $scope.showEnrollForm = function () {
+        $('#enrollForm').modal('show');
+    };
+
+    $scope.isAuthorized = function () {
+        return ($scope.isAdmin || $scope.isOwner || $scope.isManager || $scope.isNodeOwner);
+    };
+
     $scope.initNode = function () {
         courseService.init(
             $scope.courseId,
 
             function (course) {
                 $scope.course = course;
+                $scope.setCapabilities();
 
-                treeNodeService.init($scope.nodeId,
-                    function (treeNode) {
-                        $scope.treeNode = treeNode;
-                        $scope.videoFile = treeNodeService.videoFile;
-                        $scope.pdfFile = treeNodeService.pdfFile;
+                if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
+                    $scope.showEnrollForm();
+                } else {
+                    treeNodeService.init($scope.nodeId,
+                        function (treeNode) {
+                            $scope.treeNode = treeNode;
+                            $scope.videoFile = treeNodeService.videoFile;
+                            $scope.pdfFile = treeNodeService.pdfFile;
+ 
+                            Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
-                        $scope.setCapabilities();
+                            if ($scope.isAdmin || $scope.isManager) {
+                                if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                    $scope.isNodeOwner = true;
 
-                        Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
-
-                        if ($scope.isAdmin || $scope.isManager) {
-                            if ($scope.treeNode.createdBy == $rootScope.user._id)
-                                $scope.isNodeOwner = true;
-
-                            $scope.setEditMode();
-                        }
-
-                        $scope.changeTab();
-
-                        $timeout(function () {
-                            $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
-                        });
-                    },
-                    function (err) {
-                        toastr.error(err);
-
-                        $timeout(function () {
-                            if (!authService.isLoggedIn && $scope.course) {
-                                window.location.href = '/course/' + $scope.course.slug + '/#/cid/' + $scope.course._id + '?tab=preview';
+                                $scope.setEditMode();
                             }
-                        });
-                    }
-                );
+
+                            $scope.changeTab();
+
+                            $timeout(function () {
+                                $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
+                            });
+                        },
+                        function (err) {
+                            //toastr.error(err);
+
+                            $timeout(function () {
+                                if (!authService.isLoggedIn && $scope.course) {
+                                    //window.location.href = '/course/' + $scope.course.slug + '/#/cid/' + $scope.course._id + '?tab=preview';
+                                    authService.showLoginForm();
+                                }
+                            });
+                        }
+                    );
+                }
             },
 
             function (res) {
                 $scope.errors = res.errors;
-                toastr.error('Failed getting course');
+                //toastr.error('Failed getting course');
             },
 
             true
@@ -1923,7 +2068,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
     };
 
-
     $scope.$on('onAfterEditContentNode', function (event, oldTreeNode) {
         window.location.reload();
     });
@@ -1933,8 +2077,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
      */
     $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
-
-
     });
 
     /**
@@ -1942,13 +2084,6 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
      */
     var pdfPageChangeListener = $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
-
-        /*var q = $location.search();
-         if (!q.tab) {
-         if ($scope.currentTab == 'pdf' && params[0] > 1) {
-         $location.search({'tab': 'pdf'});
-         }
-         }*/
 
         if (params[0] && params[0] != 1)
             $scope.currentPdfPage = params[0];
@@ -2053,7 +2188,26 @@ app.controller('AppSettingController', function(  Page) {
                 $compile(element.contents())(scope.$new());
             }*/
         };
-    });;app.directive('errorBlock',
+    });;app
+    .directive('dynamicController', ['$controller', function ($controller) {
+        return {
+            restrict: 'A',
+            scope: true,
+            link: function (scope, element, attrs) {
+
+                var locals = {
+                    $scope: scope,
+                    $element: element,
+                    $attrs: attrs
+                };
+
+                var kol = scope.$eval(attrs.dynamicController);
+                if (kol)
+                    element.data('$Controller', $controller(kol, locals));
+            }
+        };
+    }
+    ]);;app.directive('errorBlock',
     function () {
         return {
             restrict: 'E',
@@ -3154,7 +3308,29 @@ app.directive('timepicker', function($timeout) {
             }
 
         };
-    });;app.controller('DiscussionController', function ($scope, $rootScope, $http, $location, $sce,
+    });;app.directive('widgetBox',
+    function ($compile, $timeout, $rootScope, $parse) {
+        return {
+            restrict: 'E',
+
+            terminal: true,
+            transclude: true,
+
+            scope: {
+                showTools: '=',
+                showConfigButton: '=',
+                title: '@',
+                entryPoint: '@',
+                closeAction: '&',
+                editAction: '&',
+                onloadAction: '&',
+                widget: '='
+            },
+
+            templateUrl: '/angular/views/widget-box.html'
+        };
+    });
+;app.controller('DiscussionController', function ($scope, $rootScope, $http, $location, $sce,
                                                  $compile, ActionBarService, courseService,
                                                  discussionService, $timeout,
                                                  toastr, Page, $window) {
@@ -3433,7 +3609,7 @@ app.directive('timepicker', function($timeout) {
             },
 
             function (errors) {
-                toastr.error(errors);
+                //toastr.error(errors);
             }
         );
     };
@@ -3966,6 +4142,7 @@ app.directive('timepicker', function($timeout) {
 
             isCheckingForLogin: false,
 
+            showLoginModal: false,
             /**
              * default value is null  because its used on a watch check
              *
@@ -4073,6 +4250,10 @@ app.directive('timepicker', function($timeout) {
                         errorCallback(data);
                     }
                 );
+            },
+
+            showLoginForm: function () {
+                $('#loginFormModal').modal('show');
             }
         }
     }
@@ -4090,7 +4271,7 @@ app.directive('timepicker', function($timeout) {
                 }
 
                 return false;
-            }, 
+            },
 
             /**
              *
@@ -4111,31 +4292,53 @@ app.directive('timepicker', function($timeout) {
                 }
             },
 
+            setCollapse: function (nodeId) {
+                var idx = this.isCollapsed(nodeId);
+                if (idx === false) {
+                    // hidden, now set it to hide
+                    this.collapsed.push(nodeId);
+                    // true means hide
+                    return true;
+                }
+                return false;
+            },
+
+            setExpand: function (nodeId) {
+                var idx = this.isCollapsed(nodeId);
+                if (idx !== false) {
+                    // show back
+                    this.collapsed.splice(idx, 1);
+                    return true;
+                }
+                return false;
+            },
+
             affectVisual: function (hide, pNode, nodeId) {
                 var self = this;
 
                 for (var i in pNode.childrens) {
                     var chs = pNode.childrens[i];
-                    if (hide) {
+                    if (hide === true) {
                         $('#t' + chs._id).hide();
                         if (chs.childrens.length > 0) {
-                            self.affectVisual(hide, chs, chs._id);
+                            self.affectVisual(true, chs, chs._id);
                         }
                     }
                     else {
                         $('#t' + chs._id).show();
+
                         if (chs.childrens.length > 0) {
                             var isChildrenCollapsed = self.isCollapsed(chs._id);
                             if (isChildrenCollapsed === false)
                                 self.affectVisual(false, chs, chs._id);
-                            else
+                            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
                                 self.affectVisual(true, chs, chs._id);
                         }
                     }
                 }
 
                 // hide svg
-                if (hide)
+                if (hide === true)
                     $("svg[data-source='t" + nodeId + "'").hide();
                 else
                     $("svg[data-source='t" + nodeId + "'").show();
@@ -4263,6 +4466,104 @@ app.directive('timepicker', function($timeout) {
 
             isInitialized: function () {
                 if (!this.course) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+    }
+]);;app.factory('courseListService', [
+    '$rootScope', '$http',
+
+    function ($rootScope, $http) {
+        return {
+            courses: null,
+            pageUrl: '',
+
+            pageParams: {
+                limit: 12,
+                sortBy: '_id',
+                orderBy: 'desc',
+                lastPage: false
+            },
+
+            init: function (categoryId, filterTags, success, error, force) {
+                var self = this;
+
+                self.categoryId = categoryId;
+                self.setPageUrl();
+
+                if (!force && self.courses) {
+                    if (success)
+                        success(self.courses);
+                }
+
+                else if (force || !self.courses) {
+                    var url = '/api/category/' + categoryId + '/courses';
+                    var t = [];
+                    if (filterTags.length > 0) {
+                        for (var i in filterTags)
+                            t.push(filterTags[i]._id);
+
+                        url += '?tags=' + t.join(',');
+                    }
+
+                    $http.get(url)
+                        .success(function (data) {
+                            self.courses = data.courses;
+                            success(data.courses)
+                        })
+                        .error(function (data) {
+                            if (error)
+                                error(data.errors);
+                        });
+                }
+            },
+
+            getMoreRows: function (success, error) {
+                var self = this;
+
+                self.setPageUrl();
+                $http.get('/api/category/' + self.categoryId + '/courses' + self.pageUrl)
+                    .success(function (data) {
+                        if (data.result && data.courses && data.courses.length > 0) {
+                            self.courses = self.courses.concat(data.courses);
+
+                            if (success)
+                                success(data.courses, self.courses);
+                        }
+                        else
+                            success(false);
+                    })
+                    .error(function (data) {
+                        if (error)
+                            error(data.errors);
+                    });
+            },
+
+            setPageUrl: function () {
+                this.pageUrl = '?';
+
+                var ps = [];
+                for (var k in this.pageParams) {
+                    ps.push(k + '=' + this.pageParams[k]);
+                }
+
+                this.pageUrl += ps.join('&');
+            },
+
+            setPageParams: function (scp) {
+                var self = this;
+
+                self.pageParams.limit = scp.limit;
+                self.pageParams.sortBy = scp.sortBy;
+                self.pageParams.orderBy = scp.orderBy;
+                self.pageParams.lastPage = scp.lastPage;
+            },
+
+            isInitialized: function () {
+                if (!this.courses) {
                     return false;
                 }
 
@@ -4755,8 +5056,8 @@ app.factory('socket', function ($rootScope) {
                 $.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
-                var h = $('#w' + id + ' .grid-stack-item-content');
-                $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
+                //var h = $('#w' + id + ' .grid-stack-item-content');
+                //$('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
             install: function (location, application, name, extraParams, successCb, errorCb) {
@@ -7401,3 +7702,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.initWidgets();
 });
+;/*
+app.controller('HtmlSidebarController2', function($scope){
+    console.log('abcef');
+});*/

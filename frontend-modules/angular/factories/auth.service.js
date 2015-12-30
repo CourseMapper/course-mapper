@@ -7,6 +7,7 @@ app.factory('authService', [
 
             isCheckingForLogin: false,
 
+            showLoginModal: false,
             /**
              * default value is null  because its used on a watch check
              *
@@ -114,6 +115,10 @@ app.factory('authService', [
                         errorCallback(data);
                     }
                 );
+            },
+
+            showLoginForm: function () {
+                $('#loginFormModal').modal('show');
             }
         }
     }

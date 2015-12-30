@@ -24,8 +24,9 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
         $scope.course = course;
 
         if (refreshPicture) {
-            if ($scope.course.picture)
+            if ($scope.course.picture) {
                 $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+            }
         }
 
         if ($scope.course.video) {

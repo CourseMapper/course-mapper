@@ -277,7 +277,7 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
             },
 
             function (errors) {
-                toastr.error(errors);
+                //toastr.error(errors);
             }
         );
     };

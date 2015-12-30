@@ -14,11 +14,17 @@ var BasicStrategy = require('passport-http').BasicStrategy;
 var appRoot = require('app-root-path');
 var User = require(appRoot + '/modules/accounts/users.js');
 var BearerStrategy = require('passport-http-bearer').Strategy;
+var CustomStrategy = require('passport-custom').Strategy;
 var Token = require(appRoot + '/modules/oauth2/models/accessTokens.js');
 var Client = require(appRoot + '/modules/oauth2/models/oauthClients.js');
-
+var request = require('request');
 var flash = require('flash');
 var debug = require('debug')('cm:server');
+
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+
+var l2pEndpoint = 'https://www3.elearning.rwth-aachen.de/_vti_bin/l2pservices/externalapi.svc/';
 
 function session(app, db, io) {
     var sessionStore = new mongoStore({
@@ -171,6 +177,70 @@ function session(app, db, io) {
 
                 return done(null, user);
             });
+        }
+    ));
+
+    passport.use(new CustomStrategy(
+        function (req, callback) {
+            var ap = req.query.accessToken;
+            if (ap) {
+                var getr = l2pEndpoint + 'Context?token=' + ap;
+                request(getr, function (error, response, body) {
+                    if (error) {
+                        return callback(new Error('wrong token'), null);
+                    }
+
+                    if (response.statusCode == 200) {
+                        /*{
+                         CourseId: "15ss-51899",
+                         Details: [ ],
+                         Success: true,
+                         System: "coursemapper",
+                         UserId: "FA72075F90B697CD487857F565DE30F029502E6BABE78A63D1A946B45BB11983",
+                         UserRoles: "managers"
+                         }*/
+                        var l2p = JSON.parse(body);
+
+                        if (l2p.UserId) {
+                            User.findOne({l2pUserId: l2p.UserId})
+                                .exec(function (err, doc) {
+                                    if (doc) {
+                                        callback(err, doc);
+                                    } else {
+                                        var newUser = new User();
+                                        newUser.l2p = l2p;
+                                        newUser.l2pUserId = l2p.UserId;
+
+                                        // set all of the facebook information in our user model
+                                        newUser.username = 'l2p_' + newUser.l2p.UserId;
+                                        newUser.displayName = newUser.username;
+                                        var em = newUser.l2pUserId.substring(0, 9);
+                                        newUser.email = em + '@rwth-aachen.de';
+
+                                        newUser.setPassword(newUser.l2p.UserId);
+
+                                        // save our user to the database
+                                        newUser.save(function (err) {
+                                            if (err) {
+                                                debug(err);
+                                                return callback(err, null);
+                                            }
+
+                                            // if successful, return the new user
+                                            return callback(null, newUser);
+                                        });
+                                    }
+                                });
+                        } else {
+                            callback(new Error('wrong token'), null);
+                        }
+                    } else {
+                        return callback(new Error('wrong token'), null);
+                    }
+                });
+            } else {
+                callback(new Error('access token invalid'), null);
+            }
         }
     ));
 

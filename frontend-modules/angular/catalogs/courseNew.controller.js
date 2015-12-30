@@ -7,7 +7,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.course = {
         name: null,
         category: null,
-        description: ''
+        description: '',
+        smallDescription: ''
     };
 
     $scope.tagsRaw = null;

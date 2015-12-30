@@ -6,24 +6,7 @@
                 <div class="box-header with-border">
                     <h3 class="box-title"> {{course.name}} </h3>
                 </div><!-- /.box-header -->
-                <div class="box-body description">
-                    Started
-                    <strong>
-                        {{course.dateAdded | relativeDate}}
-                    </strong>
 
-                    By
-                    <strong>
-                        {{course.createdBy.displayName}}
-                    </strong>
-
-                    <p ng-show="course.courseTags.length > 0" class="filter">
-                        <a class="label label-primary" style="cursor: default"
-                           ng-repeat="tag in course.courseTags">
-                            {{tag.name}}</a>
-                    </p>
-
-                </div>
             </div>
         </div>
         <div class="row">
@@ -32,9 +15,36 @@
                    title="Play Intro Video">
                 </a>
             </div>
-            <div class="col-xs-12 preview-image-container">
+            <div class="col-xs-6 preview-image-container"><br>
                 <img class="preview-image" ng-hide="course.picture" src="/img/courses/placeholder.png">
                 <img class="preview-image" ng-show="course.picture" ng-src="{{course.picture}}">
+            </div>
+            <div class="col-xs-6 small-description">
+                <br>
+                Started
+                <strong>
+                    {{course.dateAdded | relativeDate}}
+                </strong>
+
+                By
+                <strong>
+                    {{course.createdBy.displayName}}
+                </strong>
+
+                <p ng-show="course.courseTags.length > 0" class="filter">
+                    <a class="label label-primary" style="cursor: default"
+                       ng-repeat="tag in course.courseTags">
+                        {{tag.name}}</a>
+                </p>
+
+                <br>
+                <p ng-show="course.smallDescription">
+                    {{course.smallDescription}}
+                </p>
+                <p ng-show="!isEnrolled && !isOwner && !isAuthorized()">
+                    <button class="btn btn-primary btn-block" ng-click="enroll()">Enroll</button>
+
+                </p>
             </div>
         </div>
         <div class="row" style="height: 15px;"></div>
@@ -69,31 +79,20 @@
         <div class="grid-stack-item"
              data-gs-locked="yes"
              data-gs-no-resize="yes"
-             ng-repeat="wdg in widgets" id="w{{wdg._id}}">
+             ng-repeat="wdg in widgets" id="w{{wdg._id}}"
+        >
 
-            <div class="grid-stack-item-content">
-                <div class="box no-shadow">
-                    <div class="box-header with-border">
-                        <h3 class="box-title">{{wdg.widget}}</h3>
-
-                        <div class="box-tools pull-right" ng-show="checkOwnership(wdg.userId)">
-                            <button class="btn btn-box-tool" data-widget="remove"
-                                    data-toggle="tooltip" title="Remove"
-                                    ng-click="closeWidget(wdg._id);"
-                            >
-                                <i class="fa fa-times"></i></button>
-                        </div>
-                    </div>
-                    <div class="box-body-widget">
-
-                        <div ng-include src="wdg.widgetId.entryPoint"
-                             onload="initWidgetButton(wdg._id)">
-                        </div>
-
-                    </div>
-                    <div class="box-footer"></div>
-                </div>
-            </div>
+            <widget-box onload-action="initWidgetButton(wdg._id);"
+                        entry-point="{{wdg.widgetId.entryPoint + '?cid=' + course._id}}"
+                        title="{{wdg.widget}}"
+                        show-tools="checkOwnership(wdg.userId);"
+                        show-config-button="checkOwnership(wdg.userId) && wdg.widgetId.hasConfigButton"
+                        close-action="closeWidget(wdg._id)"
+                        edit-action="editAction(wdg)"
+                        widget="wdg"
+                        dynamic-controller="wdg.widgetId.controller"
+            >
+            </widget-box>
         </div>
     </div>
 

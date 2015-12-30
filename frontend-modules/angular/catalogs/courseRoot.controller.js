@@ -14,23 +14,23 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
 
     $scope.currentTab = "preview";
     $scope.tabDisplayName = "preview";
+    $scope.defaultPath = "preview";
+
     $scope.include = null;
     $scope.includeActionBar = null;
 
     $scope.changeTab = function () {
-        var defaultPath = "preview";
         var q = $location.search();
 
         if (!q.tab) {
-            q.tab = defaultPath;
+            q.tab = $scope.defaultPath;
         }
 
         $scope.currentTab = q.tab;
 
         $timeout(function () {
             if (!authService.isLoggedIn) {
-                if ($scope.currentTab != defaultPath)
-                    $location.search('tab', defaultPath);
+                authService.showLoginForm();
             }
         });
 
@@ -59,6 +59,12 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
 
                 $scope.setCapabilities();
 
+                if ($scope.currentTab != $scope.defaultPath) {
+                    if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
+                        $scope.showEnrollForm();
+                    }
+                }
+
                 $rootScope.$broadcast('onAfterInitCourse', $scope.course, refreshPicture);
             },
 
@@ -71,6 +77,14 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         );
 
         $scope.changeTab();
+    };
+
+    $scope.isAuthorized = function () {
+        return ($scope.isAdmin || $scope.isOwner || $scope.isManager);
+    };
+
+    $scope.showEnrollForm = function () {
+        $('#enrollForm').modal('show');
     };
 
     /**
@@ -93,10 +107,16 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
                     tapToDismiss: false,
                     toastClass: 'toast wide',
                     extendedTimeOut: 30000,
-                    timeOut: 30000
+                    timeOut: 30000,
+                    onHidden: function () {
+                        $location.search('new', null);
+                        $timeout(function () {
+                            $rootScope.$apply();
+                        });
+                        //$location.url($location.path())
+                    }
                 });
         }
-
     };
 
     /**

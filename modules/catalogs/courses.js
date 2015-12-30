@@ -14,6 +14,7 @@ var courseSchema = new mongoose.Schema({
         required: true
     },
     description: { type: String },
+    smallDescription: { type: String },
     picture: { type: String },
     video: { type: String },
     settings: { type: mongoose.Schema.Types.Mixed},

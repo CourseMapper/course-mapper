@@ -82,7 +82,7 @@
                                         </div>
                                         <div class="box-footer">
                                             <a class="btn btn-primary" href="/course/{{c.slug}}/#/cid/{{c._id}}"><i
-                                                    class=""></i> Go to course</a>
+                                                        class=""></i> Go to course</a>
                                         </div>
                                     </div>
                                 </div>
@@ -90,6 +90,16 @@
                         </div>
                     </div>
                 </div>
+
+
+                <pagination total-rows="coursesLength"
+                            limit="12"
+                            use-search="false"
+                            sort-by="dateAdded"
+                            order-by="desc"
+                            object-service="courseListService"
+                            success-cb="newRowsFetched">
+                </pagination>
 
                 <div class="row">
                     <div class="modal" id="modalCreateCourse" tabindex="-1" role="dialog"

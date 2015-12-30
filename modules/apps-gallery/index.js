@@ -49,6 +49,35 @@ AppStore.prototype.updateWidget = function (failed, params, updateParams, succes
     });
 };
 
+AppStore.prototype.editInstall = async(function (params, updateParams) {
+    if (params.courseId) {
+        var isAllowed = userHelper.isCourseAuthorizedAsync({
+            userId: params.userId,
+            courseId: params.courseId
+        });
+
+        if (isAllowed) {
+            var whereParams = {
+                _id: params._id
+            };
+
+            return await(WP.findOneAndUpdate(whereParams, updateParams, {'new': true}).exec());
+        } else {
+            throw helper.createError401();
+        }
+    }
+
+    else {
+        var whereParams = {
+            _id: params._id,
+            userId: params.userId
+        };
+
+        return await(WP.findOneAndUpdate(whereParams, updateParams, {'new': true}).exec());
+    }
+});
+
+
 /**
  * read through applications directory, and detect for config.json
  *
@@ -218,7 +247,7 @@ AppStore.prototype.setPosition = function (error, params, x, y, success) {
         return;
     }
 
-    function docSave(doc){
+    function docSave(doc) {
         doc.save(function (err, w) {
             if (err) {
                 error(err);
@@ -417,7 +446,7 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
         return;
     }
 
-    function deleteWidgetPlacement(deleteParams){
+    function deleteWidgetPlacement(deleteParams) {
         WP.findOneAndRemove(
             deleteParams,
 
@@ -435,7 +464,7 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
         );
     }
 
-    if(params.courseId) {
+    if (params.courseId) {
         userHelper.isAuthorized(
             function (err) {
                 error(err);
