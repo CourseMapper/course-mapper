@@ -18,6 +18,14 @@
       "runOn": "server"
     },
     {
+      "name": "Course Listing - Author",
+      "location": "course-listing",
+      "description": "Widget that show the author of the course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-author.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
       "name": "Course Listing Date Created",
       "location": "course-listing",
       "description": "Widget that show the created date of a course in the course-listing page",
