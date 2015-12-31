@@ -172,6 +172,26 @@ app.config(function (toastrConfig) {
         $scope.isPlaying = false;
     };
 
+    $scope.enroll = function () {
+        $scope.loading = true;
+        courseService.enroll(authService.user,
+
+            function () {
+                $scope.loading = false;
+                toastr.success('You are now enrolled');
+                $timeout(function () {
+                    window.location.reload();
+                });
+            },
+
+            function (res) {
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
+            }
+        );
+
+    };
+
     /**
      * init tabs
      */
@@ -520,7 +540,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             if (!authService.isLoggedIn) {
                 authService.showLoginForm();
             }
-        });
+        }, 120);
 
         if ($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
@@ -2223,15 +2243,21 @@ app.controller('AppSettingController', function(  Page) {
     function () {
         return {
             restrict: 'E',
-            terminal: true,
-            template:
-                '<div class="control-group">' +
-                    '<a href="/api/accounts/login/facebook">' +
-                    '<img src="/admin-lte/images/fb.png">' +
-                    '</a>' +
-                '</div>'
-    };
-});;
+            scope: {
+                loginUrl: '@'
+            },
+            template: '<div class="control-group">' +
+            '<a href="{{loginUrl}}">' +
+            '<img src="/admin-lte/images/fb.png">' +
+            '</a>' +
+            '</div>',
+            compile: function (element, attrs) {
+                if (!attrs.loginUrl) {
+                    attrs.$set('loginUrl', '/api/accounts/login/facebook');
+                }
+            }
+        };
+    });;
 app.directive('onFinishRender', function ($timeout) {
     return {
         restrict: 'A',

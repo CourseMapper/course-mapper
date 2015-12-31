@@ -26,15 +26,18 @@ router.get('/account', function (req, res, next) {
         res.status(401).json({message: 'Not authorized'});
 });
 
-router.get('/accounts/login/facebook',
-    passport.authenticate('facebook', {scope: ['email', 'public_profile']})
-);
-
 router.get('/accounts/facebook/callback',
-    passport.authenticate('facebook', {
-        successRedirect: '/accounts',
-        failureRedirect: '/login'
-    }),
+    function (req, res, next) {
+        var cbNextUrl = '/accounts';
+        if (req.session.callbackNextUrl) {
+            cbNextUrl = req.session.callbackNextUrl;
+        }
+
+        passport.authenticate('facebook', {
+            successRedirect: cbNextUrl,
+            failureRedirect: '/login'
+        })(req, res, next)
+    },
 
     // on succes
     function (req, res) {
@@ -50,6 +53,29 @@ router.get('/accounts/facebook/callback',
         if (err) {
             res.status(400).json({result: false, errors: [err.message]});
         }
+    }
+);
+
+router.get('/accounts/login/facebook',
+    function (req, res, next) {
+        req.session.callbackNextUrl = '/accounts';
+
+        passport.authenticate('facebook', {
+            scope: ['email', 'public_profile'],
+            callbackURL: "/api/accounts/facebook/callback"
+        })(req, res, next)
+    }
+);
+
+router.get('/accounts/login/facebook/course/:slug/:cid/:tab',
+    function (req, res, next) {
+        //course/new/#/cid/5623e9d1e933cd8f8def7529
+        req.session.callbackNextUrl = '/course/' + req.params.slug + '/#/cid/' + req.params.cid + '?tab=' + req.params.tab;
+
+        passport.authenticate('facebook', {
+            scope: ['email', 'public_profile'],
+            callbackURL: "/api/accounts/facebook/callback"
+        })(req, res, next)
     }
 );
 

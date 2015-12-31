@@ -12,7 +12,7 @@
                         <small>You have not logged in, please login to see this content</small>
 
                         <p class="help-block">Use your facebook account to login</p>
-                        <facebook-button></facebook-button>
+                        <facebook-button login-url="/api/accounts/login/facebook/course/{{course.slug}}/{{course._id}}/{{currentTab}}"></facebook-button>
                         <br>
                         <strong>OR</strong><br><br>
                         <% include formLogin %>

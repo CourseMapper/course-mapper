@@ -47,6 +47,26 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
         $scope.isPlaying = false;
     };
 
+    $scope.enroll = function () {
+        $scope.loading = true;
+        courseService.enroll(authService.user,
+
+            function () {
+                $scope.loading = false;
+                toastr.success('You are now enrolled');
+                $timeout(function () {
+                    window.location.reload();
+                });
+            },
+
+            function (res) {
+                $scope.loading = false;
+                toastr.error(JSON.stringify(res.errors));
+            }
+        );
+
+    };
+
     /**
      * init tabs
      */

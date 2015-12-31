@@ -32,7 +32,7 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
             if (!authService.isLoggedIn) {
                 authService.showLoginForm();
             }
-        });
+        }, 120);
 
         if ($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
