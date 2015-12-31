@@ -667,8 +667,8 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
     $scope.collapse = function (el, isInit) {
         var nodeId = el.substring(1);
-        found = false;
 
+        found = false;
         var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
         if (pNode) {
             var hide = false;
@@ -752,6 +752,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 $('#' + elName).simulate("drag-n-drop", {dx: dx, dy: dy})
             }
 
+            found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
             if (pNode) {
                 pNode.positionFromRoot = {x: data.x, y: data.y};
