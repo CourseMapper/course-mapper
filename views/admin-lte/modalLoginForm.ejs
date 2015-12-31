@@ -12,7 +12,7 @@
                         <small>You have not logged in, please login to see this content</small>
 
                         <p class="help-block">Use your facebook account to login</p>
-                        <% if(isNode != undefined){ %>
+                        <% if(typeof (isNode) != 'undefined'){ %>
                         <facebook-button
                                 login-url="/api/accounts/login/facebook/treeNode/{{courseId}}/{{nodeId}}/{{currentTab}}">
                         </facebook-button>
