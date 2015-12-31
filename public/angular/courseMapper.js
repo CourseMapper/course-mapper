@@ -1377,7 +1377,12 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.isOwner = function (tn) {
-        return tn.createdBy == $scope.user._id;
+        if (tn.createdBy._id == $scope.user._id)
+            return true;
+        else if (tn.createdBy == $scope.user._id)
+            return true;
+
+        return false;
     };
 
     $scope.isAuthorized = function (tn) {
@@ -1541,7 +1546,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
             if (pNode) {
                 pNode.positionFromRoot = {x: data.x, y: data.y};
-
+                mapService.updatePosition(nd, data);
                 $timeout(function () {
                     $scope.$apply();
                 });
@@ -1555,8 +1560,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             return;
 
         $scope.addNewNodeIntoPool(data);
-
-        //console.log('nodeCreated');
+        mapService.addNode(data);
     });
 
     socket.on('nodeUpdated', function (data) {
@@ -1568,8 +1572,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         } else {
             $scope.afterEditNode(data);
         }
-
-        //console.log('nodeUpdated');
+        mapService.updateNode(data);
     });
 
     socket.on('nodeDeleted', function (data) {
@@ -1585,14 +1588,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
             pNode.name = '[DELETED]';
 
+            mapService.deleteNode(data);
+
             // destroy the jsplumb instance and svg rendered
             $scope.destroyJSPlumb();
 
             // this will reinitiate the model, and thus also jsplumb connection
             $scope.reInitiateJSPlumb();
         }
-
-        //console.log('nodeDeleted');
     })
 });
 ;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
@@ -4794,6 +4797,8 @@ app.directive('timepicker', function($timeout) {
     function ($rootScope, $http) {
         return {
             treeNodes: null,
+            /*var for testing in findNode function*/
+            found: false,
 
             init: function (courseId, success, error, force) {
                 var self = this;
@@ -4819,6 +4824,84 @@ app.directive('timepicker', function($timeout) {
                         });
             },
 
+            //socket method
+            updatePosition: function (nid, data) {
+                this.found = false;
+                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', nid);
+                if (pNode) {
+                    pNode.positionFromRoot = {x: data.x, y: data.y};
+                }
+            },
+
+            // socket method
+            updateNode: function (treeNode) {
+                this.found = false;
+                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode._id);
+                if (pNode) {
+                    pNode.name = treeNode.name;
+                    if (pNode.type == 'contentNode') {
+                        pNode.resources = [];
+                        if (treeNode.resources.length > 0) {
+                            for (var i in treeNode.resources) {
+                                pNode.resources.push(treeNode.resources[i]);
+                            }
+                        }
+                    }
+                }
+            },
+
+            // socket method
+            deleteNode: function (treeNode) {
+                this.found = false;
+                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode._id);
+                if (pNode) {
+                    pNode.isDeleted = true;
+                    if (treeNode.isDeletedForever)
+                        pNode.isDeletedForever = true;
+
+                    pNode.name = '[DELETED]';
+                }
+            },
+
+            // socket method
+            addNode: function (treeNode) {
+                this.found = false;
+                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode.parent);
+
+                if (!pNode) {
+                    if (treeNode.parent) {
+                        this.found = false;
+                        var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode.parent);
+
+                        if (pNode) {
+                            pNode.childrens.push(treeNode);
+                        }
+                    }
+                    else
+                        this.treeNodes.push(treeNode);
+                }
+            },
+
+            findNode: function (obj, col, searchKey, searchValue) {
+                if (this.found)
+                    return this.found;
+
+                for (var i in obj) {
+                    var tn = obj[i];
+
+                    if (tn[searchKey] && tn[searchKey] == searchValue) {
+                        this.found = tn;
+                        return tn;
+                    }
+                    else if (tn[col] && tn[col].length > 0) {
+                        // search again
+                        this.findNode(tn[col], col, searchKey, searchValue);
+                    }
+                }
+
+                if (this.found)
+                    return this.found;
+            },
 
             isInitialized: function () {
                 if (!this.treeNodes) {

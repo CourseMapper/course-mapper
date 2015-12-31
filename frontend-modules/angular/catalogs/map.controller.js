@@ -592,7 +592,12 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     };
 
     $scope.isOwner = function (tn) {
-        return tn.createdBy == $scope.user._id;
+        if (tn.createdBy._id == $scope.user._id)
+            return true;
+        else if (tn.createdBy == $scope.user._id)
+            return true;
+
+        return false;
     };
 
     $scope.isAuthorized = function (tn) {
@@ -756,7 +761,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
             if (pNode) {
                 pNode.positionFromRoot = {x: data.x, y: data.y};
-
+                mapService.updatePosition(nd, data);
                 $timeout(function () {
                     $scope.$apply();
                 });
@@ -770,8 +775,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             return;
 
         $scope.addNewNodeIntoPool(data);
-
-        //console.log('nodeCreated');
+        mapService.addNode(data);
     });
 
     socket.on('nodeUpdated', function (data) {
@@ -783,8 +787,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         } else {
             $scope.afterEditNode(data);
         }
-
-        //console.log('nodeUpdated');
+        mapService.updateNode(data);
     });
 
     socket.on('nodeDeleted', function (data) {
@@ -800,13 +803,13 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             pNode.name = '[DELETED]';
 
+            mapService.deleteNode(data);
+
             // destroy the jsplumb instance and svg rendered
             $scope.destroyJSPlumb();
 
             // this will reinitiate the model, and thus also jsplumb connection
             $scope.reInitiateJSPlumb();
         }
-
-        //console.log('nodeDeleted');
     })
 });
