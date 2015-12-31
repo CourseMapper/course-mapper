@@ -79,6 +79,18 @@ router.get('/accounts/login/facebook/course/:slug/:cid/:tab',
     }
 );
 
+router.get('/accounts/login/facebook/treeNode/:cid/:nid/:tab',
+    function (req, res, next) {
+        //treeNode/568531cadaa2ec230da4f51c/#/cid/562b7a4cac20d18a063e69f7/nid/568531cadaa2ec230da4f51c?tab=pdf
+        req.session.callbackNextUrl = '/treeNode/' + req.params.nid + '/#/cid/' + req.params.cid + '/nid/' + req.params.nid + '?tab=' + req.params.tab;
+
+        passport.authenticate('facebook', {
+            scope: ['email', 'public_profile'],
+            callbackURL: "/api/accounts/facebook/callback"
+        })(req, res, next)
+    }
+);
+
 router.get('/account/:username', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
     var account = new Account();
     account.getUser(

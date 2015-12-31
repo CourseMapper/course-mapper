@@ -2026,42 +2026,44 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                 $scope.course = course;
                 $scope.setCapabilities();
 
-                if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
-                    $scope.showEnrollForm();
-                } else {
-                    treeNodeService.init($scope.nodeId,
-                        function (treeNode) {
-                            $scope.treeNode = treeNode;
-                            $scope.videoFile = treeNodeService.videoFile;
-                            $scope.pdfFile = treeNodeService.pdfFile;
- 
-                            Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
+                $timeout(function () {
+                    if (!authService.isLoggedIn && $scope.course) {
+                        var q = $location.search();
+                        if (q.tab)
+                            $scope.currentTab = q.tab;
+                        
+                        authService.showLoginForm();
+                    }
+                    else if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
+                        $scope.showEnrollForm();
+                    } else {
+                        treeNodeService.init($scope.nodeId,
+                            function (treeNode) {
+                                $scope.treeNode = treeNode;
+                                $scope.videoFile = treeNodeService.videoFile;
+                                $scope.pdfFile = treeNodeService.pdfFile;
 
-                            if ($scope.isAdmin || $scope.isManager) {
-                                if ($scope.treeNode.createdBy == $rootScope.user._id)
-                                    $scope.isNodeOwner = true;
+                                Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
-                                $scope.setEditMode();
-                            }
+                                if ($scope.isAdmin || $scope.isManager) {
+                                    if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                        $scope.isNodeOwner = true;
 
-                            $scope.changeTab();
-
-                            $timeout(function () {
-                                $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
-                            });
-                        },
-                        function (err) {
-                            //toastr.error(err);
-
-                            $timeout(function () {
-                                if (!authService.isLoggedIn && $scope.course) {
-                                    //window.location.href = '/course/' + $scope.course.slug + '/#/cid/' + $scope.course._id + '?tab=preview';
-                                    authService.showLoginForm();
+                                    $scope.setEditMode();
                                 }
-                            });
-                        }
-                    );
-                }
+
+                                $scope.changeTab();
+
+                                $timeout(function () {
+                                    $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
+                                });
+                            },
+                            function (err) {
+
+                            }
+                        );
+                    }
+                }, 120);
             },
 
             function (res) {
@@ -2085,8 +2087,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.setCapabilities = function () {
         $scope.isEnrolled = courseService.isEnrolled();
         $scope.isManager = courseService.isManager(authService.user);
+
+        if (authService.user)
+            $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
+        else
+            $scope.isOwner = false;
+
         $scope.isAdmin = authService.isAdmin();
-        $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
     };
 
     $scope.$on('onAfterEditContentNode', function (event, oldTreeNode) {
