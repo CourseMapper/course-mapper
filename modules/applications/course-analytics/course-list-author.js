@@ -3,7 +3,6 @@ var mongoose = require('mongoose');
 var Courses = require(appRoot + '/modules/catalogs/courses.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-var Users = require(appRoot + '/modules/accounts/users.js');
 
 function CourseListAuthor(){
 }
@@ -17,21 +16,16 @@ CourseListAuthor.prototype.run = async ( function(){
 
     var result = await( Courses.findOne({
         _id: self._id
-    }).exec());
-
+    }).populate('createdBy displayName').exec());
 
     self.result = result;
 
-    var user = await (Users.findOne({
-        _id: this.result.createdBy
-    }).exec());
-
-    self.user = user;
 } );
 
 CourseListAuthor.prototype.render = function(){
 
-    return '<span class="label label-info"> Author:' + this.user.displayName + '</span>';
+    return '<span class="label label-info"> Author: ' + this.result.createdBy.displayName + '</span> <br>';
+
 };
 
 module.exports = CourseListAuthor;

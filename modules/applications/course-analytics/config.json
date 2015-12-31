@@ -20,7 +20,7 @@
     {
       "name": "Course Listing - Author",
       "location": "course-listing",
-      "description": "Widget that show the author of the course in the course-listing page",
+      "description": "Widget that show the author of a course in the course-listing page",
       "entryPoint": "/course-analytics/course-list-author.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
@@ -30,6 +30,14 @@
       "location": "course-listing",
       "description": "Widget that show the created date of a course in the course-listing page",
       "entryPoint": "/course-analytics/course-list-createdDate.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Course Listing Latest Activity",
+      "location": "course-listing",
+      "description": "Widget that show the latest activity of a course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-last-activity.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },

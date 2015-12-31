@@ -18,7 +18,6 @@ CourseListDateAdded.prototype.run = async ( function(){
     var result = await( Courses.findOne({
         _id: self._id
     }).exec());
-    console.log(result);
 
     self.result = result;
 } );
@@ -26,7 +25,7 @@ CourseListDateAdded.prototype.run = async ( function(){
 CourseListDateAdded.prototype.render = function(){
 
     var momentDate = moment(this.result.dateAdded).format('MMMM Do YYYY');
-    return '<span class="label label-info"> Created On:' + momentDate + '</span> <br>';
+    return '<span class="label label-info"> Created On: ' + momentDate + '</span> <br>';
 };
 
 module.exports = CourseListDateAdded;
