@@ -13,7 +13,7 @@ var await = require('asyncawait/await');
 router.get('/authorize',
     /*helper.ensureAuthenticated,*/
     function (req, res, next) {
-        helper.ensureAuthenticated2(req, res, function (err) {
+        helper.ensureAuthenticatedWithCallback(req, res, function (err) {
             if (err) {
                 res.render(config.get('theme') + '/oauth/oLogin');
             } else {

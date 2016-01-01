@@ -30,137 +30,142 @@ router.get('/widgets/', function (req, res, next) {
     );
 });
 
-router.put('/widgets/install', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    req.body.userId = req.user._id;
-    req.body.isInstalled = true;
-
-    if (req.body.userId)
-        req.body.userId = mongoose.Types.ObjectId(req.body.userId);
-
-    if (req.body.courseId)
-        req.body.courseId = mongoose.Types.ObjectId(req.body.courseId);
-
-    if (req.body.categoryId)
-        req.body.categoryId = mongoose.Types.ObjectId(req.body.categoryId);
-
-    var app = new AppsGallery();
-
-    app.installWidget(
-        function (err) {
-            helper.resReturn(err, res);
-        },
-
-        // get active widgets and correct location
-        req.body
-        ,
-
-        function (wgs) {
-            res.status(200).json({result: true, installed: wgs});
-        });
-});
-
-router.put('/widgets/uninstall/:installId', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    req.body.userId = mongoose.Types.ObjectId(req.user._id);
-    req.body._id = mongoose.Types.ObjectId(req.params.installId);
-
-    var app = new AppsGallery();
-
-    app.uninstallWidget(function (err) {
-            helper.resReturn(err, res);
-        },
-        // get active widgets and correct location
-        req.body
-        ,
-        function (wgs) {
-            res.status(200).json({result: true, uninstalled: wgs});
-        });
-});
-
-router.put('/widget/:installId/edit', helper.ensureAuthenticated, function (req, res, next) {
-    var app = new AppsGallery();
-
-    app.editInstall(
-        {
-            _id: req.params.installId,
-            userId: req.user._id,
-            courseId: req.body.courseId
-        },
-        // get active widgets and correct location
-        req.body
-    ).
-        then(function (wgs) {
-            res.status(200).json({result: true, widget: wgs});
-        })
-        .catch(function (err) {
-            helper.resReturn(err, res);
-        });
-});
-
-router.put('/widget/:id/setPosition', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    var params = {
-        userId: mongoose.Types.ObjectId(req.user._id),
-        widgetId: mongoose.Types.ObjectId(req.params.id)
-    };
-
-    if (req.body.courseId) {
-        params.courseId = mongoose.Types.ObjectId(req.body.courseId)
-    }
-
-    var app = new AppsGallery();
-    app.setPosition(
-        function (err) {
-            res.status(500).json(err);
-        },
-
-        // get and verify if this widget belongs to this user.
-        params
-        ,
-
-        req.body.x,
-        req.body.y,
-
-        function (wgs) {
-            res.status(200).json({result: true, widget: wgs});
+router.put('/widgets/install', helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
         }
-    );
-});
+
+        req.body.userId = req.user._id;
+        req.body.isInstalled = true;
+
+        if (req.body.userId)
+            req.body.userId = mongoose.Types.ObjectId(req.body.userId);
+
+        if (req.body.courseId)
+            req.body.courseId = mongoose.Types.ObjectId(req.body.courseId);
+
+        if (req.body.categoryId)
+            req.body.categoryId = mongoose.Types.ObjectId(req.body.categoryId);
+
+        var app = new AppsGallery();
+
+        app.installWidget(
+            function (err) {
+                helper.resReturn(err, res);
+            },
+
+            // get active widgets and correct location
+            req.body
+            ,
+
+            function (wgs) {
+                res.status(200).json({result: true, installed: wgs});
+            });
+    });
+
+router.put('/widgets/uninstall/:installId', helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body._id = mongoose.Types.ObjectId(req.params.installId);
+
+        var app = new AppsGallery();
+
+        app.uninstallWidget(function (err) {
+                helper.resReturn(err, res);
+            },
+            // get active widgets and correct location
+            req.body
+            ,
+            function (wgs) {
+                res.status(200).json({result: true, uninstalled: wgs});
+            });
+    });
+
+router.put('/widget/:installId/edit', helper.ensureAuthenticated,
+    function (req, res, next) {
+        var app = new AppsGallery();
+
+        app.editInstall(
+            {
+                _id: req.params.installId,
+                userId: req.user._id,
+                courseId: req.body.courseId
+            },
+            // get active widgets and correct location
+            req.body
+        ).
+            then(function (wgs) {
+                res.status(200).json({result: true, widget: wgs});
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+    });
+
+router.put('/widget/:id/setPosition', helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+
+        var params = {
+            userId: mongoose.Types.ObjectId(req.user._id),
+            widgetId: mongoose.Types.ObjectId(req.params.id)
+        };
+
+        if (req.body.courseId) {
+            params.courseId = mongoose.Types.ObjectId(req.body.courseId)
+        }
+
+        var app = new AppsGallery();
+        app.setPosition(
+            function (err) {
+                res.status(500).json(err);
+            },
+
+            // get and verify if this widget belongs to this user.
+            params
+            ,
+
+            req.body.x,
+            req.body.y,
+
+            function (wgs) {
+                res.status(200).json({result: true, widget: wgs});
+            }
+        );
+    });
 
 /**
  * use this to update widgets, active or deactivate
  */
-router.put('/widgets/:application/:name', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    var app = new AppsGallery();
-    app.updateWidget(
-        function (err) {
-            res.status(500).json({});
-        },
-        req.params,
-        req.body,
-        function (widget) {
-            res.status(200).json({result: true, widget: widget});
+router.put('/widgets/:application/:name', helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
         }
-    );
-});
+
+        var app = new AppsGallery();
+        app.updateWidget(
+            function (err) {
+                res.status(500).json({});
+            },
+            req.params,
+            req.body,
+            function (widget) {
+                res.status(200).json({result: true, widget: widget});
+            }
+        );
+    });
 
 /**
  * get all apps. both active and inactive
@@ -185,6 +190,7 @@ router.get('/widgets/all', function (req, res, next) {
         }
     );
 });
+
 /**
  * get apps>widgets that are active and on particular location
  */

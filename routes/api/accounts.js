@@ -91,6 +91,9 @@ router.get('/accounts/login/facebook/treeNode/:cid/:nid/:tab',
     }
 );
 
+/**
+ * get user profile detail
+ */
 router.get('/account/:username', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
     var account = new Account();
     account.getUser(
@@ -114,7 +117,10 @@ router.get('/account/:username', helper.l2pAuth, helper.ensureAuthenticated, fun
     );
 });
 
-router.get('/account/:userId/courses', helper.ensureAuthenticated, function (req, res, next) {
+/**
+ * get courses that this user is enrolled to
+ */
+router.get('/account/:userId/courses', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
     var crs = new Course();
 
     var userId = mongoose.Types.ObjectId(req.params.userId);
@@ -130,7 +136,10 @@ router.get('/account/:userId/courses', helper.ensureAuthenticated, function (req
     );
 });
 
-router.get('/account/:userId/course/:courseId', helper.ensureAuthenticated, function (req, res, next) {
+/**
+ * to check is this user is enrolled in this course
+ */
+router.get('/account/:userId/course/:courseId', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
     var crs = new Course();
 
     var userId = mongoose.Types.ObjectId(req.params.userId);
@@ -157,6 +166,9 @@ router.get('/account/:userId/course/:courseId', helper.ensureAuthenticated, func
  * POST
  */
 
+/**
+ * sign up
+ */
 router.post('/accounts/signUp', function (req, res, next) {
     if (!helper.checkRequiredParams(req.body, ['username', 'email', 'password'], function (err) {
             helper.resReturn(err, res);
@@ -235,31 +247,9 @@ router.post('/accounts/login',
  */
 
 /**
- * change password only
-
- router.put('/accounts/:userId/changePassword', helper.ensureAuthenticated, function (req, res, next) {
-
-    req.body.userId = mongoose.Types.ObjectId(req.user._id);
-
-    if (!req.body.password || !req.body.passwordConfirm) {
-        res.status(400).json({result: false, errors: ["parameter not complete"]});
-        next();
-    }
-    else {
-        var account = new Account();
-        account.changePassword(
-            function error(err) {
-                helper.resReturn(err, res);
-            },
-            req.body,
-            function success(r) {
-                res.status(200).json({result: true});
-            }
-        );
-    }
-}); */
-
-router.put('/account/:userId', helper.ensureAuthenticated, function (req, res, next) {
+ * edit user
+ */
+router.put('/account/:userId', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
 
     req.body.userId = mongoose.Types.ObjectId(req.user._id);
 
