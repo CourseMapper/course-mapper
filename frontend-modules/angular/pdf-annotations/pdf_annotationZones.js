@@ -14,6 +14,13 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
     $scope.divCounter = 0;
 
+    $scope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+    $rootScope.annotationSubmitPage = -1;
+
+    $scope.previousPageNumber = -1;
+
+
+
     //$rootScope.annZoneBoxSizeX = 0;
     //$rootScope.annZoneBoxSizeY = 0;
 
@@ -327,8 +334,43 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
-      //console.log("PdfPageChange: ");
+      //Find relevant AnnZones
+      console.log("GOT HEREEEE");
+      var nextPageNumber = params[0];
+
+      if($scope.previousPageNumber != -1){
+        var unfinishedAnnZonesList = [];
+        for(var key in $scope.annotationZoneList){
+          if($scope.annotationZoneList[key].isBeingCreated == true){
+            unfinishedAnnZonesList.push($scope.annotationZoneList[key]);
+          }
+        }
+        console.log("PDF PAGE CHANGE");
+        console.log(unfinishedAnnZonesList.length);
+        console.log($scope.previousPageNumber);
+        //Store them
+        $scope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
+
+      }
       $scope.$emit('reloadTags');
+      //Add previous ones
+      if($scope.previousPageNumber != -1){
+        if(nextPageNumber in $scope.annotationZonesOnOtherSlides){
+          for(var elem  in $scope.annotationZonesOnOtherSlides[nextPageNumber]){
+            if(elem.id in $scope.annotationZoneList){
+              console.log("ERROR: Annzone overwritten, pls fix");
+            }
+            $scope.annotationZoneList[elem.id] = elem;
+
+          }
+          console.log("HERE?");
+          //$scope.annotationZoneList.concat($scope.annotationZonesOnOtherSlides[nextPageNumber]);
+          delete $scope.annotationZonesOnOtherSlides[nextPageNumber];
+          console.log("HERE???");
+        }
+      }
+      $scope.previousPageNumber = nextPageNumber;
+      console.log("HEREE?");
     });
 
     $scope.$on('$destroy',pdfPageChangeListener);

@@ -702,11 +702,13 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       if(newValue == true) {
         $scope.editMode = -1;
         $scope.replyMode = -1;
+        $rootScope.annotationSubmitPage = $scope.currentPageNumber;
         $rootScope.resetEditZoneMode();
       }
       else {
         $rootScope.removeAllActiveAnnotationZones();
         $scope.comment.rawText = "";
+        $rootScope.annotationSubmitPage = -1;
       }
     });
 

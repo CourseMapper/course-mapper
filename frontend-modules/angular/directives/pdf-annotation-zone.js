@@ -85,11 +85,9 @@ app.directive('pdfAnnotationZone',
 
 
               $rootScope.$on('pdfScaleChanged', function(event,params){
-                console.log("Blub");
 
                 $scope.localCanWidth = params[0];
                 $scope.localCanHeight = params[1];
-                console.log($scope.localCanWidth);
                 $timeout(function(){
                   $scope.$apply();
                 });
