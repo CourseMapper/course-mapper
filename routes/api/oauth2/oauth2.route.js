@@ -23,6 +23,17 @@ router.get('/authorize',
     },
     oauth2Controller.authorization);
 
+router.get('/app/', helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user) {
+        return helper.resReturn(helper.createError401('Not Authorized'));
+    }
+
+    res.status(200).json({
+        result: true
+    });
+});
+
+
 router.get('/apps/:mode', function (req, res, next) {
     if (!req.user) {
         return helper.resReturn(helper.createError401('Not Authorized'));

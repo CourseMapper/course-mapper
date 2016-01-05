@@ -90,7 +90,9 @@
                             </div>
 
                             <div class="control-group">
-                                <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                <div class="errors">
+                                    <div class="alert alert-danger" role="alert" ng-repeat="m in errors">{{m}}</div>
+                                </div>
                             </div>
                             <br>
                             <div class="control-group">
