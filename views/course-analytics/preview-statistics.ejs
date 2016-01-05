@@ -1,17 +1,20 @@
-<ul>
-    <li>
-        <i class="ionicons ion-ios-people"></i> <b>  80</b> students enrolled
-    </li>
-    <li>
-        <i class="ionicons ion-ios-circle-filled"></i> <b>  100</b> nodes created
-    </li>
-    <li>
-        <i class="ionicons ion-play"></i> <b>  40:32</b> total hours of video play time
-    </li>
-    <li>
-        <i class="ionicons ion-document"></i> <b>  521</b> total pages of PDF files
-    </li>
-    <li>
-        <i class="ionicons ion-ios-pricetags"></i> <b>  128</b> bookmarks
-    </li>
-</ul>
+<div class="box-body no-padding" ng-controller="PreviewStatsController">
+    <ul>
+        <li>
+            <i class="ionicons ion-ios-people"></i> <b>{{userList.length}}</b> user enrolled
+        </li>
+        <li>
+            <i class="ionicons ion-ios-circle-filled"></i> <b>  {{treeNodes.length}}</b> <span>{{treeNodes.length==1 ? 'subtopic': 'subtopics'}}</span>
+        </li>
+        <li>
+            <i class="ionicons ion-play"></i> <b> <span ng-repeat="treeNodes in treeNodes"></span> TODO </b> total hours of video play time
+        </li>
+        <li>
+            <i class="ionicons ion-document"></i> <b>  TODO</b> total pages of PDF files
+        </li>
+        <li>
+            <i class="ionicons ion-ios-pricetags"></i> <b>  TODO (isn't</b> discussions
+        </li>
+    </ul>
+    {{discussions}}
+</div>
