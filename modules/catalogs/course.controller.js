@@ -112,25 +112,36 @@ catalog.prototype.enroll = function (error, userParam, courseParam, done, isEnro
     var userId = userParam.id;
     var courseId = courseParam.id;
 
-    UserCourses.findOneAndUpdate({
+    var job = async(function () {
+        var usc = await(UserCourses.findOne({
             user: userId,
             course: courseId
-        },
-        {
-            user: userId,
-            course: courseId,
-            isEnrolled: isEnrolled
-        },
-        {upsert: true}
-    ).exec(function (err, doc) {
-        if (err) {
+        }). exec());
+
+        if (usc) {
+            usc.isEnrolled = isEnrolled;
+            await(usc.save());
+        } else {
+            var usc = new UserCourses({
+                user: userId,
+                course: courseId,
+                isEnrolled: isEnrolled
+            });
+
+            await(usc.save());
+        }
+
+        return usc;
+    });
+
+    job().then(function (doc) {
+            Plugin.doAction('onAfterEnrollorLeaveCourse', doc);
+            done(doc);
+        })
+        .catch(function (err) {
             // perhaps this user is already enrolled
             error(err)
-        } else {
-            done(doc);
-            Plugin.doAction('onAfterEnrollorLeaveCourse', doc);
-        }
-    });
+        });
 };
 
 /**
