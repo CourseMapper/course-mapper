@@ -2181,7 +2181,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 app.controller('AppSettingController', function(  Page) {
     Page.setTitleWithPrefix('3rd Party App Settings');
 });
-;app.controller('RecommendController', function ($scope, $filter, $http, toastr) {
+;app.controller('RecommendController', function ($scope, $filter, $http, toastr, Page) {
     $scope.submitted = false;
     $scope.isLoading = false;
     $scope.errors = [];
@@ -2190,6 +2190,8 @@ app.controller('AppSettingController', function(  Page) {
         name: '',
         description: ''
     };
+
+    Page.setTitleWithPrefix('Recommend a Category');
 
     $scope.recommend = function (isValid) {
         if (isValid) {
