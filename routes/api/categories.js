@@ -4,11 +4,15 @@ var appRoot = require('app-root-path');
 var mongoose = require('mongoose');
 var Category = require(appRoot + '/modules/catalogs/category.controller.js');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
+var CategoryRecommend = require(appRoot + '/modules/catalogs/categoryRecommendation.model.js');
 var debug = require('debug')('cm:route');
 var router = express.Router();
 
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
 
 router.get('/categories', function (req, res, next) {
     var cat = new Category();
@@ -202,6 +206,28 @@ router.post('/categories', function (req, res, next) {
             }
         );
     }
+});
+
+router.post('/categories/recommend', function (req, res, next) {
+    if (!req.user) {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var job = async(function () {
+        var cat = new CategoryRecommend(req.body);
+        await(cat.save());
+
+        return cat;
+    });
+
+    job()
+        .then(function (cat) {
+            res.status(200).json({result: ((cat) ? true : false)});
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
 });
 
 
