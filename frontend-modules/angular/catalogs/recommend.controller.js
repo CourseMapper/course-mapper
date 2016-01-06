@@ -1,4 +1,4 @@
-app.controller('RecommendController', function ($scope, $filter, $http, toastr) {
+app.controller('RecommendController', function ($scope, $filter, $http, toastr, Page) {
     $scope.submitted = false;
     $scope.isLoading = false;
     $scope.errors = [];
@@ -7,6 +7,8 @@ app.controller('RecommendController', function ($scope, $filter, $http, toastr) 
         name: '',
         description: ''
     };
+
+    Page.setTitleWithPrefix('Recommend a Category');
 
     $scope.recommend = function (isValid) {
         if (isValid) {
