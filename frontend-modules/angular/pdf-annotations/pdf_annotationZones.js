@@ -14,7 +14,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
     $scope.divCounter = 0;
 
-    $scope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+    $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
     $rootScope.annotationSubmitPage = -1;
 
     $scope.previousPageNumber = -1;
@@ -354,26 +354,32 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         //console.log(unfinishedAnnZonesList.length);
         //console.log($scope.previousPageNumber);
         //Store them
-        if(unfinishedAnnZonesList == [])
-          $scope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
-
+        if(unfinishedAnnZonesList != []){
+          $rootScope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
+          $timeout(function(){
+            $scope.$apply();
+          });
+        }
       }
       $scope.$emit('reloadTagsWCallback', function(){
         //Add previous ones
         if($scope.previousPageNumber != -1){
-          if(nextPageNumber in $scope.annotationZonesOnOtherSlides){
-            //console.log($scope.annotationZonesOnOtherSlides[nextPageNumber]);
-            for(var key  in $scope.annotationZonesOnOtherSlides[nextPageNumber]){
-              var elem = $scope.annotationZonesOnOtherSlides[nextPageNumber][key];
+          if(nextPageNumber in $rootScope.annotationZonesOnOtherSlides){
+            console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            for(var key  in $rootScope.annotationZonesOnOtherSlides[nextPageNumber]){
+              var elem = $rootScope.annotationZonesOnOtherSlides[nextPageNumber][key];
+              elem.id= 'rect-'+$scope.divCounter;
               if(elem.id in $scope.annotationZoneList){
-                //console.log("ERROR: Annzone overwritten, pls fix");
+                console.log("ERROR: Annzone overwritten, pls fix");
               }
               $scope.annotationZoneList[elem.id] = elem;
-              //console.log($scope.annotationZoneList);
+              $scope.divCounter += 1;
+
 
             }
-            //$scope.annotationZoneList.concat($scope.annotationZonesOnOtherSlides[nextPageNumber]);
-            delete $scope.annotationZonesOnOtherSlides[nextPageNumber];
+
+            //$scope.annotationZoneList.concat($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            delete $rootScope.annotationZonesOnOtherSlides[nextPageNumber];
           }
         }
         $scope.previousPageNumber = nextPageNumber;

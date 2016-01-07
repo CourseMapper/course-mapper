@@ -66,6 +66,12 @@
                   </div>
               </div>
                 <div id="commentSubmissionDiv" ng-show="writeCommentMode">
+                    COMMENT CREATE PAGE: {{annotationSubmitPage}}
+
+                    <div ng-repeat="(key,val) in annotationZonesOnOtherSlides">
+                      ON PAGE {{key}} YOU HAVE {{val.length}} ANNZONES
+                    </div>
+
                     <form name="commentForm" ng-submit="submitComment()">
 
                         <fieldset>
@@ -117,17 +123,10 @@
                                     <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
                                 </div>
                             </div>
-                            <!--<div class="control-group">
-                                <div class="controls">
-                                    <br class="clear">
-                                    <button class="btn btn-primary"> Add Comment
-                                        <spinner show="isLoading"></spinner>
-                                    </button>
 
-                                    <button type="button" class="btn btn-warning" ng-click="writeCommentMode=false">Cancel</button>
-                                </div>
-                            </div>-->
                         </fieldset>
+
+
                     </form>
                 </div>
 
