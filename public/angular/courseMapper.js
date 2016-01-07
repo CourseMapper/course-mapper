@@ -6405,12 +6405,16 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
         $rootScope.clearTagNameErrors();
 
+        var submitPage = ($rootScope.annotationSubmitPage!=-1)?$rootScope.annotationSubmitPage:$scope.currentPage;
+
+        console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
+
         var config = {
             params: {
                 rawText: $scope.comment.rawText,
                 author: $scope.currentUser.username,
                 authorID: $scope.currentUser._id,
-                pageNumber: $scope.currentPageNumber,
+                pageNumber: $rootScope.annotationSubmitPage,
                 tagNames: $scope.comment.tagNames,
                 tagRelPos: $scope.comment.tagRelPos,
                 tagRelCoord: $scope.comment.tagRelCoord,
@@ -6916,7 +6920,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $rootScope.addReference = function(id) {
       var annZoneList = $rootScope.getAnnotationZoneList();
       var name = "#"+annZoneList[id].tagName;
-      if($rootScope.annotationSubmitPage != $scope.currentPageNumber){
+      if($rootScope.annotationSubmitPage != -1 &&
+        $rootScope.annotationSubmitPage != $scope.currentPageNumber){
           name+="@"+$scope.currentPageNumber;
       }
       //$rootScope.safeApply(function() {
