@@ -347,7 +347,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         var unfinishedAnnZonesList = [];
         for(var key in $scope.annotationZoneList){
           if($scope.annotationZoneList[key].isBeingCreated == true){
-            unfinishedAnnZonesList.push($scope.annotationZoneList[key]);
+            var temp = $scope.annotationZoneList[key];
+            if(temp[0] != '#')
+              temp = '#' + temp;
+            unfinishedAnnZonesList.push(temp);
           }
         }
         //console.log("PDF PAGE CHANGE");
