@@ -354,7 +354,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         //console.log(unfinishedAnnZonesList.length);
         //console.log($scope.previousPageNumber);
         //Store them
-        if(unfinishedAnnZonesList != []){
+        if(unfinishedAnnZonesList.length != 0){
           $rootScope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
           $timeout(function(){
             $scope.$apply();
