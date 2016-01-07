@@ -125,9 +125,13 @@
                             </div>
                             <div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header">Created Annotation Zones:</div>
                             <div id="createdAnnoZoneButtons">
-                              <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton"  ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
-                                <span class="glyphicon glyphicon-remove " aria-hidden="true" style="background-color:{{}}"></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
-                              </button>
+                              <div>
+                                <div ng-repeat-start="(page,annZonesList) in annotationZonesOnOtherSlides"></div>
+                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important" onmouseover="this.style.background={{val.color}} !important" onmouseout="this.style.background={{val.color}};" ng-repeat="(key,val) in annZonesList" ng-click="">
+                                <span class="glyphicon glyphicon-remove " aria-hidden="true"></span> {{val.tagName}}@{{page}}
+                                </button>
+                                <div ng-repeat-end></div>
+                            </div>
                             </div>
                         </fieldset>
 
