@@ -127,7 +127,7 @@
                             <div id="createdAnnoZoneButtons">
                               <div>
                                 <div ng-repeat-start="(page,annZonesList) in annotationZonesOnOtherSlides"></div>
-                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important" onmouseover="this.style.background={{val.color}} !important" onmouseout="this.style.background={{val.color}};" ng-repeat="(key,val) in annZonesList" ng-click="">
+                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important"ng-repeat="(key,val) in annZonesList" ng-click="">
                                 <span class="glyphicon glyphicon-remove " aria-hidden="true"></span> {{val.tagName}}@{{page}}
                                 </button>
                                 <div ng-repeat-end></div>
