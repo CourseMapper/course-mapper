@@ -300,6 +300,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };
 
     $scope.refreshTags = function() {
+      $scope.refreshTagsWithCallbacks(function(){});
+    };
+
+    $scope.refreshTagsWithCallbacks = function(callback) {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
         $scope.annZones = data.annZones;
 
@@ -311,6 +315,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           $scope.$apply();
         });
         console.log($scope.annotationZoneList);
+        callback();
       });
     };
 
@@ -345,38 +350,44 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
             unfinishedAnnZonesList.push($scope.annotationZoneList[key]);
           }
         }
-        console.log("PDF PAGE CHANGE");
-        console.log(unfinishedAnnZonesList.length);
-        console.log($scope.previousPageNumber);
+        //console.log("PDF PAGE CHANGE");
+        //console.log(unfinishedAnnZonesList.length);
+        //console.log($scope.previousPageNumber);
         //Store them
-        $scope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
+        if(unfinishedAnnZonesList == [])
+          $scope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
 
       }
-      $scope.$emit('reloadTags');
-      //Add previous ones
-      if($scope.previousPageNumber != -1){
-        if(nextPageNumber in $scope.annotationZonesOnOtherSlides){
-          for(var elem  in $scope.annotationZonesOnOtherSlides[nextPageNumber]){
-            if(elem.id in $scope.annotationZoneList){
-              console.log("ERROR: Annzone overwritten, pls fix");
+      $scope.$emit('reloadTagsWCallback', function(){
+        //Add previous ones
+        if($scope.previousPageNumber != -1){
+          if(nextPageNumber in $scope.annotationZonesOnOtherSlides){
+            //console.log($scope.annotationZonesOnOtherSlides[nextPageNumber]);
+            for(var key  in $scope.annotationZonesOnOtherSlides[nextPageNumber]){
+              var elem = $scope.annotationZonesOnOtherSlides[nextPageNumber][key];
+              if(elem.id in $scope.annotationZoneList){
+                //console.log("ERROR: Annzone overwritten, pls fix");
+              }
+              $scope.annotationZoneList[elem.id] = elem;
+              //console.log($scope.annotationZoneList);
+
             }
-            $scope.annotationZoneList[elem.id] = elem;
-
+            //$scope.annotationZoneList.concat($scope.annotationZonesOnOtherSlides[nextPageNumber]);
+            delete $scope.annotationZonesOnOtherSlides[nextPageNumber];
           }
-          console.log("HERE?");
-          //$scope.annotationZoneList.concat($scope.annotationZonesOnOtherSlides[nextPageNumber]);
-          delete $scope.annotationZonesOnOtherSlides[nextPageNumber];
-          console.log("HERE???");
         }
-      }
-      $scope.previousPageNumber = nextPageNumber;
-      console.log("HEREE?");
+        $scope.previousPageNumber = nextPageNumber;
+      });
     });
 
     $scope.$on('$destroy',pdfPageChangeListener);
 
 
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
+      $scope.$emit('reloadTagsWCallback', function(){});
+    });
+
+    var reloadTagsEventListenerWithCallback = $scope.$on('reloadTagsWCallback', function(event, callback) {
       console.log("Reload Tags called");
       //$(".slideRect").remove();
       //$scope.annotationZoneList = new Array();
@@ -391,7 +402,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         $scope.$apply();
       });
 
-      $scope.refreshTags();
+      $scope.refreshTagsWithCallbacks(callback);
     });
 
     /*TODO:ANGANNZONE
