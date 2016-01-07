@@ -123,7 +123,12 @@
                                     <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
                                 </div>
                             </div>
-
+                            <div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header">Created Annotation Zones:</div>
+                            <div id="createdAnnoZoneButtons">
+                              <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton"  ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
+                                <span class="glyphicon glyphicon-remove " aria-hidden="true" style="background-color:{{}}"></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
+                              </button>
+                            </div>
                         </fieldset>
 
 
