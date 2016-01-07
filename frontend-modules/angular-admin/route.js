@@ -76,6 +76,21 @@ admin.config(['$routeProvider',
             }
         }).
 
+        when('/category-recommendations', {
+            templateUrl: '/cm-admin/category-recommendations',
+            controller: 'CategoryRecommendationsController',
+            resolve: {
+                pd: function ($q) {
+                    return ( {
+                        title: 'Category Recommendations',
+                        breads: [
+                            {a: '#/home', active: false, title: 'category recommendations'}
+                        ]
+                    });
+                }
+            }
+        }).
+
         otherwise({
             redirectTo: '/cm-admin'
         });

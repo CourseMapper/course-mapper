@@ -855,3 +855,7 @@ li.active .voting .vote-total {
 .aborted {
     cursor: default !important;
 }
+
+.html-sidebar-content{
+    padding: 10px !important;
+}

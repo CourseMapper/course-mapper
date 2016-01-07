@@ -279,6 +279,38 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
         $scope.initData();
     });
 
+});;admin.controller('CategoryRecommendationsController', function ($scope, $route, $routeParams, $location, $http, $timeout) {
+    $scope.route = $route;
+    $scope.location = $location;
+    $scope.routeParams = $routeParams;
+    $scope.categories = [];
+
+    $scope.init = function () {
+        $http.get('/api/categories/recommendations').success(function (res) {
+            if (res.result && res.categories) {
+                $scope.categories = res.categories;
+            }
+        });
+    };
+
+    $scope.delete = function (recId) {
+        $http.delete('/api/categories/recommendation/' + recId, {})
+            .success(function (res) {
+                if (res.result) {
+                    for (var i = 0; i < $scope.categories.length; i++) {
+                        $scope.categories.splice(i, 1);
+                        break;
+                    }
+
+                    $timeout(function () {
+                        $scope.$apply();
+                    })
+                }
+            });
+    };
+
+    $scope.init();
+
 });;admin.controller('adminController', function($scope, $route, $routeParams, $location) {
     $scope.$route = $route;
     $scope.$location = $location;
@@ -370,6 +402,21 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
                         title: 'Admin Home',
                         breads: [
                             {a: '#/home', active: false, title: 'Home'}
+                        ]
+                    });
+                }
+            }
+        }).
+
+        when('/category-recommendations', {
+            templateUrl: '/cm-admin/category-recommendations',
+            controller: 'CategoryRecommendationsController',
+            resolve: {
+                pd: function ($q) {
+                    return ( {
+                        title: 'Category Recommendations',
+                        breads: [
+                            {a: '#/home', active: false, title: 'category recommendations'}
                         ]
                     });
                 }
