@@ -5934,7 +5934,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         //console.log(unfinishedAnnZonesList.length);
         //console.log($scope.previousPageNumber);
         //Store them
-        if(unfinishedAnnZonesList != []){
+        if(unfinishedAnnZonesList.length != 0){
           $rootScope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
           $timeout(function(){
             $scope.$apply();
@@ -6916,6 +6916,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $rootScope.addReference = function(id) {
       var annZoneList = $rootScope.getAnnotationZoneList();
       var name = "#"+annZoneList[id].tagName;
+      if($rootScope.annotationSubmitPage != $scope.currentPageNumber){
+          name+="@"+$scope.currentPageNumber;
+      }
       //$rootScope.safeApply(function() {
       if($rootScope.nameHasNoError(name)){
         if(name !="#")

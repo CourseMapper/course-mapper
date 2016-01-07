@@ -790,6 +790,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $rootScope.addReference = function(id) {
       var annZoneList = $rootScope.getAnnotationZoneList();
       var name = "#"+annZoneList[id].tagName;
+      if($rootScope.annotationSubmitPage != $scope.currentPageNumber){
+          name+="@"+$scope.currentPageNumber;
+      }
       //$rootScope.safeApply(function() {
       if($rootScope.nameHasNoError(name)){
         if(name !="#")
