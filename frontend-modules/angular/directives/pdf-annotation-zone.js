@@ -66,7 +66,11 @@ app.directive('pdfAnnotationZone',
               };
 
               $scope.localAddReference = function(annId){
-                $scope.addReference({id:annId});
+                console.log($scope.isDragging);
+                if(!$scope.isDragging){
+                  $scope.addReference({id:annId});
+                  $scope.isDragging=false;
+                }
               };
 
 
@@ -112,8 +116,20 @@ app.directive('pdfAnnotationZone',
               $scope.opacityFactorHighlight = "0.75";
               $scope.tagName = $scope.tagName.slice(1);
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
+              $scope.isDragging =false;
 
-
+              $("#"+$scope.annZoneID).on({
+                  mousedown: function(e) {
+                    console.log("HELLO");
+                    $scope.isDragging =false;
+                  },
+                  mouseup: function(e) {
+                    ;
+                  },
+                  mousemove: function(e) {
+                    $scope.isDragging =true;
+                  }
+              });
 
 
 
