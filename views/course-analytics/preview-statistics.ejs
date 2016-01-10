@@ -1,20 +1,13 @@
 <div class="box-body no-padding" ng-controller="PreviewStatsController">
-    <ul>
-        <li>
-            <i class="ionicons ion-ios-people"></i> <b>{{userList.length}}</b> user enrolled
-        </li>
-        <li>
+
+            <i class="ionicons ion-ios-people"></i> <b>{{totalUser}}</b> user enrolled
+
             <i class="ionicons ion-ios-circle-filled"></i> <b>  {{treeNodes.length}}</b> <span>{{treeNodes.length==1 ? 'subtopic': 'subtopics'}}</span>
-        </li>
-        <li>
-            <i class="ionicons ion-play"></i> <b> <span ng-repeat="treeNodes in treeNodes"></span> TODO </b> total hours of video play time
-        </li>
-        <li>
-            <i class="ionicons ion-document"></i> <b>  TODO</b> total pages of PDF files
-        </li>
-        <li>
-            <i class="ionicons ion-ios-pricetags"></i> <b>  TODO (isn't</b> discussions
-        </li>
-    </ul>
-    {{discussions}}
+
+            <i class="fa fa-file-video-o"></i> <b> <span>{{totalVideo}}</span> </b>  {{totalVideo <= 1 ? 'video': 'videos'}}
+
+            <i class="fa fa-file-pdf-o"></i> <b>  {{totalPdf}}</b> PDF {{totalPdf <= 1 ? 'file': 'files'}}
+
+            <i class="fa fa-comments"></i> <b>  {{totalDiscussion}}</b> <span>{{totalDiscussion <= 1 ? 'discussion': 'discussions'}}</span>
+
 </div>

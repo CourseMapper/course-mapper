@@ -35,8 +35,7 @@ router.get('/:courseId', function(req, res, next) {
 
 });
 
-//TODO: Change /total-user to /courseStats and provide API stats that not only respond with total user but also with  summary of total pdf/video, etc... or use available API?
-router.get('/total-user/:courseId', function(req, res, next) {
+router.get('/course-stats/total-user/:courseId', function(req, res, next) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -55,5 +54,66 @@ router.get('/total-user/:courseId', function(req, res, next) {
     );
 
 });
+
+router.get('/course-stats/total-video/:courseId', function(req, res, next) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var crs = new CoursePreviewStats();
+    crs.getTotalVideo(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            courseId: mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success(totalVideo){
+            res.status(200).json({result:true, totalVideo:totalVideo});
+        }
+    );
+
+});
+
+router.get('/course-stats/total-pdf/:courseId', function(req, res, next) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var crs = new CoursePreviewStats();
+    crs.getTotalPdf(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            courseId: mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success(totalPdf){
+            res.status(200).json({result:true, totalPdf:totalPdf});
+        }
+    );
+
+});
+
+router.get('/course-stats/total-discussion/:courseId', function(req, res, next) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var crs = new CoursePreviewStats();
+    crs.getTotalDiscussion(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            course: mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success(totalDiscussion){
+            res.status(200).json({result:true, totalDiscussion:totalDiscussion});
+        }
+    );
+
+});
+
 
 module.exports = router;
