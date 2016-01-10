@@ -346,7 +346,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
       //Find relevant AnnZones
-      console.log("GOT HEREEEE");
       var nextPageNumber = params[0];
 
       if($scope.previousPageNumber != -1){

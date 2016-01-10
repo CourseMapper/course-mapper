@@ -2581,8 +2581,7 @@ app.directive('movablePdf', function() {
 
 
 /*              $scope.$watch('currCanWidth', function(newVal, oldVal){
-                console.log("HERE");
-                $scope.localCanWidth = newVal;
+              scope.localCanWidth = newVal;
               });
 
               $scope.$watch('currCanHeight', function(newVal, oldVal){
@@ -2610,7 +2609,6 @@ app.directive('movablePdf', function() {
               };
 
               $scope.localAddReference = function(annId){
-                console.log($scope.isDragging);
                 if(!$scope.isDragging){
                   $scope.addReference({id:annId});
                   $scope.isDragging=false;
@@ -2661,21 +2659,6 @@ app.directive('movablePdf', function() {
               $scope.tagName = $scope.tagName.slice(1);
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
               $scope.isDragging =false;
-
-              $("#"+$scope.annZoneID).on({
-                  mousedown: function(e) {
-                    console.log("HELLO");
-                    $scope.isDragging =false;
-                  },
-                  mouseup: function(e) {
-                    ;
-                  },
-                  mousemove: function(e) {
-                    $scope.isDragging =true;
-                  }
-              });
-
-
 
               $timeout(function(){
                 $scope.$apply();
@@ -5946,7 +5929,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
       //Find relevant AnnZones
-      console.log("GOT HEREEEE");
       var nextPageNumber = params[0];
 
       if($scope.previousPageNumber != -1){
