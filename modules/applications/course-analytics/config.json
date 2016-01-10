@@ -60,6 +60,16 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
+      "name": "Course Preview Statistics",
+      "location": "course-preview",
+      "description": "Statistic summary of the course in the preview course tab",
+      "entryPoint": "/course-analytics/ca-preview-statistics",
+      "widgetJavascript": ["ca-preview-statistics.js"],
+      "width": 12,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
       "name": "Enrolled User List",
       "location": "course-analytics",
       "description": "List of users that enrolled to the course",

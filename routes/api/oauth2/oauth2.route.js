@@ -13,7 +13,7 @@ var await = require('asyncawait/await');
 router.get('/authorize',
     /*helper.ensureAuthenticated,*/
     function (req, res, next) {
-        helper.ensureAuthenticated2(req, res, function (err) {
+        helper.ensureAuthenticatedWithCallback(req, res, function (err) {
             if (err) {
                 res.render(config.get('theme') + '/oauth/oLogin');
             } else {
@@ -22,6 +22,17 @@ router.get('/authorize',
         });
     },
     oauth2Controller.authorization);
+
+router.get('/app/', helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user) {
+        return helper.resReturn(helper.createError401('Not Authorized'));
+    }
+
+    res.status(200).json({
+        result: true
+    });
+});
+
 
 router.get('/apps/:mode', function (req, res, next) {
     if (!req.user) {

@@ -24,7 +24,7 @@ CourseListAuthor.prototype.run = async ( function(){
 
 CourseListAuthor.prototype.render = function(){
 
-    return '<span class="label label-info"> Author: ' + this.result.createdBy.displayName + '</span> <br>';
+    return '<span class="label label-info bg-green"> Author: ' + this.result.createdBy.displayName + '</span> <br>';
 
 };
 
