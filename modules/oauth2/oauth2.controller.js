@@ -41,6 +41,10 @@ server.deserializeClient(function (id, callback) {
 });
 
 server.grant(oauth2orize.grant.code(function (client, redirectUri, user, ares, callback) {
+    if (redirectUri == "" || !redirectUri) {
+        redirectUri = '/api/oauth2/app';
+    }
+
     // Create a new authorization code
     var code = new Secrets({
         oauthSecret: uid(16),
@@ -64,7 +68,7 @@ server.exchange(oauth2orize.exchange.code(function (user, code, redirectUri, cal
         if (err) {
             return callback(err);
         }
-        if (authCode === undefined) {
+        if (authCode == null || authCode === undefined) {
             return callback(null, false);
         }
 
@@ -72,7 +76,7 @@ server.exchange(oauth2orize.exchange.code(function (user, code, redirectUri, cal
             return callback(null, false);
         }
 
-        if (redirectUri !== authCode.redirectUri) {
+        if (authCode.redirectUri != '/api/oauth2/app' && redirectUri !== authCode.redirectUri) {
             return callback(null, false);
         }
 
@@ -107,6 +111,10 @@ exports.authorization = [
         Client.findOne({clientId: clientId}, function (err, client) {
             if (err) {
                 return callback(err);
+            }
+
+            if (redirectUri == "" || !redirectUri) {
+                redirectUri = '/api/oauth2/app';
             }
 
             return callback(null, client, redirectUri);
