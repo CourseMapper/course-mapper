@@ -19,22 +19,34 @@ CourseListLatestActivity.prototype.run = async ( function(){
 
     var content = await( TreeNodes.findOne({
         courseId: self._id,
-        type: 'contentNode'
-    }).sort({dateAdded:-1}).exec());
+        type: 'contentNode',
+        isDeleted: 'false'
+    }).sort({'dateAdded':-1}).exec());
 
-    self.content = content;
+    if (content) {
+        self.content = content;
+    } else {
+        //self.content = "No content available";
+        self.content = {dateUpdated: '', name:'No content available'};
+    }
+
 
     var userEnrolled = await (UserCourses.findOne({
         course: self._id,
         isEnrolled: 'true'
-    }).populate('user').exec());
+    }).sort({'dateUpdated': -1}).populate('user').exec());
 
-    self.userEnrolled = userEnrolled;
+    //self.userEnrolled = userEnrolled;
+    if (userEnrolled) {
+        self.userEnrolled = userEnrolled;
+    } else {
+        self.userEnrolled = {user: {displayName:"No user enrolled"}};
+    }
 
 } );
 
 CourseListLatestActivity.prototype.render = function(){
-
+    console.log (this.content.dateUpdated);
     var momentDate = moment(this.content.dateUpdated).format('MMMM Do YYYY');
     return '<span class="label label-info"> Latest content: ' + this.content.name + ' - ' + momentDate + '</span> <br>' +
             '<span class="label label-info"> Last enrolled user: ' + this.userEnrolled.user.displayName + '</span> <br>';
