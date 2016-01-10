@@ -120,9 +120,7 @@
                                     <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
                                 </div>
                             </div>
-                            {{annotationZonesOnOtherSlides}}
-                            {{Object.size(annotationZonesOnOtherSlides)}}
-                            <div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header" ng-hide="(annotationZonesOnOtherSlides=={})">Created Annotation Zones:</div>
+                            <!--<div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header" ng-hide="(annotationZonesOnOtherSlides=={})">Created Annotation Zones:</div>-->
                             <div id="createdAnnoZoneButtons">
                                 <div ng-repeat-start="(page,annZonesList) in annotationZonesOnOtherSlides"></div>
                                 <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important"ng-repeat="(key,val) in annZonesList" ng-click="setPageNumber(page)">
