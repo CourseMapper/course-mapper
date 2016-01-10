@@ -115,7 +115,7 @@ a.profile-picture {
 }
 
 .form_hover:hover .header {
-    opacity: .8;
+    opacity: 1;
     -webkit-animation: fadeIn ease-in 1;
     -moz-animation: fadeIn ease-in 1;
     animation: fadeIn ease-in 1;
