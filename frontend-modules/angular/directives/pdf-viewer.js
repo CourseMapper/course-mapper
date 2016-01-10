@@ -125,7 +125,7 @@ app.directive('pdfViewer',
                 $("#inpFieldCurrPage").bind("keydown keypress", function (event) {
                   if(event.which === 13) {
                       $timeout(function () {
-                          $scope.setPageNumber(parseInt($scope.currentNavPageNumber));
+                          $rootScope.setPageNumber(parseInt($scope.currentNavPageNumber));
                           $scope.$apply();
                       });
 
@@ -135,12 +135,12 @@ app.directive('pdfViewer',
                 });
 
                 $scope.changePageNumber = function (value) {
-                    $scope.setPageNumber($scope.currentPageNumber + value);
+                    $rootScope.setPageNumber($scope.currentPageNumber + value);
                 };
 
-                $scope.setPageNumber = function (value) {
+                $rootScope.setPageNumber = function (value) {
                   if ((value) <= $scope.totalPage && (value) >= 1){
-                    $scope.currentPageNumber = value;
+                    $scope.currentPageNumber = parseInt(value);
 
                     $scope.setHistoryStack( $scope.currentPageNumber );
 
