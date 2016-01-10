@@ -28,7 +28,7 @@ CatCreatedDate.prototype.render = function(){
     var momentDate = moment(this.result.dateAdded).format('MMMM Do YYYY');
 
 
-    return '<div class="dateCreated" style="font-size:80%"> Created: ' + momentDate + '</div>' ;
+    return '<div class="dateCreated" style="font-size:80%"> <span class="badge bg-green"> Created: ' + momentDate + '</span></div>' ;
 };
 
 module.exports = CatCreatedDate;

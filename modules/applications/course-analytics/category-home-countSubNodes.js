@@ -26,7 +26,7 @@ CatCountSubNodes.prototype.render = function(){
     var countSubNodes = this.result.subCategories.length;
 
 
-    return '<div class="countSubNodes" style="font-size:80%"> SubNodes: ' + countSubNodes + '</div>' ;
+    return '<div class="countSubNodes" style="font-size:80%; margin-top: 3px;"> <span class="badge bg-yellow"> SubNodes: ' + countSubNodes + '</span></div>' ;
 };
 
 module.exports = CatCountSubNodes;
