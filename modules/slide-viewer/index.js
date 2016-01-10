@@ -33,7 +33,7 @@ Comment.prototype.updateAllReferences = function(oldName, newName, pdfId,err,don
           }
         });
         if(changed) {
-          this.convertRawText(newRawText, function(newRenderedText){
+          this.convertRawTextID(newRawText, function(newRenderedText){
             var newText = {
               rawText: newRawText,
               renderedText: newRenderedText
@@ -45,7 +45,7 @@ Comment.prototype.updateAllReferences = function(oldName, newName, pdfId,err,don
                 done();
               }
             });
-          });
+          }, pdfId);
         }
       }
     }
@@ -70,7 +70,7 @@ Comment.prototype.submitAnnotation = function(err, params, done){
 
 //TODO: Temporary reply function. Later when replies have more functionality maybe merge with submitFirstLevelAnnotation
 Comment.prototype.submitReplyAnnotation = function(err, params,done){
-  var temp = this.convertRawText;
+  var temp = this.convertRawTextSpecific;
 
   var htmlEscapedRawText = validator.escape(params.rawText);
   //var htmlEscapedRawText = params.rawText;
@@ -99,11 +99,11 @@ Comment.prototype.submitReplyAnnotation = function(err, params,done){
         done(annotationsPDF);
       }
     });
-  });
+  },params.pdfId,params.pageNumber);
 };
 
 Comment.prototype.submitFirstLevelAnnotation = function(err, params,done){
-  var temp = this.convertRawText;
+  var temp = this.convertRawTextSpecific;
 
   var annZones = [];
   //Small fix to avoid problems arising from empty annZone lists
@@ -140,7 +140,7 @@ Comment.prototype.submitFirstLevelAnnotation = function(err, params,done){
 
             }
           });
-        });
+        },params.pdfId,params.pageNumber);
       }
       else{
         err("Server Error: Unable to store one or more annotation zones");
@@ -169,10 +169,12 @@ Comment.prototype.deleteAnnotation = function(err,params,isAdmin,done){
 
 
 Comment.prototype.updateAnnotation = function(err,params,isAdmin,done) {
+  //console.log("STARTED");
+  //console.log(params);
   if(typeof params.updateId != 'undefined') {
     this.checkOwnership(params.updateId, params.author, params.authorId, isAdmin, function(success) {
       if(success) {
-        var temp = Comment.prototype.convertRawText;
+        var temp = Comment.prototype.convertRawTextSpecific;
 
         //var htmlEscapedRawText = validator.escape(params.rawText);
         var htmlEscapedRawText = params.rawText;
@@ -191,7 +193,7 @@ Comment.prototype.updateAnnotation = function(err,params,isAdmin,done) {
               done();
             }
           });
-        });
+        },params.pdfId,params.pageNumber);
       }
       else {
         err("Server Error: Unable to update annotation since access was denied or the entry was not found");
@@ -298,48 +300,97 @@ Comment.prototype.checkTagName = function(tagName,tagNameList){
 
 }
 
+Comment.prototype.getAllTagNamesById = function(pdfID,callback){
+    var annZone = new AnnZones();
+    annZone.getAnnotationZonesById(pdfID,callback);
+}
+
 Comment.prototype.getAllTagNames = function(callback){
     var annZone = new AnnZones();
-    annZone.getAllAnnotationZones(callback);
+    annZone.getAnnotationZones(callback);
 }
 
 
+
 //TODO Not working correctly yet
+
 Comment.prototype.convertRawText = function(rawText,callback){
+  Comment.prototype.convertRawTextSpecific(rawText,callback,-1, -1)
+};
+
+Comment.prototype.convertRawTextID = function(rawText,callback,pdfID){
+  Comment.prototype.convertRawTextSpecific(rawText,callback,pdfID, -1)
+};
+
+
+Comment.prototype.convertRawTextSpecific = function(rawText,callback,pdfID, pdfPage){
 
 
   var check = this.checkTagName;
 
   var comm = new Comment();
-  comm.getAllTagNames(function(success,data){
+
+  var getNamesCallback = function(success,data){
     //TODO: test for success
     var tagNameList = [];
     var tagColorList = [];
+    var tagPageList = [];
 
     for(var i = 0; i < data.length; i++){
       tagNameList[i] = data[i].annotationZoneName;
       tagColorList[i] = data[i].color;
+      tagPageList[i] = data[i].pdfPageNumber;
     }
     //console.log(data);
 
 
-    var renderedText = rawText.replace(/#(\w+)/g, function(x){
+    var renderedText = rawText.replace(/#(\w+)((@)(\w+))?/g, function(x){
         var comm = new Comment();
         //console.log("Found tag with name: "+x);
+        var strSplit = x.split("@");
+        var hasPage = false;
+        var page = 0;
+        var originalX = x;
+        if(strSplit.length != 2 && strSplit.length != 1){
+          return x;
+        }
+
+        if(strSplit.length == 2){
+          x = strSplit[0];
+          page = strSplit[1];
+          hasPage = true;
+        }
+
+
+
+
+
         if(comm.checkTagName(x,tagNameList) != -1){
           //console.log("Checked tag with name: "+x);
 
-          var ret = "<label class='annotationZoneReference' style='color: " + tagColorList[comm.checkTagName(x,tagNameList)] + "'>" + x + "</label>";
+          var tagId = comm.checkTagName(x,tagNameList);
+          var ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "'>" + originalX + "</label>";
+          if(hasPage &&  page != tagPageList[tagId])
+            return originalX;
+          if(!hasPage && pdfPage != tagPageList[tagId])
+            return originalX;
+
           return ret;
         }
-        else {
-          return x;
-        }
+
+
+        return x;
 
     });
 
     callback(renderedText);
-  });
+  };
+
+  if(pdfID != -1)
+    comm.getAllTagNamesById(pdfID,getNamesCallback);
+  else
+    comm.getAllTagNames(getNamesCallback);
+
   /*var tagArray = [];
   var arrayIndex = 0;
 

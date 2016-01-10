@@ -150,7 +150,7 @@ var cmLibraries = {
         }
     },
 
-    ensureAuthenticated2: function (req, res, next) {
+    ensureAuthenticatedWithCallback: function (req, res, next) {
         // local strategy
         if (req.isAuthenticated()) {
             return next();

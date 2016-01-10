@@ -110,9 +110,6 @@ router.get('/courses', function (req, res, next) {
 });
 
 router.get('/course/:courseId', function (req, res, next) {
-    if (!helper.checkRequiredParams(req.params, ['courseId'], function (err) {
-            helper.resReturn(err, res);
-        })) return;
 
     var params = {
         _id: mongoose.Types.ObjectId(req.params.courseId)
@@ -187,7 +184,7 @@ router.get('/course/:courseId/checkUsername/:username',
  * PUT
  * enrolling user into a course
  */
-router.put('/course/:courseId/enroll',
+router.put('/course/:courseId/enroll', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user)
             return res.status(401).send('Unauthorized');
@@ -216,7 +213,7 @@ router.put('/course/:courseId/enroll',
  * PUT
  * leave course
  */
-router.put('/course/:courseId/leave',
+router.put('/course/:courseId/leave', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user)
             res.status(401).send('Unauthorized');
@@ -243,7 +240,7 @@ router.put('/course/:courseId/leave',
  * add/remove a username as a manager into a course
  *
  */
-router.put('/course/:courseId/settings',
+router.put('/course/:courseId/settings', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');

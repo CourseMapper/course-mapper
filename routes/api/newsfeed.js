@@ -10,59 +10,42 @@ var mongoose = require('mongoose');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
-router.get('/newsfeed/:courseId', function (req, res, next) {
-    if (!req.user)
-        return res.status(401).send('Unauthorized');
+router.get('/newsfeed/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user)
+            return res.status(401).send('Unauthorized');
 
-    /*
-    var limit = 10;
-    if (req.query['limit']) {
-        var limitTemp = parseInt(req.query['limit']);
-        if (limitTemp != NaN)
-            limit = limitTemp;
-    }
-
-
-    var sortBy = 'dateAdded';
-    if (req.query['sortBy'])
-        sortBy = req.query['sortBy'];
-
-    var lastPage = false;
-    if (req.query['lastPage'])
-        lastPage = parseInt(req.query['lastPage']);
-     */
-
-    userHelper.isEnrolledAsync({
-        userId: mongoose.Types.ObjectId(req.user._id),
-        courseId: mongoose.Types.ObjectId(req.params.courseId)
-    })
-        .then(function (isEnrolled) {
-            if (!isEnrolled) {
-                return helper.resReturn(helper.createError401(), res);
-            }
-
-            var nf = new NewsfeedController();
-            nf.getNewsfeed(
-                function (err) {
-                    res.status(500).json({
-                        result: false,
-                        errors: err
-                    });
-                },
-                // parameters
-                mongoose.Types.ObjectId(req.params.courseId),
-
-                function (newsfeeds) {
-                    res.status(200).json({
-                        result: true, newsfeeds: newsfeeds
-                    });
+        userHelper.isEnrolledAsync({
+                userId: mongoose.Types.ObjectId(req.user._id),
+                courseId: mongoose.Types.ObjectId(req.params.courseId)
+            })
+            .then(function (isEnrolled) {
+                if (!isEnrolled) {
+                    return helper.resReturn(helper.createError401(), res);
                 }
-            );
 
-        })
-        .catch(function (err) {
-            helper.resReturn(err, res);
-        });
-});
+                var nf = new NewsfeedController();
+                nf.getNewsfeed(
+                    function (err) {
+                        res.status(500).json({
+                            result: false,
+                            errors: err
+                        });
+                    },
+                    // parameters
+                    mongoose.Types.ObjectId(req.params.courseId),
+
+                    function (newsfeeds) {
+                        res.status(200).json({
+                            result: true, newsfeeds: newsfeeds
+                        });
+                    }
+                );
+
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+    });
 
 module.exports = router;

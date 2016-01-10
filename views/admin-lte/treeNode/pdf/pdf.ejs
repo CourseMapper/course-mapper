@@ -25,7 +25,7 @@
                           edit-tag-name-temp="annotationZoneList[key].editTagNameTemp"
                           dragable="annotationZoneList[key].dragable"
                           is-being-created="annotationZoneList[key].isBeingCreated"
-                          can-be-edited="annotationZoneList[key].canBeEdited"
+                          can-be-edited="annotationZoneList[key].canBeEdited && !isInWriteCommentMode()"
                           ann-zone-id="annotationZoneList[key].annZoneId"
                           div-counter="annotationZoneList[key].divCounter"
                           list-id="annotationZoneList[key].id"
@@ -66,6 +66,9 @@
                   </div>
               </div>
                 <div id="commentSubmissionDiv" ng-show="writeCommentMode">
+
+                    <span class="currentCommentPageClass" ng-click="setPageNumber(annotationSubmitPage)">Annotation for Page {{annotationSubmitPage}}</span>
+
                     <form name="commentForm" ng-submit="submitComment()">
 
                         <fieldset>
@@ -117,17 +120,17 @@
                                     <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
                                 </div>
                             </div>
-                            <!--<div class="control-group">
-                                <div class="controls">
-                                    <br class="clear">
-                                    <button class="btn btn-primary"> Add Comment
-                                        <spinner show="isLoading"></spinner>
-                                    </button>
-
-                                    <button type="button" class="btn btn-warning" ng-click="writeCommentMode=false">Cancel</button>
-                                </div>
-                            </div>-->
+                            <!--<div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header" ng-hide="(annotationZonesOnOtherSlides=={})">Created Annotation Zones:</div>-->
+                            <div id="createdAnnoZoneButtons">
+                                <div ng-repeat-start="(page,annZonesList) in annotationZonesOnOtherSlides"></div>
+                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important"ng-repeat="(key,val) in annZonesList" ng-click="setPageNumber(page)">
+                                <span class="glyphicon glyphicon-remove " aria-hidden="true" ng-click="$event.stopPropagation(); deleteCurrentAnnotationZones(page,key); "></span> {{val.tagName}}@{{page}}
+                                </button>
+                                <div ng-repeat-end></div>
+                            </div>
                         </fieldset>
+
+
                     </form>
                 </div>
 
