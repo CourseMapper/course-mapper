@@ -28,6 +28,10 @@ angular.module('PreviewStats', [''])
                 $scope.totalDiscussion = data.totalDiscussion;
             });
 
+            $http.get('/api/course-analytics/course-stats/course-creator/' + parseLoc).success(function (data) {
+                $scope.creator = data.creator;
+            });
+
             $http.get('/api/treeNodes/course/' + parseLoc).success(function(data){
                 $scope.treeNodes = data.treeNodes;
             });

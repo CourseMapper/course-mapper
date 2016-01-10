@@ -87,6 +87,23 @@ coursePreviewStats.prototype.getTotalDiscussion = function (error, params, done)
     });
 };
 
+coursePreviewStats.prototype.getCourseCreator = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['_id'], error)) {
+        return;
+    }
+
+    //var self = this;
+    params._id = mongoose.Types.ObjectId(params._id);
+
+    Courses.findOne(params).populate('createdBy').exec(function (err, res) {
+        if (err) error(err);
+        else {
+            done(res);
+        }
+
+    });
+};
+
 
 
 module.exports = coursePreviewStats;

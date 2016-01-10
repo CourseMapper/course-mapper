@@ -115,5 +115,25 @@ router.get('/course-stats/total-discussion/:courseId', function(req, res, next) 
 
 });
 
+router.get('/course-stats/course-creator/:courseId', function(req, res, next) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var crs = new CoursePreviewStats();
+    crs.getCourseCreator(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            _id: mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success(creator){
+            res.status(200).json({result:true, creator:creator});
+        }
+    );
+
+});
+
 
 module.exports = router;
