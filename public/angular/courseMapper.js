@@ -2463,6 +2463,7 @@ app.directive('movablePdf', function() {
                     stop: function(event, ui) {
                         if (scope.onMoved) {
                             var parent = $("#annotationZone");
+                            
                             scope.onMoved({
                                 position: getRelativePosition(ui.position, parent),
                                 size: getRelativeSize(ui.size, parent)
