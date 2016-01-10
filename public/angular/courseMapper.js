@@ -2627,6 +2627,8 @@ app.directive('movablePdf', function() {
 
 
 
+
+
               $rootScope.$on('pdfScaleChanged', function(event,params){
 
                 $scope.localCanWidth = params[0];
@@ -2662,9 +2664,10 @@ app.directive('movablePdf', function() {
                 $scope.$apply();
               });
 
-
               $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
-
+                $('.simplecolorpicker').click(function(event){
+                    event.stopPropagation();
+                });
               $('#destroy').on('click', function() {
 
                 $('select').simplecolorpicker('destroy');
