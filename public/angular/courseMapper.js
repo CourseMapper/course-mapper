@@ -5847,12 +5847,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
           delete $scope.tagNamesList[inputId];
 
         }
+        var ret = $rootScope.annotationSubmitPage;
         $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
         $rootScope.annotationSubmitPage = -1;
 
         $timeout(function(){
           $scope.$apply();
         });
+        return ret;
 
       };
 
@@ -6180,6 +6182,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.writeCommentMode = false;
 
+    $scope.decouplePDFAndComments = false;
 
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function (e, params) {
@@ -6777,11 +6780,17 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
          }
          }*/
 
-        if (!isNaN($scope.currentPageNumber)) {
-            $scope.filtersRaw['pdfPageNumber'] = $scope.currentPageNumber;
+        if (!isNaN($scope.internalPageNumber)) {
+            $scope.filtersRaw['pdfPageNumber'] = $scope.internalPageNumber;
+        }
+        else {
+          return null;
         }
         if (!(typeof ($scope.pdfFile._id) == "undefined")) {
           $scope.filtersRaw['pdfId'] = $scope.pdfFile._id;
+        }
+        else {
+          return null;
         }
 
 
@@ -6805,8 +6814,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.parseOrderType(orderType);
 
         $scope.filters = getCurrentFilters($scope.filtersRaw);
-        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-        $scope.updateScope($scope.commentGetUrl);
+        if($scope.filters != null){
+          $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+          //console.log("commentGetUrl: " + $scope.commentGetUrl);
+          $scope.updateScope($scope.commentGetUrl);
+        }
     };
 
     $scope.manageActionBar = function(){
@@ -6847,19 +6859,32 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.parseOrderType($scope.orderType.id);
         //console.log("NOTICED FILTERS CHANGE");
         $scope.filters = getCurrentFilters($scope.filtersRaw);
-        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-        //console.log("commentGetUrl: " + $scope.commentGetUrl);
-        $scope.updateScope($scope.commentGetUrl);
+        if($scope.filters != null){
+          $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+          //console.log("commentGetUrl: " + $scope.commentGetUrl);
+          $scope.updateScope($scope.commentGetUrl);
+        }
     });
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
-        if (newValue !== oldValue) {
-            $scope.parseOrderType($scope.orderType.id);
-            $scope.filters = getCurrentFilters($scope.filtersRaw);
+      if(!$scope.decouplePDFAndComments){
+        $scope.internalPageNumber = newValue;
+        $timeout(function () {
+            $scope.$apply();
+        });
+      }
+    });
+
+    $scope.$watch("internalPageNumber", function (newValue, oldValue) {
+      if (newValue !== oldValue) {
+          $scope.parseOrderType($scope.orderType.id);
+          $scope.filters = getCurrentFilters($scope.filtersRaw);
+          if($scope.filters != null){
             $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
             $scope.updateScope($scope.commentGetUrl);
-        }
+          }
+      }
     });
 
     $scope.$watch("rawSearchTerm", function (newValue, oldValue) {
@@ -6874,11 +6899,15 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.replyMode = -1;
         $rootScope.annotationSubmitPage = $scope.currentPageNumber;
         $rootScope.resetEditZoneMode();
+        $scope.decouplePDFAndComments = true;
       }
-      else {
-        $rootScope.removeAllActiveAnnotationZones();
+      else if(newValue == false){
+        var gotoPage = $rootScope.removeAllActiveAnnotationZones();
         $scope.comment.rawText = "";
-        $rootScope.annotationSubmitPage = -1;
+        $scope.decouplePDFAndComments = false;
+        if(gotoPage != -1)
+          $rootScope.setPageNumber(parseInt(gotoPage));
+        
       }
     });
 

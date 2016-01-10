@@ -264,12 +264,14 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           delete $scope.tagNamesList[inputId];
 
         }
+        var ret = $rootScope.annotationSubmitPage;
         $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
         $rootScope.annotationSubmitPage = -1;
 
         $timeout(function(){
           $scope.$apply();
         });
+        return ret;
 
       };
 
