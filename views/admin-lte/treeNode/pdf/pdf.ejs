@@ -125,13 +125,11 @@
                             </div>
                             <div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header">Created Annotation Zones:</div>
                             <div id="createdAnnoZoneButtons">
-                              <div>
                                 <div ng-repeat-start="(page,annZonesList) in annotationZonesOnOtherSlides"></div>
-                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important"ng-repeat="(key,val) in annZonesList" ng-click="">
-                                <span class="glyphicon glyphicon-remove " aria-hidden="true"></span> {{val.tagName}}@{{page}}
+                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important"ng-repeat="(key,val) in annZonesList" ng-click="setPageNumber(page)">
+                                <span class="glyphicon glyphicon-remove " aria-hidden="true" ng-click="$event.stopPropagation(); deleteCurrentAnnotationZones(page,key); "></span> {{val.tagName}}@{{page}}
                                 </button>
                                 <div ng-repeat-end></div>
-                            </div>
                             </div>
                         </fieldset>
 

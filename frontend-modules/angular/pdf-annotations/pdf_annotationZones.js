@@ -524,6 +524,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       return true;
     };
 
+    $rootScope.deleteCurrentAnnotationZones = function(page,key) {
+      console.log("bla");
+      delete $rootScope.annotationZonesOnOtherSlides[page][key];
+    };
 
     $rootScope.clearTagNameErrors = function () {
       /*for(var key in $scope.tagNameErrors) {

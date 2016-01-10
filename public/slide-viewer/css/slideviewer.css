@@ -104,6 +104,7 @@ input#searchInput{
     padding-left: 5px;
     padding-right: 5px;
     margin: 2px;
+    float:left;
   }
 .createdAnnoZoneButton:hover{
     font-size: 9pt;
