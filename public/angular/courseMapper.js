@@ -6259,6 +6259,28 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
           }
         }
 
+        for(var page in $rootScope.annotationZonesOnOtherSlides) {
+          for(var annZoneKey in $rootScope.annotationZonesOnOtherSlides[page]){
+            var annZone = $rootScope.annotationZonesOnOtherSlides[page][annZoneKey];
+            var relPosX = annZone.relativePosition.x;
+            var relPosY = annZone.relativePosition.y;
+            var relWidth = annZone.relativeSize.x;
+            var relHeight = annZone.relativeSize.y;
+
+            var name = annZone.tagName;
+            var color = annZone.color;
+
+            var errorText = $rootScope.checkTagName(name);
+
+            if(errorText != "") {
+                return errorText;
+            }
+            else {
+                $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, page );
+            }
+          }
+        }
+
         $scope.comment.tagNames = $scope.tagNames.join(',');
         $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
         $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
