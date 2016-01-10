@@ -34,8 +34,8 @@ CNWidget.prototype.render = function () {
     var d = moment(self.result.dateAdded).fromNow();
 
     var text = 'Started ' + d +' <br> By ' + self.result.createdBy.displayName;
-    return '<div class="icon-stat" style="text-align: center;padding-top:2px;width:160px;overflow: hidden">' +
-        '<small class="" style="text-align: center;"> ' + text + '</small> ' +
+    return '<div class="icon-stat bg-green" style="text-align: center;padding-top:2px;width:160px;overflow: hidden; margin-bottom: 5px;">' +
+        '<small class="label label-success" style="text-align: center;"> <i class="fa fa-clock-o"></i> ' + text + '</small> ' +
         '</div>';
 };
 
