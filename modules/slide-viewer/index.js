@@ -169,10 +169,12 @@ Comment.prototype.deleteAnnotation = function(err,params,isAdmin,done){
 
 
 Comment.prototype.updateAnnotation = function(err,params,isAdmin,done) {
+  //console.log("STARTED");
+  //console.log(params);
   if(typeof params.updateId != 'undefined') {
     this.checkOwnership(params.updateId, params.author, params.authorId, isAdmin, function(success) {
       if(success) {
-        var temp = Comment.prototype.convertRawText;
+        var temp = Comment.prototype.convertRawTextSpecific;
 
         //var htmlEscapedRawText = validator.escape(params.rawText);
         var htmlEscapedRawText = params.rawText;
@@ -191,7 +193,7 @@ Comment.prototype.updateAnnotation = function(err,params,isAdmin,done) {
               done();
             }
           });
-        });
+        },params.pdfId,params.pageNumber);
       }
       else {
         err("Server Error: Unable to update annotation since access was denied or the entry was not found");
@@ -344,7 +346,7 @@ Comment.prototype.convertRawTextSpecific = function(rawText,callback,pdfID, pdfP
 
     var renderedText = rawText.replace(/#(\w+)((@)(\w+))?/g, function(x){
         var comm = new Comment();
-        console.log("Found tag with name: "+x);
+        //console.log("Found tag with name: "+x);
         var strSplit = x.split("@");
         var hasPage = false;
         var page = 0;

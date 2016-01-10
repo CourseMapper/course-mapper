@@ -206,7 +206,7 @@ app.directive('pdfViewer',
 
 
                 function adjustPdfScale () {
-                  console.log("Adjusting PDF Scale");
+                  //console.log("Adjusting PDF Scale");
                   if(typeof $scope.pdfPageView != 'undefined'){
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
@@ -226,7 +226,7 @@ app.directive('pdfViewer',
 
                 $(window).resize(function (event) {
                   //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
-                  console.log($location.search().tab)
+                  //console.log($location.search().tab)
                   if(($location.search().tab == "pdf" || $location.search().tab == undefined || $location.search().tab == "no") && $.isWindow(event.target)) {
                     //console.log("Got called on resize");
                     adjustPdfScale();

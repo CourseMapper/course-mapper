@@ -30,7 +30,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
     $scope.updateAnnZonePos = function(posObj) {
-      console.log(posObj);
+      //console.log(posObj);
     };
 
 
@@ -80,9 +80,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       };
       $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
       $scope.divCounter += 1;
-      console.log("ADDED ZONE");
-      console.log("DivC after: "+ $scope.divCounter);
-      console.log($scope.annotationZoneList);
+      //console.log("ADDED ZONE");
+      //console.log("DivC after: "+ $scope.divCounter);
+      //console.log($scope.annotationZoneList);
 
       $timeout(function(){
 
@@ -111,8 +111,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
-      console.log("setEditZoneMode");
-      console.log(id);
+      //console.log("setEditZoneMode");
+      //console.log(id);
 
       $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
       $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
@@ -322,7 +322,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         $timeout(function(){
           $scope.$apply();
         });
-        console.log($scope.annotationZoneList);
+        //console.log($scope.annotationZoneList);
         callback();
       });
     };
@@ -348,7 +348,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
       //Find relevant AnnZones
-      console.log("GOT HEREEEE");
       var nextPageNumber = params[0];
 
       if($scope.previousPageNumber != -1){
@@ -375,12 +374,12 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         //Add previous ones
         if($scope.previousPageNumber != -1){
           if(nextPageNumber in $rootScope.annotationZonesOnOtherSlides){
-            console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            //console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
             for(var key  in $rootScope.annotationZonesOnOtherSlides[nextPageNumber]){
               var elem = $rootScope.annotationZonesOnOtherSlides[nextPageNumber][key];
               elem.id= 'rect-'+$scope.divCounter;
               if(elem.id in $scope.annotationZoneList){
-                console.log("ERROR: Annzone overwritten, pls fix");
+                console.log("ERROR: Annzone overwritten, should not occur");
               }
               $scope.annotationZoneList[elem.id] = elem;
               $scope.divCounter += 1;
@@ -404,7 +403,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     });
 
     var reloadTagsEventListenerWithCallback = $scope.$on('reloadTagsWCallback', function(event, callback) {
-      console.log("Reload Tags called");
       //$(".slideRect").remove();
       //$scope.annotationZoneList = new Array();
       $scope.annotationZoneList = JSON.parse(JSON.stringify({}));

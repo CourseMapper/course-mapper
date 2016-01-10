@@ -2957,7 +2957,7 @@ app.directive('movablePdf', function() {
 
 
                 function adjustPdfScale () {
-                  console.log("Adjusting PDF Scale");
+                  //console.log("Adjusting PDF Scale");
                   if(typeof $scope.pdfPageView != 'undefined'){
                     if($scope.scale == 0)
                       $scope.scale = 1.0;
@@ -2977,7 +2977,7 @@ app.directive('movablePdf', function() {
 
                 $(window).resize(function (event) {
                   //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
-                  console.log($location.search().tab)
+                  //console.log($location.search().tab)
                   if(($location.search().tab == "pdf" || $location.search().tab == undefined || $location.search().tab == "no") && $.isWindow(event.target)) {
                     //console.log("Got called on resize");
                     adjustPdfScale();
@@ -5613,7 +5613,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
 
     $scope.updateAnnZonePos = function(posObj) {
-      console.log(posObj);
+      //console.log(posObj);
     };
 
 
@@ -5663,9 +5663,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       };
       $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
       $scope.divCounter += 1;
-      console.log("ADDED ZONE");
-      console.log("DivC after: "+ $scope.divCounter);
-      console.log($scope.annotationZoneList);
+      //console.log("ADDED ZONE");
+      //console.log("DivC after: "+ $scope.divCounter);
+      //console.log($scope.annotationZoneList);
 
       $timeout(function(){
 
@@ -5694,8 +5694,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
-      console.log("setEditZoneMode");
-      console.log(id);
+      //console.log("setEditZoneMode");
+      //console.log(id);
 
       $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
       $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
@@ -5905,7 +5905,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $timeout(function(){
           $scope.$apply();
         });
-        console.log($scope.annotationZoneList);
+        //console.log($scope.annotationZoneList);
         callback();
       });
     };
@@ -5931,7 +5931,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
       //Find relevant AnnZones
-      console.log("GOT HEREEEE");
       var nextPageNumber = params[0];
 
       if($scope.previousPageNumber != -1){
@@ -5958,12 +5957,12 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         //Add previous ones
         if($scope.previousPageNumber != -1){
           if(nextPageNumber in $rootScope.annotationZonesOnOtherSlides){
-            console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            //console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
             for(var key  in $rootScope.annotationZonesOnOtherSlides[nextPageNumber]){
               var elem = $rootScope.annotationZonesOnOtherSlides[nextPageNumber][key];
               elem.id= 'rect-'+$scope.divCounter;
               if(elem.id in $scope.annotationZoneList){
-                console.log("ERROR: Annzone overwritten, pls fix");
+                console.log("ERROR: Annzone overwritten, should not occur");
               }
               $scope.annotationZoneList[elem.id] = elem;
               $scope.divCounter += 1;
@@ -5987,7 +5986,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     });
 
     var reloadTagsEventListenerWithCallback = $scope.$on('reloadTagsWCallback', function(event, callback) {
-      console.log("Reload Tags called");
       //$(".slideRect").remove();
       //$scope.annotationZoneList = new Array();
       $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
@@ -6448,9 +6446,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
         $rootScope.clearTagNameErrors();
 
-        var submitPage = ($rootScope.annotationSubmitPage!=-1)?$rootScope.annotationSubmitPage:$scope.currentPage;
+        var submitPage = ($rootScope.annotationSubmitPage!=-1)?$rootScope.annotationSubmitPage:$scope.currentPageNumber;
 
-        console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
+        //console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
 
         var config = {
             params: {
@@ -6508,7 +6506,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
               updateId: comment._id,
               author: $scope.currentUser.username,
               authorId: $scope.currentUser._id,
-              rawText: $scope.editRawText[$scope.editMode]
+              rawText: $scope.editRawText[$scope.editMode],
+              pageNumber: $scope.currentPageNumber,
+              pdfId: $scope.pdfFile._id
+
           }
       };
 
@@ -6534,6 +6535,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
           .error(function (data, status, headers, config) {
               displayCommentSubmissionResponse("Error: Unexpected Server Response!");
           });
+    };
+
+    $rootScope.isInWriteCommentMode = function(){
+      return $scope.writeCommentMode;
     };
 
     $scope.setQuillSelection = function(){
@@ -6907,7 +6912,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.decouplePDFAndComments = false;
         if(gotoPage != -1)
           $rootScope.setPageNumber(parseInt(gotoPage));
-        
+
       }
     });
 

@@ -304,9 +304,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
         $rootScope.clearTagNameErrors();
 
-        var submitPage = ($rootScope.annotationSubmitPage!=-1)?$rootScope.annotationSubmitPage:$scope.currentPage;
+        var submitPage = ($rootScope.annotationSubmitPage!=-1)?$rootScope.annotationSubmitPage:$scope.currentPageNumber;
 
-        console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
+        //console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
 
         var config = {
             params: {
@@ -364,7 +364,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
               updateId: comment._id,
               author: $scope.currentUser.username,
               authorId: $scope.currentUser._id,
-              rawText: $scope.editRawText[$scope.editMode]
+              rawText: $scope.editRawText[$scope.editMode],
+              pageNumber: $scope.currentPageNumber,
+              pdfId: $scope.pdfFile._id
+
           }
       };
 
@@ -390,6 +393,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           .error(function (data, status, headers, config) {
               displayCommentSubmissionResponse("Error: Unexpected Server Response!");
           });
+    };
+
+    $rootScope.isInWriteCommentMode = function(){
+      return $scope.writeCommentMode;
     };
 
     $scope.setQuillSelection = function(){
@@ -763,7 +770,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $scope.decouplePDFAndComments = false;
         if(gotoPage != -1)
           $rootScope.setPageNumber(parseInt(gotoPage));
-        
+
       }
     });
 
