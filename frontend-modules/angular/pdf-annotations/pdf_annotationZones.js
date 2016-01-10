@@ -237,7 +237,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           });
       };
 
-      $rootScope.removeAllActiveAnnotationZones = function () {
+      /*$rootScope.removeAllActiveAnnotationZones = function () {
         for(var inputId in $scope.tagNamesList) {
           var element = $("#annotationZone #"+inputId);
 
@@ -250,22 +250,28 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           delete $scope.tagNamesList[inputId];
 
         }
-      };
+      };*/
 
-      /*TODO:ANGANNZONE
       $rootScope.removeAllActiveAnnotationZones = function () {
+        for(var inputId in $scope.annotationZoneList)
+          if($scope.annotationZoneList[inputId].isBeingCreated == true)
+            delete $scope.annotationZoneList[inputId];
+
+
         for(var inputId in $scope.tagNamesList) {
-          delete $scope.annotationZoneList[inputId];
 
           delete $scope.tagNameErrors[inputId];
           delete $scope.tagNamesList[inputId];
 
-          $timeout(function(){
-            $scope.$apply();
-          });
         }
+        $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+        $rootScope.annotationSubmitPage = -1;
+
+        $timeout(function(){
+          $scope.$apply();
+        });
+
       };
-      */
 
     /*$rootScope.removeAnnotationZone = function (id) {
       var element = $("#annotationZone #"+id);
@@ -450,9 +456,11 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
               var response = $rootScope.checkTagName(tName);
               if(response.length != 0) {
                 changeValidationDisplay(key, tName, false, response);
+                $scope.annotationZoneList[key].hasErrors = true;
               }
               else {
                 changeValidationDisplay(key, tName, true, response);
+                $scope.annotationZoneList[key].hasErrors = false;
               }
             }
           }

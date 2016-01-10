@@ -110,7 +110,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
         var tagNamesList = $rootScope.getTagNamesList();
         var annotationZoneList = $rootScope.getAnnotationZoneList();
-        for(var inputId in tagNamesList) {
+        for(var inputId in annotationZoneList) {
           if(annotationZoneList[inputId].isBeingCreated == true){
             var relPosX = annotationZoneList[inputId].relativePosition.x;
             var relPosY = annotationZoneList[inputId].relativePosition.y;
@@ -122,8 +122,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
             var errorText = $rootScope.checkTagName(name);
 
-            if(errorText != "") {
-                return errorText;
+
+
+            if(annotationZoneList[inputId].hasErrors) {
+                return "The annotation zone with name " + name + " has errors and could not be submitted.";
             }
             else {
                 $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, $scope.currentPageNumber );
@@ -142,10 +144,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             var name = annZone.tagName;
             var color = annZone.color;
 
-            var errorText = $rootScope.checkTagName(name);
+            //var errorText = $rootScope.checkTagName(name);
 
-            if(errorText != "") {
-                return errorText;
+            if(annZone.hasErrors == true) {
+                return "An annotation zone on page "+page+" and name "+name+" has errors and prevents submission";
             }
             else {
                 $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, page );
