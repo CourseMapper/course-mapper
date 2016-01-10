@@ -37,8 +37,7 @@ app.directive('pdfAnnotationZone',
 
 
 /*              $scope.$watch('currCanWidth', function(newVal, oldVal){
-                console.log("HERE");
-                $scope.localCanWidth = newVal;
+              scope.localCanWidth = newVal;
               });
 
               $scope.$watch('currCanHeight', function(newVal, oldVal){
@@ -66,7 +65,10 @@ app.directive('pdfAnnotationZone',
               };
 
               $scope.localAddReference = function(annId){
-                $scope.addReference({id:annId});
+                if(!$scope.isDragging){
+                  $scope.addReference({id:annId});
+                  $scope.isDragging=false;
+                }
               };
 
 
@@ -112,10 +114,7 @@ app.directive('pdfAnnotationZone',
               $scope.opacityFactorHighlight = "0.75";
               $scope.tagName = $scope.tagName.slice(1);
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
-
-
-
-
+              $scope.isDragging =false;
 
               $timeout(function(){
                 $scope.$apply();

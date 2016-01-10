@@ -2463,6 +2463,7 @@ app.directive('movablePdf', function() {
                     stop: function(event, ui) {
                         if (scope.onMoved) {
                             var parent = $("#annotationZone");
+                            
                             scope.onMoved({
                                 position: getRelativePosition(ui.position, parent),
                                 size: getRelativeSize(ui.size, parent)
@@ -2580,8 +2581,7 @@ app.directive('movablePdf', function() {
 
 
 /*              $scope.$watch('currCanWidth', function(newVal, oldVal){
-                console.log("HERE");
-                $scope.localCanWidth = newVal;
+              scope.localCanWidth = newVal;
               });
 
               $scope.$watch('currCanHeight', function(newVal, oldVal){
@@ -2609,7 +2609,10 @@ app.directive('movablePdf', function() {
               };
 
               $scope.localAddReference = function(annId){
-                $scope.addReference({id:annId});
+                if(!$scope.isDragging){
+                  $scope.addReference({id:annId});
+                  $scope.isDragging=false;
+                }
               };
 
 
@@ -2655,10 +2658,7 @@ app.directive('movablePdf', function() {
               $scope.opacityFactorHighlight = "0.75";
               $scope.tagName = $scope.tagName.slice(1);
               $scope.dataRelCoord = $scope.relativePositionX+";"+$scope.relativePositionY;
-
-
-
-
+              $scope.isDragging =false;
 
               $timeout(function(){
                 $scope.$apply();
@@ -6117,6 +6117,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $rootScope.deleteCurrentAnnotationZones = function(page,key) {
        $rootScope.annotationZonesOnOtherSlides[page].splice(key,1);
+       if($rootScope.annotationZonesOnOtherSlides[page].length==0){
+         //$rootScope.annotationZonesOnOtherSlides.splice(page,1);
+       }
     };
 
     $rootScope.clearTagNameErrors = function () {
