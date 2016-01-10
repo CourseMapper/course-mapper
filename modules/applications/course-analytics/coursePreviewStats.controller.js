@@ -42,8 +42,9 @@ coursePreviewStats.prototype.getTotalVideo = function (error, params, done) {
     //var self = this;
     params.courseId = mongoose.Types.ObjectId(params.courseId);
     params.type = 'pdf';
+    params.isDeleted = false;
 
-    Resources.find({courseId:params.courseId, type:{$ne: params.type}}).count().exec(function (err, res) {
+    Resources.find({courseId:params.courseId, isDeleted:params.isDeleted, type:{$ne: params.type}}).count().exec(function (err, res) {
         if (err) error(err);
         else {
             done(res);
@@ -60,6 +61,7 @@ coursePreviewStats.prototype.getTotalPdf = function (error, params, done) {
     //var self = this;
     params.courseId = mongoose.Types.ObjectId(params.courseId);
     params.type = 'pdf';
+    params.isDeleted = false;
 
     Resources.find(params).count().exec(function (err, res) {
         if (err) error(err);
