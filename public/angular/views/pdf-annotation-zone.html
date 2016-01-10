@@ -37,8 +37,8 @@
       </div>
       <span id="slideRectEditSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
         <span>#</span><span ng-hide="(inEditMode || isBeingCreated)">{{tagName}}</span>
-        <input type="text" id="rectEditInputField-{{divCounter}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(!inEditMode)"></input>
-        <input type="text" id="rectSubmitInputField-{{divCounter}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="tagName" ng-hide="(!isBeingCreated)"></input>
+        <input type="text" id="rectEditInputField-{{divCounter}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(!inEditMode)" ng-click="$event.stopPropagation();"></input>
+        <input type="text" id="rectSubmitInputField-{{divCounter}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="tagName" ng-hide="(!isBeingCreated)" ng-click="$event.stopPropagation();"></input>
       </span>
       <span id="editSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-pencil" aria-hidden="true" ng-click="localSetEditZoneMode(listId);" ng-hide="(inEditMode || !canBeEdited)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
       <span id="cancelSaveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-remove" aria-hidden="true" ng-click="localResetEditZoneMode()"
