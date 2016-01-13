@@ -121,15 +121,37 @@ router.get('/account/:username', helper.l2pAuth, helper.ensureAuthenticated, fun
  * get courses that this user is enrolled to
  */
 router.get('/account/:userId/courses', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
     var crs = new Course();
 
-    var userId = mongoose.Types.ObjectId(req.params.userId);
+    var userId = mongoose.Types.ObjectId(req.user._id);
 
     crs.getUserCourses(
         function error(err) {
             helper.resReturn(err, res);
         },
         {user: userId},
+        function success(courses) {
+            res.status(200).json({result: true, courses: courses});
+        }
+    );
+});
+
+router.get('/account/:userId/createdCourses', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    var crs = new Course();
+
+    var userId = mongoose.Types.ObjectId(req.user._id);
+
+    crs.getCreatedCourses(
+        function error(err) {
+            helper.resReturn(err, res);
+        },
+        {userId: userId},
         function success(courses) {
             res.status(200).json({result: true, courses: courses});
         }

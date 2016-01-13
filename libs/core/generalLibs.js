@@ -144,6 +144,9 @@ var cmLibraries = {
                     cmLibraries.resReturn(cmLibraries.createError401(), res);
                 }
                 else {
+                    if (req.user == undefined) {
+                        req.user = user;
+                    }
                     return next();
                 }
             })(req, res, next);

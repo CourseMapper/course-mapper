@@ -40,10 +40,10 @@ catalog.prototype.getCourse = function (error, params, success) {
 catalog.prototype.getCourseAsync = function (params) {
     return async(function () {
         var crs = await(Course.findOne(params)
-                .populate('category courseTags')
-                .populate('createdBy', '_id username displayName')
-                .populate('managers', '_id username')
-                .exec()
+            .populate('category courseTags')
+            .populate('createdBy', '_id username displayName')
+            .populate('managers', '_id username')
+            .exec()
         );
 
         return crs;
@@ -135,9 +135,9 @@ catalog.prototype.enroll = function (error, userParam, courseParam, done, isEnro
     });
 
     job().then(function (doc) {
-        Plugin.doAction('onAfterEnrollorLeaveCourse', doc);
-        done(doc);
-    })
+            Plugin.doAction('onAfterEnrollorLeaveCourse', doc);
+            done(doc);
+        })
         .catch(function (err) {
             // perhaps this user is already enrolled
             error(err)
@@ -434,6 +434,18 @@ catalog.prototype.getUserCourses = function (error, params, done) {
     }
 
     UserCourses.find(params).populate('course').exec(function (err, res) {
+        if (err) error(err);
+        else
+            done(res);
+    });
+};
+
+catalog.prototype.getCreatedCourses = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['userId'], error)) {
+        return;
+    }
+
+    Course.find({createdBy: params.userId}).exec(function (err, res) {
         if (err) error(err);
         else
             done(res);
