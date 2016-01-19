@@ -31,6 +31,7 @@ var VideoAnnotationSchema = new mongoose.Schema({
   date_created: {type: Date},
   date_modified: {type: Date},
   author: {type: String, required: true},
+  authorId: {type: String, required: true},
   authorDisplayName: {type: String},
   text: {type: String, required: true},
   start: {type: Number, required: true},
