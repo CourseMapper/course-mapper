@@ -26,9 +26,9 @@
 
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
-            <li style="text-align: center">
-                <small>
-                    Created {{data.dateAdded | relativeDate}} <br>by {{data.createdBy.displayName}}
+            <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
+                <small class="label label-green">
+                    <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by {{data.createdBy.displayName}}
                 </small>
             </li>
             <li>

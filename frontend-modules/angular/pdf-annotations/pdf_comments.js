@@ -38,6 +38,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     $scope.writeCommentMode = false;
 
+    $scope.decouplePDFAndComments = false;
 
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function (e, params) {
@@ -110,7 +111,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
         var tagNamesList = $rootScope.getTagNamesList();
         var annotationZoneList = $rootScope.getAnnotationZoneList();
-        for(var inputId in tagNamesList) {
+        for(var inputId in annotationZoneList) {
           if(annotationZoneList[inputId].isBeingCreated == true){
             var relPosX = annotationZoneList[inputId].relativePosition.x;
             var relPosY = annotationZoneList[inputId].relativePosition.y;
@@ -122,11 +123,35 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
             var errorText = $rootScope.checkTagName(name);
 
-            if(errorText != "") {
-                return errorText;
+
+
+            if(annotationZoneList[inputId].hasErrors) {
+                return "The annotation zone with name " + name + " has errors and could not be submitted.";
             }
             else {
                 $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, $scope.currentPageNumber );
+            }
+          }
+        }
+
+        for(var page in $rootScope.annotationZonesOnOtherSlides) {
+          for(var annZoneKey in $rootScope.annotationZonesOnOtherSlides[page]){
+            var annZone = $rootScope.annotationZonesOnOtherSlides[page][annZoneKey];
+            var relPosX = annZone.relativePosition.x;
+            var relPosY = annZone.relativePosition.y;
+            var relWidth = annZone.relativeSize.x;
+            var relHeight = annZone.relativeSize.y;
+
+            var name = annZone.tagName;
+            var color = annZone.color;
+
+            //var errorText = $rootScope.checkTagName(name);
+
+            if(annZone.hasErrors == true) {
+                return "An annotation zone on page "+page+" and name "+name+" has errors and prevents submission";
+            }
+            else {
+                $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, page );
             }
           }
         }
@@ -279,12 +304,16 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
         $rootScope.clearTagNameErrors();
 
+        var submitPage = ($rootScope.annotationSubmitPage!=-1)?$rootScope.annotationSubmitPage:$scope.currentPageNumber;
+
+        //console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
+
         var config = {
             params: {
                 rawText: $scope.comment.rawText,
                 author: $scope.currentUser.username,
                 authorID: $scope.currentUser._id,
-                pageNumber: $scope.currentPageNumber,
+                pageNumber: $rootScope.annotationSubmitPage,
                 tagNames: $scope.comment.tagNames,
                 tagRelPos: $scope.comment.tagRelPos,
                 tagRelCoord: $scope.comment.tagRelCoord,
@@ -335,7 +364,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
               updateId: comment._id,
               author: $scope.currentUser.username,
               authorId: $scope.currentUser._id,
-              rawText: $scope.editRawText[$scope.editMode]
+              rawText: $scope.editRawText[$scope.editMode],
+              pageNumber: $scope.currentPageNumber,
+              pdfId: $scope.pdfFile._id
+
           }
       };
 
@@ -361,6 +393,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           .error(function (data, status, headers, config) {
               displayCommentSubmissionResponse("Error: Unexpected Server Response!");
           });
+    };
+
+    $rootScope.isInWriteCommentMode = function(){
+      return $scope.writeCommentMode;
     };
 
     $scope.setQuillSelection = function(){
@@ -607,11 +643,17 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
          }
          }*/
 
-        if (!isNaN($scope.currentPageNumber)) {
-            $scope.filtersRaw['pdfPageNumber'] = $scope.currentPageNumber;
+        if (!isNaN($scope.internalPageNumber)) {
+            $scope.filtersRaw['pdfPageNumber'] = $scope.internalPageNumber;
+        }
+        else {
+          return null;
         }
         if (!(typeof ($scope.pdfFile._id) == "undefined")) {
           $scope.filtersRaw['pdfId'] = $scope.pdfFile._id;
+        }
+        else {
+          return null;
         }
 
 
@@ -635,8 +677,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $scope.parseOrderType(orderType);
 
         $scope.filters = getCurrentFilters($scope.filtersRaw);
-        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-        $scope.updateScope($scope.commentGetUrl);
+        if($scope.filters != null){
+          $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+          //console.log("commentGetUrl: " + $scope.commentGetUrl);
+          $scope.updateScope($scope.commentGetUrl);
+        }
     };
 
     $scope.manageActionBar = function(){
@@ -677,19 +722,32 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         $scope.parseOrderType($scope.orderType.id);
         //console.log("NOTICED FILTERS CHANGE");
         $scope.filters = getCurrentFilters($scope.filtersRaw);
-        $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-        //console.log("commentGetUrl: " + $scope.commentGetUrl);
-        $scope.updateScope($scope.commentGetUrl);
+        if($scope.filters != null){
+          $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
+          //console.log("commentGetUrl: " + $scope.commentGetUrl);
+          $scope.updateScope($scope.commentGetUrl);
+        }
     });
 
     $scope.$watch("currentPageNumber", function (newValue, oldValue) {
-        if (newValue !== oldValue) {
-            $scope.parseOrderType($scope.orderType.id);
-            $scope.filters = getCurrentFilters($scope.filtersRaw);
+      if(!$scope.decouplePDFAndComments){
+        $scope.internalPageNumber = newValue;
+        $timeout(function () {
+            $scope.$apply();
+        });
+      }
+    });
+
+    $scope.$watch("internalPageNumber", function (newValue, oldValue) {
+      if (newValue !== oldValue) {
+          $scope.parseOrderType($scope.orderType.id);
+          $scope.filters = getCurrentFilters($scope.filtersRaw);
+          if($scope.filters != null){
             $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
             //console.log("commentGetUrl: " + $scope.commentGetUrl);
             $scope.updateScope($scope.commentGetUrl);
-        }
+          }
+      }
     });
 
     $scope.$watch("rawSearchTerm", function (newValue, oldValue) {
@@ -702,11 +760,17 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       if(newValue == true) {
         $scope.editMode = -1;
         $scope.replyMode = -1;
+        $rootScope.annotationSubmitPage = $scope.currentPageNumber;
         $rootScope.resetEditZoneMode();
+        $scope.decouplePDFAndComments = true;
       }
-      else {
-        $rootScope.removeAllActiveAnnotationZones();
+      else if(newValue == false){
+        var gotoPage = $rootScope.removeAllActiveAnnotationZones();
         $scope.comment.rawText = "";
+        $scope.decouplePDFAndComments = false;
+        if(gotoPage != -1)
+          $rootScope.setPageNumber(parseInt(gotoPage));
+
       }
     });
 
@@ -788,6 +852,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $rootScope.addReference = function(id) {
       var annZoneList = $rootScope.getAnnotationZoneList();
       var name = "#"+annZoneList[id].tagName;
+      if($rootScope.annotationSubmitPage != -1 &&
+        $rootScope.annotationSubmitPage != $scope.currentPageNumber){
+          name+="@"+$scope.currentPageNumber;
+      }
       //$rootScope.safeApply(function() {
       if($rootScope.nameHasNoError(name)){
         if(name !="#")

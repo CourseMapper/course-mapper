@@ -14,6 +14,13 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
     $scope.divCounter = 0;
 
+    $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+    $rootScope.annotationSubmitPage = -1;
+
+    $scope.previousPageNumber = -1;
+
+
+
     //$rootScope.annZoneBoxSizeX = 0;
     //$rootScope.annZoneBoxSizeY = 0;
 
@@ -23,7 +30,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
     $scope.updateAnnZonePos = function(posObj) {
-      console.log(posObj);
+      //console.log(posObj);
     };
 
 
@@ -73,9 +80,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       };
       $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
       $scope.divCounter += 1;
-      console.log("ADDED ZONE");
-      console.log("DivC after: "+ $scope.divCounter);
-      console.log($scope.annotationZoneList);
+      //console.log("ADDED ZONE");
+      //console.log("DivC after: "+ $scope.divCounter);
+      //console.log($scope.annotationZoneList);
 
       $timeout(function(){
 
@@ -104,8 +111,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
-      console.log("setEditZoneMode");
-      console.log(id);
+      //console.log("setEditZoneMode");
+      //console.log(id);
 
       $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
       $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
@@ -230,7 +237,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           });
       };
 
-      $rootScope.removeAllActiveAnnotationZones = function () {
+      /*$rootScope.removeAllActiveAnnotationZones = function () {
         for(var inputId in $scope.tagNamesList) {
           var element = $("#annotationZone #"+inputId);
 
@@ -243,22 +250,30 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           delete $scope.tagNamesList[inputId];
 
         }
-      };
+      };*/
 
-      /*TODO:ANGANNZONE
       $rootScope.removeAllActiveAnnotationZones = function () {
+        for(var inputId in $scope.annotationZoneList)
+          if($scope.annotationZoneList[inputId].isBeingCreated == true)
+            delete $scope.annotationZoneList[inputId];
+
+
         for(var inputId in $scope.tagNamesList) {
-          delete $scope.annotationZoneList[inputId];
 
           delete $scope.tagNameErrors[inputId];
           delete $scope.tagNamesList[inputId];
 
-          $timeout(function(){
-            $scope.$apply();
-          });
         }
+        var ret = $rootScope.annotationSubmitPage;
+        $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+        $rootScope.annotationSubmitPage = -1;
+
+        $timeout(function(){
+          $scope.$apply();
+        });
+        return ret;
+
       };
-      */
 
     /*$rootScope.removeAnnotationZone = function (id) {
       var element = $("#annotationZone #"+id);
@@ -293,6 +308,10 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     };
 
     $scope.refreshTags = function() {
+      $scope.refreshTagsWithCallbacks(function(){});
+    };
+
+    $scope.refreshTagsWithCallbacks = function(callback) {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
         $scope.annZones = data.annZones;
 
@@ -303,7 +322,8 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         $timeout(function(){
           $scope.$apply();
         });
-        console.log($scope.annotationZoneList);
+        //console.log($scope.annotationZoneList);
+        callback();
       });
     };
 
@@ -327,15 +347,62 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
-      //console.log("PdfPageChange: ");
-      $scope.$emit('reloadTags');
+      //Find relevant AnnZones
+      var nextPageNumber = params[0];
+
+      if($scope.previousPageNumber != -1){
+        var unfinishedAnnZonesList = [];
+        for(var key in $scope.annotationZoneList){
+          if($scope.annotationZoneList[key].isBeingCreated == true){
+            if($scope.annotationZoneList[key].tagName[0] != '#')
+              $scope.annotationZoneList[key].tagName = '#' + $scope.annotationZoneList[key].tagName;
+            unfinishedAnnZonesList.push($scope.annotationZoneList[key]);
+          }
+        }
+        //console.log("PDF PAGE CHANGE");
+        //console.log(unfinishedAnnZonesList.length);
+        //console.log($scope.previousPageNumber);
+        //Store them
+        if(unfinishedAnnZonesList.length != 0){
+          $rootScope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
+          $timeout(function(){
+            $scope.$apply();
+          });
+        }
+      }
+      $scope.$emit('reloadTagsWCallback', function(){
+        //Add previous ones
+        if($scope.previousPageNumber != -1){
+          if(nextPageNumber in $rootScope.annotationZonesOnOtherSlides){
+            //console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            for(var key  in $rootScope.annotationZonesOnOtherSlides[nextPageNumber]){
+              var elem = $rootScope.annotationZonesOnOtherSlides[nextPageNumber][key];
+              elem.id= 'rect-'+$scope.divCounter;
+              if(elem.id in $scope.annotationZoneList){
+                console.log("ERROR: Annzone overwritten, should not occur");
+              }
+              $scope.annotationZoneList[elem.id] = elem;
+              $scope.divCounter += 1;
+
+
+            }
+
+            //$scope.annotationZoneList.concat($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            delete $rootScope.annotationZonesOnOtherSlides[nextPageNumber];
+          }
+        }
+        $scope.previousPageNumber = nextPageNumber;
+      });
     });
 
     $scope.$on('$destroy',pdfPageChangeListener);
 
 
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
-      console.log("Reload Tags called");
+      $scope.$emit('reloadTagsWCallback', function(){});
+    });
+
+    var reloadTagsEventListenerWithCallback = $scope.$on('reloadTagsWCallback', function(event, callback) {
       //$(".slideRect").remove();
       //$scope.annotationZoneList = new Array();
       $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
@@ -349,7 +416,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         $scope.$apply();
       });
 
-      $scope.refreshTags();
+      $scope.refreshTagsWithCallbacks(callback);
     });
 
     /*TODO:ANGANNZONE
@@ -389,9 +456,11 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
               var response = $rootScope.checkTagName(tName);
               if(response.length != 0) {
                 changeValidationDisplay(key, tName, false, response);
+                $scope.annotationZoneList[key].hasErrors = true;
               }
               else {
                 changeValidationDisplay(key, tName, true, response);
+                $scope.annotationZoneList[key].hasErrors = false;
               }
             }
           }
@@ -463,6 +532,12 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       return true;
     };
 
+    $rootScope.deleteCurrentAnnotationZones = function(page,key) {
+       $rootScope.annotationZonesOnOtherSlides[page].splice(key,1);
+       if($rootScope.annotationZonesOnOtherSlides[page].length==0){
+         //$rootScope.annotationZonesOnOtherSlides.splice(page,1);
+       }
+    };
 
     $rootScope.clearTagNameErrors = function () {
       /*for(var key in $scope.tagNameErrors) {

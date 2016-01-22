@@ -8,6 +8,14 @@
       "entryPoint": "/content-node-detail/node-detail.js",
       "icon": "/img/appPlaceholder.png",
       "runOn": "server"
+    },
+    {
+      "name": "Node Icon Stats",
+      "location": "topic-icon-analytics",
+      "description": "analytic icons in node topic",
+      "entryPoint": "/content-node-detail/icon-analytics.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
     }
   ]
 }

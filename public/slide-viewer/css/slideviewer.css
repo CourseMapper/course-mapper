@@ -89,19 +89,58 @@ input#searchInput{
   padding-bottom: 10px;
 }
 
+.CreatedAnnoZones-header{
+  font-size: 9pt;
+  font-weight: bold;
+  color: #545454;
+  margin-bottom: 0px;
+}
+
+.currentCommentPageClass{
+  font-size: 9pt;
+  font-weight: bold;
+  color: #545454;
+  margin-bottom: 0px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.currentCommentPageClass:hover{
+  text-decoration: underline;
+}
+
+.createdAnnoZoneButton{
+    font-size: 9pt;
+    font-weight: bold;
+    color: #fff;
+    padding: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin: 2px;
+    float:left;
+  }
+.createdAnnoZoneButton:hover{
+    font-size: 9pt;
+    font-weight: bold;
+    color: #fff;
+}
+
 .annoZonesNote{
   font-size: 9pt;
   font-weight: bold;
-  color: #333;
+  color: #7e7e7e;
   text-align: left;
   float:left;
 }
+
 
 .filter-header{
   font-size: 9pt;
   font-weight: bold;
   color: #545454;
 }
+
+
+
 .filter-tag{
   font-size: 9pt;
   font-weight: bold;

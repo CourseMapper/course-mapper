@@ -15,7 +15,7 @@ var helper = require(appRoot + '/libs/core/generalLibs.js');
 var router = express.Router();
 
 
-router.get('/:courseId', function(req, res, next) {
+router.get('/user-list/:courseId', function(req, res, next) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
