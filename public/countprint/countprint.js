@@ -8,7 +8,7 @@ function loadCss(url) {
 
 function CountPrint(data, options) {
     loadCss('countprint.css');
-
+    var self = this;
     var elementWidth = (data && data.length > 0) ? (100 / data.length) : 0;
 
     var container = document.getElementsByClassName(options.container)[0];
@@ -23,6 +23,14 @@ function CountPrint(data, options) {
         tooltip.style.left = (xPos) + 'px';
         tooltip.style.top = (yPos) + 'px';
         tooltip.innerText = getHoveredElementNumber(rect, e);
+    };
+
+    container.onclick = function (e) {
+        if (self.onCountSelected) {
+            var rect = container.getBoundingClientRect();
+            var count = getHoveredElementNumber(rect, e);
+            self.onCountSelected(count);
+        }
     };
 
     function getHoveredElementNumber(rect, e) {

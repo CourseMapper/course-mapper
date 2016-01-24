@@ -50,14 +50,19 @@ app.directive('pdfViewer',
                             //console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
 
-                            // Initialize countprint
+                            // Initialize CountPrint
                             var data = [1, 0, 0, 5, 2, 1, 0, 1, 0, 0, 0, 0, 0, 7, 0, 0, 0, 1, 5, 20];
                             // TODO - Load real annotations data
-                            new CountPrint(data, {
+                            var countPrint = new CountPrint(data, {
                                 container: 'countprint',
                                 tooltip: 'countprint-tooltip',
                                 maxValue: 10
                             });
+
+                            countPrint.onCountSelected = function (selectedPage) {
+                                console.log(selectedPage);
+                                scope.changePageNumber(selectedPage);
+                            };
 
                             scope.calculateSlideNavigationProgress(scope.currentPageNumber);
 
