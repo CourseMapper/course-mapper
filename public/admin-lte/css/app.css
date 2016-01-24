@@ -856,6 +856,14 @@ li.active .voting .vote-total {
     cursor: default !important;
 }
 
-.html-sidebar-content{
+.html-sidebar-content {
     padding: 10px !important;
+}
+
+li.info-links li a {
+    color: grey !important;
+}
+
+li.info-links li a:hover {
+    color: #fff !important;
 }
