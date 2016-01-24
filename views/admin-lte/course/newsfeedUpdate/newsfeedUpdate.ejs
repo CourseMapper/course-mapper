@@ -1,22 +1,54 @@
 <div ng-controller="NewsfeedController">
-
-
     <div class="row">
-        <div class="col-xs-12 col-md-11" id="newsfeedList" style="max-height: 600px; overflow: auto;">
-            <div class="content-header">
-                <h4>Newsfeed Timeline</h4>
+        <div class="col-xs-12 col-md-11" id="newsfeedList" style="">
+            <div class="static-header" style="overflow: hidden; margin-bottom: 10px;">
+                <div class="content-header">
+                    <h4 class="pull-left">Newsfeed Timeline</h4>
+                    <select name="show-filter" ng-model="filterDropDown"
+                            ng-options="type.name for type in nfType" class="form-control pull-right" style="float: right; max-width: 300px; text-transform: capitalize;">
+                        <option value="">-- Filter --</option>
+                    </select>
+                </div>
+                <!--<form class="form-inline" style="max-width: 200px; float: right">
+                    <input type="text" ng-model="query" placeholder="Filter By" autofocus/>
+                </form>-->
             </div>
-            <div class="content">
+            <div class="content" style="max-height: 500px; overflow: auto; background-color: #ECF0F5; border-radius: 3px;">
                 <ul class="timeline">
-                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'">
-                        <i class="fa fa-user bg-blue"></i>
+                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: query  | filter: filterDropDown.name" ng-switch on="nfData.actionSubject">
+                        <i class="fa fa-book bg-navy" ng-switch-when="course"></i>
+                        <i class="fa fa-arrow-up bg-teal-active" ng-switch-when="up vote"></i>
+                        <i class="fa fa-arrow-down bg-teal" ng-switch-when="down vote"></i>
+                        <i class="fa fa-minus bg-teal disabled" ng-switch-when="cancel vote"></i>
+                        <i class="fa fa-sitemap bg-blue-active" ng-switch-when="sub topic"></i>
+                        <i class="fa fa-sitemap bg-blue" ng-switch-when="content node"></i>
+                        <i class="fa fa-sitemap bg-blue disabled" ng-switch-when="node"></i>
+                        <i class="fa fa-file-pdf-o bg-orange-active" ng-switch-when="pdf annotation"></i>
+                        <i class="fa fa-file-pdf-o bg-orange" ng-switch-when="pdf annotation zone"></i>
+                        <i class="fa fa-file-movie-o bg-yellow" ng-switch-when="video annotation"></i>
+                        <i class="fa fa-link bg-light-blue-active" ng-switch-when="link"></i>
+                        <i class="fa fa-comments-o bg-green" ng-switch-when="discussion"></i>
+                        <i class="fa fa-user bg-maroon" ng-switch-default></i>
                         <div class="timeline-item">
-                                <span class="time">
-                                    <i class="fa fa-clock-o">{{nfData.dateAdded | relativeDate}}</i>
-                                </span>
-                            <div class="timeline-header bg-gray">
-                                <b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'cancel vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> in </span>
-                                <a><b>{{nfData.actionName}}</b></a>
+
+                            <div class="timeline-header bg-gray inactive" style="border-radius: 3px;">
+                                <small class="text-muted">
+                                    <b>{{nfData.actionSubject | capitalize}}</b>
+                                </small>
+                            </div>
+                            <div class="timeline-body">
+                                <div class="products-list products-list-in-box">
+                                    <div class="">
+                                        <div class="product-img" style="margin-left: 10px;"><img src="{{nfData.userId.image}}" alt="user image" class="img-circle" style="width: 30px; height: auto;"/></div>
+                                        <div class="product-info">
+                                            <b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'cancel vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> in </span>
+                                            <a><b>{{nfData.actionName}}</b></a> <br/>
+                                            <small class="text-muted">
+                                                <i class="fa fa-clock-o"> {{nfData.dateAdded | relativeDate}}</i>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <!--div class="timeline-footer">
                                 <a class="btn btn-primary btn-xs">View</a>
