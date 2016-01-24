@@ -306,7 +306,9 @@ input#searchInput {
 .slideNavigationCurrentProgress {
     width: 0%;
     height: 100%;
-    background-color: #FFA500;
+    float: left;
+    //background-color: #FFA500;
+    background-color: #FFFFFF;
 }
 
 #slideNavigation,
