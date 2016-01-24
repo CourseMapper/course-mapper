@@ -10,6 +10,7 @@ function CountPrint(data, options) {
     loadCss('countprint.css');
     var containerName = 'countprint';
     var maxValue = 10;
+    var elementWidth = (100 / data.length);
 
     if (options) {
         if (options.container) {
@@ -20,16 +21,34 @@ function CountPrint(data, options) {
         }
     }
 
+    var background = createCountPrint(data, maxValue);
     var containers = document.getElementsByClassName(containerName);
+
     for (var i = 0; i < containers.length; i++) {
-        var container = containers[i];
-        container.style.background = createCountPrint(data, maxValue);
+        containers[i].style.background = background;
+        containers[i].onmousemove = onContainerClicked;
+    }
+
+    function onContainerClicked(evt) {
+        var element = this;
+        var rect = element.getBoundingClientRect();
+        var scrollLeft = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft;
+        var elementLeft = rect.left + scrollLeft;
+
+        var xPos = 0;
+        if (document.all) { //detects using IE
+            xPos = event.clientX + scrollLeft - elementLeft; //event not evt because of IE
+        }
+        else {
+            xPos = evt.pageX - elementLeft;
+        }
+        var progress = xPos / rect.width;
+        var page = Math.floor((progress / elementWidth) * 100 + 1);
+        console.log(page);
     }
 
     function createCountPrint(data, maxValue) {
-        var elementWidth = (100 / data.length);
         var background = '';
-
         for (var i = 0; i < data.length; i++) {
             var heat = data[i] / maxValue;
             var color = percentToHSLColor(heat);
