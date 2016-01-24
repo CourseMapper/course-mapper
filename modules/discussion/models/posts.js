@@ -21,6 +21,7 @@ postSchema.add({
     isDeleted: Boolean,
     totalPosts: Number,
     totalViews: Number,
+    totalVotes: {type: Number, default: 0},
 
     dateAdded: {type: Date},
     dateUpdated: {type: Date},

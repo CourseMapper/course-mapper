@@ -9,8 +9,8 @@ app.factory('discussionService', [
 
             pageParams: {
                 limit: 10,
-                sortBy: '_id',
-                orderBy: 'desc',
+                sortBy: 'dateAdded',
+                orderBy: -1,
                 lastPage: false
             },
 

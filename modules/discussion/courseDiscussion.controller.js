@@ -40,8 +40,11 @@ courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, pag
         pageParams.lastPage = 0;
     }
 
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Posts.find(whereParams)
-        .sort({dateAdded: -1})
+        .sort(sortOption)
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
         .populate('createdBy', 'username displayName image')
@@ -77,7 +80,11 @@ courseDiscussion.prototype.getDiscussion = function (error, pId, success) {
  * @param params
  * @param success
  */
-courseDiscussion.prototype.getReplies = function (error, parentId, success) {
+courseDiscussion.prototype.getReplies = function (error, parentId, pageParams, success) {
+
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Posts.find({
             $or: [
                 {parentPost: parentId}
@@ -86,7 +93,7 @@ courseDiscussion.prototype.getReplies = function (error, parentId, success) {
                 {isDeleted: false}
             ]
         })
-        .sort({dateAdded: -1})
+        .sort(sortOption)
         .populate('createdBy', 'username displayName image')
         .exec(function (err, docs) {
             if (!err) {

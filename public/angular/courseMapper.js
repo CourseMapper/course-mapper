@@ -3533,6 +3533,12 @@ app.directive('timepicker', function($timeout) {
     $scope.topicsLength = 0;
     $scope.replies = [];
 
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Popularity'}
+    ];
+
     $scope.newRowsFetched = function (newRows, allRows) {
         if (newRows) {
             $scope.topics = allRows;
@@ -3879,6 +3885,32 @@ app.directive('timepicker', function($timeout) {
         return $window.innerWidth;
     }, function (value) {
         $scope.wSize = Page.defineDevSize(value);
+    });
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            discussionService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 10,
+                lastPage: false
+            });
+
+            discussionService.init(courseService.course._id,
+
+                function (posts) {
+                    $scope.topics = posts;
+                    $scope.topicsLength = $scope.topics.length;
+                    $scope.pageTitleOnDiscussion = Page.title();
+                    $scope.initiateTopic();
+                },
+
+                function (errors) {
+                }, true
+            );
+        }
     });
 
     $scope.tabOpened();
@@ -4764,8 +4796,8 @@ app.directive('timepicker', function($timeout) {
 
             pageParams: {
                 limit: 10,
-                sortBy: '_id',
-                orderBy: 'desc',
+                sortBy: 'dateAdded',
+                orderBy: -1,
                 lastPage: false
             },
 
