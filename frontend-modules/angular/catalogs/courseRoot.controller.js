@@ -29,7 +29,7 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         $scope.currentTab = q.tab;
 
         $timeout(function () {
-            if (!authService.isLoggedIn) {
+            if (!authService.isLoggedIn && $scope.currentTab != $scope.defaultPath) {
                 authService.showLoginForm();
             }
         }, 120);

@@ -50,7 +50,10 @@ var userSchema = new mongoose.Schema({
     isActivated: {type: Boolean, required: true, default: true},
     activationCode: {type: String, required: true, default: "-"},
     dateUpdated: {type: Date},
-    dateAdded: {type: Date}
+    dateAdded: {type: Date},
+
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 });
 
 userSchema.pre('save', function (next) {
@@ -59,6 +62,9 @@ userSchema.pre('save', function (next) {
     if (!this.dateAdded) {
         this.dateAdded = this.dateUpdated;
     }
+
+    var user = this;
+    if (!user.isModified('password')) return next();
 
     next();
 });

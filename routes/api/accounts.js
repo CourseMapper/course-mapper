@@ -8,9 +8,15 @@ var mongoose = require('mongoose');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
+var Users = require(appRoot + '/modules/accounts/users.js');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+var crypto = require('crypto');
+var nodemailer = require('nodemailer');
 
 var router = express.Router();
 
@@ -121,15 +127,37 @@ router.get('/account/:username', helper.l2pAuth, helper.ensureAuthenticated, fun
  * get courses that this user is enrolled to
  */
 router.get('/account/:userId/courses', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
     var crs = new Course();
 
-    var userId = mongoose.Types.ObjectId(req.params.userId);
+    var userId = mongoose.Types.ObjectId(req.user._id);
 
     crs.getUserCourses(
         function error(err) {
             helper.resReturn(err, res);
         },
         {user: userId},
+        function success(courses) {
+            res.status(200).json({result: true, courses: courses});
+        }
+    );
+});
+
+router.get('/account/:userId/createdCourses', helper.l2pAuth, helper.ensureAuthenticated, function (req, res, next) {
+    if (!req.user)
+        return res.status(401).send('Unauthorized');
+
+    var crs = new Course();
+
+    var userId = mongoose.Types.ObjectId(req.user._id);
+
+    crs.getCreatedCourses(
+        function error(err) {
+            helper.resReturn(err, res);
+        },
+        {userId: userId},
         function success(courses) {
             res.status(200).json({result: true, courses: courses});
         }
@@ -193,6 +221,108 @@ router.post('/accounts/signUp', function (req, res, next) {
         }
     );
 });
+
+router.get('/accounts/reset/:token', function (req, res) {
+    Users.findOne({
+        resetPasswordToken: req.params.token,
+        resetPasswordExpires: {$gt: Date.now()}
+    }, function (err, user) {
+        if (!user) {
+            req.flash('error', 'Password reset token is invalid or has expired.');
+            return res.redirect('/accounts/forgot-password?tokenInvalid=1');
+        }
+        res.render(config.get('theme') + '/resetPassword', {
+            user: req.user
+        });
+    });
+});
+
+router.post('/accounts/reset/:token', function (req, res) {
+    var op = async(function () {
+        var user = await(Users.findOne({
+            resetPasswordToken: req.params.token,
+            resetPasswordExpires: {$gt: Date.now()}
+        }).exec());
+
+        if (user) {
+            var ha = helper.hash(req.body.password, user.salt);
+            user.password = ha;
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+
+            await(user.save());
+
+            var mailuser = 'postmaster%40sandboxb2cbe702674341fba426875d18e4a8d8.mailgun.org';
+            var passw = '354cf7d9174fdc8d277ce93073e6315c';
+            var smtpurl = "smtps://" + mailuser + ":" + passw + "@smtp.mailgun.org";
+            var smtpTransport = nodemailer.createTransport(smtpurl);
+
+            var mailOptions = {
+                to: user.email,
+                from: 'sandboxb2cbe702674341fba426875d18e4a8d8.mailgun.org',
+                subject: 'Your CourseMapper password has been changed',
+                text: 'Hello,\n\n' + 'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+            };
+
+            smtpTransport.sendMail(mailOptions, function (err) {
+                req.flash('success', 'Success! Your password has been changed.');
+            });
+        } else {
+            throw helper.createError("User not found");
+        }
+    });
+
+    op().
+        then(function () {
+            return res.status(200).json({result: true});
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
+});
+
+router.post('/accounts/resetPassword', function (req, res, next) {
+    var op = async(function () {
+        var buf = await(crypto.randomBytes(20));
+        var token = buf.toString('hex');
+
+        var user = await(Users.findOne({username: req.body.username}).exec());
+        if (user) {
+            user.resetPasswordToken = token;
+            user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+            await(user.save());
+
+            var mailuser = 'postmaster%40sandboxb2cbe702674341fba426875d18e4a8d8.mailgun.org';
+            var passw = '354cf7d9174fdc8d277ce93073e6315c';
+            var smtpurl = "smtps://" + mailuser + ":" + passw + "@smtp.mailgun.org";
+            var smtpTransport = nodemailer.createTransport(smtpurl);
+
+            var mailOptions = {
+                to: user.email,
+                from: 'CourseMapper',
+                subject: 'CourseMapper Password Reset',
+                text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
+                'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+                'http://' + req.headers.host + '/api/accounts/reset/' + token + '\n\n' +
+                'If you did not request this, please ignore this email and your password will remain unchanged.\n'
+            };
+
+            smtpTransport.sendMail(mailOptions, function (err) {
+                req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
+            });
+        }
+    });
+
+    op().
+        then(function () {
+            return res.status(200).json({result: true});
+        })
+        .catch(function (err) {
+            helper.resReturn(err, res);
+        });
+});
+
 
 /**
  * login

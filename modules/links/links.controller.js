@@ -27,11 +27,14 @@ NodeLinks.prototype.getNodeLinks = function (error, nodeId, pageParams, success)
         pageParams.lastPage = 0;
     }
 
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Links.find({
             contentNode: nodeId,
             isDeleted: false
         })
-        .sort({dateAdded: -1})
+        .sort(sortOption)
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
         .populate('createdBy', 'username displayName')

@@ -3,7 +3,20 @@
 
     <div class="row">
         <div class="col-xs-11" id="LinksList">
-            <h4>Links</h4>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <h4>Links</h4>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <select id="orderTypeSelect"
+                            ng-model="orderType"
+                            ng-init="orderType = orderingOptions[0]"
+                            ng-options="item as item.name for item in orderingOptions"
+                            class="form-control">
+                    </select>
+                </div>
+            </div>
 
             <div ng-show="links.length == 0" class="posts-list">
                 <ul class="posts">

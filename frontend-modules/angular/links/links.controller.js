@@ -11,6 +11,13 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.links = [];
     $scope.errors = [];
     $scope.isLoading = false;
+    $scope.orderType = 'dateAdded.desc';
+
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Popularity'}
+    ];
 
     $scope.initiateLink = function (pid) {
         $scope.pid = pid;
@@ -65,7 +72,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.manageActionBar();
         $rootScope.$broadcast('onNodeLinkTabOpened', $scope.currentTab);
     };
-
 
     $scope.saveNewPost = function (isValid) {
         if (!isValid)
@@ -247,7 +253,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     });
 
-
     /**
      * watch for different window size
      */
@@ -256,6 +261,34 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         return $window.innerWidth;
     }, function (value) {
         $scope.wSize = Page.defineDevSize(value);
+    });
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            linkService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 10,
+                lastPage: false
+            });
+
+            //$scope.initTab(treeNodeService.treeNode);
+
+            linkService.init(treeNodeService.treeNode._id,
+
+                function (posts) {
+                    $scope.links = posts;
+                    $scope.pageTitleOnLink = Page.title();
+                    $scope.initiateLink();
+                },
+
+                function (errors) {
+                    toastr.error(errors);
+                }, true
+            );
+        }
     });
 
     $scope.tabOpened();

@@ -22,4 +22,8 @@ router.get('/static/:page', function(req, res, next) {
     next(err);
 });
 
+router.get('/about', function(req, res, next) {
+    res.render(config.get('theme') + '/statics/about');
+});
+
 module.exports = router;

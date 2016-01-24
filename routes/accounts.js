@@ -23,6 +23,10 @@ router.get('/accounts/login', function (req, res, next) {
     res.render(config.get('theme') + '/login', {title: 'Log In Page'});
 });
 
+router.get('/accounts/forgot-password', function (req, res, next) {
+    res.render(config.get('theme') + '/forgotPassword', {title: 'Forgot Password Page'});
+});
+
 router.get('/accounts/loginform', function (req, res, next) {
     res.render(config.get('theme') + '/modalLoginForm');
 });

@@ -537,7 +537,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.currentTab = q.tab;
 
         $timeout(function () {
-            if (!authService.isLoggedIn) {
+            if (!authService.isLoggedIn && $scope.currentTab != $scope.defaultPath) {
                 authService.showLoginForm();
             }
         }, 120);
@@ -2235,6 +2235,95 @@ app.controller('AppSettingController', function(  Page) {
         }
     };
 });
+;app.controller('ResetPasswordController', function ($scope, $filter, $http, toastr, Page, $timeout, $routeParams) {
+    $scope.submitted = false;
+    $scope.isLoading = false;
+    $scope.errors = [];
+    $scope.loginData = {};
+
+    Page.setTitleWithPrefix('Reset Password');
+
+    if($routeParams.tokenInvalid && $routeParams.tokenInvalid == '1'){
+        toastr.error("Token is invalid or expired, please do another request");
+    }
+
+    $scope.resetPassword = function (isValid) {
+        var url = window.location.href.split('/');
+        var token = url[url.length - 1];
+
+        if (isValid) {
+            $scope.isLoading = true;
+            var d = transformRequest($scope.loginData);
+            $http({
+                method: 'POST',
+                url: '/api/accounts/reset/' + token,
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function (data) {
+                    if (data.result) {
+                        toastr.success('Your password has been reset, Please login with your new password');
+                    }
+
+                    $scope.isLoading = false;
+                    $scope.loginData = {};
+
+                    $scope.resetForm.$setPristine();
+
+                    $timeout(function () {
+                        window.location.href = '/accounts/login';
+                    }, 500);
+                })
+                .error(function (data) {
+                    $scope.isLoading = false;
+                    if (data.errors) {
+                        $scope.errors = data.errors;
+                    }
+                    toastr.success('Sending Request failed');
+                    $scope.loginData = {};
+
+                });
+        }
+    };
+
+    $scope.requestReset = function (isValid) {
+        if (isValid) {
+
+            $scope.isLoading = true;
+            var d = transformRequest($scope.loginData);
+            $http({
+                method: 'POST',
+                url: '/api/accounts/resetPassword',
+                data: d,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .success(function (data) {
+                    if (data.result) {
+                        toastr.success('Reset Password Requested, Please check your email');
+                    }
+
+                    $scope.isLoading = false;
+                    $scope.loginData = {};
+
+                    $scope.resetForm.$setPristine();
+                })
+                .error(function (data) {
+                    $scope.isLoading = false;
+                    if (data.errors) {
+                        $scope.errors = data.errors;
+                    }
+
+                    toastr.error('Sending Request failed');
+                    $scope.loginData = {};
+
+                });
+        }
+    };
+});
 ;app.controller('VideoTabController', function ($scope, $rootScope, $filter, $http, $location,
                                                $routeParams, $timeout, ActionBarService) {
 
@@ -3472,6 +3561,12 @@ app.directive('timepicker', function($timeout) {
     $scope.topicsLength = 0;
     $scope.replies = [];
 
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Popularity'}
+    ];
+
     $scope.newRowsFetched = function (newRows, allRows) {
         if (newRows) {
             $scope.topics = allRows;
@@ -3818,6 +3913,50 @@ app.directive('timepicker', function($timeout) {
         return $window.innerWidth;
     }, function (value) {
         $scope.wSize = Page.defineDevSize(value);
+    });
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            discussionService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 10,
+                lastPage: false
+            });
+
+            discussionService.init(courseService.course._id,
+
+                function (posts) {
+                    $scope.topics = posts;
+                    $scope.topicsLength = $scope.topics.length;
+                    $scope.pageTitleOnDiscussion = Page.title();
+                    $scope.initiateTopic();
+                },
+
+                function (errors) {
+                }, true
+            );
+        }
+    });
+
+    $scope.$watch('orderTypeReply', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            var sortBy = spl[0];
+            var orderBy = parseInt(spl[1]);
+
+            $http.get('/api/discussion/' + $scope.pid + '/posts?sortBy=' + sortBy + '&orderBy=' + orderBy).success(function (res) {
+                if (res.result) {
+                    $scope.replies = res.posts;
+                    $timeout(function () {
+                        $scope.$apply()
+                    });
+                }
+            });
+        }
     });
 
     $scope.tabOpened();
@@ -4703,8 +4842,8 @@ app.directive('timepicker', function($timeout) {
 
             pageParams: {
                 limit: 10,
-                sortBy: '_id',
-                orderBy: 'desc',
+                sortBy: 'dateAdded',
+                orderBy: -1,
                 lastPage: false
             },
 
@@ -4794,8 +4933,8 @@ app.directive('timepicker', function($timeout) {
 
             pageParams: {
                 limit: 10,
-                sortBy: '_id',
-                orderBy: 'desc',
+                sortBy: 'dateAdded',
+                orderBy: -1,
                 lastPage: false
             },
 
@@ -4850,8 +4989,9 @@ app.directive('timepicker', function($timeout) {
                         success(self.posts);
                 }
 
-                else if (force || !self.posts)
-                    $http.get('/api/links/' + nodeId)
+                else if (force || !self.posts) {
+                    self.setPageUrl();
+                    $http.get('/api/links/' + nodeId + self.pageUrl)
                         .success(function (data) {
                             if (data.result && data.posts) {
                                 self.posts = data.posts;
@@ -4863,6 +5003,7 @@ app.directive('timepicker', function($timeout) {
                             if (error)
                                 error(data.errors);
                         });
+                }
             },
 
             isInitialized: function () {
@@ -5415,6 +5556,13 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.links = [];
     $scope.errors = [];
     $scope.isLoading = false;
+    $scope.orderType = 'dateAdded.desc';
+
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Popularity'}
+    ];
 
     $scope.initiateLink = function (pid) {
         $scope.pid = pid;
@@ -5469,7 +5617,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.manageActionBar();
         $rootScope.$broadcast('onNodeLinkTabOpened', $scope.currentTab);
     };
-
 
     $scope.saveNewPost = function (isValid) {
         if (!isValid)
@@ -5651,7 +5798,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     });
 
-
     /**
      * watch for different window size
      */
@@ -5660,6 +5806,34 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         return $window.innerWidth;
     }, function (value) {
         $scope.wSize = Page.defineDevSize(value);
+    });
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            linkService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 10,
+                lastPage: false
+            });
+
+            //$scope.initTab(treeNodeService.treeNode);
+
+            linkService.init(treeNodeService.treeNode._id,
+
+                function (posts) {
+                    $scope.links = posts;
+                    $scope.pageTitleOnLink = Page.title();
+                    $scope.initiateLink();
+                },
+
+                function (errors) {
+                    toastr.error(errors);
+                }, true
+            );
+        }
     });
 
     $scope.tabOpened();

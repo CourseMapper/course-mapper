@@ -1,7 +1,19 @@
 <div ng-controller="DiscussionController">
     <div class="row">
         <div class="col-md-5" id="topicLists">
-            <h4>Discussion Topics</h4>
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <h4>Discussion Topics</h4>
+                </div>
+                <div class="col-xs-12 col-sm-6">
+                    <select id="orderTypeSelect"
+                            ng-model="orderType"
+                            ng-init="orderType = orderingOptions[0]"
+                            ng-options="item as item.name for item in orderingOptions"
+                            class="form-control">
+                    </select>
+                </div>
+            </div>
 
             <div ng-show="topics.length == 0 && (!pid && (wSize != 'xs' || wSize != 'sm'))" class="posts-list">
                 <ul class="posts">
@@ -89,6 +101,19 @@
                 </div>
 
                 <div ng-show="replies && pid">
+
+                    <div class="row">
+                        <br>
+                        <div class="col-xs-12 col-sm-4">
+                            <select id="orderTypeSelect"
+                                    ng-model="orderTypeReply"
+                                    ng-init="orderTypeReply = orderingOptions[0]"
+                                    ng-options="item as item.name for item in orderingOptions"
+                                    class="form-control">
+                            </select>
+                        </div>
+                    </div>
+
                     <ul class="replies">
                         <li class="reply" ng-repeat="re in replies">
                             <div class="col-xs-1">

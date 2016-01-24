@@ -29,9 +29,20 @@ router.get('/discussions/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
         if (req.query['sortBy'])
             sortBy = req.query['sortBy'];
 
+        var orderBy = -1;
+        if (req.query['orderBy'])
+            orderBy = req.query['orderBy'];
+
         var lastPage = false;
         if (req.query['lastPage'])
             lastPage = parseInt(req.query['lastPage']);
+
+        var pageParams = {
+            lastPage: lastPage,
+            limit: limit,
+            sortBy: sortBy,
+            orderBy: parseInt(orderBy)
+        };
 
         userHelper.isEnrolledAsync({
                 userId: mongoose.Types.ObjectId(req.user._id),
@@ -53,11 +64,8 @@ router.get('/discussions/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
                     // parameters
                     mongoose.Types.ObjectId(req.params.courseId)
                     ,
-                    {
-                        lastPage: lastPage,
-                        limit: limit,
-                        sortBy: sortBy
-                    },
+                    pageParams
+                    ,
                     function (posts) {
                         res.status(200).json({
                             result: true, posts: posts
@@ -86,6 +94,32 @@ router.get('/discussion/:postId/posts', helper.l2pAuth, helper.ensureAuthenticat
             userId: mongoose.Types.ObjectId(req.user._id)
         };
 
+        var limit = 1000;
+        if (req.query['limit']) {
+            var limitTemp = parseInt(req.query['limit']);
+            if (limitTemp != NaN)
+                limit = limitTemp;
+        }
+
+        var sortBy = 'dateAdded';
+        if (req.query['sortBy'])
+            sortBy = req.query['sortBy'];
+
+        var orderBy = -1;
+        if (req.query['orderBy'])
+            orderBy = req.query['orderBy'];
+
+        var lastPage = false;
+        if (req.query['lastPage'])
+            lastPage = parseInt(req.query['lastPage']);
+
+        var pageParams = {
+            lastPage: lastPage,
+            limit: limit,
+            sortBy: sortBy,
+            orderBy: parseInt(orderBy)
+        };
+
         CD.isPostEnrolled(params)
             .then(function (isEnrolled) {
                 if (!isEnrolled) {
@@ -101,6 +135,8 @@ router.get('/discussion/:postId/posts', helper.l2pAuth, helper.ensureAuthenticat
                     },
                     // parameters
                     params.postId
+                    ,
+                    pageParams
                     ,
                     function (posts) {
                         res.status(200).json({

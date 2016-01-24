@@ -1,4 +1,5 @@
 var passport = require('passport');
+var crypto = require('crypto');
 
 var cmLibraries = {
     /**
@@ -144,6 +145,9 @@ var cmLibraries = {
                     cmLibraries.resReturn(cmLibraries.createError401(), res);
                 }
                 else {
+                    if (req.user == undefined) {
+                        req.user = user;
+                    }
                     return next();
                 }
             })(req, res, next);
@@ -190,7 +194,12 @@ var cmLibraries = {
 
     getRandomInt: function (min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+
+    hash: function (passwd, salt) {
+        return crypto.createHmac('sha256', salt).update(passwd).digest('hex');
     }
+
 };
 
 module.exports = cmLibraries;

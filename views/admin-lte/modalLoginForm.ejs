@@ -8,9 +8,11 @@
                     <div class="box-body no-border">
                         <h3>Log In</h3>
 
-
                         <small>You have not logged in, please login to see this content</small>
 
+                        <% include formLogin %>
+                        <br>
+                        <strong>OR</strong><br><br>
                         <p class="help-block">Use your facebook account to login</p>
                         <% if(typeof (isNode) != 'undefined'){ %>
                         <facebook-button
@@ -21,9 +23,6 @@
                                 login-url="/api/accounts/login/facebook/course/{{course.slug}}/{{course._id}}/{{currentTab}}">
                         </facebook-button>
                         <% } %>
-                        <br>
-                        <strong>OR</strong><br><br>
-                        <% include formLogin %>
                     </div>
                 </div>
             </div>
