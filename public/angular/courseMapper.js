@@ -2829,13 +2829,6 @@ app.directive('movablePdf', function() {
                 scope.scale = 1.0;
                 scope.totalPage = 1;
 
-                // Initialize countprint
-                var data = [0, 15, 9, 8, 7, 2, 5, 0, 0, 6, 0, 100, 2, 1, 0, 0, 10, 2, 3, 1, 31, 0, 0, 11, 1, 0, 0, 10, 23, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                new CountPrint(data, {
-                    container: 'countprint',
-                    maxValue: 10
-                });
-
                 scope.container = element[0].getElementsByClassName('viewerContainer');
                 scope.container = scope.container[0];
 
@@ -2861,6 +2854,18 @@ app.directive('movablePdf', function() {
 
                             //console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
+
+                            // Initialize countprint
+                            var data = [];// TODO - Load real annotations data
+                            for (var i = 0; i < scope.totalPage; i++) {
+                                var number = Math.floor(Math.random() * (20 - 0 + 1)) + 0;
+                                data.push(number)
+                            }
+
+                            new CountPrint(data, {
+                                container: 'countprint',
+                                maxValue: 10
+                            });
 
                             scope.calculateSlideNavigationProgress(scope.currentPageNumber);
 
