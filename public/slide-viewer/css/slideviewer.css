@@ -308,7 +308,7 @@ input#searchInput {
     height: 100%;
     float: left;
     //background-color: #FFA500;
-    background-color: rgba(0, 0, 0, 0.24);
+    background-color: #3c8dbc;
 }
 
 #slideNavigation,
