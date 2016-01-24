@@ -3,7 +3,7 @@
 <head>
 </head>
 <body style="padding-top: 100px">
-<div class="countprint" style="width: 600px;">
+<div class="countprint">
     <span class="countprint-tooltip"></span>
 </div>
 
@@ -37,27 +37,10 @@
         {page: 20}
     ];
 
-    var result = _.reduce(annotations, function (result, value, key) {
-        if (!result[value.page]) {
-            result[value.page] = 0;
-        }
-        result[value.page] += 1;
-        return result;
-    }, {});
-
-    console.log(JSON.stringify(result));
-
-    var data = [];
-    data.length = 20;
-
-    for (var i = 0; i < data.length; i++) {
-        var page = i + 1;
-        if (result[page]) {
-            data[i] = result[page];
-        }
-    }
-
-    var cp = new CountPrint(data, {
+    var cp = new CountPrint({
+        segments: annotations,
+        segmentKey: 'page',
+        totalSegments: 30,
         container: 'countprint',
         tooltip: 'countprint-tooltip',
         maxValue: 10,
