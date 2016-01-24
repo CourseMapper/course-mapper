@@ -2856,8 +2856,12 @@ app.directive('movablePdf', function() {
                             scope.totalPage = pdfDocument.numPages;
 
                             // Initialize CountPrint
-                            var data = [1, 0, 0, 5, 2, 1, 0, 1, 0, 0, 0, 0, 0, 7, 0, 0, 0, 1, 5, 20];
                             // TODO - Load real annotations data
+                            var data = [];
+                            for (var i = 0; i < scope.totalPage; i++) {
+                                data.push(Math.floor(Math.random() * (10 + 1)) + 0);
+                            }
+
                             var countPrint = new CountPrint(data, {
                                 container: 'countprint',
                                 tooltip: 'countprint-tooltip',
