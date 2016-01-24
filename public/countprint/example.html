@@ -7,9 +7,52 @@
     <span class="countprint-tooltip"></span>
 </div>
 
+<script src="lodash.min.js"></script>
 <script src="countprint.js"></script>
 <script>
-    var data = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    var annotations = [
+        {pdfPageNumber: 1},
+        {pdfPageNumber: 2},
+        {pdfPageNumber: 2},
+        {pdfPageNumber: 2},
+        {pdfPageNumber: 2},
+        {pdfPageNumber: 2},
+        {pdfPageNumber: 2},
+        {pdfPageNumber: 11},
+        {pdfPageNumber: 7},
+        {pdfPageNumber: 3},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 20},
+        {pdfPageNumber: 1}
+    ];
+
+    var result = _.reduce(annotations, function (result, value, key) {
+        if (!result[value.pdfPageNumber]) {
+            result[value.pdfPageNumber] = 0;
+        }
+        result[value.pdfPageNumber] += 1;
+        return result;
+    }, {});
+
+    var data = [];
+    data.length = 20;
+
+    for (var i = 0; i < data.length; i++) {
+        var page = i + 1;
+        if (result[page]) {
+            data[i] = result[page];
+        }
+    }
+
     var cp = new CountPrint(data, {
         container: 'countprint',
         tooltip: 'countprint-tooltip',
