@@ -2822,7 +2822,7 @@ app.directive('movablePdf', function() {
             link: function (scope, element, attrs) {
                 if (!PDFJS.PDFViewer || !PDFJS.getDocument) {
                     alert('Please build the library and components using\n' +
-                    '  `node make generic components`');
+                        '  `node make generic components`');
                 }
 
                 scope.pageToView = 1;
@@ -2839,7 +2839,7 @@ app.directive('movablePdf', function() {
                     }
                 };
 
-                attrs.$observe('pdfId', function(pdfId){
+                attrs.$observe('pdfId', function (pdfId) {
                     $rootScope.pdfId = pdfId;
                 });
 
@@ -2854,6 +2854,24 @@ app.directive('movablePdf', function() {
 
                             //console.log("Started loading pdf");
                             scope.totalPage = pdfDocument.numPages;
+
+                            // Initialize CountPrint
+                            // TODO - Load real annotations data
+                            var data = [];
+                            for (var i = 0; i < scope.totalPage; i++) {
+                                data.push(Math.floor(Math.random() * (10 + 1)) + 0);
+                            }
+
+                            var countPrint = new CountPrint(data, {
+                                container: 'countprint',
+                                tooltip: 'countprint-tooltip',
+                                maxValue: 10
+                            });
+
+                            countPrint.onCountSelected = function (selectedPage) {
+                                console.log(selectedPage);
+                                $rootScope.setPageNumber(selectedPage);
+                            };
 
                             scope.calculateSlideNavigationProgress(scope.currentPageNumber);
 
@@ -2886,8 +2904,6 @@ app.directive('movablePdf', function() {
 
                                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
 
-
-
                                 return scope.pdfPageView.draw();
                             });
                         });
@@ -2904,38 +2920,38 @@ app.directive('movablePdf', function() {
                 $scope.currentNavPageNumber = $scope.currentPageNumber;
                 $rootScope.switchShowAnnoZones = "On";
 
-                $scope.$watch("currentPageNumber", function (newVal, oldVal){
-                  if(newVal!=oldVal){
-                    $scope.currentNavPageNumber= newVal;
+                $scope.$watch("currentPageNumber", function (newVal, oldVal) {
+                    if (newVal != oldVal) {
+                        $scope.currentNavPageNumber = newVal;
 
-                    $timeout(function () {
-                        $scope.$apply();
-                    });
-                  }
+                        $timeout(function () {
+                            $scope.$apply();
+                        });
+                    }
                 });
 
-                $scope.$watch("currentNavPageNumber", function (newVal, oldVal){
-                  if(newVal!=oldVal){
-                      if(newVal.length==0){
-                        return;
-                      }else if(isNaN(newVal)){
-                          $scope.currentNavPageNumber=oldVal;
+                $scope.$watch("currentNavPageNumber", function (newVal, oldVal) {
+                    if (newVal != oldVal) {
+                        if (newVal.length == 0) {
+                            return;
+                        } else if (isNaN(newVal)) {
+                            $scope.currentNavPageNumber = oldVal;
 
-                      }else if(!(parseInt(newVal)>=1 && parseInt(newVal)<= $scope.totalPage)){
-                          $scope.currentNavPageNumber=oldVal;
-                      }
-                  }
+                        } else if (!(parseInt(newVal) >= 1 && parseInt(newVal) <= $scope.totalPage)) {
+                            $scope.currentNavPageNumber = oldVal;
+                        }
+                    }
                 });
 
                 $("#inpFieldCurrPage").bind("keydown keypress", function (event) {
-                  if(event.which === 13) {
-                      $timeout(function () {
-                          $rootScope.setPageNumber(parseInt($scope.currentNavPageNumber));
-                          $scope.$apply();
-                      });
+                    if (event.which === 13) {
+                        $timeout(function () {
+                            $rootScope.setPageNumber(parseInt($scope.currentNavPageNumber));
+                            $scope.$apply();
+                        });
 
-                      event.preventDefault();
-                  }
+                        event.preventDefault();
+                    }
 
                 });
 
@@ -2944,16 +2960,16 @@ app.directive('movablePdf', function() {
                 };
 
                 $rootScope.setPageNumber = function (value) {
-                  if ((value) <= $scope.totalPage && (value) >= 1){
-                    $scope.currentPageNumber = parseInt(value);
+                    if ((value) <= $scope.totalPage && (value) >= 1) {
+                        $scope.currentPageNumber = parseInt(value);
 
-                    $scope.setHistoryStack( $scope.currentPageNumber );
+                        $scope.setHistoryStack($scope.currentPageNumber);
 
-                    $timeout(function () {
-                        $scope.changeSlide($scope.currentPageNumber);
-                        $scope.$apply();
-                    });
-                  }
+                        $timeout(function () {
+                            $scope.changeSlide($scope.currentPageNumber);
+                            $scope.$apply();
+                        });
+                    }
                 };
 
                 $scope.changeSlide = function (newSlideNumber) {
@@ -2967,7 +2983,8 @@ app.directive('movablePdf', function() {
                     PDFJS.getDocument($scope.source).then(function (pdfDocument) {
                         pdfDocument.getPage($scope.pageToView).then(function (pdfPage) {
                             $scope.pdfPageView.setPdfPage(pdfPage);
-                            $scope.pdfPageView.draw().catch(function(){});
+                            $scope.pdfPageView.draw().catch(function () {
+                            });
 
                             //console.log("Slide Changed");
                             $scope.pdfIsLoaded = true;
@@ -3000,58 +3017,59 @@ app.directive('movablePdf', function() {
                     }
                 };
 
-                $scope.switchShowAnnotationZone =function(){
-                  if($rootScope.switchShowAnnoZones=="On"){
-                    $rootScope.switchShowAnnoZones="Off";
-                  }else{
-                    $rootScope.switchShowAnnoZones="On";
-                  }
+                $scope.switchShowAnnotationZone = function () {
+                    if ($rootScope.switchShowAnnoZones == "On") {
+                        $rootScope.switchShowAnnoZones = "Off";
+                    } else {
+                        $rootScope.switchShowAnnoZones = "On";
+                    }
 
                 };
 
 
-                function adjustPdfScale () {
-                  //console.log("Adjusting PDF Scale");
-                  if(typeof $scope.pdfPageView != 'undefined'){
-                    if($scope.scale == 0)
-                      $scope.scale = 1.0;
+                function adjustPdfScale() {
+                    //console.log("Adjusting PDF Scale");
+                    if (typeof $scope.pdfPageView != 'undefined') {
+                        if ($scope.scale == 0)
+                            $scope.scale = 1.0;
 
-                    $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
-                    $scope.pdfPageView.update($scope.scale, 0);
-                    $scope.pdfPageView.draw().catch(function(){});
+                        $scope.scale = $scope.scale * $scope.container.clientWidth / $scope.pdfPageView.width;
+                        $scope.pdfPageView.update($scope.scale, 0);
+                        $scope.pdfPageView.draw().catch(function () {
+                        });
 
-                    $rootScope.currCanWidth = $('#annotationZone').width();
+                        $rootScope.currCanWidth = $('#annotationZone').width();
 
-                    $rootScope.currCanHeight = $('#annotationZone').height();
+                        $rootScope.currCanHeight = $('#annotationZone').height();
 
-                    $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
+                        $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
 
-                  }
+                    }
                 };
 
                 $(window).resize(function (event) {
-                  //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
-                  //console.log($location.search().tab)
-                  if(($location.search().tab == "pdf" || $location.search().tab == undefined || $location.search().tab == "no") && $.isWindow(event.target)) {
-                    //console.log("Got called on resize");
-                    adjustPdfScale();
-                  }
+                    //console.log("Registered resize. Got tab: " + $scope.currentTab +", callerId: "+event.target);
+                    //console.log($location.search().tab)
+                    if (($location.search().tab == "pdf" || $location.search().tab == undefined || $location.search().tab == "no") && $.isWindow(event.target)) {
+                        //console.log("Got called on resize");
+                        adjustPdfScale();
+                    }
                 });
 
-                $scope.$on('onAfterInitTreeNode', function(node){
-                  //console.log("Got called");
-                  //if($scope.pdfReady) {
+                $scope.$on('onAfterInitTreeNode', function (node) {
+                    //console.log("Got called");
+                    //if($scope.pdfReady) {
                     //console.log(node);
                     $rootScope.pdfId = node.targetScope.pdfFile._id;
-                  //}
+                    //}
                 });
 
-                $scope.$on('onNodeTabChange', function(event, tab){
-                  //console.log("Registered tab change. Got tab: " + tab);
-                  $scope.currentTab = tab;
-                  if(tab == "pdf") {
-                    adjustPdfScale();
-                  }
+                $scope.$on('onNodeTabChange', function (event, tab) {
+                    //console.log("Registered tab change. Got tab: " + tab);
+                    $scope.currentTab = tab;
+                    if (tab == "pdf") {
+                        adjustPdfScale();
+                    }
                 });
 
                 $scope.$on('onPdfPageChange', function (event, params) {
@@ -3065,21 +3083,20 @@ app.directive('movablePdf', function() {
                 });
 
 
-
                 // onload
-                $scope.$watch('totalPage', function(newVal, oldVal){
-                    if(oldVal !== newVal){
+                $scope.$watch('totalPage', function (newVal, oldVal) {
+                    if (oldVal !== newVal) {
                         $scope.changePageNumberBasedOnUrl();
                     }
                 });
 
-                $scope.$on('$routeUpdate', function(next, current){
-                    if(!$location.search().slidePage) {
-                        if(current.params.tab && current.params.tab == 'pdf')
+                $scope.$on('$routeUpdate', function (next, current) {
+                    if (!$location.search().slidePage) {
+                        if (current.params.tab && current.params.tab == 'pdf')
                             $scope.setHistoryStack($scope.currentPageNumber);
                     } else {
                         var sp = parseInt($location.search().slidePage);
-                        if(sp > 0 && sp != $scope.currentPageNumber && sp <= $scope.totalPage){
+                        if (sp > 0 && sp != $scope.currentPageNumber && sp <= $scope.totalPage) {
                             $scope.changePageNumberBasedOnUrl();
                         }
                     }
