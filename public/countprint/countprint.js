@@ -18,9 +18,8 @@ function CountPrint(data, options) {
     // Attach tooltip hover event
     container.onmousemove = function (e) {
         var rect = container.getBoundingClientRect();
-
         var xPos = e.clientX;
-        var yPos = rect.top - 25;
+        var yPos = rect.top - 23;
         tooltip.style.left = (xPos) + 'px';
         tooltip.style.top = (yPos) + 'px';
         tooltip.innerText = getHoveredElementNumber(rect, e);
@@ -59,24 +58,13 @@ function CountPrint(data, options) {
     /*
      *  Compute the HSL color value.
      *
-     * In this algorithm, the colors corresponding
-     * with values are:
-     *
-     * 0.00 gray    (hsl(0, 0%, 90%))
-     * 0.25 cyan    (hsl(180, 100%, 50%))
-     * 0.5  green   (hsl(120, 100%, 50%))
-     * 0.75 yellow  (hsl(60, 100%, 50%))
-     * 1.0  red     (hsl(0, 100%, 50%))
-     *
-     * */
+     **/
     function percentToHSLColor(value) {
         var normalizedValue = normalizeValue(value);
-        // Use neutral color for 0 values.
-        if (normalizedValue === 0) {
-            return buildHSL(0, 0, 90);
-        }
-        var h = (1.0 - normalizedValue) * 240;
-        return buildHSL(h, 100, 50);
+        var h = (1.0 - normalizedValue) * 320;
+        var l = 120 * normalizedValue;
+        var s = normalizedValue ? 50 : 90;
+        return buildHSL(h, l, s);
     }
 
     function buildHSL(h, s, l) {
