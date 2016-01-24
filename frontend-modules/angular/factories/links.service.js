@@ -8,8 +8,8 @@ app.factory('linkService', [
 
             pageParams: {
                 limit: 10,
-                sortBy: '_id',
-                orderBy: 'desc',
+                sortBy: 'dateAdded',
+                orderBy: -1,
                 lastPage: false
             },
 
@@ -64,8 +64,9 @@ app.factory('linkService', [
                         success(self.posts);
                 }
 
-                else if (force || !self.posts)
-                    $http.get('/api/links/' + nodeId)
+                else if (force || !self.posts) {
+                    self.setPageUrl();
+                    $http.get('/api/links/' + nodeId + self.pageUrl)
                         .success(function (data) {
                             if (data.result && data.posts) {
                                 self.posts = data.posts;
@@ -77,6 +78,7 @@ app.factory('linkService', [
                             if (error)
                                 error(data.errors);
                         });
+                }
             },
 
             isInitialized: function () {

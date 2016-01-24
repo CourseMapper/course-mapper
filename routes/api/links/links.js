@@ -30,6 +30,10 @@ router.get('/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
         if (req.query['sortBy'])
             sortBy = req.query['sortBy'];
 
+        var orderBy = 'desc';
+        if (req.query['orderBy'])
+            orderBy = req.query['orderBy'];
+
         var lastPage = false;
         if (req.query['lastPage'])
             lastPage = parseInt(req.query['lastPage']);
@@ -37,7 +41,8 @@ router.get('/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
         var pageParams = {
             lastPage: lastPage,
             limit: limit,
-            sortBy: sortBy
+            sortBy: sortBy,
+            orderBy: parseInt(orderBy)
         };
 
         var userId = mongoose.Types.ObjectId(req.user._id);
