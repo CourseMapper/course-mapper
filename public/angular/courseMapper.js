@@ -2859,7 +2859,7 @@ app.directive('movablePdf', function() {
                             // TODO - Load real annotations data
                             var data = [];
                             for (var i = 0; i < scope.totalPage; i++) {
-                                data.push(Math.floor(Math.random() * (10 + 1)) + 0);
+                                data.push(Math.floor(Math.random() * (10 + 1)));
                             }
 
                             var countPrint = new CountPrint(data, {
@@ -2870,7 +2870,6 @@ app.directive('movablePdf', function() {
                             });
 
                             countPrint.onCountSelected = function (selectedPage) {
-                                console.log(selectedPage);
                                 $rootScope.setPageNumber(selectedPage);
                             };
 
