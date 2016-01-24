@@ -555,7 +555,7 @@ var NewsfeedListener = {
                                             if (res) {
                                                 var nf = new NewsfeedAgg(
                                                     {
-                                                        userId: doc.authorID, //still wrong, author based on authorName, not authorId
+                                                        userId: doc.authorId,
                                                         actionSubjectIds: videoId,
                                                         actionSubject: "video annotation",
                                                         actionName: res.name,
@@ -597,7 +597,7 @@ var NewsfeedListener = {
                                                 if (res) {
                                                     var nf = new NewsfeedAgg(
                                                         {
-                                                            userId: doc.authorID, //still wrong, author based on authorName, not authorId
+                                                            userId: doc.authorId,
                                                             actionSubjectIds: videoId,
                                                             actionSubject: "video annotation",
                                                             actionName: res.name,
@@ -639,7 +639,7 @@ var NewsfeedListener = {
                                                 if (res) {
                                                     var nf = new NewsfeedAgg(
                                                         {
-                                                            userId: doc.authorID, //still wrong, author based on authorName, not authorId
+                                                            userId: doc.authorId,
                                                             actionSubjectIds: videoId,
                                                             actionSubject: "video annotation",
                                                             actionName: res.name,
@@ -893,7 +893,8 @@ var NewsfeedListener = {
                                     {
                                         userId: doc.user,
                                         actionSubjectIds: doc.id,
-                                        actionSubject: result.name,
+                                        actionSubject: "course",
+                                        actionName: result.name,
                                         courseId:  courseId,
                                         actionType: userStatus,
                                         dateAdded: curDate
