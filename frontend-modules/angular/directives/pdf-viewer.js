@@ -52,12 +52,36 @@ app.directive('pdfViewer',
 
                             // Initialize CountPrint
                             // TODO - Load real annotations data
-                            var data = [];
-                            for (var i = 0; i < scope.totalPage; i++) {
-                                data.push(Math.floor(Math.random() * (10 + 1)));
-                            }
+                            var annotations = [
+                                {page: 1},
+                                {page: 1},
+                                {page: 1},
+                                {page: 2},
+                                {page: 2},
+                                {page: 2},
+                                {page: 2},
+                                {page: 2},
+                                {page: 3},
+                                {page: 2},
+                                {page: 11},
+                                {page: 7},
+                                {page: 3},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20},
+                                {page: 20}
+                            ];
 
-                            var countPrint = new CountPrint(data, {
+                            var countPrint = new CountPrint({
+                                segments: annotations,
+                                segmentKey: 'page',
+                                totalSegments: 30,
                                 container: 'countprint',
                                 tooltip: 'countprint-tooltip',
                                 maxValue: 10,
