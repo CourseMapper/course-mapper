@@ -101,6 +101,19 @@
                 </div>
 
                 <div ng-show="replies && pid">
+
+                    <div class="row">
+                        <br>
+                        <div class="col-xs-12 col-sm-4">
+                            <select id="orderTypeSelect"
+                                    ng-model="orderTypeReply"
+                                    ng-init="orderTypeReply = orderingOptions[0]"
+                                    ng-options="item as item.name for item in orderingOptions"
+                                    class="form-control">
+                            </select>
+                        </div>
+                    </div>
+
                     <ul class="replies">
                         <li class="reply" ng-repeat="re in replies">
                             <div class="col-xs-1">

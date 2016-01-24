@@ -3913,6 +3913,24 @@ app.directive('timepicker', function($timeout) {
         }
     });
 
+    $scope.$watch('orderTypeReply', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            var sortBy = spl[0];
+            var orderBy = parseInt(spl[1]);
+
+            $http.get('/api/discussion/' + $scope.pid + '/posts?sortBy=' + sortBy + '&orderBy=' + orderBy).success(function (res) {
+                if (res.result) {
+                    $scope.replies = res.posts;
+                    $timeout(function () {
+                        $scope.$apply()
+                    });
+                }
+            });
+        }
+    });
+
     $scope.tabOpened();
 });
 ;app.controller('ReplyController', function ($scope, $http, $timeout, toastr) {
