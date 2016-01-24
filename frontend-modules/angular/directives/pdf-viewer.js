@@ -61,7 +61,7 @@ app.directive('pdfViewer',
 
                             countPrint.onCountSelected = function (selectedPage) {
                                 console.log(selectedPage);
-                                scope.changePageNumber(selectedPage);
+                                $rootScope.setPageNumber(selectedPage);
                             };
 
                             scope.calculateSlideNavigationProgress(scope.currentPageNumber);
