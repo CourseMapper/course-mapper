@@ -13,7 +13,8 @@
     var cp = new CountPrint(data, {
         container: 'countprint',
         tooltip: 'countprint-tooltip',
-        maxValue: 10
+        maxValue: 10,
+        colorful: true
     });
     cp.onCountSelected = function (count) {
         console.log('Selected count: ' + count);

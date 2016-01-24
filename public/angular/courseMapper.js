@@ -2865,7 +2865,8 @@ app.directive('movablePdf', function() {
                             var countPrint = new CountPrint(data, {
                                 container: 'countprint',
                                 tooltip: 'countprint-tooltip',
-                                maxValue: 10
+                                maxValue: 10,
+                                colorful: true
                             });
 
                             countPrint.onCountSelected = function (selectedPage) {

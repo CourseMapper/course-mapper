@@ -10,7 +10,7 @@ function CountPrint(data, options) {
     loadCss('countprint.css');
     var self = this;
     var elementWidth = (data && data.length > 0) ? (100 / data.length) : 0;
-
+    var colorful = options.colorful;
     var container = document.getElementsByClassName(options.container)[0];
     container.style.background = getHeatmap(data, options.maxValue);
     var tooltip = document.getElementsByClassName(options.tooltip)[0];
@@ -69,9 +69,18 @@ function CountPrint(data, options) {
      **/
     function percentToHSLColor(value) {
         var normalizedValue = normalizeValue(value);
-        var h = (1.0 - normalizedValue) * 320;
-        var l = 120 * normalizedValue;
-        var s = normalizedValue ? 50 : 90;
+
+        var h, l, s;
+        if (colorful === true) {
+            h = (1.0 - normalizedValue) * 320;
+            l = 120 * normalizedValue;
+            s = normalizedValue ? 50 : 90;
+        }
+        else {
+            h = 202;
+            l = 52;
+            s = 100 - normalizedValue * 50;
+        }
         return buildHSL(h, l, s);
     }
 
