@@ -13,11 +13,14 @@
 
     var annotations = [
         {page: 1},
+        {page: 1},
+        {page: 1},
         {page: 2},
         {page: 2},
         {page: 2},
         {page: 2},
         {page: 2},
+        {page: 3},
         {page: 2},
         {page: 11},
         {page: 7},
@@ -31,8 +34,7 @@
         {page: 20},
         {page: 20},
         {page: 20},
-        {page: 20},
-        {page: 1}
+        {page: 20}
     ];
 
     var result = _.reduce(annotations, function (result, value, key) {
@@ -42,6 +44,8 @@
         result[value.page] += 1;
         return result;
     }, {});
+
+    console.log(JSON.stringify(result));
 
     var data = [];
     data.length = 20;
@@ -59,8 +63,8 @@
         maxValue: 10,
         colorful: true
     });
-    cp.onCountSelected = function (count) {
-        console.log('Selected count: ' + count);
+    cp.onCountSelected = function (page) {
+        console.log('Selected page: ' + page);
     };
 </script>
 </body>
