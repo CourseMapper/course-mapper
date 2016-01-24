@@ -12,34 +12,34 @@
 <script>
 
     var annotations = [
-        {pdfPageNumber: 1},
-        {pdfPageNumber: 2},
-        {pdfPageNumber: 2},
-        {pdfPageNumber: 2},
-        {pdfPageNumber: 2},
-        {pdfPageNumber: 2},
-        {pdfPageNumber: 2},
-        {pdfPageNumber: 11},
-        {pdfPageNumber: 7},
-        {pdfPageNumber: 3},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 20},
-        {pdfPageNumber: 1}
+        {page: 1},
+        {page: 2},
+        {page: 2},
+        {page: 2},
+        {page: 2},
+        {page: 2},
+        {page: 2},
+        {page: 11},
+        {page: 7},
+        {page: 3},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {pagepage: 1}
     ];
 
     var result = _.reduce(annotations, function (result, value, key) {
-        if (!result[value.pdfPageNumber]) {
-            result[value.pdfPageNumber] = 0;
+        if (!result[value.page]) {
+            result[value.page] = 0;
         }
-        result[value.pdfPageNumber] += 1;
+        result[value.page] += 1;
         return result;
     }, {});
 
