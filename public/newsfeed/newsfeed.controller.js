@@ -13,7 +13,6 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
         {"name": "content node"},
         {"name": "node"},
         {"name": "pdf annotation"},
-        {"name": "pdf annotation zone"},
         {"name": "video annotation"},
         {"name": "link"},
         {"name": "discussion"}
