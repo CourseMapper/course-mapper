@@ -21,17 +21,16 @@
             <% } %>
             <ul class="nav navbar-nav">
                 <li class="dropdown">
-                    <a class="cursor dropdown-toggle" data-toggle="dropdown" aria-expanded="true" ng-show="user" ng-cloak>
+                    <a class="cursor dropdown-toggle" data-toggle="dropdown" aria-expanded="true" ng-cloak>
                         <i class="ion-information-circled"></i>&nbsp;&nbsp;&nbsp;
-                        Info Links <span
-                                class="caret"></span></a>
+                        Info Links <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                        <!--<li>
+                        <li>
                             <a href="/about">
                                 About CourseMapper
                             </a>
-                        </li>-->
-                        <li>
+                        </li>
+                        <li ng-show="user">
                             <a href="/recommend-category">
                                 Recommend Categories
                             </a>
