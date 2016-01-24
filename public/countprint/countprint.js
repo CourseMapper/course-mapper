@@ -8,46 +8,44 @@ function loadCss(url) {
 
 function CountPrint(data, options) {
     loadCss('countprint.css');
-    var containerName = 'countprint';
-    var maxValue = 10;
-    var elementWidth = (100 / data.length);
 
-    if (options) {
-        if (options.container) {
-            containerName = options.container;
-        }
-        if (options.maxValue) {
-            maxValue = options.maxValue
-        }
-    }
+    var elementWidth = (data && data.length > 0) ? (100 / data.length) : 0;
 
-    var background = createCountPrint(data, maxValue);
-    var containers = document.getElementsByClassName(containerName);
+    var container = document.getElementsByClassName(options.container)[0];
+    container.style.background = getHeatmap(data, options.maxValue);
+    var tooltip = document.getElementsByClassName(options.tooltip)[0];
 
-    for (var i = 0; i < containers.length; i++) {
-        containers[i].style.background = background;
-        containers[i].onmousemove = onContainerClicked;
-    }
+    // Attach tooltip hover event
+    container.onmousemove = function (e) {
+        var rect = container.getBoundingClientRect();
 
-    function onContainerClicked(evt) {
-        var element = this;
-        var rect = element.getBoundingClientRect();
-        var scrollLeft = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft;
+        var xPos = e.clientX;
+        var yPos = rect.top - 25;
+        tooltip.style.left = (xPos) + 'px';
+        tooltip.style.top = (yPos) + 'px';
+        tooltip.innerText = getHoveredElementNumber(rect, e);
+    };
+
+    function getHoveredElementNumber(rect, e) {
+        var scrollLeft = document.documentElement.scrollLeft ?
+            document.documentElement.scrollLeft :
+            document.body.scrollLeft;
+
         var elementLeft = rect.left + scrollLeft;
 
         var xPos = 0;
         if (document.all) { //detects using IE
-            xPos = event.clientX + scrollLeft - elementLeft; //event not evt because of IE
+            xPos = e.clientX + scrollLeft - elementLeft; //event not evt because of IE
         }
         else {
-            xPos = evt.pageX - elementLeft;
+            xPos = e.pageX - elementLeft;
         }
         var progress = xPos / rect.width;
-        var page = Math.floor((progress / elementWidth) * 100 + 1);
-        console.log(page);
+        // Compute number
+        return Math.floor((progress / elementWidth) * 100 + 1);
     }
 
-    function createCountPrint(data, maxValue) {
+    function getHeatmap(data, maxValue) {
         var background = '';
         for (var i = 0; i < data.length; i++) {
             var heat = data[i] / maxValue;
