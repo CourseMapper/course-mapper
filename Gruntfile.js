@@ -68,11 +68,11 @@ module.exports = function (grunt) {
             },
             va: {
                 src: [
-                    'public/video-annotations/scripts/*.js',
-                    'public/video-annotations/scripts/**/*.js',
-                    'public/video-annotations/scripts/**/**/*.js'
+                    'public/src/video-annotations/scripts/*.js',
+                    'public/src/video-annotations/scripts/**/*.js',
+                    'public/src/video-annotations/scripts/**/**/*.js'
                 ],
-                dest: 'public/video-annotations/va.js'
+                dest: 'public/src/video-annotations/dest/video-annotations.min.js'
             }
         },
 
@@ -85,9 +85,9 @@ module.exports = function (grunt) {
                     'frontend-modules/angular/views/**/*.html',
                     'frontend-modules/angular-admin/*.js',
                     'frontend-modules/libs/*.js',
-                    'public/video-annotations/scripts/*.js',
-                    'public/video-annotations/scripts/**/*.js',
-                    'public/video-annotations/scripts/**/**/*.js'
+                    'public/src/video-annotations/scripts/*.js',
+                    'public/src/video-annotations/scripts/**/*.js',
+                    'public/src/video-annotations/scripts/**/**/*.js'
                 ],
                 tasks: ['bowercopy:views', 'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va'],
                 options: {
