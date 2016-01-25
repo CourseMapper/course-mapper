@@ -54,7 +54,7 @@ app.directive('pdfViewer',
                 return Math.floor(Math.random() * (max - min + 1)) + min;
               }
 
-              // Initialize CountPrint
+              // Initialize CountMap
               // TODO - Load real annotations data
               var annotations = [];
               var totalSegments = pdfDocument.numPages;
@@ -65,12 +65,12 @@ app.directive('pdfViewer',
 
               console.log(JSON.stringify(annotations));
 
-              var countPrint = new CountPrint({
+              var countPrint = new CountMap({
                 segments: annotations,
                 segmentKey: 'page',
                 totalSegments: totalSegments,
-                container: 'countprint',
-                tooltip: 'countprint-tooltip',
+                container: 'countmap',
+                tooltip: 'countmap-tooltip',
                 maxValue: 10,
                 colorful: true
               });

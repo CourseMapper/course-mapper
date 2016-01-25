@@ -1,0 +1,19 @@
+.countmap {
+  height: 7px;
+  width: 100%;
+  position: relative;
+}
+
+.countmap span {
+  display: none;
+  background: #E6E6E6;
+  border-radius: 3px;
+  padding: 0 7px;
+}
+
+.countmap:hover span {
+  display: block;
+  position: fixed;
+  cursor: default;
+  overflow: hidden;
+}

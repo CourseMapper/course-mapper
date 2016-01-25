@@ -1,17 +1,6 @@
-function loadCss(url) {
-  var link = document.createElement('link');
-  link.type = 'text/css';
-  link.rel = 'stylesheet';
-  link.href = url;
-  document.getElementsByTagName('head')[0].appendChild(link);
-}
-
-function CountPrint(options) {
-  loadCss('countprint.css');
-
-  var segments = valuesToSegments(options.segments, options.segmentKey, options.totalSegments);
-
+function CountMap(options) {
   var self = this;
+  var segments = valuesToSegments(options.segments, options.segmentKey, options.totalSegments);
   var elementWidth = (segments && segments.length > 0) ? (100 / segments.length) : 0;
   var colorful = options.colorful;
   var container = document.getElementsByClassName(options.container)[0];
