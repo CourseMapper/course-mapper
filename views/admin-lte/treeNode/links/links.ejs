@@ -8,7 +8,7 @@
                 <div class="col-xs-12 col-sm-6">
                     <h4>Links</h4>
                 </div>
-                <div class="col-xs-12 col-sm-6">
+                <div class="col-xs-12 col-sm-6" ng-show="links.length > 1">
                     <select id="orderTypeSelect"
                             ng-model="orderType"
                             ng-init="orderType = orderingOptions[0]"
