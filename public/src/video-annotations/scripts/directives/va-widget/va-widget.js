@@ -9,7 +9,7 @@ videoAnnotationsModule.directive('vaWidget',
                 videoSource: '@',
                 videoId: '@'
             },
-            templateUrl: '/video-annotations/scripts/directives/va-widget/va-widget.html',
+            templateUrl: '/src/video-annotations/scripts/directives/va-widget/va-widget.html',
             controller: 'VaWidgetController'
         };
     }

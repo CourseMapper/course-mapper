@@ -6,7 +6,7 @@ videoAnnotationsModule.directive('videoAnnotation', function() {
         scope: {
             source: '='
         },
-        templateUrl: '/video-annotations/scripts/directives/va-annotation/va-annotation.html',
+        templateUrl: '/src/video-annotations/scripts/directives/va-annotation/va-annotation.html',
         controller: 'VaController'
     };
 });
