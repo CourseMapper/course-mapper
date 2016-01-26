@@ -72,7 +72,7 @@ module.exports = function (grunt) {
                     'public/src/video-annotations/scripts/**/*.js',
                     'public/src/video-annotations/scripts/**/**/*.js'
                 ],
-                dest: 'public/src/video-annotations/dest/video-annotations.min.js'
+                dest: 'public/src/video-annotations/dest/video-annotations.js'
             }
         },
 
