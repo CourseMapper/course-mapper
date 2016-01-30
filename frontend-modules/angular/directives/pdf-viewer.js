@@ -1,5 +1,5 @@
 app.directive('pdfViewer',
-  function ($compile, $timeout, $rootScope, $location, $routeParams) {
+  function ($compile, $timeout, $rootScope, $http, $location, $routeParams) {
     return {
       restrict: 'E',
       terminal: true,
@@ -44,26 +44,24 @@ app.directive('pdfViewer',
               function getRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
               }
+
               // Initialize CountMap
-              // TODO - Load real annotations data
-              var annotations = [];
-              var totalSegments = pdfDocument.numPages;
-              var dummyAnnotations = getRandomInt(1, totalSegments * 10);
-              for (var i = 0; i < dummyAnnotations; i++) {
-                annotations.push({page: getRandomInt(1, totalSegments)})
-              }
-              var countPrint = new CountMap({
-                segments: annotations,
-                segmentKey: 'page',
-                totalSegments: totalSegments,
-                container: 'countmap',
-                tooltip: 'countmap-tooltip',
-                maxValue: 10,
-                colorful: false
-              });
-              countPrint.onCountSelected = function (selectedPage) {
-                $rootScope.setPageNumber(selectedPage);
-              };
+              $http.get('/slide-viewer/countmap')
+                .success(function (segments) {
+                  var countPrint = new CountMap({
+                    segments: segments,
+                    segmentKey: 'page',
+                    totalSegments: pdfDocument.numPages,
+                    container: 'countmap',
+                    tooltip: 'countmap-tooltip',
+                    maxValue: 10,
+                    colorful: true
+                  });
+                  countPrint.onCountSelected = function (selectedPage) {
+                    $rootScope.setPageNumber(selectedPage);
+                  };
+                });
+
               scope.calculateSlideNavigationProgress(scope.currentPageNumber);
               // this will apply totalpage to the html
               $timeout(function () {

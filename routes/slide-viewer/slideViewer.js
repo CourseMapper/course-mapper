@@ -16,48 +16,46 @@ var router = express.Router();
 
 
 /*router.get('/', function(req, res, next) {
+ var comment = new Comment();
+ comment.getAllComments(function(err, data) {
+
+ //res.json(data);
+ res.render('slide-viewer/slideViewer', {
+ numComments: data.length,
+ comments: data
+ }
+
+ );
+
+ });
+ });*/
+
+router.post('/', function (req, res, next) {
   var comment = new Comment();
-  comment.getAllComments(function(err, data) {
-
-    //res.json(data);
-      res.render('slide-viewer/slideViewer', {
-        numComments: data.length,
-        comments: data
-      }
-
-    );
-
-  });
-});*/
-
-router.post('/', function(req, res, next){
-    var comment = new Comment();
-    comment.handleSubmitPost(req, res, next);
+  comment.handleSubmitPost(req, res, next);
 });
-
 
 
 /*router.get('/slide-viewer/displayComments', function(req, res, next) {
-    res.render('index', {
-      title: 'Test',
-      pagetitle: 'Hello',
-      comments: comment
+ res.render('index', {
+ title: 'Test',
+ pagetitle: 'Hello',
+ comments: comment
 
-    });
-});*/
+ });
+ });*/
 
 //Workaround for slideViewer. To be deleted if no longer neccessary (TODO)
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   var comment = new Comment();
-  comment.getAllComments(function(err, data) {
+  comment.getAllComments(function (err, data) {
 
     //res.json(data);
-      res.render('slide-viewer/slideViewer', {
+    res.render('slide-viewer/slideViewer', {
         numComments: data.length,
         comments: data,
         currentUser: req.user
       }
-
     );
 
   });
@@ -65,51 +63,60 @@ router.get('/', function(req, res, next) {
 
 });
 
-
-
-
-router.post('/submitComment/', function(req, res, next){
-    var comment = new Comment();
-    comment.handleSubmitPost(req, res, next);
+/**
+ * Retrieve count-map data
+ **/
+router.get('/countmap', function (req, res, next) {
+  var comment = new Comment();
+  comment.getAllComments(function (err, annotations) {
+    if (err) {
+      return res.send(500);
+    }
+    var countMap = [];
+    for (var i = 0; i < annotations.length; i++) {
+      countMap.push({page: annotations[i].pdfPageNumber});
+    }
+    return res.json(countMap);
+  });
 });
 
-router.post('/deleteComment/', function(req, res, next){
-    var comment = new Comment();
-    comment.handleDeletePost(req, res, next);
+router.post('/submitComment/', function (req, res, next) {
+  var comment = new Comment();
+  comment.handleSubmitPost(req, res, next);
 });
 
-router.post('/updateComment/', function(req, res, next){
-    var comment = new Comment();
-    comment.handleUpdatePost(req, res, next);
+router.post('/deleteComment/', function (req, res, next) {
+  var comment = new Comment();
+  comment.handleDeletePost(req, res, next);
 });
 
-router.post('/updateAnnZone/', function(req, res, next){
-    var annZone = new AnnZones();
-    annZone.handleUpdatePost(req, res, next);
+router.post('/updateComment/', function (req, res, next) {
+  var comment = new Comment();
+  comment.handleUpdatePost(req, res, next);
 });
 
-
-
-
+router.post('/updateAnnZone/', function (req, res, next) {
+  var annZone = new AnnZones();
+  annZone.handleUpdatePost(req, res, next);
+});
 
 
 /*router.post('/submitTag/', function(req, res, next){
-    var annZone = new AnnZones();
-    annZone.handleZoneSubmitPost(req, res, next);
-});*/
+ var annZone = new AnnZones();
+ annZone.handleZoneSubmitPost(req, res, next);
+ });*/
 
 
-router.get('/slide-viewer', function(req, res, next) {
+router.get('/slide-viewer', function (req, res, next) {
   var comment = new Comment();
-  comment.getAllComments(function(err, data) {
+  comment.getAllComments(function (err, data) {
 
     //res.json(data);
-      res.render('slide-viewer/slideViewer', {
+    res.render('slide-viewer/slideViewer', {
         numComments: data.length,
         comments: data,
         currentUser: req.user
       }
-
     );
 
   });
@@ -120,90 +127,90 @@ router.get('/slide-viewer', function(req, res, next) {
 /**
  * GET to let the server know that the user is opening which pdf and page
  */
-router.get('/read/:courseId/:nodeId/:resourceId/:pageNumber/:totalPage', function(req, res, next){
-    if (!req.user)
-        return res.status(401).send('Unauthorized');
+router.get('/read/:courseId/:nodeId/:resourceId/:pageNumber/:totalPage', function (req, res, next) {
+  if (!req.user)
+    return res.status(401).send('Unauthorized');
 
-    var cid, nid, rid, uid;
-    try{
-        cid = mongoose.Types.ObjectId(req.params.courseId);
-        nid = mongoose.Types.ObjectId(req.params.nodeId);
-        rid = mongoose.Types.ObjectId(req.params.resourceId);
-        uid = mongoose.Types.ObjectId(req.user._id);
-    } catch(err) {
-        helper.resReturn("Ids needs to be an object id", res);
-        return;
-    }
+  var cid, nid, rid, uid;
+  try {
+    cid = mongoose.Types.ObjectId(req.params.courseId);
+    nid = mongoose.Types.ObjectId(req.params.nodeId);
+    rid = mongoose.Types.ObjectId(req.params.resourceId);
+    uid = mongoose.Types.ObjectId(req.user._id);
+  } catch (err) {
+    helper.resReturn("Ids needs to be an object id", res);
+    return;
+  }
 
-    var params = {
-        courseId: cid,
-        nodeId: nid,
-        resourceId: rid,
-        pageNumber: req.params.pageNumber,
-        totalPage: req.params.totalPage,
-        userId: uid
-    };
+  var params = {
+    courseId: cid,
+    nodeId: nid,
+    resourceId: rid,
+    pageNumber: req.params.pageNumber,
+    totalPage: req.params.totalPage,
+    userId: uid
+  };
 
-    Plugin.doAction('onPdfRead', params);
+  Plugin.doAction('onPdfRead', params);
 
-    res.status(200).json({
-        result: true
-    });
+  res.status(200).json({
+    result: true
+  });
 });
 
-router.get('/disComm', function(req, res, next){
+router.get('/disComm', function (req, res, next) {
   var comment = new Comment();
-  comment.getAllComments(function(err, data) {
+  comment.getAllComments(function (err, data) {
     var modifiedData = new Array(data.length);
-    for(var i=0; i<data.length; i++){
+    for (var i = 0; i < data.length; i++) {
       modifiedData[i] = {
-        _id:  data[i]._id,
+        _id: data[i]._id,
         author: data[i].author,
         date: data[i].dateOfCreation,
         slide: data[i].originSlide,
         html: data[i].renderedText
       };
     }
-    res.status(200).json({result:true, comments: modifiedData});
+    res.status(200).json({result: true, comments: modifiedData});
     /*res.render('slide-viewer/displayComments', {
-      numComments: data.length,
-      comments: modifiedData
-    });*/
+     numComments: data.length,
+     comments: modifiedData
+     });*/
   });
 });
 
 /*router.get('/disComm/:order/:filters', function(req, res, next){
-  var comment = new Comment();
+ var comment = new Comment();
 
-  var order = JSON.parse(req.params.order);
-  var filter = JSON.parse(req.params.filter);
+ var order = JSON.parse(req.params.order);
+ var filter = JSON.parse(req.params.filter);
 
 
-  comment.getAllComments(function(err, data) {
+ comment.getAllComments(function(err, data) {
 
-    //res.json(data);
-      res.render('slide-viewer/displayComments', {
-        numComments: data.length,
-        comments: data
-      }
+ //res.json(data);
+ res.render('slide-viewer/displayComments', {
+ numComments: data.length,
+ comments: data
+ }
 
-    );
+ );
 
-  });
-});*/
+ });
+ });*/
 
-router.get('/disComm/:order/:filters/', function(req, res, next){
+router.get('/disComm/:order/:filters/', function (req, res, next) {
   var comment = new Comment();
 
   var order = JSON.parse(req.params.order);
   var filter = JSON.parse(req.params.filters);
 
-  comment.getOrderedFilteredComments(order,filter,function(err, data) {
+  comment.getOrderedFilteredComments(order, filter, function (err, data) {
     var modifiedData = new Array(data.length);
-    for(var i=0; i<data.length; i++){
+    for (var i = 0; i < data.length; i++) {
       modifiedData[i] = {
-        _id:  data[i]._id,
-        id:  data[i].id,
+        _id: data[i]._id,
+        id: data[i].id,
         author: data[i].author,
         date: data[i].dateOfCreation,
         slide: data[i].originSlide,
@@ -212,21 +219,21 @@ router.get('/disComm/:order/:filters/', function(req, res, next){
         parentId: data[i].parentId
       };
     }
-    res.status(200).json({result:true, comments: modifiedData});
+    res.status(200).json({result: true, comments: modifiedData});
 
   });
 });
 
-router.get('/disAnnZones/', function(req, res, next){
+router.get('/disAnnZones/', function (req, res, next) {
   var annZone = new AnnZones();
 
 
-  annZone.getAllAnnotationZones(function(err, data) {
+  annZone.getAllAnnotationZones(function (err, data) {
     var modifiedData = new Array(data.length);
-    for(var i=0; i<data.length; i++){
+    for (var i = 0; i < data.length; i++) {
       modifiedData[i] = {
-        _id:  data[i]._id,
-        id:  data[i].id,
+        _id: data[i]._id,
+        id: data[i].id,
         name: data[i].annotationZoneName,
         relPosX: data[i].relativeCoordinates.X,
         relPosY: data[i].relativeCoordinates.Y,
@@ -236,21 +243,21 @@ router.get('/disAnnZones/', function(req, res, next){
       };
     }
     //console.log(modifiedData);
-    res.status(200).json({result:true, annZones: modifiedData});
+    res.status(200).json({result: true, annZones: modifiedData});
 
   });
 });
 
-router.get('/disAnnZones/:pdfId/:pdfPageNumber', function(req, res, next){
+router.get('/disAnnZones/:pdfId/:pdfPageNumber', function (req, res, next) {
   var annZone = new AnnZones();
 
   var pdfId = mongoose.Types.ObjectId(req.params.pdfId);
-  annZone.getSpecificAnnotationZones(pdfId, req.params.pdfPageNumber, function(err, data) {
+  annZone.getSpecificAnnotationZones(pdfId, req.params.pdfPageNumber, function (err, data) {
     var modifiedData = new Array(data.length);
-    for(var i=0; i<data.length; i++){
+    for (var i = 0; i < data.length; i++) {
       modifiedData[i] = {
-        _id:  data[i]._id,
-        id:  data[i].id,
+        _id: data[i]._id,
+        id: data[i].id,
         name: data[i].annotationZoneName,
         author: data[i].author,
         relPosX: data[i].relativeCoordinates.X,
@@ -261,17 +268,10 @@ router.get('/disAnnZones/:pdfId/:pdfPageNumber', function(req, res, next){
       };
     }
     //console.log(modifiedData);
-    res.status(200).json({result:true, annZones: modifiedData});
+    res.status(200).json({result: true, annZones: modifiedData});
 
   });
 });
-
-
-
-
-
-
-
 
 
 module.exports = router;
