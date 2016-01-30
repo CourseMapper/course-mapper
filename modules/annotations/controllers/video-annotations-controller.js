@@ -2,6 +2,13 @@ var VideoAnnotation = require('../models/video-annotation');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
+// Do not allow other users, except
+// the author an admin to modify
+var checkHasModificationRights = function (model, user) {
+  var isAuthor = model.authorId === user._id;
+  var isAdmin = user.role === 'admin';
+  return isAuthor || isAdmin;
+};
 
 var findByVideoIdAsync = async(function (videoId) {
   var task = VideoAnnotation
@@ -10,7 +17,6 @@ var findByVideoIdAsync = async(function (videoId) {
 
   return await(task);
 });
-
 
 var findByIdAsync = async(function (id) {
   return await(VideoAnnotation.findById(id).exec());
@@ -24,23 +30,14 @@ var addAsync = async(function (model, user) {
   return await(VideoAnnotation.create(model));
 });
 
-var checkHasModificationRights = function (annotation, user) {
-  var isAuthor = annotation.author === user.username;
-  var isAdmin = user.role === 'admin';
-  return isAuthor || isAdmin;
-};
-
 var updateAsync = async(function (model, user) {
   var annotation = await(findByIdAsync(model._id));
   if (!annotation) {
     return;
   }
-  // Do not allow other users, except
-  // the author an admin to modify the annotation
   if (!checkHasModificationRights(annotation, user)) {
     return;
   }
-
   // Set modifiable properties
   annotation.start = model.start;
   annotation.end = model.end;
@@ -48,13 +45,16 @@ var updateAsync = async(function (model, user) {
   annotation.position = model.position;
   annotation.size = model.size;
   annotation.type = model.type;
-
+  // Update model
   return await(annotation.save());
 });
 
-var removeAsync = async(function (annotationId) {
+var removeAsync = async(function (annotationId, user) {
   var annotation = await(findByIdAsync(annotationId));
   if (!annotation) {
+    return;
+  }
+  if (!checkHasModificationRights(annotation, user)) {
     return;
   }
 
@@ -85,7 +85,7 @@ var addCommentAsync = async(function (params, user) {
   // Save annotation
   await(annotation.save());
 
-  return true;
+  return annotation;
 });
 
 var removeCommentAsync = async(function (params, user) {
@@ -93,27 +93,23 @@ var removeCommentAsync = async(function (params, user) {
   var annotationId = params.annotation_id;
   var commentId = params.comment_id;
 
-  var annotation = await(VAController.findByIdAsync(annotationId));
+  var annotation = await(findByIdAsync(annotationId));
   if (!annotation) {
     return;
   }
 
-  var isAdmin = user.role === 'admin';
-
   for (var i = 0; i < annotation.comments.length; i++) {
     if (annotation.comments[i]._id.toString() === commentId) {
-      var isAuthor = annotation.comments[i].author === user.username;
-      if (isAuthor || isAdmin) {
-        //console.log('removing comment', commentId);
+      var comment = annotation.comments[i];
+      if (checkHasModificationRights(comment, user)) {
         annotation.comments[i].remove();
         break;
       }
     }
   }
-
   // Save annotation
   await(annotation.save());
-
+  return annotation;
 });
 
 module.exports = {

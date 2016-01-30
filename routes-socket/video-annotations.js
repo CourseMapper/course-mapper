@@ -9,29 +9,37 @@ var Plugin = require('../modules/apps-gallery/backgroundPlugins.js');
 module.exports = function (io) {
 
   // notifies all users about changes
-  var notifyAllSubscribersAsync = async(function (videoId) {
+  var emitAnnotationUpdatedAsync = async(function (videoId) {
+    if (!videoId) {
+      throw 'Invalid video ID: ' + videoId;
+    }
+
     var annotations = await(VAController.findByVideoIdAsync(videoId));
     io.sockets.emit('annotations:updated', annotations);
   });
 
+  // Notify users that the annotation
+  // comments have been updated
+  var emitCommentsUpdatedAsync = async(function (annotation) {
+    if (!annotation) {
+      return;
+    }
+    var eventName = annotation._id + ':comments:updated';
+    io.sockets.emit(eventName, {comments: annotation.comments});
+  });
+
   io.sockets.on('connection', function (socket) {
 
-
     var getUser = function () {
-      var hasSession = socket &&
-        socket.request &&
-        socket.request.session &&
-        socket.request.session.passport;
+      var hasSession = socket && socket.request && socket.request.session && socket.request.session.passport;
       if (!hasSession) {
         throw 'No user session found.'
       }
       return socket.request.session.passport.user;
     };
 
-
     socket.on('annotations:get', async(function (params) {
-      var videoId = params.video_id;
-      var annotations = await(VAController.findByVideoIdAsync(videoId));
+      var annotations = await(VAController.findByVideoIdAsync(params.video_id));
       // return annotations only to requester
       socket.emit('annotations:updated', annotations);
     }));
@@ -48,7 +56,7 @@ module.exports = function (io) {
           Plugin.doAction('onAfterVideoAnnotationCreated', annotation);
         }
         var videoId = annotation.video_id;
-        await(notifyAllSubscribersAsync(videoId));
+        await(emitAnnotationUpdatedAsync(videoId));
       }
       catch (e) {
         console.log('Error saving video annotation: ' + e);
@@ -57,13 +65,13 @@ module.exports = function (io) {
 
     socket.on('annotations:delete', async(function (params) {
       try {
-        var annotation = await(VAController.removeAsync(params.id));
+        var annotation = await(VAController.removeAsync(params.id, getUser()));
         if (!annotation) {
           return;
         }
         var videoId = annotation.video_id;
         Plugin.doAction('onAfterVideoAnnotationDeleted', videoId);
-        await(notifyAllSubscribersAsync(videoId));
+        await(emitAnnotationUpdatedAsync(videoId));
       } catch (e) {
         console.log('Error removing video annotation: ' + e);
       }
@@ -71,14 +79,8 @@ module.exports = function (io) {
 
     socket.on('comments:post', async(function (params) {
       try {
-        var user = getUser();
-        var annotationId = params.annotation_id;
-        await(VAController.addCommentAsync(params, user));
-        // Notify users that the annotation
-        // comments have been updated
-        var eventName = annotationId + ':comments:updated';
-        var annotation = await(VAController.findByIdAsync(annotationId));
-        io.sockets.emit(eventName, {comments: annotation.comments});
+        var annotation = await(VAController.addCommentAsync(params, getUser()));
+        await(emitCommentsUpdatedAsync(annotation));
       } catch (e) {
         console.log('Error posting comment: ' + e);
       }
@@ -86,13 +88,8 @@ module.exports = function (io) {
 
     socket.on('comments:remove', async(function (params) {
       try {
-        var user = getUser();
-        await(VAController.removeCommentAsync(params, user));
-
-        var annotationId = params.annotation_id;
-        var annotation = await(VAController.findByIdAsync(annotationId));
-        var eventName = annotationId + ':comments:updated';
-        io.sockets.emit(eventName, {comments: annotation.comments});
+        var annotation = await(VAController.removeCommentAsync(params, getUser()));
+        await(emitCommentsUpdatedAsync(annotation));
       } catch (e) {
         console.log('Error removing comment: ' + e);
       }
