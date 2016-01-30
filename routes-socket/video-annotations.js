@@ -20,22 +20,22 @@ var checkSession = function (socket) {
 module.exports = function (io) {
   io.sockets.on('connection', function (socket) {
 
-
     socket.on('annotations:get', async(function (params) {
       var videoId = params.video_id;
-      var annotations = await(VAController.getAnnotationsAsync(videoId));
-
+      var annotations = await(VAController.findByVideoIdAsync(videoId));
       // return annotations only to requester
       socket.emit('annotations:updated', annotations);
     }));
 
     socket.on('annotations:save', async(function (params) {
-      // find annotation model from DB
-      var id = params.annotation._id;
-      var annotation = await(VAController.findByIdAsync(id));
       if (!checkSession(socket)) {
         return;
       }
+
+      // find annotation model from DB
+      var id = params.annotation._id;
+      var annotation = await(VAController.findByIdAsync(id));
+
       var user = socket.request.session.passport.user;
 
       // update annotation properties
@@ -57,7 +57,7 @@ module.exports = function (io) {
         annotation.type = model.type;
 
         // save to DB
-        await(annotation.save());
+        await(VAController.update(annotation));
 
         Plugin.doAction('onAfterVideoAnnotationEdited', annotation);
       } else {
@@ -66,12 +66,13 @@ module.exports = function (io) {
         params.annotation.author = user.username;
         params.annotation.authorId = user._id;
         params.annotation.authorDisplayName = user.displayName;
-        annotation = await(VideoAnnotation.create(params.annotation));
+        annotation = await(VAController.add(params.annotation));
 
         Plugin.doAction('onAfterVideoAnnotationCreated', annotation);
       }
       var videoId = annotation.video_id;
-      var annotations = await(VAController.getAnnotationsAsync(videoId));
+      var annotations = await(VAController.findByVideoIdAsync(videoId));
+
       // notify all users about changes
       io.sockets.emit('annotations:updated', annotations);
     }));
@@ -92,7 +93,7 @@ module.exports = function (io) {
         await(annotation.remove());
         Plugin.doAction('onAfterVideoAnnotationDeleted', videoId);
 
-        var annotations = await(VAController.getAnnotationsAsync(videoId));
+        var annotations = await(VAController.findByVideoIdAsync(videoId));
 
         // notify all users about changes
         io.sockets.emit('annotations:updated', annotations);
