@@ -1,4 +1,4 @@
-var VideoAnnotation = require('../models/video-annotation');
+var VideoAnnotation = require('./video-annotation');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 

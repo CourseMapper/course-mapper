@@ -2,7 +2,7 @@
 
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-var VAController = require('../modules/annotations/controllers/video-annotations-controller');
+var VAController = require('../modules/annotations/video-annotations-controller');
 var Plugin = require('../modules/apps-gallery/backgroundPlugins.js');
 
 module.exports = function (io) {
