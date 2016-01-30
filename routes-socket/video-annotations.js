@@ -1,4 +1,3 @@
-/*jslint node: true */
 'use strict';
 
 var async = require('asyncawait/async');
@@ -13,7 +12,6 @@ module.exports = function (io) {
     if (!videoId) {
       throw 'Invalid video ID: ' + videoId;
     }
-
     var annotations = await(VAController.findByVideoIdAsync(videoId));
     io.sockets.emit('annotations:updated', annotations);
   });

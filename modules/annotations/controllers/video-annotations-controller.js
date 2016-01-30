@@ -19,11 +19,14 @@ var findByIdAsync = async(function (id) {
   return await(VideoAnnotation.findById(id).exec());
 });
 
+var findByAuthorIdAsync = async(function (authorId) {
+  return await(VideoAnnotation.find({authorId: authorId}).exec());
+});
+
 var addAsync = async(function (model, user) {
   model.author = user.username;
   model.authorId = user._id;
   model.authorDisplayName = user.displayName;
-
   return await(VideoAnnotation.create(model));
 });
 
@@ -54,27 +57,21 @@ var removeAsync = async(function (annotationId, user) {
 });
 
 var addCommentAsync = async(function (params, user) {
+
   var annotationId = params.annotation_id;
   var commentText = params.text;
-
-  // find annotation in db
   var annotation = await(findByIdAsync(annotationId));
   if (!annotation) {
     return;
   }
-
   var comment = {
     text: commentText,
     author: user.username || 'Unknown',
     authorId: user._id,
     authorDisplayName: user.displayName || user.username || 'Unknown'
   };
-
   annotation.comments.push(comment);
-
-  // Save annotation
   await(annotation.save());
-
   return annotation;
 });
 
@@ -99,8 +96,9 @@ var removeCommentAsync = async(function (params, user) {
 });
 
 module.exports = {
-  findByVideoIdAsync: findByVideoIdAsync,
   findByIdAsync: findByIdAsync,
+  findByAuthorIdAsync: findByAuthorIdAsync,
+  findByVideoIdAsync: findByVideoIdAsync,
   addAsync: addAsync,
   updateAsync: updateAsync,
   removeAsync: removeAsync,
