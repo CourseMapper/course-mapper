@@ -90,8 +90,8 @@ var removeCommentAsync = async(function (params, user) {
       var comment = annotation.comments[i];
       if (checkHasRightToModify(comment, user)) {
         annotation.comments[i].remove();
-        break;
       }
+      break;
     }
   }
   await(annotation.save());
