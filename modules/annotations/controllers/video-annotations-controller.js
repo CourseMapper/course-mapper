@@ -2,20 +2,17 @@ var VideoAnnotation = require('../models/video-annotation');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
-// Do not allow other users, except
-// the author an admin to modify
-var checkHasModificationRights = function (model, user) {
+var checkHasRightToModify = function (model, user) {
+  if (!model || !user || !user.role) {
+    return false;
+  }
   var isAuthor = model.authorId === user._id;
   var isAdmin = user.role === 'admin';
   return isAuthor || isAdmin;
 };
 
 var findByVideoIdAsync = async(function (videoId) {
-  var task = VideoAnnotation
-    .find({video_id: videoId})
-    .sort('start').exec();
-
-  return await(task);
+  return await(VideoAnnotation.find({video_id: videoId}).sort('start').exec());
 });
 
 var findByIdAsync = async(function (id) {
@@ -32,10 +29,7 @@ var addAsync = async(function (model, user) {
 
 var updateAsync = async(function (model, user) {
   var annotation = await(findByIdAsync(model._id));
-  if (!annotation) {
-    return;
-  }
-  if (!checkHasModificationRights(annotation, user)) {
+  if (!checkHasRightToModify(annotation, user)) {
     return;
   }
   // Set modifiable properties
@@ -46,20 +40,16 @@ var updateAsync = async(function (model, user) {
   annotation.size = model.size;
   annotation.type = model.type;
   // Update model
-  return await(annotation.save());
+  await(annotation.save());
+  return annotation;
 });
 
 var removeAsync = async(function (annotationId, user) {
   var annotation = await(findByIdAsync(annotationId));
-  if (!annotation) {
+  if (!checkHasRightToModify(annotation, user)) {
     return;
   }
-  if (!checkHasModificationRights(annotation, user)) {
-    return;
-  }
-
   await(annotation.remove());
-  // return the removed annotations
   return annotation;
 });
 
@@ -89,25 +79,21 @@ var addCommentAsync = async(function (params, user) {
 });
 
 var removeCommentAsync = async(function (params, user) {
-
   var annotationId = params.annotation_id;
   var commentId = params.comment_id;
-
   var annotation = await(findByIdAsync(annotationId));
   if (!annotation) {
     return;
   }
-
   for (var i = 0; i < annotation.comments.length; i++) {
     if (annotation.comments[i]._id.toString() === commentId) {
       var comment = annotation.comments[i];
-      if (checkHasModificationRights(comment, user)) {
+      if (checkHasRightToModify(comment, user)) {
         annotation.comments[i].remove();
         break;
       }
     }
   }
-  // Save annotation
   await(annotation.save());
   return annotation;
 });
