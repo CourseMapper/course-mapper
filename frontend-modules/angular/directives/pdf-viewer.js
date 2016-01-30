@@ -2,18 +2,14 @@ app.directive('pdfViewer',
   function ($compile, $timeout, $rootScope, $location, $routeParams) {
     return {
       restrict: 'E',
-
       terminal: true,
-
       scope: {
         source: '@',
         currentPageNumber: '=',
         showControl: '=',
         pdfId: '@'
       },
-
       templateUrl: '/angular/views/pdf-viewer.html',
-
       link: function (scope, element, attrs) {
         if (!PDFJS.PDFViewer || !PDFJS.getDocument) {
           alert('Please build the library and components using\n' +
@@ -23,10 +19,8 @@ app.directive('pdfViewer',
         scope.pageToView = 1;
         scope.scale = 1.0;
         scope.totalPage = 1;
-
         scope.container = element[0].getElementsByClassName('viewerContainer');
         scope.container = scope.container[0];
-
         scope.calculateSlideNavigationProgress = function (newSlideNumber) {
           if (scope.totalPage > 0) {
             var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
@@ -42,18 +36,14 @@ app.directive('pdfViewer',
           //console.log(pdfFilePath);
           if (pdfFilePath) {
             PDFJS.getDocument(pdfFilePath).then(function (pdfDocument) {
-
               if (attrs.currentPageNumber) {
                 scope.pageToView = parseInt(attrs.currentPageNumber);
               }
-
               //console.log("Started loading pdf");
               scope.totalPage = pdfDocument.numPages;
-
               function getRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
               }
-
               // Initialize CountMap
               // TODO - Load real annotations data
               var annotations = [];
@@ -62,7 +52,6 @@ app.directive('pdfViewer',
               for (var i = 0; i < dummyAnnotations; i++) {
                 annotations.push({page: getRandomInt(1, totalSegments)})
               }
-
               var countPrint = new CountMap({
                 segments: annotations,
                 segmentKey: 'page',
@@ -70,15 +59,12 @@ app.directive('pdfViewer',
                 container: 'countmap',
                 tooltip: 'countmap-tooltip',
                 maxValue: 10,
-                colorful: true
+                colorful: false
               });
-
               countPrint.onCountSelected = function (selectedPage) {
                 $rootScope.setPageNumber(selectedPage);
               };
-
               scope.calculateSlideNavigationProgress(scope.currentPageNumber);
-
               // this will apply totalpage to the html
               $timeout(function () {
                 scope.$apply();
@@ -101,13 +87,9 @@ app.directive('pdfViewer',
                 // Associates the actual page with the view, and drawing it
                 scope.pdfPageView.setPdfPage(pdfPage);
                 scope.scale = scope.scale * scope.container.clientWidth / scope.pdfPageView.width;
-
                 scope.pdfPageView.update(scope.scale, 0);
-
                 scope.pdfIsLoaded = true;
-
                 $rootScope.$broadcast('onPdfPageChange', [scope.currentPageNumber, scope.totalPage]);
-
                 return scope.pdfPageView.draw();
               });
             });
@@ -140,7 +122,6 @@ app.directive('pdfViewer',
               return;
             } else if (isNaN(newVal)) {
               $scope.currentNavPageNumber = oldVal;
-
             } else if (!(parseInt(newVal) >= 1 && parseInt(newVal) <= $scope.totalPage)) {
               $scope.currentNavPageNumber = oldVal;
             }
@@ -153,10 +134,8 @@ app.directive('pdfViewer',
               $rootScope.setPageNumber(parseInt($scope.currentNavPageNumber));
               $scope.$apply();
             });
-
             event.preventDefault();
           }
-
         });
 
         $scope.changePageNumber = function (value) {
@@ -166,9 +145,7 @@ app.directive('pdfViewer',
         $rootScope.setPageNumber = function (value) {
           if ((value) <= $scope.totalPage && (value) >= 1) {
             $scope.currentPageNumber = parseInt(value);
-
             $scope.setHistoryStack($scope.currentPageNumber);
-
             $timeout(function () {
               $scope.changeSlide($scope.currentPageNumber);
               $scope.$apply();
@@ -179,9 +156,7 @@ app.directive('pdfViewer',
         $scope.changeSlide = function (newSlideNumber) {
           $rootScope.clearTagNameErrors();
           $scope.pdfIsLoaded = false;
-
           $scope.pageToView = newSlideNumber;
-
           $scope.calculateSlideNavigationProgress(newSlideNumber);
 
           PDFJS.getDocument($scope.source).then(function (pdfDocument) {
@@ -192,10 +167,7 @@ app.directive('pdfViewer',
 
               //console.log("Slide Changed");
               $scope.pdfIsLoaded = true;
-
-
               $rootScope.$broadcast('onPdfPageChange', [newSlideNumber, $scope.totalPage]);
-
               /* todo: move this somewhere else
                drawAnnZonesWhenPDFAndDBDone();
                */
@@ -209,10 +181,8 @@ app.directive('pdfViewer',
 
         $scope.changePageNumberBasedOnUrl = function () {
           var q = $location.search();
-
           if (q.slidePage) {
             var pageNumFromUrl = parseInt(q.slidePage);
-
             if ($scope.currentPageNumber != pageNumFromUrl && pageNumFromUrl > 0 && pageNumFromUrl <= $scope.totalPage) {
               // we are back from somewhere we read it from the url.
               $scope.currentPageNumber = pageNumFromUrl;
@@ -227,9 +197,7 @@ app.directive('pdfViewer',
           } else {
             $rootScope.switchShowAnnoZones = "On";
           }
-
         };
-
 
         function adjustPdfScale() {
           //console.log("Adjusting PDF Scale");
@@ -241,13 +209,9 @@ app.directive('pdfViewer',
             $scope.pdfPageView.update($scope.scale, 0);
             $scope.pdfPageView.draw().catch(function () {
             });
-
             $rootScope.currCanWidth = $('#annotationZone').width();
-
             $rootScope.currCanHeight = $('#annotationZone').height();
-
             $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
-
           }
         };
 
@@ -278,11 +242,8 @@ app.directive('pdfViewer',
 
         $scope.$on('onPdfPageChange', function (event, params) {
           setCurrentCanvasHeight(parseInt($('#annotationZone').height()));
-
           $rootScope.currCanWidth = $('#annotationZone').width();
-
           $rootScope.currCanHeight = $('#annotationZone').height();
-
           $rootScope.$broadcast("pdfScaleChanged", [$rootScope.currCanWidth, $rootScope.currCanHeight]);
         });
 
