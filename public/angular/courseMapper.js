@@ -2945,7 +2945,7 @@ app.directive('movablePdf', function() {
                     container: 'countmap',
                     tooltip: 'countmap-tooltip',
                     maxValue: 10,
-                    colorful: true
+                    colorful: false
                   });
                   countPrint.onCountSelected = function (selectedPage) {
                     $rootScope.setPageNumber(selectedPage);
