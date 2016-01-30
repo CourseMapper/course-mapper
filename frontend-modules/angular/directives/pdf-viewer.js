@@ -46,7 +46,7 @@ app.directive('pdfViewer',
               }
 
               // Initialize CountMap
-              $http.get('/slide-viewer/countmap')
+              $http.get('/slide-viewer/countmap/' + scope.pdfId)
                 .success(function (segments) {
                   var countPrint = new CountMap({
                     segments: segments,

@@ -66,9 +66,10 @@ router.get('/', function (req, res, next) {
 /**
  * Retrieve count-map data
  **/
-router.get('/countmap', function (req, res, next) {
+router.get('/countmap/:pdfId', function (req, res, next) {
+  var pdfId = req.params.pdfId;
   var comment = new Comment();
-  comment.getAllComments(function (err, annotations) {
+  comment.getPdfAnnotations(pdfId, function (err, annotations) {
     if (err) {
       return res.send(500);
     }

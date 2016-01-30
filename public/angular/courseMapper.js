@@ -2936,7 +2936,7 @@ app.directive('movablePdf', function() {
               }
 
               // Initialize CountMap
-              $http.get('/slide-viewer/countmap')
+              $http.get('/slide-viewer/countmap/' + scope.pdfId)
                 .success(function (segments) {
                   var countPrint = new CountMap({
                     segments: segments,
