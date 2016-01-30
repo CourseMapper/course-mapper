@@ -58,12 +58,10 @@ app.directive('pdfViewer',
               // TODO - Load real annotations data
               var annotations = [];
               var totalSegments = pdfDocument.numPages;
-              var annotatedPagesLength = getRandomInt(1, totalSegments);
-              for (var i = 0; i < annotatedPagesLength; i++) {
-                annotations.push({page: getRandomInt(1, annotatedPagesLength)})
+              var dummyAnnotations = getRandomInt(1, totalSegments * 10);
+              for (var i = 0; i < dummyAnnotations; i++) {
+                annotations.push({page: getRandomInt(1, totalSegments)})
               }
-
-              console.log(JSON.stringify(annotations));
 
               var countPrint = new CountMap({
                 segments: annotations,
