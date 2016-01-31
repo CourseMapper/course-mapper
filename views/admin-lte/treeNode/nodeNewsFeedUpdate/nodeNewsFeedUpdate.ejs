@@ -1,18 +1,22 @@
-<div ng-controller="NewsfeedController">
+<div ng-controller="NewsfeedNodeController">
     <div class="row">
         <div class="col-xs-12 col-md-11" id="newsfeedList" style="">
             <div class="static-header" style="overflow: hidden; margin-bottom: 10px;">
                 <div class="content-header">
                     <h4 class="pull-left">Newsfeed Timeline</h4>
                     <select name="show-filter" ng-model="filterDropDown"
-                            ng-options="type.name for type in nfType" class="form-control pull-right" style="float: right; max-width: 300px; text-transform: capitalize;">
+                            ng-options="type.name for type in nfNodeType" class="form-control pull-right" style="float: right; max-width: 300px; text-transform: capitalize;">
                         <option value="">-- Filter --</option>
                     </select>
+                    <form class="form-inline" style="max-width: 200px; float: right; margin-right: 10px; margin-top: 3px;">
+                        <input type="text" ng-model="query" placeholder="Search"/>
+                    </form>
                 </div>
+
             </div>
             <div class="content" style="max-height: 500px; overflow: auto; background-color: #ECF0F5; border-radius: 3px;">
                 <ul class="timeline">
-                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: filterDropDown.name" ng-switch on="nfData.actionSubject">
+                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: filterDropDown.name | filter: query" ng-switch on="nfData.actionSubject">
                         <i class="fa fa-book bg-navy" ng-switch-when="course"></i>
                         <i class="fa fa-arrow-up bg-teal-active" ng-switch-when="up vote"></i>
                         <i class="fa fa-arrow-down bg-teal" ng-switch-when="down vote"></i>
@@ -27,7 +31,6 @@
                         <i class="fa fa-comments-o bg-green" ng-switch-when="discussion"></i>
                         <i class="fa fa-user bg-maroon" ng-switch-default></i>
                         <div class="timeline-item">
-
                             <div class="timeline-header bg-gray inactive" style="border-radius: 3px;">
                                 <small class="text-muted">
                                     <b>{{nfData.actionSubject | capitalize}}</b>
@@ -47,9 +50,12 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </li>
                 </ul>
+                <p ng-show="(newsfeedData|filter: filterDropDown.name).length==0">There are no such activities </p>
+                <p ng-show="(newsfeedData|filter: query).length==0">There are no such activities </p>
             </div>
 
         </div>

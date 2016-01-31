@@ -21,7 +21,7 @@ newsfeedSystem.prototype.getNewsfeed = function (error,courseId, success) {
                 $lte: today,
                 $gte: lastThirtyDays
             },
-            actionSubject: {$in: [/node/i, "sub topic", "course", "discussion"]}
+            actionSubject: {$in: [/node/i, "sub topic", "course", "discussion"]} // SLASHnodeSLASHi is regex to find all doc contain word "node"
         })
             .populate('userId', '_id image displayName')
             .exec(function(err, docs) {

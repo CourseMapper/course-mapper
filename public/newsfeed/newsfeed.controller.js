@@ -8,27 +8,12 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
     //$scope.query = "vote";
     $scope.nfType = [
         {"name": "course"},
-        {"name": "vote"},
         {"name": "sub topic"},
         {"name": "content node"},
         {"name": "node"},
-        {"name": "pdf annotation"},
-        {"name": "video annotation"},
-        {"name": "link"},
         {"name": "discussion"}
     ];
 
-    $scope.nfNodeType = [
-        {"name": "course"},
-        {"name": "vote"},
-        {"name": "sub topic"},
-        {"name": "content node"},
-        {"name": "node"},
-        {"name": "pdf annotation"},
-        {"name": "video annotation"},
-        {"name": "link"},
-        {"name": "discussion"}
-    ];
 
     $http.get('/api/newsfeed/'+$scope.courseId).success(function (data) {
         $scope.newsfeedData = data.newsfeeds;
