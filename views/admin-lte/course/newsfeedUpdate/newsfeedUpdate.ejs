@@ -8,14 +8,15 @@
                             ng-options="type.name for type in nfType" class="form-control pull-right" style="float: right; max-width: 300px; text-transform: capitalize;">
                         <option value="">-- Filter --</option>
                     </select>
+                    <form class="form-inline" style="max-width: 200px; float: right; margin-right: 10px; margin-top: 3px;">
+                        <input type="text" ng-model="query" placeholder="Search"/>
+                    </form>
                 </div>
-                <!--<form class="form-inline" style="max-width: 200px; float: right">
-                    <input type="text" ng-model="query" placeholder="Filter By" autofocus/>
-                </form>-->
+
             </div>
             <div class="content" style="max-height: 500px; overflow: auto; background-color: #ECF0F5; border-radius: 3px;">
                 <ul class="timeline">
-                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: filterDropDown.name" ng-switch on="nfData.actionSubject">
+                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: filterDropDown.name | filter: query" ng-switch on="nfData.actionSubject">
                         <i class="fa fa-book bg-navy" ng-switch-when="course"></i>
                         <i class="fa fa-arrow-up bg-teal-active" ng-switch-when="up vote"></i>
                         <i class="fa fa-arrow-down bg-teal" ng-switch-when="down vote"></i>
@@ -53,6 +54,8 @@
                         </div>
                     </li>
                 </ul>
+                <p ng-show="(newsfeedData|filter: filterDropDown.name).length==0">There are no such activities </p>
+                <p ng-show="(newsfeedData|filter: query).length==0">There are no such activities </p>
             </div>
 
         </div>
