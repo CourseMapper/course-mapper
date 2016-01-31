@@ -1,4 +1,3 @@
-/* jslint node: true */
 'use strict';
 
 var mongoose = require('mongoose');
@@ -8,6 +7,7 @@ var CommentSchema = new mongoose.Schema({
   date_removed: {type: Date},
   date_modified: {type: Date},
   author: {type: String, required: true},
+  authorId: {type: String, required: true},
   authorDisplayName: {type: String, required: true},
   text: {type: String, required: true}
 });

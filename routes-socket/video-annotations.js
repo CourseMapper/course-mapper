@@ -1,180 +1,96 @@
-/*jslint node: true */
 'use strict';
 
-var async = require('asyncawait/async'),
-    await = require('asyncawait/await'),
-    VideoAnnotation = require('../modules/annotations/models/video-annotation');
-
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+var VAController = require('../modules/annotations/video-annotations-controller');
 var Plugin = require('../modules/apps-gallery/backgroundPlugins.js');
 
-var checkSession = function (socket) {
-    var hasSession = socket &&
-        socket.request &&
-        socket.request.session &&
-        socket.request.session.passport &&
-        socket.request.session.passport.user;
-    return hasSession;
-};
-
 module.exports = function (io) {
-    io.sockets.on('connection', function (socket) {
-        var getAnnotationsAsync = async(function (videoId) {
-            return await(VideoAnnotation.find({
-                video_id: videoId
-            }).sort('start').exec());
-        });
 
-        socket.on('annotations:get', async(function (params) {
-            var videoId = params.video_id;
-            var annotations = await(getAnnotationsAsync(videoId));
+  // notifies all users about changes
+  var emitAnnotationUpdatedAsync = async(function (videoId) {
+    if (!videoId) {
+      throw 'Invalid video ID: ' + videoId;
+    }
+    var annotations = await(VAController.findByVideoIdAsync(videoId));
+    io.sockets.emit('annotations:updated', annotations);
+  });
 
-            // return annotations only to requester
-            socket.emit('annotations:updated', annotations);
-        }));
+  // Notify users that the annotation
+  // comments have been updated
+  var emitCommentsUpdatedAsync = async(function (annotation) {
+    if (!annotation) {
+      return;
+    }
+    var eventName = annotation._id + ':comments:updated';
+    io.sockets.emit(eventName, {comments: annotation.comments});
+  });
 
-        socket.on('annotations:save', async(function (params) {
-            // find annotation model from DB
-            var annotation = await(VideoAnnotation.findById(params.annotation._id).exec());
-            if (!checkSession(socket)) {
-                return;
-            }
-            var user = socket.request.session.passport.user;
+  io.sockets.on('connection', function (socket) {
 
-            // update annotation properties
-            if (annotation) {
-                // Do not allow other users, except
-                // the author an admin to modify the annotation
-                var isAuthor = annotation.author === user.username;
-                var isAdmin = user.role === 'admin';
-                if (!isAuthor && !isAdmin) {
-                    return;
-                }
-                var model = params.annotation;
+    var getUser = function () {
+      var hasSession = socket && socket.request && socket.request.session && socket.request.session.passport;
+      if (!hasSession) {
+        throw 'No user session found.'
+      }
+      return socket.request.session.passport.user;
+    };
 
-                annotation.start = model.start;
-                annotation.end = model.end;
-                annotation.text = model.text;
-                annotation.position = model.position;
-                annotation.size = model.size;
-                annotation.type = model.type;
+    socket.on('annotations:get', async(function (params) {
+      var annotations = await(VAController.findByVideoIdAsync(params.video_id));
+      // return annotations only to requester
+      socket.emit('annotations:updated', annotations);
+    }));
 
-                // save to DB
-                await(annotation.save());
+    socket.on('annotations:save', async(function (params) {
+      try {
+        var user = getUser();
+        var model = params.annotation;
+        var annotation = await(VAController.updateAsync(model, user));
+        if (annotation) {
+          Plugin.doAction('onAfterVideoAnnotationEdited', annotation);
+        } else {
+          annotation = await(VAController.addAsync(model, user));
+          Plugin.doAction('onAfterVideoAnnotationCreated', annotation);
+        }
+        var videoId = annotation.video_id;
+        await(emitAnnotationUpdatedAsync(videoId));
+      }
+      catch (e) {
+        console.log('Error saving video annotation: ' + e);
+      }
+    }));
 
-                Plugin.doAction('onAfterVideoAnnotationEdited', annotation);
-            } else {
-                //  set the author and
-                // create new model in DB
-                params.annotation.author = user.username;
-                params.annotation.authorId = user._id;
-                params.annotation.authorDisplayName = user.displayName;
-                annotation = await(VideoAnnotation.create(params.annotation));
+    socket.on('annotations:delete', async(function (params) {
+      try {
+        var annotation = await(VAController.removeAsync(params.id, getUser()));
+        if (!annotation) {
+          return;
+        }
+        var videoId = annotation.video_id;
+        Plugin.doAction('onAfterVideoAnnotationDeleted', videoId);
+        await(emitAnnotationUpdatedAsync(videoId));
+      } catch (e) {
+        console.log('Error removing video annotation: ' + e);
+      }
+    }));
 
-                Plugin.doAction('onAfterVideoAnnotationCreated', annotation);
-            }
-            var videoId = annotation.video_id;
-            var annotations = await(getAnnotationsAsync(videoId));
-            // notify all users about changes
-            io.sockets.emit('annotations:updated', annotations);
-        }));
+    socket.on('comments:post', async(function (params) {
+      try {
+        var annotation = await(VAController.addCommentAsync(params, getUser()));
+        await(emitCommentsUpdatedAsync(annotation));
+      } catch (e) {
+        console.log('Error posting comment: ' + e);
+      }
+    }));
 
-        socket.on('annotations:delete', async(function (params) {
-            try {
-                var annotationId = params.id;
-
-                // find annotation in db
-                var annotation = await(VideoAnnotation.findById(annotationId).exec());
-                if (!annotation) {
-                    return;
-                }
-
-                var videoId = annotation.video_id;
-
-                // remove annotation from db
-                await(annotation.remove());
-                Plugin.doAction('onAfterVideoAnnotationDeleted', videoId);
-
-                var annotations = await(getAnnotationsAsync(videoId));
-
-                // notify all users about changes
-                io.sockets.emit('annotations:updated', annotations);
-            } catch (e) {
-                console.log(e);
-            }
-        }));
-
-        socket.on('comments:post', async(function (params) {
-            try {
-                var annotationId = params.annotation_id;
-
-                // find annotation in db
-                var annotation = await(VideoAnnotation.findById(annotationId).exec());
-                if (!annotation) {
-                    return;
-                }
-                if (!checkSession(socket)) {
-                    return;
-                }
-                var user = socket.request.session.passport.user;
-                var comment = {
-                    text: params.text,
-                    author: user.username || 'Unknown',
-                    authorDisplayName: user.displayName || user.username || 'Unknown'
-                };
-
-                annotation.comments.push(comment);
-
-                // Save annotation
-                await(annotation.save());
-
-                // Notify users that the annotation
-                // comments have been updated
-                var eventName = annotationId + ':comments:updated';
-                io.sockets.emit(eventName, {
-                    comments: annotation.comments
-                });
-            } catch (e) {
-                console.log(e);
-            }
-        }));
-
-        socket.on('comments:remove', async(function (params) {
-            try {
-                var annotationId = params.annotation_id;
-                var commentId = params.comment_id;
-
-                var annotation = await(VideoAnnotation.findById(annotationId).exec());
-                if (!annotation) {
-                    return;
-                }
-                if (!checkSession(socket)) {
-                    return;
-                }
-                var user = socket.request.session.passport.user;
-                var isAdmin = user.role === 'admin';
-
-                for (var i = 0; i < annotation.comments.length; i++) {
-                    if (annotation.comments[i]._id.toString() === commentId) {
-                        var isAuthor = annotation.comments[i].author === user.username;
-                        if (isAuthor || isAdmin) {
-                            //console.log('removing comment', commentId);
-                            annotation.comments[i].remove();
-                            break;
-                        }
-                    }
-                }
-
-                // Save annotation
-                await(annotation.save());
-
-                var eventName = annotationId + ':comments:updated';
-                io.sockets.emit(eventName, {
-                    comments: annotation.comments
-                });
-
-            } catch (e) {
-                console.log(e);
-            }
-        }));
-    });
+    socket.on('comments:remove', async(function (params) {
+      try {
+        var annotation = await(VAController.removeCommentAsync(params, getUser()));
+        await(emitCommentsUpdatedAsync(annotation));
+      } catch (e) {
+        console.log('Error removing comment: ' + e);
+      }
+    }));
+  });
 };
