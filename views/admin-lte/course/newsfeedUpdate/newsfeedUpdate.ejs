@@ -41,8 +41,13 @@
                                     <div class="">
                                         <div class="product-img" style="margin-left: 10px;"><img src="{{nfData.userId.image}}" alt="user image" class="img-circle" style="width: 30px; height: auto;"/></div>
                                         <div class="product-info">
-                                            <b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'cancel vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> in </span>
-                                            <a><b>{{nfData.actionName}}</b></a> <br/>
+                                            <!--<b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'cancel vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> in </span>
+                                            <a><b>{{nfData.actionName}}</b></a>-->
+                                            <b>{{nfData.userId.displayName}}</b> {{nfData.actionType}} {{nfData.actionSubject}}
+                                            <a ng-show="nfData.actionSubject == 'content node' || nfData.actionSubject == 'node' || nfData.actionSubject == 'sub topic'" href="#/cid/{{curUrl.courseId}}?tab=map"><b>{{nfData.actionName}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'discussion'" href="#/cid/{{curUrl.courseId}}?tab=discussion"><b>{{nfData.actionName}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'course'" href="#/cid/{{curUrl.courseId}}?tab=preview"><b>{{nfData.actionName}}</b></a>
+                                            <br/>
                                             <small class="text-muted">
                                                 <i class="fa fa-clock-o"> {{nfData.dateAdded | relativeDate}}</i>
                                             </small>
@@ -54,8 +59,7 @@
                         </div>
                     </li>
                 </ul>
-                <p ng-show="(newsfeedData|filter: filterDropDown.name).length==0">There are no such activities </p>
-                <p ng-show="(newsfeedData|filter: query).length==0">There are no such activities </p>
+                <p ng-show="(newsfeedData|filter: filterDropDown.name).length==0 || (newsfeedData|filter: query).length==0">There are no such activities </p>
             </div>
 
         </div>
