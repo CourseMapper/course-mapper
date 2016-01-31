@@ -20,7 +20,8 @@ newsfeedSystem.prototype.getNewsfeed = function (error,courseId, success) {
             dateAdded: {
                 $lte: today,
                 $gte: lastThirtyDays
-            }
+            },
+            actionSubject: {$in: [/node/i, "sub topic", "course", "discussion"]}
         })
             .populate('userId', '_id image displayName')
             .exec(function(err, docs) {
@@ -31,6 +32,29 @@ newsfeedSystem.prototype.getNewsfeed = function (error,courseId, success) {
 
                 }
             });
+};
+
+newsfeedSystem.prototype.getNewsfeedNode = function (error,courseId, success) {
+    var today = moment();
+    var lastThirtyDays = moment(today).subtract(30, 'days');
+    Newsfeed.find(
+        {
+            courseId: courseId,
+            dateAdded: {
+                $lte: today,
+                $gte: lastThirtyDays
+            },
+            actionSubject: {$in: ["pdf annotation", "video annotation", "link"]}
+        })
+        .populate('userId', '_id image displayName')
+        .exec(function(err, docs) {
+            if (err){
+                error(err);
+            } else {
+                success(docs);
+
+            }
+        });
 };
 
 module.exports = newsfeedSystem;

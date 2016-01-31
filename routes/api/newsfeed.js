@@ -48,4 +48,42 @@ router.get('/newsfeed/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
             });
     });
 
+router.get('/newsfeed-node/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user)
+            return res.status(401).send('Unauthorized');
+
+        userHelper.isEnrolledAsync({
+            userId: mongoose.Types.ObjectId(req.user._id),
+            courseId: mongoose.Types.ObjectId(req.params.courseId)
+        })
+            .then(function (isEnrolled) {
+                if (!isEnrolled) {
+                    return helper.resReturn(helper.createError401(), res);
+                }
+
+                var nf = new NewsfeedController();
+                nf.getNewsfeedNode(
+                    function (err) {
+                        res.status(500).json({
+                            result: false,
+                            errors: err
+                        });
+                    },
+                    // parameters
+                    mongoose.Types.ObjectId(req.params.courseId),
+
+                    function (newsfeeds) {
+                        res.status(200).json({
+                            result: true, newsfeeds: newsfeeds
+                        });
+                    }
+                );
+
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+    });
+
 module.exports = router;
