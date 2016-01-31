@@ -18,6 +18,18 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
         {"name": "discussion"}
     ];
 
+    $scope.nfNodeType = [
+        {"name": "course"},
+        {"name": "vote"},
+        {"name": "sub topic"},
+        {"name": "content node"},
+        {"name": "node"},
+        {"name": "pdf annotation"},
+        {"name": "video annotation"},
+        {"name": "link"},
+        {"name": "discussion"}
+    ];
+
     $http.get('/api/newsfeed/'+$scope.courseId).success(function (data) {
         $scope.newsfeedData = data.newsfeeds;
         $scope.nfLength = data.newsfeeds.length;

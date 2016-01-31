@@ -12,6 +12,7 @@ var Links = require('../../links/models/links.js');
 //var Discussions = require('../../discussion/models/courseDiscussions.js');
 var UserCourses = require('../../catalogs/userCourses.js');
 
+
 var NewsfeedListener = {
 
     //Listener for Courses
@@ -92,7 +93,114 @@ var NewsfeedListener = {
                     } else {
                         voteValue = "cancel vote";
                     }
-                    if (voteType == "discussion"|| "discussionReply") {
+                    if (voteType == "slideComment") {
+                        PdfAnnotation.findOne({_id: doc.voteTypeId})
+                            .exec(function(err, res){
+                                if (res) {
+                                    var pdfId = res.pdfId;
+                                    if (pdfId) {
+                                        Resources.findOne ({_id: pdfId})
+                                            .exec(function(err, resResources){
+                                                if (resResources) {
+                                                    SubTopics.findOne ({_id:resResources.treeNodeId})
+                                                        .exec(function(err, resSubTopics){
+                                                            if (resSubTopics) {
+                                                                var pdfName = resSubTopics.name;
+                                                                var nf = new NewsfeedAgg (
+                                                                    {
+                                                                        userId: doc.createdBy,
+                                                                        actionSubjectIds: postId,
+                                                                        actionSubject: "pdf annotation",
+                                                                        actionName: pdfName,
+                                                                        courseId: resSubTopics.courseId,
+                                                                        actionType: voteValue,
+                                                                        dateAdded: doc.dateUpdated
+                                                                    }
+                                                                );
+                                                                nf.save(
+                                                                    function (err, doc) {
+                                                                        if (!err) debug ('');
+                                                                        else debug(err);
+                                                                    }
+                                                                )
+                                                            }
+                                                        })
+                                                }
+                                            })
+                                    }
+                                }
+                            })
+                    } else if (voteType == "videoAnnotation") {
+                        VideoAnnotation.findOne({_id: doc.voteTypeId})
+                            .exec(function(err, res){
+                                if (res) {
+                                    var videoId = res.video_id;
+                                    if (videoId) {
+                                        Resources.findOne ({_id: videoId})
+                                            .exec(function(err, resResources){
+                                                if (resResources) {
+                                                    SubTopics.findOne ({_id: resResources.treeNodeId})
+                                                        .exec(function(err, resSubTopics){
+                                                            if (resSubTopics) {
+                                                                var videoName = resSubTopics.name;
+                                                                var nf = new NewsfeedAgg (
+                                                                    {
+                                                                        userId: doc.createdBy,
+                                                                        actionSubjectIds: postId,
+                                                                        actionSubject: "video annotation",
+                                                                        actionName: videoName,
+                                                                        courseId: resSubTopics.courseId,
+                                                                        actionType: voteValue,
+                                                                        dateAdded: doc.dateUpdated
+                                                                    }
+                                                                );
+                                                                nf.save(
+                                                                    function (err, doc) {
+                                                                        if (!err) debug('');
+                                                                        else debug(err);
+                                                                    }
+                                                                )
+                                                            }
+                                                        });
+
+                                                }
+                                            });
+                                    }
+                                }
+                            })
+
+                    }else if (voteType == "link") {
+                        Links.findOne({_id: doc.voteTypeId})
+                            .exec(function(err, res){
+                                if (res) {
+                                    var contentNodeId = res.contentNode;
+                                    if (contentNodeId) {
+                                        SubTopics.findOne({_id: contentNodeId})
+                                            .exec (function(err, resSubTopics){
+                                                if (resSubTopics){
+                                                    var nf = new NewsfeedAgg (
+                                                        {
+                                                            userId: doc.createdBy,
+                                                            actionSubjectIds: postId,
+                                                            actionSubject: voteType,
+                                                            actionName:res.title,
+                                                            courseId: resSubTopics.courseId,
+                                                            actionType:voteValue,
+                                                            dateAdded: doc.dateUpdated
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else debug (err);
+                                                        }
+                                                    );
+                                                }
+                                            })
+                                    }
+                                }
+                            })
+                    } else if (voteType == "discussion"|| "discussionReply") {
 
                         Posts.findOne({_id: postId})
                             .exec(function (err, result) {
@@ -102,13 +210,13 @@ var NewsfeedListener = {
                                     if (courseId) {
                                         var nf = new NewsfeedAgg(
                                             {
-                                                userId: newVote.createdBy,
-                                                actionSubjectIds: postId,
-                                                actionSubject: voteValue,
-                                                actionName: postName,
-                                                courseId: courseId,
-                                                actionType: "added",
-                                                dateAdded: newVote.dateUpdated
+                                                userId: newVote.createdBy, //userId: user who vote
+                                                actionSubjectIds: postId, //actionSubjectIds: voteTypeId
+                                                actionSubject: voteType, //actionSubject: either discussion, link or comment in resource
+                                                actionName: postName, // actionName: title of discussion/link or empty if resource comment
+                                                courseId: courseId, // self explanatory
+                                                actionType: voteValue, //upvote downvote, cancel vote (voteValue)
+                                                dateAdded: newVote.dateUpdated // self explanatory
                                             }
                                         );
                                         nf.save(
@@ -127,10 +235,10 @@ var NewsfeedListener = {
                                                             {
                                                                 userId: newVote.createdBy,
                                                                 actionSubjectIds: postId,
-                                                                actionSubject: voteValue,
+                                                                actionSubject: voteType,
                                                                 actionName: parentResult.title,
                                                                 courseId: parentResult.course,
-                                                                actionType: "added",
+                                                                actionType: voteValue,
                                                                 dateAdded: newVote.dateUpdated
                                                             }
                                                         );
@@ -151,11 +259,15 @@ var NewsfeedListener = {
                             })
                     }
 
+
+
+
+
                 }
             });
 
     },
-
+    
     //Listener for Treenodes - Subtopics
     onAfterSubTopicCreated: function (newSubTopic) {
         SubTopics.findOne({_id: newSubTopic._id})
