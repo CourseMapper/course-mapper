@@ -2,20 +2,21 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
                                              $location, $routeParams, $timeout,
                                              courseService, authService, toastr, Page) {
     $scope.courseId = $routeParams.courseId;
+    $scope.curUrl = $routeParams;
 
     $scope.newsfeedData = [];
     $scope.filterDropDown = {};
     //$scope.query = "vote";
     $scope.nfType = [
         {"name": "course"},
+        {"name": "node"},
         {"name": "sub topic"},
         {"name": "content node"},
-        {"name": "node"},
         {"name": "discussion"}
     ];
 
 
-    $http.get('/api/newsfeed/'+$scope.courseId).success(function (data) {
+    $http.get('/api/newsfeed/cid/'+$scope.courseId).success(function (data) {
         $scope.newsfeedData = data.newsfeeds;
         $scope.nfLength = data.newsfeeds.length;
     });

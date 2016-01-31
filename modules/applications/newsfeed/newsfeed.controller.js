@@ -34,7 +34,7 @@ newsfeedSystem.prototype.getNewsfeed = function (error,courseId, success) {
             });
 };
 
-newsfeedSystem.prototype.getNewsfeedNode = function (error,courseId, success) {
+newsfeedSystem.prototype.getNewsfeedNode = function (error,courseId, nodeId, success) {
     var today = moment();
     var lastThirtyDays = moment(today).subtract(30, 'days');
     Newsfeed.find(
@@ -44,7 +44,8 @@ newsfeedSystem.prototype.getNewsfeedNode = function (error,courseId, success) {
                 $lte: today,
                 $gte: lastThirtyDays
             },
-            actionSubject: {$in: ["pdf annotation", "video annotation", "link"]}
+            actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "link"]},
+            nodeId: nodeId
         })
         .populate('userId', '_id image displayName')
         .exec(function(err, docs) {

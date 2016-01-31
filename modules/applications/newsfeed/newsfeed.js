@@ -113,6 +113,7 @@ var NewsfeedListener = {
                                                                         actionSubject: "pdf annotation",
                                                                         actionName: pdfName,
                                                                         courseId: resSubTopics.courseId,
+                                                                        nodeId: resSubTopics.id,
                                                                         actionType: voteValue,
                                                                         dateAdded: doc.dateUpdated
                                                                     }
@@ -150,6 +151,7 @@ var NewsfeedListener = {
                                                                         actionSubject: "video annotation",
                                                                         actionName: videoName,
                                                                         courseId: resSubTopics.courseId,
+                                                                        nodeId: resSubTopics.id,
                                                                         actionType: voteValue,
                                                                         dateAdded: doc.dateUpdated
                                                                     }
@@ -185,6 +187,7 @@ var NewsfeedListener = {
                                                             actionSubject: voteType,
                                                             actionName:res.title,
                                                             courseId: resSubTopics.courseId,
+                                                            nodeId: resSubTopics.id,
                                                             actionType:voteValue,
                                                             dateAdded: doc.dateUpdated
                                                         }
@@ -345,6 +348,7 @@ var NewsfeedListener = {
                                 actionSubject: "content node",
                                 actionName: doc.name,
                                 courseId: courseId,
+                                nodeId: doc.id,
                                 actionType: "created",
                                 dateAdded: doc.dateAdded
                             }
@@ -376,6 +380,7 @@ var NewsfeedListener = {
                                 actionSubject: "content node",
                                 actionName: doc.name,
                                 courseId: courseId,
+                                nodeId: doc.id,
                                 actionType: "edited",
                                 dateAdded: doc.dateUpdated
                             }
@@ -479,6 +484,7 @@ var NewsfeedListener = {
                                                             actionSubject: "pdf annotation",
                                                             actionName: res.name,
                                                             courseId: result.courseId,
+                                                            nodeId: res.id,
                                                             actionType: "added",
                                                             dateAdded: doc.dateOfCreation
                                                         }
@@ -527,6 +533,7 @@ var NewsfeedListener = {
                                                             actionSubject: "pdf annotation",
                                                             actionName: res.name,
                                                             courseId: result.courseId,
+                                                            nodeId: res.id,
                                                             actionType: "replied",
                                                             dateAdded: doc.dateOfCreation
                                                         }
@@ -576,6 +583,7 @@ var NewsfeedListener = {
                                                             actionSubject: "pdf annotation zone",
                                                             actionName: res.name,
                                                             courseId: result.courseId,
+                                                            nodeId: res.id,
                                                             actionType: "created",
                                                             dateAdded: dateNow
                                                         }
@@ -624,6 +632,7 @@ var NewsfeedListener = {
                                                             actionSubject: "pdf annotation zone",
                                                             actionName: res.name,
                                                             courseId: result.courseId,
+                                                            nodeId: res.id,
                                                             actionType: "edited",
                                                             dateAdded: dateNow
                                                         }
@@ -672,6 +681,7 @@ var NewsfeedListener = {
                                                         actionSubject: "video annotation",
                                                         actionName: res.name,
                                                         courseId: result.courseId,
+                                                        nodeId: res.id,
                                                         actionType: "added",
                                                         dateAdded: doc.date_created
                                                     }
@@ -714,6 +724,7 @@ var NewsfeedListener = {
                                                             actionSubject: "video annotation",
                                                             actionName: res.name,
                                                             courseId: result.courseId,
+                                                            nodeId: res.id,
                                                             actionType: "edited",
                                                             dateAdded: doc.date_modified
                                                         }
@@ -756,6 +767,7 @@ var NewsfeedListener = {
                                                             actionSubject: "video annotation",
                                                             actionName: res.name,
                                                             courseId: result.courseId,
+                                                            nodeId: res.id,
                                                             actionType: "deleted",
                                                             dateAdded: doc.date_modified
                                                         }
@@ -796,6 +808,7 @@ var NewsfeedListener = {
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
+                                                nodeId: result.id,
                                                 actionType: "added",
                                                 dateAdded: doc.dateAdded
                                             }
@@ -835,6 +848,7 @@ var NewsfeedListener = {
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
+                                                nodeId: result.id,
                                                 actionType: "edited",
                                                 dateAdded: doc.dateUpdated
                                             }
@@ -874,6 +888,7 @@ var NewsfeedListener = {
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
+                                                nodeId: result.id,
                                                 actionType: "deleted",
                                                 dateAdded: doc.dateUpdated
                                             }

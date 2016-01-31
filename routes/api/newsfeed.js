@@ -10,7 +10,7 @@ var mongoose = require('mongoose');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
-router.get('/newsfeed/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
+router.get('/newsfeed/cid/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user)
             return res.status(401).send('Unauthorized');
@@ -48,8 +48,9 @@ router.get('/newsfeed/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
             });
     });
 
-router.get('/newsfeed-node/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
+router.get('/newsfeed-node/cid/:courseId/nid/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
         if (!req.user)
             return res.status(401).send('Unauthorized');
 
@@ -72,6 +73,7 @@ router.get('/newsfeed-node/:courseId', helper.l2pAuth, helper.ensureAuthenticate
                     },
                     // parameters
                     mongoose.Types.ObjectId(req.params.courseId),
+                    nodeId,
 
                     function (newsfeeds) {
                         res.status(200).json({
