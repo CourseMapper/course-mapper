@@ -18,6 +18,7 @@ newsfeedSchema.add({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'treeNodes'
     },
+    contentName : {type: String},
     actionSubject: { type: String},
     actionType : { type: String},
     actionName : {type:String},
