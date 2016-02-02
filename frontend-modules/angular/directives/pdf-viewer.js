@@ -1,5 +1,25 @@
 app.directive('pdfViewer',
   function ($compile, $timeout, $rootScope, $http, $location, $routeParams) {
+
+    var loadCountMap = function (pdfId, numPages) {
+      // Initialize CountMap
+      $http.get('/slide-viewer/countmap/' + pdfId)
+        .success(function (segments) {
+          var countPrint = new CountMap({
+            segments: segments,
+            segmentKey: 'page',
+            totalSegments: numPages,
+            container: 'countmap',
+            tooltip: 'countmap-tooltip',
+            maxValue: 10,
+            colorful: false
+          });
+          countPrint.onCountSelected = function (selectedPage) {
+            $rootScope.setPageNumber(selectedPage);
+          };
+        });
+    };
+
     return {
       restrict: 'E',
       terminal: true,
@@ -23,6 +43,9 @@ app.directive('pdfViewer',
         scope.container = scope.container[0];
         scope.calculateSlideNavigationProgress = function (newSlideNumber) {
           if (scope.totalPage > 0) {
+            console.log(scope.totalPage)
+            loadCountMap($rootScope.pdfId, scope.totalPage);
+
             var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
             progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
           }
@@ -45,22 +68,6 @@ app.directive('pdfViewer',
                 return Math.floor(Math.random() * (max - min + 1)) + min;
               }
 
-              // Initialize CountMap
-              $http.get('/slide-viewer/countmap/' + scope.pdfId)
-                .success(function (segments) {
-                  var countPrint = new CountMap({
-                    segments: segments,
-                    segmentKey: 'page',
-                    totalSegments: pdfDocument.numPages,
-                    container: 'countmap',
-                    tooltip: 'countmap-tooltip',
-                    maxValue: 10,
-                    colorful: false
-                  });
-                  countPrint.onCountSelected = function (selectedPage) {
-                    $rootScope.setPageNumber(selectedPage);
-                  };
-                });
 
               scope.calculateSlideNavigationProgress(scope.currentPageNumber);
               // this will apply totalpage to the html
@@ -70,6 +77,7 @@ app.directive('pdfViewer',
 
               // Document loaded, retrieving the page.
               return pdfDocument.getPage(scope.pageToView).then(function (pdfPage) {
+
                 // Creating the page view with default parameters.
                 scope.pdfPageView = new PDFJS.PDFPageView({
                   container: scope.container,
