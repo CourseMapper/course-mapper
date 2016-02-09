@@ -150,16 +150,16 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           return "An annotation zone on page " + page + " and name " + name + " has errors and prevents submission";
         }
         else {
-          $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, page);
+          $scope.addAnnotationZoneData(name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, page);
         }
       }
     }
 
-    $scope.comment.tagNames = $scope.tagNames.join(',');
+    /*$scope.comment.tagNames = $scope.tagNames.join(',');
     $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
     $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
     $scope.comment.tagColor = $scope.tagColor.join(',');
-
+*/
     return "";
   };
 
@@ -296,7 +296,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   $scope.submitComment = function (resultVarName) {
     var annZoneCheckResult = $scope.populateAnnotationZone();
     if (annZoneCheckResult != "") {
-      displayCommentSubmissionResponse("Client Error: Some of the attached annotation zones are invalid: " + annZoneCheckResult);
+      displayCommentSubmissionResponse("Client Error: Some annotation zones are invalid: " + annZoneCheckResult);
       return false;
     }
 
@@ -304,7 +304,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     var submitPage = ($rootScope.annotationSubmitPage != -1) ? $rootScope.annotationSubmitPage : $scope.currentPageNumber;
 
-    //console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
+    console.log($scope.annotationZones);
 
     var config = {
       params: {
@@ -845,13 +845,15 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   $rootScope.addReference = function (id) {
     var annZoneList = $rootScope.getAnnotationZoneList();
     var name = "#" + annZoneList[id].tagName;
-    if ($rootScope.annotationSubmitPage != -1 &&
-      $rootScope.annotationSubmitPage != $scope.currentPageNumber) {
-      name += "@" + $scope.currentPageNumber;
-    }
+
     //$rootScope.safeApply(function() {
     if ($rootScope.nameHasNoError(name)) {
-      if (name != "#")
+      if (name != "#") {
+        if ($rootScope.annotationSubmitPage != -1 &&
+          $rootScope.annotationSubmitPage != $scope.currentPageNumber) {
+          name += "@" + $scope.currentPageNumber;
+        }
+
         if ($scope.writeCommentMode) {
           if (typeof $scope.comment.rawText == 'undefined')
             $scope.comment.rawText = name + ' ';
@@ -882,6 +884,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
             $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
           }
         }
+      }
 
       $timeout(function () {
         $scope.$apply();

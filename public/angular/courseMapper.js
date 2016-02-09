@@ -2803,10 +2803,21 @@ app.directive('movablePdf', function() {
                 $scope.$apply();
               });
 
-              $('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
-                $('.simplecolorpicker').click(function(event){
-                    event.stopPropagation();
-                });
+              $timeout(function(){
+
+              var thisElem = $("#caRect-" + $scope.divCounter);
+
+
+              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+
+              thisElem.find('.simplecolorpicker').click(function(event){
+                  event.stopPropagation();
+              });
+              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker();
+
+              
+              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker('selectColor', $scope.color);
+
               $('#destroy').on('click', function() {
 
                 $('select').simplecolorpicker('destroy');
@@ -2814,6 +2825,7 @@ app.directive('movablePdf', function() {
               // By default, activate simplecolorpicker plugin on HTML selects
               $('#init').trigger('click');
 
+              });
 
 
             }
@@ -6512,16 +6524,16 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
           return "An annotation zone on page " + page + " and name " + name + " has errors and prevents submission";
         }
         else {
-          $scope.addAnnotationZoneData("#" + name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, page);
+          $scope.addAnnotationZoneData(name, relPosX, relPosY, relWidth, relHeight, color, $scope.pdfFile._id, page);
         }
       }
     }
 
-    $scope.comment.tagNames = $scope.tagNames.join(',');
+    /*$scope.comment.tagNames = $scope.tagNames.join(',');
     $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
     $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
     $scope.comment.tagColor = $scope.tagColor.join(',');
-
+*/
     return "";
   };
 
@@ -6658,7 +6670,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   $scope.submitComment = function (resultVarName) {
     var annZoneCheckResult = $scope.populateAnnotationZone();
     if (annZoneCheckResult != "") {
-      displayCommentSubmissionResponse("Client Error: Some of the attached annotation zones are invalid: " + annZoneCheckResult);
+      displayCommentSubmissionResponse("Client Error: Some annotation zones are invalid: " + annZoneCheckResult);
       return false;
     }
 
@@ -6666,7 +6678,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     var submitPage = ($rootScope.annotationSubmitPage != -1) ? $rootScope.annotationSubmitPage : $scope.currentPageNumber;
 
-    //console.log("SUBMITTED ON PAGE: "+ $rootScope.annotationSubmitPage);
+    console.log($scope.annotationZones);
 
     var config = {
       params: {
@@ -7207,13 +7219,15 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   $rootScope.addReference = function (id) {
     var annZoneList = $rootScope.getAnnotationZoneList();
     var name = "#" + annZoneList[id].tagName;
-    if ($rootScope.annotationSubmitPage != -1 &&
-      $rootScope.annotationSubmitPage != $scope.currentPageNumber) {
-      name += "@" + $scope.currentPageNumber;
-    }
+
     //$rootScope.safeApply(function() {
     if ($rootScope.nameHasNoError(name)) {
-      if (name != "#")
+      if (name != "#") {
+        if ($rootScope.annotationSubmitPage != -1 &&
+          $rootScope.annotationSubmitPage != $scope.currentPageNumber) {
+          name += "@" + $scope.currentPageNumber;
+        }
+
         if ($scope.writeCommentMode) {
           if (typeof $scope.comment.rawText == 'undefined')
             $scope.comment.rawText = name + ' ';
@@ -7244,6 +7258,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
             $scope.replyRawText[$scope.replyMode] = firstPart + ' ' + name + ' ' + lastPart;
           }
         }
+      }
 
       $timeout(function () {
         $scope.$apply();
