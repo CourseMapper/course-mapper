@@ -125,8 +125,8 @@ AnnZones.prototype.convertRawText2 = function(rawText,id,data){
 
     renderedText = rawText.replace(/#(\w+)@[0-9]+/g, function(x){
     if(check(x.split("@")[0],tagNameList) != -1){
-          console.log(check(x.split("@")[0],tagNameList));
-          console.log(tagColorList[check(x.split("@")[0],tagNameList)]);
+          //console.log(check(x.split("@")[0],tagNameList));
+          //console.log(tagColorList[check(x.split("@")[0],tagNameList)]);
           var ret = "<label class='annotationZoneReference' style='color: " + tagColorList[check(x.split("@")[0],tagNameList)] + "'>" + x + "</label>";
           return ret;
         }
@@ -196,11 +196,11 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pageNumber, 
           }
           else{
             var newRawText = rawText.replace(/#(\w+)@[0-9]+/g, function(x){
-              console.log(x);
-              console.log(oldName + "@" + pageNumber);
+              //console.log(x);
+              //console.log(oldName + "@" + pageNumber);
 
               if(x == oldName + "@" + pageNumber){
-                console.log("found one");
+                //console.log("found one");
                 var ret = newName2 + "@" + pageNumber;
                 changed = true;
                 return ret;
