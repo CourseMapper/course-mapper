@@ -1,85 +1,52 @@
+'use strict';
+
 function CountMap(options) {
   var self = this;
-  var segments = valuesToSegments(options.segments, options.segmentKey, options.totalSegments);
-  var elementWidth = (segments && segments.length > 0) ? (100 / segments.length) : 0;
-  var colorful = options.colorful;
-  var container = document.getElementsByClassName(options.container)[0];
-  container.style.background = getHeatmap(segments, options.maxValue);
-  var tooltip = document.getElementsByClassName(options.tooltip)[0];
+  var container = $(options.container);
 
-  // Attach tooltip hover event
-  container.onmousemove = function (e) {
-    var rect = container.getBoundingClientRect();
-    var xPos = e.clientX;
-    var yPos = rect.top - 23;
-    tooltip.style.left = (xPos) + 'px';
-    tooltip.style.top = (yPos) + 'px';
-    tooltip.innerText = getHoveredElementNumber(rect, e);
-  };
+  this.buildHeatMap = function (options) {
+    container.empty();
+    var segments = valuesToSegments(options.segments, options.segmentKey, options.totalSegments);
+    var hasSegments = (segments && segments.length > 0);
+    if (!hasSegments) {
+      return;
+    }
+    var elementWidth = (100 / segments.length);
 
-  container.onclick = function (e) {
-    if (self.onCountSelected) {
-      var rect = container.getBoundingClientRect();
-      var count = getHoveredElementNumber(rect, e);
-      self.onCountSelected(count);
+    for (var i = 0; i < segments.length; i++) {
+      var percentage = (segments[i] / options.maxValue);
+
+      var div = $('<div></div>');
+      div.css('background', percentToHSLColor(percentage, options.colorful));
+      div.css('width', elementWidth + '%');
+      div.css('height', '100%');
+      div.css('margin-left', (i * elementWidth) + '% ');
+      div.css('position', 'absolute');
+
+      // Set data attribute to element number
+      div.attr('title', (i + 1).toString());
+
+      // Wire events
+      div.click(function () {
+        if (self.itemClicked) {
+          self.itemClicked(this.getAttribute('title'));
+        }
+      });
+
+      div.hover(function () {
+        $(this).css('cursor', 'pointer');
+      }, function () {
+        $(this).css('cursor', 'auto');
+      });
+      container.append(div);
     }
   };
-
-  function valuesToSegments(items, name, totalPages) {
-    var countsList = _.reduce(items, function (result, value, k) {
-      var p = value[name];
-      if (!result[p]) result[p] = 0;
-      result[p] += 1;
-      return result;
-    }, {});
-
-    var values = [];
-    values.length = totalPages;
-    for (var i = 0; i < values.length; i++) {
-      var page = i + 1;
-      if (countsList[page]) {
-        values[i] = countsList[page];
-      }
-    }
-    return values;
-  }
-
-
-  function getHoveredElementNumber(rect, e) {
-    var scrollLeft = document.documentElement.scrollLeft ?
-      document.documentElement.scrollLeft :
-      document.body.scrollLeft;
-
-    var elementLeft = rect.left + scrollLeft;
-
-    var xPos = 0;
-    if (document.all) { //detects using IE
-      xPos = e.clientX + scrollLeft - elementLeft; //event not evt because of IE
-    }
-    else {
-      xPos = e.pageX - elementLeft;
-    }
-    var progress = xPos / rect.width;
-    // Compute number
-    return Math.floor((progress / elementWidth) * 100 + 1);
-  }
-
-  function getHeatmap(values, maxValue) {
-    var background = '';
-    for (var i = 0; i < values.length; i++) {
-      var heat = values[i] / maxValue;
-      var color = percentToHSLColor(heat);
-      var colorStop = elementWidth * (i + 1);
-      background += 'linear-gradient(to right, ' + color + ' ' + colorStop + '%, transparent 0%),';
-    }
-    return background;
-  }
 
   /*
    *  Compute the HSL color value.
    *
    **/
-  function percentToHSLColor(value) {
+  function percentToHSLColor(value, colorful) {
     var normalizedValue = normalizeValue(value);
 
     var h, l, s;
@@ -109,5 +76,27 @@ function CountMap(options) {
       return 0.0;
     }
     return value;
+  }
+
+  function valuesToSegments(items, selector, totalItems) {
+    var kvpList = _.reduce(items, function (result, value, k) {
+      var i = value[selector];
+      if (!result[i]) result[i] = 0;
+      result[i] += 1;
+      return result;
+    }, {});
+
+    var segments = [];
+    segments.length = totalItems;
+    for (var i = 0; i < segments.length; i++) {
+      var index = i + 1;
+      if (kvpList[index]) {
+        segments[i] = kvpList[index];
+      }
+      else {
+        segments[i] = 0;
+      }
+    }
+    return segments;
   }
 }
