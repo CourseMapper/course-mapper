@@ -68,7 +68,7 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,isAdmin,done) {
                         if (errB) {
                             err('Server Error: Unable to update annotation zone');
                         } else {
-                            upAllRefs(oldName, newName, pdfId,err,function(){done();});
+                            upAllRefs(oldName, newName, currentTag.pageNumber, pdfId,err,function(){done();});
                             Plugin.doAction('onAfterAnnotationZonePdfEdited', updatedAnnotationZonePDF);
                         }
                     });
@@ -111,10 +111,23 @@ AnnZones.prototype.convertRawText2 = function(rawText,id,data){
     //console.log(data);
 
 
-    var renderedText = rawText.replace(/#(\w+)/g, function(x){
+    var renderedText = rawText.replace(/#(\w+)[^@]/g, function(x){
         if(check(x,tagNameList) != -1){
 
           var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[check(x,tagNameList)] + "'>" + x + "</label>";
+          return ret;
+        }
+        else {
+          return x;
+        }
+
+    });
+
+    renderedText = rawText.replace(/#(\w+)@[0-9]+/g, function(x){
+    if(check(x.split("@")[0],tagNameList) != -1){
+          console.log(check(x.split("@")[0],tagNameList));
+          console.log(tagColorList[check(x.split("@")[0],tagNameList)]);
+          var ret = "<label class='annotationZoneReference' style='color: " + tagColorList[check(x.split("@")[0],tagNameList)] + "'>" + x + "</label>";
           return ret;
         }
         else {
@@ -138,7 +151,7 @@ AnnZones.prototype.checkTagName = function(tagName,tagNameList){
 
 };
 
-AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
+AnnZones.prototype.updateAllReferences = function(oldName, newName, pageNumber, pdfId,err,done) {
   /*console.log(AnnotationsPDF);
   var ann = new Comments();
   ann.updateAllReferences(oldName,newName,pdfId,err,done);*/
@@ -148,7 +161,7 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
   var newName2 = validator.escape(newName);
 
   //console.log("NAMES");
-  //console.log("xxx"+oldName+"xxx");
+  //console.log("xxx"+pageNumber+"xxx");
   //console.log("xxx"+newName+"xxx");
 
   AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
@@ -164,18 +177,40 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
           var currentId = data[key].id;
           var changed = false;
           var rawText = data[key].rawText;
-          var newRawText = rawText.replace(/#(\w+)/g, function(x){
-            //console.log(x);
-            if(x == oldName){
-              //console.log("found one");
-              var ret = newName2;
-              changed = true;
-              return ret;
-            }
-            else {
-              return x;
-            }
-          });
+          var annPage = data[key].pdfPageNumber;
+          //console.log("xxx"+annPage+"xxx");
+
+          if(pageNumber == annPage){
+            var newRawText = rawText.replace(/#(\w+)/g, function(x){
+              //console.log(x);
+              if(x == oldName){
+                //console.log("found one");
+                var ret = newName2;
+                changed = true;
+                return ret;
+              }
+              else {
+                return x;
+              }
+            });
+          }
+          else{
+            var newRawText = rawText.replace(/#(\w+)@[0-9]+/g, function(x){
+              console.log(x);
+              console.log(oldName + "@" + pageNumber);
+
+              if(x == oldName + "@" + pageNumber){
+                console.log("found one");
+                var ret = newName2 + "@" + pageNumber;
+                changed = true;
+                return ret;
+              }
+              else {
+                return x;
+              }
+            });
+          }
+
           //console.log("HEREEE");
           if(changed) {
             //console.log(newRawText);

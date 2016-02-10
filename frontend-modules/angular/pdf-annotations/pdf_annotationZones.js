@@ -202,7 +202,9 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           updatedAnnZone:
           {
             annotationZoneName: "#"+$scope.annotationZoneList[id].tagName,
-            color: $scope.annotationZoneList[id].color
+            color: $scope.annotationZoneList[id].color,
+            pageNumber: $scope.currentPageNumber
+
           },
           pdfId: $scope.pdfFile._id,
         }
