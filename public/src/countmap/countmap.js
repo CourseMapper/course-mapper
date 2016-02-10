@@ -11,11 +11,10 @@ function CountMap(options) {
     if (!hasSegments) {
       return;
     }
-    var elementWidth = (100 / segments.length);
 
+    var elementWidth = (100 / segments.length);
     for (var i = 0; i < segments.length; i++) {
       var percentage = (segments[i] / options.maxValue);
-
       var div = $('<div></div>');
       div.css('background', percentToHSLColor(percentage, options.colorful));
       div.css('width', elementWidth + '%');
