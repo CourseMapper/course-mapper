@@ -2945,11 +2945,9 @@ app.directive('movablePdf', function() {
         scope.container = scope.container[0];
         scope.calculateSlideNavigationProgress = function (newSlideNumber) {
           if (scope.totalPage > 0) {
-            console.log(scope.totalPage)
             loadCountMap($rootScope.pdfId, scope.totalPage);
-
-            var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
-            progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
+            //var progressBar = element[0].getElementsByClassName('slideNavigationCurrentProgress');
+            //progressBar[0].style.width = ((newSlideNumber / scope.totalPage) * 100) + "%";
           }
         };
 
