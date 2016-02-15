@@ -49,21 +49,25 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
 
     $scope.enroll = function () {
         $scope.loading = true;
-        courseService.enroll(authService.user,
+        if (!authService.user) {
+            toastr.warning("Please Login to Enroll.", {preventDuplicates: false});
+        }
+        else
+            courseService.enroll(authService.user,
 
-            function () {
-                $scope.loading = false;
-                toastr.success('You are now enrolled');
-                $timeout(function () {
-                    window.location.reload();
-                });
-            },
+                function () {
+                    $scope.loading = false;
+                    toastr.success('You are now enrolled.');
+                    $timeout(function () {
+                        window.location.reload();
+                    });
+                },
 
-            function (res) {
-                $scope.loading = false;
-                toastr.error(JSON.stringify(res.errors));
-            }
-        );
+                function (res) {
+                    $scope.loading = false;
+                    toastr.error(JSON.stringify(res.errors));
+                }
+            );
 
     };
 

@@ -8,8 +8,8 @@ var app = angular.module('courseMapper', [
 app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
         positionClass: 'toast-top-center',
-        preventDuplicates: true,
-        preventOpenDuplicates: true
+        preventOpenDuplicates: true,
+        maxOpened: 1
     });
 });
 ;app.config(['$routeProvider', '$locationProvider',
@@ -174,21 +174,25 @@ app.config(function (toastrConfig) {
 
     $scope.enroll = function () {
         $scope.loading = true;
-        courseService.enroll(authService.user,
+        if (!authService.user) {
+            toastr.warning("Please Login to Enroll.", {preventDuplicates: false});
+        }
+        else
+            courseService.enroll(authService.user,
 
-            function () {
-                $scope.loading = false;
-                toastr.success('You are now enrolled');
-                $timeout(function () {
-                    window.location.reload();
-                });
-            },
+                function () {
+                    $scope.loading = false;
+                    toastr.success('You are now enrolled.');
+                    $timeout(function () {
+                        window.location.reload();
+                    });
+                },
 
-            function (res) {
-                $scope.loading = false;
-                toastr.error(JSON.stringify(res.errors));
-            }
-        );
+                function (res) {
+                    $scope.loading = false;
+                    toastr.error(JSON.stringify(res.errors));
+                }
+            );
 
     };
 
