@@ -1,6 +1,6 @@
 app.controller('CourseListController', function ($scope, $rootScope, $http,
                                                  $routeParams, $location, $sce,
-                                                 Page, courseListService) {
+                                                 Page, courseListService, authService) {
     $scope.slug = $routeParams.slug;
 
     // chosen filter
@@ -15,6 +15,10 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     $scope.coursesLength = 0;
 
     $scope.widgets = [];
+
+    $scope.isLoggedIn = function () {
+        return (authService.user ? true : false);
+    };
 
     $scope.getCoursesFromThisCategory = function () {
         courseListService.init($scope.category._id, $scope.filterTags,

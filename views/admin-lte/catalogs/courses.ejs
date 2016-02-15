@@ -54,6 +54,15 @@
                         </div>
                     </div>
 
+                    <div class="row" ng-show="courses.length == 0" ng-cloak>
+                        <div class="col-sm-12">
+                            No course has been created.
+                        </div>
+                        <div ng-show="isLoggedIn()" class="col-sm-12">
+                            You can add a new one by clicking on "create course" button located on the top right of the page.
+                        </div>
+
+                    </div>
                     <div class="row">
                         <div class="col-sm-6 col-lg-3" ng-repeat="c in courses | filter:query">
                             <div class="form_hover" ng-mouseenter="getCourseAnalytics(c._id)">
@@ -80,7 +89,8 @@
                                                 <div class="col-xs-12">
                                                     <div class="small-box bg-aqua">
                                                         <div class="inner">
-                                                            <div class="courses-analytics" ng-bind-html="widgets[c._id]"></div>
+                                                            <div class="courses-analytics"
+                                                                 ng-bind-html="widgets[c._id]"></div>
                                                         </div>
                                                         <div class="icon">
                                                             <i class="fa fa-mortar-board"></i>
@@ -91,7 +101,8 @@
 
                                         </div>
                                         <div class="box-footer">
-                                            <a class="btn btn-primary" href="/course/{{c.slug}}/#/cid/{{c._id}}" style="margin: 0 auto; display: block;"><i
+                                            <a class="btn btn-primary" href="/course/{{c.slug}}/#/cid/{{c._id}}"
+                                               style="margin: 0 auto; display: block;"><i
                                                         class=""></i> Go to course</a>
                                         </div>
                                     </div>
