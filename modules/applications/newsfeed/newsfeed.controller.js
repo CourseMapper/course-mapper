@@ -13,7 +13,7 @@ function newsfeedSystem(){
 
 newsfeedSystem.prototype.getNewsfeed = function (error,courseId, success) {
     var today = moment();
-    var lastThirtyDays = moment(today).subtract(30, 'days');
+    var lastThirtyDays = moment(today).startOf('day').subtract(30, 'days');
     Newsfeed.find(
         {
             courseId: courseId,
