@@ -362,7 +362,13 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
         //console.log("Checked tag with name: "+x);
 
         var tagId = comm.checkTagName(x, tagNameList);
-        var ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "'>" + originalX + "</label>";
+        var ret;
+        if(hasPage){
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "' data-toggle='tooltip' data-placement='bottom' title='Referenced from page "+page+"'>" + originalX + "</label>";
+        }else{
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "'>" + originalX + "</label>";
+        }
+
         if (hasPage && page != tagPageList[tagId])
           return originalX;
         if (!hasPage && pdfPage != tagPageList[tagId])
