@@ -122,25 +122,25 @@ app.directive('pdfAnnotationZone',
 
               $timeout(function(){
 
-              var thisElem = $("#caRect-" + $scope.divCounter);
+                var thisElem = $("#caRect-" + $scope.divCounter);
 
 
-              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+                thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
 
-              thisElem.find('.simplecolorpicker').click(function(event){
-                  event.stopPropagation();
-              });
-              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker();
+                thisElem.find('.simplecolorpicker').click(function(event){
+                    event.stopPropagation();
+                });
+                thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker();
 
-              
-              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker('selectColor', $scope.color);
 
-              $('#destroy').on('click', function() {
+                thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker('selectColor', $scope.color);
 
-                $('select').simplecolorpicker('destroy');
-              });
-              // By default, activate simplecolorpicker plugin on HTML selects
-              $('#init').trigger('click');
+                $('#destroy').on('click', function() {
+
+                  $('select').simplecolorpicker('destroy');
+                });
+                // By default, activate simplecolorpicker plugin on HTML selects
+                $('#init').trigger('click');
 
               });
 
