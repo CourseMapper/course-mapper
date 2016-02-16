@@ -2805,25 +2805,25 @@ app.directive('movablePdf', function() {
 
               $timeout(function(){
 
-              var thisElem = $("#caRect-" + $scope.divCounter);
+                var thisElem = $("#caRect-" + $scope.divCounter);
 
 
-              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+                thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
 
-              thisElem.find('.simplecolorpicker').click(function(event){
-                  event.stopPropagation();
-              });
-              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker();
+                thisElem.find('.simplecolorpicker').click(function(event){
+                    event.stopPropagation();
+                });
+                thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker();
 
-              
-              thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker('selectColor', $scope.color);
 
-              $('#destroy').on('click', function() {
+                thisElem.find('select[name="colorpicker-change-background-color"]').simplecolorpicker('selectColor', $scope.color);
 
-                $('select').simplecolorpicker('destroy');
-              });
-              // By default, activate simplecolorpicker plugin on HTML selects
-              $('#init').trigger('click');
+                $('#destroy').on('click', function() {
+
+                  $('select').simplecolorpicker('destroy');
+                });
+                // By default, activate simplecolorpicker plugin on HTML selects
+                $('#init').trigger('click');
 
               });
 
@@ -6431,10 +6431,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   $rootScope.$on('$destroy', pdfPageChangeListener);
 
   $scope.orderingOptions = [
-    {id: 'dateOfCreation.descending', name: 'Newest First'},
-    {id: 'dateOfCreation.ascending', name: 'Oldest First'},
-    {id: 'author.descending', name: 'Author (descending)'},
-    {id: 'author.ascending', name: 'Author (ascending)'}
+    {id: '', name: '-- Sort by --', disabled: 'true'},
+    {id: 'dateOfCreation.descending', name: 'Newest First', disabled: 'false'},
+    {id: 'dateOfCreation.ascending', name: 'Oldest First', disabled: 'false'},
+    {id: 'author.descending', name: 'Author (descending)', disabled: 'false'},
+    {id: 'author.ascending', name: 'Author (ascending)', disabled: 'false'}
     //todo: {id: 'relevance', name: 'Relevance'}
   ];
 
@@ -6686,7 +6687,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     var submitPage = ($rootScope.annotationSubmitPage != -1) ? $rootScope.annotationSubmitPage : $scope.currentPageNumber;
 
-    console.log($scope.annotationZones);
+
+    if($scope.comment.rawText == ""){
+      displayCommentSubmissionResponse("Client Error: The annotation is empty. Please enter some text.");
+      return false;
+    }
 
     var config = {
       params: {

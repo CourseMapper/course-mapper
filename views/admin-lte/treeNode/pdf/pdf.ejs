@@ -58,7 +58,7 @@
                                 placeholder = "bla"
                                 ng-model="orderType"
                                 ng-init="orderType = orderType || orderingOptions[0]"
-                                ng-options="item as item.name for item in orderingOptions"
+                                ng-options="item as item.name for item in orderingOptions | filter: {disabled: 'false'}"
                                 class="form-control">
                         </select>
                           <input id="searchInput" placeholder="Search..." class="form-control" ng-model="rawSearchTerm"></input>

@@ -49,10 +49,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   $rootScope.$on('$destroy', pdfPageChangeListener);
 
   $scope.orderingOptions = [
-    {id: 'dateOfCreation.descending', name: 'Newest First'},
-    {id: 'dateOfCreation.ascending', name: 'Oldest First'},
-    {id: 'author.descending', name: 'Author (descending)'},
-    {id: 'author.ascending', name: 'Author (ascending)'}
+    {id: '', name: '-- Sort by --', disabled: 'true'},
+    {id: 'dateOfCreation.descending', name: 'Newest First', disabled: 'false'},
+    {id: 'dateOfCreation.ascending', name: 'Oldest First', disabled: 'false'},
+    {id: 'author.descending', name: 'Author (descending)', disabled: 'false'},
+    {id: 'author.ascending', name: 'Author (ascending)', disabled: 'false'}
     //todo: {id: 'relevance', name: 'Relevance'}
   ];
 
@@ -304,7 +305,11 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     var submitPage = ($rootScope.annotationSubmitPage != -1) ? $rootScope.annotationSubmitPage : $scope.currentPageNumber;
 
-    console.log($scope.annotationZones);
+
+    if($scope.comment.rawText == ""){
+      displayCommentSubmissionResponse("Client Error: The annotation is empty. Please enter some text.");
+      return false;
+    }
 
     var config = {
       params: {
