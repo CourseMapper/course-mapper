@@ -5816,7 +5816,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     });
 
     $scope.tabOpened();
-});;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
+});
+;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
@@ -6432,12 +6433,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
   $scope.orderingOptions = [
     //{id: 'dateOfCreation.descending', name: '-- Sort by --', disabled: 'false'},
-    {id: 'dateOfCreation.descending', name: 'Newest First', disabled: 'false'},
-    {id: 'dateOfCreation.ascending', name: 'Oldest First', disabled: 'false'},
-    {id: 'author.descending', name: 'Author (descending)', disabled: 'false'},
-    {id: 'author.ascending', name: 'Author (ascending)', disabled: 'false'}
+    {id: 'dateOfCreation.descending', name: 'Newest First'},
+    {id: 'dateOfCreation.ascending', name: 'Oldest First'},
+    {id: 'author.descending', name: 'Author (descending)'},
+    {id: 'author.ascending', name: 'Author (ascending)'}
     //todo: {id: 'relevance', name: 'Relevance'}
   ];
+
+  $scope.orderingOptionsDefault = {id: 'dateOfCreation.descending', name: '-- Sort by --'};
 
   /*
    $scope.populateAnnotationZone = function () {

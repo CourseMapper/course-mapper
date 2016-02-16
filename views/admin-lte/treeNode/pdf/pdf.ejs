@@ -57,9 +57,10 @@
                         <select id="orderTypeSelect"
                                 placeholder = "bla"
                                 ng-model="orderType"
-                                ng-init="orderType = orderType || orderingOptions[0]"
+                                ng-init="orderType = orderType || orderingOptionsDefault"
                                 ng-options="item as item.name for item in orderingOptions"
                                 class="form-control">
+                                  <option value="" selected ng-disabled="true">{{orderingOptionsDefault.name}}</option>
 
 
                         </select>
