@@ -40,7 +40,7 @@
         </div>
 
         <a class="cursor" ng-show="showCommentingArea" ng-click="toggle = !toggle">
-            {{!toggle ? comments.length + ' comment(s)' : 'hide comments'}}
+            {{!toggle ? ((comments === undefined || comments === null) ? 0 : comments.length) + ' comment(s)' : 'hide comments'}}
         </a>
         <article ng-show="toggle && showCommentingArea">
             <div id="comment-box">
