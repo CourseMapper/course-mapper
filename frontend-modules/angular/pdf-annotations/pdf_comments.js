@@ -49,7 +49,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   $rootScope.$on('$destroy', pdfPageChangeListener);
 
   $scope.orderingOptions = [
-    {id: '', name: '-- Sort by --', disabled: 'true'},
+    //{id: 'dateOfCreation.descending', name: '-- Sort by --', disabled: 'false'},
     {id: 'dateOfCreation.descending', name: 'Newest First', disabled: 'false'},
     {id: 'dateOfCreation.ascending', name: 'Oldest First', disabled: 'false'},
     {id: 'author.descending', name: 'Author (descending)', disabled: 'false'},
