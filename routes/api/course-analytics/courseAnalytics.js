@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 var appRoot = require('app-root-path');
 var EnrolledUser = require(appRoot + '/modules/applications/course-analytics/enrolledUserList');
 var CoursePreviewStats = require(appRoot + '/modules/applications/course-analytics/coursePreviewStats.controller');
+var CourseHistory = require(appRoot + '/modules/applications/course-analytics/course-history.controller');
 
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
@@ -135,5 +136,77 @@ router.get('/course-stats/course-creator/:courseId', function(req, res, next) {
 
 });
 
+router.get('/course-history/enrolled-users/:courseId', function (req, res, next){
+    if (!req.user) {
+       return res.status(401).send('Unauthorized');
+    }
+
+    var ch = new CourseHistory();
+    ch.getHistoryFollower(
+        function error(err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            course: mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success(users) {
+            res.status(200).json({result: true, users: users})
+        }
+    );
+});
+
+router.get('/course-history/pdf-upload/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new CourseHistory();
+    ch.getHistoryPdf(
+        function error (err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (pdf) {
+            res.status(200).json({result: true, pdf: pdf})
+        }
+    );
+});
+
+router.get('/course-history/video-upload/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new CourseHistory();
+    ch.getHistoryVideo(
+        function error (err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (videos) {
+            res.status(200).json({result: true, videos: videos})
+        }
+    );
+});
+
+router.get('/course-history/discussions/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new CourseHistory();
+    ch.getHistoryDiscussion(
+        function error (err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            course:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (discussions) {
+            res.status(200).json({result: true, discussions: discussions})
+        }
+    );
+});
 
 module.exports = router;
