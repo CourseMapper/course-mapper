@@ -51,24 +51,19 @@
                     </span>
                 </div>
             </div>
+            <br>
             <section ng-repeat="comment in comments">
-                <div class="box box-solid">
+                <div class="box box-solid" style="background: rgba(0, 0, 255, 0.05)">
                     <div class="box-body">
                             <span class="posted-at">
                               Posted <strong>{{comment.date | relativeDate}}</strong>
                               By <strong><span>{{comment.author}}</span></strong>
                             </span>
+                            <a class="pull-right" style="cursor: pointer;" ng-show="(comment.isAuthor || isAdmin)" title="delete" ng-click="removeComment(comment._id)">X</a>
 
                         <p class="reply" ng-bind-html="comment.html | unsafe"></p>
                     </div>
-                    <div class="box-footer">
-                        <div class="replyControl">
-                            <a ng-show="(comment.isAuthor || isAdmin)"
-                               ng-click="removeComment(comment._id)"
-                               title="delete"
-                               class="cursor btn btn-danger btn-xs">DELETE</a>
-                        </div>
-                    </div>
+<!--rgba(0, 0, 255, 0.05)-->
                 </div>
             </section>
         </article>
