@@ -95,7 +95,7 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,isAdmin,done) {
   }
 };
 
-AnnZones.prototype.convertRawText2 = function(rawText,id,data){
+AnnZones.prototype.convertRawText2 = function(rawText,id,data, pdfPage){
 
   var check = AnnZones.prototype.checkTagName;
 
@@ -103,36 +103,54 @@ AnnZones.prototype.convertRawText2 = function(rawText,id,data){
     //TODO: test for success
     var tagNameList = [];
     var tagColorList = [];
+    var tagPageList = [];
 
-    for(var i = 0; i < data.length; i++){
+    for (var i = 0; i < data.length; i++) {
       tagNameList[i] = data[i].annotationZoneName;
       tagColorList[i] = data[i].color;
+      tagPageList[i] = data[i].pdfPageNumber;
     }
     //console.log(data);
 
 
-    var renderedText = rawText.replace(/#(\w+)[^@]/g, function(x){
-        if(check(x,tagNameList) != -1){
+    var renderedText = rawText.replace(/#(\w+)((@)(\w+))?/g, function (x) {
+      //console.log("Found tag with name: "+x);
+      var strSplit = x.split("@");
+      var hasPage = false;
+      var page = 0;
+      var originalX = x;
+      if (strSplit.length != 2 && strSplit.length != 1) {
+        return x;
+      }
 
-          var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[check(x,tagNameList)] + "'>" + x + "</label>";
-          return ret;
-        }
-        else {
-          return x;
+      if (strSplit.length == 2) {
+        x = strSplit[0];
+        page = strSplit[1];
+        hasPage = true;
+      }
+
+
+      if (check(x, tagNameList) != -1) {
+        //console.log("Checked tag with name: "+x);
+
+        var tagId = check(x, tagNameList);
+        var ret;
+        if(hasPage){
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "' data-toggle='tooltip' data-placement='bottom' title='Referenced from page "+page+"'>" + originalX + "</label>";
+        }else{
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "'>" + originalX + "</label>";
         }
 
-    });
+        if (hasPage && page != tagPageList[tagId])
+          return originalX;
+        if (!hasPage && pdfPage != tagPageList[tagId])
+          return originalX;
 
-    renderedText = rawText.replace(/#(\w+)@[0-9]+/g, function(x){
-    if(check(x.split("@")[0],tagNameList) != -1){
-          //console.log(check(x.split("@")[0],tagNameList));
-          //console.log(tagColorList[check(x.split("@")[0],tagNameList)]);
-          var ret = "<label class='annotationZoneReference' style='color: " + tagColorList[check(x.split("@")[0],tagNameList)] + "'>" + x + "</label>";
-          return ret;
-        }
-        else {
-          return x;
-        }
+        return ret;
+      }
+
+
+      return x;
 
     });
 
@@ -217,7 +235,7 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pageNumber, 
 
             //console.log("BLUB");
             //console.log(currentId);
-            newRenderedText = convertRaw(newRawText, currentId, annZoneData);
+            newRenderedText = convertRaw(newRawText, currentId, annZoneData, annPage);
             var newText = {
               rawText: newRawText,
               renderedText: newRenderedText
