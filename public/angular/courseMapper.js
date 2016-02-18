@@ -5270,7 +5270,7 @@ app.factory('socket', function ($rootScope) {
 ]);;app.factory('widgetService', [
     '$http', '$rootScope', '$ocLazyLoad', '$timeout',
 
-    function (  $http, $rootScope, $ocLazyLoad, $timeout) {
+    function ($http, $rootScope, $ocLazyLoad, $timeout) {
         return {
             widgets: [],
             uninstalledwidgets: [],
@@ -5280,7 +5280,7 @@ app.factory('socket', function ($rootScope) {
                 var self = this;
 
                 if (!force && self.installedWidgets[location]) {
-                    self.initializeWidgets(self.installedWidgets[location], location, function( ){
+                    self.initializeWidgets(self.installedWidgets[location], location, function () {
                         if (success) {
                             success(self.widgets[location]);
                         }
@@ -5292,17 +5292,16 @@ app.factory('socket', function ($rootScope) {
                         .success(function (data) {
                             self.installedWidgets[location] = [];
 
-                            if(data.result){
+                            if (data.result) {
                                 self.installedWidgets[location] = data.widgets;
 
-                                self.initializeWidgets(data.widgets, location, function( ){
+                                self.initializeWidgets(data.widgets, location, function () {
                                     if (success) {
                                         success(self.widgets[location]);
                                     }
                                 });
-                            } else
-                                if (error)
-                                    error(data.errors);
+                            } else if (error)
+                                error(data.errors);
                         })
                         .error(function (data) {
                             if (error)
@@ -5346,7 +5345,7 @@ app.factory('socket', function ($rootScope) {
                     }
                 }
 
-                if(finishedCB)
+                if (finishedCB)
                     finishedCB(self.widgets[location]);
             },
 
@@ -5385,8 +5384,8 @@ app.factory('socket', function ($rootScope) {
                 $.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
-                //var h = $('#w' + id + ' .grid-stack-item-content');
-                //$('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
+                var h = $('#w' + id);
+                $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
             install: function (location, application, name, extraParams, successCb, errorCb) {
@@ -5403,9 +5402,8 @@ app.factory('socket', function ($rootScope) {
                         if (data.result) {
                             if (successCb)
                                 successCb(data.installed);
-                        } else
-                            if (errorCb)
-                                errorCb(data.errors);
+                        } else if (errorCb)
+                            errorCb(data.errors);
                     })
                     .error(function (data) {
                         if (errorCb)
@@ -5419,14 +5417,13 @@ app.factory('socket', function ($rootScope) {
                 $http.put('/api/widgets/uninstall/' + installId, extraParams)
                     .success(function (data) {
                         if (data.result) {
-                             self.uninstalledwidgets.push(installId);
+                            self.uninstalledwidgets.push(installId);
 
                             if (successCb)
                                 successCb(data.uninstalled);
                         }
-                        else
-                            if (errorCb)
-                                errorCb(data.errors);
+                        else if (errorCb)
+                            errorCb(data.errors);
                     })
                     .error(function (data) {
                         if (errorCb)
@@ -5459,7 +5456,7 @@ app.factory('socket', function ($rootScope) {
                     resizable: false
                 };
 
-                if(!enableDragging){
+                if (!enableDragging) {
                     options.draggable = {'disabled': true};
                 }
 
@@ -5468,7 +5465,7 @@ app.factory('socket', function ($rootScope) {
                 var $gs = $(loc);
                 $gs.gridstack(options);
 
-                if(enableDragging){
+                if (enableDragging) {
                     $gs.on('onStartMove', function (e, node) {
                         curNode.x = node.x;
                         curNode.y = node.y;
@@ -7617,7 +7614,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 });;app.controller('staticController', function($scope, $http, $rootScope) {
 
 });
-;app.controller('UserEditController', function ($scope, $http, $rootScope, $timeout, authService, toastr) {
+app.controller('aboutController', function($scope, $http, $rootScope, Page) {
+    Page.setTitleWithPrefix('About CourseMapper');
+});;app.controller('UserEditController', function ($scope, $http, $rootScope, $timeout, authService, toastr) {
     $scope.user = {};
     $scope.formData = {};
     $scope.errors = null;

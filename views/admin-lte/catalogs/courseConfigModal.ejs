@@ -20,8 +20,8 @@
                                 <label class="control-label" for="description">Add Course Managers</label>
 
                                 <p class="help-block">Course Manager can act as a Course Creator.
-                                    a user with this privilege can edit or delete
-                                    contents that have been added into this course
+                                    A user with this privilege can edit or delete
+                                    contents that have been added into this course.
                                 </p>
 
                                 <div class="input-group input-group-sm">
@@ -87,11 +87,7 @@
                                             dt = course.settings['disableTop'];
                                         }
                                     %>
-                                    <!--<div class="checkbox">
-                                        <label ng-init="settings.disableControls = <%= dc %>">
-                                            <input type="checkbox" name="disableControl"
-                                                   ng-model="settings.disableControls"> Disable Controls</label>
-                                    </div>-->
+
                                     <div class="checkbox">
                                         <label ng-init="settings.disableTop = <%= dt %>">
                                             <input type="checkbox" name="disableTop" ng-model="settings.disableTop">

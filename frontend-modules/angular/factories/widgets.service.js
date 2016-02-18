@@ -1,7 +1,7 @@
 app.factory('widgetService', [
     '$http', '$rootScope', '$ocLazyLoad', '$timeout',
 
-    function (  $http, $rootScope, $ocLazyLoad, $timeout) {
+    function ($http, $rootScope, $ocLazyLoad, $timeout) {
         return {
             widgets: [],
             uninstalledwidgets: [],
@@ -11,7 +11,7 @@ app.factory('widgetService', [
                 var self = this;
 
                 if (!force && self.installedWidgets[location]) {
-                    self.initializeWidgets(self.installedWidgets[location], location, function( ){
+                    self.initializeWidgets(self.installedWidgets[location], location, function () {
                         if (success) {
                             success(self.widgets[location]);
                         }
@@ -23,17 +23,16 @@ app.factory('widgetService', [
                         .success(function (data) {
                             self.installedWidgets[location] = [];
 
-                            if(data.result){
+                            if (data.result) {
                                 self.installedWidgets[location] = data.widgets;
 
-                                self.initializeWidgets(data.widgets, location, function( ){
+                                self.initializeWidgets(data.widgets, location, function () {
                                     if (success) {
                                         success(self.widgets[location]);
                                     }
                                 });
-                            } else
-                                if (error)
-                                    error(data.errors);
+                            } else if (error)
+                                error(data.errors);
                         })
                         .error(function (data) {
                             if (error)
@@ -77,7 +76,7 @@ app.factory('widgetService', [
                     }
                 }
 
-                if(finishedCB)
+                if (finishedCB)
                     finishedCB(self.widgets[location]);
             },
 
@@ -116,8 +115,8 @@ app.factory('widgetService', [
                 $.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
-                //var h = $('#w' + id + ' .grid-stack-item-content');
-                //$('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
+                var h = $('#w' + id);
+                $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
             install: function (location, application, name, extraParams, successCb, errorCb) {
@@ -134,9 +133,8 @@ app.factory('widgetService', [
                         if (data.result) {
                             if (successCb)
                                 successCb(data.installed);
-                        } else
-                            if (errorCb)
-                                errorCb(data.errors);
+                        } else if (errorCb)
+                            errorCb(data.errors);
                     })
                     .error(function (data) {
                         if (errorCb)
@@ -150,14 +148,13 @@ app.factory('widgetService', [
                 $http.put('/api/widgets/uninstall/' + installId, extraParams)
                     .success(function (data) {
                         if (data.result) {
-                             self.uninstalledwidgets.push(installId);
+                            self.uninstalledwidgets.push(installId);
 
                             if (successCb)
                                 successCb(data.uninstalled);
                         }
-                        else
-                            if (errorCb)
-                                errorCb(data.errors);
+                        else if (errorCb)
+                            errorCb(data.errors);
                     })
                     .error(function (data) {
                         if (errorCb)
@@ -190,7 +187,7 @@ app.factory('widgetService', [
                     resizable: false
                 };
 
-                if(!enableDragging){
+                if (!enableDragging) {
                     options.draggable = {'disabled': true};
                 }
 
@@ -199,7 +196,7 @@ app.factory('widgetService', [
                 var $gs = $(loc);
                 $gs.gridstack(options);
 
-                if(enableDragging){
+                if (enableDragging) {
                     $gs.on('onStartMove', function (e, node) {
                         curNode.x = node.x;
                         curNode.y = node.y;
