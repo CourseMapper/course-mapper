@@ -72,10 +72,20 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "Activity History",
+      "name": "Course Activity History",
       "location": "course-analytics",
       "description": "Analytics bar graph to show history activity in this particular course",
       "entryPoint": "/course-analytics/ca-history-analytics",
+      "widgetJavascript": ["ca-history-analytics.js"],
+      "width": 6,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Node Activity History",
+      "location": "course-analytics",
+      "description": "Analytics bar graph to show the history of activity in all of the nodes in this course",
+      "entryPoint": "/course-analytics/ca-node-history-analytics",
       "widgetJavascript": ["ca-history-analytics.js"],
       "width": 6,
       "height":1,

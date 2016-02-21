@@ -209,4 +209,58 @@ router.get('/course-history/discussions/:courseId', function (req, res, next){
     );
 });
 
+router.get('/course-history/pdf-annotations/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new CourseHistory();
+    ch.getHistoryPdfAnnotations (
+        function error (err) {
+           res.status(200).json({result:false, message: err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (pdfAnnotations) {
+            res.status(200).json({result:true, pdfAnnotations: pdfAnnotations})
+        }
+    );
+});
+
+router.get('/course-history/video-annotations/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new CourseHistory();
+    ch.getHistoryVideoAnnotations (
+        function error (err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (videoAnnotations) {
+            res.status(200).json({result:true, videoAnnotations: videoAnnotations})
+        }
+    );
+});
+
+router.get('/course-history/links/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new CourseHistory();
+    ch.getHistoryLinks (
+        function error (err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (links) {
+            res.status(200).json({result:true, links: links})
+        }
+    );
+});
+
 module.exports = router;
