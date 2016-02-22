@@ -13,35 +13,6 @@ angular.module('HistoryAnalytics', ['chart.js'])
     });
 }])
 .controller("BarHistoryAnalyticsController", ['$scope', '$rootScope', '$filter', '$http', '$location', '$routeParams', function ($scope, $rootScope, $filter, $http, $location, $routeParams) {
-        /* NVD3 options
-        $scope.options = {
-            chart: {
-                type: 'discreteBarChart',
-                height: 450,
-                margin : {
-                    top: 20,
-                    right: 20,
-                    bottom: 60,
-                    left: 55
-                },
-                x: function(d){ return d.dateAdded; },
-                y: function(d){ return d.user; },
-                showValues: true,
-                valueFormat: function(d){
-                    return d3.format(',.4f')(d);
-                },
-                transitionDuration: 500,
-                xAxis: {
-                    axisLabel: 'X Axis'
-                },
-                yAxis: {
-                    axisLabel: 'Y Axis',
-                    axisLabelDistance: 30
-                }
-            }
-        };
-*/
-
 
     $scope.title = "Course Analytics History Chart";
     //$scope.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September"];
@@ -157,6 +128,73 @@ angular.module('HistoryAnalytics', ['chart.js'])
         $scope.dataDiscussionMonthly.push(arrTemp);
 
     });
+
+    //get pdf annotation history for one year range max
+    $http.get('/api/course-analytics/course-history/pdf-annotations/'+$scope.courseId).success(function(result){
+        var arrTemp = [];
+        var monthTemp ={};
+        $scope.labelPdfAnnotationMonthly = []; $scope.dataPdfAnnotationMonthly=[];
+        $scope.resultPdfAnnotations = result.pdfAnnotations;
+        $scope.resultPdfAnnotations.forEach(function(r){
+            var objectName = new Date(r.dateOfCreation).formatMMYYYY();
+            if (typeof monthTemp[objectName] != "undefined")
+                monthTemp[objectName].value = monthTemp[objectName].value + 1;
+            else
+                monthTemp[objectName] = {data: new Date(r.dateOfCreation).formatMMYYYY(), value: 1};
+        });
+        for (var index in monthTemp) {
+            var val = monthTemp[index];
+            $scope.labelPdfAnnotationMonthly.push(val.data);
+            arrTemp.push(val.value);
+        }
+        $scope.dataPdfAnnotationMonthly.push(arrTemp);
+
+    });
+
+    //get video annotation history for one year range max
+    $http.get('/api/course-analytics/course-history/video-annotations/'+$scope.courseId).success(function(result){
+        var arrTemp = [];
+        var monthTemp ={};
+        $scope.labelVideoAnnotationMonthly = []; $scope.dataVideoAnnotationMonthly=[];
+        $scope.resultVideoAnnotations = result.videoAnnotations;
+        $scope.resultVideoAnnotations.forEach(function(r){
+            var objectName = new Date(r.date_modified).formatMMYYYY();
+            if (typeof monthTemp[objectName] != "undefined")
+                monthTemp[objectName].value = monthTemp[objectName].value + 1;
+            else
+                monthTemp[objectName] = {data: new Date(r.date_modified).formatMMYYYY(), value: 1};
+        });
+        for (var index in monthTemp) {
+            var val = monthTemp[index];
+            $scope.labelVideoAnnotationMonthly.push(val.data);
+            arrTemp.push(val.value);
+        }
+        $scope.dataVideoAnnotationMonthly.push(arrTemp);
+
+    });
+
+    //get submitted links history for one year range max
+    $http.get('/api/course-analytics/course-history/links/'+$scope.courseId).success(function(result){
+        var arrTemp = [];
+        var monthTemp ={};
+        $scope.labelLinksMonthly = []; $scope.dataLinksMonthly=[];
+        $scope.resultLinks = result.links;
+        $scope.resultLinks.forEach(function(r){
+            var objectName = new Date(r.dateUpdated).formatMMYYYY();
+            if (typeof monthTemp[objectName] != "undefined")
+                monthTemp[objectName].value = monthTemp[objectName].value + 1;
+            else
+                monthTemp[objectName] = {data: new Date(r.dateUpdated).formatMMYYYY(), value: 1};
+        });
+        for (var index in monthTemp) {
+            var val = monthTemp[index];
+            $scope.labelLinksMonthly.push(val.data);
+            arrTemp.push(val.value);
+        }
+        $scope.dataLinksMonthly.push(arrTemp);
+
+    });
+
 /*
     $scope.testLbl = ["1/6/2016","1/11/2016","2/10/2016","2/10/2016","2/14/2016"];
     $scope.testData = [[5,10,10,8,3]];*/
