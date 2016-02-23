@@ -42,15 +42,25 @@ app.config(function (toastrConfig) {
                   tUrl += 'iframe=' + params.iframe;
                   hasQueryStringStart = true;
                 }
-                if(typeof(params.accessToken) != undefined){
+                if(typeof(params.l2pToken) != 'undefined'){
                     if(!hasQueryStringStart)
                       tUrl += '?';
                     else {
                       tUrl += '&';
                     }
-                    tUrl += 'accessToken=' + params.accessToken;
+                    tUrl += 'l2pToken=' + params.l2pToken;
                     hasQueryStringStart = true;
                 }
+                if(typeof(params.l2pCourse) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pCourse=' + params.l2pCourse;
+                    hasQueryStringStart = true;
+                }
+                console.log(tUrl);
                 return tUrl;
             },
             controller: 'NodeRootController',

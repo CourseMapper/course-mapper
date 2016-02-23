@@ -8,10 +8,6 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function (req, res) {
 
-  var url_parts = url.parse(req.url, true);
-  console.log(req.query);
-  console.log(url_parts.query);
-  console.log(req.url);
 
     var user = {};
     if (req.session &&
