@@ -32,12 +32,35 @@ app.config(function (toastrConfig) {
         when('/cid/:courseId/nid/:nodeId', {
             templateUrl: function (params) {
                 var tUrl = '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
-                if (params.iframe === 'true' || params.iframe === 'false')
-                    tUrl += '?iframe=' + params.iframe;
-                if(params.accessToken == 1){
-                    tUrl += '?accessToken=' + params.accessToken;
-
+                var hasQueryStringStart = false;
+                if (params.iframe === 'true' || params.iframe === 'false'){
+                  if(!hasQueryStringStart)
+                    tUrl += '?';
+                  else {
+                    tUrl += '&';
+                  }
+                  tUrl += 'iframe=' + params.iframe;
+                  hasQueryStringStart = true;
                 }
+                if(typeof(params.l2pToken) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pToken=' + params.l2pToken;
+                    hasQueryStringStart = true;
+                }
+                if(typeof(params.l2pCourse) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pCourse=' + params.l2pCourse;
+                    hasQueryStringStart = true;
+                }
+                console.log(tUrl);
                 return tUrl;
             },
             controller: 'NodeRootController',

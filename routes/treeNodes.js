@@ -1,5 +1,4 @@
 var express = require('express');
-var url =require('url');
 var config = require('config');
 var appRoot = require('app-root-path');
 var CourseController = require(appRoot + '/modules/catalogs/course.controller.js');
@@ -61,7 +60,11 @@ router.get('/treeNode/actionBar/:tabName', function (req, res, next) {
  * partial for nodeDetail, (accessed by course detail page)
  */
 router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
-    console.log(req.query.accessToken);
+    console.log("accessToken:");
+    console.log(req.query.l2pToken);
+    console.log("courseId:");
+    console.log(req.query.l2pCourse);
+
 
     var TC = new TabsController();
     var nod = new NodeController();
