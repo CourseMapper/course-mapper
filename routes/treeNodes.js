@@ -6,6 +6,7 @@ var CourseController = require(appRoot + '/modules/catalogs/course.controller.js
 var NodeController = require(appRoot + '/modules/trees/index.js');
 var TabsController = require(appRoot + '/modules/tabs/tabs.controller.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
+var l2phelper = require(appRoot +'/libs/core/l2pHelper.js');
 var debug = require('debug')('cm:route');
 var moment = require('moment');
 var mongoose = require('mongoose');
