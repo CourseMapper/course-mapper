@@ -65,6 +65,17 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
     console.log("courseId:");
     console.log(req.query.l2pCourse);
 
+    l2phelper.getUserRole(req.query.l2pToken, req.query.l2pCourse, function(role){
+      console.log("role:");
+      console.log(role);
+    });
+
+    l2phelper.getContext(req.query.l2pToken, function(context){
+      console.log("context:");
+      console.log(context);
+    });
+
+
 
     var TC = new TabsController();
     var nod = new NodeController();
