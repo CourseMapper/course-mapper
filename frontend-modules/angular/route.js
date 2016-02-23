@@ -18,11 +18,24 @@ app.config(['$routeProvider', '$locationProvider',
         when('/cid/:courseId/nid/:nodeId', {
             templateUrl: function (params) {
                 var tUrl = '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
-                if (params.iframe === 'true' || params.iframe === 'false')
-                    tUrl += '?iframe=' + params.iframe;
-                if(params.accessToken == 1){
-                    tUrl += '?accessToken=' + params.accessToken;
-
+                var hasQueryStringStart = false;
+                if (params.iframe === 'true' || params.iframe === 'false'){
+                  if(!hasQueryStringStart)
+                    tUrl += '?';
+                  else {
+                    tUrl += '&';
+                  }
+                  tUrl += 'iframe=' + params.iframe;
+                  hasQueryStringStart = true;
+                }
+                if(typeof(params.accessToken) != undefined){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'accessToken=' + params.accessToken;
+                    hasQueryStringStart = true;
                 }
                 return tUrl;
             },
