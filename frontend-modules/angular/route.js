@@ -20,6 +20,10 @@ app.config(['$routeProvider', '$locationProvider',
                 var tUrl = '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
                 if (params.iframe === 'true' || params.iframe === 'false')
                     tUrl += '?iframe=' + params.iframe;
+                if(params.accessToken == 1){
+                    tUrl += '?accessToken=' + params.accessToken;
+
+                }
                 return tUrl;
             },
             controller: 'NodeRootController',

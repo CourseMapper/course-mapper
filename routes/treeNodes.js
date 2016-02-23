@@ -1,4 +1,5 @@
 var express = require('express');
+var url =require('url');
 var config = require('config');
 var appRoot = require('app-root-path');
 var CourseController = require(appRoot + '/modules/catalogs/course.controller.js');
@@ -16,6 +17,8 @@ var _ = require('underscore');
 
 // set a cookie
 router.use(function (req, res, next) {
+
+
     var isInIframe = false;
     var setCookie = false;
 
@@ -43,10 +46,13 @@ router.use(function (req, res, next) {
  * partials related to tab and actionbars
  */
 router.get('/treeNode/tab/:tabName', function (req, res, next) {
+
+
     res.render(theme + '/treeNode/' + req.params.tabName + '/' + req.params.tabName);
 });
 
 router.get('/treeNode/actionBar/:tabName', function (req, res, next) {
+
     res.render(theme + '/treeNode/' + req.params.tabName + '/' + req.params.tabName + 'ActionBar');
 });
 
@@ -54,6 +60,8 @@ router.get('/treeNode/actionBar/:tabName', function (req, res, next) {
  * partial for nodeDetail, (accessed by course detail page)
  */
 router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
+    console.log(req.query.accessToken);
+
     var TC = new TabsController();
     var nod = new NodeController();
     var nid = mongoose.Types.ObjectId(req.params.nid);

@@ -108,7 +108,7 @@ router.post('/updateAnnZone/', function (req, res, next) {
  });*/
 
 
-router.get('/slide-viewer', function (req, res, next) {
+/*router.get('/slide-viewer', function (req, res, next) {
   var comment = new Comment();
   comment.getAllComments(function (err, data) {
 
@@ -123,7 +123,7 @@ router.get('/slide-viewer', function (req, res, next) {
   });
 
 
-});
+});*/
 
 /**
  * GET to let the server know that the user is opening which pdf and page
