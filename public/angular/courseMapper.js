@@ -685,7 +685,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         return (authService.user ? true : false);
     };
 
-    $scope.getCoursesFromThisCategory = function () {
+    $scope.getCoursesFromThisCategory = function (force) {
         courseListService.init($scope.category._id, $scope.filterTags,
             function (courses) {
                 $scope.courses = courses;
@@ -694,6 +694,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             function (errors) {
                 console.log(JSON.stringify(errors));
             }
+            , force
         );
     };
 
@@ -753,10 +754,13 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.go = function () {
-        if ($scope.filterTags.length > 0)
+        if ($scope.filterTags.length > 0) {
             $location.search({tags: $scope.filterTagsText.join(',')});
+        }
         else
             $location.search({});
+
+        $scope.getCoursesFromThisCategory(true);
     };
 
     $scope.removeFilter = function (tag) {
