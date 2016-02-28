@@ -11,19 +11,19 @@
         <br>
 
         <div class="enrolled-user-chart no-padding" ng-show="tab ===1">
-            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="dataPdfAnnotationMonthly"
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataPdfAnnotationMonthly"
                     chart-labels="labelPdfAnnotationMonthly">
             </canvas>
             <div class="small-box-footer" style="text-align: center;">Monthly data of PDF annotations created by users</div>
         </div>
         <div class="discussion-chart" ng-show="tab === 2">
-            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="dataVideoAnnotationMonthly"
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataVideoAnnotationMonthly"
                     chart-labels="labelVideoAnnotationMonthly">
             </canvas>
             <div class="small-box-footer" style="text-align: center;">Monthly data of video annotations created by users</div>
         </div>
         <div class="pdf-chart" ng-show="tab === 3">
-            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="dataLinksMonthly"
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataLinksMonthly"
                     chart-labels="labelLinksMonthly">
             </canvas>
             <div class="small-box-footer" style="text-align: center;">Monthly data of links submitted by users</div>
