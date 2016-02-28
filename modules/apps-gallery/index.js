@@ -350,6 +350,9 @@ AppStore.prototype.installWidget = function (error, params, success) {
                     if (params.courseId)
                         ins.courseId = params.courseId;
 
+                    if (params.nodeId)
+                        ins.nodeId = params.nodeId;
+
                     if (params.categoryId)
                         ins.categoryId = params.categoryId;
 

@@ -10,6 +10,7 @@ var widgetPlacementsSchema = new mongoose.Schema({
     location: {type: String, required: true},
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "users"},
     courseId: {type: mongoose.Schema.Types.ObjectId, ref: "courses"},
+    nodeId: {type: mongoose.Schema.Types.ObjectId, ref: "treeNodes"},
     categoryId: {type: mongoose.Schema.Types.ObjectId, ref: "categories"},
 
     position: {type: mongoose.Schema.Types.Mixed},

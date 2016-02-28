@@ -5,7 +5,7 @@ app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootSc
     $scope.widgets = [];
 
     $scope.getWidgets = function (force) {
-        widgetService.getWidgetsOnLocation($scope.location, $scope.course._id,
+        widgetService.getWidgetsOnLocation($scope.location, $scope.treeNode._id,
 
             function (widgets) {
                 $scope.widgets = widgets;
