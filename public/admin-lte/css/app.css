@@ -702,7 +702,7 @@ a.videoButton:hover {
     height: auto
 }
 
-#description .ql-container {
+#description .ql-container, .description .ql-container {
     min-height: 300px;
     max-height: none !important
 }
