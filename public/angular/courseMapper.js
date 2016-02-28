@@ -3555,7 +3555,7 @@ app.directive('timepicker', function($timeout) {
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
-        {id: 'totalVotes.-1', name: 'Popularity'}
+        {id: 'totalVotes.-1', name: 'Most Popular'}
     ];
 
     $scope.newRowsFetched = function (newRows, allRows) {
@@ -5549,7 +5549,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
-        {id: 'totalVotes.-1', name: 'Popularity'}
+        {id: 'totalVotes.-1', name: 'Most Popular'}
     ];
 
     $scope.initiateLink = function (pid) {
