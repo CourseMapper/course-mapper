@@ -26,7 +26,7 @@ AppStore.prototype.init = function () {
  * @param success cb
  */
 AppStore.prototype.getWidgets = function (error, params, success) {
-    Widgets.find(params, function (err, widgets) {
+    Widgets.find(params).sort({location: 1}).exec(function (err, widgets) {
         if (err)
             error();
         else

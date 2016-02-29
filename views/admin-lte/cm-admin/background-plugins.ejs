@@ -8,9 +8,7 @@
             <li>
                 <a data-toggle="tab" data-target="#tab_2">Active</a></li>
             <li>
-                <a data-toggle="tab" data-target="#tab_3">Not Active</a></li>
-            <li>
-                <a data-toggle="tab" data-target="#tab_4">Background Plugins</a></li>
+                <a data-toggle="tab" data-target="#tab_3">Not Active</a></li> 
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1">
@@ -19,18 +17,14 @@
                     <tr>
                         <th>Location</th>
                         <th>Widget</th>
-                        <th>Group</th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets" ng-show="widget.location != 'background-plugin'">
+                    <tr ng-repeat="widget in widgets">
                         <td>
                             {{widget.location}}
                         </td>
                         <td>
                             {{widget.name}}
-                        </td>
-                        <td>
-                            {{widget.application}}
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
@@ -51,21 +45,16 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
-                        <th>Location</th>
                         <th>Widget</th>
-                        <th>Group</th>
+                        <th>Location</th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets"
-                        ng-show="widget.isActive && widget.location != 'background-plugin'">
-                        <td>
-                            {{widget.location}}
-                        </td>
+                    <tr ng-repeat="widget in widgets" ng-show="widget.isActive">
                         <td>
                             {{widget.name}}
                         </td>
                         <td>
-                            {{widget.application}}
+                            {{widget.location}}
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
@@ -86,21 +75,16 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
-                        <th>Location</th>
                         <th>Widget</th>
-                        <th>Group</th>
+                        <th>Location</th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets"
-                        ng-hide="widget.isActive || widget.location=='background-plugin'">
-                        <td>
-                            {{widget.location}}
-                        </td>
+                    <tr ng-repeat="widget in widgets" ng-hide="widget.isActive">
                         <td>
                             {{widget.name}}
                         </td>
                         <td>
-                            {{widget.application}}
+                            {{widget.location}}
                         </td>
                         <td>
                             <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
@@ -117,44 +101,17 @@
                 </table>
             </div>
             <!-- /.tab-pane -->
-
-            <div class="tab-pane" id="tab_4">
-                <table class="table table-bordered">
-                    <tbody>
-                    <tr>
-                        <th>Location</th>
-                        <th>Plugin</th>
-                        <th>Group</th>
-                        <th>Activate</th>
-                    </tr>
-                    <tr ng-repeat="widget in widgets" ng-show="widget.location == 'background-plugin'">
-                        <td>
-                            {{widget.location}}
-                        </td>
-                        <td>
-                            {{widget.name}}
-                        </td>
-                        <td>
-                            {{widget.application}}
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
-                                    ng-click="activate(widget.application, widget.name)">
-                                Activate
-                            </button>
-
-                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
-                                    ng-click="deactivate(widget.application, widget.name)">
-                                Deactivate
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
         </div>
     </div>
     <!-- /.tab-content -->
 </div>
 <!-- nav-tabs-custom -->
+</div>
+
+<!--<pre>
+{{route}}
+{{location}}
+{{routeParams}}
+</pre>-->
 
 <div class="clear"></div>

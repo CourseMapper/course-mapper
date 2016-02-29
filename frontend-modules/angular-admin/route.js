@@ -37,9 +37,9 @@ admin.config(['$routeProvider',
             resolve: {
                 pd: function ($q) {
                     return ( {
-                        title: 'Manage Widgets',
+                        title: 'Manage Widgets and Background Plugins',
                         breads: [
-                            {a: '#/widgets', active: false, title: 'Widgets'}
+                            {a: '#/widgets', active: false, title: 'Widgets and Background Plugins'}
                         ]
                     });
                 }
