@@ -1309,6 +1309,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 
+    $scope.hasPdf = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
+                return resources[i].link;
+            }
+        }
+
+        return false;
+    };
+
     $scope.getDataShape = function (nodeType) {
         if (nodeType == 'subTopic')
             return 'Ellipse';

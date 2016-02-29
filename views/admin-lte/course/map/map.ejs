@@ -71,6 +71,10 @@
                 <a class="cursor"
                    ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
             </li>
+
+            <li ng-show="hasPdf(data.resources)">
+                <a class="cursor" href="{{hasPdf(data.resources)}}" target="_blank"><i class="fa fa-file-pdf-o"></i> Download PDF</a>
+            </li>
         </ul>
 
         <ul class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
