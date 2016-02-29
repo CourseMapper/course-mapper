@@ -79,7 +79,8 @@ app.controller('CourseEditController', function ($scope, $filter, $http, $locati
 
                 $scope.progressPercentage = 0;
 
-                window.location.reload();
+                var slg = data.course.slug;
+                window.location.href = '/course/' + slg + '/#/cid/' + data.course._id + '?tab=preview';
             })
 
             .error(function (data) {

@@ -262,6 +262,7 @@ catalog.prototype.editCourse = function (error, params, files, success) {
 
     function saveEditCourse(course) {
         course.name = params.name;
+        course.setSlug(course.name);
         course.description = params.description;
         course.smallDescription = params.smallDescription;
         course.courseTags = [];
