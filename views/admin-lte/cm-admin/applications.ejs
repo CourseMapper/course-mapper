@@ -17,12 +17,25 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
-                        <th>Location</th>
-                        <th>Widget</th>
-                        <th>Group</th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets" ng-show="widget.location != 'background-plugin'">
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse"
+                        ng-show="widget.location != 'background-plugin'">
                         <td>
                             {{widget.location}}
                         </td>
@@ -51,12 +64,24 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
-                        <th>Location</th>
-                        <th>Widget</th>
-                        <th>Group</th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets"
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse"
                         ng-show="widget.isActive && widget.location != 'background-plugin'">
                         <td>
                             {{widget.location}}
@@ -86,12 +111,24 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
-                        <th>Location</th>
-                        <th>Widget</th>
-                        <th>Group</th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets"
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse"
                         ng-hide="widget.isActive || widget.location=='background-plugin'">
                         <td>
                             {{widget.location}}
@@ -122,12 +159,24 @@
                 <table class="table table-bordered">
                     <tbody>
                     <tr>
-                        <th>Location</th>
-                        <th>Plugin</th>
-                        <th>Group</th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets" ng-show="widget.location == 'background-plugin'">
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse" ng-show="widget.location == 'background-plugin'">
                         <td>
                             {{widget.location}}
                         </td>

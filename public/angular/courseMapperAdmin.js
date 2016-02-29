@@ -12,6 +12,9 @@ admin.filter('capitalize', function() {
     $scope.routeParams = $routeParams;
     $scope.widgets = null;
 
+    $scope.sortType = 'location';
+    $scope.sortReverse = false;
+
     $scope.init = function () {
         $http.get('/api/widgets/all')
             .success(function (res) {
