@@ -13,28 +13,29 @@ var courseSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    description: { type: String },
-    smallDescription: { type: String },
-    picture: { type: String },
-    video: { type: String },
-    settings: { type: mongoose.Schema.Types.Mixed},
-    tabsActive: { type: mongoose.Schema.Types.Mixed},
-    category: { type: mongoose.Schema.Types.ObjectId, ref: 'categories', required: true},
-    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
-    managers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'users'}],
-    courseTags:[{ type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
-    dateAdded: { type: Date },
-    dateUpdated: { type: Date }
+    description: {type: String},
+    smallDescription: {type: String},
+    picture: {type: String},
+    video: {type: String},
+    settings: {type: mongoose.Schema.Types.Mixed},
+    tabsActive: {type: mongoose.Schema.Types.Mixed},
+    category: {type: mongoose.Schema.Types.ObjectId, ref: 'categories', required: true},
+    createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
+    managers: [{type: mongoose.Schema.Types.ObjectId, ref: 'users'}],
+    courseTags: [{type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
+    isDeleted: {type: Boolean},
+    dateAdded: {type: Date},
+    dateUpdated: {type: Date}
 });
 
-courseSchema.methods.setSlug = function(cString) {
+courseSchema.methods.setSlug = function (cString) {
     this.slug = slug(cString);
 };
 
-courseSchema.pre('save', function(next){
+courseSchema.pre('save', function (next) {
     var now = new Date();
 
-    if ( !this.dateAdded ) {
+    if (!this.dateAdded) {
         this.dateAdded = now;
     }
 

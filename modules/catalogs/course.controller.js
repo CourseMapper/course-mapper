@@ -452,4 +452,23 @@ catalog.prototype.getCreatedCourses = function (error, params, done) {
     });
 };
 
+
+catalog.prototype.delete = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['courseId'], error)) {
+        return;
+    }
+
+    Course.findOne({_id: params.courseId}).exec(function (err, doc) {
+        if (err) error(err);
+        else if (doc) {
+            if (doc.createdBy.equals(mongoose.Types.ObjectId(params.user._id)) || params.user.role == 'admin') {
+                doc.isDeleted = true;
+                doc.save(function () {
+                    done();
+                });
+            }
+        }
+    });
+};
+
 module.exports = catalog;

@@ -131,6 +131,7 @@ app.config(function (toastrConfig) {
     $scope.course = null;
     $scope.videoSources = false;
     $scope.isPlaying = false;
+    $scope.isDeleted = false;
 
     $scope.tabOpened = function () {
         if (courseService.course) {
@@ -201,7 +202,7 @@ app.config(function (toastrConfig) {
      */
     $scope.tabOpened();
 });
-;app.controller('CourseConfigController', function ($scope, $http, toastr, $window) {
+;app.controller('CourseConfigController', function ($scope, $http, toastr, $window, $timeout) {
     $scope.courseEdit = null;
     $scope.errors = [];
     $scope.managersRaw = [];
@@ -289,10 +290,10 @@ app.config(function (toastrConfig) {
             managers: JSON.stringify($scope.managersIdRaw)
         };
 
-        if($scope.tabsActive){
+        if ($scope.tabsActive) {
             params.tabsActive = $scope.tabsActive;
         }
-        if($scope.settings){
+        if ($scope.settings) {
             params.settings = $scope.settings;
         }
 
@@ -323,6 +324,27 @@ app.config(function (toastrConfig) {
 
     $scope.cancel = function () {
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+    };
+
+    $scope.deleteCourse = function () {
+        if (confirm('Are you sure you want to delete this course?')) {
+            $http.delete('/api/course/' + $scope.courseId)
+                .success(function (data) {
+                    if (data.result) {
+                        toastr.success('Successfully deleted');
+
+                        $timeout(function () {
+                            $('#configView').modal('hide');
+                            $('.content-course').css('display', 'none');
+                            $('.action-header').css('visibility', 'hidden');
+                            $scope.$parent.isDeleted = true;
+                        });
+                    }
+                })
+                .error(function (data) {
+                    $scope.errors = data.errors;
+                });
+        }
     };
 });
 ;app.controller('CourseEditController', function ($scope, $filter, $http, $location, Upload, toastr) {

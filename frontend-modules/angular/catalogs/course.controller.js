@@ -6,6 +6,7 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
     $scope.course = null;
     $scope.videoSources = false;
     $scope.isPlaying = false;
+    $scope.isDeleted = false;
 
     $scope.tabOpened = function () {
         if (courseService.course) {

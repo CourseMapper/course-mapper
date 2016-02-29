@@ -281,4 +281,29 @@ router.put('/course/:courseId/settings', helper.l2pAuth, helper.ensureAuthentica
 
     });
 
+/**
+ * PUT
+ * enrolling user into a course
+ */
+router.delete('/course/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user)
+            return res.status(401).send('Unauthorized');
+
+        var catalog = new Course();
+
+        var courseId = mongoose.Types.ObjectId(req.params.courseId);
+
+        catalog.delete(
+            function failed(err) {
+                helper.resReturn(err, res);
+            },
+
+            {courseId: courseId, user: req.user},
+
+            function () {
+                res.status(200).json({result: true});
+            });
+    });
+
 module.exports = router;
