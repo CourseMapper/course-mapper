@@ -50,7 +50,7 @@ router.get('/category/:category/courseTags', function (req, res, next) {
  * return: json
  */
 router.get('/category/:category/courses', function (req, res, next) {
-    var getCParam = {category: req.params.category};
+    var getCParam = {category: req.params.category, $or: [{isDeleted: {$exists: false}}, {isDeleted: false}]};
 
     // converting tag ids csv into tag (object ids)
     var tags = req.query.tags;
