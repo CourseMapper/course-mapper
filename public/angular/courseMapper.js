@@ -6732,9 +6732,13 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     var submitPage = ($rootScope.annotationSubmitPage != -1) ? $rootScope.annotationSubmitPage : $scope.currentPageNumber;
 
+    var annTextWOWhitespace = $scope.comment.rawText.replace(/&nbsp;/gi,'');
+    annTextWOWhitespace = annTextWOWhitespace.replace(/<[a-zA-Z]+>/gi,'');
+    annTextWOWhitespace = annTextWOWhitespace.replace(/<\/[a-zA-Z]+>/gi,'');
+    annTextWOWhitespace = $.trim(annTextWOWhitespace);
 
-    if($scope.comment.rawText == ""){
-      displayCommentSubmissionResponse("Client Error: The annotation is empty. Please enter some text.");
+    if(annTextWOWhitespace == ""){
+      displayCommentSubmissionResponse("Client Error: Your annotation was not submitted, since it does not contain any text yet.");
       return false;
     }
 
