@@ -7287,7 +7287,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       if (name != "#") {
         if ($rootScope.annotationSubmitPage != -1 &&
           $rootScope.annotationSubmitPage != $scope.currentPageNumber) {
-          name += "@" + $scope.currentPageNumber;
+          name += "@p" + $scope.currentPageNumber;
         }
 
         if ($scope.writeCommentMode) {

@@ -340,10 +340,10 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
     //console.log(data);
 
 
-    var renderedText = rawText.replace(/#(\w+)((@)(\w+))?/g, function (x) {
+    var renderedText = rawText.replace(/#(\w+)((@p)(\w+))?/g, function (x) {
       var comm = new Comment();
       //console.log("Found tag with name: "+x);
-      var strSplit = x.split("@");
+      var strSplit = x.split("@p");
       var hasPage = false;
       var page = 0;
       var originalX = x;

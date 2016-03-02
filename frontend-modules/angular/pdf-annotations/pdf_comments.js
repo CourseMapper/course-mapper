@@ -862,7 +862,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       if (name != "#") {
         if ($rootScope.annotationSubmitPage != -1 &&
           $rootScope.annotationSubmitPage != $scope.currentPageNumber) {
-          name += "@" + $scope.currentPageNumber;
+          name += "@p" + $scope.currentPageNumber;
         }
 
         if ($scope.writeCommentMode) {
