@@ -39,8 +39,8 @@ ApplicationOauth.prototype.deleteApp = async(function (where) {
 });
 
 ApplicationOauth.prototype.deleteInstalledApp = async(function (where) {
-    var ret = await(Token.findOneAndRemove(where).exec());
-    var ret2 = await(Secrets.findOneAndRemove({userId: where.userId, clientId: ret.clientId}).exec());
+    var ret = await(Token.find({userId: where.userId, clientId: where._id}).remove().exec());
+    var ret2 = await(Secrets.find({userId: where.userId, clientId: where._id}).remove().exec());
     return (ret && ret2);
 });
 
@@ -69,16 +69,19 @@ ApplicationOauth.prototype.getInstalledApps = async(function (params) {
 
     var rets = [];
 
+    var clients = {};
     for (var i in apps) {
         var a = apps[i].toObject();
         a.app = await(Client.findOne({
             clientId: a.clientId
         }));
 
+        clients[a.clientId] = a.app;
+
         rets.push(a)
     }
 
-    return rets;
+    return clients;
 });
 
 /**

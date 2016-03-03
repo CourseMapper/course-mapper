@@ -4360,6 +4360,16 @@ app.directive('timepicker', function($timeout) {
             $scope.errors = err;
         }
     );
+
+    $scope.isEmptyObject = function(obj) {
+        for(var prop in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 });;externalApp.config(['$routeProvider', '$locationProvider',
 
     function ($routeProvider, $locationProvider) {
@@ -4409,7 +4419,7 @@ app.directive('timepicker', function($timeout) {
             externalAppService.deleteInstallation(installId,
                 function () {
                     toastr.success('Application deleted.');
-                    var deleted = _.remove($scope.$parent.installedApps, {_id: installId});
+                    var deleted = _.remove($scope.$parent.installedApps, {clientId: installId});
                 },
                 function () {
                     toastr.error('Delete failed.');
