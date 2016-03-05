@@ -12,25 +12,25 @@
         <br>
 
         <div class="enrolled-user-chart no-padding" ng-show="tab ===1">
-            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="dataEnrolledUserMonthly"
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataEnrolledUserMonthly"
                     chart-labels="labelEnrolledUserMonthly">
             </canvas>
             <div class="small-box-footer" style="text-align: center;">Monthly data of enrolled users in this course</div>
         </div>
         <div class="discussion-chart" ng-show="tab === 2">
-            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="dataDiscussionMonthly"
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataDiscussionMonthly"
                     chart-labels="labelDiscussionMonthly">
             </canvas>
             <div class="small-box-footer" style="text-align: center;">Monthly data of discussions topic created in this course</div>
         </div>
         <div class="pdf-chart" ng-show="tab === 3">
-            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="dataPdfUploadMonthly"
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataPdfUploadMonthly"
                     chart-labels="labelPdfUploadMonthly">
             </canvas>
             <div class="small-box-footer" style="text-align: center;">Monthly data of uploaded PDF materials in this course</div>
         </div>
         <div class="video-chart" ng-show="tab === 4">
-            <canvas id="bar" width="500" height="135" class="chart chart-bar" chart-data="dataVideoUploadMonthly"
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataVideoUploadMonthly"
                     chart-labels="labelVideoUploadMonthly">
             </canvas>
             <div class="small-box-footer" style="text-align: center;">Monthly data of uploaded video materials in this course</div>
