@@ -107,7 +107,7 @@ courseHistory.prototype.getHistoryPdfAnnotations = function (error, params, done
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            PdfAnnotation.find({pdfId: {$in: ids},dateOfCreation: {'$gte': lastYear} }, function (error, docs){
+            PdfAnnotation.find({pdfId: {$in: ids},dateOfCreation: {'$gte': lastYear}, hasParent: false }, function (error, docs){
                 if (error) error (error);
                 else {done(docs)}
             });

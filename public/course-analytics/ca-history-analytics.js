@@ -30,7 +30,6 @@ angular.module('HistoryAnalytics', ['chart.js'])
 
     $scope.courseId = $routeParams.courseId;
 
-
     //get enrolled user history for one year range max
     $http.get('/api/course-analytics/course-history/enrolled-users/'+$scope.courseId).success(function (result) {
         var arrTemp = [];
