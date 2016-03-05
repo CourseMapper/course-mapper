@@ -12,7 +12,7 @@ angular.module('NodeHistoryAnalytics', ['chart.js'])
             datasetFill: false
         });
     }])
-    .controller("BarNodeHistoryAnalyticsController", ['$scope', '$rootScope', '$filter', '$http', '$location', '$routeParams', function ($scope, $rootScope, $filter, $http, $location, $routeParams) {
+    .controller("NodeHistoryAnalyticsController", ['$scope', '$rootScope', '$filter', '$http', '$location', '$routeParams', function ($scope, $rootScope, $filter, $http, $location, $routeParams) {
 
         $scope.title = "Node Analytics History Chart";
         $scope.enrolledUsersData = [];
@@ -53,7 +53,7 @@ angular.module('NodeHistoryAnalytics', ['chart.js'])
         });
 
         //get video annotation history for one year range max
-        $http.get('/api/course-analytics/course-history/video-annotations/'+$scope.courseId).success(function(result){
+        $http.get('/api/node-analytics/node-history/video-annotations/'+$scope.nodeId).success(function(result){
             var arrTemp = [];
             var monthTemp ={};
             $scope.labelVideoAnnotationMonthly = []; $scope.dataVideoAnnotationMonthly=[];
@@ -75,7 +75,7 @@ angular.module('NodeHistoryAnalytics', ['chart.js'])
         });
 
         //get submitted links history for one year range max
-        $http.get('/api/course-analytics/course-history/links/'+$scope.courseId).success(function(result){
+        $http.get('/api/node-analytics/node-history/links/'+$scope.nodeId).success(function(result){
             var arrTemp = [];
             var monthTemp ={};
             $scope.labelLinksMonthly = []; $scope.dataLinksMonthly=[];
