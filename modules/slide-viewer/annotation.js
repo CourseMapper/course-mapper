@@ -31,7 +31,7 @@ var annotationPDFSchema = new mongoose.Schema({
     pdfId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-        ref: 'treeNodes'
+        ref: 'resources'
     },
     pdfPageNumber: {
       type: Number

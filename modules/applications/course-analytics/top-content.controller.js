@@ -32,7 +32,7 @@ topContent.prototype.getTopPdf = function (error, params, done) {
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            PdfAnnotation.find({pdfId: {$in: ids},hasParent: false }).populate('pdfId').exec(function (error, docs){
+            PdfAnnotation.find({pdfId: {$in: ids},hasParent: false }).populate('pdfId', 'treeNodeId').exec(function (error, docs){
                 if (error) error (error);
                 else {done(docs)}
             });
