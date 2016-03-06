@@ -10,6 +10,7 @@ var appRoot = require('app-root-path');
 var EnrolledUser = require(appRoot + '/modules/applications/course-analytics/enrolledUserList');
 var CoursePreviewStats = require(appRoot + '/modules/applications/course-analytics/coursePreviewStats.controller');
 var CourseHistory = require(appRoot + '/modules/applications/course-analytics/course-history.controller');
+var TopContent = require(appRoot + '/modules/applications/course-analytics/top-content.controller');
 
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
@@ -17,9 +18,6 @@ var router = express.Router();
 
 
 router.get('/user-list/:courseId', function(req, res, next) {
-    if (!req.user) {
-        return res.status(401).send('Unauthorized');
-    }
 
     var crs = new EnrolledUser();
     crs.getUserList(
@@ -37,9 +35,7 @@ router.get('/user-list/:courseId', function(req, res, next) {
 });
 
 router.get('/course-stats/total-user/:courseId', function(req, res, next) {
-    if (!req.user) {
-        return res.status(401).send('Unauthorized');
-    }
+
 
     var crs = new CoursePreviewStats();
     crs.getTotalUser(
@@ -57,9 +53,7 @@ router.get('/course-stats/total-user/:courseId', function(req, res, next) {
 });
 
 router.get('/course-stats/total-video/:courseId', function(req, res, next) {
-    if (!req.user) {
-        return res.status(401).send('Unauthorized');
-    }
+
 
     var crs = new CoursePreviewStats();
     crs.getTotalVideo(
@@ -77,9 +71,7 @@ router.get('/course-stats/total-video/:courseId', function(req, res, next) {
 });
 
 router.get('/course-stats/total-pdf/:courseId', function(req, res, next) {
-    if (!req.user) {
-        return res.status(401).send('Unauthorized');
-    }
+
 
     var crs = new CoursePreviewStats();
     crs.getTotalPdf(
@@ -97,9 +89,7 @@ router.get('/course-stats/total-pdf/:courseId', function(req, res, next) {
 });
 
 router.get('/course-stats/total-discussion/:courseId', function(req, res, next) {
-    if (!req.user) {
-        return res.status(401).send('Unauthorized');
-    }
+
 
     var crs = new CoursePreviewStats();
     crs.getTotalDiscussion(
@@ -117,9 +107,7 @@ router.get('/course-stats/total-discussion/:courseId', function(req, res, next) 
 });
 
 router.get('/course-stats/course-creator/:courseId', function(req, res, next) {
-    if (!req.user) {
-        return res.status(401).send('Unauthorized');
-    }
+
 
     var crs = new CoursePreviewStats();
     crs.getCourseCreator(
@@ -137,9 +125,6 @@ router.get('/course-stats/course-creator/:courseId', function(req, res, next) {
 });
 
 router.get('/course-history/enrolled-users/:courseId', function (req, res, next){
-    if (!req.user) {
-       return res.status(401).send('Unauthorized');
-    }
 
     var ch = new CourseHistory();
     ch.getHistoryFollower(
@@ -259,6 +244,24 @@ router.get('/course-history/links/:courseId', function (req, res, next){
         },
         function success (links) {
             res.status(200).json({result:true, links: links})
+        }
+    );
+});
+
+router.get('/top-content/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var tc = new TopContent();
+    tc.getTopPdf (
+        function error (err) {
+          res.status(200).json({result:false, message:err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (topPdf) {
+            res.status(200).json({result:true, topPdf:topPdf})
         }
     );
 });

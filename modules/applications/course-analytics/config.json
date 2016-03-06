@@ -90,6 +90,16 @@
       "width": 6,
       "height":1,
       "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Top Content",
+      "location": "course-analytics",
+      "description": "Top material content based on the number of annotations",
+      "entryPoint": "/course-analytics/ca-top-content",
+      "widgetJavascript": ["ca-top-content.js"],
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
     }
   ]
 }

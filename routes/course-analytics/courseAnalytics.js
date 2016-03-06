@@ -40,6 +40,9 @@ router.get('/ca-enrolled-users', function(req, res, next) {
     res.render('course-analytics/enrolled-users');
 });
 
+router.get('/ca-top-content',function (req, res, next){
+   res.render('course-analytics/top-content');
+});
 
 
 
