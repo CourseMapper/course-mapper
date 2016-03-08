@@ -168,10 +168,10 @@ account.prototype.handleLoginPost = function (req, res, next) {
             return res.redirect('/accounts/login');
         }
 
-        // only login non l2p-accounts here
+        /*// only login non l2p-accounts here
         if(user.l2pUserId){
             return res.redirect('/accounts/login');
-        }
+        }*/
 
         // if everything is OK
         req.logIn(user, function (err) {

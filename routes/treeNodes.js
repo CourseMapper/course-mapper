@@ -110,7 +110,12 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
 
         }
         else{
-          l2pUserExists = true;
+          if(l2pUserName == user.username){
+            l2pUserExists = true;
+          }
+          else {
+            l2pUserExists = false;
+          }
         }
       });
 
