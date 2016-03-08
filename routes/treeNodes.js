@@ -4,6 +4,8 @@ var appRoot = require('app-root-path');
 var CourseController = require(appRoot + '/modules/catalogs/course.controller.js');
 var NodeController = require(appRoot + '/modules/trees/index.js');
 var TabsController = require(appRoot + '/modules/tabs/tabs.controller.js');
+var Account = require(appRoot + '/modules/accounts/index.js');
+var User = require(appRoot + '/modules/accounts/users.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var l2phelper = require(appRoot +'/libs/core/l2pHelper.js');
 var debug = require('debug')('cm:route');
@@ -65,15 +67,64 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
     console.log("courseId:");
     console.log(req.query.l2pCourse);
 
+    var l2pRole;
+    var l2pContext;
+
     l2phelper.getUserRole(req.query.l2pToken, req.query.l2pCourse, function(role){
       console.log("role:");
       console.log(role);
+      l2pRole = role;
     });
 
     l2phelper.getContext(req.query.l2pToken, function(context){
       console.log("context:");
       console.log(context);
+      l2pContext = context;
     });
+
+    var currL2pUserId = ""; //TODO
+
+    //Create L2P User if it does not exist
+
+    var l2pUserExists = false;
+    var l2pUserName = "";//TODO
+    var roleIsValid = false; //TODO: Change to correct checking of roleIsValid
+    if(roleIsValid){
+      var account = new Account();
+      User.findOne({
+          l2pUserId: currL2pUserId
+      },function(err,user){
+        if(!user){
+          var params = {
+            username: l2pUserName,
+            role: l2pRole,
+            l2pUserId: currL2pUserId,
+            password: "2"
+          };
+          account.signUp(function(err){
+              console.log("Error: Error during L2P user creation");
+              l2pUserExists = false;
+          }, params, function(){
+              l2pUserExists = true;
+          });
+
+        }
+        else{
+          l2pUserExists = true;
+        }
+      });
+
+
+    }
+
+    if(!l2pUserExists){
+      console.log("Error: L2P user does not exist and could not be created");
+    }
+    else {
+      req.user = l2pUserName;
+      res.render(config.get('theme') + '/profile', {title: 'My Profile', user: l2pUserName});
+      //TODO: login l2p user into coursemapper
+    }
 
 
 

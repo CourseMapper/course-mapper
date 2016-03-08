@@ -83,6 +83,10 @@ account.prototype.addUser = function (errorCallback, params, done) {
     if (params.role)
         user.role = params.role;
 
+    if (params.l2pUserId)
+        user.l2pUserId = params.l2pUserId;
+
+
     // hash the password first
     user.setPassword(params.password);
 
@@ -161,6 +165,11 @@ account.prototype.handleLoginPost = function (req, res, next) {
             // from previous (info.message) step, assign it into to
             // req.session and redirect to the login page again to display
             req.session.messages = info.message;
+            return res.redirect('/accounts/login');
+        }
+
+        // only login non l2p-accounts here
+        if(user.l2pUserId){
             return res.redirect('/accounts/login');
         }
 

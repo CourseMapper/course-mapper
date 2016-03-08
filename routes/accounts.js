@@ -20,7 +20,7 @@ router.get('/accounts', function (req, res, next) {
 });
 
 router.get('/accounts/login', function (req, res, next) {
-    res.render(config.get('theme') + '/login', {title: 'Log In Page'});
+  res.render(config.get('theme') + '/login', {title: 'Log In Page'});
 });
 
 router.get('/accounts/forgot-password', function (req, res, next) {
@@ -28,7 +28,7 @@ router.get('/accounts/forgot-password', function (req, res, next) {
 });
 
 router.get('/accounts/loginform', function (req, res, next) {
-    res.render(config.get('theme') + '/modalLoginForm');
+  res.render(config.get('theme') + '/modalLoginForm');
 });
 
 router.get('/accounts/nodeloginform', function (req, res, next) {
