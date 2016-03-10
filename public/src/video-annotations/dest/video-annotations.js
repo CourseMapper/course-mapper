@@ -142,7 +142,7 @@ videoAnnotationsModule.directive('videoAnnotation', function() {
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http',
   function ($scope, socket, rootScope, $http) {
     var videoPulse;
-    var videoPulseHost = 'https://lanzarote.informatik.rwth-aachen.de:3005';
+    var videoPulseHost = 'http://lanzarote.informatik.rwth-aachen.de:3005';
 
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
