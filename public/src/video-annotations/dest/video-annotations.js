@@ -137,11 +137,13 @@ videoAnnotationsModule.directive('videoAnnotation', function() {
         controller: 'VaController'
     };
 });
-;/* jslint node: true */
-'use strict';
+;'use strict';
 
-videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
-  function ($scope, socket, rootScope) {
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http',
+  function ($scope, socket, rootScope, $http) {
+    var videoPulse;
+    var videoPulseHost = 'http://lanzarote.informatik.rwth-aachen.de:3005';
+
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
       params.showing = false;
@@ -213,7 +215,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
     $scope.seekPosition = function (annotation) {
       $scope.API.seekTime(annotation.start / 1000);
-      //$scope.API.pause();
     };
 
     $scope.onPlayerReady = function (API) {
@@ -291,18 +292,26 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     $scope.init = function (videoId, videoSource) {
       $scope.sources = [{
         src: videoSource,
-        type: 'video/mp4'
+        type: 'video/mp4',
+        video_id: videoId
       }];
 
-      $scope.cuePoints = {
-        points: []
-      };
+      // Stop any previous pulse
+      if (videoPulse) {
+        videoPulse.stop();
+      }
+      videoPulse = new VideoPulse({
+        host: videoPulseHost,
+        userId: rootScope.user._id,
+        videoId: videoId,
+        mediaElement: $scope.API
+      });
+
+      $scope.cuePoints = {points: []};
       $scope.annotations = [];
 
       // Trigger initial annotations update.
-      socket.emit('annotations:get', {
-        video_id: videoId
-      });
+      socket.emit('annotations:get', {video_id: videoId});
     };
 
     // Initialize scope when the video-source is set.
@@ -312,12 +321,33 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       }
     });
 
-    $scope.onUpdateState = function(state){
-        rootScope.$broadcast('onVideoUpdateState', {
-            'state': state,
-            'API': $scope.API
+    var resumeLastPlaybackState = function () {
+      var user = rootScope.user;
+      var videoId = $scope.sources[0].video_id;
+      var url = videoPulseHost + '/beats/' + videoId + '/' + user._id;
+      $http.get(url)
+        .success(function (data) {
+          var timestamp = data.pointer || 0;
+          console.log('Resuming position: ' + timestamp);
+          $scope.API.seekTime(timestamp / 1000);
         });
-    }
+    };
+
+    var isResumed = false;
+
+    $scope.onUpdateState = function (state) {
+
+      rootScope.$broadcast('onVideoUpdateState', {'state': state, 'API': $scope.API});
+      if (state === 'play') {
+        if (!isResumed) {
+          resumeLastPlaybackState();
+          isResumed = true;
+        }
+        videoPulse.start();
+      } else {
+        videoPulse.stop();
+      }
+    };
   }
 ]);;/*jslint node: true */
 'use strict';
