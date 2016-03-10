@@ -137,11 +137,12 @@ videoAnnotationsModule.directive('videoAnnotation', function() {
         controller: 'VaController'
     };
 });
-;/* jslint node: true */
-'use strict';
+;'use strict';
 
-videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope',
-  function ($scope, socket, rootScope) {
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http',
+  function ($scope, socket, rootScope, $http) {
+    var videoPulse;
+
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
       params.showing = false;
@@ -213,7 +214,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
     $scope.seekPosition = function (annotation) {
       $scope.API.seekTime(annotation.start / 1000);
-      //$scope.API.pause();
     };
 
     $scope.onPlayerReady = function (API) {
@@ -291,18 +291,25 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     $scope.init = function (videoId, videoSource) {
       $scope.sources = [{
         src: videoSource,
-        type: 'video/mp4'
+        type: 'video/mp4',
+        video_id: videoId
       }];
+      // Stop any previous pulse
+      if (videoPulse) {
+        videoPulse.stop();
+      }
+      videoPulse = new VideoPulse({
+        host: 'http://lanzarote.informatik.rwth-aachen.de:3005',
+        userId: rootScope.user._id,
+        videoId: videoId,
+        mediaElement: $scope.API
+      });
 
-      $scope.cuePoints = {
-        points: []
-      };
+      $scope.cuePoints = {points: []};
       $scope.annotations = [];
 
       // Trigger initial annotations update.
-      socket.emit('annotations:get', {
-        video_id: videoId
-      });
+      socket.emit('annotations:get', {video_id: videoId});
     };
 
     // Initialize scope when the video-source is set.
@@ -312,11 +319,28 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       }
     });
 
-    $scope.onUpdateState = function(state){
-        rootScope.$broadcast('onVideoUpdateState', {
-            'state': state,
-            'API': $scope.API
+    var resumeLastPlaybackState = function () {
+      var user = rootScope.user;
+      var videoId = $scope.API.sources[0].video_id;
+      var url = 'http://lanzarote.informatik.rwth-aachen.de:3005/beats/' + videoId + '/' + user._id;
+      $http.get(url)
+        .success(function (data) {
+          if (!data || !data.timestamp) {
+            return;
+          }
+          console.log('Resuming position: ' + data.timestamp);
+          $scope.API.seekTime(data.timestamp / 1000);
         });
+    };
+
+    $scope.onUpdateState = function (state) {
+
+      rootScope.$broadcast('onVideoUpdateState', {'state': state, 'API': $scope.API});
+      if (state === 'play') {
+        videoPulse.start();
+      } else {
+        videoPulse.stop();
+      }
     }
   }
 ]);;/*jslint node: true */
