@@ -142,6 +142,7 @@ videoAnnotationsModule.directive('videoAnnotation', function() {
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http',
   function ($scope, socket, rootScope, $http) {
     var videoPulse;
+    var videoPulseHost = 'https://lanzarote.informatik.rwth-aachen.de:3005';
 
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
@@ -300,7 +301,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         videoPulse.stop();
       }
       videoPulse = new VideoPulse({
-        host: 'http://lanzarote.informatik.rwth-aachen.de:3005',
+        host: videoPulseHost,
         userId: rootScope.user._id,
         videoId: videoId,
         mediaElement: $scope.API
@@ -323,7 +324,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     var resumeLastPlaybackState = function () {
       var user = rootScope.user;
       var videoId = $scope.sources[0].video_id;
-      var url = 'http://lanzarote.informatik.rwth-aachen.de:3005/beats/' + videoId + '/' + user._id;
+      var url = videoPulseHost + '/beats/' + videoId + '/' + user._id;
       $http.get(url)
         .success(function (data) {
           var timestamp = data.pointer || 0;
