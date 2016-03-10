@@ -10,22 +10,27 @@ function VideoPulse(params) {
   var signaller = null;
 
   this.start = function () {
-    stop();
-    signaller = setInterval(function () {
-
-      data.pointer = video.currentTime; // update pointer
-
-      var request = new XMLHttpRequest();
-      var url = host + '/beats/' + videoId;
-      request.open('POST', url, true);
-      request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-      request.send(JSON.stringify(data));
-    }, pulseInterval);
+    if (signaller) {
+      return;
+    }
+    signaller = setInterval(beat, pulseInterval);
   };
 
   this.stop = function () {
     if (signaller) {
-      clearInterval(signaller)
+      clearInterval(signaller);
+      beat();
     }
+  };
+
+  var beat = function () {
+
+    data.pointer = video.currentTime; // update pointer
+
+    var request = new XMLHttpRequest();
+    var url = host + '/beats/' + videoId;
+    request.open('POST', url, true);
+    request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    request.send(JSON.stringify(data));
   };
 }

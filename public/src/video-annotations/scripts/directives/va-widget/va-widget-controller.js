@@ -155,6 +155,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         type: 'video/mp4',
         video_id: videoId
       }];
+      resumeLastPlaybackState();
+
       // Stop any previous pulse
       if (videoPulse) {
         videoPulse.stop();
@@ -182,15 +184,13 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
     var resumeLastPlaybackState = function () {
       var user = rootScope.user;
-      var videoId = $scope.API.sources[0].video_id;
+      var videoId = $scope.sources[0].video_id;
       var url = 'http://lanzarote.informatik.rwth-aachen.de:3005/beats/' + videoId + '/' + user._id;
       $http.get(url)
         .success(function (data) {
-          if (!data || !data.timestamp) {
-            return;
-          }
-          console.log('Resuming position: ' + data.timestamp);
-          $scope.API.seekTime(data.timestamp / 1000);
+          var timestamp = data.pointer || 0;
+          console.log('Resuming position: ' + timestamp);
+          $scope.API.seekTime(timestamp / 1000);
         });
     };
 
