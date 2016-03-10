@@ -155,7 +155,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         type: 'video/mp4',
         video_id: videoId
       }];
-      resumeLastPlaybackState();
 
       // Stop any previous pulse
       if (videoPulse) {
@@ -194,14 +193,20 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         });
     };
 
+    var isResumed = false;
+
     $scope.onUpdateState = function (state) {
 
       rootScope.$broadcast('onVideoUpdateState', {'state': state, 'API': $scope.API});
       if (state === 'play') {
+        if (!isResumed) {
+          resumeLastPlaybackState();
+          isResumed = true;
+        }
         videoPulse.start();
       } else {
         videoPulse.stop();
       }
-    }
+    };
   }
 ]);

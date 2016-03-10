@@ -1,6 +1,6 @@
 <div class="col-md-7">
     <videogular class="embed-responsive embed-responsive-16by9"
-                vg-youtube="rel=1;showinfo=0;iv_load_policy=3"
+                vg-youtube=""
                 vg-player-ready="onPlayerReady($API)"
                 vg-cue-points="cuePoints"
                 vg-update-state="onUpdateState($state)">
@@ -11,7 +11,8 @@
             <vg-scrub-bar>
                 <!--<vg-scrub-bar-buffer></vg-scrub-bar-buffer>-->
                 <vg-scrub-bar-current-time ng-show="!isFpOn"></vg-scrub-bar-current-time>
-                <vg-scrub-bar-cue-points ng-show="!isFpOn" class="default"
+                <vg-scrub-bar-cue-points ng-show="!isFpOn"
+                                         class="default"
                                          vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
                 <div ng-class="{ invisible: !isFpOn }" class="fp-timeline" ng-style="timelineWidth"></div>
             </vg-scrub-bar>
