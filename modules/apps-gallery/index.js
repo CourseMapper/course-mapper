@@ -409,23 +409,22 @@ AppStore.prototype.installWidget = function (error, params, success) {
             return;
         }
 
-        userHelper.isAuthorized(
-            error,
-
-            {
+        userHelper.isCourseAuthorizedAsync({
                 userId: params.userId,
                 courseId: params.courseId
-            },
+            })
+            .then(function (isAllwd) {
 
-            function (ret) {
-                // isOwnerOrManager
-                if (ret) {
+                if (isAllwd) {
                     saveWidgetInstall();
                 } else {
-                    error(helper.createError('Cannot edit course', 401));
+                    error(helper.createError('Cannot add/edit widgets', 401));
                 }
-            }
-        );
+
+            })
+            .catch(function () {
+                error(helper.createError401());
+            });
     }
 
     else {
