@@ -493,6 +493,16 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.hasPdf = function (resources) {
         for (var i in resources) {
             if (resources[i].type == 'pdf') {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    $scope.getPdfLink = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
                 return resources[i].link;
             }
         }
