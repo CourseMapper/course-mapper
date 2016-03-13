@@ -1431,7 +1431,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 
-    $scope.isOwner = function (tn) {
+    $scope.isNodeOwner = function (tn) {
         if (tn.createdBy._id == $scope.user._id)
             return true;
         else if (tn.createdBy == $scope.user._id)
@@ -1441,7 +1441,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.isAuthorized = function (tn) {
-        return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
+        return ($scope.isNodeOwner(tn) || $scope.isAdmin || $scope.isManager || $scope.isOwner);
     };
 
     $scope.addNewNodeIntoPool = function (treeNode) {
@@ -2096,7 +2096,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         var q = $location.search();
                         if (q.tab)
                             $scope.currentTab = q.tab;
-                        
+
                         authService.showLoginForm();
                     }
                     else if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
@@ -2110,10 +2110,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                                 Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
-                                if ($scope.isAdmin || $scope.isManager) {
-                                    if ($scope.treeNode.createdBy == $rootScope.user._id)
-                                        $scope.isNodeOwner = true;
+                                if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                    $scope.isNodeOwner = true;
 
+                                if ($scope.isAuthorized()) {
                                     $scope.setEditMode();
                                 }
 

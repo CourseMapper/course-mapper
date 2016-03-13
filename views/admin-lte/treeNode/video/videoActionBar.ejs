@@ -2,20 +2,24 @@
     <li ng-show="isNodeOwner && !isOwner">
         You created this content node
     </li>
-    <li ng-show="isOwner && isNodeOwner">
+    <li ng-show="isOwner && !isNodeOwner">
         You created this course
     </li>
     <li ng-show="isManager">
         You are a manager
     </li>
-    <li ng-show="isOwner || isManager || isNodeOwner">
+
+    <li ng-show="isAdmin && !isManager && !isOwner && !isNodeOwner">
+        You are an admin
+    </li>
+    <li ng-show="isOwner || isManager || isNodeOwner || isAdmin">
         <a style="cursor: pointer"
            data-toggle="modal" data-target="#editContentNodeModal"
            title="Edit this content node">
             <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
     </li>
 
-    <li ng-show="isOwner || isManager || isNodeOwner">
+    <li ng-show="isOwner || isManager || isNodeOwner || isAdmin">
         <a style="cursor: pointer"
            data-toggle="modal" data-target="#configView"
            title="Edit this node's settings">
