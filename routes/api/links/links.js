@@ -30,7 +30,7 @@ router.get('/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
         if (req.query['sortBy'])
             sortBy = req.query['sortBy'];
 
-        var orderBy = 'desc';
+        var orderBy = -1;
         if (req.query['orderBy'])
             orderBy = req.query['orderBy'];
 
