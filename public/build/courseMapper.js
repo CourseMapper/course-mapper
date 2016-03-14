@@ -702,6 +702,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.courses = null;
     $scope.coursesLength = 0;
 
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Most Popular'}
+    ];
+
     $scope.widgets = [];
 
     $scope.isLoggedIn = function () {
@@ -817,6 +828,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.initTagFromSearch();
         });
     });
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
+    };
+
 });
 ;app.controller('MapController', function ($scope, $http, $rootScope, authService,
                                           $timeout, $sce, $location, socket,
