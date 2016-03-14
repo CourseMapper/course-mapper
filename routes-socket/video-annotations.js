@@ -68,7 +68,7 @@ module.exports = function (io) {
           return;
         }
         var videoId = annotation.video_id;
-        Plugin.doAction('onAfterVideoAnnotationDeleted', videoId);
+        Plugin.doAction('onAfterVideoAnnotationDeleted', annotation);
         await(emitAnnotationUpdatedAsync(videoId));
       } catch (e) {
         console.log('Error removing video annotation: ' + e);
