@@ -868,7 +868,7 @@ var NewsfeedListener = {
     },
 
     onAfterLinkDeleted: function (deleteLink) {
-        Links.findOne({_id: deleteLink._id})
+        Links.findOne({_id: deleteLink})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -971,7 +971,7 @@ var NewsfeedListener = {
     },
 
     onAfterDiscussionDeleted: function (deleteDiscussion){
-        Posts.findOne({_id: deleteDiscussion._id})
+        Posts.findOne({_id: deleteDiscussion})
             .exec(function (err, doc) {
                 if (doc) {
                     var courseId = doc.course;
