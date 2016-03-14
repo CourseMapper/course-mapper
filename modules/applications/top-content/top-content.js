@@ -30,7 +30,7 @@ var topContentListener = {
                                         SubTopics.findOne({_id:treeNodeId})
                                             .exec(function(err, res){
                                                 if (res) {
-                                                    var condition = {contentId: pdfId}, update = {$inc: {count: 1}};
+                                                    var condition = {contentId: pdfId, contentType:"pdf"}, update = {$inc: {count: 1}};
                                                     TopContentAgg.findOne(condition)
                                                         .exec(function(err, resTC){
                                                             if (resTC) {
@@ -93,7 +93,7 @@ var topContentListener = {
                                         SubTopics.findOne({_id:treeNodeId})
                                             .exec(function(err, res){
                                                 if (res) {
-                                                    var condition = {contentId: videoId}, update = {$inc: {count: 1}};
+                                                    var condition = {contentId: videoId, contentType:"video"}, update = {$inc: {count: 1}};
                                                     TopContentAgg.findOne(condition)
                                                         .exec(function(err, resTC){
                                                             if (resTC) {
@@ -148,7 +148,7 @@ var topContentListener = {
                             SubTopics.findOne({_id:treeNodeId})
                                 .exec(function(err, res){
                                     if (res) {
-                                        var condition = {contentId: videoId}, update = {$inc: {count: -1}};
+                                        var condition = {contentId: videoId, contentType:"video"}, update = {$inc: {count: -1}};
                                         TopContentAgg.findOne(condition)
                                             .exec(function(err, resTC){
                                                 if (resTC) {
@@ -171,8 +171,86 @@ var topContentListener = {
                 })
         }
 
-    }
+    },
 
+    //Listener for Link
+    onAfterLinkCreated: function (newLink) {
+        Links.findOne({_id: newLink._id})
+            .exec(function (err, doc) {
+                //var linkId = doc.
+                if (doc) {
+                    var contentId = doc.contentNode;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var courseId = result.courseId;
+                                    if (courseId) {
+                                        var condition = {contentId: contentId, countType: "link"}, update = {$inc: {count: 1}};
+                                        TopContentAgg.findOne(condition)
+                                            .exec(function(err, resTC){
+                                                if (resTC) {
+                                                    TopContentAgg.update(condition, update).exec();
+                                                }
+                                                else {
+                                                    var nf = new TopContentAgg(
+                                                        {
+                                                            courseId: courseId,
+                                                            nodeId: result.id,
+                                                            contentId : contentId,
+                                                            contentName : result.name,
+                                                            contentType : "node",
+                                                            countType : "link",
+                                                            count : 1
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+                                            });
+
+                                    }
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterLinkDeleted: function (deleteLink) {
+        Links.findOne({_id: deleteLink})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentNode;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var condition = {contentId: contentId, countType:"link"}, update = {$inc: {count: -1}};
+                                    TopContentAgg.findOne(condition)
+                                        .exec(function(err, resTC){
+                                            if (resTC) {
+                                                TopContentAgg.update(condition, update).exec();
+                                            }
+                                            else {
+                                                console.log('could not find document');
+                                            }
+                                        });
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    }
 };
 
 module.exports = topContentListener;
