@@ -248,20 +248,56 @@ router.get('/course-history/links/:courseId', function (req, res, next){
     );
 });
 
-router.get('/top-content/:courseId', function (req, res, next){
+router.get('/top-content/pdf-annotation/:courseId', function (req, res, next){
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
     var tc = new TopContent();
-    tc.getTopPdf (
+    tc.getTopAnnotatedPdf (
         function error (err) {
           res.status(200).json({result:false, message:err})
         },
         {
             courseId:mongoose.Types.ObjectId(req.params.courseId)
         },
-        function success (topPdf) {
-            res.status(200).json({result:true, topPdf:topPdf})
+        function success (topAnnotatedPdf) {
+            res.status(200).json({result:true, topAnnotatedPdf:topAnnotatedPdf})
+        }
+    );
+});
+
+router.get('/top-content/video-annotation/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var tc = new TopContent();
+    tc.getTopAnnotatedVideo (
+        function error (err) {
+            res.status(200).json({result:false, message:err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (topAnnotatedVideo) {
+            res.status(200).json({result:true, topAnnotatedVideo:topAnnotatedVideo})
+        }
+    );
+});
+
+router.get('/top-content/link-node/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var tc = new TopContent();
+    tc.getTopLinkNode (
+        function error (err) {
+            res.status(200).json({result:false, message:err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (topLinkNode) {
+            res.status(200).json({result:true, topLinkNode:topLinkNode})
         }
     );
 });
