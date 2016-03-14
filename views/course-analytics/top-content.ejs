@@ -8,7 +8,7 @@
                 </span>
                 <div class="info-box-content">
                     <span class="info-box-text">Top Annotated Pdf</span>
-                    <span class="info-box-number" ng-if="topAnnotatedPdf === null">There is no pdf contains annotation in this course</span>
+                    <span class="info-box-number" ng-if="topAnnotatedPdf === null">None</span>
                     <span class="info-box-number" ng-if="topAnnotatedPdf !== null"><a href="/treeNode/{{topAnnotatedPdf.nodeId}}/#/cid/{{topAnnotatedPdf.courseId}}/nid/{{topAnnotatedPdf.nodeId}}?tab=pdf" class="">{{topAnnotatedPdf.contentName}}</a></span>
                     <span class="progress-description" ng-if="topAnnotatedPdf !== null">{{topAnnotatedPdf.count}} pdf annotations</span>
                 </div>
@@ -19,7 +19,7 @@
                 </span>
                 <div class="info-box-content">
                     <span class="info-box-text">Top Annotated Video</span>
-                    <span class="info-box-number" ng-if="topAnnotatedVideo === null">There is no video contains annotation in this course</span>
+                    <span class="info-box-number" ng-if="topAnnotatedVideo === null">None</span>
                     <span class="info-box-number" ng-if="topAnnotatedVideo !== null"><a href="/treeNode/{{topAnnotatedVideo.nodeId}}/#/cid/{{topAnnotatedVideo.courseId}}/nid/{{topAnnotatedVideo.nodeId}}?tab=video" class="">{{topAnnotatedVideo.contentName}}</a></span>
                     <span class="progress-description" ng-if="topAnnotatedVideo !== null">{{topAnnotatedVideo.count}} video annotations</span>
                 </div>
@@ -30,7 +30,7 @@
                 </span>
                 <div class="info-box-content">
                     <span class="info-box-text">Top Node with link</span>
-                    <span class="info-box-number" ng-if="topLinkNode === null">There is no video contains annotation in this course</span>
+                    <span class="info-box-number" ng-if="topLinkNode === null">None</span>
                     <span class="info-box-number" ng-if="topLinkNode !== null"><a href="/treeNode/{{topLinkNode.nodeId}}/#/cid/{{topLinkNode.courseId}}/nid/{{topLinkNode.nodeId}}?tab=pdf" class="">{{topLinkNode.contentName}}</a></span>
                     <span class="progress-description" ng-if="topLinkNode !== null">{{topLinkNode.count}} links</span>
                 </div>
