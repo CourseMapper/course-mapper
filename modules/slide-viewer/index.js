@@ -153,6 +153,7 @@ Comment.prototype.deleteAnnotation = function (err, params, isAdmin, done) {
     this.checkOwnership(params.deleteId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
         AnnotationsPDF.findOne({_id: params.deleteId}).remove().exec();
+        Plugin.doAction('onAfterPdfAnnotationDeleted', params);
         done();
       }
       else {
@@ -188,6 +189,7 @@ Comment.prototype.updateAnnotation = function (err, params, isAdmin, done) {
               err("Server Error: Unable to update annotation");
             } else {
               // call success callback
+              Plugin.doAction('onAfterPdfAnnotationEdited', params);
               done();
             }
           });
