@@ -374,7 +374,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                                 error(err);
                             } else {
                                 success(newInstall);
-                                Plugin.doAction('onAfterWidgetInstalled', newInstall);
+                                Plugin.doAction('onAfterWidgetInstalled', newInstall, params);
                             }
                         });
 
@@ -391,7 +391,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                                     error(err);
                                 else {
                                     success(doc);
-                                    Plugin.doAction('onAfterWidgetInstalled', doc);
+                                    Plugin.doAction('onAfterWidgetInstalled', doc, params);
                                 }
                             }
                         );
@@ -457,7 +457,7 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
                     error(err);
                 else if (doc) {
                     success(doc);
-                    Plugin.doAction('onAfterWidgetUninstalled', doc);
+                    Plugin.doAction('onAfterWidgetUninstalled', doc, deleteParams);
                 }
                 else {
                     error(helper.createError404('Widget Installation'));
@@ -467,15 +467,10 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
     }
 
     if (params.courseId) {
-        userHelper.isAuthorized(
-            function (err) {
-                error(err);
-            },
-            {
-                userId: params.userId,
-                courseId: params.courseId
-            },
-            function (isAllowed) {
+        userHelper.isCourseAuthorizedAsync({
+            userId: params.userId,
+            courseId: params.courseId
+        }).then(function (isAllowed) {
                 if (isAllowed) {
                     var deleteParams = {
                         _id: params._id
@@ -485,8 +480,11 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
                 } else {
                     error(helper.createError401());
                 }
-            }
-        );
+
+            })
+            .catch(function () {
+                error(helper.createError401());
+            });
     }
 
     else {

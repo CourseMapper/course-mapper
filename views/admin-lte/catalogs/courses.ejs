@@ -59,7 +59,8 @@
                             No course has been created.
                         </div>
                         <div ng-show="isLoggedIn()" class="col-sm-12">
-                            You can add a new one by clicking on "create course" button located on the top right of the page.
+                            You can add a new one by clicking on "create course" button located on the top right of the
+                            page.
                         </div>
 
                     </div>
@@ -114,11 +115,13 @@
 
 
                 <pagination total-rows="coursesLength"
+                            set-reset="paginationReset()"
                             limit="12"
                             use-search="false"
-                            sort-by="dateAdded"
-                            order-by="desc"
                             object-service="courseListService"
+                            current-page="{{currentPage}}"
+                            sort-by="{{sortBy}}"
+                            order-by="{{orderBy}}"
                             success-cb="newRowsFetched">
                 </pagination>
 

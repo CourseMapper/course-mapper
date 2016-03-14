@@ -17,7 +17,7 @@ var BackgroundPlugins = {
      * @param hookName
      * @param params
      */
-    doAction : function(hookName, params){
+    doAction : function(hookName, params, extraParams){
         var rules = [{isActive: true}];
         Widgets.aggregate([
             { $match: {$and: rules} },
@@ -47,7 +47,7 @@ var BackgroundPlugins = {
                             if (typeof plugCode[hookName] === "function") {
                                 try {
                                     // safe to use the function
-                                    plugCode[hookName](params);
+                                    plugCode[hookName](params, extraParams);
 
                                 } catch (e) {
                                     debug(e);

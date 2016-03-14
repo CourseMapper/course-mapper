@@ -317,7 +317,7 @@ catalog.prototype.editCourse = function (error, params, files, success) {
         }
 
         success(course);
-        Plugin.doAction('onAfterCourseEdited', course);
+        Plugin.doAction('onAfterCourseEdited', course, params);
     }
 
     self.getCourse(error,

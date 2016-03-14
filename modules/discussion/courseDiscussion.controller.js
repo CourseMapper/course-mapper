@@ -142,7 +142,7 @@ courseDiscussion.prototype.editPost = function (error, params, success) {
             doc.title = params.title;
             doc.content = params.content;
             doc.save(function () {
-                Plugin.doAction('onAfterDiscussionEdited', doc);
+                Plugin.doAction('onAfterDiscussionEdited', doc, params);
                 success(doc);
             });
 
@@ -168,7 +168,7 @@ courseDiscussion.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterDiscussionDeleted', params.postId);
+                Plugin.doAction('onAfterDiscussionDeleted', params.postId, params);
                 success(doc);
             }
         });

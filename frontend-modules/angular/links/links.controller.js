@@ -11,7 +11,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.links = [];
     $scope.errors = [];
     $scope.isLoading = false;
-    $scope.orderType = 'dateAdded.desc';
+    $scope.orderType = 'dateAdded.-1';
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
 
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
@@ -38,6 +42,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.linksLength = function () {
         return $scope.links.length;
+    };
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
     };
 
     $scope.initTab = function (node) {
@@ -274,7 +282,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                 lastPage: false
             });
 
-            //$scope.initTab(treeNodeService.treeNode);
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.pageReset = Math.random();
 
             linkService.init(treeNodeService.treeNode._id,
 
