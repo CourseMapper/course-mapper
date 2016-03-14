@@ -7,10 +7,20 @@ angular.module('TopContent', [''])
         //alert(parseLoc);
         if (parseLoc) {
 
-            $http.get('/api/course-analytics/user-list/' + parseLoc).success(function (data) {
-                $scope.userList = data.courses;
+            $http.get('/api/course-analytics/top-content/pdf-annotation/' + parseLoc).success(function (data) {
+                $scope.topAnnotatedPdf = data.topAnnotatedPdf;
 
             });
+            $http.get('/api/course-analytics/top-content/video-annotation/' + parseLoc).success(function (data) {
+                $scope.topAnnotatedVideo = data.topAnnotatedVideo;
+
+            });
+
+            $http.get('/api/course-analytics/top-content/link-node/' + parseLoc).success(function (data) {
+                $scope.topLinkNode = data.topLinkNode;
+
+            });
+
         } else
             console.log('cannot get courseId in analytic widget');
 
