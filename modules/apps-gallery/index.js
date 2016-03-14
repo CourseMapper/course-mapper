@@ -374,7 +374,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                                 error(err);
                             } else {
                                 success(newInstall);
-                                Plugin.doAction('onAfterWidgetInstalled', newInstall);
+                                Plugin.doAction('onAfterWidgetInstalled', newInstall, params);
                             }
                         });
 
@@ -391,7 +391,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                                     error(err);
                                 else {
                                     success(doc);
-                                    Plugin.doAction('onAfterWidgetInstalled', doc);
+                                    Plugin.doAction('onAfterWidgetInstalled', doc, params);
                                 }
                             }
                         );
@@ -457,7 +457,7 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
                     error(err);
                 else if (doc) {
                     success(doc);
-                    Plugin.doAction('onAfterWidgetUninstalled', doc);
+                    Plugin.doAction('onAfterWidgetUninstalled', doc, deleteParams);
                 }
                 else {
                     error(helper.createError404('Widget Installation'));

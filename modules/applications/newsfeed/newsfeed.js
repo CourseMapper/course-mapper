@@ -746,7 +746,7 @@ var NewsfeedListener = {
             });
     },
 
-    onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation) {
+    onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation, user) {
         VideoAnnotation.findOne({_id:deleteVideoAnnotation})
             .exec(function(err, doc){
                 if (doc) {
@@ -942,7 +942,7 @@ var NewsfeedListener = {
 
     },
 
-    onAfterDiscussionEdited: function (editDiscussion){
+    onAfterDiscussionEdited: function (editDiscussion, params){
         Posts.findOne({_id: editDiscussion._id})
             .exec(function (err, doc) {
                 if (doc) {

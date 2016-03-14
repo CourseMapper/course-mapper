@@ -191,9 +191,9 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
                 success(tn);
 
                 if (params.type == 'contentNode') {
-                    Plugin.doAction('onAfterContentNodeEdited', tn);
+                    Plugin.doAction('onAfterContentNodeEdited', tn, params);
                 } else {
-                    Plugin.doAction('onAfterSubTopicEdited', tn);
+                    Plugin.doAction('onAfterSubTopicEdited', tn, params);
                 }
 
             })
@@ -396,7 +396,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
                     else {
                         // success saved the cat
                         success(tn);
-                        Plugin.doAction('onAfterNodeEdited', tn);
+                        Plugin.doAction('onAfterNodeEdited', tn, paramsUpdate);
                     }
                 });
             }
@@ -442,7 +442,7 @@ catalog.prototype.deleteNode = function (error, params, success) {
                         }
                         else {
                             success(tn);
-                            Plugin.doAction('onAfterNodeDeleted', tn);
+                            Plugin.doAction('onAfterNodeDeleted', tn, params);
                         }
                     }
                 );
