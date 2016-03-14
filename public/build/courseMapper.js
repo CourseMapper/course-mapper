@@ -2691,7 +2691,10 @@ app.directive('movablePdf', function() {
                 objectService: '@',
                 sortBy: '@',
                 orderBy: '@',
-                successCb: '='
+                currentPage: '@',
+                successCb: '=',
+                lastPage: '@',
+                setReset: '='
             },
 
             templateUrl: '/angular/views/pagination.html',
@@ -2706,24 +2709,41 @@ app.directive('movablePdf', function() {
 
             controller: function ($http, $scope, $location) {
                 $scope.showMoreButton = false;
-                $scope.currentPage = 1;
+
+                if ($scope.currentPage == undefined)
+                    $scope.currentPage = 0;
+                else
+                    $scope.currentPage = parseInt($scope.currentPage);
+
                 $scope.lastPage = $scope.currentPage * $scope.limit;
 
                 $scope.$watch('totalRows', function () {
+                    $scope.currentPage = parseInt($scope.currentPage);
                     if ($scope.totalRows / $scope.currentPage >= $scope.limit) {
                         $scope.showMoreButton = true;
                     } else
                         $scope.showMoreButton = false;
                 });
 
+                $scope.$watch('setReset', function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        $scope.currentPage = 1;
+                        $scope.lastPage = $scope.currentPage * $scope.limit;
+                    }
+                });
+
                 $scope.showMoreRows = function () {
                     $scope.objectServiceInstance.setPageParams($scope);
                     $scope.objectServiceInstance.getMoreRows(function (newRows, allRows) {
-                        $scope.totalRows = newRows.length;
-                        // show more button if it has possibilities of having more pages
-                        if ($scope.totalRows >= $scope.limit) {
-                            $scope.showMoreButton = true;
-                        } else
+                        if (newRows) {
+                            $scope.totalRows = newRows.length;
+                            // show more button if it has possibilities of having more pages
+                            if ($scope.totalRows >= $scope.limit) {
+                                $scope.showMoreButton = true;
+                            } else
+                                $scope.showMoreButton = false;
+                        }
+                        else
                             $scope.showMoreButton = false;
 
                         $scope.successCb(newRows, allRows);
@@ -3601,6 +3621,11 @@ app.directive('timepicker', function($timeout) {
     $scope.topicsLength = 0;
     $scope.replies = [];
 
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
@@ -3966,6 +3991,11 @@ app.directive('timepicker', function($timeout) {
                 lastPage: false
             });
 
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
             discussionService.init(courseService.course._id,
 
                 function (posts) {
@@ -3980,6 +4010,10 @@ app.directive('timepicker', function($timeout) {
             );
         }
     });
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
+    };
 
     $scope.$watch('orderTypeReply', function (newVal, oldVal) {
         if (newVal != oldVal) {
@@ -4794,7 +4828,7 @@ app.directive('timepicker', function($timeout) {
             pageParams: {
                 limit: 12,
                 sortBy: '_id',
-                orderBy: 'desc',
+                orderBy: '-1',
                 lastPage: false
             },
 
@@ -5603,7 +5637,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.links = [];
     $scope.errors = [];
     $scope.isLoading = false;
-    $scope.orderType = 'dateAdded.desc';
+    $scope.orderType = 'dateAdded.-1';
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
 
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
@@ -5630,6 +5668,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.linksLength = function () {
         return $scope.links.length;
+    };
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
     };
 
     $scope.initTab = function (node) {
@@ -5866,7 +5908,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                 lastPage: false
             });
 
-            //$scope.initTab(treeNodeService.treeNode);
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.pageReset = Math.random();
 
             linkService.init(treeNodeService.treeNode._id,
 

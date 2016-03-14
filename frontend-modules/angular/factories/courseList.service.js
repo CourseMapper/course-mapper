@@ -9,7 +9,7 @@ app.factory('courseListService', [
             pageParams: {
                 limit: 12,
                 sortBy: '_id',
-                orderBy: 'desc',
+                orderBy: '-1',
                 lastPage: false
             },
 

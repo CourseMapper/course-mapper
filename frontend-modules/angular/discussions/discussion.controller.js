@@ -19,6 +19,11 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     $scope.topicsLength = 0;
     $scope.replies = [];
 
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
@@ -384,6 +389,11 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
                 lastPage: false
             });
 
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
             discussionService.init(courseService.course._id,
 
                 function (posts) {
@@ -398,6 +408,10 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
             );
         }
     });
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
+    };
 
     $scope.$watch('orderTypeReply', function (newVal, oldVal) {
         if (newVal != oldVal) {
