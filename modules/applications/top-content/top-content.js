@@ -136,44 +136,41 @@ var topContentListener = {
             });
     },
 
-    onAfterVideoAnnotationDeleted: function (newVideoAnnotation) {
-        VideoAnnotation.findOne({_id:newVideoAnnotation})
-            .exec(function(err, doc){
-                if (doc) {
-                    var videoId = doc.video_id;
-                    if (videoId) {
-                        Resources.findOne({_id:videoId})
-                            .exec(function(err, result){
-                                if (result) {
-                                    var treeNodeId = result.treeNodeId;
-                                    if (treeNodeId) {
-                                        SubTopics.findOne({_id:treeNodeId})
-                                            .exec(function(err, res){
-                                                if (res) {
-                                                    var condition = {contentId: videoId}, update = {$inc: {count: -1}};
-                                                    TopContentAgg.findOne(condition)
-                                                        .exec(function(err, resTC){
-                                                            if (resTC) {
-                                                                TopContentAgg.update(condition, update).exec();
-                                                            }
-                                                            else {
-                                                                console.log('could not find document');
-                                                            }
-                                                        });
+    onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation) {
 
-
-
-
-
+        var videoId = deleteVideoAnnotation.video_id;
+        if (videoId) {
+            Resources.findOne({_id:videoId})
+                .exec(function(err, result){
+                    if (result) {
+                        var treeNodeId = result.treeNodeId;
+                        if (treeNodeId) {
+                            SubTopics.findOne({_id:treeNodeId})
+                                .exec(function(err, res){
+                                    if (res) {
+                                        var condition = {contentId: videoId}, update = {$inc: {count: -1}};
+                                        TopContentAgg.findOne(condition)
+                                            .exec(function(err, resTC){
+                                                if (resTC) {
+                                                    TopContentAgg.update(condition, update).exec();
                                                 }
+                                                else {
+                                                    console.log('could not find document');
+                                                }
+                                            });
 
-                                            })
+
+
+
+
                                     }
-                                }
-                            })
+
+                                })
+                        }
                     }
-                }
-            });
+                })
+        }
+
     }
 
 };
