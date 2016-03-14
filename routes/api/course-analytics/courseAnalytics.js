@@ -10,7 +10,7 @@ var appRoot = require('app-root-path');
 var EnrolledUser = require(appRoot + '/modules/applications/course-analytics/enrolledUserList');
 var CoursePreviewStats = require(appRoot + '/modules/applications/course-analytics/coursePreviewStats.controller');
 var CourseHistory = require(appRoot + '/modules/applications/course-analytics/course-history.controller');
-var TopContent = require(appRoot + '/modules/applications/course-analytics/top-content.controller');
+var TopContent = require(appRoot + '/modules/applications/top-content/top-content.controller');
 
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
