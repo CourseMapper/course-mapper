@@ -389,6 +389,8 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
                 lastPage: false
             });
 
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
             // reset the page
             $scope.currentPage = 0;
             $scope.lastPage = false;
