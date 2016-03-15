@@ -94,9 +94,6 @@ crashlytics-build.properties
 
 # sftp configuration file
 sftp-config.json
-bower_components
-data
-misc
 public/img/courses
 public/resources
 public/bower
