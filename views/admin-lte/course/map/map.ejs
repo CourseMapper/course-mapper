@@ -28,7 +28,8 @@
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
             <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
                 <small class="label label-green">
-                    <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by {{data.createdBy.displayName}}
+                    <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by
+                    {{data.createdBy.displayName}}
                 </small>
             </li>
             <li>
@@ -73,7 +74,8 @@
             </li>
 
             <li ng-show="hasPdf(data.resources)">
-                <a class="cursor" href="{{hasPdf(data.resources)}}" target="_blank"><i class="fa fa-file-pdf-o"></i> Download PDF</a>
+                <a class="cursor" href="{{getPdfLink(data.resources)}}" target="_blank"><i class="fa fa-file-pdf-o"></i>
+                    Download PDF</a>
             </li>
         </ul>
 
@@ -92,10 +94,12 @@
 <div class="box-body no-border" id="tree" ng-controller="MapController">
 
     <div class="course-control">
-        <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i
-                    class="ionicons ion-android-locate"></i></button>
+        <button data-tooltip="tooltip" title="Center Map"
+                class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)">
+            <i class="ionicons ion-android-locate"></i></button>
 
-        <button class="btn btn-default btn-sm" ng-click="showMapInfo()">
+        <button data-tooltip="tooltip" title="Information"
+                class="btn btn-default btn-sm" ng-click="showMapInfo()">
             <i class="ionicons ion-information"></i></button>
     </div>
 
@@ -308,6 +312,7 @@
             Container.onWindowResize(w, h);
             Canvas.onWindowResize(w, h);
         });
+        $('[data-tooltip="tooltip"]').tooltip();
     });
 
 </script>

@@ -1,0 +1,26 @@
+var mongoose = require('mongoose');
+
+var topContentSchema = new mongoose.Schema();
+
+topContentSchema.add({
+
+    courseId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'courses'
+    },
+    nodeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'treeNodes'
+    },
+    contentId : {
+        type: mongoose.Schema.Types.ObjectId
+    },
+    contentName : {type: String},
+    contentType : {type: String},
+    countType : { type: String},
+    count : {type: Number}
+});
+
+var topContentAgg = mongoose.model('topContent', topContentSchema);
+
+module.exports = topContentAgg;

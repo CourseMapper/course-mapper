@@ -60,8 +60,7 @@ catalog.prototype.getCourseAsync = function (params) {
  */
 catalog.prototype.checkUsername = function (error, params, success) {
     Course.findOne({
-        _id: params.courseId,
-        createdBy: params.userId
+        _id: params.courseId
     }, function (err, doc) {
         if (err) {
             error(err);
@@ -318,7 +317,7 @@ catalog.prototype.editCourse = function (error, params, files, success) {
         }
 
         success(course);
-        Plugin.doAction('onAfterCourseEdited', course);
+        Plugin.doAction('onAfterCourseEdited', course, params);
     }
 
     self.getCourse(error,
@@ -327,14 +326,15 @@ catalog.prototype.editCourse = function (error, params, files, success) {
         },
 
         function (course) {
-            userHelper.isAuthorized(error,
-                {
+
+            userHelper.isCourseAuthorizedAsync({
                     userId: params.userId,
                     courseId: params.courseId
-                },
+                })
 
-                function (isAllowed) {
-                    if (isAllowed) {
+                .then(function (isAllwd) {
+
+                    if (isAllwd) {
                         if (params.video && params.video == 'delete') {
                             course.video = undefined;
                             course.save(function () {
@@ -351,6 +351,10 @@ catalog.prototype.editCourse = function (error, params, files, success) {
                     } else {
                         error(helper.createError401());
                     }
+
+                })
+                .catch(function () {
+                    error(helper.createError401());
                 });
         }
     );

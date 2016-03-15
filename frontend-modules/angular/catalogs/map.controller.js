@@ -493,6 +493,16 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.hasPdf = function (resources) {
         for (var i in resources) {
             if (resources[i].type == 'pdf') {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    $scope.getPdfLink = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
                 return resources[i].link;
             }
         }
@@ -601,7 +611,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         }
     };
 
-    $scope.isOwner = function (tn) {
+    $scope.isNodeOwner = function (tn) {
         if (tn.createdBy._id == $scope.user._id)
             return true;
         else if (tn.createdBy == $scope.user._id)
@@ -611,7 +621,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     };
 
     $scope.isAuthorized = function (tn) {
-        return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
+        return ($scope.isNodeOwner(tn) || $scope.isAdmin || $scope.isManager || $scope.isOwner);
     };
 
     $scope.addNewNodeIntoPool = function (treeNode) {

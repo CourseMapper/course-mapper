@@ -702,6 +702,17 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.courses = null;
     $scope.coursesLength = 0;
 
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Most Popular'}
+    ];
+
     $scope.widgets = [];
 
     $scope.isLoggedIn = function () {
@@ -817,6 +828,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             $scope.initTagFromSearch();
         });
     });
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
+    };
+
 });
 ;app.controller('MapController', function ($scope, $http, $rootScope, authService,
                                           $timeout, $sce, $location, socket,
@@ -1313,6 +1329,16 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     $scope.hasPdf = function (resources) {
         for (var i in resources) {
             if (resources[i].type == 'pdf') {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    $scope.getPdfLink = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
                 return resources[i].link;
             }
         }
@@ -1421,7 +1447,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }
     };
 
-    $scope.isOwner = function (tn) {
+    $scope.isNodeOwner = function (tn) {
         if (tn.createdBy._id == $scope.user._id)
             return true;
         else if (tn.createdBy == $scope.user._id)
@@ -1431,7 +1457,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
     };
 
     $scope.isAuthorized = function (tn) {
-        return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
+        return ($scope.isNodeOwner(tn) || $scope.isAdmin || $scope.isManager || $scope.isOwner);
     };
 
     $scope.addNewNodeIntoPool = function (treeNode) {
@@ -1896,23 +1922,25 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         }).success(function (data, status, headers, config) {
 
                 if (data.result) {
-                    data.treeNode['resources'] = [];
-                    for (var i in uploadParams.file) {
-                        var f = uploadParams.file[i];
-                        var resTemp = $scope.parseNgFile(f);
-                        data.treeNode['resources'].push(resTemp);
-                    }
+                    if (uploadParams.file.length > 0) {
+                        /*data.treeNode['resources'] = [];
+                         for (var i in uploadParams.file) {
+                         var f = uploadParams.file[i];
+                         var resTemp = $scope.parseNgFile(f);
+                         data.treeNode['resources'].push(resTemp);
+                         }*/
 
-                    if ($scope.videoHostLink != '') {
-                        data.treeNode['resources'].push({
-                            type: 'videoLink'
-                        });
-                    }
+                        /*if ($scope.videoHostLink != '') {
+                         data.treeNode['resources'].push({
+                         type: 'videoLink'
+                         });
+                         }*/
 
-                    if ($scope.pdfHostLink != '') {
-                        data.treeNode['resources'].push({
-                            type: 'pdfLink'
-                        });
+                        /*if ($scope.pdfHostLink != '') {
+                         data.treeNode['resources'].push({
+                         type: 'pdfLink'
+                         });
+                         }*/
                     }
                 }
 
@@ -1944,7 +1972,11 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                 $scope.videoHostLink = '';
                 $scope.pdfHostLink = '';
+                $scope.formData.videoHostLink = '';
+                $scope.formData.pdfHostLink = '';
+                uploadParams.file = [];
                 $scope.progressPercentage = 0;
+
                 $scope.isLoading = false;
             })
             .error(function (data) {
@@ -2080,7 +2112,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                         var q = $location.search();
                         if (q.tab)
                             $scope.currentTab = q.tab;
-                        
+
                         authService.showLoginForm();
                     }
                     else if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
@@ -2094,10 +2126,10 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
                                 Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
-                                if ($scope.isAdmin || $scope.isManager) {
-                                    if ($scope.treeNode.createdBy == $rootScope.user._id)
-                                        $scope.isNodeOwner = true;
+                                if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                    $scope.isNodeOwner = true;
 
+                                if ($scope.isAuthorized()) {
                                     $scope.setEditMode();
                                 }
 
@@ -2675,7 +2707,10 @@ app.directive('movablePdf', function() {
                 objectService: '@',
                 sortBy: '@',
                 orderBy: '@',
-                successCb: '='
+                currentPage: '@',
+                successCb: '=',
+                lastPage: '@',
+                setReset: '='
             },
 
             templateUrl: '/angular/views/pagination.html',
@@ -2690,24 +2725,41 @@ app.directive('movablePdf', function() {
 
             controller: function ($http, $scope, $location) {
                 $scope.showMoreButton = false;
-                $scope.currentPage = 1;
+
+                if ($scope.currentPage == undefined)
+                    $scope.currentPage = 0;
+                else
+                    $scope.currentPage = parseInt($scope.currentPage);
+
                 $scope.lastPage = $scope.currentPage * $scope.limit;
 
                 $scope.$watch('totalRows', function () {
+                    $scope.currentPage = parseInt($scope.currentPage);
                     if ($scope.totalRows / $scope.currentPage >= $scope.limit) {
                         $scope.showMoreButton = true;
                     } else
                         $scope.showMoreButton = false;
                 });
 
+                $scope.$watch('setReset', function (newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        $scope.currentPage = 1;
+                        $scope.lastPage = $scope.currentPage * $scope.limit;
+                    }
+                });
+
                 $scope.showMoreRows = function () {
                     $scope.objectServiceInstance.setPageParams($scope);
                     $scope.objectServiceInstance.getMoreRows(function (newRows, allRows) {
-                        $scope.totalRows = newRows.length;
-                        // show more button if it has possibilities of having more pages
-                        if ($scope.totalRows >= $scope.limit) {
-                            $scope.showMoreButton = true;
-                        } else
+                        if (newRows) {
+                            $scope.totalRows = newRows.length;
+                            // show more button if it has possibilities of having more pages
+                            if ($scope.totalRows >= $scope.limit) {
+                                $scope.showMoreButton = true;
+                            } else
+                                $scope.showMoreButton = false;
+                        }
+                        else
                             $scope.showMoreButton = false;
 
                         $scope.successCb(newRows, allRows);
@@ -3585,6 +3637,11 @@ app.directive('timepicker', function($timeout) {
     $scope.topicsLength = 0;
     $scope.replies = [];
 
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
@@ -3950,6 +4007,13 @@ app.directive('timepicker', function($timeout) {
                 lastPage: false
             });
 
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
             discussionService.init(courseService.course._id,
 
                 function (posts) {
@@ -3964,6 +4028,10 @@ app.directive('timepicker', function($timeout) {
             );
         }
     });
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
+    };
 
     $scope.$watch('orderTypeReply', function (newVal, oldVal) {
         if (newVal != oldVal) {
@@ -4778,7 +4846,7 @@ app.directive('timepicker', function($timeout) {
             pageParams: {
                 limit: 12,
                 sortBy: '_id',
-                orderBy: 'desc',
+                orderBy: '-1',
                 lastPage: false
             },
 
@@ -5587,7 +5655,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.links = [];
     $scope.errors = [];
     $scope.isLoading = false;
-    $scope.orderType = 'dateAdded.desc';
+    $scope.orderType = 'dateAdded.-1';
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
 
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
@@ -5614,6 +5686,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.linksLength = function () {
         return $scope.links.length;
+    };
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
     };
 
     $scope.initTab = function (node) {
@@ -5850,7 +5926,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                 lastPage: false
             });
 
-            //$scope.initTab(treeNodeService.treeNode);
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.pageReset = Math.random();
 
             linkService.init(treeNodeService.treeNode._id,
 

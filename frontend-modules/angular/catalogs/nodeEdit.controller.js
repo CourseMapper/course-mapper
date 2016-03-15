@@ -190,23 +190,25 @@ app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload
         }).success(function (data, status, headers, config) {
 
                 if (data.result) {
-                    data.treeNode['resources'] = [];
-                    for (var i in uploadParams.file) {
-                        var f = uploadParams.file[i];
-                        var resTemp = $scope.parseNgFile(f);
-                        data.treeNode['resources'].push(resTemp);
-                    }
+                    if (uploadParams.file.length > 0) {
+                        /*data.treeNode['resources'] = [];
+                         for (var i in uploadParams.file) {
+                         var f = uploadParams.file[i];
+                         var resTemp = $scope.parseNgFile(f);
+                         data.treeNode['resources'].push(resTemp);
+                         }*/
 
-                    if ($scope.videoHostLink != '') {
-                        data.treeNode['resources'].push({
-                            type: 'videoLink'
-                        });
-                    }
+                        /*if ($scope.videoHostLink != '') {
+                         data.treeNode['resources'].push({
+                         type: 'videoLink'
+                         });
+                         }*/
 
-                    if ($scope.pdfHostLink != '') {
-                        data.treeNode['resources'].push({
-                            type: 'pdfLink'
-                        });
+                        /*if ($scope.pdfHostLink != '') {
+                         data.treeNode['resources'].push({
+                         type: 'pdfLink'
+                         });
+                         }*/
                     }
                 }
 
@@ -238,7 +240,11 @@ app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload
 
                 $scope.videoHostLink = '';
                 $scope.pdfHostLink = '';
+                $scope.formData.videoHostLink = '';
+                $scope.formData.pdfHostLink = '';
+                uploadParams.file = [];
                 $scope.progressPercentage = 0;
+
                 $scope.isLoading = false;
             })
             .error(function (data) {

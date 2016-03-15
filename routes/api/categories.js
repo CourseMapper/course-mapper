@@ -71,6 +71,10 @@ router.get('/category/:category/courses', function (req, res, next) {
             limit = limitTemp;
     }
 
+    var orderBy = -1;
+    if (req.query['orderBy'])
+        orderBy = req.query['orderBy'];
+
     var sortBy = 'dateAdded';
     if (req.query['sortBy'])
         sortBy = req.query['sortBy'];
@@ -82,7 +86,8 @@ router.get('/category/:category/courses', function (req, res, next) {
     var pageParams = {
         lastPage: lastPage,
         limit: limit,
-        sortBy: sortBy
+        sortBy: sortBy,
+        orderBy: parseInt(orderBy)
     };
 
     var cat = new Course();

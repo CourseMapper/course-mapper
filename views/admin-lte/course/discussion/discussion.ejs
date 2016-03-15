@@ -53,10 +53,12 @@
                 </ul>
 
                 <pagination total-rows="topicsLength"
+                            set-reset="paginationReset()"
                             limit="10"
                             use-search="false"
-                            sort-by="dateAdded"
-                            order-by="desc"
+                            current-page="{{currentPage}}"
+                            sort-by="{{sortBy}}"
+                            order-by="{{orderBy}}"
                             object-service="discussionService"
                             success-cb="newRowsFetched">
                 </pagination>

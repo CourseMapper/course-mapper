@@ -86,7 +86,7 @@ NodeLinks.prototype.editPost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterLinkEdited', doc);
+                Plugin.doAction('onAfterLinkEdited', doc, params);
                 success(doc);
             }
         });
@@ -106,7 +106,7 @@ NodeLinks.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterLinkDeleted', params.linkId);
+                Plugin.doAction('onAfterLinkDeleted', params.linkId, params);
                 success(doc);
             }
         });
