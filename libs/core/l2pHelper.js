@@ -41,7 +41,7 @@ function getContext(token,callback){
 
     var parsed = JSON.parse(body);
 
-    callback(parsed.UserId);
+    callback(parsed);
 
     });
 

@@ -7535,6 +7535,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.login = function (isValid) {
         if (isValid) {
             $scope.isLoading = true;
+            console.log("Login Data");
+            console.log($scope.loginData);
             authService.login($scope.loginData,
                 function (user) {
                     $scope.user = user;
@@ -7554,7 +7556,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     }
 
-});;app.controller('MainController', function($scope, Page) {
+});
+;app.controller('MainController', function($scope, Page) {
     $scope.Page = Page;
 });
 ;app.controller('MainMenuController', function ($scope, $http, $rootScope, $cookies, authService, toastr) {

@@ -35,6 +35,8 @@ app.controller('LoginPageController', function ($scope, $http, $rootScope, $cook
     $scope.login = function (isValid) {
         if (isValid) {
             $scope.isLoading = true;
+            console.log("Login Data");
+            console.log($scope.loginData);
             authService.login($scope.loginData,
                 function (user) {
                     $scope.user = user;
