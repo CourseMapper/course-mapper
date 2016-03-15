@@ -1,0 +1,29 @@
+
+<div class="row" ng-controller="CoursesBreakdownController">
+    <div class="col-xs-12">
+        <accordion close-others="oneAtATime">
+            <accordion-group heading="{{enrolled.course.name}}" ng-repeat="enrolled in courseEnrolled | orderBy: 'course.name'">
+                <accordion>
+                    <accordion-group heading="PDF List">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr ng-repeat="resource in courseEnrolledResources" ng-if="resource.courseId == enrolled.course._id && resource.type=='pdf'">
+                                    <td><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class="">{{resource.treeNodeId.name}}</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </accordion-group>
+                    <accordion-group heading="Video List">
+                        <table class="table table-striped">
+                            <tbody>
+                            <tr ng-repeat="resource in courseEnrolledResources" ng-if="resource.courseId == enrolled.course._id && resource.type!='pdf'">
+                                <td><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video" class="">{{resource.treeNodeId.name}}</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </accordion-group>
+                </accordion>
+            </accordion-group>
+        </accordion>
+    </div>
+</div>

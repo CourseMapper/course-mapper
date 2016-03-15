@@ -43,6 +43,10 @@ router.get('/my-course-progress', function(req, res, next) {
     res.render('my-course/course-history');
 });
 
+router.get('/my-courses-breakdown', function(req, res, next) {
+    res.render('my-course/courses-breakdown');
+});
+
 
 
 

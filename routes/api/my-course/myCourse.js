@@ -20,8 +20,8 @@ router.get('/', function(req, res, next) {
         return res.status(401).send('Unauthorized');
     }
 
-    var crs = new Course();
-    crs.getEnrolledCourses(
+    var myCrs = new Course();
+    myCrs.getEnrolledCourses(
         function error(err){
             res.status(200).json({result:false, message:err});
         },
@@ -54,9 +54,24 @@ router.get('/pdf-history', function (req, res, next){
         }
     )
 
+});
 
-
-
+router.get('/enrolled-resources', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var myCrs = new Course();
+    myCrs.getEnrolledResources(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            user: mongoose.Types.ObjectId(req.user._id)
+        },
+        function success(resources){
+            res.status(200).json({result:true, resources:resources});
+        }
+    );
 });
 
 
