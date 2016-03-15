@@ -1,0 +1,37 @@
+{
+  "name": "angular-quill",
+  "main": "angular-quill.js",
+  "version": "0.9.1",
+  "homepage": "https://github.com/axilleasiv/angular-quill",
+  "authors": [
+    "Achilleas Kiritsakas <akiritsakas@gmail.com>"
+  ],
+  "description": "Directive for sailsforces's quill WYSIWYG editor",
+  "dependencies": {
+    "quill": ">=0.17.6"
+  },
+  "keywords": [
+    "quill",
+    "WYSIWYG",
+    "Angular",
+    "Directives",
+    "Html5 Editor"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "0.9.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.9.1",
+    "commit": "9390f3f9ce3bedff0e463d8290cb0a2677765644"
+  },
+  "_source": "git://github.com/axilleasiv/angular-quill.git",
+  "_target": "~0.9.1",
+  "_originalSource": "angular-quill"
+}

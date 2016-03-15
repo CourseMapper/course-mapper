@@ -153,8 +153,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     $scope.init = function (videoId, videoSource) {
       $scope.sources = [{
         src: videoSource,
-        type: 'video/mp4',
-        video_id: videoId
+        type: 'video/mp4'
       }];
 
       // Stop any previous pulse
@@ -173,6 +172,9 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
       // Trigger initial annotations update.
       socket.emit('annotations:get', {video_id: videoId});
+
+      var user = rootScope.user;
+      $scope.API.pulseUrl = videoPulseHost + '/beats/' + videoId + '/' + user._id;
     };
 
     // Initialize scope when the video-source is set.
@@ -182,28 +184,9 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       }
     });
 
-    var resumeLastPlaybackState = function () {
-      var user = rootScope.user;
-      var videoId = $scope.sources[0].video_id;
-      var url = videoPulseHost + '/beats/' + videoId + '/' + user._id;
-      $http.get(url)
-        .success(function (data) {
-          var timestamp = data.pointer || 0;
-          console.log('Resuming position: ' + timestamp);
-          $scope.API.seekTime(timestamp / 1000);
-        });
-    };
-
-    var isResumed = false;
-
     $scope.onUpdateState = function (state) {
-
       rootScope.$broadcast('onVideoUpdateState', {'state': state, 'API': $scope.API});
       if (state === 'play') {
-        if (!isResumed) {
-          resumeLastPlaybackState();
-          isResumed = true;
-        }
         videoPulse.start();
       } else {
         videoPulse.stop();

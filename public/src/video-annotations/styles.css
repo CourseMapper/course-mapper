@@ -96,38 +96,16 @@ video-annotation.default {
 
 vg-scrub-bar-cue-points.default .cue-point {
   background-color: yellow !important;
-  opacity: 0.1 !important;
+  opacity: 0.15 !important;
   height: 5px !important;
   margin-top: -2px !important;
 }
 
 videogular-container {
   width: 100%;
-  height: 320px;
+  height: 250px;
   margin: auto;
   overflow: hidden;
-}
-
-/* switch FP and annotations button */
-videogular fp-toggle-button {
-  display: table-cell;
-  width: 50px;
-  vertical-align: middle;
-  text-align: center;
-  cursor: pointer;
-}
-
-videogular div.fp-toggle-button {
-  display: table-cell;
-  width: 50px;
-  vertical-align: middle;
-  text-align: center;
-  cursor: pointer;
-}
-
-videogular .fp-toggle-button img {
-  width: 20px;
-  height: 20px;
 }
 
 videogular .fp-timeline {

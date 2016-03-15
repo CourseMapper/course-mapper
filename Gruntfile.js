@@ -3,7 +3,6 @@
 
 module.exports = function (grunt) {
   // load all grunt tasks
-  grunt.loadNpmTasks('grunt-bowercopy');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-ng-annotate');
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -11,42 +10,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
 
   grunt.initConfig({
-    bowercopy: {
-      scripts: {
-        options: {
-          srcPrefix: 'bower_components',
-          destPrefix: 'public'
-        },
-        files: {
-          'angular/angular.min.js': 'angular/angular.min.js',
-          'angular/angular.min.js.map': 'angular/angular.min.js.map',
-
-          'angular/angular-resource.min.js': 'angular-resource/angular-resource.min.js',
-          'angular/angular-resource.min.js.map': 'angular-resource/angular-resource.min.js.map',
-
-          'angular/angular-animate.min.js': 'angular-animate/angular-animate.min.js',
-          'angular/angular-animate.min.js.map': 'angular-animate/angular-animate.min.js.map',
-
-          'angular/angular-route.min.js': 'angular-route/angular-route.min.js',
-          'angular/angular-route.min.js.map': 'angular-route/angular-route.min.js.map',
-
-          'angular/angular-cookies.min.js': 'angular-cookies/angular-cookies.min.js',
-          'angular/angular-cookies.min.js.map': 'angular-cookies/angular-cookies.min.js.map',
-
-          'angular-toastr': 'angular-toastr/dist/*'
-
-        }
-      },
-      views: {
-        options: {
-          srcPrefix: 'frontend-modules/angular'
-        },
-        files: {
-          'public/angular/views': 'views/**/*.html'
-        }
-      }
-    },
-
     concat: {
       options: {
         separator: ';'
@@ -84,11 +47,14 @@ module.exports = function (grunt) {
           'frontend-modules/angular/views/**/*.html',
           'frontend-modules/angular-admin/*.js',
           'frontend-modules/libs/*.js',
-          'public/src/video-annotations/scripts/*.js',
-          'public/src/video-annotations/scripts/**/*.js',
-          'public/src/video-annotations/scripts/**/**/*.js'
+          'public/src/video-annotations/*.js',
+          'public/src/video-annotations/**/*.js'
         ],
-        tasks: ['bowercopy:views', 'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va'],
+        tasks: [
+          'concat:dist',
+          'concat:js',
+          'concat:libsJS',
+          'concat:va'],
         options: {
           spawn: false
         }
@@ -135,13 +101,10 @@ module.exports = function (grunt) {
 
   // the default task (running "grunt" in console)
   grunt.registerTask('default', [
-    'bowercopy:scripts',
-    'bowercopy:views',
     'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va']
   );
 
   grunt.registerTask('production', [
-    'bowercopy',
     'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va',
     'ngAnnotate:cmscripts',
     'uglify:courseMapper', 'uglify:courseMapperAdmin', 'cssmin'
