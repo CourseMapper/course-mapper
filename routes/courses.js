@@ -113,89 +113,6 @@ function courseDetailRender(req,res,next, courseId){
       });
 };
 
-/**
-  * Helper function to login l2p users
-  */
-function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId, callback){
-  if(!l2pUserExists){
-    console.log("Error: L2P user does not exist and could not be created");
-  }
-  else {
-    //req.user = l2pUserName;
-    //res.render(config.get('theme') + '/profile', {title: 'My Profile', user: l2pUserName});
-    console.log("Logging in L2PUser");
-    User.findOne({
-        l2pUserId: currL2pUserId
-    },function(err,user){
-      if(!user){
-        console.log("Login Attempt failed");
-      }
-      else{
-        //passport.authenticate('custom',{})(req,res,next);
-        req.login(user,function(data){
-          console.log("Login successful");
-          req.user = user.displayName;
-          //res.render(config.get('theme') + '/profile', {title: 'My Profile', user: user.displayName});
-          /*req.enroll(user,function(data){
-            console.log("Successfully enrolled");
-            nodeDetailRender(req,res,next);
-
-          },function error(err){
-            console.log("Error: Could not enroll");
-            nodeDetailRender(req,res,next);
-
-          });*/
-          //req.enroll();
-          createL2PCourse(req,res,next,user._id,function(cid){courseDetailRender(req,res,next,cid);});
-
-        },function error(data){
-          if(data.errors){
-            console.log("GOT ERRORS");
-          }
-        });
-      }
-    });
-    //TODO: login l2p user into coursemapper
-  }
-}
-
-/**
-  * Function to create L2P Courses
-  */
-
-function createL2PCourse(req,res,next,userId,callback){
-  var crs = new CourseController();
-  var courseId;
-  crs.getCourse(function(err){
-    var cat = new CategoryController();
-
-    console.log("Error: Could not find course");
-
-    cat.getCategory(function(err){
-      console.log(err);
-    },{},function(data){
-      var params = {
-        'category': data._id,
-        'name': req.query.l2pCourse,
-        'userId': userId
-      };
-
-      crs.addCourse(function(erro){
-          console.log("Error: Could not create course"); //TODO
-          console.log(erro);
-      }, params, function(data){
-        courseId = data._id;
-        callback(courseId);
-      });
-
-
-    });
-  },{name: req.query.l2pCourse}, function(data){
-    console.log("Found One");
-    courseId = data._id;
-    callback(courseId);
-  });
-}
 
 
 router.get('/course/courseDetail/:courseId', function (req, res, next) {
@@ -344,12 +261,89 @@ router.get('/course/editContentNode', function (req, res, next) {
 });
 
 /**
+  * Helper function to login l2p users
+  */
+function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId, callback){
+  if(!l2pUserExists){
+    console.log("Error: L2P user does not exist and could not be created");
+  }
+  else {
+    //req.user = l2pUserName;
+    //res.render(config.get('theme') + '/profile', {title: 'My Profile', user: l2pUserName});
+    console.log("Logging in L2PUser");
+    User.findOne({
+        l2pUserId: currL2pUserId
+    },function(err,user){
+      if(!user){
+        console.log("Login Attempt failed");
+      }
+      else{
+        //passport.authenticate('custom',{})(req,res,next);
+        req.login(user,function(data){
+          console.log("Login successful");
+          req.user = user.displayName;
+
+          createL2PCourse(req,res,next,user._id,function(slug){callback(slug);});
+
+        },function error(data){
+          if(data.errors){
+            console.log("GOT ERRORS");
+          }
+        });
+      }
+    });
+    //TODO: login l2p user into coursemapper
+  }
+}
+
+/**
+  * Function to create L2P Courses
+  */
+
+function createL2PCourse(req,res,next,userId,callback){
+  var crs = new CourseController();
+  var courseSlug;
+  crs.getCourse(function(err){
+    var cat = new CategoryController();
+
+    console.log("Error: Could not find course");
+
+    cat.getCategory(function(err){
+      console.log(err);
+    },{},function(data){
+      var params = {
+        'category': data._id,
+        'name': req.query.l2pCourse,
+        'userId': userId
+      };
+
+      crs.addCourse(function(erro){
+          console.log("Error: Could not create course"); //TODO
+          console.log(erro);
+      }, params, function(data){
+        courseSlug = data.slug;
+        callback(courseSlug);
+      });
+
+
+    });
+  },{name: req.query.l2pCourse}, function(data){
+    console.log("Found One");
+    courseSlug = data.slug;
+    callback(courseSlug);
+  });
+}
+
+
+
+
+/**
   * L2P Prep
   */
 
 function l2pPrep(req,res,next,callback){
   if(!req.query.l2pToken)
-    callback(false);
+    callback("1");
   else{
     l2phelper.getContext(req.query.l2pToken, function(context){
       if(!context.Success){
@@ -383,22 +377,22 @@ function l2pPrep(req,res,next,callback){
             account.signUp(function(err){
                 console.log("Error: Error during L2P user creation");
                 l2pUserExists = false;
-                callback(false);
+                callback("");
             }, params, function(){
               console.log("Created l2p account");
 
               l2pUserExists = true;
-              loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,courseId);
+              loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,courseId,callback);
             });
           }
           else{
             if(l2pUserName == user.username){
               l2pUserExists = true;
-              loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId);
+              loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId,callback);
             }
             else {
               l2pUserExists = false;
-              callback(false);
+              callback("");
             }
           }
         });
@@ -414,85 +408,91 @@ function l2pPrep(req,res,next,callback){
  * full page for displaying course detail page
  */
 router.get('/course/:slug', function (req, res, next) {
-    l2pPrep(req,res,next,function(success){
+  //console.log(req);
+    l2pPrep(req,res,next,function(slug){
+      var slugStr = req.params.slug;
+      if(slug!="")
+        slugStr = slug;
 
+      console.log("SLUG");
+      console.log(slug);
+
+      if (!helper.checkRequiredParams(req.params, ['slug'],
+              function (err) {
+                  helper.resReturn(err, res);
+              }
+          )) return;
+
+      var params = {
+          slug: slugStr
+      };
+
+      var isInIframe = (req.cookies.isInIframe === 'true');
+      if (!isInIframe)
+          if (req.query.iframe === 'true') {
+              isInIframe = true;
+          } else if (req.query.iframe === 'false') {
+              isInIframe = false;
+          }
+
+      var c = new CourseController();
+      c.getCourse(
+          function (err) {
+              helper.resReturn(err, res);
+          },
+
+          params,
+
+          function (cours) {
+              if (!cours)
+                  res.send(404);
+
+              else {
+                  var TC = new TabsController();
+
+                  var op = async(function () {
+                      var tabs = await(TC.getActiveTabs('course')());
+                      return {tabs: tabs, tabsActive: cours.tabsActive};
+                  });
+
+                  op()
+                      .then(function (ret) {
+                          var activeTabs = [];
+                          if (!ret.tabsActive)
+                              ret.tabsActive = {};
+
+                          for (var i = 0; i < ret.tabs.length; i++) {
+                              var isActive = ret.tabs[i].isActive;
+                              if (!isActive) {
+                                  continue;
+                              }
+
+                              if (typeof(ret.tabsActive[ret.tabs[i].name]) != "undefined") {
+                                  if (!ret.tabsActive[ret.tabs[i].name]) {
+                                      continue;
+                                  }
+                              }
+
+                              activeTabs.push(ret.tabs[i]);
+                          }
+
+                          res.render(theme + '/catalogs/course', {
+                              title: cours.name,
+                              course: cours,
+                              user: req.user,
+                              moment: moment,
+                              isInNodeDetailPage: false,
+                              activeTabs: activeTabs,
+                              isInIframe: isInIframe
+                          });
+                      })
+                      .catch(function (err) {
+                          helper.resReturn(err, res)
+                      });
+              }
+          }
+      );
     });
-
-    if (!helper.checkRequiredParams(req.params, ['slug'],
-            function (err) {
-                helper.resReturn(err, res);
-            }
-        )) return;
-
-    var params = {
-        slug: req.params.slug
-    };
-
-    var isInIframe = (req.cookies.isInIframe === 'true');
-    if (!isInIframe)
-        if (req.query.iframe === 'true') {
-            isInIframe = true;
-        } else if (req.query.iframe === 'false') {
-            isInIframe = false;
-        }
-
-    var c = new CourseController();
-    c.getCourse(
-        function (err) {
-            helper.resReturn(err, res);
-        },
-
-        params,
-
-        function (cours) {
-            if (!cours)
-                res.send(404);
-
-            else {
-                var TC = new TabsController();
-
-                var op = async(function () {
-                    var tabs = await(TC.getActiveTabs('course')());
-                    return {tabs: tabs, tabsActive: cours.tabsActive};
-                });
-
-                op()
-                    .then(function (ret) {
-                        var activeTabs = [];
-                        if (!ret.tabsActive)
-                            ret.tabsActive = {};
-
-                        for (var i = 0; i < ret.tabs.length; i++) {
-                            var isActive = ret.tabs[i].isActive;
-                            if (!isActive) {
-                                continue;
-                            }
-
-                            if (typeof(ret.tabsActive[ret.tabs[i].name]) != "undefined") {
-                                if (!ret.tabsActive[ret.tabs[i].name]) {
-                                    continue;
-                                }
-                            }
-
-                            activeTabs.push(ret.tabs[i]);
-                        }
-
-                        res.render(theme + '/catalogs/course', {
-                            title: cours.name,
-                            course: cours,
-                            user: req.user,
-                            moment: moment,
-                            isInNodeDetailPage: false,
-                            activeTabs: activeTabs,
-                            isInIframe: isInIframe
-                        });
-                    })
-                    .catch(function (err) {
-                        helper.resReturn(err, res)
-                    });
-            }
-        }
-    );
 
 });
 

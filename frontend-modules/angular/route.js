@@ -10,7 +10,30 @@ app.config(['$routeProvider', '$locationProvider',
         }).
 
         when('/category/:slug', {
-            templateUrl: 'courses_list.html',
+            templateUrl: function (params) {
+                var tUrl = 'courses_list.html';
+                var hasQueryStringStart = false;
+                if(typeof(params.l2pToken) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pToken=' + params.l2pToken;
+                    hasQueryStringStart = true;
+                }
+                if(typeof(params.l2pCourse) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pCourse=' + params.l2pCourse;
+                    hasQueryStringStart = true;
+                }
+                console.log(tUrl);
+                return tUrl;
+            },
             controller: 'CourseListController',
             reloadOnSearch: false
         }).
