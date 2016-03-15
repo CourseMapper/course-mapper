@@ -10,6 +10,9 @@
                     <i ng-show="sortType == 'nodeId.name' && sortReverse" class="fa fa-caret-up"></i>
                 </a>
             </th>
+            <th>Last Page Opened</th>
+            <th>Total Page</th>
+            <!--<th>Percentage Finished</th>-->
             <th>
                 <a href="#" ng-click="sortType = 'dateUpdated'; sortReverse = !sortReverse">
                     Date Accessed
@@ -17,17 +20,14 @@
                     <i ng-show="sortType == 'dateUpdated' && sortReverse" class="fa fa-caret-up"></i>
                 </a>
             </th>
-            <th>Last Page</th>
-            <th>Total Page</th>
-            <th>Percentage Finished</th>
         </tr>
         <tr ng-repeat="pdf in pdfHistory | orderBy:sortType:sortReverse">
             <td>{{$index+1}}.</td>
             <td><a href="/course/{{pdf.courseId.slug}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?slidePage={{pdf.pageNumber}}">{{pdf.nodeId.name}}</a></td>
-            <td>{{pdf.dateUpdated | relativeDate}}</td>
             <td>{{pdf.pageNumber}}</td>
             <td>{{pdf.totalPage}}</td>
-            <td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>
+            <!--<td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>-->
+            <td>{{pdf.dateUpdated | relativeDate}}</td>
         </tr>
         </tbody>
     </table>
