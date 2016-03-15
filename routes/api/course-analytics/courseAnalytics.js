@@ -10,7 +10,7 @@ var appRoot = require('app-root-path');
 var EnrolledUser = require(appRoot + '/modules/applications/course-analytics/enrolledUserList');
 var CoursePreviewStats = require(appRoot + '/modules/applications/course-analytics/coursePreviewStats.controller');
 var CourseHistory = require(appRoot + '/modules/applications/course-analytics/course-history.controller');
-var TopContent = require(appRoot + '/modules/applications/course-analytics/top-content.controller');
+var TopContent = require(appRoot + '/modules/applications/top-content/top-content.controller');
 
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
@@ -248,20 +248,56 @@ router.get('/course-history/links/:courseId', function (req, res, next){
     );
 });
 
-router.get('/top-content/:courseId', function (req, res, next){
+router.get('/top-content/pdf-annotation/:courseId', function (req, res, next){
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
     var tc = new TopContent();
-    tc.getTopPdf (
+    tc.getTopAnnotatedPdf (
         function error (err) {
           res.status(200).json({result:false, message:err})
         },
         {
             courseId:mongoose.Types.ObjectId(req.params.courseId)
         },
-        function success (topPdf) {
-            res.status(200).json({result:true, topPdf:topPdf})
+        function success (topAnnotatedPdf) {
+            res.status(200).json({result:true, topAnnotatedPdf:topAnnotatedPdf})
+        }
+    );
+});
+
+router.get('/top-content/video-annotation/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var tc = new TopContent();
+    tc.getTopAnnotatedVideo (
+        function error (err) {
+            res.status(200).json({result:false, message:err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (topAnnotatedVideo) {
+            res.status(200).json({result:true, topAnnotatedVideo:topAnnotatedVideo})
+        }
+    );
+});
+
+router.get('/top-content/link-node/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var tc = new TopContent();
+    tc.getTopLinkNode (
+        function error (err) {
+            res.status(200).json({result:false, message:err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (topLinkNode) {
+            res.status(200).json({result:true, topLinkNode:topLinkNode})
         }
     );
 });

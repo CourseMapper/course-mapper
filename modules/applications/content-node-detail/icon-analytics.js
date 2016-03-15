@@ -28,7 +28,8 @@ AStat.prototype.run = async ( function(){
     var contentId = contentNodeDetail._id;
 
     var totalLinks = await(Links.find({
-        contentNode: contentId
+        contentNode: contentId,
+        isDeleted: false
     }).count().exec());
 
     var arrResourcesLength = arrResources.length;
@@ -62,9 +63,9 @@ AStat.prototype.run = async ( function(){
 
 AStat.prototype.render = function(){
     return  '<div class="icon-stat" style="text-align: center">' +
-                '<div class="badge bg-light-blue" style="text-align: center"><i class="fa fa-pencil" style="font-size: 12px"></i> <i class="fa fa-file-pdf-o" style="font-size: 12px"></i> '+ this.sumAnnoPdf +'</div> '+
-                '<div class="badge bg-light-blue" style="text-align: center"><i class="fa fa-pencil" style="font-size: 12px"></i> <i class="fa fa-file-movie-o" style="font-size: 12px"></i> '+  this.sumAnnoVideo +'</div> '+
-                '<div class="badge bg-light-blue" style="text-align: center"><i class="fa fa-link" style="font-size: 12px"></i> '+ this.tl +'</div> ' +
+                '<div class="badge bg-light-blue" style="text-align: center; margin-bottom: 3px;"><i class="fa fa-file-pdf-o" style="font-size: 12px"></i> Pdf Annotation: '+ this.sumAnnoPdf +'</div> '+
+                '<div class="badge bg-light-blue" style="text-align: center; margin-bottom: 3px;"><i class="fa fa-file-movie-o" style="font-size: 12px"></i> Video Annotation: '+  this.sumAnnoVideo +'</div> '+
+                '<div class="badge bg-light-blue" style="text-align: center; margin-bottom: 3px;"><i class="fa fa-link" style="font-size: 12px"></i> Link Added: '+ this.tl +'</div> ' +
             '</div>';
 };
 

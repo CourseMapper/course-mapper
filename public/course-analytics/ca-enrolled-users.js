@@ -7,8 +7,8 @@ angular.module('EnrolledUsers', [''])
         //alert(parseLoc);
         if (parseLoc) {
 
-            $http.get('/api/course-analytics/top-content/' + parseLoc).success(function (data) {
-                $scope.topContent = data;
+            $http.get('/api/course-analytics/user-list/' + parseLoc).success(function (data) {
+                $scope.userList = data.courses;
 
             });
         } else

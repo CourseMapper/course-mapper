@@ -747,47 +747,44 @@ var NewsfeedListener = {
     },
 
     onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation, user) {
-        VideoAnnotation.findOne({_id:deleteVideoAnnotation})
-            .exec(function(err, doc){
-                if (doc) {
-                    var videoId = doc.video_id;
-                    if (videoId) {
-                        Resources.findOne({_id:videoId})
-                            .exec(function(err, result){
-                                if (result) {
-                                    var treeNodeId = result.treeNodeId;
-                                    if (treeNodeId) {
-                                        SubTopics.findOne({_id:treeNodeId})
-                                            .exec(function(err, res){
-                                                if (res) {
-                                                    var nf = new NewsfeedAgg(
-                                                        {
-                                                            userId: doc.authorId,
-                                                            actionSubjectIds: videoId,
-                                                            actionSubject: "video annotation",
-                                                            actionName: res.name,
-                                                            courseId: result.courseId,
-                                                            nodeId: res.id,
-                                                            actionType: "deleted",
-                                                            dateAdded: doc.date_modified
-                                                        }
-                                                    );
-                                                    nf.save(
-                                                        function (err, doc) {
-                                                            if (!err) debug('');
-                                                            else
-                                                                debug(err);
-                                                        }
-                                                    );
-                                                }
-                                            })
-                                    }
+        var videoId = deleteVideoAnnotation.video_id;
+        var userId = user;
+        var dateAdded = deleteVideoAnnotation.date_modified;
+        Resources.findOne({_id:videoId})
+            .exec(function(err, result){
+                if (result) {
+                    var treeNodeId = result.treeNodeId;
+                    if (treeNodeId) {
+                        SubTopics.findOne({_id: treeNodeId})
+                            .exec(function (err, res) {
+                                if (res) {
+                                    var nf = new NewsfeedAgg(
+                                        {
+                                            userId: userId,
+                                            actionSubjectIds: videoId,
+                                            actionSubject: "video annotation",
+                                            actionName: res.name,
+                                            courseId: result.courseId,
+                                            nodeId: res.id,
+                                            actionType: "deleted",
+                                            dateAdded: dateAdded
+                                        }
+                                    );
+                                    nf.save(
+                                        function (err, doc) {
+                                            if (!err) debug('');
+                                            else
+                                                debug(err);
+                                        }
+                                    );
+
                                 }
                             })
                     }
                 }
             });
     },
+
 
     //Listener for Link
     onAfterLinkCreated: function (newLink) {
@@ -871,7 +868,7 @@ var NewsfeedListener = {
     },
 
     onAfterLinkDeleted: function (deleteLink) {
-        Links.findOne({_id: deleteLink._id})
+        Links.findOne({_id: deleteLink})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -974,7 +971,7 @@ var NewsfeedListener = {
     },
 
     onAfterDiscussionDeleted: function (deleteDiscussion){
-        Posts.findOne({_id: deleteDiscussion._id})
+        Posts.findOne({_id: deleteDiscussion})
             .exec(function (err, doc) {
                 if (doc) {
                     var courseId = doc.course;
