@@ -130,7 +130,7 @@ videoAnnotationsModule.directive('videoAnnotation', function () {
     scope: {
       source: '='
     },
-    templateUrl: '/src/video-annotations/va-annotation/va-annotation.html',
+    templateUrl: '/js/video-annotations/va-annotation/va-annotation.html',
     controller: 'VaController'
   };
 });
@@ -340,7 +340,7 @@ videoAnnotationsModule.directive('vaWidget',
         videoSource: '@',
         videoId: '@'
       },
-      templateUrl: '/src/video-annotations/va-widget/va-widget.html',
+      templateUrl: '/js/video-annotations/va-widget/va-widget.html',
       controller: 'VaWidgetController'
     };
   }

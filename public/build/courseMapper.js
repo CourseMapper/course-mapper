@@ -2479,7 +2479,7 @@ app.controller('AppSettingController', function(  Page) {
             },
             template: '<div class="control-group">' +
             '<a href="{{loginUrl}}">' +
-            '<img src="/admin-lte/images/fb.png">' +
+            '<img src="/img/admin-lte/fb.png">' +
             '</a>' +
             '</div>',
             compile: function (element, attrs) {

@@ -27,12 +27,12 @@ module.exports = function (grunt) {
       },
       libsJS: {
         src: 'frontend-modules/libs/*.js',
-        dest: 'public/admin-lte/js/libs.js'
+        dest: 'public/build/cm-utils.js'
       },
       va: {
         src: [
-          'public/src/video-annotations/*.js',
-          'public/src/video-annotations/**/*.js'
+          'public/js/video-annotations/*.js',
+          'public/js/video-annotations/**/*.js'
         ],
         dest: 'public/build/video-annotations.js'
       }
@@ -47,8 +47,8 @@ module.exports = function (grunt) {
           'frontend-modules/angular/views/**/*.html',
           'frontend-modules/angular-admin/*.js',
           'frontend-modules/libs/*.js',
-          'public/src/video-annotations/*.js',
-          'public/src/video-annotations/**/*.js'
+          'public/js/video-annotations/*.js',
+          'public/js/video-annotations/**/*.js'
         ],
         tasks: [
           'concat:dist',
