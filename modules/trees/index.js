@@ -431,16 +431,30 @@ catalog.prototype.deleteNode = function (error, params, success) {
                     error(helper.createError('Cannot delete node with childrens'));
                 }
 
+                Resources.update({
+                        treeNodeId: tn._id
+                    },
+                    {
+                        $set: {isDeleted: true}
+                    }).exec();
+
             } else {
                 tn.isDeleted = true;
                 tn.dateDeleted = new Date();
                 tn.save(
                     function (err) {
                         if (err) {
-                            debug('failed update node position');
+                            debug('failed delete node');
                             error(err);
                         }
                         else {
+                            Resources.update({
+                                    treeNodeId: tn._id
+                                },
+                                {
+                                    $set: {isDeleted: true}
+                                }).exec();
+
                             success(tn);
                             Plugin.doAction('onAfterNodeDeleted', tn, params);
                         }
