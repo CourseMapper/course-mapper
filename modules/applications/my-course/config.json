@@ -30,6 +30,16 @@
       "width": 6,
       "height":1,
       "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Courses Breakdown",
+      "location": "user-profile",
+      "description": "Show the material list from courses I have enrolled",
+      "entryPoint": "/my-course/my-courses-breakdown",
+      "widgetJavascript": ["my-courses-breakdown.js"],
+      "width": 6,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
     }
   ]
 }
