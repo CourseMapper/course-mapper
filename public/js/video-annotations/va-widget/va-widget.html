@@ -7,22 +7,22 @@
         <vg-media vg-src="sources"></vg-media>
         <vg-controls vg-autohide="true" vg-autohide-time="10000">
             <vg-play-pause-button></vg-play-pause-button>
+            <vg-resume-button></vg-resume-button>
             <vg-time-display>{{ currentTime | date:'HH:mm:ss':'UTC' }}</vg-time-display>
             <vg-scrub-bar>
                 <vg-scrub-bar-current-time ng-show="selectedBar!=='fp' "></vg-scrub-bar-current-time>
                 <vg-scrub-bar-cue-points class="default"
                                          ng-show="selectedBar==='va' "
                                          vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
-                <vg-footprint ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint>
+                <!--<vg-footprint ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint>-->
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
-            <!--<vg-footprint-info ng-show="selectedBar==='fp' "></vg-footprint-info>-->
+            <!--<vg-footprint-info ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint-info>-->
             <vg-fullscreen-button></vg-fullscreen-button>
             <vg-volume>
                 <vg-mute-button></vg-mute-button>
                 <vg-volume-bar></vg-volume-bar>
             </vg-volume>
-            <!--<vg-resume-button></vg-resume-button>-->
         </vg-controls>
         <vg-overlay-play></vg-overlay-play>
         <div id="inline-va-container">
@@ -34,13 +34,17 @@
             </div>
         </div>
     </videogular>
-    <div class="col-md-3">
-
-        <select class="form-control" ng-model="selectedBar">
-            <option value="" selected disabled>Select analytics bar...</option>
-            <option value="va">Video Annotations</option>
-            <option value="fp">Footprint</option>
-        </select>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="col-md-3">
+                <select class="form-control" ng-model="selectedBar">
+                    <option value="" selected disabled>Select analytics bar...</option>
+                    <option value="none">None</option>
+                    <option value="va">Video Annotations</option>
+                    <option value="fp">Footprint</option>
+                </select>
+            </div>
+        </div>
     </div>
 </div>
 <div class="col-md-4 replies">
