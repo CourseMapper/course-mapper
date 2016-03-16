@@ -1,24 +1,38 @@
 'use strict';
 
-videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http',
-  function ($scope, socket, rootScope, $http) {
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http', '$location', '$anchorScroll',
+  function ($scope, socket, rootScope, $http, $location, $anchorScroll) {
     var videoPulse;
     var videoPulseHost = 'http://lanzarote.informatik.rwth-aachen.de:3005';
 
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
       params.showing = false;
+      params.isScrolled = false;
     };
 
     var onComplete = function (currentTime, timeLapse, params) {
       params.completed = true;
       params.showing = false;
+      params.isScrolled = false;
     };
 
     var onUpdate = function (currentTime, timeLapse, params) {
+
       if (!params.showing) {
         params.completed = false;
         params.showing = true;
+      }
+
+      var scrolled = _.find($scope.annotations, function (a) {
+        return a.isScrolled;
+      });
+      // Scroll to annotation if there
+      // isn't a scrolled annotation in the viewer
+      if (!scrolled) {
+        $location.hash(params._id);
+        $anchorScroll();
+        params.isScrolled = true;
       }
     };
 

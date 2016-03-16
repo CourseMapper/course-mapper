@@ -36,7 +36,7 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="col-md-3 form-group">
-                <button class="btn btn-block btn-primary btn-sm" type="button" ng-click="onClickedResume()">
+                <button ng-hide="!lastPos" class="btn btn-block btn-primary btn-sm" type="button" ng-click="onClickedResume()">
                     Resume: {{lastPos | msToTime}}
                 </button>
             </div>
@@ -74,9 +74,10 @@
     <div class="col-xs-12">
         <section class="row" id="annotations-view" ng-show="annotations.length > 0">
             <div ng-repeat="annotation in annotations | filter:query | orderBy:sortBy">
-                <div class="col-xs-11">
+                <div class="col-xs-11" id="{{annotation._id}}">
                     <video-annotation ng-mouseover="annotation.isHovered=true"
-                                      ng-mouseleave="annotation.isHovered=false" source="annotation"
+                                      ng-mouseleave="annotation.isHovered=false"
+                                      source="annotation"
                                       ng-class="{showing: annotation.showing, completed: annotation.completed}">
                     </video-annotation>
                 </div>
