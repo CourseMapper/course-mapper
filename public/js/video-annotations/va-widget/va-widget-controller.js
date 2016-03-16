@@ -173,8 +173,18 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       // Trigger initial annotations update.
       socket.emit('annotations:get', {video_id: videoId});
 
-      var user = rootScope.user;
-      $scope.API.pulseUrl = videoPulseHost + '/beats/' + videoId + '/' + user._id;
+      var pulseUrl = videoPulseHost + '/beats/' + videoId + '/' + rootScope.user._id;
+      $http.get(pulseUrl)
+        .success(function (data) {
+          var position = (data.pointer / 1000);
+          $scope.lastPos = data.pointer;
+
+          if (position >>> 0) {
+            $scope.onClickedResume = function () {
+              $scope.API.seekTime(position);
+            }
+          }
+        });
     };
 
     // Initialize scope when the video-source is set.
