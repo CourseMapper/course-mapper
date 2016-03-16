@@ -11,7 +11,7 @@ app.directive('modalBox',
                 title: '@'
             },
 
-            templateUrl: '/angular/views/modal-box.html',
+            templateUrl: '/partials/modal-box.html',
 
             link: function (scope, el, attrs) {
             }

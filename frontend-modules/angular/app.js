@@ -1,7 +1,7 @@
 var app = angular.module('courseMapper', [
     'ngResource', 'ngRoute', 'ngCookies',
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
-    'relativeDate', 'wysiwyg.module', 'angular-quill',
+    'relativeDate', 'angular-quill',
     'VideoAnnotations', 'SlideViewerAnnotationZones',
     'ngAnimate', 'toastr', 'ui.bootstrap', 'externalApp']);
 

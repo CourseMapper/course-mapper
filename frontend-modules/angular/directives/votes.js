@@ -17,7 +17,7 @@ app.directive('voting',
                 if (attrs['mode'])
                     mode = attrs['mode'];
 
-                var tmplt = '/angular/views/vote-' + mode + '.html';
+                var tmplt = '/partials/vote-' + mode + '.html';
 
                 return tmplt;
             },

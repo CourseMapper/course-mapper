@@ -8,7 +8,7 @@ app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $loc
       showControl: '=',
       pdfId: '@'
     },
-    templateUrl: '/angular/views/pdf-viewer.html',
+    templateUrl: '/partials/pdf-viewer.html',
     link: function (scope, element, attrs) {
       if (!PDFJS.PDFViewer || !PDFJS.getDocument) {
         alert('Please build the library and components using\n' +

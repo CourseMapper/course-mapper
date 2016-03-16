@@ -108,7 +108,7 @@ app.factory('widgetService', [
                     y = wdg.position.y;
                 }
 
-                grid.add_widget(el, x, y, wdg.width, wdg.height, false);
+                grid.addWidget(el, x, y, wdg.width, wdg.height, false);
             },
 
             initWidgetButton: function (location, id) {

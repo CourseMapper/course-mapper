@@ -32,7 +32,7 @@ app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyL
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.remove_all();
+            grid.removeAll();
 
             $scope.getWidgets();
         });
@@ -41,7 +41,7 @@ app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyL
         $scope.$on(onafter2, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.remove_all();
+            grid.removeAll();
 
             $scope.getWidgets();
         });
@@ -118,11 +118,11 @@ app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyL
             x = wdg.position.x;
             y = wdg.position.y;
         }
-        grid.add_widget(el, x, y, wdg.width, wdg.height, false);
+        grid.addWidget(el, x, y, wdg.width, wdg.height, false);
     };
 
     $scope.closeWidget = function (id) {
-        var i = _.findIndex($scope.widgets, {'widgetId': {'_id': id}});
+        var i = _.findIndex($scope.widgets, {'_id': id});
         var wdg = $scope.widgets[i];
 
         $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
@@ -133,7 +133,7 @@ app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyL
         var loc = '#' + locs + '-widgets';
 
         var options = {
-            cell_height: 340,
+            cellHeight: 340,
             verticalMargin: 10,
             resizable: false
             //allowed_grids: [0, 4, 8]

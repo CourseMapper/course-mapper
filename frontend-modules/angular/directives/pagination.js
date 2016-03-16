@@ -16,7 +16,7 @@ app.directive('pagination',
                 setReset: '='
             },
 
-            templateUrl: '/angular/views/pagination.html',
+            templateUrl: '/partials/pagination.html',
 
             link: function (scope, element, attrs) {
                 attrs.$observe('objectService', function () {
