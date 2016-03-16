@@ -13,7 +13,7 @@
                 <vg-scrub-bar-cue-points class="default"
                                          ng-show="selectedBar==='va' "
                                          vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
-                <vg-footprint ng-show="selectedBar==='fp'"></vg-footprint>
+                <vg-footprint ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint>
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
             <!--<vg-footprint-info ng-show="selectedBar==='fp' "></vg-footprint-info>-->
@@ -22,7 +22,7 @@
                 <vg-mute-button></vg-mute-button>
                 <vg-volume-bar></vg-volume-bar>
             </vg-volume>
-            <vg-resume-button></vg-resume-button>
+            <!--<vg-resume-button></vg-resume-button>-->
         </vg-controls>
         <vg-overlay-play></vg-overlay-play>
         <div id="inline-va-container">
