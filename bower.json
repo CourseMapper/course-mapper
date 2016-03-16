@@ -47,7 +47,6 @@
     "AdminLTE": "admin-lte#^2.3.2",
     "font-awesome": "fontawesome#^4.5.0",
     "Ionicons": "ionicons#^2.0.1",
-    "datatables": "DataTables#^1.10.11",
     "ng-tags-input": "^3.0.0",
     "gridstack": "^0.2.5",
     "oclazyload": "~1.0.9"
