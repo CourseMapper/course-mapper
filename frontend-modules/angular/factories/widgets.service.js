@@ -182,8 +182,8 @@ app.factory('widgetService', [
                 var loc = '#' + locs + '-widgets';
 
                 var options = {
-                    cell_height: 340,
-                    vertical_margin: 10,
+                    cellHeight: 340,
+                    verticalMargin: 10,
                     resizable: false
                 };
 

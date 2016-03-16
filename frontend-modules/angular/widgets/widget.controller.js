@@ -134,7 +134,7 @@ app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyL
 
         var options = {
             cell_height: 340,
-            vertical_margin: 10,
+            verticalMargin: 10,
             resizable: false
             //allowed_grids: [0, 4, 8]
         };

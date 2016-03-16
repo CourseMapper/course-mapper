@@ -133,8 +133,7 @@ videoAnnotationsModule.directive('videoAnnotation', function () {
     templateUrl: '/js/video-annotations/va-annotation/va-annotation.html',
     controller: 'VaController'
   };
-});
-;'use strict';
+});;'use strict';
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http',
   function ($scope, socket, rootScope, $http) {

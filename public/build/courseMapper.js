@@ -5566,7 +5566,7 @@ app.factory('socket', function ($rootScope) {
                 var loc = '#' + locs + '-widgets';
 
                 var options = {
-                    cell_height: 340,
+                    cellHeight: 340,
                     vertical_margin: 10,
                     resizable: false
                 };
