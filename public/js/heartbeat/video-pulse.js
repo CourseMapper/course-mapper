@@ -5,7 +5,7 @@ function VideoPulse(params) {
   var host = params.host;
   var videoId = params.videoId;
   var video = params.mediaElement;
-  var data = {user_id: params.userId};
+  var data = {key: params.userId};
 
   var signaller = null;
 
