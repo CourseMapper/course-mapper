@@ -13,10 +13,10 @@
                 <vg-scrub-bar-cue-points class="default"
                                          ng-show="selectedBar==='va' "
                                          vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
-                <!--<vg-footprint ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint>-->
+                <vg-footprint ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint>
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
-            <!--<vg-footprint-info ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint-info>-->
+            <vg-footprint-info ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint-info>
             <vg-fullscreen-button></vg-fullscreen-button>
             <vg-volume>
                 <vg-mute-button></vg-mute-button>
