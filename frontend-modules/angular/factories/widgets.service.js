@@ -188,35 +188,25 @@ app.factory('widgetService', [
                 };
 
                 if (!enableDragging) {
-                    options.draggable = {'disabled': true};
+                    options.disableDrag = true;
                 }
-
-                var curNode = {x: 0, y: 0};
 
                 var $gs = $(loc);
                 $gs.gridstack(options);
 
-                if (enableDragging) {
-                    $gs.on('onStartMove', function (e, node) {
-                        curNode.x = node.x;
-                        curNode.y = node.y;
-                    });
+                $gs.on('change', function (evt, node) {
+                    if (node && node[0]) {
+                        var c = $(node[0].el);
 
-                    $gs.on('onMove', function (e, node) {
+                        var wId = c.attr('id').substr(1);
+                        if (node[0]._updating) {
+                            var x = node[0].x;
+                            var y = node[0].y;
 
-                    });
-
-                    $gs.on('onFinishDrop', function (e, node) {
-                        var o = $(node.el);
-
-                        if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
-                            o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+                            self.setPosition(wId, x, y);
                         }
-
-                        var wId = o.attr('id').substr(1);
-                        self.setPosition(wId, node.x, node.y);
-                    });
-                }
+                    }
+                });
             }
         }
     }

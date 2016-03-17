@@ -135,35 +135,46 @@ app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyL
         var options = {
             cellHeight: 340,
             verticalMargin: 10,
-            resizable: false
-            //allowed_grids: [0, 4, 8]
+            resizable: false,
+            onchange: function (ab, cd) {
+                console.log(ab);
+            }
         };
-
-        var curNode = {x: 0, y: 0};
 
         var $gs = $(loc);
         $gs.gridstack(options);
+        $gs.on('change', function (evt, node) {
+            //console.log(evt);
+            //console.log(node);
+            if (node && node[0]) {
+                var c = $(node[0].el);
 
-        $gs.on('onStartMove', function (e, node) {
-            curNode.x = node.x;
-            curNode.y = node.y;
-        });
+                var wId = c.attr('id').substr(1);
+                if (node[0]._updating) {
+                    var x = node[0].x;
+                    var y = node[0].y;
 
-        $gs.on('onMove', function (e, node) {
-
-        });
-
-        $gs.on('onFinishDrop', function (e, node) {
-            var o = $(node.el);
-
-            if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
-                o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+                    $scope.setPosition(wId, x, y);
+                }
             }
-
-            var wId = o.attr('id').substr(1);
-            $scope.setPosition(wId, node.x, node.y);
         });
     };
+
+    /*$scope.$on('initDragEvent', function () {
+
+     var gItems = $('.grid-stack-item');
+     gItems.on("dragstop",
+     function (e, node) {
+     var c = $(node.helper[0]);
+
+     var wId = c.attr('id').substr(1);
+     var x = parseInt(c.attr('data-gs-x'));
+     var y = parseInt(c.attr('data-gs-y'));
+
+     $scope.setPosition(wId, x, y);
+     }
+     );
+     });*/
 
     $scope.setPosition = function (wId, x, y) {
         $http.put('/api/widget/' + wId + '/setPosition', {
