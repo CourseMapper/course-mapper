@@ -83,6 +83,37 @@ app.factory('collapseService', [
                     $("svg[data-source='t" + nodeId + "'").hide();
                 else
                     $("svg[data-source='t" + nodeId + "'").show();
+            },
+
+            affectVisualCat: function (hide, pNode, slug) {
+                var self = this;
+
+                for (var i in pNode.subCategories) {
+                    var chs = pNode.subCategories[i];
+                    if (hide === true) {
+                        $('#' + chs.slug).hide();
+                        if (chs.subCategories.length > 0) {
+                            self.affectVisual(true, chs, chs.slug);
+                        }
+                    }
+                    else {
+                        $('#' + chs.slug).show();
+
+                        if (chs.subCategories.length > 0) {
+                            var isChildrenCollapsed = self.isCollapsed(chs._id);
+                            if (isChildrenCollapsed === false)
+                                self.affectVisual(false, chs, chs.slug);
+                            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
+                                self.affectVisual(true, chs, chs.slug);
+                        }
+                    }
+                }
+
+                // hide svg
+                if (hide === true)
+                    $("svg[data-source='" + slug + "'").hide();
+                else
+                    $("svg[data-source='" + slug + "'").show();
             }
 
         }

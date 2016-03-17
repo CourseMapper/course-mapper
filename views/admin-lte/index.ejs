@@ -12,7 +12,7 @@
 
         <a ng-show="user" class="btn btn-primary btn-xs" style="float: right"
            href="/recommend-category">Recommend Category</a>
- 
+
     </section>
 
     <!-- Content Wrapper. Contains page content -->
@@ -31,6 +31,13 @@
 
                 {{data.name}}
 
+                <div class="collapse-button-home" ng-show="data.subCategories.length > 0">
+                    <a class="pointer" ng-click="collapse('t' + data._id )">
+                        <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
+                        <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
+                    </a>
+                </div>
+
                 <ul class="dropdown-menu box box-primary category">
                     <li><b>{{data.name}}</b></li>
                     <li class="divider"></li>
@@ -42,6 +49,12 @@
                             Courses
                         </button>
                     </li>
+                    <li>  <div class="collapse-button-home2">
+                            <a class="pointer" ng-click="collapse('t' + data._id )">
+                                <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
+                                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
+                            </a>
+                        </div></li>
                 </ul>
 
             </div>
