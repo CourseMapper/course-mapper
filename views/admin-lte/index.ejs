@@ -49,7 +49,7 @@
                             Courses
                         </button>
                     </li>
-                    <li>  <div class="collapse-button-home2">
+                    <li>  <div class="collapse-button-home2" ng-show="data.subCategories.length > 0">
                             <a class="pointer" ng-click="collapse('t' + data._id )">
                                 <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
                                 <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>

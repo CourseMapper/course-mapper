@@ -74,6 +74,7 @@ app.controller('HomePageController', function ($scope, $http, $rootScope,
 
         $timeout(function () {
             $scope.firstCollapse($scope.categories);
+            $scope.getCollapseDataFromLStorage();
 
             $scope.initiateCollapse();
             jQuery('.tree-container').css('visibility', 'visible');
@@ -167,10 +168,10 @@ app.controller('HomePageController', function ($scope, $http, $rootScope,
         for (var j in $scope.nodeChildrens[1]) {
             var totalKids = $scope.nodeChildrens[1][j];
             if (totalKids > 0) {
-                collapseService.setCollapse(j);
+                collapseService.setCollapseFirst(j);
                 $scope.collapseStatus[j] = true;
             } else {
-                collapseService.setExpand(j);
+                collapseService.setExpandFirst(j);
                 $scope.collapseStatus[j] = false;
             }
         }
@@ -183,7 +184,30 @@ app.controller('HomePageController', function ($scope, $http, $rootScope,
         }
     };
 
+    $scope.getCollapseDataFromLStorage = function () {
+        if (typeof(localStorage) == "undefined")
+            return;
+
+        for (var i in localStorage) {
+            var collData = localStorage[i];
+            if (i.indexOf("collapse") > -1) {
+                var _id = i.split('.');
+                _id = _id[1];
+                collData = parseInt(collData);
+                if (collData) {
+                    collapseService.setCollapse(_id);
+                    $scope.collapseStatus[_id] = true;
+                }
+                else {
+                    collapseService.setExpand(_id);
+                    $scope.collapseStatus[_id] = false;
+                }
+            }
+        }
+    };
+
     $scope.getChildLength = function (nid, level, categories) {
+
         if ($scope.nodeChildrens[level] == undefined) {
             $scope.nodeChildrens[level] = {};
         }
@@ -200,7 +224,7 @@ app.controller('HomePageController', function ($scope, $http, $rootScope,
 
         if (level > 1) {
             if ($scope.nodeChildrens[level][nid] > 0) {
-                collapseService.setCollapse(nid);
+                collapseService.setCollapseFirst(nid);
                 $scope.collapseStatus[nid] = true;
             }
         }
