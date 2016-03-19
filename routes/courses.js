@@ -137,18 +137,6 @@ function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,callback){
         req.login(user,function(data){
           console.log("Login successful");
           req.user = user.displayName;
-          //res.render(config.get('theme') + '/profile', {title: 'My Profile', user: user.displayName});
-          /*req.enroll(user,function(data){
-            console.log("Successfully enrolled");
-            nodeDetailRender(req,res,next);
-
-          },function error(err){
-            console.log("Error: Could not enroll");
-            nodeDetailRender(req,res,next);
-
-          });*/
-          //req.enroll();
-          //createL2PCourse(req,res,next,user._id,function(cid){courseDetailRender(req,res,next,cid);});
           callback(true,user);
 
         },function error(data){
@@ -385,7 +373,7 @@ function l2pPrep(req,res,next,courseId,callback){
 
 
       var l2pUserExists = false;
-      var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
+      var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.DisplayName';})[0].Value;
       console.log("l2pUserName: ");
       console.log(l2pUserName);
       var roleArray = ["admins","managers","students"];
