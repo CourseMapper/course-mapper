@@ -57,7 +57,7 @@ function getLearningMaterials(token,course_id,callback){
             return console.log('Error:', error);
         }
 
-<<<<<<< HEAD
+
         //Check for right status code
         if(response.statusCode !== 200){
             return console.log('Invalid Status Code Returned:', response.statusCode);
@@ -66,9 +66,7 @@ function getLearningMaterials(token,course_id,callback){
         var parsed = JSON.parse(body);
 
         callback(parsed.dataSet);
-=======
-    callback(parsed);
->>>>>>> cd6a7f5b1eb62a47a038f679d9f54f7d4be173a0
+
 
     });
 }
