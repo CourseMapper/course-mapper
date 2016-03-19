@@ -77,20 +77,10 @@ function downloadLearningMaterials(token,course_id,dataSet,callback){
         downloadUrl = dataSet[i].fileInformation.downloadUrl
         url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
-        var file = fs.createWriteStream("./temp/"+filename);
-        request(url,function (error, response, body) {
-            //Check for error
-            if(error){
-                return console.log('Error:', error);
-            }
-
-            //Check for right status code
-            if(response.statusCode !== 200){
-                return console.log('Invalid Status Code Returned:', response.statusCode);
-            }
-
-            body.pipe(file)
-        });
+        //Make sure temp folder exists
+        var ws = fs.createWriteStream("./temp/"+filename);
+        ws.on('error', function(err) { console.log(err); });
+        request(url).pipe(ws);
     }
 }
 
