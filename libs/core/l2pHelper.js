@@ -82,6 +82,7 @@ function downloadLearningMaterials(token,course_id,dataSet,callback){
         ws.on('error', function(err) { console.log(err); });
         request(url).pipe(ws);
     }
+    callback();
 }
 
 exports.getUserRole = getUserRole;
