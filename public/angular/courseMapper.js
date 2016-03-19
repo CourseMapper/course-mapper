@@ -70,8 +70,35 @@ app.config(function (toastrConfig) {
         when('/cid/:courseId', {
             templateUrl: function (params) {
                 var tUrl = '/course/courseDetail/' + params.courseId;
-                if (params.iframe === 'true' || params.iframe === 'false')
-                    tUrl += '?iframe=' + params.iframe;
+                var hasQueryStringStart = false;
+                if (params.iframe === 'true' || params.iframe === 'false'){
+                  if(!hasQueryStringStart)
+                    tUrl += '?';
+                  else {
+                    tUrl += '&';
+                  }
+                  tUrl += 'iframe=' + params.iframe;
+                  hasQueryStringStart = true;
+                }
+                if(typeof(params.l2pToken) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pToken=' + params.l2pToken;
+                    hasQueryStringStart = true;
+                }
+                if(typeof(params.l2pCourse) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pCourse=' + params.l2pCourse;
+                    hasQueryStringStart = true;
+                }
+                console.log(tUrl);
                 return tUrl;
             },
             controller: 'CourseRootController',
@@ -7535,6 +7562,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.login = function (isValid) {
         if (isValid) {
             $scope.isLoading = true;
+            console.log("Login Data");
+            console.log($scope.loginData);
             authService.login($scope.loginData,
                 function (user) {
                     $scope.user = user;
@@ -7554,7 +7583,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     }
 
-});;app.controller('MainController', function($scope, Page) {
+});
+;app.controller('MainController', function($scope, Page) {
     $scope.Page = Page;
 });
 ;app.controller('MainMenuController', function ($scope, $http, $rootScope, $cookies, authService, toastr) {
