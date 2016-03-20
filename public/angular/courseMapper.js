@@ -42,16 +42,16 @@ app.config(function (toastrConfig) {
                   tUrl += 'iframe=' + params.iframe;
                   hasQueryStringStart = true;
                 }
-                if(typeof(params.l2pToken) != 'undefined'){
+                if(typeof(params.accessToken) != 'undefined'){
                     if(!hasQueryStringStart)
                       tUrl += '?';
                     else {
                       tUrl += '&';
                     }
-                    tUrl += 'l2pToken=' + params.l2pToken;
+                    tUrl += 'accessToken=' + params.accessToken;
                     hasQueryStringStart = true;
                 }
-                if(typeof(params.l2pCourse) != 'undefined'){
+                /*if(typeof(params.l2pCourse) != 'undefined'){
                     if(!hasQueryStringStart)
                       tUrl += '?';
                     else {
@@ -59,7 +59,7 @@ app.config(function (toastrConfig) {
                     }
                     tUrl += 'l2pCourse=' + params.l2pCourse;
                     hasQueryStringStart = true;
-                }
+                }*/
                 console.log(tUrl);
                 return tUrl;
             },
@@ -80,16 +80,16 @@ app.config(function (toastrConfig) {
                   tUrl += 'iframe=' + params.iframe;
                   hasQueryStringStart = true;
                 }
-                if(typeof(params.l2pToken) != 'undefined'){
+                if(typeof(params.accessToken) != 'undefined'){
                     if(!hasQueryStringStart)
                       tUrl += '?';
                     else {
                       tUrl += '&';
                     }
-                    tUrl += 'l2pToken=' + params.l2pToken;
+                    tUrl += 'accessToken=' + params.accessToken;
                     hasQueryStringStart = true;
                 }
-                if(typeof(params.l2pCourse) != 'undefined'){
+                /*if(typeof(params.l2pCourse) != 'undefined'){
                     if(!hasQueryStringStart)
                       tUrl += '?';
                     else {
@@ -97,7 +97,7 @@ app.config(function (toastrConfig) {
                     }
                     tUrl += 'l2pCourse=' + params.l2pCourse;
                     hasQueryStringStart = true;
-                }
+                }*/
                 console.log(tUrl);
                 return tUrl;
             },

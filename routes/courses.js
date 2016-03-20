@@ -116,9 +116,10 @@ function courseDetailRender(req,res,next, courseId){
 /**
   * Helper function to login l2p users
   */
-function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId, callback){
+function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,callback){
   if(!l2pUserExists){
     console.log("Error: L2P user does not exist and could not be created");
+    callback(false,{});
   }
   else {
     //req.user = l2pUserName;
@@ -129,29 +130,20 @@ function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId, cal
     },function(err,user){
       if(!user){
         console.log("Login Attempt failed");
+        callback(false,{});
       }
       else{
         //passport.authenticate('custom',{})(req,res,next);
         req.login(user,function(data){
           console.log("Login successful");
           req.user = user.displayName;
-          //res.render(config.get('theme') + '/profile', {title: 'My Profile', user: user.displayName});
-          /*req.enroll(user,function(data){
-            console.log("Successfully enrolled");
-            nodeDetailRender(req,res,next);
-
-          },function error(err){
-            console.log("Error: Could not enroll");
-            nodeDetailRender(req,res,next);
-
-          });*/
-          //req.enroll();
-          createL2PCourse(req,res,next,user._id,function(cid){courseDetailRender(req,res,next,cid);});
+          callback(true,user);
 
         },function error(data){
           if(data.errors){
             console.log("GOT ERRORS");
           }
+          callback(false,{});
         });
       }
     });
@@ -161,9 +153,11 @@ function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId, cal
 
 /**
   * Function to create L2P Courses
+  * Currently not in use
   */
 
 function createL2PCourse(req,res,next,userId,callback){
+  console.log("Should not display");
   var crs = new CourseController();
   var courseId;
   crs.getCourse(function(err){
@@ -200,7 +194,12 @@ function createL2PCourse(req,res,next,userId,callback){
 
 router.get('/course/courseDetail/:courseId', function (req, res, next) {
   var courseId = req.params.courseId;
-  courseDetailRender(req,res,next,courseId);
+  //courseDetailRender(req,res,next,courseId);
+
+
+  l2pPrep(req,res,next,courseId,function(success){
+    courseDetailRender(req,res,next,courseId);
+  });
 
   /*if(!req.query.l2pToken)
     courseDetailRender(req,res,next,courseId);
@@ -219,7 +218,10 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
       var currL2pUserId = l2pContext.UserId;
 
       var l2pUserExists = false;
-      var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
+      var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.DisplayName';})[0].Value;
+      l2pUserName= "Joh Kloe";
+      console.log("Display Name: ");
+      console.log(l2pUserName);
       var roleArray = ["admins","managers","students"];
       var roleIsValid = (roleArray.indexOf(l2pRole) != -1);
       if(roleIsValid){
@@ -242,13 +244,13 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
               console.log("Created l2p account");
 
               l2pUserExists = true;
-              loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,courseId);
+              loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,courseId,function(success){courseDetailRender(req,res,next,courseId);});
             });
           }
           else{
             if(l2pUserName == user.username){
               l2pUserExists = true;
-              loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId);
+              loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId,function(success){courseDetailRender(req,res,next,courseId);});
             }
             else {
               l2pUserExists = false;
@@ -260,6 +262,9 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
 
     });
   }*/
+
+
+
 });
 
 
@@ -347,11 +352,13 @@ router.get('/course/editContentNode', function (req, res, next) {
   * L2P Prep
   */
 
-function l2pPrep(req,res,next,callback){
-  if(!req.query.l2pToken)
+function l2pPrep(req,res,next,courseId,callback){
+  var crs = new CourseController();
+
+  if(!req.query.accessToken)
     callback(false);
   else{
-    l2phelper.getContext(req.query.l2pToken, function(context){
+    l2phelper.getContext(req.query.accessToken, function(context){
       if(!context.Success){
         console.log("Error: Invalid L2P Token");
         //TODO: return when error
@@ -364,8 +371,11 @@ function l2pPrep(req,res,next,callback){
 
       var currL2pUserId = l2pContext.UserId;
 
+
       var l2pUserExists = false;
       var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
+      console.log("l2pUserName: ");
+      console.log(l2pUserName);
       var roleArray = ["admins","managers","students"];
       var roleIsValid = (roleArray.indexOf(l2pRole) != -1);
       if(roleIsValid){
@@ -378,7 +388,7 @@ function l2pPrep(req,res,next,callback){
               username: l2pUserName,
               role: l2pRole,
               l2pUserId: currL2pUserId,
-              password: req.query.l2pToken + "RaNdOmStRiNg"
+              password: req.query.accessToken + "RaNdOmStRiNg"
             };
             account.signUp(function(err){
                 console.log("Error: Error during L2P user creation");
@@ -388,13 +398,30 @@ function l2pPrep(req,res,next,callback){
               console.log("Created l2p account");
 
               l2pUserExists = true;
-              loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,courseId);
+              loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,function(success,logInUser){
+                crs.enroll(function(err){
+                  callback(false);
+                }, {id: logInUser._id},
+                {id: courseId},
+                function(followed){
+                  callback(true);
+                }, true);
+              });
+
             });
           }
           else{
             if(l2pUserName == user.username){
               l2pUserExists = true;
-              loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,courseId);
+              loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,function(success,logInUser){
+                crs.enroll(function(err){
+                  callback(false);
+                }, {id: logInUser._id},
+                {id: courseId},
+                function(followed){
+                  callback(true);
+                }, true);
+              });
             }
             else {
               l2pUserExists = false;
@@ -403,7 +430,6 @@ function l2pPrep(req,res,next,callback){
           }
         });
       }
-
     });
   }
 }
@@ -414,9 +440,9 @@ function l2pPrep(req,res,next,callback){
  * full page for displaying course detail page
  */
 router.get('/course/:slug', function (req, res, next) {
-    l2pPrep(req,res,next,function(success){
+    /*l2pPrep(req,res,next,function(success){
 
-    });
+    });*/
 
     if (!helper.checkRequiredParams(req.params, ['slug'],
             function (err) {
