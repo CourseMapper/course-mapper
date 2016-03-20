@@ -4,6 +4,7 @@ var appRoot = require('app-root-path');
 var CourseController = require(appRoot + '/modules/catalogs/course.controller.js');
 var Courses = require(appRoot + '/modules/catalogs/courses.js');
 var CategoryController = require(appRoot + '/modules/catalogs/category.controller.js');
+var Category = require(appRoot + '/modules/catalogs/categories.js');
 var TabsController = require(appRoot + '/modules/tabs/tabs.controller.js');
 var Account = require(appRoot + '/modules/accounts/index.js');
 var User = require(appRoot + '/modules/accounts/users.js');
@@ -164,27 +165,66 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
     console.log("Could not find course. Creating new course");
 
 
-    var func = function(uid){
-      cat.getCategory(function(err){
-        console.log(err);
-      },{},function(data){
-        var params = {
-          'category': data._id,
-          'name': l2pCourseName,
-          'userId': uid,
-          l2pCourseId: l2pCourseId,
-          settings: {disableControls: false, disableTop: true}
-        };
+    var func2 = function(cate,uid){
+      var params = {
+        'category': cate._id,
+        'name': l2pCourseName,
+        'userId': uid,
+        l2pCourseId: l2pCourseId,
+        settings: {disableControls: false, disableTop: true}
+      };
 
-        crs.addCourse(function(erro){
-            console.log("Error: Could not create course"); //TODO
-            console.log(erro);
-        }, params, function(data){
-          courseId = data._id;
-          callback(courseId);
-        });
+
+
+      crs.addCourse(function(erro){
+          console.log("Error: Could not create course"); //TODO
+          console.log(erro);
+          callback("");
+      }, params, function(data){
+        console.log("Created Course");
+        courseId = data._id;
+        callback(courseId);
       });
-    }
+    };
+
+    console.log("BLUB");
+
+
+    var catParams = {
+      name: "L2PCourses",
+      positionFromRoot: {
+        x: -200,
+        y: -140
+      }
+    };
+
+
+    var func = function(uid){
+      cat.getCategories(function (err){
+        console.log(err);
+        callback("");
+      },
+      catParams,
+      function (data) {
+        if(!data[0]){
+          cat.addCategory(function(err){
+            console.log(err);
+            callback("")
+          }, catParams, function(data){
+            console.log("Created one category");
+            func2(data,uid);
+          });
+        }
+        else {
+          //console.log("Found One");
+          func2(data[0],uid);
+        }
+
+        //console.log("Found One");
+        //console.log(data);
+        //func2(data[0],uid);
+      });
+    };
 
     var account = new Account();
     account.getUser(function(){
@@ -407,10 +447,6 @@ function l2pPrep(req,res,next,courseId,callback){
           }
         }
       });
-
-
-
-
     });
   }
 }

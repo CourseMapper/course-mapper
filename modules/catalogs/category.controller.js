@@ -199,14 +199,18 @@ catalog.prototype.getCategoryTags = function(error, params, success){
 
 catalog.prototype.addCategory = function(error, params, success){
 
+    if(!params.positionFromRoot){
+      params.positionFromRoot = {
+        x: 100,
+        y:  70
+      };
+    }
+
     var cat = new Category({
         name: params.name,
         parentCategory: params.parentCategory,
         subCategories: [],
-        positionFromRoot: {
-            x: 100,
-            y: 70
-        }
+        positionFromRoot: params.positionFromRoot
     });
 
     cat.setSlug(params.name);
