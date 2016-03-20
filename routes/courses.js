@@ -424,7 +424,9 @@ function l2pPrep(req,res,next,courseId,callback){
                 function(followed){
                   console.log("Getting Materials");
                   l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
-                    l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, function(){
+                    
+                    l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,courseId,dataSet, function(){
+
                       callback(true);
                     });
                   });
@@ -447,7 +449,10 @@ function l2pPrep(req,res,next,courseId,callback){
                 function(followed){
                   console.log("Getting Materials");
                   l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
-                    l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, function(){
+
+                    
+                    l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,courseId,dataSet, function(){
+
                       callback(true);
                     });
                   });
