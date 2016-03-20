@@ -1,6 +1,7 @@
 <div class="col-md-7">
     <videogular class="embed-responsive embed-responsive-16by9"
                 vg-youtube=""
+                vg-vimeo=""
                 vg-player-ready="onPlayerReady($API)"
                 vg-cue-points="cuePoints"
                 vg-update-state="onUpdateState($state)">
@@ -24,7 +25,7 @@
                 <vg-volume-bar></vg-volume-bar>
             </vg-volume>
         </vg-controls>
-        <vg-overlay-play></vg-overlay-play>
+        <!--<vg-overlay-play></vg-overlay-play>-->
         <div id="inline-va-container">
             <div ng-mouseover="item.isHovered=true" ng-mouseleave="item.isHovered=false" movable
                  can-move="{{item.isEditMode===true}}" on-moved="item.reposition"
