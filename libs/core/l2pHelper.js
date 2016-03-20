@@ -1,5 +1,5 @@
 var request = require('request');
-var fs = require('fs');
+var fs = require('fs-extra');
 
 var internalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/api.svc/v1/";
 var externalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/externalapi.svc/";
@@ -64,14 +64,33 @@ function getLearningMaterials(token,course_id,callback){
         }
 
         var parsed = JSON.parse(body);
+        var dataSet = parsed.dataSet
+        var dataSet_filtered = []
+        for (var i = 0; i < dataSet.length; i++){
+            if (!dataSet[i].isDirectory){
+                filename = dataSet[i].fileInformation.fileName;
+                tokens = filename.split(".");
+                if (tokens[tokens.length-1] == "pdf" || tokens[tokens.length-1] == "mp4" || tokens[tokens.length-1] == "webm"){
+                    dataSet_filtered.push(dataSet[i])
+                }
+                
+            }
+            
+        }
 
-        callback(parsed.dataSet);
+        callback(dataSet_filtered);
 
 
     });
 }
 
 function downloadLearningMaterials(token,course_id,dataSet,callback){
+    var dir = './temp';
+
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+
     for (var i = 0; i < dataSet.length; i++){
         if (!dataSet[i].isDirectory){
             filename = dataSet[i].fileInformation.fileName;
