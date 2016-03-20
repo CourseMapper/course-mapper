@@ -371,7 +371,7 @@ function l2pPrep(req,res,next,courseId,callback){
 
       var currL2pUserId = l2pContext.UserId;
 
-
+      var userIsManager = false;
       var l2pUserExists = false;
       var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
       console.log("l2pUserName: ");
@@ -379,6 +379,18 @@ function l2pPrep(req,res,next,courseId,callback){
       var roleArray = ["admins","managers","students"];
       var roleIsValid = (roleArray.indexOf(l2pRole) != -1);
       if(roleIsValid){
+        switch(l2pRole){
+            case "admins":
+              l2pRole = "admin";
+            break;
+            case "managers":
+              l2pRole = "user";
+              userIsManager = true;
+            break;
+            default:
+              l2pRole = "user";
+            break;
+        }
         var account = new Account();
         User.findOne({
             l2pUserId: currL2pUserId
@@ -394,10 +406,16 @@ function l2pPrep(req,res,next,courseId,callback){
                 console.log("Error: Error during L2P user creation");
                 l2pUserExists = false;
                 callback(false);
-            }, params, function(){
+            }, params, function(signedUpUser){
               console.log("Created l2p account");
 
               l2pUserExists = true;
+
+
+              //if(userIsManager){
+                crs.addManager(signedUpUser._id,courseId);
+              //}
+
               loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,function(success,logInUser){
                 crs.enroll(function(err){
                   callback(false);
@@ -406,8 +424,6 @@ function l2pPrep(req,res,next,courseId,callback){
                 function(followed){
                   console.log("Getting Materials");
                   l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
-                    console.log("Got here");
-                    console.log(dataSet);
                     l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, function(){
                       callback(true);
                     });
@@ -420,6 +436,9 @@ function l2pPrep(req,res,next,courseId,callback){
           else{
             if(l2pUserName == user.username){
               l2pUserExists = true;
+
+              crs.addManager(user._id,courseId);
+
               loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,function(success,logInUser){
                 crs.enroll(function(err){
                   callback(false);
@@ -428,8 +447,6 @@ function l2pPrep(req,res,next,courseId,callback){
                 function(followed){
                   console.log("Getting Materials");
                   l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
-                    console.log("Got here");
-                    console.log(dataSet);
                     l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, function(){
                       callback(true);
                     });
