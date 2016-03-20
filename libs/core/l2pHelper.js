@@ -107,9 +107,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
                 console.log("Full Path: "+fullPath);
                 fullPath = fullPath.split("Lists/StructuredMaterials/")[1];
                 folders = fullPath.split("/");
-                console.log(folders);
                 for (var j = 0; j < folders.length; j++){
-                    console.log("Folder: "+folders[j]);
                     current_folder = folders[j];
                     TreeNodes.findOne({name: folders[j],courseId:cid_internal}, function(err,obj) { 
                         if (obj != null){
