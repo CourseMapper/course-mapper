@@ -50,10 +50,8 @@ function getContext(token,callback){
 
 function getLearningMaterials(token,course_id,callback){
     url = internalApiURL+"viewAllLearningMaterials?accessToken="+token+"&cid="+ course_id;
-    console.log("Got here 2");
 
     request(url,function (error, response, body) {
-        console.log("Got here");
         //Check for error
         if(error){
             return console.log('Error:', error);
@@ -86,7 +84,7 @@ function downloadLearningMaterials(token,course_id,dataSet,callback){
         } else {
             //what to do with directories
         }
-        
+
     }
     callback();
 }
