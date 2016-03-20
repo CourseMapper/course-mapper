@@ -403,6 +403,19 @@ catalog.prototype.saveSettings = function (params) {
     }
 };
 
+catalog.prototype.addManager = function (userId, courseId) {
+  Course.findOne({_id: courseId}, function(course,err){
+    var managerId = mongoose.Types.ObjectId(userId);
+    Course.update({
+        $addToSet: { managers: managerId}
+    }, function(err){
+      console.log(err);
+    });
+
+  });
+
+};
+
 catalog.prototype.getCourses = function (error, params, pageParams, success) {
 
     if (!pageParams.lastPage || pageParams.lastPage == 'false') {
