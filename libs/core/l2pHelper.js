@@ -74,9 +74,9 @@ function getLearningMaterials(token,course_id,callback){
                 if (tokens[tokens.length-1] == "pdf" || tokens[tokens.length-1] == "mp4" || tokens[tokens.length-1] == "webm"){
                     dataSet_filtered.push(dataSet[i])
                 }
-                
+
             }
-            
+
         }
 
         callback(dataSet_filtered);
@@ -132,6 +132,19 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
     }
     callback();
 }
+
+function checkNode(lType, lName, lCreatedBy, lCourseId, lRessource){
+  var node = {
+    type: lType,
+    name: lName,
+    createdBy: lCreatedBy,
+    courseId: lCourseId
+  };
+
+
+}
+
+
 
 exports.getUserRole = getUserRole;
 exports.getContext = getContext;
