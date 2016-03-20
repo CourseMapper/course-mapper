@@ -49,7 +49,8 @@
     "Ionicons": "ionicons#^2.0.1",
     "ng-tags-input": "^3.0.0",
     "gridstack": "^0.2.5",
-    "oclazyload": "~1.0.9"
+    "oclazyload": "~1.0.9",
+    "videogular-vimeo": "*"
   },
   "devDependencies": {
     "livereload-js": "^2.2.1"
