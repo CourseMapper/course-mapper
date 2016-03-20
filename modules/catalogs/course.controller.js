@@ -162,12 +162,15 @@ catalog.prototype.addCourse = function (error, params, success) {
         return;
     }
 
+
     var course = new Course({
         name: params.name,
         createdBy: mongoose.Types.ObjectId(params.userId),
         category: mongoose.Types.ObjectId(params.category),
         description: params.description,
-        smallDescription: params.smallDescription
+        smallDescription: params.smallDescription,
+        l2pCourseId: params.l2pCourseId,
+        settings: params.settings
     });
 
     course.setSlug(params.name);
@@ -403,17 +406,19 @@ catalog.prototype.saveSettings = function (params) {
     }
 };
 
-catalog.prototype.addManager = function (userId, courseId) {
-  Course.findOne({_id: courseId}, function(course,err){
-    var managerId = mongoose.Types.ObjectId(userId);
-    Course.update({
-        $addToSet: { managers: managerId}
-    }, function(err){
+catalog.prototype.addManager = function (userId, courseId,callback) {
+  var managerId = mongoose.Types.ObjectId(userId);
+  Course.update({_id: courseId}, {
+      $addToSet: { managers: managerId}
+  }, function(err){
+    if(err){
       console.log(err);
-    });
-
+      callback(false);
+    }
+    else {
+      callback(true);
+    }
   });
-
 };
 
 catalog.prototype.getCourses = function (error, params, pageParams, success) {

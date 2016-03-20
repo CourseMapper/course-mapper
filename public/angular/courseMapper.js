@@ -105,6 +105,16 @@ app.config(function (toastrConfig) {
             reloadOnSearch: false
         }).
 
+        when('/makeCourse/:id/:name', {
+          templateUrl: function (params) {
+              console.log("TESTSTRING");
+              var tUrl = '/course/courseDetail/createl2pCourse/' + params.id + "/" + params.name;
+              return tUrl;
+          },
+          controller: 'CourseRootController',
+          reloadOnSearch: false
+        }).
+
         otherwise({
             redirectTo: '/'
         });

@@ -17,6 +17,7 @@ var courseSchema = new mongoose.Schema({
     smallDescription: { type: String },
     picture: { type: String },
     video: { type: String },
+    l2pCourseId: { type: String},
     settings: { type: mongoose.Schema.Types.Mixed},
     tabsActive: { type: mongoose.Schema.Types.Mixed},
     category: { type: mongoose.Schema.Types.ObjectId, ref: 'categories', required: true},
