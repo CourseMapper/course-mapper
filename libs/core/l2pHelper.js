@@ -75,14 +75,18 @@ function getLearningMaterials(token,course_id,callback){
 
 function downloadLearningMaterials(token,course_id,dataSet,callback){
     for (var i = 0; i < dataSet.length; i++){
-        filename = dataSet[i].fileInformation.fileName
-        downloadUrl = dataSet[i].fileInformation.downloadUrl
-        url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
+        if (!dataSet[i].isDirectory){
+            filename = dataSet[i].fileInformation.fileName;
+            downloadUrl = dataSet[i].fileInformation.downloadUrl;
+            url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
-        //Make sure temp folder exists
-        var ws = fs.createWriteStream("./temp/"+filename);
-        ws.on('error', function(err) { console.log(err); });
-        request(url).pipe(ws);
+            var ws = fs.createWriteStream("./temp/"+filename);
+            ws.on('error', function(err) { console.log(err); });
+            request(url).pipe(ws);
+        } else {
+            //what to do with directories
+        }
+        
     }
     callback();
 }
