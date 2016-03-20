@@ -1,5 +1,6 @@
 var request = require('request');
 var fs = require('fs-extra');
+var TreeNodes = require('./../../modules/trees/treeNodes.js');
 
 var internalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/api.svc/v1/";
 var externalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/externalapi.svc/";
@@ -84,7 +85,7 @@ function getLearningMaterials(token,course_id,callback){
     });
 }
 
-function downloadLearningMaterials(token,course_id,dataSet,callback){
+function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback){
     var dir = './temp';
 
     if (!fs.existsSync(dir)){
@@ -94,7 +95,31 @@ function downloadLearningMaterials(token,course_id,dataSet,callback){
     for (var i = 0; i < dataSet.length; i++){
         if (!dataSet[i].isDirectory){
             filename = dataSet[i].fileInformation.fileName;
+            console.log("File Name: "+filename)
             downloadUrl = dataSet[i].fileInformation.downloadUrl;
+            is_root = false;
+            if (dataSet[i].itemId == dataSet[i].parentFolderId){
+                //doesn't have a parent folder
+                console.log("is on root position");
+                is_root = true;
+            } else {
+                fullPath = dataSet[i].sourceDirectory;
+                console.log("Full Path: "+fullPath);
+                fullPath = fullPath.split("Lists/StructuredMaterials/")[1];
+                folders = fullPath.split("/");
+                console.log(folders);
+                for (var j = 0; j < folders.length; j++){
+                    console.log("Folder: "+folders[j]);
+                    TreeNodes.findOne({name: folders[j],courseId:cid_internal}, function(err,obj) { 
+                        if (obj != null){
+                            console.log("tree node found");
+                        } else {
+                            console.log("tree node not found");
+                        }
+                    });
+                }
+            }
+            
             url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
             var ws = fs.createWriteStream("./temp/"+filename);
