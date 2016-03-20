@@ -404,7 +404,12 @@ function l2pPrep(req,res,next,courseId,callback){
                 }, {id: logInUser._id},
                 {id: courseId},
                 function(followed){
-                  callback(true);
+                  console.log("Getting Materials");
+                  l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
+                    console.log("Got here");
+                    console.log(dataSet);
+                    l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, callback(true));
+                  });
                 }, true);
               });
 
@@ -419,7 +424,12 @@ function l2pPrep(req,res,next,courseId,callback){
                 }, {id: logInUser._id},
                 {id: courseId},
                 function(followed){
-                  callback(true);
+                  console.log("Getting Materials");
+                  l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
+                    console.log("Got here");
+                    console.log(dataSet);
+                    l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, callback(true));
+                  });
                 }, true);
               });
             }
