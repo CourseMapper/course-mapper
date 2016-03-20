@@ -132,15 +132,35 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
     callback();
 }
 
+function generateRandomPos() {
+  return Math.floor((Math.random() * 110) + 50);
+}
+
 function checkNode(lType, lName, lCreatedBy, lCourseId, lRessource){
   var node = {
     type: lType,
     name: lName,
     createdBy: lCreatedBy,
-    courseId: lCourseId
+    courseId: lCourseId,
+    dateAdded: new Date();
+
   };
+  node.positionFromRoot = {x: generateRandomPos(), y: generateRandomPos()};
+  var tn = new TreeNodes(node);
+  await(tn.save());
 
 
+  //Phils stuff start
+
+  //Phils stuff end
+
+  var Res = new Resources({
+    type: lType,
+    createdBy: lCreatedBy,
+    link: url,
+    courseId: contentNode.courseId,
+    treeNodeId: contentNode._id
+  });
 }
 
 
