@@ -373,7 +373,7 @@ function l2pPrep(req,res,next,courseId,callback){
 
 
       var l2pUserExists = false;
-      var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.DisplayName';})[0].Value;
+      var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
       console.log("l2pUserName: ");
       console.log(l2pUserName);
       var roleArray = ["admins","managers","students"];
