@@ -112,7 +112,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
                 fullPath = fullPath.split("Lists/StructuredMaterials/")[1];
                 folders = fullPath.split("/");
 
-                
+
 
                 var stuff = async(function () {
                         lastNode = null;
@@ -130,12 +130,12 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
                                 //console.log(node)
                             }
 
-                            
+
 
                         }
-                        
+
                 });
-                
+
 
                 stuff();
 
@@ -145,11 +145,11 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
             var ws = fs.createWriteStream("./temp/"+filename);
             ws.on('error', function(err) { console.log(err); });
             request(url).pipe(ws);
-        } 
+        }
 
     } else {
             //what to do with directories
-        
+
 
     }
     }
