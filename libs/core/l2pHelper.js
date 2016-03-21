@@ -126,10 +126,11 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
                                 console.log("tree node '"+ current_folder +"' found");
                             } else {
                                 console.log("tree node '"+ current_folder +"' not found");
-                                //node = await(addSubTopicNode(null,null,null));
+                                //node = await(addSubTopicNode(current_folder,null,cid_internal,lastNode));
                                 //console.log(node)
                             }
 
+                            lastNode = node;
 
 
                         }
@@ -167,8 +168,7 @@ function addSubTopicNode(lName, lCreatedBy, lCourseId){
     name: lName,
     createdBy: lCreatedBy,
     courseId: lCourseId,
-    isDeleted: false,
-
+    isDeleted: false
   };
   node.dateAdded= new Date();
 
