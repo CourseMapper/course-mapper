@@ -42,9 +42,26 @@ router.get('/accounts/all', function (req, res, next) {
     });
 });
 
+router.delete('/account/:userId', function (req, res, next) {
+    if (req.user && req.user.role != 'admin') {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    var uid = mongoose.Types.ObjectId(req.params.userId);
+    AccountModel.remove({_id: uid}).exec(function (err, docs) {
+        if (err) {
+            helper.resReturn(err, res);
+            return;
+        }
+
+        res.status(200).json({result: true, users: docs});
+    });
+});
+
 router.get('/account', function (req, res, next) {
     if (req.user)
-        res.redirect('/api/account/' + req.user.username);
+        res.redirect('/api/account/' + encodeURIComponent(req.user.username));
     else
         res.status(401).json({message: 'Not authorized'});
 });
