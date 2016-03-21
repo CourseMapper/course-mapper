@@ -89,9 +89,9 @@ function getLearningMaterials(token,course_id,callback){
     });
 }
 
-function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback){
+function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,callback){
     var dir = './temp';
-
+    //console.log(userid);
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
     }
@@ -126,7 +126,8 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
                                 console.log("tree node '"+ current_folder +"' found");
                             } else {
                                 console.log("tree node '"+ current_folder +"' not found");
-                                //node = await(addSubTopicNode(current_folder,null,cid_internal,lastNode));
+                                console.log(lastNode);
+                                node = await(addSubTopicNode(current_folder,userid,cid_internal,lastNode));
                                 //console.log(node)
                             }
 
@@ -162,7 +163,7 @@ function generateRandomPos() {
 }
 
 
-function addSubTopicNode(lName, lCreatedBy, lCourseId){
+function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
   var node = {
     type: "subTopic",
     name: lName,
@@ -172,8 +173,25 @@ function addSubTopicNode(lName, lCreatedBy, lCourseId){
   };
   node.dateAdded= new Date();
 
-  node.positionFromRoot = {x: generateRandomPos(), y: generateRandomPos()};
+  node.positionFromRoot = {
+    x: generateRandomPos(),
+    y: generateRandomPos()
+  };
   var tn = new TreeNodes(node);
+  await(tn.save());
+
+  if(lParent!=null){
+    console.log(lParent);
+    var parentNode = await(TreeNodes.findOne({_id: lParent}).exec());
+    parentNode.childrens.push(tn._id);
+    await(parentNode.save());
+
+    tn.positionFromRoot = {
+      x: parentNode.positionFromRoot.x + generateRandomPos(),
+      y: parentNode.positionFromRoot.y + generateRandomPos()
+    };
+  }
+
   return tn.save();
 
 
