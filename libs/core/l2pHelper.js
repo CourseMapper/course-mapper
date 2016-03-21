@@ -6,6 +6,9 @@ mongoose.Promise = global.Promise;
 var internalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/api.svc/v1/";
 var externalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/externalapi.svc/";
 
+var await = require('asyncawait/await');
+var async = require('asyncawait/async');
+
 function getUserRole(token,course_id,callback){
     url = internalApiURL+"viewUserRole?accessToken="+token+"&cid="+ course_id;
 
@@ -109,31 +112,46 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
                 fullPath = fullPath.split("Lists/StructuredMaterials/")[1];
                 folders = fullPath.split("/");
 
-                lastNode = null;
-                for (var j = 0; j < folders.length; j++){
-                    current_folder = folders[j];
-                    console.log(current_folder)
-                    var promise = TreeNodes.findOne({name: folders[j],courseId:cid_internal}).exec();
-                    promise.then(function(obj){
-                        if (obj != null){
-                            console.log("tree node '"+ current_folder +"' found");
-                        } else {
-                            console.log("tree node '"+ current_folder +"' not found");
-                        }
-                    });
+                
 
-                }
-            }
+                var stuff = async(function () {
+                        lastNode = null;
+                        for (var j = 0; j < folders.length; j++){
+                            current_folder = folders[j];
+                            console.log(current_folder)
+
+                            var node = await(TreeNodes.findOne({name: folders[j],courseId:cid_internal}).exec());
+
+                            if(node){
+                                console.log("tree node '"+ current_folder +"' found");
+                            } else {
+                                console.log("tree node '"+ current_folder +"' not found");
+                                //node = await(addSubTopicNode(null,null,null));
+                                //console.log(node)
+                            }
+
+                            
+
+                        }
+                        
+                });
+                
+
+                stuff();
+
 
             url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
             var ws = fs.createWriteStream("./temp/"+filename);
             ws.on('error', function(err) { console.log(err); });
             request(url).pipe(ws);
-        } else {
-            //what to do with directories
-        }
+        } 
 
+    } else {
+            //what to do with directories
+        
+
+    }
     }
     callback();
 }
