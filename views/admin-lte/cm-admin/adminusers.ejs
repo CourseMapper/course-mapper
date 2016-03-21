@@ -16,42 +16,20 @@
                     <tbody>
                     <tr>
                         <th>
-                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
-                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
-                        </th>
-                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
-                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
-                        </th>
-                        <th>
-                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
-                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
-
+                            <a class="pointer" ng-click="sortType = 'username'; sortReverse = !sortReverse">username</a>
+                            <span ng-show="sortType == 'username' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'username' && sortReverse" class="fa fa-caret-up"></span>
                         </th>
                         <th>Activate</th>
                     </tr>
-                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse"
-                        ng-show="widget.location != 'background-plugin'">
+                    <tr ng-repeat="usera in users | orderBy:sortType:sortReverse">
                         <td>
-                            {{widget.location}}
+                            {{usera.username}}
                         </td>
                         <td>
-                            {{widget.name}}
-                        </td>
-                        <td>
-                            {{widget.application}}
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
-                                    ng-click="activate(widget.application, widget.name)">
-                                Activate
-                            </button>
-
-                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
-                                    ng-click="deactivate(widget.application, widget.name)">
-                                Deactivate
+                            <button class="btn btn-sm btn-warning"
+                                    ng-click="deleteUser(user._id)">
+                                Delete
                             </button>
                         </td>
                     </tr>
@@ -64,16 +42,18 @@
 
                         <error-block messages="errors"></error-block>
 
-                        <div ng-controller="categoryFormController">
-                            <form role="form" ng-submit="processForm('root')" id="rootCategory">
+                        <div>
+                            <form role="form" ng-submit="saveUserForm()" id="user">
                                 <div class="col-xs-6 input-group input-group-sm">
-                                    <input type="text" name="category" class="form-control input-sm col-xs-3"
-                                           placeholder="Add New Category ..." ng-model="formData['root'].name"/>
-                                    <input type="hidden" name="parent" ng-value="0" value="0"
-                                           ng-model="formData['root'].parentCategory"/>
+                                    <input type="text" name="username" class="form-control input-sm col-xs-3"
+                                           placeholder="username" ng-model="formData.username"/>
+                                    <input type="password" name="password" class="form-control input-sm col-xs-3"
+                                           ng-model="formData.password"/>
+                                    <input type="email" name="email" class="form-control input-sm col-xs-3"
+                                           placeholder="email" ng-model="formData.email"/>
                               <span class="input-group-btn">
                               <button class="btn btn-info btn-flat" type="submit"><i class="fa fa-plus"></i> Add New
-                                  Category
+                                  Admin
                               </button>
                               </span>
                                 </div>

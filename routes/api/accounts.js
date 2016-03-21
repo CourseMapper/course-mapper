@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 
 var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
+var AccountModel = require(appRoot + '/modules/accounts/users.js');
 var Users = require(appRoot + '/modules/accounts/users.js');
 var Course = require(appRoot + '/modules/catalogs/course.controller.js');
 
@@ -23,6 +24,22 @@ var router = express.Router();
 router.get('/accounts/logout', function (req, res, next) {
     req.logout();
     res.status(200).json({result: true, message: 'Logged out'});
+});
+
+router.get('/accounts/all', function (req, res, next) {
+    if (req.user && req.user.role != 'admin') {
+        res.status(401).send('Unauthorized');
+        return;
+    }
+
+    AccountModel.find({role: 'admin'}).exec(function (err, docs) {
+        if (err) {
+            helper.resReturn(err, res);
+            return;
+        }
+
+        res.status(200).json({result: true, users: docs});
+    });
 });
 
 router.get('/account', function (req, res, next) {

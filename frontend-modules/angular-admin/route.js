@@ -63,7 +63,7 @@ admin.config(['$routeProvider',
 
         when('/adminusers', {
             templateUrl: '/cm-admin/adminusers',
-            controller: 'adminusersController',
+            controller: 'AdminUserController',
             resolve: {
                 pd: function ($q) {
                     return ( {
