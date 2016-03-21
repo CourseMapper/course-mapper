@@ -122,7 +122,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
 
                 }
             }
-            
+
             url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
             var ws = fs.createWriteStream("./temp/"+filename);
@@ -140,34 +140,27 @@ function generateRandomPos() {
   return Math.floor((Math.random() * 110) + 50);
 }
 
-/*
-function checkNode(lType, lName, lCreatedBy, lCourseId, lRessource){
+
+function addSubTopicNode(lName, lCreatedBy, lCourseId){
   var node = {
-    type: lType,
+    type: "subTopic",
     name: lName,
     createdBy: lCreatedBy,
     courseId: lCourseId,
-    dateAdded: new Date();
+    isDeleted: false,
 
   };
+  node.dateAdded= new Date();
+
   node.positionFromRoot = {x: generateRandomPos(), y: generateRandomPos()};
   var tn = new TreeNodes(node);
-  await(tn.save());
+  return tn.save();
 
 
-  //Phils stuff start
 
-  //Phils stuff end
-
-  var Res = new Resources({
-    type: lType,
-    createdBy: lCreatedBy,
-    link: url,
-    courseId: contentNode.courseId,
-    treeNodeId: contentNode._id
-  });
+  //INSERT NODE TO PARENT
 }
-*/
+
 
 
 exports.getUserRole = getUserRole;
@@ -177,11 +170,11 @@ exports.downloadLearningMaterials = downloadLearningMaterials;
 
 /*
 var q = require('q');
- 
+
 var folders = fullPath.split("/");
- 
+
 var promise = q.Promise();
- 
+
 for (var i = 0; i < array.length; i++) {
   promise = promise.then(function (lastNode) {
     return TreeNodes.findOne({name: folders[j],courseId:cid_internal});
