@@ -1,7 +1,8 @@
 var request = require('request');
 var fs = require('fs-extra');
 var TreeNodes = require('./../../modules/trees/treeNodes.js');
-
+var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 var internalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/api.svc/v1/";
 var externalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/externalapi.svc/";
 
@@ -109,13 +110,16 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet,callback
                 folders = fullPath.split("/");
                 for (var j = 0; j < folders.length; j++){
                     current_folder = folders[j];
-                    TreeNodes.findOne({name: folders[j],courseId:cid_internal}, function(err,obj) { 
+
+                    var promise = TreeNodes.findOne({name: folders[j],courseId:cid_internal}).exec();
+                    promise.then(function(obj){
                         if (obj != null){
                             console.log("tree node '"+ current_folder +"' found");
                         } else {
                             console.log("tree node '"+ current_folder +"' not found");
                         }
                     });
+
                 }
             }
             
@@ -136,6 +140,7 @@ function generateRandomPos() {
   return Math.floor((Math.random() * 110) + 50);
 }
 
+/*
 function checkNode(lType, lName, lCreatedBy, lCourseId, lRessource){
   var node = {
     type: lType,
@@ -162,7 +167,7 @@ function checkNode(lType, lName, lCreatedBy, lCourseId, lRessource){
     treeNodeId: contentNode._id
   });
 }
-
+*/
 
 
 exports.getUserRole = getUserRole;
