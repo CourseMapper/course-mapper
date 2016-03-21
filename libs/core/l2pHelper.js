@@ -169,3 +169,17 @@ exports.getUserRole = getUserRole;
 exports.getContext = getContext;
 exports.getLearningMaterials = getLearningMaterials;
 exports.downloadLearningMaterials = downloadLearningMaterials;
+
+/*
+var q = require('q');
+ 
+var folders = fullPath.split("/");
+ 
+var promise = q.Promise();
+ 
+for (var i = 0; i < array.length; i++) {
+  promise = promise.then(function (lastNode) {
+    return TreeNodes.findOne({name: folders[j],courseId:cid_internal});
+  })
+}
+*/
