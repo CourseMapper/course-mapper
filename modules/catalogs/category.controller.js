@@ -70,6 +70,16 @@ catalog.prototype.getCategories = function(error, params, success){
     });
 };
 
+catalog.prototype.categoryExists = function(error, params, success){
+  Category.findOne(params,
+  function(err,data){
+    if(err)
+      error(err);
+    else
+      success(data);
+  });
+};
+
 catalog.prototype.getCategory = function(error, params, success){
     Category.findOne(params)
         .populate('subCategories courseTags').exec(function(err, docs) {

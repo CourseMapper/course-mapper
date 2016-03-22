@@ -57,6 +57,9 @@ catalog.prototype.saveResourceFile = function (filetype, file, contentNode, crea
 };
 
 catalog.prototype.addTreeNode = function (error, params, files, success) {
+    debug(files);
+    debug(params);
+
     var self = this;
 
     // check for at least 1 resource either it s a pdf or a video

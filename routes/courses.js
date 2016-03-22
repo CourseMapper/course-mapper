@@ -187,8 +187,6 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
       });
     };
 
-    console.log("BLUB");
-
 
     var catParams = {
       name: "L2PCourses",
@@ -200,13 +198,15 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
 
 
     var func = function(uid){
-      cat.getCategories(function (err){
+      console.log("Blub");
+      cat.categoryExists(function (err){
+        console.log("GOt an error");
         console.log(err);
         callback();
       },
-      catParams,
+      {name: "L2PCourses"},
       function (data) {
-        if(!data[0]){
+        if(!data){
           cat.addCategory(function(err){
             console.log(err);
             callback();
@@ -216,8 +216,8 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
           });
         }
         else {
-          //console.log("Found One");
-          func2(data[0],uid);
+          console.log("Found Category");
+          func2(data,uid);
         }
 
         //console.log("Found One");
@@ -328,7 +328,8 @@ function l2pPrep(req,res,next,courseId,callback){
     l2phelper.getContext(req.query.accessToken, function(context){
       if(!context.Success){
         console.log("Error: Invalid L2P Token");
-        //TODO: return when error
+        callback(false);
+        return;
       }
       console.log("context:");
       console.log(context);
@@ -402,7 +403,7 @@ function l2pPrep(req,res,next,courseId,callback){
                           function(followed){
                             console.log("Getting Materials");
                             l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
-                              l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, function(){
+                              l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,courseId,dataSet, logInUser._id, function(){
                                 callback(true);
                               });
                             });
@@ -432,8 +433,8 @@ function l2pPrep(req,res,next,courseId,callback){
                           function(followed){
                             console.log("Getting Materials");
                             l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
-                              l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,dataSet, function(){
-                                callback(true);
+                              l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,courseId,dataSet, logInUser._id, function(){
+                                  callback(true);
                               });
                             });
                           }, true);
@@ -447,9 +448,13 @@ function l2pPrep(req,res,next,courseId,callback){
                   callback(false);
                 }
               }
-            });
+              });
+            }
+            else {
+              l2pUserExists = false;
+              callback(false);
+            }
           }
-        }
       });
     });
   }
