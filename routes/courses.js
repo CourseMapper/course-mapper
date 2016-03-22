@@ -179,11 +179,11 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
       crs.addCourse(function(erro){
           console.log("Error: Could not create course"); //TODO
           console.log(erro);
-          callback("");
+          callback();
       }, params, function(data){
         console.log("Created Course");
         courseId = data._id;
-        callback(courseId);
+        callback(data);
       });
     };
 
@@ -202,14 +202,14 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
     var func = function(uid){
       cat.getCategories(function (err){
         console.log(err);
-        callback("");
+        callback();
       },
       catParams,
       function (data) {
         if(!data[0]){
           cat.addCategory(function(err){
             console.log(err);
-            callback("")
+            callback();
           }, catParams, function(data){
             console.log("Created one category");
             func2(data,uid);
@@ -235,7 +235,7 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
       };
       account.signUp(function(err){
           console.log(err);
-          callback("");
+          callback();
       }, params, function(signedUpUser){
           func(signedUpUser._id);
       });
@@ -248,7 +248,7 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
   },{l2pCourseId: l2pCourseId}, function(data){
     console.log("Found One");
     courseId = data._id;
-    callback(courseId);
+    callback(data);
   });
 }
 
@@ -264,8 +264,12 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
 
 
 router.get('/course/courseDetail/createl2pCourse/:courseId/:courseName', function (req, res, next) {
-  createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(){
-    res.status(200).json({result: true})
+  createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData){
+    if(courseData)
+      res.status(200).json({result: true, url: "/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"});
+    else {
+      res.status(200).json({result: false});
+    }
   });
 
 });
