@@ -61,6 +61,21 @@ admin.config(['$routeProvider',
             }
         }).
 
+        when('/adminusers', {
+            templateUrl: '/cm-admin/adminusers',
+            controller: 'AdminUserController',
+            resolve: {
+                pd: function ($q) {
+                    return ( {
+                        title: 'Manage Admin Users',
+                        breads: [
+                            {a: '#/adminusers', active: false, title: 'Admin Users'}
+                        ]
+                    });
+                }
+            }
+        }).
+
         when('/cm-admin', {
             templateUrl: '/cm-admin-html.tpl',
             controller: 'adminHomeController',
