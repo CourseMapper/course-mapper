@@ -1,29 +1,56 @@
 
 <div class="row" ng-controller="CoursesBreakdownController">
     <div class="col-xs-12">
-        <accordion close-others="oneAtATime">
-            <accordion-group heading="{{enrolled.course.name}}" ng-repeat="enrolled in courseEnrolled | orderBy: 'course.name'">
-                <accordion>
-                    <accordion-group heading="PDF List">
+        My Enrolled Courses List:
+        <div class="box-group" id="accordion">
+            <div class="panel box box-primary" ng-repeat="enrolled in courseEnrolled | orderBy: 'course.name'">
+                <div class="box-header with-border">
+                    <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{$index}}" aria-expanded="false" class="collapsed">
+                            {{enrolled.course.name}}
+                        </a>
+                    </h4>
+                    <h4 class="box-title pull-right" title="number of discussion you created">Discussion: {{(newsfeedData | filter:isDiscussion | filter:isAdded | filter:(enrolled.course._id)).length}}</h4>
+                </div>
+                <div id="collapse{{$index}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <div class="box-body">
                         <table class="table table-striped">
                             <tbody>
-                                <tr ng-repeat="resource in courseEnrolledResources" ng-if="resource.courseId == enrolled.course._id && resource.type=='pdf'">
-                                    <td><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class="">{{resource.treeNodeId.name}}</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </accordion-group>
-                    <accordion-group heading="Video List">
-                        <table class="table table-striped">
-                            <tbody>
-                            <tr ng-repeat="resource in courseEnrolledResources" ng-if="resource.courseId == enrolled.course._id && resource.type!='pdf'">
-                                <td><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video" class="">{{resource.treeNodeId.name}}</a></td>
+                            <tr ng-repeat="resource in courseEnrolledResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == enrolled.course._id">
+                                <td ng-if="resource.type=='pdf'"><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class=""><i class="fa fa-file-pdf-o"></i> {{resource.treeNodeId.name}}</a><span class="pull-right">anno: {{(newsfeedData | filter:isPdfAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}. Link: {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</span></td>
+                                <td ng-if="resource.type!='pdf'"><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video" class=""><i class="fa fa-file-movie-o"></i> {{resource.treeNodeId.name}}</a><span class="pull-right">anno: {{(newsfeedData | filter:isVideoAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}. Link: {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</span></td>
                             </tr>
                             </tbody>
                         </table>
-                    </accordion-group>
-                </accordion>
-            </accordion-group>
-        </accordion>
+                    </div>
+                </div>
+            </div>
+        </div>
+        My Created Courses List: <!--TODO-->
+        <div class="box-group" id="accordion">
+            <div class="panel box box-primary" ng-repeat="created in courseCreated | orderBy: 'course.name'">
+                <div class="box-header with-border">
+                    <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-{{$index}}" aria-expanded="false" class="collapsed">
+                            {{created.course.name}}
+                        </a>
+                    </h4>
+                    <h4 class="box-title pull-right" title="number of discussion you created">Discussion: {{(newsfeedData | filter:isDiscussion | filter:isAdded | filter:(created.course._id)).length}}</h4>
+                </div>
+                <div id="collapse-{{$index}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <div class="box-body">
+                        <table class="table table-striped">
+                            <tbody>
+                            <!-- masih salah. cbuat API dari courseCreatedResources
+                            <tr ng-repeat="resource in courseEnrolledResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == enrolled.course._id">
+                                <td ng-if="resource.type=='pdf'"><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class=""><i class="fa fa-file-pdf-o"></i> {{resource.treeNodeId.name}}</a><span class="pull-right">anno: {{(newsfeedData | filter:isPdfAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}. Link: {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</span></td>
+                                <td ng-if="resource.type!='pdf'"><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video" class=""><i class="fa fa-file-movie-o"></i> {{resource.treeNodeId.name}}</a><span class="pull-right">anno: {{(newsfeedData | filter:isVideoAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}. Link: {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</span></td>
+                            </tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

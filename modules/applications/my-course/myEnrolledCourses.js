@@ -2,6 +2,7 @@ var config = require('config');
 var UserCourses = require('../../catalogs/userCourses.js');
 var Courses = require('../../catalogs/courses.js');
 var Resources = require('../../trees/resources.js');
+var Newsfeed = require('../newsfeed/models/newsfeed.model.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
@@ -80,6 +81,19 @@ enrolledCourses.prototype.getCreatedCourses = function (error, params, done) {
     });
 };
 
+//get all user activity history from newsfeed
+enrolledCourses.prototype.getUserNewsfeed = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
+        return;
+    }
+
+    var usrId = {userId: params.user};
+
+    Newsfeed.find(usrId).exec(function (err, res){
+        if (err) error (err);
+        else done(res);
+    });
+};
 
 
 module.exports = enrolledCourses;
