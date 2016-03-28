@@ -81,6 +81,41 @@ enrolledCourses.prototype.getCreatedCourses = function (error, params, done) {
     });
 };
 
+//get all breakdown material resources from Created courses
+enrolledCourses.prototype.getCreatedResources = function (error, params, done){
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
+        return;
+    }
+
+    var pf = {createdBy: params.user};
+    Courses.find(pf).exec(function (err, res){
+        if (err) error (err);
+        else
+            var cIds = res.map(function(doc){return doc.id});
+            Resources.find ({courseId: {$in:cIds}, isDeleted:false}).populate('treeNodeId').exec(function (error, docs){
+                if (error) error (error);
+                else {
+                    done (docs);
+                }
+            })
+    });
+    //params.isEnrolled = true;
+    /*UserCourses
+        .find(params).exec(function (err, res){
+            if (err) error (err);
+            else
+                var cIds = res.map(function(doc){return doc.course});
+            Resources.find({ courseId: {$in:cIds}, isDeleted:false }).populate('treeNodeId').exec(function (error, docs){
+                if (error) error (error);
+                else {
+                    done (docs);
+                }
+            });
+            //done(res);
+            //done (cIds);
+        });*/
+};
+
 //get all user activity history from newsfeed
 enrolledCourses.prototype.getUserNewsfeed = function (error, params, done) {
     if (!helper.checkRequiredParams(params, ['user'], error)) {
