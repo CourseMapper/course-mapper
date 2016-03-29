@@ -3,12 +3,10 @@ angular.module('MyCoursesBreakdown', [])
         //$scope.title = "List of PDF History";
 
 
+
         $http.get('/api/my-course').success(function (data) {
             $scope.courseEnrolled = data.courses.enrolled;
             $scope.courseEnrolledLength = data.courses.enrolled.length;
-            //created courses data
-            $scope.courseCreated = data.courses.created;
-            $scope.courseCreatedLength = data.courses.created.length;
 
         });
 
@@ -22,11 +20,8 @@ angular.module('MyCoursesBreakdown', [])
 
         $http.get('/api/my-course/newsfeed').success(function (data) {
             $scope.newsfeedData  = data.newsfeed;
-            //$scope.nfDataVidAnno = [];
-
-
-
         });
+
 
         //filtering scope
         $scope.isPdfAnno = function (action) {
@@ -45,4 +40,11 @@ angular.module('MyCoursesBreakdown', [])
             return action.actionType == 'added';
         };
 
+        //filtering scope resources
+        $scope.isPdf = function (action) {
+            return action.type == 'pdf';
+        };
+        $scope.isVideo = function (action) {
+            return action.type != 'pdf';
+        };
     });
