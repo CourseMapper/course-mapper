@@ -1,10 +1,10 @@
 <div ng-controller="CourseListCreatedController">
     <div class="col-xs-12">
-        <div class="box-group" id="accordion">
+        <div class="box-group" id="accordion-created">
             <div class="panel box box-primary" ng-repeat="created in courseCreated | orderBy: 'name'">
                 <div class="box-header with-border">
                     <h4 class="box-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse-created{{$index}}" aria-expanded="false" class="collapsed">
+                        <a data-toggle="collapse" data-parent="#accordion-created" href="#collapse-created{{$index}}" aria-expanded="false" class="collapsed">
                             {{created.name}} <i class="fa fa-caret-down"></i>
                         </a>
                     </h4>
