@@ -1,29 +1,45 @@
 
-<div class="row" ng-controller="CoursesBreakdownController">
+<div ng-controller="CoursesBreakdownController">
     <div class="col-xs-12">
-        <accordion close-others="oneAtATime">
-            <accordion-group heading="{{enrolled.course.name}}" ng-repeat="enrolled in courseEnrolled | orderBy: 'course.name'">
-                <accordion>
-                    <accordion-group heading="PDF List">
+        <div class="box-group" id="accordion">
+            <div class="panel box box-primary" ng-repeat="enrolled in courseEnrolled | orderBy: 'course.name'">
+                <div class="box-header with-border">
+                    <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{$index}}" aria-expanded="false" class="collapsed">
+                            {{enrolled.course.name}} <i class="fa fa-caret-down"></i>
+                        </a>
+                    </h4>
+                    <small class="label label-success pull-right" style="font-size: 13px;" title="number of discussion you created"><i class="fa fa-comments-o"></i> {{(newsfeedData | filter:isDiscussion | filter:isAdded | filter:(enrolled.course._id)).length}}</small>
+                    <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px;" title="number of Pdf material you added"><i class="fa fa-file-pdf-o"></i> {{(courseEnrolledResources | filter:isPdf | filter:(enrolled.course._id) | filter:(user._id)).length}}</small>
+                    <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px;" title="number of video material you added"><i class="fa fa-file-movie-o"></i> {{(courseEnrolledResources | filter:isVideo | filter:(enrolled.course._id) | filter:(user._id)).length}}</small>
+                </div>
+                <div id="collapse{{$index}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <div class="box-body">
                         <table class="table table-striped">
                             <tbody>
-                                <tr ng-repeat="resource in courseEnrolledResources" ng-if="resource.courseId == enrolled.course._id && resource.type=='pdf'">
-                                    <td><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class="">{{resource.treeNodeId.name}}</a></td>
+                                <tr ng-repeat="resource in courseEnrolledResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == enrolled.course._id">
+                                    <td ng-if="resource.type=='pdf'">
+                                        <a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class="">
+                                            <i class="fa fa-file-pdf-o"></i> {{resource.treeNodeId.name}}
+                                        </a>
+                                        <small class="label label-primary pull-right" style="font-size: 12px;" title="number of pdf annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-pdf-o"></i> {{(newsfeedData | filter:isPdfAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px;" title="number of link you created"><i class="fa fa-link"></i> {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <i class="fa fa-user pull-right" style="color: #3c8dbc; font-size: 14px; margin-right: 2px;" ng-if="resource.createdBy == user._id" title="this is the content you created"></i>
+                                    </td>
+                                    <td ng-if="resource.type!='pdf'">
+                                        <a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video" class="">
+                                            <i class="fa fa-file-movie-o"></i> {{resource.treeNodeId.name}}
+                                        </a>
+                                        <small class="label label-primary pull-right" style="font-size: 12px;" title="number of video annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-movie-o"></i> {{(newsfeedData | filter:isPdfAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px;" title="number of link you created"><i class="fa fa-link"></i> {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <i class="fa fa-user pull-right" style="color: #3c8dbc; font-size: 14px; margin-right: 2px;" ng-if="resource.createdBy == user._id" title="this is the content you created"></i>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </accordion-group>
-                    <accordion-group heading="Video List">
-                        <table class="table table-striped">
-                            <tbody>
-                            <tr ng-repeat="resource in courseEnrolledResources" ng-if="resource.courseId == enrolled.course._id && resource.type!='pdf'">
-                                <td><a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video" class="">{{resource.treeNodeId.name}}</a></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </accordion-group>
-                </accordion>
-            </accordion-group>
-        </accordion>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

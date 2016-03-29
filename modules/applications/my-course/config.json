@@ -2,26 +2,6 @@
   "name": "My Courses",
   "widgets":[
     {
-      "name": "My Enrolled Course List",
-      "location": "user-profile",
-      "description": "List of all your enrolled courses",
-      "entryPoint": "/my-course/my-enrolled-courses",
-      "widgetJavascript": ["my-enrolled-courses.js"],
-      "width": 4,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-    },
-    {
-      "name": "My Created Course List",
-      "location": "user-profile",
-      "description": "List all of your created courses",
-      "entryPoint": "/my-course/my-created-courses",
-      "widgetJavascript": ["my-created-courses.js"],
-      "width": 4,
-      "height":1,
-      "icon":"/img/appPlaceholder.png"
-    },
-    {
       "name": "My PDF Widget",
       "location": "user-profile",
       "description": "Show information on the status of accessed PDF and suggestion based on the current PDF read",
@@ -32,12 +12,22 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "My Courses Breakdown",
+      "name": "My Activity in Created Courses",
       "location": "user-profile",
-      "description": "Show the material list from courses I have enrolled",
+      "description": "Show the list from courses you created, including the statistics of your activities for each node in the courses you created",
+      "entryPoint": "/my-course/my-created-courses",
+      "widgetJavascript": ["my-created-courses.js"],
+      "width": 5,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Activity in Enrolled Courses",
+      "location": "user-profile",
+      "description": "Show the list from courses you enrolled, including the statistics of your activities for each node in the courses you enrolled",
       "entryPoint": "/my-course/my-courses-breakdown",
       "widgetJavascript": ["my-courses-breakdown.js"],
-      "width": 6,
+      "width": 5,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     }

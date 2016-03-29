@@ -2,6 +2,7 @@ var config = require('config');
 var UserCourses = require('../../catalogs/userCourses.js');
 var Courses = require('../../catalogs/courses.js');
 var Resources = require('../../trees/resources.js');
+var Newsfeed = require('../newsfeed/models/newsfeed.model.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
@@ -73,13 +74,47 @@ enrolledCourses.prototype.getCreatedCourses = function (error, params, done) {
 
     var pf = {createdBy: params.user};
 
-    Courses.find(pf).exec(function (err, res){
+    Courses.find(pf).select('-description').exec(function (err, res){
        if (err) error (err);
        else
            done(res);
     });
 };
 
+//get all breakdown material resources from Created courses
+enrolledCourses.prototype.getCreatedResources = function (error, params, done){
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
+        return;
+    }
+
+    var pf = {createdBy: params.user};
+    Courses.find(pf).exec(function (err, res){
+        if (err) error (err);
+        else
+            var cIds = res.map(function(doc){return doc.id});
+            Resources.find ({courseId: {$in:cIds}, isDeleted:false}).populate('treeNodeId').exec(function (error, docs){
+                if (error) error (error);
+                else {
+                    done (docs);
+                }
+            })
+    });
+
+};
+
+//get all user activity history from newsfeed
+enrolledCourses.prototype.getUserNewsfeed = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
+        return;
+    }
+
+    var usrId = {userId: params.user};
+
+    Newsfeed.find(usrId).exec(function (err, res){
+        if (err) error (err);
+        else done(res);
+    });
+};
 
 
 module.exports = enrolledCourses;
