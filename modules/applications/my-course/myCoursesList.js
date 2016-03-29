@@ -74,7 +74,7 @@ enrolledCourses.prototype.getCreatedCourses = function (error, params, done) {
 
     var pf = {createdBy: params.user};
 
-    Courses.find(pf).exec(function (err, res){
+    Courses.find(pf).select('-description').exec(function (err, res){
        if (err) error (err);
        else
            done(res);
@@ -99,21 +99,7 @@ enrolledCourses.prototype.getCreatedResources = function (error, params, done){
                 }
             })
     });
-    //params.isEnrolled = true;
-    /*UserCourses
-        .find(params).exec(function (err, res){
-            if (err) error (err);
-            else
-                var cIds = res.map(function(doc){return doc.course});
-            Resources.find({ courseId: {$in:cIds}, isDeleted:false }).populate('treeNodeId').exec(function (error, docs){
-                if (error) error (error);
-                else {
-                    done (docs);
-                }
-            });
-            //done(res);
-            //done (cIds);
-        });*/
+
 };
 
 //get all user activity history from newsfeed
