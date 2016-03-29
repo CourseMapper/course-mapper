@@ -34,6 +34,7 @@ peerReviewSchema.pre('save', function(next){
         this.dueDate = now;
     }
 
+    // Ask what should be done for this
     if (!this.solutionPublicationDate) {
         this.solutionPublicationDate = now;
     }

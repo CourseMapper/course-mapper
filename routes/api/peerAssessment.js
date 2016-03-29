@@ -45,6 +45,39 @@ router.post('/peerassessment/:courseId/peerreviews',
     });
 
 /**
+ * PUT
+ * edit peer review
+ */
+router.put('/peerassessment/:courseId/peerreviews/:id',
+    multipartyMiddleware,
+    function (req, res, next) {
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        var pa = new peerAssessment();
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+        req.body.pRId = mongoose.Types.ObjectId(req.params.id);
+
+        pa.editPeerReview(
+            function (err) {
+                console.log(err);
+                // res.status(200).json({result: false, errors: [err.message]});
+                helper.resReturn(err, res);
+            },
+
+            // parameters
+            req.body,
+            req.files,
+
+            function () {
+                res.status(200).json({result: true});
+            }
+        );
+    });
+
+/**
  * GET
  * fetch all peer reviews
  */

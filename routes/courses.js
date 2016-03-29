@@ -116,6 +116,17 @@ router.get('/course/actionBar/:tabName', function (req, res, next) {
 });
 
 /**
+ * partials related to tab and actionbars for peer Assesment
+ */
+router.get('/course/tab/:tabName/:fileName', function (req, res, next) {
+    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.fileName);
+});
+
+router.get('/course/actionBar/:tabName', function (req, res, next) {
+    res.render(theme + '/course/' + req.params.tabName + '/' + req.params.fileName + 'ActionBar');
+});
+
+/**
  * partial for add new course modal form accessed from top menu in course list page
  */
 router.get('/course/create', function (req, res, next) {

@@ -1,0 +1,103 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="viewAssignmentModal" tabindex="-1" role="dialog"
+         aria-labelledby="New Peer Review" aria-hidden="true">
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                    <div class="box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">View Peer Review</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                        <div class="box-body form-horizontal horizontal-max">
+                            <!--<form class="form-horizontal horizontal-max" name="addAssignmentForm" role="form" ng-submit="saveNewPost(addAssignmentForm.$valid)" novalidate>-->
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Title</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{viewReview.title}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Review Description</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{viewReview.reviewDescription}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Review Documents</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <div class="label label-info" ng-repeat="doc in viewReview.displayDocumentsList">
+                                                <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Allow Group Submission</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{viewReview.groupSubmission}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Total Marks</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{viewReview.totalMarks}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Publication Date</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{viewReview.publicationDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Due Date</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{viewReview.dueDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Sample Solution Publication Date</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{viewReview.ssPublicationDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Sample Solutions</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <div class="label label-info" ng-repeat="doc in viewReview.displaySolutionsList">
+                                                <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="box-footer control-group">
+                                        <!-- Button -->
+                                        <div class="controls pull-right">
+                                            <button class="btn btn-primary" data-dismiss="modal"> Close</button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            <!--</form>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

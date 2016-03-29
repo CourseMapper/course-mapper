@@ -23,6 +23,10 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
                 review.publicationDate = new Date(review.publicationDate);
                 review.dueDate = new Date(review.dueDate);
                 review.solutionPublicationDate = new Date(review.solutionPublicationDate);
+                review.ssPublicationDate = review.solutionPublicationDate;
+                delete review.solutionPublicationDate;
+                review.reviewDescription = review.description;
+                delete review.description;
             });
             $scope.peerreviews = response.data.peerreviews;
         }, function(err){
@@ -49,13 +53,84 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
         $('#confirmDeleteAssignmentModal').modal('hide');
     }
 
-    $scope.openDeleteConfirmationModal = function(reviewDocId) {
+    $scope.openEditConfirmationModal = function(review, event) {
+        event.stopPropagation();
+        console.log('review', review);
+        if(review.documents && review.documents.length>0) {
+            review.displayDocumentsList = [];
+            _.each(review.documents, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displayDocumentsList.push(temp);
+            })
+        }
+
+        if(review.solutions && review.solutions.length>0) {
+            review.displaySolutionsList = [];
+            _.each(review.solutions, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displaySolutionsList.push(temp);
+            })
+        }
+
+        $scope.newAssignObj = _.extend({}, review);
+        $('#editAssignmentModal').modal('show');
+    }
+
+    $scope.openDeleteConfirmationModal = function(reviewDocId, event) {
+        event.stopPropagation();
         $scope.deleteReviewId = reviewDocId;
         $('#confirmDeleteAssignmentModal').modal('show');
     }
 
+    $scope.openViewModal = function(review) {
+        console.log('review', review, $scope);
+        //$scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
+        if(review.documents && review.documents.length>0) {
+            review.displayDocumentsList = [];
+            _.each(review.documents, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displayDocumentsList.push(temp);
+            })
+        }
+
+        if(review.solutions && review.solutions.length>0) {
+            review.displaySolutionsList = [];
+            _.each(review.solutions, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displaySolutionsList.push(temp);
+            })
+        }
+
+        if(review.groupSubmission) {
+            review.groupSubmission = 'Yes';
+        } else {
+            review.groupSubmission = 'No';
+        }
+        $scope.viewReview = review;
+        $scope.$parent.$parent.viewReview = review;
+        $scope.$parent.$parent.include = '/course/tab/peerAssessment/' + 'viewAssignment';
+        //$('#viewAssignmentModal').modal('show');
+    }
+
     $scope.tabOpened();
 });
+
+app.controller('ViewPeerReviewController', function($scope) {
+    console.log($scope);
+    console.log($scope.$parent.$parent.viewReview);
+})
 
 app.controller('NewPeerReviewController', function($scope, $http, toastr, $window, Upload){
     $scope.newAssignObj = {
@@ -70,6 +145,26 @@ app.controller('NewPeerReviewController', function($scope, $http, toastr, $windo
     $scope.reviewDocuments = false;
     $scope.sampleSolutions = false;
     $scope.progress = 0;
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.reviewDocuments, fileName);
+        for(var i=0; i<$scope.reviewDocuments.length; i++) {
+            if($scope.reviewDocuments[i].name == fileName) {
+                $scope.reviewDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.deleteSelectedSolutions = function(fileName) {
+        console.log('Review Docs Selected', $scope.sampleSolutions, fileName);
+        for(var i=0; i<$scope.sampleSolutions.length; i++) {
+            if($scope.sampleSolutions[i].name == fileName) {
+                $scope.sampleSolutions.splice(i,1);
+                break;
+            }
+        }
+    }
 
     $scope.createPeerReview = function() {
         $scope.isLoading = true;
@@ -109,6 +204,116 @@ app.controller('NewPeerReviewController', function($scope, $http, toastr, $windo
                  window.location.reload();
             })
             .error(function (data) {
+                $scope.errors = data.errors;
+                $scope.progress = 0;
+                $scope.isLoading = false;
+            });
+    }
+
+    $scope.processAssignmentCredentials = function() {
+        // Check if this is needed when dealing with validation stuff
+    }
+});
+
+app.controller('EditPeerReviewController', function($scope, $http, toastr, $window, Upload){
+
+    $scope.reviewDocuments = false;
+    $scope.sampleSolutions = false;
+    $scope.progress = 0;
+    //$scope.newAssignObj.deletedUploadedFiles = [];
+    //$scope.newAssignObj.deletedUploadedSolutions = [];
+
+    $scope.deleteUploadedFiles = function(fileName) {
+        for(var i=0; i<$scope.newAssignObj.displayDocumentsList.length; i++) {
+            if ($scope.newAssignObj.displayDocumentsList[i].link == fileName) {
+                if(!$scope.newAssignObj.deletedUploadedFiles) {
+                    $scope.newAssignObj.deletedUploadedFiles = [];
+                }
+                $scope.newAssignObj.deletedUploadedFiles.push($scope.newAssignObj.documents[i]);
+                $scope.newAssignObj.documents.splice(i,1);
+                $scope.newAssignObj.displayDocumentsList.splice(i,1);
+                break;
+            }
+        }
+        console.log('Check deleted Objects', $scope.newAssignObj.deletedUploadedFiles, $scope.newAssignObj.documents, $scope.newAssignObj.displayDocumentsList);
+    }
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.reviewDocuments, fileName);
+        for(var i=0; i<$scope.reviewDocuments.length; i++) {
+            if($scope.reviewDocuments[i].name == fileName) {
+                $scope.reviewDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.deleteUploadedSolutions = function(fileName) {
+        for(var i=0; i<$scope.newAssignObj.displaySolutionsList.length; i++) {
+            if ($scope.newAssignObj.displaySolutionsList[i].link == fileName) {
+                if(!$scope.newAssignObj.deletedUploadedSolutions) {
+                    $scope.newAssignObj.deletedUploadedSolutions = [];
+                }
+                $scope.newAssignObj.deletedUploadedSolutions.push($scope.newAssignObj.solutions[i]);
+                $scope.newAssignObj.solutions.splice(i,1);
+                $scope.newAssignObj.displaySolutionsList.splice(i,1);
+                break;
+            }
+        }
+        console.log('Check deleted Objects', $scope.newAssignObj.deletedUploadedSolutions, $scope.newAssignObj.solutions, $scope.newAssignObj.displaySolutionsList);
+    }
+
+    $scope.deleteSelectedSolutions = function(fileName) {
+        console.log('Review Docs Selected', $scope.sampleSolutions, fileName);
+        for(var i=0; i<$scope.sampleSolutions.length; i++) {
+            if($scope.sampleSolutions[i].name == fileName) {
+                $scope.sampleSolutions.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.editPeerReview = function() {
+        console.log('Debug', $scope.newAssignObj);
+        $scope.isLoading = true;
+        var uploadParams = {
+            method: 'PUT',
+            url: '/api/peerassessment/' + $scope.$parent.course._id + '/peerreviews/' + $scope.newAssignObj._id,
+            fields: $scope.newAssignObj
+        };
+        uploadParams.file = [];
+        if($scope.reviewDocuments) {
+            uploadParams.file.push({'reviewDocuments':$scope.reviewDocuments});
+        }
+        if($scope.sampleSolutions) {
+            uploadParams.file.push({'sampleSolutions':$scope.sampleSolutions});
+        }
+
+        $scope.upload = Upload.upload(
+            uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
+
+                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log("Progress", $scope.progress);
+            })
+            .success(function (data) {
+
+                $scope.progress = 0;
+                if (data.result) {
+                    toastr.success('Successfully Saved');
+                } else {
+                    toastr.error('Updating Peer Review Failed');
+                }
+                $scope.isLoading = false;
+                $('#addNewAssignmentModal').modal('hide');
+
+                window.location.reload();
+            })
+            .error(function (data) {
+                toastr.error('Updating Peer Review Failed');
                 $scope.errors = data.errors;
                 $scope.progress = 0;
                 $scope.isLoading = false;

@@ -14,19 +14,21 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="review in peerreviews">
+                <tr ng-repeat="review in peerreviews" ng-click="openViewModal(review)">
                     <td>{{review.title}}</td>
                     <td>{{review.publicationDate | date:'dd.MM.yyyy HH:mm'}}</td>
                     <td>{{review.dueDate | date:'dd.MM.yyyy HH:mm'}}</td>
                     <td>{{review.totalMarks}}</td>
                     <td ng-show="isOwner || isManager || isAdmin">
-                        <i class="ion-edit" style="font-size: medium"></i> &nbsp;
-                        <a href="" ng-click="openDeleteConfirmationModal(review._id)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
+                        <a href="" ng-click="openEditConfirmationModal(review, $event)"> <i class="ion-edit" style="font-size: medium"></i> </a> &nbsp;
+                        <a href="" ng-click="openDeleteConfirmationModal(review._id, $event)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
     <% include addNewAssignmentModal %>
+    <% include editAssignmentModal%>
     <% include confirmDeleteAssignmentModal %>
+    <% include viewAssignmentModal%>
 </div>
