@@ -47,6 +47,9 @@ router.get('/my-courses-breakdown', function(req, res, next) {
     res.render('my-course/courses-breakdown');
 });
 
+router.get('/my-activity-summary', function(req, res, next) {
+    res.render('my-course/activity-summary');
+});
 
 
 

@@ -30,6 +30,16 @@
       "width": 5,
       "height":1,
       "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Summary",
+      "location": "user-profile",
+      "description": "Show the summary of your activities",
+      "entryPoint": "/my-course/my-activity-summary",
+      "widgetJavascript": ["my-activity-summary.js"],
+      "width": 7,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
     }
   ]
 }

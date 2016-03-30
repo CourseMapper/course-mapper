@@ -887,3 +887,25 @@ li.info-links li a:hover {
 .skin-blue .main-header .logo:hover {
   background: #357ca5 url("/img/admin-lte/logo.png") no-repeat;
 }
+
+.activity-summary-widget {
+  padding: 5px;
+}
+
+.activity-summary-widget .widget-user-2 {
+
+}
+
+.activity-summary-widget .info-box   {
+  min-height: 50px;
+}
+
+.activity-summary-widget .small-box   {
+  border: 1px solid #00c0ef;
+  margin-bottom: 10px;
+
+}
+.activity-summary-widget .small-box:hover   {
+  color: inherit;
+}
+
