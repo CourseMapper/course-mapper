@@ -162,6 +162,69 @@ function generateRandomPos() {
   return Math.floor((Math.random() * 110) + 50);
 }
 
+/*
+
+    var attachLinkToNodeAsync = async(function (contentNode, type, url) {
+        var Res = new Resources({
+            type: type,
+            createdBy: contentNode.createdBy,
+            link: url,
+            courseId: contentNode.courseId,
+            treeNodeId: contentNode._id
+        });
+
+        await(Res.save());
+
+        var upd = await(
+            TreeNodes.update({_id: contentNode._id}, {
+                $addToSet: {
+                    resources: Res._id
+                }
+            }));
+
+        return upd;
+    });
+*/
+function addContentNode(lName, lCreatedBy, lCourseId, lParent, lUrl){
+  var node = {
+    type: "contentNode",
+    name: lName,
+    createdBy: lCreatedBy,
+    courseId: lCourseId,
+    isDeleted: false
+  };
+  node.dateAdded= new Date();
+
+  node.positionFromRoot = {
+    x: generateRandomPos(),
+    y: generateRandomPos()
+  };
+  var tn = new TreeNodes(node);
+  await(tn.save());
+
+  if(lParent!=null){
+    console.log(lParent);
+    var parentNode = await(TreeNodes.findOne({_id: lParent}).exec());
+    parentNode.childrens.push(tn._id);
+    await(parentNode.save());
+    tn.parent = lParent;
+    tn.positionFromRoot = {
+      x: parentNode.positionFromRoot.x + generateRandomPos(),
+      y: parentNode.positionFromRoot.y + generateRandomPos()
+    };
+  }
+  var Res = new Resources({
+      type: type,
+      createdBy: lCreatedBy,
+      link: lUrl,
+      courseId: lCourseId,
+      treeNodeId: tn._id
+  });
+  await(Res.save());
+
+
+  return tn.save();
+}
 
 function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
   var node = {
@@ -185,18 +248,13 @@ function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
     var parentNode = await(TreeNodes.findOne({_id: lParent}).exec());
     parentNode.childrens.push(tn._id);
     await(parentNode.save());
-
+    tn.parent = lParent;
     tn.positionFromRoot = {
       x: parentNode.positionFromRoot.x + generateRandomPos(),
       y: parentNode.positionFromRoot.y + generateRandomPos()
     };
   }
-
   return tn.save();
-
-
-
-  //INSERT NODE TO PARENT
 }
 
 
