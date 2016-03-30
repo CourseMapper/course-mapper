@@ -42,6 +42,14 @@
       "runOn": "server"
     },
     {
+      "name": "Course Listing Basic Stats",
+      "location": "course-listing",
+      "description": "Widget that show the number of enrolled participants in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-basic-stats.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
       "name": "Enrolled Users",
       "location": "course-preview",
       "description": "List of users that enrolled to the course",
