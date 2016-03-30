@@ -1,5 +1,5 @@
 /**
- * /api/myCourse/*
+ * /api/my-course/*
  */
 var express = require('express');
 var passport = require('passport');
