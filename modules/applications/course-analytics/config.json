@@ -10,10 +10,10 @@
       "runOn": "server"
     },
     {
-      "name": "Home Widget - Count SubNodes",
+      "name": "Home Widget - Count Courses",
       "location": "category-homepage",
-      "description": "Widget that show the number of sub-nodes available inside one node",
-      "entryPoint": "/course-analytics/category-home-countSubNodes.js",
+      "description": "Widget that show the number of courses available inside one node",
+      "entryPoint": "/course-analytics/category-home-countCourses.js",
       "icon":"/img/appPlaceholder.png",
       "runOn": "server"
     },

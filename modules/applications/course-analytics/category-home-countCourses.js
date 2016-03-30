@@ -1,6 +1,7 @@
 var appRoot = require('app-root-path');
 //var mongoose = require('mongoose');
 var Categories = require(appRoot + '/modules/catalogs/categories.js');
+var Courses = require(appRoot + '/modules/catalogs/courses.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
@@ -17,16 +18,21 @@ CatCountSubNodes.prototype.run = async ( function(){
     var result = await( Categories.findOne({
         slug: self.slug
     }).exec());
+    if (result._id) {
+        var countCourses = await (Courses.find({category: result._id}).count().exec());
+    }
+    //var catId = result._id;
 
-    self.result = result;
+
+    self.result = countCourses;
 } );
 
 
 CatCountSubNodes.prototype.render = function(){
-    var countSubNodes = this.result.subCategories.length;
+    var countCourses = this.result;
 
 
-    return '<div class="countSubNodes" style="font-size:80%; margin-top: 3px;"> <span class="badge bg-yellow"> SubNodes: ' + countSubNodes + '</span></div>' ;
+    return '<div class="countCourses" style="font-size:80%; margin-top: 3px;"> <span class="badge bg-yellow"> Course Available: ' + countCourses + '</span></div>' ;
 };
 
 module.exports = CatCountSubNodes;
