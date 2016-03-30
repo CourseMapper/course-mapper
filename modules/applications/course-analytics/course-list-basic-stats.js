@@ -30,7 +30,7 @@ CourseListBasicStats.prototype.run = async(function(){
 
 CourseListBasicStats.prototype.render = function(){
 
-    return '<span class="label label-info"> Total enrolled participants: <b>' + this.countEnrolledUser + '</span> <br>';
+    return '<span class="label label-info bg-green"> Total enrolled participants: <b>' + this.countEnrolledUser + '</span> <br>';
 };
 
 module.exports = CourseListBasicStats;
