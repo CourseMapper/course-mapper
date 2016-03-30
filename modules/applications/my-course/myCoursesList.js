@@ -102,6 +102,19 @@ enrolledCourses.prototype.getCreatedResources = function (error, params, done){
 
 };
 
+//get all material resources  from one particular user
+enrolledCourses.prototype.getAllResources = function (error, params, done){
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
+        return;
+    }
+    Resources.find({createdBy: params.user, isDeleted:false}).exec(function (error, docs){
+        if (error) error (error);
+        else {
+            done (docs);
+        }
+    });
+};
+
 //get all user activity history from newsfeed
 enrolledCourses.prototype.getUserNewsfeed = function (error, params, done) {
     if (!helper.checkRequiredParams(params, ['user'], error)) {
@@ -115,6 +128,7 @@ enrolledCourses.prototype.getUserNewsfeed = function (error, params, done) {
         else done(res);
     });
 };
+
 
 
 module.exports = enrolledCourses;

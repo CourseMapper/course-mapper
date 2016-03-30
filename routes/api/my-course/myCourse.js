@@ -92,6 +92,23 @@ router.get('/created-resources', function (req, res, next){
     );
 });
 
+router.get('/resources', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var myCrs = new Course();
+    myCrs.getAllResources(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            user: mongoose.Types.ObjectId(req.user._id)
+        },
+        function success(resources){
+            res.status(200).json({result:true, resources:resources});
+        }
+    );
+});
 
 router.get('/newsfeed', function (req, res, next){
     if (!req.user) {
@@ -110,7 +127,6 @@ router.get('/newsfeed', function (req, res, next){
         }
     );
 });
-
 
 
 module.exports = router;

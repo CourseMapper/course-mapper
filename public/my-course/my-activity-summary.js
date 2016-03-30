@@ -11,61 +11,44 @@
  */
 angular.module('MyProgress', ['chart.js'])
     .controller("BarProgressController", ['$scope', '$timeout', '$http', '$filter', function ($scope, $timeout, $http, $filter) {
+
         $http.get('/api/my-course').success(function (data) {
             $scope.courseCreated = data.courses.created;
             $scope.courseEnrolled = data.courses.enrolled;
         });
 
+        $scope.contentNodeActivityLabels = ["Link Submitted", "Pdf Annotations", "Video Annotations"];
         $http.get('/api/my-course/newsfeed').success(function (data) {
-            $scope.linkCount = $filter('filter')(data.newsfeed, { actionSubject: "link" }).length;
-            /*$scope.totalVideo = function(){
-                var count = 0;
-                angular.forEach(data, function(video){
-                    count += video.actionSubject
-                })
-            };*/
+            var lcAll = $filter('filter')(data.newsfeed, { actionSubject: "link" });
+            $scope.linkCount = $filter('filter')(lcAll, {actionType: "added"}).length;
+            var pdfAnnoAll = $filter('filter')(data.newsfeed, { actionSubject: "pdf annotation" });
+            $scope.pdfAnnoCount = $filter('filter')(pdfAnnoAll, { actionType: "added" }).length;
+            var videoAnnoAll = $filter('filter')(data.newsfeed, { actionSubject: "video annotation" });
+            $scope.videoAnnoCount = $filter('filter')(videoAnnoAll, { actionType: "added" }).length;
+            $scope.contentNodeActivityData = [$scope.linkCount, $scope.pdfAnnoCount, $scope.videoAnnoCount ];
 
-            //$scope.newsfeedData  = data.newsfeed;
         });
 
+        $scope.nodeActivityLabels = ["Discussion Started", "Pdf Added", "Video Added"];
+        $http.get('/api/my-course/resources').success(function (data) {
+            var courseResources = data.resources;
+            var filtered;
+            filtered  = $filter('filter')(courseResources, {type: 'pdf'});
+            filtered = $filter('filter')(filtered, {isDeleted: false});
+            $scope.pdfCount = filtered.length;
 
+            var filtered2;
+            filtered2 = $filter('filter')(courseResources, {isDeleted: false}).length;
+            $scope.videoCount = filtered2 - filtered.length;
 
+            $http.get('/api/my-course/newsfeed').success(function (data) {
+                var filtered;
+                filtered = $filter('filter')(data.newsfeed, {actionSubject: "discussion"});
+                filtered = $filter('filter')(filtered, {actionType: "added"});
 
-        $scope.labelsPie = ["Video Added", "Pdf Added", "Discussion"];
-        $scope.labelsPie2 = ["Video Annotations", "Pdf Annotations", "Links"];
-        $scope.dataPie = [300, 500, 100];
-
-        $scope.myPDFReadData = [[12, 19, 6, 10, 12, 14, 12, 2, 5]];
-        $scope.myVideoWatchedData = [[2, 5, 8, 10, 12, 11, 14, 17, 22]];
-        $scope.myCommentsMadeData = [[7, 5, 1, 5, 5, 9, 12, 13, 20]];
-        $scope.myLikesData = [[4, 15, 12, 1, 17, 8, 15, 8, 2]];
-        $scope.myFollowingCoursesData = [[0, 2, 0, 0, 1, 3, 1, 0, 2]];
-        var ax= 12, bx = 70, cx = 29;
-        $scope.pushedData = [ax, bx, cx];
-
-        //filtering scope
-        $scope.isPdfAnno = function (action) {
-            return action.actionSubject == 'pdf annotation';
-        };
-        $scope.isVideoAnno = function (action) {
-            return action.actionSubject == 'video annotation';
-        };
-        $scope.isDiscussion = function (action) {
-            return action.actionSubject == 'discussion';
-        };
-        $scope.isLink = function (action) {
-            return action.actionSubject == 'link';
-        };
-        $scope.isAdded = function (action) {
-            return action.actionType == 'added';
-        };
-
-        //filtering scope resources
-        $scope.isPdf = function (action) {
-            return action.type == 'pdf';
-        };
-        $scope.isVideo = function (action) {
-            return action.type != 'pdf';
-        };
-
+                $scope.discussionCount = filtered.length;
+                $scope.nodeActivityData = [ $scope.discussionCount, $scope.pdfCount, $scope.videoCount];
+            });
+        });
+        
     }]);
