@@ -185,7 +185,7 @@ function generateRandomPos() {
         return upd;
     });
 */
-function addContentNode(lName, lCreatedBy, lCourseId, lParent, lUrl){
+function addContentNode(lName, lCreatedBy, lCourseId, lParent,lFileType){
   var node = {
     type: "contentNode",
     name: lName,
@@ -213,17 +213,27 @@ function addContentNode(lName, lCreatedBy, lCourseId, lParent, lUrl){
       y: parentNode.positionFromRoot.y + generateRandomPos()
     };
   }
+  var fName = "/resources/"+tn._id + "."+ lFileType;
   var Res = new Resources({
-      type: type,
+      type: lFileType,
       createdBy: lCreatedBy,
-      link: lUrl,
+      link: fName,
       courseId: lCourseId,
       treeNodeId: tn._id
   });
   await(Res.save());
 
 
-  return tn.save();
+  await(
+    TreeNodes.update({_id: tn._id}, {
+      $addToSet: {
+        resources: Res._id
+      }
+    }));
+
+  await(tn.save());
+
+  return fName;
 }
 
 function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
