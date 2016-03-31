@@ -144,6 +144,8 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
             url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
+            tokens = filename.split(".");
+            filetype = tokens[tokens.length-1]
             var ws = fs.createWriteStream("./temp/"+filename);
             ws.on('error', function(err) { console.log(err); });
             request(url).pipe(ws);
