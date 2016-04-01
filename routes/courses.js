@@ -162,7 +162,6 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
   crs.getCourse(function(err){
     var cat = new CategoryController();
 
-    console.log("Could not find course. Creating new course");
 
 
     var func2 = function(cate,uid){
@@ -198,9 +197,7 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
 
 
     var func = function(uid){
-      console.log("Blub");
       cat.categoryExists(function (err){
-        console.log("GOt an error");
         console.log(err);
         callback();
       },
@@ -211,7 +208,6 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
             console.log(err);
             callback();
           }, catParams, function(data){
-            console.log("Created one category");
             func2(data,uid);
           });
         }
@@ -246,7 +242,6 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
     }
   );
   },{l2pCourseId: l2pCourseId}, function(data){
-    console.log("Found One");
     courseId = data._id;
     callback(data);
   });
@@ -263,12 +258,12 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
 });
 
 
-router.get('/course/courseDetail/createl2pCourse/:courseId/:courseName', function (req, res, next) {
+router.get('/createl2pCourse/:courseId/:courseName', function (req, res, next) {
   createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData){
     if(courseData)
-      res.status(200).json({result: true, url: "/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"});
+      res.status(200).json({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"});
     else {
-      res.status(200).json({result: false});
+      res.status(200).json({result: false, url:""});
     }
   });
 

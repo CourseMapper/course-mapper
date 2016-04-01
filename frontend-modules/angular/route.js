@@ -91,10 +91,9 @@ app.config(['$routeProvider', '$locationProvider',
             reloadOnSearch: false
         }).
 
-        when('/makeCourse/:id/:name', {
+        when('/createL2PCourse/:id/:name', {
           templateUrl: function (params) {
-              console.log("TESTSTRING");
-              var tUrl = '/course/courseDetail/createl2pCourse/' + params.id + "/" + params.name;
+              var tUrl = '/createl2pCourse/' + params.id + "/" + params.name + "?hideCourse=true";
               return tUrl;
           },
           controller: 'CourseRootController',
