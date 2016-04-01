@@ -185,7 +185,7 @@ var topContributorListener = {
             });
 
     },
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
+    
     //When user delete discussion, decrease counter
     onAfterDiscussionDeleted: function (newDiscussion) {
         Posts.findOne({_id: newDiscussion._id})
@@ -342,38 +342,32 @@ var topContributorListener = {
             });
     },
 
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     //when user delete video annotation, decrease counter
-    /*onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation) {
-        VideoAnnotation.findOne({_id: newVideoAnnotation})
-            .exec(function (err, doc) {
-                if (doc) {
-                    var videoId = doc.video_id;
-                    if (videoId) {
-                        Resources.findOne({_id: videoId})
-                            .exec(function (err, result) {
-                                var userId = doc.authorId;
-                                var courseId = result.courseId;
-                                if (result) {
-                                    var condition = {
-                                        userId: userId,
-                                        courseId: courseId
-                                    }, update = {$inc: {totalCount: -1, countNodeActivity: -1}};
-                                    TopContributorAgg.findOne(condition)
-                                        .exec(function (err, resTC) {
-                                            if (resTC) {
-                                                TopContributorAgg.update(condition, update).exec();
-                                            }
-                                            else {
-                                                console.log('No document fount');
-                                            }
-                                        });
-                                }
-                            })
-                    }
+    onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation, user) {
+        var videoId = deleteVideoAnnotation.video_id;
+        var userId = user;
+        Resources.findOne({_id: videoId})
+            .exec(function (err, result) {
+                //var userId = doc.authorId;
+                var courseId = result.courseId;
+                if (result) {
+                    var condition = {
+                        userId: userId,
+                        courseId: courseId
+                    }, update = {$inc: {totalCount: -1, countNodeActivity: -1}};
+                    TopContributorAgg.findOne(condition)
+                        .exec(function (err, resTC) {
+                            if (resTC) {
+                                TopContributorAgg.update(condition, update).exec();
+                            }
+                            else {
+                                console.log('No document fount');
+                            }
+                        });
                 }
-            });
-    },*/
+            })
+
+    },
 
     //Listener for Link
     onAfterLinkCreated: function (newLink) {
@@ -425,11 +419,9 @@ var topContributorListener = {
 
     },
 
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterLinkDeleted: function (deleteLink) {
         Links.findOne({_id: deleteLink._id})
             .exec(function (err, doc) {
-                //var linkId = doc.
                 if (doc) {
                     var contentId = doc.contentNode;
                     if (contentId) {
