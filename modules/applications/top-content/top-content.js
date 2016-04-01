@@ -136,6 +136,7 @@ var topContentListener = {
             });
     },
 
+    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation) {
 
         var videoId = deleteVideoAnnotation.video_id;
@@ -224,6 +225,7 @@ var topContentListener = {
 
     },
 
+    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterLinkDeleted: function (deleteLink) {
         Links.findOne({_id: deleteLink})
             .exec(function (err, doc) {

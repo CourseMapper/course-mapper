@@ -13,8 +13,8 @@ topContributorSchema.add({
         ref: 'courses'
     },
     countCourseActivity : {type: Number},
-    countNodeActivity : {type:number},
-    totalCount : {type:number}
+    countNodeActivity : {type:Number},
+    totalCount : {type:Number}
 });
 
 var topContributorAgg = mongoose.model('topContributor', topContributorSchema);

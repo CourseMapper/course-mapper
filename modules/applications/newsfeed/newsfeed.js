@@ -746,6 +746,7 @@ var NewsfeedListener = {
             });
     },
 
+    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation, user) {
         var videoId = deleteVideoAnnotation.video_id;
         var userId = user;
@@ -866,7 +867,7 @@ var NewsfeedListener = {
             });
 
     },
-
+    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterLinkDeleted: function (deleteLink) {
         Links.findOne({_id: deleteLink})
             .exec(function (err, doc) {
@@ -970,6 +971,7 @@ var NewsfeedListener = {
 
     },
 
+    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterDiscussionDeleted: function (deleteDiscussion){
         Posts.findOne({_id: deleteDiscussion})
             .exec(function (err, doc) {
