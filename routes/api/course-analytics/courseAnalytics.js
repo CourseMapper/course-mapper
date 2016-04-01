@@ -303,4 +303,20 @@ router.get('/top-content/link-node/:courseId', function (req, res, next){
     );
 });
 
+router.get('/top-contributor/user-list/:courseId', function (req, res, next){
+
+    var tc = new TopContributor();
+    tc.getTopContributorList (
+        function error (err) {
+            res.status(200).json({result:false, message:err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (topContributor) {
+            res.status(200).json({result:true, topContributor:topContributor})
+        }
+    );
+});
+
 module.exports = router;

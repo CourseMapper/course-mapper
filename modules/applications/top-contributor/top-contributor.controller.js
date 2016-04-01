@@ -22,4 +22,19 @@ function topContributor() {
 
 }
 
+topContributor.prototype.getTopContributorList = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['courseId'], error)) {
+        return;
+    }
+    params.courseId = mongoose.Types.ObjectId(params.courseId);
+    TopContributor.find(params).limit(5).populate('userId', '_id image displayName').sort('-totalCount').exec(function(err, docs){
+        if (err){
+            error(err);
+        } else {
+            done(docs);
+        }
+    });
+
+};
+
 module.exports = topContributor;
