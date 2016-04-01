@@ -9,8 +9,8 @@
                 <div class="info-box-content">
                     <span class="info-box-text">Top Annotated Pdf</span>
                     <span class="info-box-number" ng-if="topAnnotatedPdf === null">None</span>
-                    <span class="info-box-number" ng-if="topAnnotatedPdf !== null"  style="font-size: 16px;"><a href="/treeNode/{{topAnnotatedPdf.nodeId}}/#/cid/{{topAnnotatedPdf.courseId}}/nid/{{topAnnotatedPdf.nodeId}}?tab=pdf" class="">{{topAnnotatedPdf.contentName}}</a></span>
-                    <span class="progress-description" ng-if="topAnnotatedPdf !== null">{{topAnnotatedPdf.count}} pdf annotations</span>
+                    <span class="info-box-number" ng-if="topAnnotatedPdf !== null"  style="font-size: 16px;"><a href="/treeNode/{{topAnnotatedPdf.nodeId}}/#/cid/{{topAnnotatedPdf.courseId}}/nid/{{topAnnotatedPdf.nodeId}}?tab=pdf" class="">{{topAnnotatedPdf.contentName | capitalize}}</a></span>
+                    <span class="progress-description" ng-if="topAnnotatedPdf !== null">{{topAnnotatedPdf.count}} <ng-pluralize count="topAnnotatedPdf.count" when="{'0': 'pdf annotation', '1': 'pdf annotation', 'other': 'pdf annotations',}"></ng-pluralize></span>
                 </div>
             </div>
             <div class="info-box" style="margin-bottom: 0px; border: solid 1px #E5E5E5;">
@@ -18,10 +18,10 @@
                     <i class="fa fa-file-video-o"></i>
                 </span>
                 <div class="info-box-content">
-                    <span class="info-box-text">Top Annotated Video</span>
+                    <span class="info-box-text">Top annotated aideo</span>
                     <span class="info-box-number" ng-if="topAnnotatedVideo === null">None</span>
-                    <span class="info-box-number" ng-if="topAnnotatedVideo !== null" style="font-size: 16px;"><a href="/treeNode/{{topAnnotatedVideo.nodeId}}/#/cid/{{topAnnotatedVideo.courseId}}/nid/{{topAnnotatedVideo.nodeId}}?tab=video" class="">{{topAnnotatedVideo.contentName}}</a></span>
-                    <span class="progress-description" ng-if="topAnnotatedVideo !== null">{{topAnnotatedVideo.count}} video annotations</span>
+                    <span class="info-box-number" ng-if="topAnnotatedVideo !== null" style="font-size: 16px;"><a href="/treeNode/{{topAnnotatedVideo.nodeId}}/#/cid/{{topAnnotatedVideo.courseId}}/nid/{{topAnnotatedVideo.nodeId}}?tab=video" class="">{{topAnnotatedVideo.contentName | capitalize}}</a></span>
+                    <span class="progress-description" ng-if="topAnnotatedVideo !== null">{{topAnnotatedVideo.count}} <ng-pluralize count="topAnnotatedVideo.count" when="{'0': 'video annotation', '1': 'video annotation', 'other': 'video annotations',}"></ng-pluralize></span>
                 </div>
             </div>
             <div class="info-box" style="margin-bottom: 0px; border: solid 1px #E5E5E5;">
@@ -29,10 +29,10 @@
                     <i class="ion ion-link"></i>
                 </span>
                 <div class="info-box-content">
-                    <span class="info-box-text">Top Node with link</span>
+                    <span class="info-box-text">Top node with link</span>
                     <span class="info-box-number" ng-if="topLinkNode === null">None</span>
-                    <span class="info-box-number" ng-if="topLinkNode !== null"  style="font-size: 16px;"><a href="/treeNode/{{topLinkNode.nodeId}}/#/cid/{{topLinkNode.courseId}}/nid/{{topLinkNode.nodeId}}?tab=links" class="">{{topLinkNode.contentName}}</a></span>
-                    <span class="progress-description" ng-if="topLinkNode !== null">{{topLinkNode.count}} links</span>
+                    <span class="info-box-number" ng-if="topLinkNode !== null"  style="font-size: 16px;"><a href="/treeNode/{{topLinkNode.nodeId}}/#/cid/{{topLinkNode.courseId}}/nid/{{topLinkNode.nodeId}}?tab=links" class="">{{topLinkNode.contentName | capitalize}}</a></span>
+                    <span class="progress-description" ng-if="topLinkNode !== null">{{topLinkNode.count}} <ng-pluralize count="topLinkNode.count" when="{'0': 'link', '1': 'link', 'other': 'links',}"></ng-pluralize></span>
                 </div>
             </div>
 
