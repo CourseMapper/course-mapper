@@ -14,7 +14,7 @@
                 </div>
 
             </div>
-            <div class="content" style="max-height: 500px; overflow: auto; background-color: #ECF0F5; border-radius: 3px;">
+            <div class="content" style="max-height: 1500px; overflow: auto; background-color: #ECF0F5; border-radius: 3px;">
                 <ul class="timeline">
                     <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: filterDropDown.name | filter: query" ng-switch on="nfData.actionSubject">
                         <i class="fa fa-book bg-navy" ng-switch-when="course"></i>
@@ -44,11 +44,11 @@
                                             <!--<b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'cancel vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> </span>
                                             <a><b>{{nfData.actionName}}</b></a> -->
 
-                                            <b>{{nfData.userId.displayName}}</b> {{nfData.actionType}} {{nfData.actionSubject}}
-                                            <a ng-show="nfData.actionSubject == 'pdf annotation'" href="#/cid/{{curUrl.courseId}}/nid/{{curUrl.nodeId}}?tab=pdf"><b>{{nfData.actionName}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'video annotation'" href="#/cid/{{curUrl.courseId}}/nid/{{curUrl.nodeId}}?tab=video"><b>{{nfData.actionName}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'link'" href="#/cid/{{curUrl.courseId}}/nid/{{curUrl.nodeId}}?tab=links"><b>{{nfData.actionName}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'content node'" href="#/cid/{{curUrl.courseId}}?tab=map"><b>{{nfData.actionName}}</b></a>
+                                            <b>{{nfData.userId.displayName | capitalize}}</b> {{nfData.actionType}} {{nfData.actionSubject}}
+                                            <a ng-show="nfData.actionSubject == 'pdf annotation'" href="#/cid/{{curUrl.courseId}}/nid/{{curUrl.nodeId}}?tab=pdf"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'video annotation'" href="#/cid/{{curUrl.courseId}}/nid/{{curUrl.nodeId}}?tab=video"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'link'" href="#/cid/{{curUrl.courseId}}/nid/{{curUrl.nodeId}}?tab=links"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'content node'" href="#/cid/{{curUrl.courseId}}?tab=map"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <br/>
                                             <small class="text-muted">
                                                 <i class="fa fa-clock-o"> {{nfData.dateAdded | relativeDate}}</i>

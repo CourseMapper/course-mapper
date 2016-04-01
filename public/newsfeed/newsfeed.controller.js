@@ -2,6 +2,7 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
                                              $location, $routeParams, $timeout,
                                              courseService, authService, toastr, Page) {
     $scope.courseId = $routeParams.courseId;
+    $scope.nodeId = $routeParams.nodeId;
     $scope.curUrl = $routeParams;
 
     $scope.newsfeedData = [];
@@ -9,10 +10,19 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
     //$scope.query = "vote";
     $scope.nfType = [
         {"name": "course"},
-        {"name": "node"},
         {"name": "sub topic"},
         {"name": "content node"},
-        {"name": "discussion"}
+        {"name": "discussion"},
+        {"name": "link"},
+        {"name": "pdf annotation"},
+        {"name": "video annotation"}
+    ];
+    $scope.nfNodeType = [
+        {"name": "content node"},
+        {"name": "link"},
+        {"name": "pdf annotation"},
+        {"name": "video annotation"}
+
     ];
 
 
@@ -20,6 +30,7 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
         $scope.newsfeedData = data.newsfeeds;
         $scope.nfLength = data.newsfeeds.length;
     });
+
 
 
 });
