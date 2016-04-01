@@ -15,7 +15,7 @@ angular.module('HistoryAnalytics', ['chart.js'])
 .controller("BarHistoryAnalyticsController", ['$scope', '$rootScope', '$filter', '$http', '$location', '$routeParams', function ($scope, $rootScope, $filter, $http, $location, $routeParams) {
 
     $scope.title = "Course Analytics History Chart";
-    //$scope.labels = ["January", "February", "March", "April", "May", "June", "July", "August", "September"];
+    var monthName = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
     $scope.enrolledUsersData = [];
 
     Date.prototype.formatMMDDYYYY = function() {
@@ -24,8 +24,8 @@ angular.module('HistoryAnalytics', ['chart.js'])
             "/" +  this.getFullYear();
     };
     Date.prototype.formatMMYYYY = function() {
-        return ( this.getMonth() + 1) +
-            "/" +  this.getFullYear();
+        return monthName[this.getMonth()] +
+            " / " +  this.getFullYear();
     };
 
     $scope.courseId = $routeParams.courseId;
