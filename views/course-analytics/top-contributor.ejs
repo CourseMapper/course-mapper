@@ -1,86 +1,22 @@
-<div class="box-body">
+<div class="box-body" ng-controller="TopContributorController">
     <ul class="products-list product-list-in-box">
-        <li class="item">
+        <li class="item" ng-repeat="user in topContributor">
             <div class="product-img">
-                <img src="{{user.image}}" alt="Product Image">
+                <img src="{{user.userId.image}}" alt="Product Image" style="border-radius: 50%">
             </div>
             <div class="product-info">
-                <div class="product-title">Si Pitung
-                    <span class="label label-warning pull-right">42 activities</span>
+                <div class="product-title">{{user.userId.displayName | capitalize}}
+                    <span class="label label-warning pull-right">{{user.totalCount}} activities</span>
                 </div>
-                <span class="product-description">
-                  <b>32</b> course material added
+                <span class="product-description" title="course activity such as add material and discussion">
+                  <b>{{user.countCourseActivity}}</b> Course Activities
                 </span>
-                <span class="product-description">
-                  <b>10</b> annotation created
+                <span class="product-description" title="node activity such as material annotation and add link">
+                  <b>{{user.countNodeActivity}}</b> Node Activities
                 </span>
             </div>
         </li>
         <!-- /.item -->
-        <li class="item">
-            <div class="product-img">
-                <img src="dist/img/default-50x50.gif" alt="Product Image">
-            </div>
-            <div class="product-info">
-                <div class="product-title">Si Pitung
-                    <span class="label label-warning pull-right">42 activities</span>
-                </div>
-                <span class="product-description">
-                  <b>32</b> course material added
-                </span>
-                <span class="product-description">
-                  <b>10</b> annotation created
-                </span>
-            </div>
-        </li>
-        <!-- /.item --><li class="item">
-            <div class="product-img">
-                <img src="dist/img/default-50x50.gif" alt="Product Image">
-            </div>
-            <div class="product-info">
-                <div class="product-title">Si Pitung
-                    <span class="label label-warning pull-right">42 activities</span>
-                </div>
-                <span class="product-description">
-                  <b>32</b> course material added
-                </span>
-                <span class="product-description">
-                  <b>10</b> annotation created
-                </span>
-            </div>
-        </li>
-        <!-- /.item --><li class="item">
-            <div class="product-img">
-                <img src="dist/img/default-50x50.gif" alt="Product Image">
-            </div>
-            <div class="product-info">
-                <div class="product-title">Si Pitung
-                    <span class="label label-warning pull-right">42 activities</span>
-                </div>
-                <span class="product-description">
-                  <b>32</b> course material added
-                </span>
-                <span class="product-description">
-                  <b>10</b> annotation created
-                </span>
-            </div>
-        </li>
-        <!-- /.item --><li class="item">
-            <div class="product-img">
-                <img src="dist/img/default-50x50.gif" alt="Product Image">
-            </div>
-            <div class="product-info">
-                <div class="product-title">Si Pitung
-                    <span class="label label-warning pull-right">42 activities</span>
-                </div>
-                <span class="product-description">
-                  <b>32</b> course material added
-                </span>
-                <span class="product-description">
-                  <b>10</b> annotation created
-                </span>
-            </div>
-        </li>
-        <!-- /.item -->
+
     </ul>
 </div>
