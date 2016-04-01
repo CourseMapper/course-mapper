@@ -512,6 +512,59 @@ var NewsfeedListener = {
 
     },
 
+    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document the retunring params does not contain info about pdfId*/
+    onAfterPdfAnnotationDeleted: function (deletePdfAnnotation) {
+        console.log(deletePdfAnnotation);
+        var userId = deletePdfAnnotation.authorId;
+        var deletedPdfAnnoId = deletePdfAnnotation.deleteId;
+        PdfAnnotation.findOne({_id: deletePdfAnnotation._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var pdfId = doc.pdfId;
+                    if (pdfId) {
+                        Resources.findOne({_id: pdfId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId){
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorID,
+                                                            actionSubjectIds: pdfId,
+                                                            actionSubject: "pdf annotation",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            nodeId: res.id,
+                                                            actionType: "added",
+                                                            dateAdded: doc.dateOfCreation
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+
+                                            })
+
+
+
+                                    }
+
+                                }
+                            })
+                    }
+                }
+            });
+
+    },
+
     onAfterPdfReplyCreated: function (newPdfAnnotationReply) {
         PdfAnnotation.findOne({_id: newPdfAnnotationReply._id})
             .exec(function (err, doc) {
@@ -682,7 +735,7 @@ var NewsfeedListener = {
                                                         actionName: res.name,
                                                         courseId: result.courseId,
                                                         nodeId: res.id,
-                                                        actionType: "added",
+                                                        actionType: "deleted",
                                                         dateAdded: doc.date_created
                                                     }
                                                 );
@@ -746,7 +799,6 @@ var NewsfeedListener = {
             });
     },
 
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterVideoAnnotationDeleted: function (deleteVideoAnnotation, user) {
         var videoId = deleteVideoAnnotation.video_id;
         var userId = user;
@@ -867,7 +919,7 @@ var NewsfeedListener = {
             });
 
     },
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
+
     onAfterLinkDeleted: function (deleteLink) {
         Links.findOne({_id: deleteLink})
             .exec(function (err, doc) {
@@ -940,7 +992,7 @@ var NewsfeedListener = {
 
     },
 
-    onAfterDiscussionEdited: function (editDiscussion, params){
+    onAfterDiscussionEdited: function (editDiscussion){
         Posts.findOne({_id: editDiscussion._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -971,7 +1023,6 @@ var NewsfeedListener = {
 
     },
 
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
     onAfterDiscussionDeleted: function (deleteDiscussion){
         Posts.findOne({_id: deleteDiscussion})
             .exec(function (err, doc) {
