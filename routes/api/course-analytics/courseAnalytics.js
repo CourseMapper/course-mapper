@@ -11,6 +11,7 @@ var EnrolledUser = require(appRoot + '/modules/applications/course-analytics/enr
 var CoursePreviewStats = require(appRoot + '/modules/applications/course-analytics/coursePreviewStats.controller');
 var CourseHistory = require(appRoot + '/modules/applications/course-analytics/course-history.controller');
 var TopContent = require(appRoot + '/modules/applications/top-content/top-content.controller');
+var TopContributor = require(appRoot + '/modules/applications/top-contributor/top-contributor.controller');
 
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 

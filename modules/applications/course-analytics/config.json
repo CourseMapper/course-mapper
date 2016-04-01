@@ -108,6 +108,16 @@
       "width": 4,
       "height":1,
       "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Top Contributor",
+      "location": "course-analytics",
+      "description": "List of top contributor based on the number of participant activity in the course",
+      "entryPoint": "/course-analytics/ca-top-contributor",
+      "widgetJavascript": ["ca-top-contributor.js"],
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
     }
   ]
 }
