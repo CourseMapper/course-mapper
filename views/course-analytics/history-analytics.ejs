@@ -4,7 +4,7 @@
     <div class="nav-tabs-custom">
         <!--Tabs within a box-->
         <ul class="nav nav-tabs pull-right" ng-init="tab = 1">
-            <li class="active"><a href ng-click="tab = 1" data-toggle="tab">Enrolled Users</a></li>
+            <li class="active"><a href ng-click="tab = 1" data-toggle="tab">Enrolled Participants</a></li>
             <li><a href ng-click="tab = 2" data-toggle="tab">Discussions</a></li>
             <li><a href ng-click="tab = 3" data-toggle="tab">PDF Materials</a></li>
             <li><a href ng-click="tab = 4" data-toggle="tab">Video Materials</a></li>
@@ -15,13 +15,13 @@
             <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataEnrolledUserMonthly"
                     chart-labels="labelEnrolledUserMonthly">
             </canvas>
-            <div class="small-box-footer" style="text-align: center; font-weight: 500">Monthly data of enrolled users in this course</div>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500">Monthly data of enrolled participants in this course</div>
         </div>
         <div class="discussion-chart" ng-show="tab === 2">
             <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataDiscussionMonthly"
                     chart-labels="labelDiscussionMonthly">
             </canvas>
-            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of discussions topic created in this course</div>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of discussion topics created in this course</div>
         </div>
         <div class="pdf-chart" ng-show="tab === 3">
             <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataPdfUploadMonthly"

@@ -6,7 +6,7 @@
         <ul class="nav nav-tabs pull-right" ng-init="tab = 1">
             <li class="active"><a href ng-click="tab = 1" data-toggle="tab">PDF Annotations</a></li>
             <li><a href ng-click="tab = 2" data-toggle="tab">Video Annotations</a></li>
-            <li><a href ng-click="tab = 3" data-toggle="tab">Submitted Links</a></li>
+            <li><a href ng-click="tab = 3" data-toggle="tab">Links</a></li>
         </ul>
         <br>
 
@@ -14,19 +14,19 @@
             <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataPdfAnnotationMonthly"
                     chart-labels="labelPdfAnnotationMonthly">
             </canvas>
-            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of PDF annotations created by users</div>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of PDF annotations created by participants</div>
         </div>
         <div class="discussion-chart" ng-show="tab === 2">
             <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataVideoAnnotationMonthly"
                     chart-labels="labelVideoAnnotationMonthly">
             </canvas>
-            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of video annotations created by users</div>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of video annotations created by participants</div>
         </div>
         <div class="pdf-chart" ng-show="tab === 3">
             <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataLinksMonthly"
                     chart-labels="labelLinksMonthly">
             </canvas>
-            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of links submitted by users</div>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of links submitted by participants</div>
         </div>
 
 
