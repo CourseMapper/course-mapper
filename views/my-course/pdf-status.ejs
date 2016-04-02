@@ -2,7 +2,6 @@
     <table class="table table-striped">
         <tbody>
         <tr>
-            <th style="width:10px;">Nr.</th>
             <th>
                 <a href="#" ng-click="sortType = 'nodeId.name'; sortReverse = !sortReverse">
                     PDF Name
@@ -21,9 +20,8 @@
                 </a>
             </th>
         </tr>
-        <tr ng-repeat="pdf in pdfHistory | orderBy:sortType:sortReverse">
-            <td>{{$index+1}}.</td>
-            <td><a href="/course/{{pdf.courseId.slug}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?slidePage={{pdf.pageNumber}}">{{pdf.nodeId.name}}</a></td>
+        <tr ng-repeat="pdf in pdfHistory | orderBy:sortType:sortReverse" ng-if="pdf.nodeId.name">
+            <td><a href="/treeNode/{{pdf.nodeId._id}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?tab=pdf&slidePage={{pdf.pageNumber}}">{{pdf.nodeId.name}}</a></td>
             <td>{{pdf.pageNumber}}</td>
             <td>{{pdf.totalPage}}</td>
             <!--<td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>-->

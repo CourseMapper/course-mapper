@@ -15,7 +15,8 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
         {"name": "discussion"},
         {"name": "link"},
         {"name": "pdf annotation"},
-        {"name": "video annotation"}
+        {"name": "video annotation"},
+        {"name": "vote"}
     ];
     $scope.nfNodeType = [
         {"name": "content node"},

@@ -16,7 +16,7 @@
                     <div class="box-body">
                         <table class="table table-striped">
                             <tbody>
-                                <tr ng-repeat="resource in courseCreatedResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == created._id">
+                                <tr ng-repeat="resource in courseCreatedResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == created._id && resource.treeNodeId.name">
                                     <td ng-if="resource.type=='pdf'">
                                         <a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class="" title="pdf material">
                                             <i class="fa fa-file-pdf-o"></i> {{resource.treeNodeId.name}}
