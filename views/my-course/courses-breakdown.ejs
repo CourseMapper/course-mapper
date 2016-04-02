@@ -1,6 +1,7 @@
 
 <div ng-controller="CoursesBreakdownController">
     <div class="col-xs-12">
+        <div ng-if="courseEnrolled.length == 0" style="font-weight: 400; margin-top: 10px;">You are not enrolled in any courses yet</div>
         <div class="box-group" id="accordion">
             <div class="panel box box-primary" ng-repeat="enrolled in courseEnrolled | orderBy: 'course.name'">
                 <div class="box-header with-border">

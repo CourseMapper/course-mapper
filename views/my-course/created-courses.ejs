@@ -1,5 +1,6 @@
 <div ng-controller="CourseListCreatedController">
     <div class="col-xs-12">
+        <div ng-if="courseCreated.length == 0" style="font-weight: 400; margin-top: 10px;">you have not created any courses yet</div>
         <div class="box-group" id="accordion-created">
             <div class="panel box box-primary" ng-repeat="created in courseCreated | orderBy: 'name'">
                 <div class="box-header with-border">
