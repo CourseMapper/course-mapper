@@ -79,6 +79,41 @@ router.put('/peerassessment/:courseId/peerreviews/:id',
 
 /**
  * GET
+ * get peer review
+ */
+router.get('/peerassessment/:courseId/peerreviews/:id',
+    function (req, res, next) {
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        var pa = new peerAssessment();
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+        req.body.pRId = mongoose.Types.ObjectId(req.params.id);
+
+        var params = {
+            _id: mongoose.Types.ObjectId(req.params.id)
+        }
+
+        pa.getPeerReview(
+            function (err) {
+                console.log(err);
+                // res.status(200).json({result: false, errors: [err.message]});
+                helper.resReturn(err, res);
+            },
+
+            // parameters
+            params,
+
+            function (peerReview) {
+                res.status(200).json({result: true, peerReview: peerReview});
+            }
+        );
+    });
+
+/**
+ * GET
  * fetch all peer reviews
  */
 router.get('/peerassessment/:courseId/peerreviews', function(req, res) {
