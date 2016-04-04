@@ -116,6 +116,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
                 var stuff = async(function () {
+                        console.log("log inner")
                         lastNode = null;
                         for (var j = 0; j < folders.length; j++){
                             current_folder = folders[j];
@@ -137,22 +138,28 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
                         }
                   parent = lastNode;
+                  console.log('parentasd: '+parent)
 
                   url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
                   tokens = filename.split(".");
                   filetype = tokens[tokens.length-1]
 
-                  content_node =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
+                  filename =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
                   //console.log("fname: "+content_node);
-                  var ws = fs.createWriteStream(content_node);
+                  var ws = fs.createWriteStream(filename);
                   ws.on('error', function(err) { console.log(err); });
                   request(url).pipe(ws);
 
                 });
 
-
-                stuff();
+                stuff2 = async(function(){
+                  console.log("log0");
+                  await(stuff());
+                  console.log("log1");
+                });
+                stuff2();
+                console.log("log2");
                
             
         }
