@@ -59,15 +59,15 @@ router.get('/courses', function (req, res, next) {
 
 router.get('/createl2pCourse/:courseId/:courseName' , function (req, res, next) {
   createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData,err,salvage){
-    req.courseCreation = true;
+    var urlPre = "http://lanzarote.informatik.rwth-aachen.de:3000";
     if(courseData){
       res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"}));
+      res.send(JSON.stringify({result: true, url: urlPre+"/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"}));
     }
     else {
       if(salvage){
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({result: false, error: err, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+salvage.slug+"/#/cid/"+salvage._id+"?iframe=true"}));
+        res.send(JSON.stringify({result: false, error: err, url: urlPre+"/course/"+salvage.slug+"/#/cid/"+salvage._id+"?iframe=true"}));
       }
       else {
         res.setHeader('Content-Type', 'application/json');
@@ -137,34 +137,27 @@ function courseDetailRender(req,res,next, courseId){
 /**
   * Helper function to login l2p users
   */
-function loginL2PUser(req, res, next, l2pUserExists, currL2pUserId,callback){
-  if(!l2pUserExists){
-    callback(false,{});
-  }
-  else {
-    //req.user = l2pUserName;
-    //res.render(config.get('theme') + '/profile', {title: 'My Profile', user: l2pUserName});
-    User.findOne({
-        l2pUserId: currL2pUserId
-    },function(err,user){
-      if(!user){
-        callback(false,{});
-      }
-      else{
-        //passport.authenticate('custom',{})(req,res,next);
-        req.login(user,function(data){
-          req.user = user.displayName;
-          callback(true,user);
+function loginL2PUser(req, res, next, currL2pUserId,callback){
+  User.findOne({
+      l2pUserId: currL2pUserId
+  },function(err,user){
+    if(!user){
+      callback(false,{});
+    }
+    else{
+      //passport.authenticate('custom',{})(req,res,next);
+      req.login(user,function(data){
+        req.user = user.displayName;
+        callback(true,user);
 
-        },function error(data){
-          if(data.errors){
-            ;
-          }
-          callback(false,{});
-        });
-      }
-    });
-  }
+      },function error(data){
+        if(data.errors){
+          ;
+        }
+        callback(false,{});
+      });
+    }
+  });
 }
 
 /**
@@ -270,6 +263,19 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
   var courseId = req.params.courseId;
 
   l2pPrep(req,res,next,courseId,function(success){
+    /*console.log("USER");
+    console.log(req.user);
+    if(req.user){
+      var account = new Account();
+      account.getUser(function(){
+
+      },
+      {_id: req.user._id},
+      function(data){
+        func(data._id);
+      });
+    }*/
+
     courseDetailRender(req,res,next,courseId);
   });
 
@@ -372,34 +378,6 @@ function l2pPrep(req,res,next,courseId,callback){
           var roleArray = ["admins","managers","students"];
           var roleIsValid = (roleArray.indexOf(l2pRole) != -1);
 
-
-
-          var signUpCallback = function(signedUpUser){
-            if(userIsManager){
-              crs.addManager(signedUpUser._id,courseId, function(success){
-                if(!success){
-                  callback(false);
-                }
-                else {
-                  loginL2PUser(req, res,next, l2pUserExists, currL2pUserId,function(success,logInUser){
-                    crs.enroll(function(err){
-                      callback(false);
-                    }, {id: logInUser._id},
-                    {id: courseId},
-                    function(followed){
-                      l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
-                        l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,courseId,dataSet, logInUser._id, function(){
-                          callback(true);
-                        });
-                      });
-                    }, true);
-                  });
-                }
-              });
-            }
-          };
-
-
           if(roleIsValid){
             switch(l2pRole){
                 case "admins":
@@ -413,6 +391,44 @@ function l2pPrep(req,res,next,courseId,callback){
                   l2pRole = "user";
                 break;
             }
+
+            var signUpCallback = function(signedUpUser){
+              console.log("USERR:");
+              console.log(signedUpUser);
+              if(userIsManager){
+                crs.addManager(signedUpUser._id,courseId, function(success){
+                  if(!success){
+                    callback(false);
+                  }
+                  else {
+                    loginL2PUser(req, res,next, currL2pUserId,function(success,logInUser,err){
+                      if(success){
+                        crs.enroll(function(err){
+                          callback(false);
+                        },
+                        {id: logInUser._id},
+                        {id: courseId},
+                        function(followed){
+                          l2phelper.getLearningMaterials(req.query.accessToken,context.CourseId,function(dataSet){
+                            l2phelper.downloadLearningMaterials(req.query.accessToken,context.CourseId,courseId,dataSet, logInUser._id, function(){
+                              callback(true);
+                            });
+                          });
+                        }, true);
+                      }
+                      else {
+                        console.log("ERROR: Could not login user");
+                        console.log(err);
+                        callback(false);
+                      }
+                    });
+                  }
+                });
+              }
+            };
+
+
+
             var account = new Account();
             User.findOne({
                 l2pUserId: currL2pUserId
