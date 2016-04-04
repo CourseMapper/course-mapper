@@ -58,13 +58,21 @@ router.get('/courses', function (req, res, next) {
 });
 
 router.get('/createl2pCourse/:courseId/:courseName' , function (req, res, next) {
-  createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData){
+  createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData,err,salvage){
     req.courseCreation = true;
-    if(courseData)
-      //res.status(200).json({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"});
+    if(courseData){
+      res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"}));
+    }
     else {
-      res.send(JSON.stringify({result: false}));
+      if(salvage){
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({result: false, error: err, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+salvage.slug+"/#/cid/"+salvage._id+"?iframe=true"}));
+      }
+      else {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({result: false, error: err}));
+      }
     }
   });
 });
@@ -189,9 +197,7 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
 
 
       crs.addCourse(function(erro){
-          console.log("Error: Could not create course"); //TODO
-          console.log(erro);
-          callback();
+          callback(undefined,"Error: Unable to create course. Possibly duplicate name?");
       }, params, function(data){
         console.log("Created Course");
         courseId = data._id;
@@ -211,15 +217,13 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
 
     var func = function(uid){
       cat.categoryExists(function (err){
-        console.log(err);
-        callback();
+        callback(undefined,"Error: Was unable to determine existence of category.");
       },
       {name: "L2PCourses"},
       function (data) {
         if(!data){
           cat.addCategory(function(err){
-            console.log(err);
-            callback();
+            callback(undefined,"Error: Did not find category L2PCourses and was unable to create it.");
           }, catParams, function(data){
             func2(data,uid);
           });
@@ -243,8 +247,7 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
         password: "RaNdOmStRiNg54654987333"
       };
       account.signUp(function(err){
-          console.log(err);
-          callback();
+          callback(undefined,"Error: Unable to signUp L2PCourseCreator");
       }, params, function(signedUpUser){
           func(signedUpUser._id);
       });
@@ -254,9 +257,8 @@ function createL2PCourse(req,res,next,l2pCourseId,l2pCourseName,callback){
       func(data._id);
     }
   );
-  },{l2pCourseId: l2pCourseId}, function(data){
-    courseId = data._id;
-    callback(data);
+},{l2pCourseId: l2pCourseId}, function(data){
+    callback(undefined,"Error: Course already exists",data);
   });
 }
 
