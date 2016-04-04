@@ -192,8 +192,6 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
 
                 if (params.type == 'contentNode') {
                     Plugin.doAction('onAfterContentNodeEdited', tn, params);
-                } else {
-                    Plugin.doAction('onAfterSubTopicEdited', tn, params);
                 }
 
             })
@@ -396,7 +394,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
                     else {
                         // success saved the cat
                         success(tn);
-                        Plugin.doAction('onAfterNodeEdited', tn, paramsUpdate);
+                        Plugin.doAction('onAfterSubTopicEdited', tn, paramsUpdate);
                     }
                 });
             }
