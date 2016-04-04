@@ -402,7 +402,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, user,
     });
 };
 
-catalog.prototype.deleteNode = function (error, params, success) {
+catalog.prototype.deleteNode = function (error, params, user, success) {
     TreeNodes.findById(params).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -454,7 +454,7 @@ catalog.prototype.deleteNode = function (error, params, success) {
                                 }).exec();
 
                             success(tn);
-                            Plugin.doAction('onAfterNodeDeleted', tn, params);
+                            Plugin.doAction('onAfterNodeDeleted', tn, user);
                         }
                     }
                 );
