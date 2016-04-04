@@ -54,6 +54,19 @@ router.get('/courses', function (req, res, next) {
         user: req.user,
         showSidebar: true
     });
+
+});
+
+router.get('/createl2pCourse/:courseId/:courseName' , function (req, res, next) {
+  createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData){
+    req.courseCreation = true;
+    if(courseData)
+      //res.status(200).json({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"});
+      res.send(JSON.stringify({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"}));
+    else {
+      res.send(JSON.stringify({result: false}));
+    }
+  });
 });
 
 /**
@@ -258,16 +271,18 @@ router.get('/course/courseDetail/:courseId', function (req, res, next) {
 });
 
 
-router.get('/createl2pCourse/:courseId/:courseName', function (req, res, next) {
+/*router.get('/createl2pCourse/:courseId/:courseName', function (req, res, next) {
   createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData){
+    req.courseCreation = true;
     if(courseData)
-      res.status(200).json({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"});
+      //res.status(200).json({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"});
+      res.send(JSON.stringify({result: true, url: "http://lanzarote.informatik.rwth-aachen.de:3000/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"}));
     else {
       res.status(200).json({result: false, url:""});
     }
   });
 
-});
+});*/
 
 /**
  * partials related to tab and actionbars
