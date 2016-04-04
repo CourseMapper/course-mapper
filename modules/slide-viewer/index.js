@@ -172,7 +172,7 @@ Comment.prototype.deleteAnnotation = function (err, params, isAdmin, user, done)
 };
 
 
-Comment.prototype.updateAnnotation = function (err, params, isAdmin, done) {
+Comment.prototype.updateAnnotation = function (err, params, isAdmin, user, done) {
   //console.log("STARTED");
   //console.log(params);
   if (typeof params.updateId != 'undefined') {
@@ -194,7 +194,7 @@ Comment.prototype.updateAnnotation = function (err, params, isAdmin, done) {
               err("Server Error: Unable to update annotation");
             } else {
               // call success callback
-              Plugin.doAction('onAfterPdfAnnotationEdited', params);
+              Plugin.doAction('onAfterPdfAnnotationEdited', params, user);
               done();
             }
           });
@@ -458,6 +458,7 @@ Comment.prototype.handleUpdatePost = function (req, res, next) {
     },
     req.query,
     req.user.role == "admin",
+    req.user,
     function done() {
       // todo: implement flash
       return res.status(200).send({result: true});
