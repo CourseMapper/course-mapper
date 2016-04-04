@@ -1,6 +1,7 @@
 var request = require('request');
 var fs = require('fs-extra');
 var TreeNodes = require('./../../modules/trees/treeNodes.js');
+var Resources = require('./../../modules/trees/resources.js');
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 var internalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/api.svc/v1/";
@@ -135,7 +136,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
                         }
-                  return lastNode;
+                  parent = lastNode;
 
                   url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
@@ -143,7 +144,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                   filetype = tokens[tokens.length-1]
 
                   content_node =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
-                  console.log("fname: "+content_node);
+                  //console.log("fname: "+content_node);
                   var ws = fs.createWriteStream(content_node);
                   ws.on('error', function(err) { console.log(err); });
                   request(url).pipe(ws);
