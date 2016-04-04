@@ -91,6 +91,10 @@ function getLearningMaterials(token,course_id,callback){
 }
 
 function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,callback){
+    console.log("user id: "+userid);
+    console.log("course_id: "+course_id);
+    console.log("cid_internal: "+cid_internal);
+    console.log("token: "+token);
     var dir = './temp';
     //console.log(userid);
     if (!fs.existsSync(dir)){
@@ -120,7 +124,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                         lastNode = null;
                         for (var j = 0; j < folders.length; j++){
                             current_folder = folders[j];
-                            console.log(current_folder)
+                            console.log('current folder: '+current_folder)
 
                             var node = await(TreeNodes.findOne({name: folders[j],courseId:cid_internal}).exec());
 
@@ -128,7 +132,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                                 console.log("tree node '"+ current_folder +"' found");
                             } else {
                                 console.log("tree node '"+ current_folder +"' not found");
-                                console.log(lastNode);
+                                console.log('last node: '+lastNode);
                                 node = await(addSubTopicNode(current_folder,userid,cid_internal,lastNode));
                                 //console.log(node)
                             }
@@ -147,19 +151,17 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
                   filename =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
                   //console.log("fname: "+content_node);
-                  var ws = fs.createWriteStream(filename);
+                  var ws = fs.createWriteStream("./public/"+filename);
                   ws.on('error', function(err) { console.log(err); });
                   request(url).pipe(ws);
+                  callback();
+                  console.log("end of async")
 
                 });
 
-                stuff2 = async(function(){
-                  console.log("log0");
-                  await(stuff());
-                  console.log("log1");
-                });
-                stuff2();
-                console.log("log2");
+                
+                stuff();
+                console.log("end of inner")
                
             
         }
@@ -170,7 +172,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
     }
     }
-    callback();
+    console.log("end of function")
 }
 
 function generateRandomPos() {
@@ -252,6 +254,7 @@ function addContentNode(lName, lCreatedBy, lCourseId, lParent,lFileType){
 }
 
 function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
+  console.log(lName+", "+lCreatedBy+", "+lCourseId+", "+lParent);
   var node = {
     type: "subTopic",
     name: lName,
@@ -266,8 +269,10 @@ function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
     y: generateRandomPos()
   };
   var tn = new TreeNodes(node);
+  console.log('saving node');
   await(tn.save());
 
+  console.log('checking parent');
   if(lParent!=null){
     console.log(lParent);
     var parentNode = await(TreeNodes.findOne({_id: lParent}).exec());
@@ -279,6 +284,8 @@ function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
       y: parentNode.positionFromRoot.y + generateRandomPos()
     };
   }
+
+  console.log('return');
   return tn.save();
 }
 
