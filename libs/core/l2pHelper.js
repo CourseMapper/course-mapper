@@ -1,6 +1,7 @@
 var request = require('request');
 var fs = require('fs-extra');
 var TreeNodes = require('./../../modules/trees/treeNodes.js');
+var Resources = require('./../../modules/trees/resources.js');
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 var internalApiURL = "https://www3.elearning.rwth-aachen.de/_vti_bin/L2PServices/api.svc/v1/";
@@ -115,6 +116,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
                 var stuff = async(function () {
+                        console.log("log inner")
                         lastNode = null;
                         for (var j = 0; j < folders.length; j++){
                             current_folder = folders[j];
@@ -135,23 +137,29 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
                         }
-                  return lastNode;
+                  parent = lastNode;
+                  console.log('parentasd: '+parent)
 
                   url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
                   tokens = filename.split(".");
                   filetype = tokens[tokens.length-1]
 
-                  content_node =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
-                  console.log("fname: "+content_node);
-                  var ws = fs.createWriteStream(content_node);
+                  filename =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
+                  //console.log("fname: "+content_node);
+                  var ws = fs.createWriteStream(filename);
                   ws.on('error', function(err) { console.log(err); });
                   request(url).pipe(ws);
 
                 });
 
-
-                stuff();
+                stuff2 = async(function(){
+                  console.log("log0");
+                  await(stuff());
+                  console.log("log1");
+                });
+                stuff2();
+                console.log("log2");
                
             
         }
