@@ -377,7 +377,7 @@ catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdat
     });
 };
 
-catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, success) {
+catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, user, success) {
     TreeNodes.findById(paramsWhere).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -394,7 +394,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
                     else {
                         // success saved the cat
                         success(tn);
-                        Plugin.doAction('onAfterSubTopicEdited', tn, paramsUpdate);
+                        Plugin.doAction('onAfterSubTopicEdited', tn, user);
                     }
                 });
             }
