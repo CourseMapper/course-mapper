@@ -153,7 +153,6 @@ Comment.prototype.deleteAnnotation = function (err, params, isAdmin, done) {
     this.checkOwnership(params.deleteId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
         AnnotationsPDF.findOne({_id: params.deleteId}).remove().exec();
-        Plugin.doAction('onAfterPdfAnnotationDeleted', params);
         done();
       }
       else {
@@ -429,7 +428,9 @@ Comment.prototype.handleSubmitPost = function (req, res, next) {
 };
 
 Comment.prototype.handleDeletePost = function (req, res, next) {
-  //console.log(req);
+  Plugin.doAction('onAfterPdfAnnotationDeleted', req.query, req.user);
+
+    //console.log(req);
   this.deleteAnnotation(
     function error(err) {
       return res.status(200).send({result: false, error: err});
