@@ -393,8 +393,6 @@ function l2pPrep(req,res,next,courseId,callback){
             }
 
             var signUpCallback = function(signedUpUser){
-              console.log("USERR:");
-              console.log(signedUpUser);
               if(userIsManager){
                 crs.addManager(signedUpUser._id,courseId, function(success){
                   if(!success){
@@ -417,8 +415,6 @@ function l2pPrep(req,res,next,courseId,callback){
                         }, true);
                       }
                       else {
-                        console.log("ERROR: Could not login user");
-                        console.log(err);
                         callback(false);
                       }
                     });
