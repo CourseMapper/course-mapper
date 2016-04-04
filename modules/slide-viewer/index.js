@@ -148,12 +148,18 @@ Comment.prototype.submitFirstLevelAnnotation = function (err, params, done) {
 };
 
 
-Comment.prototype.deleteAnnotation = function (err, params, isAdmin, done) {
+Comment.prototype.deleteAnnotation = function (err, params, isAdmin, user, done) {
   if (typeof params.deleteId != 'undefined') {
     this.checkOwnership(params.deleteId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
-        AnnotationsPDF.findOne({_id: params.deleteId}).remove().exec();
-        done();
+        AnnotationsPDF.findOne({_id: params.deleteId}).exec(function(err, doc){
+            if(doc) {
+                doc.remove();
+                Plugin.doAction('onAfterPdfAnnotationDeleted', doc, user);
+
+                done();
+            }
+        });
       }
       else {
         err("Server Error: Unable to delete annotation since access was denied or the entry was not found");
@@ -428,15 +434,14 @@ Comment.prototype.handleSubmitPost = function (req, res, next) {
 };
 
 Comment.prototype.handleDeletePost = function (req, res, next) {
-  Plugin.doAction('onAfterPdfAnnotationDeleted', req.query, req.user);
-
-    //console.log(req);
+  //console.log(req);
   this.deleteAnnotation(
     function error(err) {
       return res.status(200).send({result: false, error: err});
     },
     req.query,
     req.user.role == "admin",
+    req.user,
     function done() {
       // todo: implement flash
       return res.status(200).send({result: true});
