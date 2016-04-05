@@ -9,7 +9,7 @@ var debug = require('debug')('cm:server');
 /**
  * Listen on provided port, on all network interfaces.
  */
-var port = normalizePort(process.env.PORT || '3011');
+var port = normalizePort(process.env.PORT || '3000');
 //app.set('port', port);
 
 server.listen(port);
