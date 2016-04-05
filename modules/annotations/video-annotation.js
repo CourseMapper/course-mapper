@@ -49,9 +49,7 @@ var VideoAnnotationSchema = new mongoose.Schema({
 });
 
 // Define indexes
-VideoAnnotationSchema.index({
-  'text': 'text'
-});
+VideoAnnotationSchema.index({'text': 'text'});
 
 VideoAnnotationSchema.pre('save', function (next) {
   var now = Date.now();
