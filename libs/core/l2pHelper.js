@@ -100,9 +100,9 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
     }
-
-    for (var j = 0; j < dataSet.length; j++){
-      (function (i,last){
+    var stuff = async(function () {
+    for (var i = 0; i < dataSet.length; i++){
+     
         if (!dataSet[i].isDirectory){
             filename = dataSet[i].fileInformation.fileName;
             console.log("File Name: "+filename)
@@ -119,8 +119,9 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
 
-                var stuff = async(function (filename,folders) {
+                
                         lastNode = null;
+                         var inserted = 0;
                         for (var j = 0; j < folders.length; j++){
                             current_folder = folders[j];
                             console.log('current folder: '+current_folder)
@@ -159,14 +160,11 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                           request(url).pipe(ws);
                         }
                         
-                        if (i == last){
-                          callback();
-                        }
-
-                });
+                       
+                          
+                        
 
                 
-                stuff(filename,folders);
                 
                
             
@@ -177,8 +175,13 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
         }
-      })(j,dataSet.length-1);
+      
     }
+    callback();
+    });
+
+                
+                stuff();
 }
 
 function generateRandomPos() {
