@@ -24,17 +24,19 @@ var SearchBuilder = function (term) {
   };
 
   this.searchByResource = function (resources) {
-    if (!resources) {
-      return this;
-    }
     searchableResources = resources;
     return this;
   };
 
   this.build = function () {
-    var engines = {};
-    engines.courses = Courses.find(courseSearchOptions).execAsync();
-    engines.annotations = VideoAnnotation.find(annotationSearchOptions).execAsync();
+    var engines = {
+      courses: Courses.find(courseSearchOptions).execAsync(),
+      annotations: VideoAnnotation.find(annotationSearchOptions).execAsync()
+    };
+
+    if (!searchableResources) {
+      return engines;
+    }
 
     // Filter the searched resources
     var searchQuery = {};
