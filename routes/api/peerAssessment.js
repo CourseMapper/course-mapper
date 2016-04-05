@@ -1,6 +1,7 @@
 var express = require('express');
 var config = require('config');
 var appRoot = require('app-root-path');
+var solutions = require(appRoot + '/modules/peerAssessment/solutions.controller.js');
 var peerAssessment = require(appRoot + '/modules/peerAssessment/peerAssessment.controller.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
@@ -13,6 +14,74 @@ var mongoose = require('mongoose');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
+
+/**
+ * POST
+ * create solution
+ */
+router.post('/peerassessment/:courseId/peerreviews/:pRId/solutions',
+    function (req, res, next) {
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        var rs = new solutions();
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.username = req.user.username;
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+        req.body.reviewId = mongoose.Types.ObjectId(req.params.pRId);
+
+        rs.addSolution(
+            function (err) {
+                console.log(err);
+                res.status(200).json({result: false, errors: [err.message]});
+            },
+
+            // parameters
+            req.body,
+
+            function (solution, title) {
+                res.status(200).json({result: true, solution: solution, title: title});
+            }
+        );
+    });
+
+/**
+ * PUT
+ * edit solution
+ */
+router.put('/peerassessment/:courseId/peerreviews/:pRId/solutions/:id',
+    multipartyMiddleware,
+    function (req, res, next) {
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        var rs = new solutions();
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.username = req.user.username;
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+        req.body.reviewId = mongoose.Types.ObjectId(req.params.pRId);
+        req.body.sId = mongoose.Types.ObjectId(req.params.id);
+
+        rs.editSolution(
+            function (err) {
+                console.log(err);
+                res.status(200).json({result: false, errors: [err.message]});
+            },
+
+            // parameters
+            req.body,
+            req.files,
+
+            function () {
+                res.status(200).json({result: true});
+            }
+        );
+    });
+/***************************************************************************/
+/*********************************PeerReviews*******************************/
+/***************************************************************************/
 /**
  * POST
  * create peer review
@@ -54,6 +123,7 @@ router.put('/peerassessment/:courseId/peerreviews/:id',
         if (!req.user) {
             return res.status(401).send('Unauthorized');
         }
+
 
         var pa = new peerAssessment();
         req.body.userId = mongoose.Types.ObjectId(req.user._id);

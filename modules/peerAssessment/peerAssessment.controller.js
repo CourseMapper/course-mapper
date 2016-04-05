@@ -284,75 +284,81 @@ peerAssessment.prototype.addPeerReview = function (error, params, files, success
                     _.extend(peerReview, { solutionPublicationDate: params.ssPublicationDate });
                 }
 
-                // peerReview.save();
-                if(files && files.file) {
-                    var reviewDocuments = null;
-                    var sampleSolutions = null;
-                    if(files.file.length == 2){
-                        reviewDocuments = files.file[0].reviewDocuments
-                        sampleSolutions = files.file[1].sampleSolutions
-                    } else if (files.file.length == 1) {
-                        if(files.file[0] && files.file[0].reviewDocuments) {
-                            reviewDocuments = files.file[0].reviewDocuments
-                        }
-                        if(files.file[0] && files.file[0].sampleSolutions) {
-                            sampleSolutions = files.file[0].sampleSolutions
-                        }
-                    }
-
-                    if(reviewDocuments && reviewDocuments.constructor == Array) {
-                        for (var i in reviewDocuments) {
-                            var f = reviewDocuments[i];
-                            self.saveResourceFile(error,
-                                f,
-                                'reviewDocument',
-                                peerReview,
-                                function (fn) {
-                                    var duplicate = false;
-                                    _.each(peerReview.documents, function (doc) {
-                                        if (fn == doc) {
-                                            duplicate = true;
-                                        }
-                                    })
-                                    if (!duplicate) {
-                                        peerReview.documents.push(fn);
-                                    }
-                                })
-                        }
-                    }
-                    if(sampleSolutions && sampleSolutions.constructor == Array) {
-                        for (var i in sampleSolutions) {
-                            var f = sampleSolutions[i];
-                            self.saveResourceFile(error,
-                                f,
-                                'sampleSolution',
-                                peerReview,
-                                function(fn) {
-                                    var duplicate = false;
-                                    _.each(peerReview.solutions, function(doc){
-                                        if(fn == doc) {
-                                            duplicate = true;
-                                        }
-                                    })
-                                    if(!duplicate) {
-                                        peerReview.solutions.push(fn);
-                                    }
-                                })
-                        }
-                    }
-                }
-                console.log('Peer review', peerReview);
-                peerReview.save(function (err, res) {
+                peerReview.save(function (err, peerReview) {
                     if (err) {
                         debug('failed saving new peerreview');
                         error(err);
                     }
                     else {
-                        debug('peerreview saved successfully');
-                        success();
+                        console.log('Doc', peerReview);
+                        if(files && files.file) {
+                            var reviewDocuments = null;
+                            var sampleSolutions = null;
+                            if(files.file.length == 2){
+                                reviewDocuments = files.file[0].reviewDocuments
+                                sampleSolutions = files.file[1].sampleSolutions
+                            } else if (files.file.length == 1) {
+                                if(files.file[0] && files.file[0].reviewDocuments) {
+                                    reviewDocuments = files.file[0].reviewDocuments
+                                }
+                                if(files.file[0] && files.file[0].sampleSolutions) {
+                                    sampleSolutions = files.file[0].sampleSolutions
+                                }
+                            }
+
+                            if(reviewDocuments && reviewDocuments.constructor == Array) {
+                                for (var i in reviewDocuments) {
+                                    var f = reviewDocuments[i];
+                                    self.saveResourceFile(error,
+                                        f,
+                                        'reviewDocument',
+                                        peerReview,
+                                        function (fn) {
+                                            var duplicate = false;
+                                            _.each(peerReview.documents, function (doc) {
+                                                if (fn == doc) {
+                                                    duplicate = true;
+                                                }
+                                            })
+                                            if (!duplicate) {
+                                                peerReview.documents.push(fn);
+                                            }
+                                        })
+                                }
+                            }
+                            if(sampleSolutions && sampleSolutions.constructor == Array) {
+                                for (var i in sampleSolutions) {
+                                    var f = sampleSolutions[i];
+                                    self.saveResourceFile(error,
+                                        f,
+                                        'sampleSolution',
+                                        peerReview,
+                                        function(fn) {
+                                            var duplicate = false;
+                                            _.each(peerReview.solutions, function(doc){
+                                                if(fn == doc) {
+                                                    duplicate = true;
+                                                }
+                                            })
+                                            if(!duplicate) {
+                                                peerReview.solutions.push(fn);
+                                            }
+                                        })
+                                }
+                            }
+                        }
+                        peerReview.save(function (err, res) {
+                            if (err) {
+                                debug('failed saving new peerreview');
+                                error(err);
+                            }
+                            else {
+                                debug('peerreview saved successfully');
+                                success();
+                            }
+                        });
                     }
                 });
-                // success();
             } else {
                 error(helper.createError401());
             }
@@ -369,7 +375,7 @@ peerAssessment.prototype.saveResourceFile = function (error, file, type, helper,
         // extension not right
         error(new Error("File extension not right"));
     } else {
-        var fn = '/pa/'+ helper.courseId +'/'+ helper.title+'/'+ type +'/'+ file.name;
+        var fn = '/pa/'+ helper.courseId +'/'+ helper._id+'/'+ type +'/'+ file.name;
         var dest = appRoot + '/public/'+ fn;
         try {
             handleUpload(file, dest, true);

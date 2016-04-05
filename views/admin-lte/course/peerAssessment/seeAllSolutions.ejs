@@ -1,0 +1,31 @@
+<div ng-controller="SolutionsController">
+    <div class="col-md-11">
+        <h5>Still working on this</h5>
+        <div ng-show="peerreviews.length == 0">
+            <h5>No Peer Reviews for this course yet</h5>
+        </div>
+        <table class="table table-hover" ng-show="peerreviews.length > 0">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Review Task Title</th>
+                <th>Student(s)/Group</th>
+                <th>Student(s)</th>
+                <th ng-show="isOwner || isManager || isAdmin"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="review in peerreviews" ng-click="viewPeerReview(review)">
+                <td>{{review.title}}</td>
+                <td>{{review.publicationDate | date:'dd.MM.yyyy HH:mm'}}</td>
+                <td>{{review.dueDate | date:'dd.MM.yyyy HH:mm'}}</td>
+                <td>{{review.totalMarks}}</td>
+                <td ng-show="isOwner || isManager || isAdmin">
+                    <a href="" ng-click="openEditConfirmationModal(review, $event)"> <i class="ion-edit" style="font-size: medium"></i> </a> &nbsp;
+                    <a href="" ng-click="openDeleteConfirmationModal(review._id, $event)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

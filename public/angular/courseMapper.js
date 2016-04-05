@@ -7381,6 +7381,15 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.initiateView();
     }
 
+    // Delete Modal
+    $scope.openDeleteConfirmationModal = function(reviewDocId, event) {
+        if(event) {
+            event.stopPropagation();
+        }
+        $scope.deleteReviewId = reviewDocId;
+        $('#confirmDeleteAssignmentModal').modal('show');
+    }
+
     $scope.deletePeerReview = function(reviewId) {
         var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + reviewId;
 
@@ -7402,6 +7411,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $('#confirmDeleteAssignmentModal').modal('hide');
     }
 
+    // Edit Modal
     $scope.openEditConfirmationModal = function(review, event) {
         if(event) {
             event.stopPropagation();
@@ -7433,14 +7443,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $('#editAssignmentModal').modal('show');
     }
 
-    $scope.openDeleteConfirmationModal = function(reviewDocId, event) {
-        if(event) {
-            event.stopPropagation();
-        }
-        $scope.deleteReviewId = reviewDocId;
-        $('#confirmDeleteAssignmentModal').modal('show');
-    }
-
+    // Solution Modal
     $scope.openAddEditSolutionModal = function(review) {
         console.log('review', review);
         var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + review._id + '/solutions';
@@ -7449,8 +7452,23 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
         $http.post(url, params).then(function(response) {
             console.log('response', response);
-        }, function(err) {
+            $scope.solutionObj = response.data.solution;
+            $scope.solutionObj.peerReviewTitle = response.data.title;
 
+            if($scope.solutionObj && $scope.solutionObj.solutionDocuments && $scope.solutionObj.solutionDocuments.length>0) {
+                $scope.solutionObj.displayDocumentsList = [];
+                _.each($scope.solutionObj.solutionDocuments, function(docName) {
+                    var temp = {};
+                    temp.link = window.location.origin + docName;
+                    var tempArr = docName.split('/');
+                    temp.name = tempArr[tempArr.length-1];
+                    $scope.solutionObj.displayDocumentsList.push(temp);
+                })
+            }
+
+            $('#addEditSolutionModal').modal('show');
+        }, function(err) {
+            console.log('err', err);
         })
     }
 
@@ -7458,11 +7476,16 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewPeerReview&vId=' + review._id;
     }
 
+    $scope.viewAllSolutions = function() {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolutionsList';
+    }
+
     $scope.redirectPRHome = function() {
         $scope.vName = false;
         $scope.vId = false;
         $location.search('vName', '');
         $location.search('vId', '');
+        // window.location.reload();
     }
 
     $scope.$on('$routeUpdate', function () {
@@ -7470,6 +7493,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
         if (!$scope.vName) {
             $('li.peerAssessmentTitle').remove();
+            $scope.tabOpened();
             //var te = $('a.discussionTabLink').text();
             //$('.action-header .breadcrumb li.tab').html(te);
         }
@@ -7478,8 +7502,13 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.initiateView = function() {
         $scope.vName = $location.search().vName;
         if($scope.vName) {
-            $scope.currentView = 'viewAssignment.tpl';
-            $scope.manageBreadCrumb('View Peer Review');
+            if($scope.vName == 'viewPeerReview') {
+                $scope.currentView = 'viewAssignment.tpl';
+                $scope.manageBreadCrumb('View Peer Review');
+            } else if($scope.vName == 'viewSolutionsList') {
+                $scope.currentView = 'seeAllSolutions.tpl';
+                $scope.manageBreadCrumb('See All Solutions');
+            }
         } else {
             $scope.currentView = 'main.tpl';
             ActionBarService.extraActionsMenu = [];
@@ -7490,8 +7519,17 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                         ' data-toggle="modal" data-target="#addNewAssignmentModal"' +
                         ' title="New Peer Review">' +
                         '&nbsp;&nbsp; <i class="ionicons ion-android-add"></i> &nbsp; NEW PEER REVIEW</a>'
+                    },
+                    {
+                        separator: true
+                    },
+                    {
+                        clickAction: $scope.viewAllSolutions,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-android-add"></i> &nbsp; SEE ALL SOLUTIONS',
+                        aTitle: 'See All Solutions'
                     }
                 );
+
             }
         }
 
@@ -7515,7 +7553,20 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.tabOpened();
 });
 
-app.controller('ViewPeerReviewController', function($scope, $location, $http, ActionBarService) {
+app.controller('SolutionsController', function($scope, $location, $http, toastr, ActionBarService) {
+    if($scope.vName) {
+        ActionBarService.extraActionsMenu = [];
+        ActionBarService.extraActionsMenu.push(
+            {
+                clickAction: $scope.redirectPRHome,
+                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+                aTitle: 'Peer Review Home'
+            }
+        );
+    }
+})
+
+app.controller('ViewPeerReviewController', function($scope, $location, $http, toastr, ActionBarService) {
     $scope.vId = $location.search().vId;
     if($scope.vName && $scope.vId) {
         $scope.viewReview = null;
@@ -7806,7 +7857,89 @@ app.controller('EditPeerReviewController', function($scope, $http, toastr, $wind
     $scope.processAssignmentCredentials = function() {
         // Check if this is needed when dealing with validation stuff
     }
-});;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, Page) {
+});
+
+app.controller('AddEditSolutionController', function($scope, $http, toastr, $window, Upload) {
+    $scope.selSolutionDocuments = false;
+    $scope.progress = 0;
+
+    $scope.deleteUploadedFiles = function(fileName) {
+        for(var i=0; i<$scope.solutionObj.displayDocumentsList.length; i++) {
+            if ($scope.solutionObj.displayDocumentsList[i].link == fileName) {
+                if(!$scope.solutionObj.deletedUploadedFiles) {
+                    $scope.solutionObj.deletedUploadedFiles = [];
+                }
+                $scope.solutionObj.deletedUploadedFiles.push($scope.solutionObj.solutionDocuments[i]);
+                $scope.solutionObj.solutionDocuments.splice(i,1);
+                $scope.solutionObj.displayDocumentsList.splice(i,1);
+                break;
+            }
+        }
+        console.log('Check deleted Objects', $scope.solutionObj.deletedUploadedFiles, $scope.solutionObj.solutionDocuments, $scope.solutionObj.displayDocumentsList);
+    }
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.selSolutionDocuments, fileName);
+        for(var i=0; i<$scope.selSolutionDocuments.length; i++) {
+            if($scope.selSolutionDocuments[i].name == fileName) {
+                $scope.selSolutionDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.updateSolution = function(solutionObj) {
+        console.log(solutionObj);
+        console.log('dsadasdas',$scope.solutionObj)
+        var params = {
+            //isSubmitted: true,
+            studentComments: solutionObj.studentComments,
+            solutionDocuments: solutionObj.solutionDocuments,
+            deletedUploadedFiles: solutionObj.deletedUploadedFiles
+        }
+        $scope.isLoading = true;
+        var uploadParams = {
+            method: 'PUT',
+            url: '/api/peerassessment/' + $scope.$parent.course._id + '/peerreviews/' + solutionObj.peerReviewId + '/solutions/' + solutionObj._id,
+            fields: params
+        };
+        uploadParams.file = [];
+        if($scope.selSolutionDocuments) {
+            uploadParams.file.push({'selSolutionDocuments':$scope.selSolutionDocuments});
+        }
+
+        $scope.upload = Upload.upload(
+            uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
+
+                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log("Progress", $scope.progress);
+            })
+            .success(function (data) {
+
+                $scope.progress = 0;
+                if (data.result) {
+                    toastr.success('Successfully Saved');
+                } else {
+                    toastr.error('Updating Solution Failed');
+                }
+                $scope.isLoading = false;
+                $('#addEditSolutionModal').modal('hide');
+
+                window.location.reload();
+            })
+            .error(function (data) {
+                toastr.error('Updating Solution Failed');
+                $scope.errors = data.errors;
+                $scope.progress = 0;
+                $scope.isLoading = false;
+            });
+    }
+})
+;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, Page) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];
