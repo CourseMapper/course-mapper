@@ -23,7 +23,6 @@
         </div>
 
         <!-- Main content -->
-
         <script type="text/ng-template" id="tree_item_renderer.html">
             <div class="w" id="{{data.slug}}"
                  data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}"
@@ -49,12 +48,14 @@
                             Courses
                         </button>
                     </li>
-                    <li>  <div class="collapse-button-home2" ng-show="data.subCategories.length > 0">
+                    <li>
+                        <div class="collapse-button-home2" ng-show="data.subCategories.length > 0">
                             <a class="pointer" ng-click="collapse('t' + data._id )">
                                 <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
                                 <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
                             </a>
-                        </div></li>
+                        </div>
+                    </li>
                 </ul>
 
             </div>
@@ -64,16 +65,13 @@
 
         <div class="tree-container">
             <div class="category-map" id="category-map">
-
                 <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'"
                      on-finish-render="jsTreeInit">
                 </div>
-
                 <div class="center-category" id="center" data-shape="Rectangle">
                     <h4>CourseMapper</h4>
                     is a Mind Map Based Collaborative Course Annotation and Analytics Platform
                 </div>
-
             </div>
         </div>
 
