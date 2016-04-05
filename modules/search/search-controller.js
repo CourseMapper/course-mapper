@@ -1,12 +1,7 @@
 'use strict';
 
 var Promise = require('bluebird');
-var mongoose = require('mongoose');
-var VideoAnnotation = require('../../modules/annotations/video-annotation');
-var Courses = require('../../modules/catalogs/courses');
-var _ = require('lodash');
-
-Promise.promisifyAll(mongoose);
+var SearchBuilder = require('./search-builder');
 
 var search = function (req, res, next) {
   // Require a search term
@@ -15,20 +10,13 @@ var search = function (req, res, next) {
     return res.status(400).json();
   }
 
-  var query = {$text: {$search: term}};
-  var filterCategories = req.query.categories;
+  var searchBuilder = new SearchBuilder(term);
+  searchBuilder.searchByResource(req.query.resources);
+  searchBuilder.searchByOwnership(req.query.owner);
 
-  var categories = {
-    courses: Courses.find(query).execAsync(),
-    annotations: VideoAnnotation.find(query).execAsync()
-  };
+  var query = searchBuilder.build();
 
-  var props = {};
-  _.each(filterCategories, function (filter) {
-    props[filter] = categories[filter];
-  });
-
-  Promise.props(props)
+  Promise.props(query)
     .then(function (results) {
       res.json(results);
     })
