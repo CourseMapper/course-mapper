@@ -5,6 +5,7 @@ app.factory('courseListService', [
         return {
             courses: null,
             pageUrl: '',
+            filterTags: [],
 
             pageParams: {
                 limit: 12,
@@ -16,6 +17,7 @@ app.factory('courseListService', [
             init: function (categoryId, filterTags, success, error, force) {
                 var self = this;
 
+                self.filterTags = filterTags;
                 self.categoryId = categoryId;
                 self.setPageUrl();
 
@@ -25,14 +27,7 @@ app.factory('courseListService', [
                 }
 
                 else if (force || !self.courses) {
-                    var url = '/api/category/' + categoryId + '/courses';
-                    var t = [];
-                    if (filterTags.length > 0) {
-                        for (var i in filterTags)
-                            t.push(filterTags[i]._id);
-
-                        url += '?tags=' + t.join(',');
-                    }
+                    var url = '/api/category/' + self.categoryId + '/courses' + self.pageUrl;
 
                     $http.get(url)
                         .success(function (data) {
@@ -73,6 +68,14 @@ app.factory('courseListService', [
                 var ps = [];
                 for (var k in this.pageParams) {
                     ps.push(k + '=' + this.pageParams[k]);
+                }
+
+                var t = [];
+                if (this.filterTags && this.filterTags.length > 0) {
+                    for (var i in this.filterTags)
+                        t.push(this.filterTags[i]._id);
+
+                    ps.push('tags=' + t.join(','));
                 }
 
                 this.pageUrl += ps.join('&');

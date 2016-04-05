@@ -414,8 +414,12 @@ catalog.prototype.getCourses = function (error, params, pageParams, success) {
         pageParams.lastPage = 0;
     }
 
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Course
         .find(params)
+        .sort(sortOption)
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
         .exec(function (err, docs) {
