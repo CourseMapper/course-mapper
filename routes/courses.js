@@ -59,7 +59,7 @@ router.get('/courses', function (req, res, next) {
 
 router.get('/createl2pCourse/:courseId/:courseName' , function (req, res, next) {
   createL2PCourse(req,res,next,req.params.courseId,req.params.courseName,function(courseData,err,salvage){
-    var urlPre = "http://lanzarote.informatik.rwth-aachen.de:3000";
+    var urlPre = "https://lanzarote.informatik.rwth-aachen.de:8449";
     if(courseData){
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({result: true, url: urlPre+"/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"}));
@@ -373,7 +373,7 @@ function l2pPrep(req,res,next,courseId,callback){
 
           var userIsManager = false;
           var l2pUserExists = false;
-          var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
+           var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
 
           var roleArray = ["admins","managers","students"];
           var roleIsValid = (roleArray.indexOf(l2pRole) != -1);
