@@ -256,9 +256,9 @@ var topContentListener = {
             });
 
     },
-    
+
     onAfterLinkDeleted: function (deleteLink) {
-        Links.findOne({_id: deleteLink})
+        Links.findOne({_id: deleteLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
