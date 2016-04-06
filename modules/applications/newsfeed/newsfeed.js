@@ -31,7 +31,6 @@ var NewsfeedListener = {
                                 courseId: courseId,
                                 actionType: "created",
                                 dateAdded: doc.dateAdded
-                                //performedByUserId: doc.createdBy
                             }
                         );
                         nf.save(
@@ -496,6 +495,7 @@ var NewsfeedListener = {
                             SubTopics.findOne({_id:treeNodeId})
                                 .exec(function(err, res){
                                     if (res) {
+                                        var curDate = Date.now();
                                         var nf = new NewsfeedAgg(
                                             {
                                                 userId: userId,
@@ -505,7 +505,7 @@ var NewsfeedListener = {
                                                 courseId: result.courseId,
                                                 nodeId: res.id,
                                                 actionType: "deleted",
-                                                dateAdded: deletePdfAnnotation.dateOfCreation
+                                                dateAdded: curDate
                                             }
                                         );
                                         nf.save(
@@ -774,6 +774,7 @@ var NewsfeedListener = {
                         SubTopics.findOne({_id: treeNodeId})
                             .exec(function (err, res) {
                                 if (res) {
+                                    var curDate = Date.now()
                                     var nf = new NewsfeedAgg(
                                         {
                                             userId: userId,
@@ -783,7 +784,7 @@ var NewsfeedListener = {
                                             courseId: result.courseId,
                                             nodeId: res.id,
                                             actionType: "deleted",
-                                            dateAdded: dateAdded
+                                            dateAdded: curDate
                                         }
                                     );
                                     nf.save(
@@ -844,7 +845,7 @@ var NewsfeedListener = {
     },
 
     onAfterLinkEdited: function (editLink, user) {
-        Links.findOne({_id: editLink._id})
+        Links.findOne({_id: editLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -854,6 +855,7 @@ var NewsfeedListener = {
                                 if (result) {
                                     var courseId = result.courseId;
                                     if (courseId) {
+                                        var dateNow = new Date();
                                         var nf = new NewsfeedAgg(
                                             {
                                                 userId: user._id,
@@ -863,7 +865,7 @@ var NewsfeedListener = {
                                                 courseId:  courseId,
                                                 nodeId: result.id,
                                                 actionType: "edited",
-                                                dateAdded: doc.dateUpdated
+                                                dateAdded: dateNow
                                             }
                                         );
                                         nf.save(
@@ -884,7 +886,7 @@ var NewsfeedListener = {
     },
 
     onAfterLinkDeleted: function (deleteLink, user) {
-        Links.findOne({_id: deleteLink})
+        Links.findOne({_id: deleteLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -894,6 +896,7 @@ var NewsfeedListener = {
                                 if (result) {
                                     var courseId = result.courseId;
                                     if (courseId) {
+                                        var dateNow = new Date();
                                         var nf = new NewsfeedAgg(
                                             {
                                                 userId: user._id,
@@ -903,7 +906,7 @@ var NewsfeedListener = {
                                                 courseId:  courseId,
                                                 nodeId: result.id,
                                                 actionType: "deleted",
-                                                dateAdded: doc.dateUpdated
+                                                dateAdded: dateNow
                                             }
                                         );
                                         nf.save(
@@ -992,6 +995,7 @@ var NewsfeedListener = {
                 if (doc) {
                     var courseId = doc.course;
                     if (courseId) {
+                        var curDate = Date.now();
                         var nf = new NewsfeedAgg(
                             {
                                 userId: user._id,
@@ -1000,7 +1004,7 @@ var NewsfeedListener = {
                                 actionName : doc.title,
                                 courseId:  courseId,
                                 actionType: "deleted",
-                                dateAdded: doc.dateUpdated
+                                dateAdded: curDate
                             }
                         );
                         nf.save(
