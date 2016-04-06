@@ -91,13 +91,18 @@ function getLearningMaterials(token,course_id,callback){
 }
 
 function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,callback){
+    console.log("user id: "+userid);
+    console.log("course_id: "+course_id);
+    console.log("cid_internal: "+cid_internal);
+    console.log("token: "+token);
     var dir = './temp';
     //console.log(userid);
     if (!fs.existsSync(dir)){
         fs.mkdirSync(dir);
     }
-
+    var stuff = async(function () {
     for (var i = 0; i < dataSet.length; i++){
+     
         if (!dataSet[i].isDirectory){
             filename = dataSet[i].fileInformation.fileName;
             console.log("File Name: "+filename)
@@ -105,7 +110,6 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
             is_root = false;
             if (dataSet[i].itemId == dataSet[i].parentFolderId){
                 //doesn't have a parent folder
-                console.log("is on root position");
                 is_root = true;
             } else {
                 fullPath = dataSet[i].sourceDirectory;
@@ -115,12 +119,12 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
 
-                var stuff = async(function () {
-                        console.log("log inner")
+                
                         lastNode = null;
+                         var inserted = 0;
                         for (var j = 0; j < folders.length; j++){
                             current_folder = folders[j];
-                            console.log(current_folder)
+                            console.log('current folder: '+current_folder)
 
                             var node = await(TreeNodes.findOne({name: folders[j],courseId:cid_internal}).exec());
 
@@ -128,7 +132,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                                 console.log("tree node '"+ current_folder +"' found");
                             } else {
                                 console.log("tree node '"+ current_folder +"' not found");
-                                console.log(lastNode);
+                                console.log('last node: '+lastNode);
                                 node = await(addSubTopicNode(current_folder,userid,cid_internal,lastNode));
                                 //console.log(node)
                             }
@@ -137,69 +141,54 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
                         }
-                  parent = lastNode;
-                  console.log('parentasd: '+parent)
+                        var node = await(TreeNodes.findOne({name: filename,courseId:cid_internal}).exec());
+                        if (node){
+                          console.log("content node: "+filename+" already exists")
+                        } else {
 
-                  url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
+                          parent = lastNode;
 
-                  tokens = filename.split(".");
-                  filetype = tokens[tokens.length-1]
+                          url = internalApiURL+"downloadFile/"+filename+"viewUserRole?accessToken="+token+"&cid="+ course_id+"&downloadUrl="+downloadUrl;
 
-                  filename =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
-                  //console.log("fname: "+content_node);
-                  var ws = fs.createWriteStream(filename);
-                  ws.on('error', function(err) { console.log(err); });
-                  request(url).pipe(ws);
+                          tokens = filename.split(".");
+                          filetype = tokens[tokens.length-1]
 
-                });
+                          filename =  await(addContentNode(filename, userid, cid_internal, parent,filetype));
+                          //console.log("fname: "+content_node);
+                          var ws = fs.createWriteStream("./public/"+filename);
+                          ws.on('error', function(err) { console.log(err); });
+                          request(url).pipe(ws);
+                        }
+                        
+                       
+                          
+                        
 
-                stuff2 = async(function(){
-                  console.log("log0");
-                  await(stuff());
-                  console.log("log1");
-                });
-                stuff2();
-                console.log("log2");
+                
+                
                
             
-        }
+            }
 
-    } else {
+        } else {
             //what to do with directories
 
 
-    }
+        }
+      
     }
     callback();
+    });
+
+                
+                stuff();
 }
 
 function generateRandomPos() {
   return Math.floor((Math.random() * 110) + 50);
 }
 
-/*
 
-    var attachLinkToNodeAsync = async(function (contentNode, type, url) {
-        var Res = new Resources({
-            type: type,
-            createdBy: contentNode.createdBy,
-            link: url,
-            courseId: contentNode.courseId,
-            treeNodeId: contentNode._id
-        });
-
-        await(Res.save());
-
-        var upd = await(
-            TreeNodes.update({_id: contentNode._id}, {
-                $addToSet: {
-                    resources: Res._id
-                }
-            }));
-
-        return upd;
-    });
-*/
 function addContentNode(lName, lCreatedBy, lCourseId, lParent,lFileType){
   var node = {
     type: "contentNode",
@@ -218,7 +207,6 @@ function addContentNode(lName, lCreatedBy, lCourseId, lParent,lFileType){
   await(tn.save());
 
   if(lParent!=null){
-    console.log(lParent);
     var parentNode = await(TreeNodes.findOne({_id: lParent}).exec());
     parentNode.childrens.push(tn._id);
     await(parentNode.save());
@@ -269,7 +257,6 @@ function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
   await(tn.save());
 
   if(lParent!=null){
-    console.log(lParent);
     var parentNode = await(TreeNodes.findOne({_id: lParent}).exec());
     parentNode.childrens.push(tn._id);
     await(parentNode.save());
@@ -279,6 +266,7 @@ function addSubTopicNode(lName, lCreatedBy, lCourseId, lParent){
       y: parentNode.positionFromRoot.y + generateRandomPos()
     };
   }
+
   return tn.save();
 }
 
@@ -289,16 +277,4 @@ exports.getContext = getContext;
 exports.getLearningMaterials = getLearningMaterials;
 exports.downloadLearningMaterials = downloadLearningMaterials;
 
-/*
-var q = require('q');
 
-var folders = fullPath.split("/");
-
-var promise = q.Promise();
-
-for (var i = 0; i < array.length; i++) {
-  promise = promise.then(function (lastNode) {
-    return TreeNodes.findOne({name: folders[j],courseId:cid_internal});
-  })
-}
-*/
