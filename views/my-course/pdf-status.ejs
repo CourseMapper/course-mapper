@@ -19,13 +19,17 @@
                     <i ng-show="sortType == 'dateUpdated' && sortReverse" class="fa fa-caret-up"></i>
                 </a>
             </th>
+            <th></th>
         </tr>
         <tr ng-repeat="pdf in pdfHistory | orderBy:sortType:sortReverse" ng-if="pdf.nodeId.name">
-            <td><a href="/treeNode/{{pdf.nodeId._id}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?tab=pdf&slidePage={{pdf.pageNumber}}">{{pdf.nodeId.name}}</a></td>
+            <td>{{pdf.nodeId.name}}</td>
             <td>{{pdf.pageNumber}}</td>
             <td>{{pdf.totalPage}}</td>
             <!--<td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>-->
             <td>{{pdf.dateUpdated | relativeDate}}</td>
+            <td>
+                <a type="button" class="btn btn-block btn-primary btn-xs" href="/treeNode/{{pdf.nodeId._id}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?tab=pdf&slidePage={{pdf.pageNumber}}">Resume</a>
+            </td>
         </tr>
         </tbody>
     </table>
