@@ -10,6 +10,7 @@
 var debug = require('debug')('cm:server');
 var CreatedNodes = require('./models/myCreatedNodes.js');
 var PdfRead = require('./models/myPDFStatus.js');
+var VideoRead = require('./models/myVideoStatus.model.js');
 
 var MyCourseListener = {
     /**
@@ -49,21 +50,6 @@ var MyCourseListener = {
      * this will push/aggregate a newly created subtopic Id into a document for easy use later
      */
     onAfterContentNodeCreated: function(newContentNode){
-        /*CreatedNodes.findOne({userId: newContentNode.createdBy, nodeType: "contentNode"}).
-            exec(function(doc){
-                if(doc){
-                    doc.treeNodeIds.push(newContentNode._id);
-                    doc.save();
-                } else {
-                    var cn = new CreatedNodes({
-                        userId: newContentNode.createdBy,
-                        treeNodeIds: [newContentNode._id],
-                        nodeType: "contentNode"
-                    });
-
-                    cn.save();
-                }
-            });*/
         CreatedNodes.findOneAndUpdate(
             {userId: newContentNode.createdBy, nodeType: "contentNode"},
             {$push: {"treeNodeIds": newContentNode._id}},
@@ -87,6 +73,30 @@ var MyCourseListener = {
             {$set: {
                 "pageNumber":params.pageNumber,
                 "totalPage":params.totalPage,
+                "dateAdded": new Date(),
+                "dateUpdated": new Date()
+            }},
+            {safe: true, upsert: true},
+
+            function(err, doc){
+                if(!err) debug('');
+                else
+                    debug(err);
+            }
+        );
+    },
+
+    onVideoUpdateState: function(params){
+        VideoRead.findOneAndUpdate(
+            {
+                userId: params.userId,
+                courseId:params.courseId,
+                resourceId:params.resourceId,
+                nodeId:params.nodeId
+            },
+            {$set: {
+                "totalTime":params.totalTime,
+                "currentTime":params.currentTime,
                 "dateAdded": new Date(),
                 "dateUpdated": new Date()
             }},
