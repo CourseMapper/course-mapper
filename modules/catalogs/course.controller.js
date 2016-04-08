@@ -166,7 +166,8 @@ catalog.prototype.addCourse = function (error, params, success) {
         createdBy: mongoose.Types.ObjectId(params.userId),
         category: mongoose.Types.ObjectId(params.category),
         description: params.description,
-        smallDescription: params.smallDescription
+        smallDescription: params.smallDescription,
+        totalEnrollment: 0
     });
 
     course.setSlug(params.name);

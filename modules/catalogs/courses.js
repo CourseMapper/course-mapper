@@ -23,6 +23,7 @@ var courseSchema = new mongoose.Schema({
     createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
     managers: [{type: mongoose.Schema.Types.ObjectId, ref: 'users'}],
     courseTags: [{type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
+    totalEnrollment: {type: Number},
     isDeleted: {type: Boolean},
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
