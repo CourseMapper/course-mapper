@@ -1023,42 +1023,64 @@ var NewsfeedListener = {
 
     //Listener when user enroll or leave course
     onAfterEnrollorLeaveCourse: function (userEnrollment){
-    UserCourses.findOne({_id: userEnrollment._id})
-        .exec(function (err, doc) {
-            if (doc) {
-                var userStatus = (doc.isEnrolled === true)? 'enrolled':'left';
-                var curDate = Date.now();
-                var courseId = doc.course;
-                if (courseId) {
-                    Courses.findOne({_id:courseId})
-                        .exec(function(err, result){
-                            if (result){
-                                var nf = new NewsfeedAgg(
-                                    {
-                                        userId: doc.user,
-                                        actionSubjectIds: doc.id,
-                                        actionSubject: "course",
-                                        actionName: result.name,
-                                        courseId:  courseId,
-                                        actionType: userStatus,
-                                        dateAdded: curDate
-                                    }
-                                );
-                                nf.save(
-                                    function (err, doc) {
-                                        if (!err) debug('');
-                                        else
-                                            debug(err);
-                                    }
-                                );
-                            }
-                        })
+        UserCourses.findOne({_id: userEnrollment._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var userStatus = (doc.isEnrolled === true)? 'enrolled':'left';
+                    var curDate = Date.now();
+                    var courseId = doc.course;
+                    if (courseId) {
+                        Courses.findOne({_id:courseId})
+                            .exec(function(err, result){
+                                if (result){
+                                    var nf = new NewsfeedAgg(
+                                        {
+                                            userId: doc.user,
+                                            actionSubjectIds: doc.id,
+                                            actionSubject: "course",
+                                            actionName: result.name,
+                                            courseId:  courseId,
+                                            actionType: userStatus,
+                                            dateAdded: curDate
+                                        }
+                                    );
+                                    nf.save(
+                                        function (err, doc) {
+                                            if (!err) debug('');
+                                            else
+                                                debug(err);
+                                        }
+                                    );
+                                }
+                            })
+                    }
+
                 }
+            });
+        //TODO: move below listener to its own place since its not belong to newsfeed scope
+        //update totalEnrollment in course model each time someone enroll/leave course. (for popularity sorting course list)
+        UserCourses.findOne({_id: userEnrollment._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var counter = (doc.isEnrolled === true)? 1:-1;
+                    var courseId = doc.course;
+                    if (courseId) {
+                        var condition = {_id:courseId}, update = {$inc: {totalEnrollment: counter}};
+                        Courses.findOne(condition)
+                            .exec(function(err, result){
+                                if (result) {
+                                    Courses.update(condition,update).exec();
+                                } else {
+                                    console.log('Cannot find course');
+                                }
+                            })
 
-            }
-        });
+                    }
 
-}
+                }
+            });
+    }
+
 
 };
 
