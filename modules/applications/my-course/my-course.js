@@ -61,7 +61,7 @@ var MyCourseListener = {
                     debug(err);
             });
     },
-
+    //listener each time user read a pdf save in collection my-course-mypdfstatuses
     onPdfRead: function(params){
         PdfRead.findOneAndUpdate(
             {
@@ -86,6 +86,7 @@ var MyCourseListener = {
         );
     },
 
+    //listener each time user watch video, save in collection myvideostatuses
     onVideoUpdateState: function(params){
         VideoRead.findOneAndUpdate(
             {
@@ -108,6 +109,12 @@ var MyCourseListener = {
                     debug(err);
             }
         );
+    },
+
+    //if a node deleted, remove all related document in collection myvideostatuses and my-course-mypdfstatuses to avoid unlinked document
+    onAfterNodeDeleted: function(deleteNode) {
+        PdfRead.find({nodeId:deleteNode._id}).remove().exec();
+        VideoRead.find({nodeId:deleteNode._id}).remove().exec();
     }
 };
 
