@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/applications/my-course/myCoursesList');
 var PdfStatus = require(appRoot + '/modules/applications/my-course/myPDFStatus');
+var VideoStatus = require(appRoot + '/modules/applications/my-course/myVideoStatus.controller.js');
 
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
@@ -51,6 +52,26 @@ router.get('/pdf-history', function (req, res, next){
         },
         function success(pdfHistory){
             res.status(200).json({result:true, pdfHistory:pdfHistory });
+        }
+    )
+
+});
+
+router.get('/video-history', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var vHis = new VideoStatus();
+    vHis.getVideoStatus(
+        function error(err){
+            res.status(500).json({result:false, message:err});
+        },
+        {
+            userId: mongoose.Types.ObjectId(req.user._id)
+        },
+        function success(videoHistory){
+            res.status(200).json({result:true, videoHistory:videoHistory });
         }
     )
 

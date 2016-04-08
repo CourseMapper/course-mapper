@@ -245,6 +245,7 @@ router.put('/treeNodes/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                     }
                     ,
                     req.body,
+                    req.user,
                     function (tn) {
                         res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
                         tn = tn.toObject();
@@ -285,7 +286,8 @@ router.delete('/treeNodes/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                     },
                     {
                         _id: nodeId
-                    }
+                    },
+                    req.user
                     ,
                     function (tn) {
                         res.status(200).json({result: ((tn) ? true : false), treeNode: tn});

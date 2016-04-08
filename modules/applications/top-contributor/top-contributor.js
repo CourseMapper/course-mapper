@@ -107,19 +107,19 @@ var topContributorListener = {
             });
 
     },
-    //when user delete content node, decrease counter
-    onAfterNodeDeleted: function (deleteNode) {
+    //when user delete content node, increase counter depends on the user
+    onAfterNodeDeleted: function (deleteNode, user) {
 
         TreeNodes.findOne({_id: deleteNode._id})
             .exec(function (err, doc) {
                 if (doc) {
                     var courseId = doc.courseId;
-                    var userId = doc.createdBy;
+                    var userId = user._id;
                     if (courseId) {
                         var condition = {userId: userId, courseId: courseId}, update = {
                             $inc: {
-                                totalCount: -1,
-                                countCourseActivity: -1
+                                totalCount: 1,
+                                countCourseActivity: 1
                             }
                         };
                         TopContributorAgg.findOne(condition)
@@ -186,18 +186,18 @@ var topContributorListener = {
 
     },
     
-    //When user delete discussion, decrease counter
-    onAfterDiscussionDeleted: function (newDiscussion) {
-        Posts.findOne({_id: newDiscussion._id})
+    //When user delete discussion, increase counter
+    onAfterDiscussionDeleted: function (deleteDiscussion, user) {
+        Posts.findOne({_id: deleteDiscussion._id})
             .exec(function (err, doc) {
                 if (doc) {
                     var courseId = doc.course;
-                    var userId = doc.createdBy;
+                    var userId = user._id;
                     if (courseId) {
                         var condition = {userId: userId, courseId: courseId}, update = {
                             $inc: {
-                                totalCount: -1,
-                                countCourseActivity: -1
+                                totalCount: 1,
+                                countCourseActivity: 1
                             }
                         };
                         TopContributorAgg.findOne(condition)
@@ -263,35 +263,31 @@ var topContributorListener = {
 
     },
 
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document*/
-    //Listener for PDF, if deleted, decrease counter
-    onAfterPdfAnnotationDeleted: function (newPdfAnnotation) {
-        PdfAnnotation.findOne({_id: newPdfAnnotation._id})
-            .exec(function (err, doc) {
-                if (doc) {
-                    var pdfId = doc.pdfId;
-                    if (pdfId) {
-                        Resources.findOne({_id: pdfId})
-                            .exec(function (err, result) {
-                                if (result) {
-                                    var condition = {
-                                        userId: doc.authorID,
-                                        courseId: result.courseId
-                                    }, update = {$inc: {totalCount: -1, countNodeActivity: -1}};
-                                    TopContributorAgg.findOne(condition)
-                                        .exec(function (err, resTC) {
-                                            if (resTC) {
-                                                TopContributorAgg.update(condition, update).exec();
-                                            }
-                                            else {
-                                                console.log('cannot find document');
-                                            }
-                                        });
+    //Listener for PDF, if deleted, increase counter
+    onAfterPdfAnnotationDeleted: function (deletePdfAnnotation, user) {
+        var userId = user._id;
+        var pdfId = deletePdfAnnotation.pdfId;
+        if (pdfId) {
+            Resources.findOne({_id: pdfId})
+                .exec(function (err, result) {
+                    if (result) {
+                        var condition = {
+                            userId: userId,
+                            courseId: result.courseId
+                        }, update = {$inc: {totalCount: 1, countNodeActivity: 1}};
+                        TopContributorAgg.findOne(condition)
+                            .exec(function (err, resTC) {
+                                if (resTC) {
+                                    TopContributorAgg.update(condition, update).exec();
                                 }
-                            })
+                                else {
+                                    console.log('cannot find document');
+                                }
+                            });
                     }
-                }
-            });
+                })
+        }
+
 
     },
 
@@ -348,13 +344,12 @@ var topContributorListener = {
         var userId = user;
         Resources.findOne({_id: videoId})
             .exec(function (err, result) {
-                //var userId = doc.authorId;
                 var courseId = result.courseId;
                 if (result) {
                     var condition = {
                         userId: userId,
                         courseId: courseId
-                    }, update = {$inc: {totalCount: -1, countNodeActivity: -1}};
+                    }, update = {$inc: {totalCount: 1, countNodeActivity: 1}};
                     TopContributorAgg.findOne(condition)
                         .exec(function (err, resTC) {
                             if (resTC) {
@@ -419,7 +414,8 @@ var topContributorListener = {
 
     },
 
-    onAfterLinkDeleted: function (deleteLink) {
+    onAfterLinkDeleted: function (deleteLink, user) {
+        var userId = user._id;
         Links.findOne({_id: deleteLink._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -427,11 +423,12 @@ var topContributorListener = {
                     if (contentId) {
                         TreeNodes.findOne({_id: contentId})
                             .exec(function (err, result) {
-                                var userId = doc.authorId;
+                                //var userId = doc.authorId;
                                 if (result) {
                                     var condition = {
-                                        userId: userId
-                                    }, update = {$inc: {totalCount: -1, countNodeActivity: -1}};
+                                        userId: userId,
+                                        courseId: result.courseId
+                                    }, update = {$inc: {totalCount: 1, countNodeActivity: 1}};
                                     TopContributorAgg.findOne(condition)
                                         .exec(function (err, resTC) {
                                             if (resTC) {

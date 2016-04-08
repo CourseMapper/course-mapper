@@ -280,6 +280,7 @@ router.put('/discussion/:postId', helper.l2pAuth, helper.ensureAuthenticated,
                         helper.resReturn(err, res)
                     },
                     params,
+                    req.user,
                     function (post) {
                         res.status(200).json({
                             result: true, post: post
@@ -313,6 +314,7 @@ router.delete('/discussion/:postId', helper.l2pAuth, helper.ensureAuthenticated,
                         helper.resReturn(err, res);
                     },
                     params,
+                    req.user,
                     function (post) {
                         res.status(200).json({
                             result: true, post: post
@@ -353,6 +355,7 @@ router.delete('/discussions/:courseId/topic/:postId', helper.l2pAuth, helper.ens
                     },
                     params
                     ,
+                    req.user,
                     function (post) {
                         res.status(200).json({
                             result: true, post: post
