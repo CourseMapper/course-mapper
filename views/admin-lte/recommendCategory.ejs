@@ -32,14 +32,14 @@
                                             <p class="help-block">Category name that you recommend to be
                                                 created</p>
                                             <div class="controls"
-                                                 ng-class="{ 'has-error' : recommendForm.name.$invalid && !recommendForm.name.$pristine }">
+                                                 ng-class="{ 'has-error' : recommendForm.name.$invalid && !recommendForm.$pristine }">
 
                                                 <input type="text" id="name" name="name"
                                                        class="form-control"
                                                        ng-model="category.name"
                                                        required ng-required="true">
 
-                                                <p ng-show="recommendForm.category.$invalid && !recommendForm.category.$pristine"
+                                                <p ng-show="recommendForm.name.$invalid && !recommendForm.$pristine"
                                                    class="help-block">Category Name is required.</p>
 
                                             </div>
@@ -52,14 +52,14 @@
                                             <p class="help-block">Description of the
                                                 category</p>
                                             <div class="controls"
-                                                 ng-class="{ 'has-error' : recommendForm.description.$invalid && !recommendForm.description.$pristine }">
+                                                 ng-class="{ 'has-error' : recommendForm.description.$invalid && !recommendForm.$pristine }">
 
                                                 <input type="text" id="description" name="description"
                                                        class="form-control"
                                                        ng-model="category.description"
                                                        required ng-required="true">
 
-                                                <p ng-show="recommendForm.description.$invalid && !recommendForm.description.$pristine"
+                                                <p ng-show="recommendForm.description.$invalid && !recommendForm.$pristine"
                                                    class="help-block">Description is required.</p>
                                             </div>
                                         </div>

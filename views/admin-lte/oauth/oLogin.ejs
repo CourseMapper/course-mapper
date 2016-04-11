@@ -12,6 +12,7 @@
 
     oLogin.controller('OauthLoginController',
             function ($scope, $http) {
+                $scope.errors = [];
                 $scope.loginData = {};
                 $scope.login = function (isValid) {
                     if (isValid) {
@@ -90,7 +91,7 @@
                             </div>
 
                             <div class="control-group">
-                                <div class="errors">
+                                <div class="errors" ng-cloak ng-show="errors.length < 0">
                                     <div class="alert alert-danger" role="alert" ng-repeat="m in errors">{{m}}</div>
                                 </div>
                             </div>
