@@ -1,5 +1,6 @@
 var appRoot = require('app-root-path');
 var mongoose = require('mongoose');
+var moment = require ('moment');
 var Courses = require(appRoot + '/modules/catalogs/courses.js');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
@@ -24,7 +25,8 @@ CourseListAuthor.prototype.run = async ( function(){
 
 CourseListAuthor.prototype.render = function(){
 
-    return '<span class="label label-info bg-green"> Author: ' + this.result.createdBy.displayName + '</span> <br>';
+    var momentDate = moment(this.result.dateAdded).format('MMMM Do YYYY');
+    return '<span class="label label-info bg-green"> Author: ' + this.result.createdBy.displayName + ' - ' + momentDate + '</span> <br>';
 
 };
 
