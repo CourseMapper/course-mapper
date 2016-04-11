@@ -78,6 +78,7 @@ module.exports = function (io) {
     socket.on('comments:post', async(function (params) {
       try {
         var annotation = await(VAController.addCommentAsync(params, getUser()));
+        Plugin.doAction('onAfterVideoCommentCreated', annotation, getUser());
         await(emitCommentsUpdatedAsync(annotation));
       } catch (e) {
         console.log('Error posting comment: ' + e);
@@ -87,6 +88,7 @@ module.exports = function (io) {
     socket.on('comments:remove', async(function (params) {
       try {
         var annotation = await(VAController.removeCommentAsync(params, getUser()));
+        Plugin.doAction('onAfterVideoCommentDeleted', annotation, getUser());
         await(emitCommentsUpdatedAsync(annotation));
       } catch (e) {
         console.log('Error removing comment: ' + e);
