@@ -1,5 +1,5 @@
 <div class="box-body no-padding" ng-controller="VideoStatusController">
-    <table class="table table-striped">
+    <table class="table table-striped" ng-if="videoHistory.length !=0">
 
         <tbody>
         <tr>
@@ -23,8 +23,8 @@
         </tr>
         <tr ng-repeat="video in videoHistory | orderBy:sortType:sortReverse" ng-if="video.nodeId.name">
             <td>{{video.nodeId.name}}</td>
-            <td>{{video.totalTime | date: 'HH:mm:ss'}}</td>
-            <td>{{video.currentTime | date: 'HH:mm:ss'}}</td>
+            <td>{{video.totalTime | msToTime}}</td>
+            <td>{{video.currentTime | msToTime}}</td>
             <td>{{video.dateUpdated | relativeDate}}</td>
             <td>
                 <a type="button" class="btn btn-block btn-primary btn-xs" href="/treeNode/{{video.nodeId._id}}/#/cid/{{video.courseId._id}}/nid/{{video.nodeId._id}}?tab=video">Resume</a>
@@ -33,4 +33,5 @@
 
         </tbody>
     </table>
+    <div ng-if="videoHistory.length == 0" style="margin-top: 20px; margin-left: 10px;">You have not watched any videos yet.</div>
 </div>
