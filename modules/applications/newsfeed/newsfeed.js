@@ -400,19 +400,22 @@ var NewsfeedListener = {
 
     },
 
-    
-
     onAfterNodeDeleted: function (deleteNode, user) {
         SubTopics.findOne({_id: deleteNode._id})
             .exec(function (err, doc) {
                 if (doc) {
+                    if (doc.type == 'subTopic') {
+                        var actSubj = 'sub topic';
+                    } else {
+                        var actSubj = 'content node';
+                    }
                     var courseId = doc.courseId;
                     if (courseId) {
                         var nf = new NewsfeedAgg(
                             {
                                 userId: user._id,
                                 actionSubjectIds: doc.id,
-                                actionSubject: "node",
+                                actionSubject: actSubj,
                                 actionName: doc.name,
                                 courseId: courseId,
                                 actionType: "deleted",
@@ -470,6 +473,56 @@ var NewsfeedListener = {
                                                 }
 
                                         })
+
+
+
+                                    }
+
+                                }
+                            })
+                    }
+                }
+            });
+
+    },
+
+    onAfterPdfAnnotationEdited: function (newPdfAnnotation, user) {
+        PdfAnnotation.findOne({_id: newPdfAnnotation.updateId})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var pdfId = doc.pdfId;
+                    if (pdfId) {
+                        Resources.findOne({_id: pdfId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    var curDate = Date.now();
+                                    if (treeNodeId){
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: user._id,
+                                                            actionSubjectIds: pdfId,
+                                                            actionSubject: "pdf annotation",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            nodeId: res.id,
+                                                            actionType: "edited",
+                                                            dateAdded: curDate
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+
+                                            })
 
 
 
@@ -577,7 +630,7 @@ var NewsfeedListener = {
 
     },
 
-    onAfterAnnotationZonePdfCreated: function (newPdfAnnotationZone) {
+    /*onAfterAnnotationZonePdfCreated: function (newPdfAnnotationZone) {
         PdfAnnotationZone.findOne({_id: newPdfAnnotationZone._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -673,7 +726,7 @@ var NewsfeedListener = {
                     }
                 }
             });
-    },
+    },*/
 
     //Listener for Video
     onAfterVideoAnnotationCreated: function (newVideoAnnotation) {
@@ -692,13 +745,13 @@ var NewsfeedListener = {
                                             if (res) {
                                                 var nf = new NewsfeedAgg(
                                                     {
-                                                        userId: doc.authorId,
+                                                        userId: user._id,
                                                         actionSubjectIds: videoId,
                                                         actionSubject: "video annotation",
                                                         actionName: res.name,
                                                         courseId: result.courseId,
                                                         nodeId: res.id,
-                                                        actionType: "added",
+                                                        actionType: "replied",
                                                         dateAdded: doc.date_created
                                                     }
                                                 );
@@ -802,6 +855,49 @@ var NewsfeedListener = {
             });
     },
 
+    onAfterVideoCommentCreated: function (newVideoComment, user) {
+        VideoAnnotation.findOne({_id:newVideoComment})
+            .exec(function(err, doc){
+                if (doc) {
+                    var videoId = doc.video_id;
+                    if (videoId) {
+                        Resources.findOne({_id:videoId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var treeNodeId = result.treeNodeId;
+                                    if (treeNodeId) {
+                                        SubTopics.findOne({_id:treeNodeId})
+                                            .exec(function(err, res){
+                                                if (res) {
+                                                    var curDate = Date.now();
+                                                    var nf = new NewsfeedAgg(
+                                                        {
+                                                            userId: doc.authorId,
+                                                            actionSubjectIds: videoId,
+                                                            actionSubject: "video annotation",
+                                                            actionName: res.name,
+                                                            courseId: result.courseId,
+                                                            nodeId: res.id,
+                                                            actionType: "replied",
+                                                            dateAdded: curDate
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+                                            })
+                                    }
+                                }
+                            })
+                    }
+                }
+            });
+    },
 
     //Listener for Link
     onAfterLinkCreated: function (newLink) {
@@ -931,28 +1027,58 @@ var NewsfeedListener = {
         Posts.findOne({_id: newDiscussion._id})
             .exec(function (err, doc) {
                 if (doc) {
-                    var courseId = doc.course;
-                    if (courseId) {
-                        var nf = new NewsfeedAgg(
-                            {
-                                userId: doc.createdBy,
-                                actionSubjectIds: doc.id,
-                                actionSubject: "discussion",
-                                actionName : doc.title,
-                                courseId:  courseId,
-                                actionType: "added",
-                                dateAdded: doc.dateAdded
-                            }
-                        );
-                        nf.save(
-                            function (err, doc) {
-                                if (!err) debug('');
-                                else
-                                    debug(err);
-                            }
-                        );
+                    //if reply to discussion
+                    if (doc.parentPost) {
+                        Posts.findOne({_id: doc.parentPost})
+                            .exec(function (err, result) {
+                                if (result) {
+                                    var courseId = result.course;
+                                    if (courseId) {
+                                        var nf = new NewsfeedAgg(
+                                            {
+                                                userId: result.createdBy,
+                                                actionSubjectIds: result.id,
+                                                actionSubject: "discussion",
+                                                actionName: result.title,
+                                                courseId: courseId,
+                                                actionType: "replied",
+                                                dateAdded: result.dateAdded
+                                            }
+                                        );
+                                        nf.save(
+                                            function (err, doc) {
+                                                if (!err) debug('');
+                                                else
+                                                    debug(err);
+                                            }
+                                        );
+                                    }
+                                }
+                            })
                     }
-
+                    else {
+                        var courseId = doc.course;
+                        if (courseId) {
+                            var nf = new NewsfeedAgg(
+                                {
+                                    userId: doc.createdBy,
+                                    actionSubjectIds: doc.id,
+                                    actionSubject: "discussion",
+                                    actionName: doc.title,
+                                    courseId: courseId,
+                                    actionType: "added",
+                                    dateAdded: doc.dateAdded
+                                }
+                            );
+                            nf.save(
+                                function (err, doc) {
+                                    if (!err) debug('');
+                                    else
+                                        debug(err);
+                                }
+                            );
+                        }
+                    }
                 }
             });
 
