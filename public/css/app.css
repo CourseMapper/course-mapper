@@ -909,3 +909,8 @@ li.info-links li a:hover {
   color: inherit;
 }
 
+#toast-container{
+    pointer-events: none!important;
+}
+
+.toast{pointer-events: auto;}
