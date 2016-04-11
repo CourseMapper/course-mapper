@@ -27,7 +27,7 @@
                             {{usera.username}}
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-warning"
+                            <button class="btn btn-sm btn-warning" ng-show="usera._id == currentUser._id"
                                     ng-click="deleteUser(usera._id)">
                                 Delete
                             </button>
