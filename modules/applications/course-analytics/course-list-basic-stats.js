@@ -36,7 +36,8 @@ CourseListBasicStats.prototype.run = async(function(){
     }).count().exec());
 
     var countTotalDiscussion = await(Posts.find({
-        course: self._id
+        course: self._id,
+        isDeleted: false
     }).count().exec());
 
     if (countEnrolledUser) {
