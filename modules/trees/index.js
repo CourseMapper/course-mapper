@@ -434,6 +434,9 @@ catalog.prototype.deleteNode = function (error, params, user, success) {
                     },
                     {
                         $set: {isDeleted: true}
+                    },
+                    {
+                       multi: true
                     }).exec();
 
             } else {
@@ -451,7 +454,11 @@ catalog.prototype.deleteNode = function (error, params, user, success) {
                                 },
                                 {
                                     $set: {isDeleted: true}
-                                }).exec();
+                                },
+                                {
+                                    multi: true
+                                }
+                            ).exec();
 
                             success(tn);
                             Plugin.doAction('onAfterNodeDeleted', tn, user);
