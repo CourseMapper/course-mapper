@@ -18,11 +18,12 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     $scope.sortBy = 'dateAdded';
     $scope.currentPage = 1;
     $scope.pageReset = false;
+    $scope.lastPage = false;
 
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
-        {id: 'totalVotes.-1', name: 'Most Popular'}
+        {id: 'totalEnrollment.-1', name: 'Most Popular'}
     ];
 
     $scope.widgets = [];
@@ -32,6 +33,14 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     };
 
     $scope.getCoursesFromThisCategory = function (force) {
+
+        courseListService.setPageParams({
+            sortBy: $scope.sortBy,
+            orderBy: $scope.orderBy,
+            limit: 12,
+            lastPage: false
+        });
+
         courseListService.init($scope.category._id, $scope.filterTags,
             function (courses) {
                 $scope.courses = courses;
@@ -107,6 +116,7 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
             $location.search({});
 
         $scope.getCoursesFromThisCategory(true);
+        $scope.pageReset = Math.random();
     };
 
     $scope.removeFilter = function (tag) {
@@ -144,5 +154,36 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     $scope.paginationReset = function () {
         return $scope.pageReset;
     };
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            courseListService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 12,
+                lastPage: false
+            });
+
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
+            courseListService.init($scope.category._id, $scope.filterTags,
+                function (courses) {
+                    $scope.courses = courses;
+                    $scope.coursesLength = courses.length;
+                },
+                function (errors) {
+                    console.log(JSON.stringify(errors));
+                }
+                , true
+            );
+        }
+    });
 
 });

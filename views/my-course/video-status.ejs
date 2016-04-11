@@ -1,17 +1,17 @@
-<div class="box-body no-padding" ng-controller="PdfStatusController">
+<div class="box-body no-padding" ng-controller="VideoStatusController">
     <table class="table table-striped">
+
         <tbody>
         <tr>
             <th>
                 <a href="#" ng-click="sortType = 'nodeId.name'; sortReverse = !sortReverse">
-                    PDF Name
+                    Video Name
                     <i ng-show="sortType == 'nodeId.name' && !sortReverse" class="fa fa-caret-down"></i>
                     <i ng-show="sortType == 'nodeId.name' && sortReverse" class="fa fa-caret-up"></i>
                 </a>
             </th>
-            <th>Last Page Opened</th>
-            <th>Total Page</th>
-            <!--<th>Percentage Finished</th>-->
+            <th>Total Time</th>
+            <th>Current Time</th>
             <th>
                 <a href="#" ng-click="sortType = 'dateUpdated'; sortReverse = !sortReverse">
                     Date Accessed
@@ -21,16 +21,16 @@
             </th>
             <th></th>
         </tr>
-        <tr ng-repeat="pdf in pdfHistory | orderBy:sortType:sortReverse" ng-if="pdf.nodeId.name">
-            <td>{{pdf.nodeId.name}}</td>
-            <td>{{pdf.pageNumber}}</td>
-            <td>{{pdf.totalPage}}</td>
-            <!--<td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>-->
-            <td>{{pdf.dateUpdated | relativeDate}}</td>
+        <tr ng-repeat="video in videoHistory | orderBy:sortType:sortReverse" ng-if="video.nodeId.name">
+            <td>{{video.nodeId.name}}</td>
+            <td>{{video.totalTime | date: 'HH:mm:ss'}}</td>
+            <td>{{video.currentTime | date: 'HH:mm:ss'}}</td>
+            <td>{{video.dateUpdated | relativeDate}}</td>
             <td>
-                <a type="button" class="btn btn-block btn-primary btn-xs" href="/treeNode/{{pdf.nodeId._id}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?tab=pdf&slidePage={{pdf.pageNumber}}">Resume</a>
+                <a type="button" class="btn btn-block btn-primary btn-xs" href="/treeNode/{{video.nodeId._id}}/#/cid/{{video.courseId._id}}/nid/{{video.nodeId._id}}?tab=video">Resume</a>
             </td>
         </tr>
+
         </tbody>
     </table>
 </div>

@@ -192,8 +192,6 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
 
                 if (params.type == 'contentNode') {
                     Plugin.doAction('onAfterContentNodeEdited', tn, params);
-                } else {
-                    Plugin.doAction('onAfterSubTopicEdited', tn, params);
                 }
 
             })
@@ -379,7 +377,7 @@ catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdat
     });
 };
 
-catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, success) {
+catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, user, success) {
     TreeNodes.findById(paramsWhere).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -396,7 +394,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
                     else {
                         // success saved the cat
                         success(tn);
-                        Plugin.doAction('onAfterNodeEdited', tn, paramsUpdate);
+                        Plugin.doAction('onAfterSubTopicEdited', tn, user);
                     }
                 });
             }
@@ -404,7 +402,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
     });
 };
 
-catalog.prototype.deleteNode = function (error, params, success) {
+catalog.prototype.deleteNode = function (error, params, user, success) {
     TreeNodes.findById(params).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -456,7 +454,7 @@ catalog.prototype.deleteNode = function (error, params, success) {
                                 }).exec();
 
                             success(tn);
-                            Plugin.doAction('onAfterNodeDeleted', tn, params);
+                            Plugin.doAction('onAfterNodeDeleted', tn, user);
                         }
                     }
                 );

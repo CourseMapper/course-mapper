@@ -148,13 +148,18 @@ Comment.prototype.submitFirstLevelAnnotation = function (err, params, done) {
 };
 
 
-Comment.prototype.deleteAnnotation = function (err, params, isAdmin, done) {
+Comment.prototype.deleteAnnotation = function (err, params, isAdmin, user, done) {
   if (typeof params.deleteId != 'undefined') {
     this.checkOwnership(params.deleteId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
-        AnnotationsPDF.findOne({_id: params.deleteId}).remove().exec();
-        Plugin.doAction('onAfterPdfAnnotationDeleted', params);
-        done();
+        AnnotationsPDF.findOne({_id: params.deleteId}).exec(function(err, doc){
+            if(doc) {
+                doc.remove();
+                Plugin.doAction('onAfterPdfAnnotationDeleted', doc, user);
+
+                done();
+            }
+        });
       }
       else {
         err("Server Error: Unable to delete annotation since access was denied or the entry was not found");
@@ -167,7 +172,7 @@ Comment.prototype.deleteAnnotation = function (err, params, isAdmin, done) {
 };
 
 
-Comment.prototype.updateAnnotation = function (err, params, isAdmin, done) {
+Comment.prototype.updateAnnotation = function (err, params, isAdmin, user, done) {
   //console.log("STARTED");
   //console.log(params);
   if (typeof params.updateId != 'undefined') {
@@ -189,7 +194,7 @@ Comment.prototype.updateAnnotation = function (err, params, isAdmin, done) {
               err("Server Error: Unable to update annotation");
             } else {
               // call success callback
-              Plugin.doAction('onAfterPdfAnnotationEdited', params);
+              Plugin.doAction('onAfterPdfAnnotationEdited', params, user);
               done();
             }
           });
@@ -436,6 +441,7 @@ Comment.prototype.handleDeletePost = function (req, res, next) {
     },
     req.query,
     req.user.role == "admin",
+    req.user,
     function done() {
       // todo: implement flash
       return res.status(200).send({result: true});
@@ -452,6 +458,7 @@ Comment.prototype.handleUpdatePost = function (req, res, next) {
     },
     req.query,
     req.user.role == "admin",
+    req.user,
     function done() {
       // todo: implement flash
       return res.status(200).send({result: true});

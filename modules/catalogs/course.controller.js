@@ -166,7 +166,8 @@ catalog.prototype.addCourse = function (error, params, success) {
         createdBy: mongoose.Types.ObjectId(params.userId),
         category: mongoose.Types.ObjectId(params.category),
         description: params.description,
-        smallDescription: params.smallDescription
+        smallDescription: params.smallDescription,
+        totalEnrollment: 0
     });
 
     course.setSlug(params.name);
@@ -414,8 +415,12 @@ catalog.prototype.getCourses = function (error, params, pageParams, success) {
         pageParams.lastPage = 0;
     }
 
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Course
         .find(params)
+        .sort(sortOption)
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
         .exec(function (err, docs) {

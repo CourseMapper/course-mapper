@@ -2,11 +2,21 @@
   "name": "My Courses",
   "widgets":[
     {
-      "name": "My PDF Widget",
+      "name": "My PDF Activity Widget",
       "location": "user-profile",
-      "description": "Show information on the status of accessed PDF and suggestion based on the current PDF read",
+      "description": "Show your reading PDF list contains the file information and link to resume your reading progress",
       "entryPoint": "/my-course/my-pdf-status",
       "widgetJavascript": ["my-pdf-status.js"],
+      "width": 6,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Video Activity Widget",
+      "location": "user-profile",
+      "description": "Show your video list contains the file information and the link to resume your video learning progress",
+      "entryPoint": "/my-course/my-video-status",
+      "widgetJavascript": ["my-video-status.js"],
       "width": 6,
       "height":1,
       "icon":"/img/appPlaceholder.png"

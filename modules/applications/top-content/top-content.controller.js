@@ -32,7 +32,7 @@ topContent.prototype.getTopAnnotatedPdf = function (error, params, done) {
     params.countType = "annotation";
     //params.isDeleted = false;
 
-    TopContent.findOne(params).sort('-count').exec(function(err, docs){
+    TopContent.findOne(params).populate('nodeId', '_id name').sort('-count').exec(function(err, docs){
         if (err){
             error(err);
         } else {
@@ -52,7 +52,7 @@ topContent.prototype.getTopAnnotatedVideo = function (error, params, done) {
     params.contentType = "video";
     params.countType = "annotation";
 
-    TopContent.findOne(params).sort('-count').exec(function(err, docs){
+    TopContent.findOne(params).populate('nodeId', '_id name').sort('-count').exec(function(err, docs){
         if (err){
             error(err);
         } else {
@@ -72,7 +72,7 @@ topContent.prototype.getTopLinkNode = function (error, params, done) {
     params.contentType = "node";
     params.countType = "link";
 
-    TopContent.findOne(params).sort('-count').exec(function(err, docs){
+    TopContent.findOne(params).populate('nodeId', '_id name').sort('-count').exec(function(err, docs){
         if (err){
             error(err);
         } else {

@@ -47,7 +47,7 @@ var NewsfeedListener = {
 
     },
 
-    onAfterCourseEdited: function (editCourse) {
+    onAfterCourseEdited: function (editCourse, params) {
         Courses.findOne({_id: editCourse._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -55,13 +55,14 @@ var NewsfeedListener = {
                     if (courseId) {
                         var nf = new NewsfeedAgg(
                             {
-                                userId: doc.createdBy,
+                                userId: params.userId,
                                 actionSubjectIds: doc.id,
                                 actionSubject: "course",
                                 actionName : doc.name,
                                 courseId: courseId,
                                 actionType: "edited",
                                 dateAdded: doc.dateUpdated
+                                //performedByUserId: doc.createdBy
                             }
                         );
                         nf.save(
@@ -87,11 +88,11 @@ var NewsfeedListener = {
                     var voteType = doc.voteType;
                     var voteValue = "";
                     if (doc.voteValue == 1) {
-                        voteValue = "up vote";
+                        voteValue = "up voted";
                     } else if (doc.voteValue == -1) {
-                        voteValue = "down vote";
+                        voteValue = "down voted";
                     } else {
-                        voteValue = "cancel vote";
+                        voteValue = "canceled vote";
                     }
                     if (voteType == "slideComment") {
                         PdfAnnotation.findOne({_id: doc.voteTypeId})
@@ -303,7 +304,7 @@ var NewsfeedListener = {
 
     },
 
-    onAfterSubTopicEdited: function (editSubTopic) {
+    onAfterSubTopicEdited: function (editSubTopic, user) {
         SubTopics.findOne({_id: editSubTopic._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -311,7 +312,7 @@ var NewsfeedListener = {
                     if (courseId) {
                         var nf = new NewsfeedAgg(
                             {
-                                userId: doc.createdBy,
+                                userId: user._id,
                                 actionSubjectIds: doc.id,
                                 actionSubject: "sub topic",
                                 actionName : doc.name,
@@ -367,7 +368,7 @@ var NewsfeedListener = {
 
     },
 
-    onAfterContentNodeEdited: function (editContentNode) {
+    onAfterContentNodeEdited: function (editContentNode, params) {
         SubTopics.findOne({_id: editContentNode._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -375,7 +376,7 @@ var NewsfeedListener = {
                     if (courseId) {
                         var nf = new NewsfeedAgg(
                             {
-                                userId: doc.createdBy,
+                                userId: params.userId,
                                 actionSubjectIds: doc.id,
                                 actionSubject: "content node",
                                 actionName: doc.name,
@@ -399,39 +400,9 @@ var NewsfeedListener = {
 
     },
 
-    //Listener for Treenodes - Node (whats different with subtopics?)
-    onAfterNodeEdited: function (editNode) {
-        SubTopics.findOne({_id: editNode._id})
-            .exec(function (err, doc) {
-                if (doc) {
-                    var courseId = doc.courseId;
-                    if (courseId) {
-                        var nf = new NewsfeedAgg(
-                            {
-                                userId: doc.createdBy,
-                                actionSubjectIds: doc.id,
-                                actionSubject: "node",
-                                actionName: doc.name,
-                                courseId: courseId,
-                                actionType: "edited",
-                                dateAdded: doc.dateUpdated
-                            }
-                        );
-                        nf.save(
-                            function (err, doc) {
-                                if (!err) debug('');
-                                else
-                                    debug(err);
-                            }
-                        );
-                    }
+    
 
-                }
-            });
-
-    },
-
-    onAfterNodeDeleted: function (deleteNode) {
+    onAfterNodeDeleted: function (deleteNode, user) {
         SubTopics.findOne({_id: deleteNode._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -439,7 +410,7 @@ var NewsfeedListener = {
                     if (courseId) {
                         var nf = new NewsfeedAgg(
                             {
-                                userId: doc.createdBy,
+                                userId: user._id,
                                 actionSubjectIds: doc.id,
                                 actionSubject: "node",
                                 actionName: doc.name,
@@ -512,57 +483,49 @@ var NewsfeedListener = {
 
     },
 
-    /*TODO: Zuhra, fix this since the find function search for notexisted document due to deletation of document the retunring params does not contain info about pdfId*/
-    onAfterPdfAnnotationDeleted: function (deletePdfAnnotation) {
-        console.log(deletePdfAnnotation);
-        var userId = deletePdfAnnotation.authorId;
-        var deletedPdfAnnoId = deletePdfAnnotation.deleteId;
-        PdfAnnotation.findOne({_id: deletePdfAnnotation._id})
-            .exec(function (err, doc) {
-                if (doc) {
-                    var pdfId = doc.pdfId;
-                    if (pdfId) {
-                        Resources.findOne({_id: pdfId})
-                            .exec(function(err, result){
-                                if (result) {
-                                    var treeNodeId = result.treeNodeId;
-                                    if (treeNodeId){
-                                        SubTopics.findOne({_id:treeNodeId})
-                                            .exec(function(err, res){
-                                                if (res) {
-                                                    var nf = new NewsfeedAgg(
-                                                        {
-                                                            userId: doc.authorID,
-                                                            actionSubjectIds: pdfId,
-                                                            actionSubject: "pdf annotation",
-                                                            actionName: res.name,
-                                                            courseId: result.courseId,
-                                                            nodeId: res.id,
-                                                            actionType: "added",
-                                                            dateAdded: doc.dateOfCreation
-                                                        }
-                                                    );
-                                                    nf.save(
-                                                        function (err, doc) {
-                                                            if (!err) debug('');
-                                                            else
-                                                                debug(err);
-                                                        }
-                                                    );
-                                                }
-
-                                            })
-
-
-
+    onAfterPdfAnnotationDeleted: function (deletePdfAnnotation, user) {
+        var userId = user._id;
+        var pdfId = deletePdfAnnotation.pdfId;
+        if (pdfId) {
+            Resources.findOne({_id: pdfId})
+                .exec(function(err, result){
+                    if (result) {
+                        var treeNodeId = result.treeNodeId;
+                        if (treeNodeId){
+                            SubTopics.findOne({_id:treeNodeId})
+                                .exec(function(err, res){
+                                    if (res) {
+                                        var curDate = Date.now();
+                                        var nf = new NewsfeedAgg(
+                                            {
+                                                userId: userId,
+                                                actionSubjectIds: pdfId,
+                                                actionSubject: "pdf annotation",
+                                                actionName: res.name,
+                                                courseId: result.courseId,
+                                                nodeId: res.id,
+                                                actionType: "deleted",
+                                                dateAdded: curDate
+                                            }
+                                        );
+                                        nf.save(
+                                            function (err, doc) {
+                                                if (!err) debug('');
+                                                else
+                                                    debug(err);
+                                            }
+                                        );
                                     }
 
-                                }
-                            })
-                    }
-                }
-            });
+                                })
 
+
+
+                        }
+
+                    }
+                })
+        }
     },
 
     onAfterPdfReplyCreated: function (newPdfAnnotationReply) {
@@ -735,7 +698,7 @@ var NewsfeedListener = {
                                                         actionName: res.name,
                                                         courseId: result.courseId,
                                                         nodeId: res.id,
-                                                        actionType: "deleted",
+                                                        actionType: "added",
                                                         dateAdded: doc.date_created
                                                     }
                                                 );
@@ -811,6 +774,7 @@ var NewsfeedListener = {
                         SubTopics.findOne({_id: treeNodeId})
                             .exec(function (err, res) {
                                 if (res) {
+                                    var curDate = Date.now()
                                     var nf = new NewsfeedAgg(
                                         {
                                             userId: userId,
@@ -820,7 +784,7 @@ var NewsfeedListener = {
                                             courseId: result.courseId,
                                             nodeId: res.id,
                                             actionType: "deleted",
-                                            dateAdded: dateAdded
+                                            dateAdded: curDate
                                         }
                                     );
                                     nf.save(
@@ -880,8 +844,8 @@ var NewsfeedListener = {
 
     },
 
-    onAfterLinkEdited: function (editLink) {
-        Links.findOne({_id: editLink._id})
+    onAfterLinkEdited: function (editLink, user) {
+        Links.findOne({_id: editLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -891,16 +855,17 @@ var NewsfeedListener = {
                                 if (result) {
                                     var courseId = result.courseId;
                                     if (courseId) {
+                                        var dateNow = new Date();
                                         var nf = new NewsfeedAgg(
                                             {
-                                                userId: doc.createdBy,
+                                                userId: user._id,
                                                 actionSubjectIds: doc.id,
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
                                                 nodeId: result.id,
                                                 actionType: "edited",
-                                                dateAdded: doc.dateUpdated
+                                                dateAdded: dateNow
                                             }
                                         );
                                         nf.save(
@@ -920,8 +885,8 @@ var NewsfeedListener = {
 
     },
 
-    onAfterLinkDeleted: function (deleteLink) {
-        Links.findOne({_id: deleteLink})
+    onAfterLinkDeleted: function (deleteLink, user) {
+        Links.findOne({_id: deleteLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -931,16 +896,17 @@ var NewsfeedListener = {
                                 if (result) {
                                     var courseId = result.courseId;
                                     if (courseId) {
+                                        var dateNow = new Date();
                                         var nf = new NewsfeedAgg(
                                             {
-                                                userId: doc.createdBy,
+                                                userId: user._id,
                                                 actionSubjectIds: doc.id,
                                                 actionSubject: "link",
                                                 actionName : doc.title,
                                                 courseId:  courseId,
                                                 nodeId: result.id,
                                                 actionType: "deleted",
-                                                dateAdded: doc.dateUpdated
+                                                dateAdded: dateNow
                                             }
                                         );
                                         nf.save(
@@ -992,7 +958,7 @@ var NewsfeedListener = {
 
     },
 
-    onAfterDiscussionEdited: function (editDiscussion){
+    onAfterDiscussionEdited: function (editDiscussion, user){
         Posts.findOne({_id: editDiscussion._id})
             .exec(function (err, doc) {
                 if (doc) {
@@ -1000,7 +966,7 @@ var NewsfeedListener = {
                     if (courseId) {
                         var nf = new NewsfeedAgg(
                             {
-                                userId: doc.createdBy,
+                                userId: user._id,
                                 actionSubjectIds: doc.id,
                                 actionSubject: "discussion",
                                 actionName : doc.title,
@@ -1023,21 +989,22 @@ var NewsfeedListener = {
 
     },
 
-    onAfterDiscussionDeleted: function (deleteDiscussion){
-        Posts.findOne({_id: deleteDiscussion})
+    onAfterDiscussionDeleted: function (deleteDiscussion, user){
+        Posts.findOne({_id: deleteDiscussion.postId})
             .exec(function (err, doc) {
                 if (doc) {
                     var courseId = doc.course;
                     if (courseId) {
+                        var curDate = Date.now();
                         var nf = new NewsfeedAgg(
                             {
-                                userId: doc.createdBy,
+                                userId: user._id,
                                 actionSubjectIds: doc.id,
                                 actionSubject: "discussion",
                                 actionName : doc.title,
                                 courseId:  courseId,
                                 actionType: "deleted",
-                                dateAdded: doc.dateUpdated
+                                dateAdded: curDate
                             }
                         );
                         nf.save(
@@ -1056,42 +1023,64 @@ var NewsfeedListener = {
 
     //Listener when user enroll or leave course
     onAfterEnrollorLeaveCourse: function (userEnrollment){
-    UserCourses.findOne({_id: userEnrollment._id})
-        .exec(function (err, doc) {
-            if (doc) {
-                var userStatus = (doc.isEnrolled === true)? 'enrolled':'left';
-                var curDate = Date.now();
-                var courseId = doc.course;
-                if (courseId) {
-                    Courses.findOne({_id:courseId})
-                        .exec(function(err, result){
-                            if (result){
-                                var nf = new NewsfeedAgg(
-                                    {
-                                        userId: doc.user,
-                                        actionSubjectIds: doc.id,
-                                        actionSubject: "course",
-                                        actionName: result.name,
-                                        courseId:  courseId,
-                                        actionType: userStatus,
-                                        dateAdded: curDate
-                                    }
-                                );
-                                nf.save(
-                                    function (err, doc) {
-                                        if (!err) debug('');
-                                        else
-                                            debug(err);
-                                    }
-                                );
-                            }
-                        })
+        UserCourses.findOne({_id: userEnrollment._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var userStatus = (doc.isEnrolled === true)? 'enrolled':'left';
+                    var curDate = Date.now();
+                    var courseId = doc.course;
+                    if (courseId) {
+                        Courses.findOne({_id:courseId})
+                            .exec(function(err, result){
+                                if (result){
+                                    var nf = new NewsfeedAgg(
+                                        {
+                                            userId: doc.user,
+                                            actionSubjectIds: doc.id,
+                                            actionSubject: "course",
+                                            actionName: result.name,
+                                            courseId:  courseId,
+                                            actionType: userStatus,
+                                            dateAdded: curDate
+                                        }
+                                    );
+                                    nf.save(
+                                        function (err, doc) {
+                                            if (!err) debug('');
+                                            else
+                                                debug(err);
+                                        }
+                                    );
+                                }
+                            })
+                    }
+
                 }
+            });
+        //TODO: move below listener to its own place since its not belong to newsfeed scope
+        //update totalEnrollment in course model each time someone enroll/leave course. (for popularity sorting course list)
+        UserCourses.findOne({_id: userEnrollment._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var counter = (doc.isEnrolled === true)? 1:-1;
+                    var courseId = doc.course;
+                    if (courseId) {
+                        var condition = {_id:courseId}, update = {$inc: {totalEnrollment: counter}};
+                        Courses.findOne(condition)
+                            .exec(function(err, result){
+                                if (result) {
+                                    Courses.update(condition,update).exec();
+                                } else {
+                                    console.log('Cannot find course');
+                                }
+                            })
 
-            }
-        });
+                    }
 
-}
+                }
+            });
+    }
+
 
 };
 

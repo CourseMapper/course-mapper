@@ -37,6 +37,15 @@
                                 {{tag.name}}</a>
                             <span class="label label-primary" ng-show="availableTags.length == 0">-</span>
 
+                            <br> <br>
+                            <div class="col-xs-12 col-sm-4" ng-show="courses.length > 1">
+                                <select id="orderTypeSelect"
+                                        ng-model="orderType"
+                                        ng-init="orderType = orderingOptions[0]"
+                                        ng-options="item as item.name for item in orderingOptions"
+                                        class="form-control">
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
