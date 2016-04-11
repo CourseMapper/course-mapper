@@ -43,7 +43,8 @@ var topContributorListener = {
                                             courseId: courseId,
                                             countCourseActivity: 1,
                                             countNodeActivity: 0,
-                                            totalCount: 1
+                                            totalCount: 1,
+                                            isEnrolled: true
                                         }
                                     );
                                     nf.save(
@@ -88,7 +89,8 @@ var topContributorListener = {
                                             courseId: courseId,
                                             countCourseActivity: 1,
                                             countNodeActivity: 0,
-                                            totalCount: 1
+                                            totalCount: 1,
+                                            isEnrolled: true
                                         }
                                     );
                                     nf.save(
@@ -166,7 +168,8 @@ var topContributorListener = {
                                             courseId: courseId,
                                             countCourseActivity: 1,
                                             countNodeActivity: 0,
-                                            totalCount: 1
+                                            totalCount: 1,
+                                            isEnrolled: true
                                         }
                                     );
                                     nf.save(
@@ -243,7 +246,8 @@ var topContributorListener = {
                                                         courseId: result.courseId,
                                                         countCourseActivity: 0,
                                                         countNodeActivity: 1,
-                                                        totalCount: 1
+                                                        totalCount: 1,
+                                                        isEnrolled: true
                                                     }
                                                 );
                                                 nf.save(
@@ -319,7 +323,8 @@ var topContributorListener = {
                                                         courseId: courseId,
                                                         countCourseActivity: 0,
                                                         countNodeActivity: 1,
-                                                        totalCount: 1
+                                                        totalCount: 1,
+                                                        isEnrolled: true
                                                     }
                                                 );
                                                 nf.save(
@@ -368,13 +373,12 @@ var topContributorListener = {
     onAfterLinkCreated: function (newLink) {
         Links.findOne({_id: newLink._id})
             .exec(function (err, doc) {
-                //var linkId = doc.
+                var userId = doc.createdBy;
                 if (doc) {
                     var contentId = doc.contentNode;
                     if (contentId) {
                         TreeNodes.findOne({_id: contentId})
                             .exec(function (err, result) {
-                                var userId = doc.authorId;
                                 var courseId = result.courseId;
                                 if (result) {
                                     var condition = {
@@ -393,7 +397,8 @@ var topContributorListener = {
                                                         courseId: courseId,
                                                         countCourseActivity: 0,
                                                         countNodeActivity: 1,
-                                                        totalCount: 1
+                                                        totalCount: 1,
+                                                        isEnrolled: true
                                                     }
                                                 );
                                                 nf.save(
@@ -416,7 +421,7 @@ var topContributorListener = {
 
     onAfterLinkDeleted: function (deleteLink, user) {
         var userId = user._id;
-        Links.findOne({_id: deleteLink._id})
+        Links.findOne({_id: deleteLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -444,6 +449,18 @@ var topContributorListener = {
 
                 }
             });
+    },
+
+    onAfterEnrollorLeaveCourse: function (userEnrollment) {
+        UserCourses.findOne({_id: userEnrollment._id})
+            .exec(function (err, doc){
+                if (doc) {
+                    var userStatus = doc.isEnrolled;
+                    var userId = doc.user;
+                    var courseId = doc.course;
+                    TopContributorAgg.update({userId: userId, courseId: courseId}, {isEnrolled:userStatus}, {multi:true}).exec();
+                }
+            })
     }
 };
 

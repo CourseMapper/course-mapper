@@ -1,5 +1,5 @@
 <div class="box-body" ng-controller="TopContributorController">
-    <ul class="products-list product-list-in-box">
+    <ul class="products-list product-list-in-box" ng-if="topContributor.length != 0">
         <li class="item" ng-repeat="user in topContributor">
             <div class="product-img">
                 <img src="{{user.userId.image}}" alt="Product Image" style="border-radius: 50%">
@@ -17,6 +17,6 @@
             </div>
         </li>
         <!-- /.item -->
-
     </ul>
+    <div ng-if="topContributor.length == 0" style="margin: 20px 15px;">No activity</div>
 </div>
