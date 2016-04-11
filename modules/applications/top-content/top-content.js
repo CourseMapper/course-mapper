@@ -45,7 +45,9 @@ var topContentListener = {
                                                                         contentName : res.name,
                                                                         contentType : "pdf",
                                                                         countType : "annotation",
+                                                                        isDeleted: false,
                                                                         count : 1
+                                                                        
                                                                     }
                                                                 );
                                                                 nf.save(
@@ -142,6 +144,7 @@ var topContentListener = {
                                                                         contentName : res.name,
                                                                         contentType : "video",
                                                                         countType : "annotation",
+                                                                        isDeleted: false,
                                                                         count : 1
                                                                     }
                                                                 );
@@ -234,6 +237,7 @@ var topContentListener = {
                                                             contentName : result.name,
                                                             contentType : "node",
                                                             countType : "link",
+                                                            isDeleted: false,
                                                             count : 1
                                                         }
                                                     );
@@ -282,6 +286,13 @@ var topContentListener = {
 
                 }
             });
+
+    },
+
+    //set isDeleted true for all affected top-content documents when a node is deleted
+    onAfterNodeDeleted: function (deleteNode) {
+        var nodeId = deleteNode._id;
+        TopContentAgg.update({nodeId: nodeId, isDeleted: false}, {isDeleted: true}, {multi: true}).exec();
 
     }
 };
