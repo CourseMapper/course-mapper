@@ -125,6 +125,18 @@ var MyCourseListener = {
     onAfterNodeDeleted: function(deleteNode) {
         PdfRead.find({nodeId:deleteNode._id}).remove().exec();
         VideoRead.find({nodeId:deleteNode._id}).remove().exec();
+        //also set isDeleted:true to all related content node activity in myactivitystatuses collection
+        var condition = {nodeId:deleteNode._id};
+        var update = {$set: {isDeleted: true}};
+        MyActivityStatus.find(condition)
+            .exec(function (err, resAS){
+                if (resAS) {
+                    MyActivityStatus.update(condition, update, {multi:true}).exec();
+                } else {
+                    console.log('cannot find documents');
+                }
+            })
+
     },
 
     //Listener for PDF
