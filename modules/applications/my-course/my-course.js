@@ -11,7 +11,9 @@ var debug = require('debug')('cm:server');
 var CreatedNodes = require('./models/myCreatedNodes.js');
 var PdfRead = require('./models/myPDFStatus.js');
 var VideoRead = require('./models/myVideoStatus.model.js');
+var Posts = require('../../discussion/models/posts.js');
 var MyActivityStatus = require('./models/myActivityStatus.model.js');
+var MyDiscussionStatus = require('./models/myDiscussionStatus.model.js');
 var PdfAnnotation = require('../../slide-viewer/annotation.js');
 var Resources = require('../../trees/resources.js');
 var Links = require('../../links/models/links.js');
@@ -367,6 +369,69 @@ var MyCourseListener = {
                                             })
 
                                     }
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
+
+    //Listener for Discussion
+    onAfterDiscussionCreated: function (newDiscussion){
+        Posts.findOne({_id: newDiscussion._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    //if not reply to discussion
+                    if (!doc.parentPost) {
+                        var courseId = doc.course;
+                        if (courseId) {
+                            var nf = new MyDiscussionStatus(
+                                {
+                                    userId: doc.createdBy,
+                                    courseId: courseId,
+                                    discussionId: doc._id,
+                                    type: "discussion",
+                                    isDeleted: false
+                                }
+                            );
+                            nf.save(
+                                function (err, doc) {
+                                    if (!err) debug('');
+                                    else
+                                        debug(err);
+                                }
+                            );
+                        }
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterDiscussionDeleted: function (deleteDiscussion){
+        Posts.findOne({_id: deleteDiscussion.postId})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var courseId = doc.course;
+                    if (courseId) {
+                        var condition =
+                            {
+                                userId: doc.createdBy,
+                                courseId:  courseId,
+                                discussionId: doc._id,
+                                type: "discussion",
+                                isDeleted: false
+                            };
+                        var update = {$set: {isDeleted: true}};
+                        MyDiscussionStatus.findOne(condition)
+                            .exec(function (err, resDS){
+                                if (resDS) {
+                                    MyDiscussionStatus.update(condition, update).exec();
+                                } else {
+                                    console.log('cannot find documents');
                                 }
                             })
                     }
