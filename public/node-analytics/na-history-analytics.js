@@ -15,6 +15,7 @@ angular.module('NodeHistoryAnalytics', ['chart.js'])
     .controller("NodeHistoryAnalyticsController", ['$scope', '$rootScope', '$filter', '$http', '$location', '$routeParams', function ($scope, $rootScope, $filter, $http, $location, $routeParams) {
 
         $scope.title = "Node Analytics History Chart";
+        var monthName = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
         $scope.enrolledUsersData = [];
 
         Date.prototype.formatMMDDYYYY = function() {
@@ -23,8 +24,8 @@ angular.module('NodeHistoryAnalytics', ['chart.js'])
                 "/" +  this.getFullYear();
         };
         Date.prototype.formatMMYYYY = function() {
-            return ( this.getMonth() + 1) +
-                "/" +  this.getFullYear();
+            return monthName[this.getMonth()] +
+                " / " +  this.getFullYear();
         };
 
         $scope.nodeId = $routeParams.nodeId;
