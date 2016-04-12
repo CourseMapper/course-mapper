@@ -10,7 +10,7 @@
                         </div>
                         <!-- /.widget-user-image -->
                         <h3 class="widget-user-username" align="center">{{user.displayName}}</h3>
-                        <h5 class="widget-user-desc" align="center" style="padding-bottom: 5px;">Member Since: {{user.dateAdded | date:'yyyy-MM-dd'}}</h5>
+                        <h5 class="widget-user-desc" align="center" style="padding-bottom: 5px;">Member Since: {{user.dateAdded | date:'dd-MM-yyyy'}}</h5>
                     </div>
                     <div class="box-footer no-padding">
                         <ul class="nav nav-stacked">
@@ -26,9 +26,9 @@
                     <div class="col-xs-6">
                         <div class="small-box">
                             <div class="inner">
-                                <p align="center">Node Activity Summary</p>
+                                <p align="center">Course Activity Summary</p>
                                 <canvas id="pie" class="chart chart-pie"
-                                        chart-data="nodeActivityData" chart-labels="nodeActivityLabels" chart-legend="true">
+                                        chart-data="courseActivityData" chart-labels="courseActivityLabels" chart-legend="true">
                                 </canvas>
                             </div>
                         </div>
@@ -49,4 +49,3 @@
         </div>
     </div>
 </div>
-

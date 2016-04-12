@@ -3,6 +3,8 @@ var UserCourses = require('../../catalogs/userCourses.js');
 var Courses = require('../../catalogs/courses.js');
 var Resources = require('../../trees/resources.js');
 var Newsfeed = require('../newsfeed/models/newsfeed.model.js');
+var MyActivityStatus = require('./models/myActivityStatus.model.js');
+var MyDiscussionStatus = require('./models/myDiscussionStatus.model.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
@@ -129,6 +131,33 @@ enrolledCourses.prototype.getUserNewsfeed = function (error, params, done) {
     });
 };
 
+//get all discussion doc from myDiscussionStatus
+enrolledCourses.prototype.getUserMyDiscussionStatus = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
+        return;
+    }
+
+    var usrId = {userId: params.user};
+
+    MyDiscussionStatus.find(usrId).exec(function (err, res){
+        if (err) error (err);
+        else done(res);
+    });
+};
+
+//get all user activity doc from myActivityStatus
+enrolledCourses.prototype.getUserMyNodeActivityStatus = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['user'], error)) {
+        return;
+    }
+
+    var usrId = {userId: params.user};
+
+    MyActivityStatus.find(usrId).exec(function (err, res){
+        if (err) error (err);
+        else done(res);
+    });
+};
 
 
 module.exports = enrolledCourses;

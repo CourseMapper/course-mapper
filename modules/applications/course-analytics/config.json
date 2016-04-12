@@ -26,14 +26,6 @@
       "runOn": "server"
     },
     {
-      "name": "Course Listing Date Created",
-      "location": "course-listing",
-      "description": "Widget that show the created date of a course in the course-listing page",
-      "entryPoint": "/course-analytics/course-list-createdDate.js",
-      "icon":"/img/appPlaceholder.png",
-      "runOn": "server"
-    },
-    {
       "name": "Course Listing Latest Activity",
       "location": "course-listing",
       "description": "Widget that show the latest activity of a course in the course-listing page",
@@ -90,7 +82,7 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "Node Activity History",
+      "name": "Content Activity History",
       "location": "course-analytics",
       "description": "Analytics bar graph to show the history of activity in all of the nodes in this course",
       "entryPoint": "/course-analytics/ca-node-history-analytics",

@@ -149,5 +149,41 @@ router.get('/newsfeed', function (req, res, next){
     );
 });
 
+router.get('/my-node-activity-status', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var myCrs = new Course();
+    myCrs.getUserMyNodeActivityStatus(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            user: mongoose.Types.ObjectId(req.user._id)
+        },
+        function success(myNodeActivityStatus){
+            res.status(200).json({result:true, myNodeActivityStatus:myNodeActivityStatus});
+        }
+    );
+})
+
+router.get('/my-discussion-status', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var myCrs = new Course();
+    myCrs.getUserMyDiscussionStatus(
+        function error(err){
+            res.status(200).json({result:false, message:err});
+        },
+        {
+            user: mongoose.Types.ObjectId(req.user._id)
+        },
+        function success(myDiscussionStatus){
+            res.status(200).json({result:true, myDiscussionStatus:myDiscussionStatus});
+        }
+    );
+});
+
 
 module.exports = router;
