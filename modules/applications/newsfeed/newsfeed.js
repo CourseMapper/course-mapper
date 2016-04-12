@@ -745,13 +745,13 @@ var NewsfeedListener = {
                                             if (res) {
                                                 var nf = new NewsfeedAgg(
                                                     {
-                                                        userId: user._id,
+                                                        userId: doc.authorId,
                                                         actionSubjectIds: videoId,
                                                         actionSubject: "video annotation",
                                                         actionName: res.name,
                                                         courseId: result.courseId,
                                                         nodeId: res.id,
-                                                        actionType: "replied",
+                                                        actionType: "added",
                                                         dateAdded: doc.date_created
                                                     }
                                                 );
@@ -827,7 +827,7 @@ var NewsfeedListener = {
                         SubTopics.findOne({_id: treeNodeId})
                             .exec(function (err, res) {
                                 if (res) {
-                                    var curDate = Date.now()
+                                    var curDate = Date.now();
                                     var nf = new NewsfeedAgg(
                                         {
                                             userId: userId,
