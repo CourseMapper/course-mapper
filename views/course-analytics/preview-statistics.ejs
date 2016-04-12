@@ -14,7 +14,7 @@
                         <div class="description-block">
                             <h5 class="description-header" style="font-size: 25px;"><i class="ionicons ion-ios-people"></i></h5>
                             <span class="description-text" style="font-size: 12px"><b>{{totalUser}}</b> {{totalUser <= 1 ? 'Participant': 'Participants'}}</span><br/>
-                            <span class="description-text" style="font-size: 12px"><b>{{treeNodes.length}}</b> {{treeNodes.length <= 1 ? 'sub topic': 'sub topics'}}</span>
+                            <span class="description-text" style="font-size: 12px"><b>{{(treeNodes | filter:isTrue).length}}</b> {{treeNodes.length <= 1 ? 'sub topic': 'sub topics'}}</span>
                         </div>
                         <!-- /.description-block -->
                     </div>
