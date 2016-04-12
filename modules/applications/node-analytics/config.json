@@ -2,7 +2,7 @@
   "name": "Node Analytics",
   "widgets":[
     {
-      "name": "A Node Activity History",
+      "name": "Content Node Activity History",
       "location": "node-analytics",
       "description": "Analytics bar graph to show the history of activity in a node",
       "entryPoint": "/node-analytics/na-node-history-analytics",
