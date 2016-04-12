@@ -1,9 +1,21 @@
-<link href="/admin-lte/css/posts.css" rel="stylesheet" type="text/css"/>
 <div ng-controller="LinksController">
 
     <div class="row">
         <div class="col-xs-11" id="LinksList">
-            <h4>Links</h4>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <h4>Links</h4>
+                </div>
+                <div class="col-xs-12 col-sm-6" ng-show="links.length > 1">
+                    <select id="orderTypeSelect"
+                            ng-model="orderType"
+                            ng-init="orderType = orderingOptions[0]"
+                            ng-options="item as item.name for item in orderingOptions"
+                            class="form-control">
+                    </select>
+                </div>
+            </div>
 
             <div ng-show="links.length == 0" class="posts-list">
                 <ul class="posts">
@@ -23,6 +35,8 @@
                         ng-hide="bookmark.isDeleted"
                         ng-click="initiateLink(bookmark._id)"
                     >
+                        <div class="changePage" ng-if="$index !=0 && $index % 10 == 0"></div>
+
                         <div class="row">
                             <div class="col-xs-1">
                                 <voting vote-type="link" vote-type-id="{{bookmark._id}}" vote-value=""></voting>
@@ -52,10 +66,12 @@
                 </ul>
 
                 <pagination total-rows="linksLength()"
+                            set-reset="paginationReset()"
                             limit="10"
                             use-search="false"
-                            sort-by="dateAdded"
-                            order-by="desc"
+                            sort-by="{{sortBy}}"
+                            order-by="{{orderBy}}"
+                            current-page="{{currentPage}}"
                             object-service="linkService"
                             success-cb="newRowsFetched">
                 </pagination>

@@ -149,7 +149,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         debug('success attaching files');
     }
 
-    function generateRandomPos(){
+    function generateRandomPos() {
         return Math.floor((Math.random() * 110) + 50);
     }
 
@@ -191,9 +191,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
                 success(tn);
 
                 if (params.type == 'contentNode') {
-                    Plugin.doAction('onAfterContentNodeEdited', tn);
-                } else {
-                    Plugin.doAction('onAfterSubTopicEdited', tn);
+                    Plugin.doAction('onAfterContentNodeEdited', tn, params);
                 }
 
             })
@@ -237,12 +235,16 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
                 }
 
                 debug('success creating node');
-                TreeNodes.findById(tn._id).populate('resources').exec(function (err, doc) {
-                    if (doc)
-                        success(doc);
-                    else
-                        error(err);
-                });
+
+                TreeNodes.findById(tn._id)
+                    .populate('resources')
+                    .populate('createdBy', '_id displayName username')
+                    .exec(function (err, doc) {
+                        if (doc)
+                            success(doc);
+                        else
+                            error(err);
+                    });
             })
             .catch(function (err) {
                 debug('failed adding Tree Node');
@@ -291,49 +293,52 @@ catalog.prototype.getNodeAsync = function () {
  * @param success
  */
 catalog.prototype.getTreeNodes = function (error, params, success) {
-    TreeNodes.find(params).populate('resources').exec(function (err, docs) {
-        if (!err) {
-            var cats = helper.convertToDictionary(docs);
+    TreeNodes.find(params)
+        .populate('resources')
+        .populate('createdBy', 'displayName _id')
+        .exec(function (err, docs) {
+            if (!err) {
+                var cats = helper.convertToDictionary(docs);
 
-            // keys for the ref ids of parent and childrens
-            var parent = 'parent';
-            var children = 'childrens';
+                // keys for the ref ids of parent and childrens
+                var parent = 'parent';
+                var children = 'childrens';
 
-            var tree = [];
+                var tree = [];
 
-            function again(cat) {
-                if (cat[children]) {
-                    var childrens = [];
-                    for (var e in cat[children]) {
-                        var catId = cat[children][e];
-                        var childCat = cats[catId];
-                        childrens.push(childCat);
-                        again(childCat);
+                function again(cat) {
+                    if (cat[children]) {
+                        var childrens = [];
+                        for (var e in cat[children]) {
+                            var catId = cat[children][e];
+                            var childCat = cats[catId];
+                            childrens.push(childCat);
+                            again(childCat);
+                        }
+
+                        cat[children] = childrens;
+                    }
+                }
+
+                for (var i in cats) {
+                    // get the root
+                    var doc = cats[i];
+
+                    if (doc.isDeleted) {
+                        doc.name = "[DELETED]";
                     }
 
-                    cat[children] = childrens;
+                    if (!doc[parent]) {
+                        again(doc);
+                        tree.push(doc);
+                    }
                 }
+
+                success(tree);
+            } else {
+                error(err);
             }
-
-            for (var i in cats) {
-                // get the root
-                var doc = cats[i];
-
-                if (doc.isDeleted) {
-                    doc.name = "[DELETED]";
-                }
-
-                if (!doc[parent]) {
-                    again(doc);
-                    tree.push(doc);
-                }
-            }
-
-            success(tree);
-        } else {
-            error(err);
-        }
-    });
+        });
 };
 
 catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdate, success) {
@@ -372,7 +377,7 @@ catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdat
     });
 };
 
-catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, success) {
+catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, user, success) {
     TreeNodes.findById(paramsWhere).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -389,7 +394,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
                     else {
                         // success saved the cat
                         success(tn);
-                        Plugin.doAction('onAfterNodeEdited', tn);
+                        Plugin.doAction('onAfterSubTopicEdited', tn, user);
                     }
                 });
             }
@@ -397,7 +402,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
     });
 };
 
-catalog.prototype.deleteNode = function (error, params, success) {
+catalog.prototype.deleteNode = function (error, params, user, success) {
     TreeNodes.findById(params).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -424,18 +429,39 @@ catalog.prototype.deleteNode = function (error, params, success) {
                     error(helper.createError('Cannot delete node with childrens'));
                 }
 
+                Resources.update({
+                        treeNodeId: tn._id
+                    },
+                    {
+                        $set: {isDeleted: true}
+                    },
+                    {
+                       multi: true
+                    }).exec();
+
             } else {
                 tn.isDeleted = true;
                 tn.dateDeleted = new Date();
                 tn.save(
                     function (err) {
                         if (err) {
-                            debug('failed update node position');
+                            debug('failed delete node');
                             error(err);
                         }
                         else {
+                            Resources.update({
+                                    treeNodeId: tn._id
+                                },
+                                {
+                                    $set: {isDeleted: true}
+                                },
+                                {
+                                    multi: true
+                                }
+                            ).exec();
+
                             success(tn);
-                            Plugin.doAction('onAfterNodeDeleted', tn);
+                            Plugin.doAction('onAfterNodeDeleted', tn, user);
                         }
                     }
                 );

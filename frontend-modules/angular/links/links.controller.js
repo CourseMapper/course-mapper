@@ -11,6 +11,17 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.links = [];
     $scope.errors = [];
     $scope.isLoading = false;
+    $scope.orderType = 'dateAdded.-1';
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Most Popular'}
+    ];
 
     $scope.initiateLink = function (pid) {
         $scope.pid = pid;
@@ -31,6 +42,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.linksLength = function () {
         return $scope.links.length;
+    };
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
     };
 
     $scope.initTab = function (node) {
@@ -65,7 +80,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         $scope.manageActionBar();
         $rootScope.$broadcast('onNodeLinkTabOpened', $scope.currentTab);
     };
-
 
     $scope.saveNewPost = function (isValid) {
         if (!isValid)
@@ -247,7 +261,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     });
 
-
     /**
      * watch for different window size
      */
@@ -256,6 +269,38 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         return $window.innerWidth;
     }, function (value) {
         $scope.wSize = Page.defineDevSize(value);
+    });
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            linkService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 10,
+                lastPage: false
+            });
+
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.pageReset = Math.random();
+
+            linkService.init(treeNodeService.treeNode._id,
+
+                function (posts) {
+                    $scope.links = posts;
+                    $scope.pageTitleOnLink = Page.title();
+                    $scope.initiateLink();
+                },
+
+                function (errors) {
+                    toastr.error(errors);
+                }, true
+            );
+        }
     });
 
     $scope.tabOpened();

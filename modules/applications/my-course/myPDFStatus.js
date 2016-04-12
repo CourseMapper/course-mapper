@@ -19,7 +19,7 @@ pdfStatus.prototype.getPdfStatus = function (error, params, done) {
 
     var user = {userId: params.userId};
 
-    MyPdfStatus.find(user).populate('nodeId').populate('courseId').exec(function (err, res){
+    MyPdfStatus.find(user).populate('nodeId').populate('courseId', '-description').exec(function (err, res){
         if (err) error (err);
         else
             done(res);

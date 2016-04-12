@@ -4,6 +4,9 @@ admin.controller('applicationsController', function ($scope, $route, $routeParam
     $scope.routeParams = $routeParams;
     $scope.widgets = null;
 
+    $scope.sortType = 'location';
+    $scope.sortReverse = false;
+
     $scope.init = function () {
         $http.get('/api/widgets/all')
             .success(function (res) {

@@ -1,0 +1,15 @@
+{
+  "name": "Node Analytics",
+  "widgets":[
+    {
+      "name": "Node Activity History",
+      "location": "node-analytics",
+      "description": "Analytics bar graph to show the history of activity in a node",
+      "entryPoint": "/node-analytics/na-node-history-analytics",
+      "widgetJavascript": ["na-history-analytics.js"],
+      "width": 6,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    }
+  ]
+}

@@ -27,10 +27,10 @@ app.directive('pdfComment',
                 postComment: '&',
                 recentSubmitOnAnnotation: '=',
                 commentText: '=',
-                removeFunction: '&'
+                removeFunction: '&',
             },
 
-            templateUrl: '/angular/views/pdf-comment.html',
+            templateUrl: '/partials/pdf-comment.html',
 
             controller: function($http, $scope, $rootScope, $sce){
                 //$scope.commentText = "";

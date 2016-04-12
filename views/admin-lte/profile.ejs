@@ -27,30 +27,35 @@
                             <i class="ionicons ion-ios-gear"></i> Account Settings</a></li>
 
                     <li>
+                        <a class="cursor"
+                           href="/settings/apps"
+                           title="Manage your permission to permited 3rd party apps">
+                            <i class="ionicons ion-settings"></i> App Settings</a></li>
+
+                    <li>
                         <a style="cursor: pointer;"
                            title="Add or remove dashboard widgets"
                            data-toggle="modal" data-target="#widgetGallery"><i
-                                class="ionicons ion-android-apps"></i> Widgets Store</a></li>
+                                    class="ionicons ion-android-apps"></i> Widgets Store</a></li>
 
                     <% if(user.role == 'admin'){ %>
                     <li><a href="/cm-admin/" title="admin"> Admin Panel</a></li>
-                    <% }%>
+                    <% } %>
                 </ul>
             </div>
         </section>
 
         <!-- Main content -->
-        <section class="content" ng-controller="widgetController" ng-init="location='user-profile'">
+        <section class="content" ng-controller="profileWidgetController">
             <div class="row" id="dashboard">
 
                 <!-- analytics-->
-                <div class="grid-stack col-sm-12 col-md-12" id="user-profile-widgets"
-                     ng-init="location='user-profile';
-                                  initiateDraggableGrid('user-profile');">
+                <div class="grid-stack col-sm-12 col-md-12" id="user-profile-widgets">
                     <div class="grid-stack-item"
                          data-gs-no-resize="yes"
-                         data-gs-locked="yes"
-                         ng-repeat="wdg in widgets" id="w{{wdg._id}}">
+                         ng-repeat="wdg in widgets" id="w{{wdg._id}}"
+                         on-finish-render="afterAllWidgetsRendered">
+
                         <div class="grid-stack-item-content">
                             <div class="box no-shadow">
                                 <div class="box-header with-border">
@@ -60,7 +65,7 @@
                                         <button class="btn btn-box-tool" data-widget="remove"
                                                 data-toggle="tooltip" title="Remove"
                                                 ng-click="closeWidget(wdg._id);"
-                                                >
+                                        >
                                             <i class="fa fa-times"></i></button>
                                     </div>
                                 </div>
@@ -97,10 +102,8 @@
 </div><!-- ./wrapper -->
 
 <% include profiles/editAccountModal %>
-
 <% include jsfooter %>
 
-<script src="/gridstack/gridstack.js"></script>
 <!--add chart.js source-->
 <script src="/chartjs/Chart.min.js"></script>
 <script src="/chartjs/angular-chart.min.js"></script>

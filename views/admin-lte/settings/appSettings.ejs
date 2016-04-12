@@ -1,0 +1,50 @@
+<% include ../header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" ng-controller="AppSettingController">
+
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">3rd Party App Settings</li>
+            </ol>
+        </section>
+
+        <section class="content-header action-header blue">
+            <ol class="breadcrumb">
+                <li class="home">3rd Party App Settings</li>
+            </ol>
+
+            <div class="navbar-custom-menu">
+                <ul>
+                    <li>
+                        <a class="cursor" href="/accounts"
+                           title="Change account settings">
+                            <i class="ionicons ion-ios-gear"></i> My Account</a></li>
+
+                    <li>
+                        <a class="cursor"
+                           href="/settings/apps"
+                           title="Manage your permission to permited 3rd party apps">
+                            <i class="ionicons ion-settings"></i> App Settings</a></li>
+
+
+                </ul>
+            </div>
+        </section>
+
+        <!-- Main content -->
+        <% include settings %>
+        <!-- /.content -->
+
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+<% include ../jsfooter %>
+<% include ../footer %>

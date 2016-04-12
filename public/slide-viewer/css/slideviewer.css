@@ -1,69 +1,145 @@
-.debug{
-    border-style: solid;
-    border-color: #ff0000;
-}
-.hasOnClick{
-    cursor: pointer;
-}
-.blueText{
-    color: blue;
+.debug {
+  border-style: solid;
+  border-color: #ff0000;
 }
 
-.slideRectWrapper{
-
-
-
+.hasOnClick {
+  cursor: pointer;
 }
 
-.filter-header{
-  margin-bottom:20px;
+.blueText {
+  color: blue;
 }
 
-#inpFieldCurrPage{
+.slideRectWrapper {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+.colorPickerWrapper {
+  float: left;
+  margin-left: -20px;
+  width: 20px;
+}
+
+.annoFadeEffect {
+  opacity: 0.125;
+  transition: opacity .2s ease-in-out;
+  -moz-transition: opacity .2s ease-in-out;
+  -webkit-transition: opacity .2s ease-in-out;
+}
+
+.annoFadeEffect:hover {
+  opacity: 0.75;
+}
+
+.annoEditEffect {
+  opacity: 0.75;
+  border: 1px dashed white;
+  transition: background-color .1s linear;
+  -moz-transition: background-color .1s linear;
+  -webkit-transition: background-color .1s linear;
+}
+
+.slideEditIcon {
+  float: right;
+  color: #fff;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.slideValidationIcon {
+  color: #fff;
+  margin: 2px;
+}
+
+.filter-header {
+  margin-bottom: 20px;
+}
+
+#inpFieldCurrPage {
   width: 25pt;
   color: #fff;
   text-align: center;
   background-color: #333;
-  border-width:0px;
-  border:none;
+  border-width: 0px;
+  border: none;
 
 }
 
-#annoZonesTriggersId{
+#annoZonesTriggersId {
   color: #fff;
   cursor: pointer;
-  font-size : 10pt;
+  font-size: 10pt;
 }
 
-input#searchInput{
+input#searchInput {
   height: 34px;
   margin-top: 10px;
 
 }
 
-.cmtBx{
+.cmtBx {
   background-color: rgba(0, 0, 255, 0.05);
 }
 
-#replyAnno.replyControl{
+#replyAnno.replyControl {
   padding-top: 10px;
   padding-bottom: 10px;
 }
 
-.annoZonesNote{
+.CreatedAnnoZones-header {
   font-size: 9pt;
   font-weight: bold;
-  color: #333;
-  text-align: left;
-  float:left;
+  color: #545454;
+  margin-bottom: 0px;
 }
 
-.filter-header{
+.currentCommentPageClass {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #545454;
+  margin-bottom: 0px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.currentCommentPageClass:hover {
+  text-decoration: underline;
+}
+
+.createdAnnoZoneButton {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+  padding: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 2px;
+  float: left;
+}
+
+.createdAnnoZoneButton:hover {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+}
+
+.annoZonesNote {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #7e7e7e;
+  text-align: left;
+  float: left;
+}
+
+.filter-header {
   font-size: 9pt;
   font-weight: bold;
   color: #545454;
 }
-.filter-tag{
+
+.filter-tag {
   font-size: 9pt;
   font-weight: bold;
   color: #fff;
@@ -73,85 +149,94 @@ input#searchInput{
   padding-right: 5px;
   margin: 2px;
 }
-.filter-tag:hover{
+
+.filter-tag:hover {
   font-size: 9pt;
   font-weight: bold;
   color: #fff;
   background-color: #B4CDCD !important;
 
 }
-.filter-tag:active{
+
+.filter-tag:active {
   font-size: 9pt;
   font-weight: bold;
   color: #fff;
   background-color: #B4CDCD !important;
 
 }
-.filter-tag:focus{
+
+.filter-tag:focus {
   font-size: 9pt;
   font-weight: bold;
   color: #fff;
   background-color: #B4CDCD !important;
 }
 
-
-#tagErrorList{
+#tagErrorList {
   font-size: 9pt;
   font-weight: bold;
-  color:red;
+  color: red;
 }
 
-.slideRectSpan > .slideRectInput{
-  width:80%;
+.slideRectSpan > .slideRectInput {
+  width: 80%;
   max-width: 50px;
   min-width: 10px;
+  color: #000
 
 }
-.slideRect{
+
+.slideRect {
   min-width: 126px;
   min-height: 26px;
 }
- .btn.btn-white.btn-link{
+
+.btn.btn-white.btn-link {
   padding-top: 0px;
   padding-bottom: 0px;
   padding-right: 6px;
   padding-left: 6px;
 }
 
-.btn.btn-default.color-dropdown.dropdown-toggle.no-hex{
+.btn.btn-default.color-dropdown.dropdown-toggle.no-hex {
   padding: 1px;
 }
 
-.slideRect > .ui-resizable-handle.ui-resizable-ne{
-  height: 0px;
-  width: 0px;
-}
-.slideRect > .ui-resizable-handle.ui-resizable-nw{
-  height: 0px;
-  width: 0px;
-}
-.slideRect > .ui-resizable-handle.ui-resizable-sw{
+.slideRect > .ui-resizable-handle.ui-resizable-ne {
   height: 0px;
   width: 0px;
 }
 
-.slideRect > .ui-resizable-handle{
+.slideRect > .ui-resizable-handle.ui-resizable-nw {
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle.ui-resizable-sw {
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle {
   background-color: white;
 }
 
-#viewerWrapper{
-    position: relative;
-    top: 0px;
-    left:0px;
+#viewerWrapper {
+  position: relative;
+  top: 0px;
+  left: 0px;
 }
-#annotationZone{
-    bottom: 45px;
-    width: 100%;
-    height: auto;
-    position: absolute;
-    top: 0px;
+
+#annotationZone {
+  bottom: 45px;
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 0px;
 }
-.slideRectSpan{
+
+.slideRectSpan {
   color: white;
   font-weight: bold;
   padding-left: 2pt;
@@ -159,75 +244,76 @@ input#searchInput{
   margin-left: 2px;
 }
 
-.commentZoneList{
+.commentZoneList {
   /*max-height: 600px;*/
-/*  overflow-y: auto;
-  overflow-x: hidden;*/
+  /*  overflow-y: auto;
+    overflow-x: hidden;*/
 }
 
-#commentList{
+#commentList {
   max-height: 600px;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
+.slideRect1 {
+  min-width: 126px;
+  min-height: 30px;
 
-.slideRect{
-}
-.btn-white{
-     color: #FFF;
-    }
-
-.btn-white:hover{
-   color: #FFF;
 }
 
-.slideRect:hover{
+.btn-white {
+  color: #FFF;
 }
 
-#viewerContainer{
+.btn-white:hover {
+  color: #FFF;
 }
-.notSelectable{
+
+#viewerContainer {
+}
+
+.notSelectable {
   -moz-user-select: none;
   -khtml-user-select: none;
   -webkit-user-select: none;
   -o-user-select: none;
 }
-.iconSlideNav{
-    font-size: 15pt;
-    vertical-align: middle;
-    display: inline-block;
-    color: #fff;
-    cursor: pointer;
+
+.iconSlideNav {
+  font-size: 15pt;
+  vertical-align: middle;
+  display: inline-block;
+  color: #fff;
+  cursor: pointer;
 }
 
-#slideNavText{
-    font-size: 12pt;
-    vertical-align: middle;
-    display: inline-block;
-    color: #fff
+#slideNavText {
+  font-size: 12pt;
+  vertical-align: middle;
+  display: inline-block;
+  color: #fff
 }
 
-#slideNavigationProgress,
-.slideNavigationProgress{
+#progress-bar {
   width: 100%;
-  height: 4pt;
-  background-color: #191919;
+  height: 100%;
+  position: relative;
 }
 
-#slideNavigationCurrentProgress,
-.slideNavigationCurrentProgress
-{
-  width:0%;
-  height: 100%;
-  background-color: #FFA500;
+#progress-indicator {
+  height: 33%;
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  background: orange;
 }
 
 #slideNavigation,
-.slideNavigation{
+.slideNavigation {
   background-color: black;
-  margin-right: 0px;
-  margin-left: 0px;
+  margin-right: 0;
+  margin-left: 0;
   padding-top: 1%;
   padding-bottom: 1%;
   width: 100%;

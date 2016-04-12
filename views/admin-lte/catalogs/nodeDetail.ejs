@@ -4,7 +4,6 @@
     <ol class="breadcrumb">
         <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="/courses/#/category/{{course.category.slug}}%>"> </i> {{course.category.name}}</a></li>
-        <li class="active"><a href="#/cid/{{course._id}}?tab=preview">{{course.name}}</a></li>
     </ol>
 </section>
 <% } %>
@@ -21,9 +20,10 @@
                 {{course.name}}
             </a>
         </li>
-        <li><a href="/course/{{course.slug}}/#/cid/{{course._id}}?tab=map&center={{nodeId}}">Map</a></li>
+        <li ng-show="nodeId"><a href="/course/{{course.slug}}/#/cid/{{course._id}}?tab=map&center={{nodeId}}">Map</a>
+        </li>
         <% } %>
-        <li>
+        <li ng-show="treeNode">
             <a href="/course/{{course.slug}}/#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a>
         </li>
         <li class="active">{{tabDisplayName}}</li>
@@ -62,6 +62,7 @@
 
 <!-- modal contents -->
 <% include nodeDetailModal %>
+<div ng-include="'/accounts/nodeloginform'"></div>
 <!-- /.modal contents -->
 
 <script>
@@ -78,5 +79,7 @@
         //Set the min-height of the content and sidebar based on the
         //the height of the document.
         $(".content-wrapper #courseTabs").css('min-height', window_height - neg - neg2 - neg2);
+
+        $('[data-tooltip="tooltip"]').tooltip();
     });
 </script>

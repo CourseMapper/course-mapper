@@ -27,11 +27,14 @@ NodeLinks.prototype.getNodeLinks = function (error, nodeId, pageParams, success)
         pageParams.lastPage = 0;
     }
 
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Links.find({
             contentNode: nodeId,
             isDeleted: false
         })
-        .sort({dateAdded: -1})
+        .sort(sortOption)
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
         .populate('createdBy', 'username displayName')
@@ -66,7 +69,7 @@ NodeLinks.prototype.getNodeLink = function (error, pId, success) {
         });
 };
 
-NodeLinks.prototype.editPost = function (error, params, success) {
+NodeLinks.prototype.editPost = function (error, params, user, success) {
     Links.findOneAndUpdate(
         {
             _id: params.linkId
@@ -83,13 +86,13 @@ NodeLinks.prototype.editPost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterLinkEdited', doc);
+                Plugin.doAction('onAfterLinkEdited', params, user);
                 success(doc);
             }
         });
 };
 
-NodeLinks.prototype.deletePost = function (error, params, success) {
+NodeLinks.prototype.deletePost = function (error, params, user, success) {
     Links.update(
         {
             _id: params.linkId
@@ -103,7 +106,7 @@ NodeLinks.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterLinkDeleted', params.linkId);
+                Plugin.doAction('onAfterLinkDeleted', params, user);
                 success(doc);
             }
         });

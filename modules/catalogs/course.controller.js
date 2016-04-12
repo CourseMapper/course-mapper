@@ -37,8 +37,8 @@ catalog.prototype.getCourse = function (error, params, success) {
         });
 };
 
-catalog.prototype.getCourseAsync = function(params){
-    return async(function(){
+catalog.prototype.getCourseAsync = function (params) {
+    return async(function () {
         var crs = await(Course.findOne(params)
             .populate('category courseTags')
             .populate('createdBy', '_id username displayName')
@@ -60,8 +60,7 @@ catalog.prototype.getCourseAsync = function(params){
  */
 catalog.prototype.checkUsername = function (error, params, success) {
     Course.findOne({
-        _id: params.courseId,
-        createdBy: params.userId
+        _id: params.courseId
     }, function (err, doc) {
         if (err) {
             error(err);
@@ -112,25 +111,36 @@ catalog.prototype.enroll = function (error, userParam, courseParam, done, isEnro
     var userId = userParam.id;
     var courseId = courseParam.id;
 
-    UserCourses.findOneAndUpdate({
+    var job = async(function () {
+        var usc = await(UserCourses.findOne({
             user: userId,
             course: courseId
-        },
-        {
-            user: userId,
-            course: courseId,
-            isEnrolled: isEnrolled
-        },
-        {upsert: true}
-    ).exec(function (err, doc) {
-        if (err) {
+        }). exec());
+
+        if (usc) {
+            usc.isEnrolled = isEnrolled;
+            await(usc.save());
+        } else {
+            var usc = new UserCourses({
+                user: userId,
+                course: courseId,
+                isEnrolled: isEnrolled
+            });
+
+            await(usc.save());
+        }
+
+        return usc;
+    });
+
+    job().then(function (doc) {
+            Plugin.doAction('onAfterEnrollorLeaveCourse', doc);
+            done(doc);
+        })
+        .catch(function (err) {
             // perhaps this user is already enrolled
             error(err)
-        } else {
-            done(doc);
-            Plugin.doAction('onAfterEnrollorLeaveCourse', doc);
-        }
-    });
+        });
 };
 
 /**
@@ -155,7 +165,9 @@ catalog.prototype.addCourse = function (error, params, success) {
         name: params.name,
         createdBy: mongoose.Types.ObjectId(params.userId),
         category: mongoose.Types.ObjectId(params.category),
-        description: params.description
+        description: params.description,
+        smallDescription: params.smallDescription,
+        totalEnrollment: 0
     });
 
     course.setSlug(params.name);
@@ -250,7 +262,9 @@ catalog.prototype.editCourse = function (error, params, files, success) {
 
     function saveEditCourse(course) {
         course.name = params.name;
+        course.setSlug(course.name);
         course.description = params.description;
+        course.smallDescription = params.smallDescription;
         course.courseTags = [];
 
         // save the update
@@ -304,7 +318,7 @@ catalog.prototype.editCourse = function (error, params, files, success) {
         }
 
         success(course);
-        Plugin.doAction('onAfterCourseEdited', course);
+        Plugin.doAction('onAfterCourseEdited', course, params);
     }
 
     self.getCourse(error,
@@ -313,14 +327,15 @@ catalog.prototype.editCourse = function (error, params, files, success) {
         },
 
         function (course) {
-            userHelper.isAuthorized(error,
-                {
+
+            userHelper.isCourseAuthorizedAsync({
                     userId: params.userId,
                     courseId: params.courseId
-                },
+                })
 
-                function (isAllowed) {
-                    if (isAllowed) {
+                .then(function (isAllwd) {
+
+                    if (isAllwd) {
                         if (params.video && params.video == 'delete') {
                             course.video = undefined;
                             course.save(function () {
@@ -337,6 +352,10 @@ catalog.prototype.editCourse = function (error, params, files, success) {
                     } else {
                         error(helper.createError401());
                     }
+
+                })
+                .catch(function () {
+                    error(helper.createError401());
                 });
         }
     );
@@ -390,14 +409,27 @@ catalog.prototype.saveSettings = function (params) {
     }
 };
 
-catalog.prototype.getCourses = function (error, params, success) {
-    Course.find(params, function (err, docs) {
-        if (!err) {
-            success(docs);
-        } else {
-            error(err);
-        }
-    });
+catalog.prototype.getCourses = function (error, params, pageParams, success) {
+
+    if (!pageParams.lastPage || pageParams.lastPage == 'false') {
+        pageParams.lastPage = 0;
+    }
+
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
+    Course
+        .find(params)
+        .sort(sortOption)
+        .skip(pageParams.lastPage)
+        .limit(pageParams.limit)
+        .exec(function (err, docs) {
+            if (!err) {
+                success(docs);
+            } else {
+                error(err);
+            }
+        });
 };
 
 /**
@@ -415,6 +447,37 @@ catalog.prototype.getUserCourses = function (error, params, done) {
         if (err) error(err);
         else
             done(res);
+    });
+};
+
+catalog.prototype.getCreatedCourses = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['userId'], error)) {
+        return;
+    }
+
+    Course.find({createdBy: params.userId}).exec(function (err, res) {
+        if (err) error(err);
+        else
+            done(res);
+    });
+};
+
+
+catalog.prototype.delete = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['courseId'], error)) {
+        return;
+    }
+
+    Course.findOne({_id: params.courseId}).exec(function (err, doc) {
+        if (err) error(err);
+        else if (doc) {
+            if (doc.createdBy.equals(mongoose.Types.ObjectId(params.user._id)) || params.user.role == 'admin') {
+                doc.isDeleted = true;
+                doc.save(function () {
+                    done();
+                });
+            }
+        }
     });
 };
 

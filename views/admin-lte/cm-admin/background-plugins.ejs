@@ -1,0 +1,117 @@
+<!-- Main content -->
+<div class="col-lg-12" id="Applications">
+    <!-- Custom Tabs -->
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" data-target="#tab_1">All Widgets</a></li>
+            <li>
+                <a data-toggle="tab" data-target="#tab_2">Active</a></li>
+            <li>
+                <a data-toggle="tab" data-target="#tab_3">Not Active</a></li> 
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Location</th>
+                        <th>Widget</th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets">
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_2">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Widget</th>
+                        <th>Location</th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets" ng-show="widget.isActive">
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_3">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>Widget</th>
+                        <th>Location</th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets" ng-hide="widget.isActive">
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
+        </div>
+    </div>
+    <!-- /.tab-content -->
+</div>
+<!-- nav-tabs-custom -->
+</div>
+
+<!--<pre>
+{{route}}
+{{location}}
+{{routeParams}}
+</pre>-->
+
+<div class="clear"></div>

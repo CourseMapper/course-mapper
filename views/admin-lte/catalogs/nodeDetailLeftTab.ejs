@@ -8,6 +8,7 @@
             data-displayName="<%= activeTabs[i].displayName %>"
     >
         <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
+           data-tooltip="tooltip" title="<%= activeTabs[i].displayName %>"
            data-toggle="tab" data-target="#<%= activeTabs[i].name %>">
             <i class="<%= activeTabs[i].icon %>"></i><br>
             <span><%= activeTabs[i].displayName %></span>
@@ -28,6 +29,7 @@
             data-displayName="<%= activeTabs[i].displayName %>"
     >
         <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
+           data-tooltip="tooltip" title="<%= activeTabs[i].displayName %>"
            data-toggle="tab" data-target="#<%= activeTabs[i].name %>"
            onclick="hideTabMenu()">
             <i class="<%= activeTabs[i].icon %>"></i><br>

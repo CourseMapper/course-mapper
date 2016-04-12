@@ -16,62 +16,64 @@ var router = express.Router();
 /**
  * get all tree nodes based on course id
  */
-router.get('/treeNodes/course/:courseId', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
+router.get('/treeNodes/course/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
 
-    var courseId = mongoose.Types.ObjectId(req.params.courseId);
-    var userId = mongoose.Types.ObjectId(req.user._id);
+        var courseId = mongoose.Types.ObjectId(req.params.courseId);
+        var userId = mongoose.Types.ObjectId(req.user._id);
 
-    userHelper.isEnrolledAsync({userId: userId, courseId: courseId})
-        .then(function (isAllowd) {
-            if (!isAllowd)
-                return helper.resReturn(helper.createError401(), res);
+        userHelper.isEnrolledAsync({userId: userId, courseId: courseId})
+            .then(function (isAllowd) {
+                if (!isAllowd)
+                    return helper.resReturn(helper.createError401(), res);
 
-            var tr = new Tree();
+                var tr = new Tree();
 
-            tr.getTreeNodes(
-                function (err) {
-                    helper.resReturn(err, res);
-                },
-                {
-                    courseId: courseId
-                },
-                function (treeNodes) {
-                    res.status(200).json({result: true, treeNodes: treeNodes});
-                }
-            );
-        })
-        .catch(function (err) {
-            helper.resReturn(err, res);
-        });
-});
+                tr.getTreeNodes(
+                    function (err) {
+                        helper.resReturn(err, res);
+                    },
+                    {
+                        courseId: courseId
+                    },
+                    function (treeNodes) {
+                        res.status(200).json({result: true, treeNodes: treeNodes});
+                    }
+                );
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+    });
 
 /**
  * get all tree nodes underneath a node id
  */
-router.get('/treeNode/:nodeId', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
-
-    var tr = new Tree();
-
-    tr.getTreeNode(
-        function (err) {
-            helper.resReturn(err, res);
-        },
-        {
-            _id: mongoose.Types.ObjectId(req.params.nodeId)
-        },
-        function (treeNode) {
-            res.status(200).json({result: true, treeNode: treeNode});
+router.get('/treeNode/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
         }
-    );
-});
+
+        var tr = new Tree();
+
+        tr.getTreeNode(
+            function (err) {
+                helper.resReturn(err, res);
+            },
+            {
+                _id: mongoose.Types.ObjectId(req.params.nodeId)
+            },
+            function (treeNode) {
+                res.status(200).json({result: true, treeNode: treeNode});
+            }
+        );
+    });
 
 /**
  * POST
@@ -137,165 +139,171 @@ router.post('/treeNodes', multipartyMiddleware, function (req, res, next) {
 /**
  * GET to let the server know that the user is interacting with videoPlayer
  */
-router.put('/treeNodes/watch/:courseId/:nodeId/:resourceId', function (req, res, next) {
-    if (!req.user)
-        return res.status(401).send('Unauthorized');
+router.put('/treeNodes/watch/:courseId/:nodeId/:resourceId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user)
+            return res.status(401).send('Unauthorized');
 
-    var cid, nid, rid, uid;
-    try {
-        cid = mongoose.Types.ObjectId(req.params.courseId);
-        nid = mongoose.Types.ObjectId(req.params.nodeId);
-        rid = mongoose.Types.ObjectId(req.params.resourceId);
-        uid = mongoose.Types.ObjectId(req.user._id);
-    } catch (err) {
-        helper.resReturn("Ids needs to be an object id", res);
-        return;
-    }
+        var cid, nid, rid, uid;
+        try {
+            cid = mongoose.Types.ObjectId(req.params.courseId);
+            nid = mongoose.Types.ObjectId(req.params.nodeId);
+            rid = mongoose.Types.ObjectId(req.params.resourceId);
+            uid = mongoose.Types.ObjectId(req.user._id);
+        } catch (err) {
+            helper.resReturn("Ids needs to be an object id", res);
+            return;
+        }
 
-    var params = {
-        courseId: cid,
-        nodeId: nid,
-        resourceId: rid,
-        userId: uid
-    };
+        var params = {
+            courseId: cid,
+            nodeId: nid,
+            resourceId: rid,
+            userId: uid
+        };
 
-    params = _.extend(params, req.body);
+        params = _.extend(params, req.body);
 
-    Plugin.doAction('onVideoUpdateState', params);
+        Plugin.doAction('onVideoUpdateState', params);
 
-    res.status(200).json({
-        result: true
+        res.status(200).json({
+            result: true
+        });
     });
-});
 
 /**
  * update node.positionFromRoot value
  */
-router.put('/treeNodes/:nodeId/positionFromRoot', function (req, res, next) {
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
+router.put('/treeNodes/:nodeId/positionFromRoot', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
 
-    var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-    var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        var userId = mongoose.Types.ObjectId(req.user._id);
 
-    var tr = new Tree();
-    tr.isNodeAuthorized({nodeId: nodeId, userId: userId})
-        .then(function (isAllwd) {
-            if (!isAllwd)
-                return helper.resReturn(helper.createError401(), res);
+        var tr = new Tree();
+        tr.isNodeAuthorized({nodeId: nodeId, userId: userId})
+            .then(function (isAllwd) {
+                if (!isAllwd)
+                    return helper.resReturn(helper.createError401(), res);
 
-            tr.updateNodePosition(
-                function (err) {
-                    helper.resReturn(err, res);
-                },
-                {
-                    _id: nodeId
-                }
-                ,
-                {
-                    x: req.body.x,
-                    y: req.body.y
-                },
-                function (tn, updPos) {
-                    updPos.nodeId = tn._id;
-                    updPos.userId = req.user._id;
-                    socketIoHelper.io.to('map/' + tn.courseId).emit('positionUpdated', updPos);
+                tr.updateNodePosition(
+                    function (err) {
+                        helper.resReturn(err, res);
+                    },
+                    {
+                        _id: nodeId
+                    }
+                    ,
+                    {
+                        x: req.body.x,
+                        y: req.body.y
+                    },
+                    function (tn, updPos) {
+                        updPos.nodeId = tn._id;
+                        updPos.userId = req.user._id;
+                        socketIoHelper.io.to('map/' + tn.courseId).emit('positionUpdated', updPos);
 
-                    res.status(200).json({treeNode: tn});
-                }
-            );
-        })
-        .catch(function (err) {
-            helper.resReturn(err, res);
-        });
-});
+                        res.status(200).json({treeNode: tn});
+                    }
+                );
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+    });
 
 /**
  * update node name value
  */
-router.put('/treeNodes/:nodeId', function (req, res, next) {
-    // check for user rights
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
+router.put('/treeNodes/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        // check for user rights
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
 
-    var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-    var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        var userId = mongoose.Types.ObjectId(req.user._id);
 
-    var tr = new Tree();
-    tr.isNodeAuthorized({nodeId: nodeId, userId: userId})
-        .then(function (isAllwd) {
-            if (!isAllwd)
-                return helper.resReturn(helper.createError401(), res);
+        var tr = new Tree();
+        tr.isNodeAuthorized({nodeId: nodeId, userId: userId})
+            .then(function (isAllwd) {
+                if (!isAllwd)
+                    return helper.resReturn(helper.createError401(), res);
 
-            tr.updateNode(
-                function (err) {
-                    helper.resReturn(err, res);
-                },
-                {
-                    _id: nodeId
-                }
-                ,
-                req.body,
-                function (tn) {
-                    res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
-                    tn = tn.toObject();
-                    tn.nodeId = tn._id;
-                    tn.userId = req.user._id;
-                    socketIoHelper.io.to('map/' + tn.courseId).emit('nodeUpdated', tn);
-                }
-            );
-        })
-        .catch(function (err) {
-            helper.resReturn(err, res);
-        });
-});
+                tr.updateNode(
+                    function (err) {
+                        helper.resReturn(err, res);
+                    },
+                    {
+                        _id: nodeId
+                    }
+                    ,
+                    req.body,
+                    req.user,
+                    function (tn) {
+                        res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
+                        tn = tn.toObject();
+                        tn.nodeId = tn._id;
+                        tn.userId = req.user._id;
+                        socketIoHelper.io.to('map/' + tn.courseId).emit('nodeUpdated', tn);
+                    }
+                );
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+    });
 
 /**
  * delete a node (setting isDeleted to true)
  */
-router.delete('/treeNodes/:nodeId', function (req, res, next) {
-    // check for user rights
-    if (!req.user) {
-        res.status(401).send('Unauthorized');
-        return;
-    }
+router.delete('/treeNodes/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res, next) {
+        // check for user rights
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
 
-    var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-    var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        var userId = mongoose.Types.ObjectId(req.user._id);
 
-    var tr = new Tree();
-    tr.isNodeAuthorized({nodeId: nodeId, userId: userId})
-        .then(function (isAllwd) {
-            if (!isAllwd)
-                return helper.resReturn(helper.createError401(), res);
+        var tr = new Tree();
+        tr.isNodeAuthorized({nodeId: nodeId, userId: userId})
+            .then(function (isAllwd) {
+                if (!isAllwd)
+                    return helper.resReturn(helper.createError401(), res);
 
-            tr.deleteNode(
-                function (err) {
-                    helper.resReturn(err, res);
-                },
-                {
-                    _id: nodeId
-                }
-                ,
-                function (tn) {
-                    res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
-                    if (!tn.isDeletedForever) {
-                        tn = tn.toObject();
+                tr.deleteNode(
+                    function (err) {
+                        helper.resReturn(err, res);
+                    },
+                    {
+                        _id: nodeId
+                    },
+                    req.user
+                    ,
+                    function (tn) {
+                        res.status(200).json({result: ((tn) ? true : false), treeNode: tn});
+                        if (!tn.isDeletedForever) {
+                            tn = tn.toObject();
+                        }
+
+                        tn.nodeId = nodeId;
+                        tn.userId = req.user._id;
+                        socketIoHelper.io.to('map/' + tn.courseId).emit('nodeDeleted', tn);
                     }
-
-                    tn.nodeId = nodeId;
-                    tn.userId = req.user._id;
-                    socketIoHelper.io.to('map/' + tn.courseId).emit('nodeDeleted', tn);
-                }
-            );
-        })
-        .catch(function (err) {
-            helper.resReturn(err, res);
-        });
-});
+                );
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+    });
 
 module.exports = router;

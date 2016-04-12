@@ -178,7 +178,8 @@ router.get('/course/:slug', function (req, res, next) {
         function (cours) {
             if (!cours)
                 res.send(404);
-
+            else if (cours.isDeleted === true)
+                res.send(404);
             else {
                 var TC = new TabsController();
 

@@ -68,7 +68,7 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,isAdmin,done) {
                         if (errB) {
                             err('Server Error: Unable to update annotation zone');
                         } else {
-                            upAllRefs(oldName, newName, pdfId,err,function(){done();});
+                            upAllRefs(oldName, newName, currentTag.pageNumber, pdfId,err,function(){done();});
                             Plugin.doAction('onAfterAnnotationZonePdfEdited', updatedAnnotationZonePDF);
                         }
                     });
@@ -95,7 +95,7 @@ AnnZones.prototype.updateAnnotationZone = function(err,params,isAdmin,done) {
   }
 };
 
-AnnZones.prototype.convertRawText2 = function(rawText,id,data){
+AnnZones.prototype.convertRawText2 = function(rawText,id,data, pdfPage){
 
   var check = AnnZones.prototype.checkTagName;
 
@@ -103,23 +103,54 @@ AnnZones.prototype.convertRawText2 = function(rawText,id,data){
     //TODO: test for success
     var tagNameList = [];
     var tagColorList = [];
+    var tagPageList = [];
 
-    for(var i = 0; i < data.length; i++){
+    for (var i = 0; i < data.length; i++) {
       tagNameList[i] = data[i].annotationZoneName;
       tagColorList[i] = data[i].color;
+      tagPageList[i] = data[i].pdfPageNumber;
     }
     //console.log(data);
 
 
-    var renderedText = rawText.replace(/#(\w+)/g, function(x){
-        if(check(x,tagNameList) != -1){
+    var renderedText = rawText.replace(/#(\w+)((@p)(\w+))?/g, function (x) {
+      //console.log("Found tag with name: "+x);
+      var strSplit = x.split("@p");
+      var hasPage = false;
+      var page = 0;
+      var originalX = x;
+      if (strSplit.length != 2 && strSplit.length != 1) {
+        return x;
+      }
 
-          var ret = "<label class='annotationZoneReference' style='color: #" + tagColorList[check(x,tagNameList)] + "'>" + x + "</label>";
-          return ret;
+      if (strSplit.length == 2) {
+        x = strSplit[0];
+        page = strSplit[1];
+        hasPage = true;
+      }
+
+
+      if (check(x, tagNameList) != -1) {
+        //console.log("Checked tag with name: "+x);
+
+        var tagId = check(x, tagNameList);
+        var ret;
+        if(hasPage){
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "' data-toggle='tooltip' data-placement='bottom' title='Referenced from page "+page+"'>" + originalX + "</label>";
+        }else{
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "'>" + originalX + "</label>";
         }
-        else {
-          return x;
-        }
+
+        if (hasPage && page != tagPageList[tagId])
+          return originalX;
+        if (!hasPage && pdfPage != tagPageList[tagId])
+          return originalX;
+
+        return ret;
+      }
+
+
+      return x;
 
     });
 
@@ -138,7 +169,7 @@ AnnZones.prototype.checkTagName = function(tagName,tagNameList){
 
 };
 
-AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,done) {
+AnnZones.prototype.updateAllReferences = function(oldName, newName, pageNumber, pdfId,err,done) {
   /*console.log(AnnotationsPDF);
   var ann = new Comments();
   ann.updateAllReferences(oldName,newName,pdfId,err,done);*/
@@ -148,7 +179,7 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
   var newName2 = validator.escape(newName);
 
   //console.log("NAMES");
-  //console.log("xxx"+oldName+"xxx");
+  //console.log("xxx"+pageNumber+"xxx");
   //console.log("xxx"+newName+"xxx");
 
   AnnotationsPDF.find({pdfId: pdfId}, function (err2, data) {
@@ -164,25 +195,47 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pdfId,err,do
           var currentId = data[key].id;
           var changed = false;
           var rawText = data[key].rawText;
-          var newRawText = rawText.replace(/#(\w+)/g, function(x){
-            //console.log(x);
-            if(x == oldName){
-              //console.log("found one");
-              var ret = newName2;
-              changed = true;
-              return ret;
-            }
-            else {
-              return x;
-            }
-          });
+          var annPage = data[key].pdfPageNumber;
+          //console.log("xxx"+annPage+"xxx");
+
+          if(pageNumber == annPage){
+            var newRawText = rawText.replace(/#(\w+)/g, function(x){
+              //console.log(x);
+              if(x == oldName){
+                //console.log("found one");
+                var ret = newName2;
+                changed = true;
+                return ret;
+              }
+              else {
+                return x;
+              }
+            });
+          }
+          else{
+            var newRawText = rawText.replace(/#(\w+)@p[0-9]+/g, function(x){
+              //console.log(x);
+              //console.log(oldName + "@" + pageNumber);
+
+              if(x == oldName + "@p" + pageNumber){
+                //console.log("found one");
+                var ret = newName2 + "@p" + pageNumber;
+                changed = true;
+                return ret;
+              }
+              else {
+                return x;
+              }
+            });
+          }
+
           //console.log("HEREEE");
           if(changed) {
             //console.log(newRawText);
 
             //console.log("BLUB");
             //console.log(currentId);
-            newRenderedText = convertRaw(newRawText, currentId, annZoneData);
+            newRenderedText = convertRaw(newRawText, currentId, annZoneData, annPage);
             var newText = {
               rawText: newRawText,
               renderedText: newRenderedText
@@ -337,8 +390,9 @@ var permArray;
 
 AnnZones.prototype.submitTagObjectList = function(err,tags, pdfId, callback){
   this.getAnnotationZonesById(pdfId, function(completed,data){
-    if(!completed)
+    if(!completed){
       return callback(false);
+    }
     else {
       var oldTagList = data;
       var currentIndex = 0;
@@ -349,8 +403,9 @@ AnnZones.prototype.submitTagObjectList = function(err,tags, pdfId, callback){
 
 function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
   var currentTag = JSON.parse(tags[currentIndex]);
-  if(!validateTagObject(currentTag,oldTagList,false))
+  if(!validateTagObject(currentTag,oldTagList,false)){
     callback(false);
+  }
   else {
     /*var annotationZonePDF = new AnnotationZonesPDF({
       annotationZoneName: currentTag.annotationZoneName,
@@ -387,6 +442,7 @@ function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
 };
 
 function validateTagObject(currentTag,oldTagList,simple) {
+  console.log(currentTag);
   var ret = true;
   if(!(currentTag.annotationZoneName.length >= 3))
     return false;
@@ -396,7 +452,9 @@ function validateTagObject(currentTag,oldTagList,simple) {
   ret &= validator.isAlphanumeric(currentTag.annotationZoneName.substring(1));
   ret &= nameIsAvailable(currentTag.annotationZoneName,oldTagList);
 
-  ret &= validator.isHexadecimal(currentTag.color);
+  ret &= (currentTag.color[0] == '#');
+  ret &= validator.isHexadecimal(currentTag.color.substring(1));
+  //ret &= validator.isHexadecimal(currentTag.color);
 
   if(!simple) {
     ret &= validator.isFloat(currentTag.relativeCoordinates.X);

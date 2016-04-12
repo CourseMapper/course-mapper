@@ -17,7 +17,7 @@
     "description": "to show tree map on course",
     "isDefaultActivated": true,
     "icon": "ionicons ion-map",
-    "ngShow": "isEnrolled || isOwner || isManager"
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
   },
   {
     "orderNo": 3,
@@ -27,7 +27,7 @@
     "description": "to show discussion",
     "isDefaultActivated": true,
     "icon": "ionicons ion-ios-chatboxes-outline",
-    "ngShow": "isEnrolled || isOwner || isManager"
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
   },
   {
     "orderNo": 4,
@@ -37,7 +37,7 @@
     "description": "to show analytics",
     "isDefaultActivated": true,
     "icon": "ionicons ion-stats-bars",
-    "ngShow": "isEnrolled || isOwner || isManager"
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
   },
   {
     "orderNo": 1,
@@ -47,7 +47,7 @@
     "description": "to show video",
     "isDefaultActivated": true,
     "icon": "fa fa-file-video-o",
-    "ngShow": "(isEnrolled || isOwner || isManager) && videoFile"
+    "ngShow": "(isEnrolled || isOwner || isManager || isAdmin) && videoFile"
   },
   {
     "orderNo": 2,
@@ -57,7 +57,7 @@
     "description": "to show pdf",
     "isDefaultActivated": true,
     "icon": "fa fa-file-pdf-o",
-    "ngShow": "(isEnrolled || isOwner || isManager) && pdfFile"
+    "ngShow": "(isEnrolled || isOwner || isManager || isAdmin) && pdfFile"
   },
   {
     "orderNo": 3,
@@ -67,7 +67,7 @@
     "description": "to show discussion",
     "isDefaultActivated": true,
     "icon": "ionicons ion-link",
-    "ngShow": "isEnrolled || isOwner || isManager"
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
   },
   {
     "orderNo": 4,
@@ -77,6 +77,6 @@
     "description": "to show analytics",
     "isDefaultActivated": true,
     "icon": "ionicons ion-stats-bars",
-    "ngShow": "isEnrolled || isOwner || isManager"
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
   }
 ]

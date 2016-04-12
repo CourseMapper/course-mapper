@@ -1,35 +1,123 @@
+<% include ../header %>
+<div class="wrapper">
 
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
 
-            <div class="container">
-                <div class="row ">
-                    <div class="col-md-9" style="opacity: 0.9;padding:40px;margin-top:20px;background: white">
-                        <h1><i class="ion-information-circled"></i> &nbsp;&nbsp;We are still developing</h1>
+    <section class="content-header" ng-controller="aboutController">
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+            <li>About CourseMapper</li>
+        </ol>
+    </section>
 
-                        <br/>
-                        <p class="lead">With not just many missing links are expected to be found, but also
-                            non-functional
-                            buttons and interfaces.<br/>
-                            Please be aware that we are still studying our usabilities, while also implementing
-                            features.
-                        </p>
+    <div class="content-wrapper">
+        <section class="content">
+            <div class="box">
 
-                        <p class="lead">
-                            If you arrived at this page, that means you are participating in our early access program
-                            for our
-                            requirement and usabilities studies.
-                            <br/>
+                <div class="box-header">
+                    <h3>About CourseMapper</h3>
+                </div>
+                <div class="box-body">
+                    <p>
+                        CourseMapper is a mind map-based collaborative course annotation and analytics platform that
+                        fosters collaboration and interaction around pdf/video learning materials, supported by visual
+                        learning analytics.
+                    </p>
+                    <br>
+                    <p>
+                        The CourseMapper project is supervised by <strong> Dr. Mohamed Amine Chatti</strong></p>
+                </div>
+            </div>
+            <div class="box-header">
+                <h3>Features/Team </h3>
+            </div>
+            <div class="box">
+                <div class="box-header">
+                    <h4>Overall UX, Widget System, REST API Implementation and Course Map Tool</h4>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <img src="/img/coursemap.png" style="width: 100%">
+                        </div>
 
-                        </p>
+                        <div class="col-xs-12 col-sm-6">
+                            Implemented by R. Laksono. <br><br>
 
-                        <p class="lead">
-                            We thank you for your participations.
-                        </p>
+                            Course Map Tool allows course participants to collaborate on creating or modifying course
+                            structures.
+                            The course structures are visualised as mind map. In it, participants can add course
+                            materials such as PDF, Videos and Links.
+                        </div>
                     </div>
                 </div>
             </div>
-<style>
-    .content-wrapper{
-        background-size:cover;
-        background: url(/img/bg.jpg) no-repeat center; 
-    }
-</style>
+
+            <div class="box">
+                <div class="box-header"><h4>PDF Reader and Annotation Tool</h4>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <img src="/img/pdf.png" style="width:100%">
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            Implemented by J. Klöckner and I. Dimitrialis.<br>
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="box">
+                <div class="box-header">
+                    <h4>Video Viewer and Annotation tools</h4></div>
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6"><img src="/img/video.png" style="width:100%">
+                        </div>
+                        <div class="col-xs-12 col-sm-6">Implemented by M. Momchil.<br>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="box-header"><h4>Analytics Widgets on Courses, Videos and PDFs</h4>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6"> Implemented by Z. Sofyan.<br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="box-header"><h4>Technologies</h4>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <ul>
+                                <li>NodeJS, ExpressJS, PassportJS, Socket.io</li>
+                                <li>MongoDB, Mongoose</li>
+                                <li>AdminLTE, Bootstrap framework, jQuery, jQueryUI</li>
+                                <li>GridStack, JSPlumb, QuillJS</li>
+                                <li>Angular and many others</li>
+                                <li>PDF.js</li>
+                                <li>Videogular</li>
+                                <li>FootprintJS</li>
+                                <li>ChartJS</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div><!-- ./wrapper -->
+<% include ../jsfooter %>
+<% include ../footer %>

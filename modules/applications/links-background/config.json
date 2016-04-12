@@ -1,0 +1,13 @@
+{
+  "name": "Links Background Service",
+  "widgets": [
+    {
+      "name": "Vote Aggregator",
+      "location": "background-plugin",
+      "description": "-",
+      "entryPoint": "-",
+      "icon": "/img/appPlaceholder.png",
+      "runOn": "server"
+    }
+  ]
+}

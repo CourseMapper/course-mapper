@@ -23,7 +23,7 @@ app.directive('comment',
                 replyAction: '&'
             },
 
-            templateUrl: '/angular/views/discussion.reply.html'/*,
+            templateUrl: '/partials/discussion.reply.html'/*,
 
             link: function (scope, element, attrs) {
                 $timeout(function () {

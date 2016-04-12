@@ -22,7 +22,7 @@ enrolledUserList.prototype.getUserList = function (error, params, done) {
     params.course = mongoose.Types.ObjectId(params.course);
     params.isEnrolled = true;
 
-    UserCourses.find(params).populate('user', 'username displayName').exec(function (err, res) {
+    UserCourses.find(params).populate('user', 'username displayName image').sort({dateUpdated: -1}).exec(function (err, res) {
         if (err) error(err);
         else {
             done(res);
@@ -31,6 +31,7 @@ enrolledUserList.prototype.getUserList = function (error, params, done) {
 
     });
 };
+
 
 
 

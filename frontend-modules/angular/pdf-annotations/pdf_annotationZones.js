@@ -2,7 +2,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
     $scope.storedAnnZones = [];
     $scope.storedAnnZoneColors = [];
-    $scope.tagNameErrors = {};
+    $rootScope.tagNameErrors = {};
     //$rootScope.pdfId = "";
 
     $scope.tagNamesList = JSON.parse(JSON.stringify({}));
@@ -11,8 +11,86 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     $scope.editZoneValues = [];
 
 
+    $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
+    $scope.divCounter = 0;
+
+    $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+    $rootScope.annotationSubmitPage = -1;
+
+    $scope.previousPageNumber = -1;
 
 
+
+    //$rootScope.annZoneBoxSizeX = 0;
+    //$rootScope.annZoneBoxSizeY = 0;
+
+    $rootScope.currCanWidth = 0;
+
+    $rootScope.currCanHeight = 0;
+
+
+    $scope.updateAnnZonePos = function(posObj) {
+      //console.log(posObj);
+    };
+
+
+
+    $rootScope.createMovableAnnZone = function() {
+      var element = $scope.addAnnotationZone(0, 0, 0.3, 0.3, "#ac725e", "", true, false, "");
+      //addAnnotationZoneElement(element);
+      var annZoneId = element.id;
+
+      $scope.tagNamesList[annZoneId] = "";
+    };
+
+    $rootScope.getTagNamesList = function(){
+      return $scope.tagNamesList;
+    };
+
+    $rootScope.getAnnotationZoneList = function(){
+      return $scope.annotationZoneList;
+    };
+
+
+    $scope.addAnnotationZone = function(relLeft,relTop, relWidth, relHeight, color, tagName, isBeingCreated, canBeEdited, annZoneId) {
+
+
+
+
+      var newAnnZone = {
+        relativePosition: {
+          x: relLeft,
+          y: relTop
+        },
+        relativeSize: {
+          x: relWidth,
+          y: relHeight
+        },
+        color: color,
+        colorBeforeEdit: color,
+        tagName: tagName,
+        editTagNameTemp: tagName.slice(1),
+        dragable: isBeingCreated,
+        isBeingCreated: isBeingCreated,
+        canBeEdited: canBeEdited,
+        annZoneId: annZoneId,
+        divCounter: $scope.divCounter,
+        id: 'rect-'+$scope.divCounter,
+        tagNameIsValidated: false,
+      };
+      $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
+      $scope.divCounter += 1;
+      //console.log("ADDED ZONE");
+      //console.log("DivC after: "+ $scope.divCounter);
+      //console.log($scope.annotationZoneList);
+
+      $timeout(function(){
+
+        $scope.$apply();
+
+      });
+      return newAnnZone;
+    };
 
 
     //$scope.annZoneMov = [];
@@ -29,12 +107,18 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
         }
     };*/
 
-    $scope.setEditZoneMode = function(id,divCounter,color) {
+    $scope.setEditZoneMode = function(id) {
       $rootScope.resetEditAndReplyMode();
 
       $scope.editZoneMode = id;
+      //console.log("setEditZoneMode");
+      //console.log(id);
 
-      var ele = $('select[name="colorpicker-change-background-color2"]');
+      $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
+      $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
+
+
+/*      var ele = $('select[name="colorpicker-change-background-color2"]');
       ele.parent().find(".simplecolorpicker").remove();
       ele.parent().css({"margin-left":"0px"});
       ele.remove();
@@ -42,10 +126,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
 
       var nColorPickerEditInput = $('<select/>');
       nColorPickerEditInput.attr("name","colorpicker-change-background-color2");
-      //nColorPickerEditInput.attr("value","#ac725e");
-      //nColorPickerEditInput.attr("value",color);
-      //nColorPickerEditInput.attr("ng-hide", "(editZoneMode != '"+id+"')");
-      //nColorPickerEditInput.attr("ng-model", "editZoneValues['" + id + "'].color");
       nColorPickerEditInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
       nColorPickerEditInput.attr("id", "colorPickerEditInput-" + divCounter);
       nColorPickerEditInput.addClass("slideRectColorPickerEdit");
@@ -58,7 +138,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       wrapperElement.prepend(nColorPickerEditInput);
       wrapperElement.css({"margin-left":"-20px"});
 
-      //$("#rect-"+divCounter).css({opacity:"0.75"});
       $("#rect-"+divCounter).hover(function () {
           $(this).stop().fadeTo("fast", "0.75");
       }, function () {
@@ -70,11 +149,6 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       $('select[name="colorpicker-change-background-color2"]').simplecolorpicker("selectColor",color);
 
 
-      /*$('#destroy').on('click', function() {
-        $('select').simplecolorpicker('destroy');
-      });*/
-      // By default, activate simplecolorpicker plugin on HTML selects
-      //$('#init').trigger('click');
 
 
       nColorPickerEditInput.on('change', function() {
@@ -85,35 +159,52 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
             $scope.$apply();
           });
         });
-
+*/
 
     };
 
     $rootScope.resetEditZoneMode = function() {
-      $rootScope.$broadcast('reloadTags');
+      //$rootScope.$broadcast('reloadTags');
+
+      var id = $scope.editZoneMode;
 
       $scope.writeCommentMode = false;
       $scope.replyRawText = [];
       $scope.replyMode = -1;
       $scope.editZoneMode = -1;
+      $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
 
-      var ele = $('select[name="colorpicker-change-background-color2"]');
+
+      /*var ele = $('select[name="colorpicker-change-background-color2"]');
       ele.parent().find(".simplecolorpicker").remove();
       ele.parent().css({"margin-left":"0px"});
       ele.remove();
+      */
+      if(id != -1){
+        $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
+        $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
+
+        $timeout(function(){
+          $scope.$apply();
+        });
+      }
     };
 
     $scope.updateAnnZone = function (id) {
 
+      $scope.annotationZoneList[id].tagName = $scope.annotationZoneList[id].editTagNameTemp;
+
       var config = {
         params: {
-          updateId: id,
+          updateId: $scope.annotationZoneList[id].annZoneId,
           author: $scope.currentUser.username,
           authorId: $scope.currentUser._id,
           updatedAnnZone:
           {
-            annotationZoneName: "#"+$scope.editZoneValues[$scope.editZoneMode].name,
-            color: $scope.editZoneValues[$scope.editZoneMode].color.substring(1)
+            annotationZoneName: "#"+$scope.annotationZoneList[id].tagName,
+            color: $scope.annotationZoneList[id].color,
+            pageNumber: $scope.currentPageNumber
+
           },
           pdfId: $scope.pdfFile._id,
         }
@@ -140,6 +231,7 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
               //console.log("updateAnnZoneEv");
 
               $rootScope.resetEditZoneMode();
+              $scope.$emit('reloadTags');
 
           })
           .error(function (data, status, headers, config) {
@@ -147,113 +239,200 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
           });
       };
 
-      $rootScope.removeAllActiveAnnotationZones = function () {
+      /*$rootScope.removeAllActiveAnnotationZones = function () {
         for(var inputId in $scope.tagNamesList) {
-            var element = $("#annotationZone #"+inputId);
+          var element = $("#annotationZone #"+inputId);
 
-            //var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
-
-          //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
-          //var inputId = element.attr("id");*/
-          //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-          //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-          //console.log(inputId);
           delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
           angular.element($("#annZoneList")).scope().timeout();
 
-          //annotationInList.parent().remove();
           element.remove();
+
+          delete $rootScope.tagNameErrors[inputId];
+          delete $scope.tagNamesList[inputId];
+
+        }
+      };*/
+
+      $rootScope.removeAllActiveAnnotationZones = function () {
+        for(var inputId in $scope.annotationZoneList)
+          if($scope.annotationZoneList[inputId].isBeingCreated == true)
+            delete $scope.annotationZoneList[inputId];
+
+
+        for(var inputId in $scope.tagNamesList) {
 
           delete $scope.tagNameErrors[inputId];
           delete $scope.tagNamesList[inputId];
 
-
-          /*var element = $(childElement).parent();
-          var rectId = element.find("#rectangleId").val();
-          var rectElement = $("#"+rectId);
-          rectElement.remove();
-          element.remove();*/
         }
+        var ret = $rootScope.annotationSubmitPage;
+        $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+        $rootScope.annotationSubmitPage = -1;
+
+        $timeout(function(){
+          $scope.$apply();
+        });
+        return ret;
+
       };
 
-    $rootScope.removeAnnotationZone = function (id) {
+    /*$rootScope.removeAnnotationZone = function (id) {
       var element = $("#annotationZone #"+id);
 
-      //var annotationInList = $("#annotationZoneSubmitList div").find("#"+id);
-      var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
+      //var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
 
-      //console.log("Will remove " +  annotationInList.length + " elements with id " + id);
       var inputId = element.attr("id");
 
-      //console.log(angular.element($("#annZoneList")).scope().tagNamesList);
-      //console.log(angular.element($("#annZoneList")).scope().tagNamesList[inputId]);
-      //console.log(inputId);
-      delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
-      angular.element($("#annZoneList")).scope().timeout();
+      //delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
+      delete $scope.tagNamesList[inputId];
+      $scope.timeout();
 
-      annotationInList.parent().remove();
+      //annotationInList.parent().remove();
       element.remove();
 
       delete $scope.tagNameErrors[id];
       delete $scope.tagNamesList[id];
 
+    };
+    */
+    $rootScope.removeAnnotationZone = function (id) {
 
-      /*var element = $(childElement).parent();
-      var rectId = element.find("#rectangleId").val();
-      var rectElement = $("#"+rectId);
-      rectElement.remove();
-      element.remove();*/
+      delete $scope.annotationZoneList[id];
+
+      delete $scope.tagNamesList[id];
+
+
+      delete $rootScope.tagNameErrors[id];
+
+      $scope.timeout();
 
     };
 
-//    $scope.removeAnnotationZone = function (id) {
-      //$rootScope.removeAnnotationZone(id);
-    //};
-
     $scope.refreshTags = function() {
-      //console.log('TAGS UPDATED: pdfid:'+ $scope.pdfFile._id +', pagenumber: ' + $scope.currentPageNumber);
-      //$http.get('/slide-viewer/disAnnZones/' + $scope.pdfFile._id + '/'+$scope.currentPageNumber).success(function (data) {
+      $scope.refreshTagsWithCallbacks(function(){});
+    };
+
+    $scope.refreshTagsWithCallbacks = function(callback) {
       $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
-        //console.log("Loading AnnZones");
-        //console.log("PDF_ID: "+ $scope.pdfId);
-        //console.log("PageNumber: " + $scope.currentPageNumber);
         $scope.annZones = data.annZones;
 
-        tagListLoaded($scope.annZones);
+        //tagListLoaded($scope.annZones);
+
+        $scope.tagListLoaded();
 
         $timeout(function(){
           $scope.$apply();
         });
-
-
-        /*$scope.$on('$stateChangeSuccess', function(){
-          console.log("ALL DONE AJS");
-        });
-        */
-
+        //console.log($scope.annotationZoneList);
+        callback();
       });
     };
+
+    $scope.tagListLoaded = function() {
+      for(var i = 0; i < $scope.annZones.length; i++) {
+        var ele = $scope.annZones[i];
+        var isAuthor = (ele.author == angular.element($("#annZoneList")).scope().currentUser.username);
+        var isAdmin =  angular.element($("#annZoneList")).scope().$root.user.role == "admin";
+        var allowedToEdit = (isAdmin || isAuthor);
+
+        if(ele.color[0] != '#')
+          ele.color = '#'+ele.color;
+
+        $scope.addAnnotationZone(ele.relPosX, ele.relPosY, ele.relWidth, ele.relHeight, ele.color, ele.name, false, allowedToEdit, ele.id)
+      }
+    };
+
+
 
 
 
 
     var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
-      //console.log("PdfPageChange: ");
-      $scope.$emit('reloadTags');
+      //Find relevant AnnZones
+      var nextPageNumber = params[0];
+
+      if($scope.previousPageNumber != -1){
+        var unfinishedAnnZonesList = [];
+        for(var key in $scope.annotationZoneList){
+          if($scope.annotationZoneList[key].isBeingCreated == true){
+            if($scope.annotationZoneList[key].tagName[0] != '#')
+              $scope.annotationZoneList[key].tagName = '#' + $scope.annotationZoneList[key].tagName;
+            unfinishedAnnZonesList.push($scope.annotationZoneList[key]);
+          }
+        }
+        //console.log("PDF PAGE CHANGE");
+        //console.log(unfinishedAnnZonesList.length);
+        //console.log($scope.previousPageNumber);
+        //Store them
+        if(unfinishedAnnZonesList.length != 0){
+          $rootScope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
+          $timeout(function(){
+            $scope.$apply();
+          });
+        }
+      }
+      $scope.$emit('reloadTagsWCallback', function(){
+        //Add previous ones
+        if($scope.previousPageNumber != -1){
+          if(nextPageNumber in $rootScope.annotationZonesOnOtherSlides){
+            //console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            for(var key  in $rootScope.annotationZonesOnOtherSlides[nextPageNumber]){
+              var elem = $rootScope.annotationZonesOnOtherSlides[nextPageNumber][key];
+              elem.id= 'rect-'+$scope.divCounter;
+              if(elem.id in $scope.annotationZoneList){
+                console.log("ERROR: Annzone overwritten, should not occur");
+              }
+              $scope.annotationZoneList[elem.id] = elem;
+              $scope.divCounter += 1;
+
+
+            }
+
+            //$scope.annotationZoneList.concat($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+            delete $rootScope.annotationZonesOnOtherSlides[nextPageNumber];
+          }
+        }
+        $scope.previousPageNumber = nextPageNumber;
+      });
     });
 
     $scope.$on('$destroy',pdfPageChangeListener);
 
 
     var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
-      //console.log("Reload Tags called");
-      $(".slideRect").remove();
+      $scope.$emit('reloadTagsWCallback', function(){});
+    });
+
+    var reloadTagsEventListenerWithCallback = $scope.$on('reloadTagsWCallback', function(event, callback) {
+      //$(".slideRect").remove();
+      //$scope.annotationZoneList = new Array();
+      $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
+      $scope.divCounter = 0;
+
+      annotationZonesAreLoaded = false;
+
+      toDrawAnnotationZoneData = [];
+
+      $timeout(function(){
+        $scope.$apply();
+      });
+
+      $scope.refreshTagsWithCallbacks(callback);
+    });
+
+    /*TODO:ANGANNZONE
+    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
+      $scope.annotationZoneList = new Array();
+      $scope.divCounter = 0;
 
       annotationZonesAreLoaded = false;
 
       toDrawAnnotationZoneData = [];
       $scope.refreshTags();
     });
+    */
+
 
     $scope.$on('$destroy',reloadTagsEventListener);
 
@@ -266,17 +445,25 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       );
     };
 
-    $scope.$watch("tagNamesList", function (newValue, oldValue) {
+    //Check if names of new annZones are correct
+    $scope.$watch("annotationZoneList", function (newValue, oldValue) {
       if(newValue != oldValue) {
-        if(typeof $scope.annZones != "undefined") {
+        if(typeof $scope.annotationZoneList != "undefined") {
           for(var key in newValue) {
-            //console.log(newValue[key]);
-            var response = $rootScope.checkTagName(newValue[key]);
-            if(response.length != 0) {
-              changeValidationDisplay(key, newValue[key], false, response)
-            }
-            else {
-              changeValidationDisplay(key, newValue[key], true, response)
+            var annZone = newValue[key];
+            if(annZone.isBeingCreated){
+
+              var tName = newValue[key].tagName;
+              //console.log(newValue[key]);
+              var response = $rootScope.checkTagName(tName);
+              if(response.length != 0) {
+                changeValidationDisplay(key, tName, false, response);
+                $scope.annotationZoneList[key].hasErrors = true;
+              }
+              else {
+                changeValidationDisplay(key, tName, true, response);
+                $scope.annotationZoneList[key].hasErrors = false;
+              }
             }
           }
         }
@@ -311,37 +498,32 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
     }
 
     function changeValidationDisplay (key, name, success, text) {
+      $scope.annotationZoneList[key].tagNameIsValidated = success;
+
       if(success){
-        //console.log("VAL SUCCESS ON " + key);
-        $("#"+key).find(".validationIcon").addClass("glyphicon");
+        /*$("#"+key).find(".validationIcon").addClass("glyphicon");
         $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
         $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
-        delete $scope.tagNameErrors[key];
+        */
+        delete $rootScope.tagNameErrors[key];
         $timeout(function(){
-          $scope.$apply($scope.tagNameErrors);
+          $scope.$apply($rootScope.tagNameErrors);
         });
-        //TODO: success
       }
       else {
-        //console.log("VAL ERROR ON " + key + ": "+text);
-        $("#"+key).find(".validationIcon").addClass("glyphicon");
-        $("#"+key).find(".validationIcon").removeClass("glyphicon-ok-sign");
-        $("#"+key).find(".validationIcon").addClass("glyphicon-remove-sign");
-        $scope.tagNameErrors[key] = {name : name, text : text};
-        //console.log($scope.tagNameErrors);
-        //console.log($scope.tagNameErrors[key]);
+        $rootScope.tagNameErrors[key] = {name : name, text : text};
+
         $timeout(function(){
-          $scope.$apply($scope.tagNameErrors);
+          $scope.$apply($rootScope.tagNameErrors);
         });
-        //TODO: failure
       }
     }
 
     $rootScope.nameHasNoError = function (name) {
 
-      for(var key in $scope.tagNameErrors) {
-        if($scope.tagNameErrors[key].name == name.substring(1)) {
-          if($scope.tagNameErrors[key].text == "") {
+      for(var key in $rootScope.tagNameErrors) {
+        if($rootScope.tagNameErrors[key].name == name.substring(1)) {
+          if($rootScope.tagNameErrors[key].text == "") {
             return true;
           }
           else {
@@ -352,23 +534,31 @@ app.controller('AnnotationZoneListController', function($scope, $http, $rootScop
       return true;
     };
 
+    $rootScope.deleteCurrentAnnotationZones = function(page,key) {
+       $rootScope.annotationZonesOnOtherSlides[page].splice(key,1);
+       if($rootScope.annotationZonesOnOtherSlides[page].length==0){
+         //$rootScope.annotationZonesOnOtherSlides.splice(page,1);
+       }
+    };
 
     $rootScope.clearTagNameErrors = function () {
       /*for(var key in $scope.tagNameErrors) {
         delete $scope.tagNameErrors[key];
         //console.log($scope.tagNameErrors[key]);
       }*/
-      $scope.tagNameErrors = JSON.parse(JSON.stringify({}));
+      $rootScope.tagNameErrors = JSON.parse(JSON.stringify({}));
       $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
       $timeout(function(){
-        $scope.$apply($scope.tagNameErrors);
+        $scope.$apply($rootScope.tagNameErrors);
       });
     };
 
     $scope.timeout = function () {
       $timeout(function(){
-        $scope.$apply($scope.tagNameErrors);
+        $scope.$apply($rootScope.tagNameErrors);
       });
     };
+
+
 });

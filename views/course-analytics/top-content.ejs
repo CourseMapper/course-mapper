@@ -1,0 +1,44 @@
+<div class="row" ng-controller="TopContentController" style="background-color: #ecf0f5;">
+    <div class="col-xs-12">
+        <div class="top-content">
+            <div class="info-box" style="margin-bottom: 0px; border: solid 1px #E5E5E5;">
+                <span class="info-box-icon">
+                    <!--<i class="fa fa-file-pdf-o"></i>-->
+                    <i class="fa fa-file-pdf-o"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Top Annotated Pdf</span>
+                    <span class="info-box-number" ng-if="topAnnotatedPdf === null">None</span>
+                    <span class="info-box-number" ng-if="topAnnotatedPdf !== null"  style="font-size: 16px;"><a href="/treeNode/{{topAnnotatedPdf.nodeId._id}}/#/cid/{{topAnnotatedPdf.courseId}}/nid/{{topAnnotatedPdf.nodeId._id}}?tab=pdf" class="">{{topAnnotatedPdf.nodeId.name | capitalize}}</a></span>
+                    <span class="progress-description" ng-if="topAnnotatedPdf !== null">{{topAnnotatedPdf.count}} <ng-pluralize count="topAnnotatedPdf.count" when="{'0': 'annotation', '1': 'annotation', 'other': 'annotations',}"></ng-pluralize></span>
+                </div>
+            </div>
+            <div class="info-box" style="margin-bottom: 0px; border: solid 1px #E5E5E5;">
+                <span class="info-box-icon">
+                    <i class="fa fa-file-video-o"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Top annotated video</span>
+                    <span class="info-box-number" ng-if="topAnnotatedVideo === null">None</span>
+                    <span class="info-box-number" ng-if="topAnnotatedVideo !== null" style="font-size: 16px;"><a href="/treeNode/{{topAnnotatedVideo.nodeId._id}}/#/cid/{{topAnnotatedVideo.courseId}}/nid/{{topAnnotatedVideo.nodeId._id}}?tab=video" class="">{{topAnnotatedVideo.nodeId.name | capitalize}}</a></span>
+                    <span class="progress-description" ng-if="topAnnotatedVideo !== null">{{topAnnotatedVideo.count}} <ng-pluralize count="topAnnotatedVideo.count" when="{'0': 'annotation', '1': 'annotation', 'other': 'annotations',}"></ng-pluralize></span>
+                </div>
+            </div>
+            <div class="info-box" style="margin-bottom: 0px; border: solid 1px #E5E5E5;">
+                <span class="info-box-icon">
+                    <i class="ion ion-link"></i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Content with most link</span>
+                    <span class="info-box-number" ng-if="topLinkNode === null">None</span>
+                    <span class="info-box-number" ng-if="topLinkNode !== null"  style="font-size: 16px;"><a href="/treeNode/{{topLinkNode.nodeId._id}}/#/cid/{{topLinkNode.courseId}}/nid/{{topLinkNode.nodeId._id}}?tab=links" class="">{{topLinkNode.nodeId.name | capitalize}}</a></span>
+                    <span class="progress-description" ng-if="topLinkNode !== null">{{topLinkNode.count}} <ng-pluralize count="topLinkNode.count" when="{'0': 'link', '1': 'link', 'other': 'links',}"></ng-pluralize></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+

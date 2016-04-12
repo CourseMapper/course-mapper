@@ -1,0 +1,17 @@
+<div class="voting">
+    <a class="cursor" ng-click="sendVote('up')">
+        <div class="btn-up" ng-class="getClassUp()">
+            <i class="ionicons ion-ios-arrow-up" ng-hide="(voteValue == 1)"></i>
+            <i class="ionicons ion-arrow-up-b" ng-show="(voteValue == 1)"></i>
+        </div>
+    </a>
+
+    <div class="vote-total">{{voteDisplay}}</div>
+
+    <a class="cursor">
+        <div class="btn-down" ng-class="getClassDown()" ng-click="sendVote('down')">
+            <i class="ionicons ion-ios-arrow-down" ng-hide="(voteValue == -1)"></i>
+            <i class="ionicons ion-arrow-down-b" ng-show="(voteValue == -1)"></i>
+        </div>
+    </a>
+</div>

@@ -1,3 +1,6 @@
+var passport = require('passport');
+var crypto = require('crypto');
+
 var cmLibraries = {
     /**
      * do validation of required parameters before sending them to query
@@ -104,7 +107,99 @@ var cmLibraries = {
             result: false,
             errors: errMsg
         });
+    },
+
+    l2pAuth: function (req, res, next) {
+        if (req.query.accessToken != undefined) {
+            passport.authenticate('custom', function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+
+                if (user) {
+                    req.logIn(user, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        return next();
+                    });
+                } else
+                    next();
+            })(req, res, next);
+        } else
+            next();
+    },
+
+    ensureAuthenticated: function (req, res, next) {
+        // local strategy
+        if (req.isAuthenticated()) {
+            return next();
+        } else {
+            // basic strategy
+            passport.authenticate(['basic', 'bearer'], {session: false}, function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    cmLibraries.resReturn(cmLibraries.createError401(), res);
+                }
+                else {
+                    if (req.user == undefined) {
+                        req.user = user;
+                    }
+                    return next();
+                }
+            })(req, res, next);
+        }
+    },
+
+    ensureAuthenticatedWithCallback: function (req, res, next) {
+        // local strategy
+        if (req.isAuthenticated()) {
+            return next();
+        } else {
+            // basic strategy
+            passport.authenticate(['basic', 'bearer'], {session: false}, function (err, user, info) {
+                if (err) {
+                    return next(err);
+                }
+                if (!user) {
+                    return next(new Error('401'));
+                }
+                else {
+                    req.logIn(user, function (err) {
+                        if (err) {
+                            return next(err);
+                        }
+
+                        return next();
+                    });
+                }
+            })(req, res, next);
+        }
+    },
+
+    uid: function (len) {
+        var buf = []
+            , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+            , charlen = chars.length;
+
+        for (var i = 0; i < len; ++i) {
+            buf.push(chars[cmLibraries.getRandomInt(0, charlen - 1)]);
+        }
+
+        return buf.join('');
+    },
+
+    getRandomInt: function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+
+    hash: function (passwd, salt) {
+        return crypto.createHmac('sha256', salt).update(passwd).digest('hex');
     }
+
 };
 
 module.exports = cmLibraries;

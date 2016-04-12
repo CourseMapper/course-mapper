@@ -1,0 +1,25 @@
+<h3>
+    Applications that are allowed to access your data
+</h3>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box-body no-border">
+            <div class="installedApps">
+                <ul>
+                    <li ng-repeat="app in installedApps">
+                        <p>{{app.name}}</p>
+                        <button type="button" class="btn btn-xs btn-warning"
+                                aria-label="Delete Installation"
+                                ng-click="deleteInstallation(app.clientId)">Delete Permission
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div ng-show="isEmptyObject(installedApps)">
+                There is no application installed.
+            </div>
+        </div>
+    </div>
+</div>

@@ -7,13 +7,17 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.jsPlumbConnections = [];
     $scope.widgets = [];
     $scope.isTreeInitiated = false;
-    $scope.isCurrentTabIsMap = false;
     $scope.infoToast = null;
     $scope.infoEmptyToast = null;
     $scope.instance = null;
     $scope.nodeModaltitle = "";
     $scope.currentNodeAction = {};
+    // for our view to show plus/minus button
     $scope.collapseStatus = {};
+
+    // {"0": {nodeId:isCollapsed},}
+    $scope.nodeChildrens = {};
+    $scope.firstloaded = true;
 
     /**
      * find node recursively
@@ -87,7 +91,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             function (err) {
                 console.log(err);
-                toastr.error('cannot load course tree');
+                //toastr.error('cannot load course tree');
             }
         );
     };
@@ -157,21 +161,26 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 found = false;
                 var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nId);
 
-                $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
-                    .success(function (res, status) {
-                        //console.log(res);
-                        if (pNode)
-                            pNode.positionFromRoot = distanceFromCenter;
-                    })
-                    .error(function (res, status) {
-                        console.log('err');
-                        console.log(res);
-                    });
+                $scope.sendPosition(nId, distanceFromCenter, pNode);
             }
         });
     };
 
+    $scope.sendPosition = function (nId, distanceFromCenter, pNode) {
+        $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
+            .success(function (res, status) {
+                //console.log(res);
+                if (pNode)
+                    pNode.positionFromRoot = distanceFromCenter;
+            })
+            .error(function (res, status) {
+                console.log('err');
+                console.log(res);
+            });
+    };
+
     $scope.initJSPlumb = function () {
+        jQuery('.tree-container').css('visibility', 'hidden');
         Tree.init(Canvas.w, Canvas.h);
         jsPlumb.ready(function () {
             $scope.instance = jsPlumb.getInstance({
@@ -192,7 +201,81 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 /*blanket on click to close dropdown menu*/
                 $scope.initDropDownMenuHybrid();
             });
+
+            $timeout(function () {
+                $scope.firstCollapse($scope.treeNodes);
+
+                $scope.initiateCollapse();
+                jQuery('.tree-container').css('visibility', 'visible');
+            })
         });
+    };
+
+    $scope.firstCollapse = function (treeNodes) {
+        if (!$scope.firstloaded)
+            return;
+
+        $scope.firstloaded = false;
+        for (var i = 0; i < treeNodes.length; i++) {
+            var child = treeNodes[i];
+
+            if (child.isDeletedForever)
+                continue;
+
+            $scope.getChildLength(child._id, 0, child);
+        }
+
+        // collapse on first level
+        for (var j in $scope.nodeChildrens[1]) {
+            var totalKids = $scope.nodeChildrens[1][j];
+            if (totalKids > 0) {
+                collapseService.setCollapse(j);
+                $scope.collapseStatus[j] = true;
+            } else {
+                collapseService.setExpand(j);
+                $scope.collapseStatus[j] = false;
+            }
+        }
+    };
+
+    $scope.initiateCollapse = function () {
+        for (var i in collapseService.collapsed) {
+            var colEl = 't' + collapseService.collapsed[i];
+            $scope.collapse(colEl, true);
+        }
+    };
+
+    $scope.getChildLength = function (nid, level, treeNodes) {
+        if ($scope.nodeChildrens[level] == undefined) {
+            $scope.nodeChildrens[level] = {};
+        }
+
+        if ($scope.nodeChildrens[level][nid] == undefined) {
+            $scope.nodeChildrens[level][nid] = 0;
+        }
+
+        var add = 0;
+        if (treeNodes.childrens && treeNodes.childrens.length > 0)
+            add = 1;
+
+        $scope.nodeChildrens[level][nid] += add;
+
+        if (level > 1) {
+            if ($scope.nodeChildrens[level][nid] > 0) {
+                collapseService.setCollapse(nid);
+                $scope.collapseStatus[nid] = true;
+            }
+        }
+
+        if (treeNodes.childrens && treeNodes.childrens.length > 0) {
+            level++;
+            for (var e in treeNodes.childrens) {
+                var ch = treeNodes.childrens[e];
+                $scope.getChildLength(ch._id, level, ch);
+            }
+        } else {
+            //console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
+        }
     };
 
     $scope.initDropDown = function (slug) {
@@ -218,6 +301,12 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 return false;
             })
             .on('mouseenter', function () {
+                if ($(this).hasClass('subTopic')) {
+                    return true;
+                }
+                if ($(this).hasClass('deleted')) {
+                    return true;
+                }
                 $scope.requestIconAnalyitics(slug);
             });
     };
@@ -248,6 +337,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
     $scope.showMapEmptyInfo = function () {
         if (!$scope.infoEmptyToast) {
+            toastr.clear();
             $scope.infoEmptyToast = toastr.info(
                 'Hi, this course is new, Please add a subtopic first, ' +
                 '<br>from there, you can add a content node, then upload a pdf or a video.' +
@@ -262,10 +352,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                     tapToDismiss: true,
                     extendedTimeOut: 10000,
                     timeOut: 10000,
-                    toastClass: 'toast wide',
+                    toastClass: 'toast wide'
                 });
         } else {
-            toastr.clear();
             $scope.infoEmptyToast = null;
         }
     };
@@ -304,8 +393,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             $scope.jsPlumbConnections.push(cc);
 
-            if (child.childrens) {
+            if (child.childrens)
                 $('#' + parent + ' .collapse-button').addClass('hasChildren');
+            if (child.childrens && child.childrens.length > 0) {
                 $scope.interConnect(childId, child.childrens, instance);
             }
         }
@@ -400,6 +490,26 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         }
     };
 
+    $scope.hasPdf = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    $scope.getPdfLink = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
+                return resources[i].link;
+            }
+        }
+
+        return false;
+    };
+
     $scope.getDataShape = function (nodeType) {
         if (nodeType == 'subTopic')
             return 'Ellipse';
@@ -409,6 +519,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
     $scope.requestIconAnalyitics = function (nodeId) {
         nodeId = nodeId.substring(1);
+        if (nodeId == 'enter')
+            return;
+
         $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
             function (res) {
                 $scope.isRequesting = false;
@@ -498,12 +611,17 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         }
     };
 
-    $scope.isOwner = function (tn) {
-        return tn.createdBy == $scope.user._id;
+    $scope.isNodeOwner = function (tn) {
+        if (tn.createdBy._id == $scope.user._id)
+            return true;
+        else if (tn.createdBy == $scope.user._id)
+            return true;
+
+        return false;
     };
 
     $scope.isAuthorized = function (tn) {
-        return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
+        return ($scope.isNodeOwner(tn) || $scope.isAdmin || $scope.isManager || $scope.isOwner);
     };
 
     $scope.addNewNodeIntoPool = function (treeNode) {
@@ -518,16 +636,22 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         else
             $scope.treeNodes.push(treeNode);
 
-        // destroy the jsplumb instance and svg rendered
-        $scope.destroyJSPlumb();
+        $timeout(function () {
+            $scope.$apply();
 
-        // this will reinitiate the model, and thus also jsplumb connection
-        $scope.reInitiateJSPlumb(function () {
-            if ($('.open').length > 0) {
-                $('.open').removeClass('open');
-                return true;
-            }
+            // destroy the jsplumb instance and svg rendered
+            $scope.destroyJSPlumb();
+
+            // this will reinitiate the model, and thus also jsplumb connection
+            $scope.reInitiateJSPlumb(function () {
+                $scope.donotInit = true;
+                if ($('.open').length > 0) {
+                    $('.open').removeClass('open');
+                    return true;
+                }
+            });
         });
+
     };
 
     $scope.afterEditNode = function (treeNode) {
@@ -566,21 +690,30 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             });
     };
 
-    $scope.collapse = function (el) {
+    $scope.collapse = function (el, isInit) {
         var nodeId = el.substring(1);
-        found = false;
 
+        found = false;
         var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
         if (pNode) {
-            var hide = collapseService.toggle(nodeId);
-            $scope.collapseStatus[nodeId] = hide;
-            collapseService.affectVisual(hide, pNode, nodeId);
+            var hide = false;
 
-            if (hide !== false) {
+            if (isInit === true)
+                hide = collapseService.isCollapsed(nodeId);
+            else
+                hide = collapseService.toggle(nodeId);
+
+            if (hide === false) {
+                $scope.collapseStatus[nodeId] = false;
                 $('#' + el).addClass('aborted');
-            } else {
+                collapseService.affectVisual(false, pNode, nodeId);
+            }
+            else if (hide >= 0 || hide == true) {
+                $scope.collapseStatus[nodeId] = true;
+                collapseService.affectVisual(true, pNode, nodeId);
                 $('#' + el).removeClass('aborted');
             }
+
         }
     };
 
@@ -597,7 +730,12 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     });
 
     $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        $scope.isTreeInitiated = true;
+        if (!$scope.isTreeInitiated && !$scope.donotInit) {
+            $scope.isTreeInitiated = true;
+            $scope.initJSPlumb();
+        } else {
+            $scope.donotInit = true;
+        }
     });
 
     $scope.$on('onAfterSetMode', function (event, course) {
@@ -605,21 +743,6 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             $scope.parseResources();
         }
     });
-
-    $scope.$watchGroup(['isTreeInitiated', 'isCurrentTabIsMap'], function (oldVal, newVal) {
-        if ($scope.isTreeInitiated === true && $scope.isCurrentTabIsMap === true) {
-            $scope.initJSPlumb();
-        }
-    });
-
-    $scope.$watch(function () {
-        return $location.search()
-    }, function (newVal, oldVal) {
-        var currentTab = $location.search().tab;
-        if (currentTab == 'map') {
-            $scope.isCurrentTabIsMap = true;
-        }
-    }, true);
 
     $(document).ready(function () {
         $scope.width = jQuery(window).width();
@@ -654,10 +777,11 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                 $('#' + elName).simulate("drag-n-drop", {dx: dx, dy: dy})
             }
 
+            found = false;
             var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
             if (pNode) {
                 pNode.positionFromRoot = {x: data.x, y: data.y};
-
+                mapService.updatePosition(nd, data);
                 $timeout(function () {
                     $scope.$apply();
                 });
@@ -671,7 +795,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             return;
 
         $scope.addNewNodeIntoPool(data);
-        console.log('nodeCreated');
+        mapService.addNode(data);
     });
 
     socket.on('nodeUpdated', function (data) {
@@ -683,8 +807,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         } else {
             $scope.afterEditNode(data);
         }
-
-        console.log('nodeUpdated');
+        mapService.updateNode(data);
     });
 
     socket.on('nodeDeleted', function (data) {
@@ -700,13 +823,13 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
             pNode.name = '[DELETED]';
 
+            mapService.deleteNode(data);
+
             // destroy the jsplumb instance and svg rendered
             $scope.destroyJSPlumb();
 
             // this will reinitiate the model, and thus also jsplumb connection
             $scope.reInitiateJSPlumb();
         }
-
-        console.log('nodeDeleted');
     })
 });

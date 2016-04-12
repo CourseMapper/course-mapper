@@ -7,7 +7,7 @@ angular.module('EnrolledUsers', [''])
         //alert(parseLoc);
         if (parseLoc) {
 
-            $http.get('/api/course-analytics/' + parseLoc).success(function (data) {
+            $http.get('/api/course-analytics/user-list/' + parseLoc).success(function (data) {
                 $scope.userList = data.courses;
 
             });

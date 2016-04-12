@@ -1,18 +1,20 @@
 var mongoose = require('mongoose');
 
 var widgetPlacementsSchema = new mongoose.Schema({
-    widgetId: {type:mongoose.Schema.Types.ObjectId, ref: "widgets"},
+    widgetId: {type: mongoose.Schema.Types.ObjectId, ref: "widgets"},
 
     application: {type: String, required: true},
     widget: {type: String, required: true},
+    options: {type: mongoose.Schema.Types.Mixed},
 
     location: {type: String, required: true},
     userId: {type: mongoose.Schema.Types.ObjectId, ref: "users"},
     courseId: {type: mongoose.Schema.Types.ObjectId, ref: "courses"},
+    nodeId: {type: mongoose.Schema.Types.ObjectId, ref: "treeNodes"},
     categoryId: {type: mongoose.Schema.Types.ObjectId, ref: "categories"},
 
     position: {type: mongoose.Schema.Types.Mixed},
-    isInstalled: {type: Boolean, default:true},
+    isInstalled: {type: Boolean, default: true},
 
     width: {type: Number},
     height: {type: Number},

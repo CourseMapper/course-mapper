@@ -17,11 +17,12 @@ courseLinkSchema.add({
     content: {type: String, required: true},
 
     isDeleted: Boolean,
+    totalVotes: {type: Number, default: 0},
 
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
 });
-courseLinkSchema.methods.setSlug = function(s) {
+courseLinkSchema.methods.setSlug = function (s) {
     this.slug = slug(s);
 };
 courseLinkSchema.pre('save', function (next) {

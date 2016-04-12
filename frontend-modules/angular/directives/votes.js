@@ -8,24 +8,24 @@ app.directive('voting',
                 voteTypeId: '@',
                 voteValue: '@',
                 voteTotal: '@',
-                voteDisplay: '@'
+                voteDisplay: '@',
+                mode: '@'
             },
-            template: '<div class="voting">' +
-            '<a class="cursor" ng-click="sendVote(\'up\')"><div class="btn-up" ng-class="getClassUp()">' +
-            '<i class="ionicons ion-ios-arrow-up" ng-hide="(voteValue == 1)"></i>' +
-            '<i class="ionicons ion-arrow-up-b" ng-show="(voteValue == 1)"></i>' +
-            '</div></a>' +
-            '<div class="vote-total">{{voteDisplay}}</div>' +
-            '<a class="cursor"><div class="btn-down" ng-class="getClassDown()" ng-click="sendVote(\'down\')">' +
-            '<i class="ionicons ion-ios-arrow-down" ng-hide="(voteValue == -1)"></i>' +
-            '<i class="ionicons ion-arrow-down-b" ng-show="(voteValue == -1)"></i>' +
-            '</div></a>' +
-            '</div>',
+
+            templateUrl: function (elem, attrs) {
+                var mode = 'vertical';
+                if (attrs['mode'])
+                    mode = attrs['mode'];
+
+                var tmplt = '/partials/vote-' + mode + '.html';
+
+                return tmplt;
+            },
 
             controller: function ($scope, $compile, $http, $attrs, toastr) {
                 $scope.errors = [];
 
-                if($attrs.voteTotal)
+                if ($attrs.voteTotal)
                     $scope.voteDisplay = $attrs.voteTotal;
                 else
                     $scope.voteDisplay = 0;
@@ -39,16 +39,16 @@ app.directive('voting',
                 $scope.getVoteTotal = function () {
                     $scope.isLoading = true;
                     $http.get('/api/votes/' + $scope.voteType + '/id/' + $scope.voteTypeId)
-                        .success(function(data){
-                            if(data.result && data.vote.length > 0){
+                        .success(function (data) {
+                            if (data.result && data.vote.length > 0) {
                                 $scope.voteTotal = data.vote[0].total;
                                 $scope.voteDisplay = data.vote[0].total;
 
-                                if(data.vote[0].isVotingObject){
+                                if (data.vote[0].isVotingObject) {
                                     $scope.voteValue = data.vote[0].isVotingObject.voteValue;
-                                    if($scope.voteValue == 1)
+                                    if ($scope.voteValue == 1)
                                         $scope.voteTotal -= 1;
-                                    else if($scope.voteValue == -1)
+                                    else if ($scope.voteValue == -1)
                                         $scope.voteTotal += 1;
 
                                     $scope.voteDisplay = $scope.voteTotal + $scope.voteValue;
@@ -56,7 +56,7 @@ app.directive('voting',
                             }
                             $scope.isLoading = false;
                         })
-                        .error(function(data){
+                        .error(function (data) {
                             $scope.errors = data.errors;
                             $scope.isLoading = false;
                         });
@@ -92,7 +92,7 @@ app.directive('voting',
                     })
                         .success(function (data) {
                             if (data.result) {
-                                if (val == 'up') { 
+                                if (val == 'up') {
                                     $scope.voteValue = 1;
 
                                 } else if (val == 'down') {
@@ -102,10 +102,10 @@ app.directive('voting',
                                     $scope.voteValue = 0;
                                 }
 
-                                if(typeof($scope.voteTotal) == 'undefined')
+                                if (typeof($scope.voteTotal) == 'undefined')
                                     $scope.voteTotal = 0;
 
-                                if(val == 'reset'){
+                                if (val == 'reset') {
                                     toastr.success('Vote Removed');
                                 }
                                 else {

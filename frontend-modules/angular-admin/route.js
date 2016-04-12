@@ -37,9 +37,9 @@ admin.config(['$routeProvider',
             resolve: {
                 pd: function ($q) {
                     return ( {
-                        title: 'Manage Widgets',
+                        title: 'Manage Widgets and Background Plugins',
                         breads: [
-                            {a: '#/widgets', active: false, title: 'Widgets'}
+                            {a: '#/widgets', active: false, title: 'Widgets and Background Plugins'}
                         ]
                     });
                 }
@@ -61,6 +61,21 @@ admin.config(['$routeProvider',
             }
         }).
 
+        when('/adminusers', {
+            templateUrl: '/cm-admin/adminusers',
+            controller: 'AdminUserController',
+            resolve: {
+                pd: function ($q) {
+                    return ( {
+                        title: 'Manage Admin Users',
+                        breads: [
+                            {a: '#/adminusers', active: false, title: 'Admin Users'}
+                        ]
+                    });
+                }
+            }
+        }).
+
         when('/cm-admin', {
             templateUrl: '/cm-admin-html.tpl',
             controller: 'adminHomeController',
@@ -70,6 +85,21 @@ admin.config(['$routeProvider',
                         title: 'Admin Home',
                         breads: [
                             {a: '#/home', active: false, title: 'Home'}
+                        ]
+                    });
+                }
+            }
+        }).
+
+        when('/category-recommendations', {
+            templateUrl: '/cm-admin/category-recommendations',
+            controller: 'CategoryRecommendationsController',
+            resolve: {
+                pd: function ($q) {
+                    return ( {
+                        title: 'Category Recommendations',
+                        breads: [
+                            {a: '#/home', active: false, title: 'category recommendations'}
                         ]
                     });
                 }

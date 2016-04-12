@@ -19,6 +19,17 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     $scope.topicsLength = 0;
     $scope.replies = [];
 
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalVotes.-1', name: 'Most Popular'}
+    ];
+
     $scope.newRowsFetched = function (newRows, allRows) {
         if (newRows) {
             $scope.topics = allRows;
@@ -277,7 +288,7 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
             },
 
             function (errors) {
-                toastr.error(errors);
+                //toastr.error(errors);
             }
         );
     };
@@ -365,6 +376,61 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
         return $window.innerWidth;
     }, function (value) {
         $scope.wSize = Page.defineDevSize(value);
+    });
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            discussionService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 10,
+                lastPage: false
+            });
+
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
+            discussionService.init(courseService.course._id,
+
+                function (posts) {
+                    $scope.topics = posts;
+                    $scope.topicsLength = $scope.topics.length;
+                    $scope.pageTitleOnDiscussion = Page.title();
+                    $scope.initiateTopic();
+                },
+
+                function (errors) {
+                }, true
+            );
+        }
+    });
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
+    };
+
+    $scope.$watch('orderTypeReply', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            var sortBy = spl[0];
+            var orderBy = parseInt(spl[1]);
+
+            $http.get('/api/discussion/' + $scope.pid + '/posts?sortBy=' + sortBy + '&orderBy=' + orderBy).success(function (res) {
+                if (res.result) {
+                    $scope.replies = res.posts;
+                    $timeout(function () {
+                        $scope.$apply()
+                    });
+                }
+            });
+        }
     });
 
     $scope.tabOpened();

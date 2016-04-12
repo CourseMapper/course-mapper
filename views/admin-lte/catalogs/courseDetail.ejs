@@ -10,7 +10,9 @@
 
 <section class="content-header action-header blue">
     <li class="visible-sm-inline-block visible-xs-inline-block draw-tab-button">
-        <a class="cursor" onclick="toggleTabMenu()" style="color: white"><i class="ionicons ion-navicon-round"></i></a>
+        <a class="cursor" onclick="toggleTabMenu()" style="color: white">
+            <i class="ionicons ion-navicon-round"></i>
+        </a>
     </li>
     <ol class="breadcrumb">
         <li class="home"><a href="#/cid/{{course._id}}?tab=preview">{{course.name}}</a></li>
@@ -45,8 +47,13 @@
 </section>
 <!-- /.content -->
 
+<section class="delete-notice" ng-show="isDeleted" style="padding: 15px;">
+    <h4>Course is deleted.</h4>
+</section>
+
 <!-- modal contents -->
 <% include courseDetailModals %>
+<div ng-include="'/accounts/loginform'"></div>
 <!-- /.modal contents -->
 
 <script>
@@ -63,5 +70,7 @@
         //Set the min-height of the content and sidebar based on the
         //the height of the document.
         $(".content-wrapper #courseTabs").css('min-height', window_height - neg - neg2 - neg2);
+
+        $('[data-tooltip="tooltip"]').tooltip();
     });
 </script>

@@ -1,0 +1,7 @@
+#countmap {
+  height: 9px;
+  width: 100%;
+  border-top: solid #000000 thin;
+  position: relative;
+  background: white;
+}

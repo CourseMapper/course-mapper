@@ -1,15 +1,47 @@
 <div class="row" ng-controller="PdfTabController">
 
-    <div id="commentController" class="col-xs-11 container-fluid" ng-controller="CommentListController">
 
+
+    <div id="commentController" class="col-xs-11 container-fluid" ng-controller="CommentListController">
         <div class="slide-container col-sm-7 col-md-7">
             <div id="viewerWrapper">
 
                 <pdf-viewer source="{{pdfFile.link}}" current-page-number="1" pdf-id="{{pdfFile._id}}"></pdf-viewer>
 
-                <div id="annotationZone">
-                    <!--<div movable style="background-color:yellow;height:100px;width:100px;" ></div>-->
+
+
+                <div id="annZoneList" ng-controller="AnnotationZoneListController">
+                  <div id="annotationZone">
+
+
+                        <pdf-annotation-zone
+                          ng-repeat="(key, item) in annotationZoneList"
+                          relative-position-x="annotationZoneList[key].relativePosition.x"
+                          relative-position-y="annotationZoneList[key].relativePosition.y"
+                          relative-size-x="annotationZoneList[key].relativeSize.x"
+                          relative-size-y="annotationZoneList[key].relativeSize.y"
+                          color="annotationZoneList[key].color"
+                          tag-name="annotationZoneList[key].tagName"
+                          edit-tag-name-temp="annotationZoneList[key].editTagNameTemp"
+                          dragable="annotationZoneList[key].dragable"
+                          is-being-created="annotationZoneList[key].isBeingCreated"
+                          can-be-edited="annotationZoneList[key].canBeEdited && !isInWriteCommentMode()"
+                          ann-zone-id="annotationZoneList[key].annZoneId"
+                          div-counter="annotationZoneList[key].divCounter"
+                          list-id="annotationZoneList[key].id"
+                          switch-show-anno-zones="switchShowAnnoZones"
+                          tag-name-is-validated="annotationZoneList[key].tagNameIsValidated"
+                          set-edit-zone-mode="setEditZoneMode(id)"
+                          reset-edit-zone-mode="resetEditZoneMode()"
+                          update-ann-zone="updateAnnZone(id)"
+                          remove-annotation-zone="removeAnnotationZone(id)"
+                          add-reference="addReference(id)"
+                        ></pdf-annotation-zone>
+
+
+                  </div>
                 </div>
+
 
             </div>
         </div>
@@ -25,15 +57,21 @@
                         <select id="orderTypeSelect"
                                 placeholder = "bla"
                                 ng-model="orderType"
-                                ng-init="orderType = orderType || orderingOptions[0]"
+                                ng-init="orderType = orderType || orderingOptionsDefault"
                                 ng-options="item as item.name for item in orderingOptions"
                                 class="form-control">
+                                  <option value="" selected ng-disabled="true">{{orderingOptionsDefault.name}}</option>
+
+
                         </select>
                           <input id="searchInput" placeholder="Search..." class="form-control" ng-model="rawSearchTerm"></input>
                       </div>
                   </div>
               </div>
                 <div id="commentSubmissionDiv" ng-show="writeCommentMode">
+
+                    <span class="currentCommentPageClass" ng-click="setPageNumber(annotationSubmitPage)">Annotation for Page {{annotationSubmitPage}}</span>
+
                     <form name="commentForm" ng-submit="submitComment()">
 
                         <fieldset>
@@ -50,8 +88,9 @@
                             <div id="annotationZoneSubmitList">
                             </div>
 
-                           <div id="annZoneList"
-                                 ng-controller="AnnotationZoneListController">
+                           <div id="annZoneListOld"
+                                 >
+
                                 <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
                                     <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
@@ -84,19 +123,21 @@
                                     <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
                                 </div>
                             </div>
-                            <!--<div class="control-group">
-                                <div class="controls">
-                                    <br class="clear">
-                                    <button class="btn btn-primary"> Add Comment
-                                        <spinner show="isLoading"></spinner>
-                                    </button>
-
-                                    <button type="button" class="btn btn-warning" ng-click="writeCommentMode=false">Cancel</button>
-                                </div>
-                            </div>-->
+                            <!--<div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header" ng-hide="(annotationZonesOnOtherSlides=={})">Created Annotation Zones:</div>-->
+                            <div id="createdAnnoZoneButtons">
+                                <div ng-repeat-start="(page,annZonesList) in annotationZonesOnOtherSlides"></div>
+                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important"ng-repeat="(key,val) in annZonesList" ng-click="setPageNumber(page)">
+                                <span class="glyphicon glyphicon-remove " aria-hidden="true" ng-click="$event.stopPropagation(); deleteCurrentAnnotationZones(page,key); "></span> {{val.tagName}}@{{page}}
+                                </button>
+                                <div ng-repeat-end></div>
+                            </div>
                         </fieldset>
+
+
                     </form>
                 </div>
+
+
 
                 <!--<div id="annotationZoneSubmitListMovables">
                     <button class="btn btn-default" onclick="createMovableAnnZone();">

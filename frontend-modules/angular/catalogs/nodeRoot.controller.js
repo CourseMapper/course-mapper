@@ -77,49 +77,65 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
         $scope.tabDisplayName = $('li.' + name).attr('data-displayName');
     };
 
+    $scope.showEnrollForm = function () {
+        $('#enrollForm').modal('show');
+    };
+
+    $scope.isAuthorized = function () {
+        return ($scope.isAdmin || $scope.isOwner || $scope.isManager || $scope.isNodeOwner);
+    };
+
     $scope.initNode = function () {
         courseService.init(
             $scope.courseId,
 
             function (course) {
                 $scope.course = course;
+                $scope.setCapabilities();
 
-                treeNodeService.init($scope.nodeId,
-                    function (treeNode) {
-                        $scope.treeNode = treeNode;
-                        $scope.videoFile = treeNodeService.videoFile;
-                        $scope.pdfFile = treeNodeService.pdfFile;
+                $timeout(function () {
+                    if (!authService.isLoggedIn && $scope.course) {
+                        var q = $location.search();
+                        if (q.tab)
+                            $scope.currentTab = q.tab;
 
-                        $scope.setCapabilities();
-
-                        Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
-
-                        if ($scope.treeNode.createdBy == $rootScope.user._id) {
-                            $scope.isNodeOwner = true;
-                            $scope.setEditMode();
-                        }
-
-                        $scope.changeTab();
-
-                        $timeout(function () {
-                            $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
-                        });
-                    },
-                    function (err) {
-                        toastr.error(err);
-
-                        $timeout(function () {
-                            if (!authService.isLoggedIn && $scope.course) {
-                                window.location.href = '/course/' + $scope.course.slug + '/#/cid/' + $scope.course._id + '?tab=preview';
-                            }
-                        });
+                        authService.showLoginForm();
                     }
-                );
+                    else if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
+                        $scope.showEnrollForm();
+                    } else {
+                        treeNodeService.init($scope.nodeId,
+                            function (treeNode) {
+                                $scope.treeNode = treeNode;
+                                $scope.videoFile = treeNodeService.videoFile;
+                                $scope.pdfFile = treeNodeService.pdfFile;
+
+                                Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
+
+                                if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                    $scope.isNodeOwner = true;
+
+                                if ($scope.isAuthorized()) {
+                                    $scope.setEditMode();
+                                }
+
+                                $scope.changeTab();
+
+                                $timeout(function () {
+                                    $scope.$broadcast('onAfterInitTreeNode', $scope.treeNode);
+                                });
+                            },
+                            function (err) {
+
+                            }
+                        );
+                    }
+                }, 120);
             },
 
             function (res) {
                 $scope.errors = res.errors;
-                toastr.error('Failed getting course');
+                //toastr.error('Failed getting course');
             },
 
             true
@@ -138,10 +154,14 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
     $scope.setCapabilities = function () {
         $scope.isEnrolled = courseService.isEnrolled();
         $scope.isManager = courseService.isManager(authService.user);
-        $scope.isAdmin = authService.isAdmin();
-        $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
-    };
 
+        if (authService.user)
+            $scope.isOwner = authService.user._id == $scope.course.createdBy._id;
+        else
+            $scope.isOwner = false;
+
+        $scope.isAdmin = authService.isAdmin();
+    };
 
     $scope.$on('onAfterEditContentNode', function (event, oldTreeNode) {
         window.location.reload();
@@ -152,8 +172,6 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
      */
     $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
-
-
     });
 
     /**
@@ -161,13 +179,6 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
      */
     var pdfPageChangeListener = $scope.$on('onPdfPageChange', function (event, params) {
         $http.get('/slide-viewer/read/' + $scope.courseId + '/' + $scope.nodeId + '/' + $scope.pdfFile._id + '/' + params[0] + '/' + params[1]);
-
-        /*var q = $location.search();
-         if (!q.tab) {
-         if ($scope.currentTab == 'pdf' && params[0] > 1) {
-         $location.search({'tab': 'pdf'});
-         }
-         }*/
 
         if (params[0] && params[0] != 1)
             $scope.currentPdfPage = params[0];
@@ -212,10 +223,4 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
             $scope.initNode();
         }
     });
-
-    /*$scope.$watch(function () {
-        return courseService.isEnrolled();
-    }, function () {
-        $scope.isEnrolled = courseService.isEnrolled();
-    });*/
 });

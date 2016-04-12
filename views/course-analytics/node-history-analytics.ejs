@@ -1,0 +1,34 @@
+<div class="box-body no-padding"  ng-controller="BarHistoryAnalyticsController">
+
+    <!--Using chartjs unfortunately does not work with tab-->
+    <div class="nav-tabs-custom">
+        <!--Tabs within a box-->
+        <ul class="nav nav-tabs pull-right" ng-init="tab = 1">
+            <li class="active"><a href ng-click="tab = 1" data-toggle="tab">PDF Annotations</a></li>
+            <li><a href ng-click="tab = 2" data-toggle="tab">Video Annotations</a></li>
+            <li><a href ng-click="tab = 3" data-toggle="tab">Links</a></li>
+        </ul>
+        <br>
+
+        <div class="enrolled-user-chart no-padding" ng-show="tab ===1">
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataPdfAnnotationMonthly"
+                    chart-labels="labelPdfAnnotationMonthly">
+            </canvas>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of PDF annotations created by participants</div>
+        </div>
+        <div class="discussion-chart" ng-show="tab === 2">
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataVideoAnnotationMonthly"
+                    chart-labels="labelVideoAnnotationMonthly">
+            </canvas>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of video annotations created by participants</div>
+        </div>
+        <div class="pdf-chart" ng-show="tab === 3">
+            <canvas id="bar" width="500" height="135" class="chart chart-line" chart-data="dataLinksMonthly"
+                    chart-labels="labelLinksMonthly">
+            </canvas>
+            <div class="small-box-footer" style="text-align: center; font-weight: 500"">Monthly data of links submitted by participants</div>
+        </div>
+
+
+    </div><!-- /.nav-tabs-custom -->
+</div>

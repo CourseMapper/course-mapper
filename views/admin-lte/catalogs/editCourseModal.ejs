@@ -30,7 +30,19 @@
                                        class="help-block">Course name is required.</p>
                                 </div>
                             </div>
+                            <div class="control-group">
+                                <br>
+                                <label class="control-label" for="Small Description">Small Description </label>
 
+                                <p class="help-block">A small introduction words about this course</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : editCourseForm.smallDescription.$invalid && !editCourseForm.$pristine }">
+                                    <input type="text" id="course" name="smallDescription" placeholder=""
+                                           class="form-control"
+                                           ng-model="courseEdit.smallDescription">
+                                </div>
+                            </div>
                             <div class="control-group">
                                 <p></p>
                                 <label class="control-label" for="description">Description</label>

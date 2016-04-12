@@ -1,0 +1,80 @@
+<!-- Main content -->
+<div class="col-lg-12" id="Applications">
+    <!-- Custom Tabs -->
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" data-target="#tab_1">Admin Users</a></li>
+            <li>
+                <a data-toggle="tab" data-target="#tab_2">Add Admin</a></li>
+
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'username'; sortReverse = !sortReverse">username</a>
+                            <span ng-show="sortType == 'username' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'username' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>Delete</th>
+                    </tr>
+                    <tr ng-repeat="usera in users | orderBy:sortType:sortReverse">
+                        <td>
+                            {{usera.username}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" ng-show="usera._id == currentUser._id"
+                                    ng-click="deleteUser(usera._id)">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="tab-pane" id="tab_2">
+                <div class="box">
+                    <div class="box-body with-border">
+
+                        <error-block messages="errors"></error-block>
+
+                        <div>
+                            <form role="form" ng-submit="saveUserForm()" id="user">
+                                <div class="col-xs-6 input-group input-group-sm">
+                                    Username:
+                                    <input type="text" name="username" class="form-control input-sm col-xs-3"
+                                           placeholder="username" ng-model="formData.username"/>
+                                </div>
+                                <div class="col-xs-6 input-group input-group-sm">
+                                    Password:
+                                    <input type="password" name="password" class="form-control input-sm col-xs-3"
+                                           ng-model="formData.password"/>
+                                </div>
+
+                                <div class="col-xs-6 input-group input-group-sm">
+                                    Email:
+                                    <input type="email" name="email" class="form-control input-sm col-xs-3"
+                                           placeholder="email" ng-model="formData.email"/>
+                                </div>
+                                <br>
+                              <span class="input-group-btn">
+                              <button class="btn btn-info btn-flat" type="submit"><i class="fa fa-plus"></i> Add New
+                                  Admin
+                              </button>
+                              </span>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.tab-content -->
+</div>
+<!-- nav-tabs-custom -->
+
+<div class="clear"></div>

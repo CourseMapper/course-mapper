@@ -13,7 +13,7 @@
         <div class="collapse-button" ng-show="data.type == 'subTopic'">
             <a class="pointer" ng-click="collapse('t' + data._id )">
                 <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
-                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id]"></i>
+                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
             </a>
         </div>
 
@@ -26,6 +26,12 @@
 
         <!-- subtopic menu-->
         <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
+            <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
+                <small class="label label-green">
+                    <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by
+                    {{data.createdBy.displayName}}
+                </small>
+            </li>
             <li>
                 <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
                    ng-click="setMode('add', 'subTopic', data)">
@@ -66,6 +72,11 @@
                 <a class="cursor"
                    ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
             </li>
+
+            <li ng-show="hasPdf(data.resources)">
+                <a class="cursor" href="{{getPdfLink(data.resources)}}" target="_blank"><i class="fa fa-file-pdf-o"></i>
+                    Download PDF</a>
+            </li>
         </ul>
 
         <ul class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
@@ -83,10 +94,12 @@
 <div class="box-body no-border" id="tree" ng-controller="MapController">
 
     <div class="course-control">
-        <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i
-                    class="ionicons ion-android-locate"></i></button>
+        <button data-tooltip="tooltip" title="Center Map"
+                class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)">
+            <i class="ionicons ion-android-locate"></i></button>
 
-        <button class="btn btn-default btn-sm" ng-click="showMapInfo()">
+        <button data-tooltip="tooltip" title="Information"
+                class="btn btn-default btn-sm" ng-click="showMapInfo()">
             <i class="ionicons ion-information"></i></button>
     </div>
 
@@ -149,8 +162,8 @@
         };
 
         self.rePosition = function (w, h) {
-            var left = w / 2 + ((self.fromCenter.x - self.w / 2)  );
-            var top = h / 2 + ((self.fromCenter.y - self.h / 2)  );
+            var left = w / 2 + ((self.fromCenter.x));
+            var top = h / 2 + ((self.fromCenter.y));
 
             self.el.css({
                 left: left + "px",
@@ -299,6 +312,7 @@
             Container.onWindowResize(w, h);
             Canvas.onWindowResize(w, h);
         });
+        $('[data-tooltip="tooltip"]').tooltip();
     });
 
 </script>

@@ -30,7 +30,8 @@ var annotationPDFSchema = new mongoose.Schema({
     //isDeleted: {},
     pdfId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true
+      required: true,
+        ref: 'resources'
     },
     pdfPageNumber: {
       type: Number

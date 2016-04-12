@@ -6,6 +6,7 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
     $scope.course = null;
     $scope.videoSources = false;
     $scope.isPlaying = false;
+    $scope.isDeleted = false;
 
     $scope.tabOpened = function () {
         if (courseService.course) {
@@ -24,8 +25,9 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
         $scope.course = course;
 
         if (refreshPicture) {
-            if ($scope.course.picture)
+            if ($scope.course.picture) {
                 $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+            }
         }
 
         if ($scope.course.video) {
@@ -44,6 +46,30 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
 
     $scope.stopVideo = function () {
         $scope.isPlaying = false;
+    };
+
+    $scope.enroll = function () {
+        $scope.loading = true;
+        if (!authService.user) {
+            toastr.warning("Please Login to Enroll.", {preventDuplicates: false});
+        }
+        else
+            courseService.enroll(authService.user,
+
+                function () {
+                    $scope.loading = false;
+                    toastr.success('You are now enrolled.');
+                    $timeout(function () {
+                        window.location.reload();
+                    });
+                },
+
+                function (res) {
+                    $scope.loading = false;
+                    toastr.error(JSON.stringify(res.errors));
+                }
+            );
+
     };
 
     /**

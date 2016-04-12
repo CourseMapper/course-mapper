@@ -12,6 +12,8 @@ var widgetSchema = new mongoose.Schema({
     height: {type: Number},
     icon: {type: String},
     runOn: {type: String},
+    controller: {type: String},
+    hasConfigButton: {type: Boolean},
 
     allowMultipleInstallation: {type: Boolean, required: true, default:false},
     isActive: {type: Boolean, required: true, default:false},

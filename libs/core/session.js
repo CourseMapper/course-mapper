@@ -10,10 +10,21 @@ var mongoStore = require('connect-mongo')(expressSession);
 var passport = require('passport');
 var localStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
+var BasicStrategy = require('passport-http').BasicStrategy;
 var appRoot = require('app-root-path');
 var User = require(appRoot + '/modules/accounts/users.js');
+var BearerStrategy = require('passport-http-bearer').Strategy;
+var CustomStrategy = require('passport-custom').Strategy;
+var Token = require(appRoot + '/modules/oauth2/models/accessTokens.js');
+var Client = require(appRoot + '/modules/oauth2/models/oauthClients.js');
+var request = require('request');
 var flash = require('flash');
 var debug = require('debug')('cm:server');
+
+var async = require('asyncawait/async');
+var await = require('asyncawait/await');
+
+var l2pEndpoint = 'https://www3.elearning.rwth-aachen.de/_vti_bin/l2pservices/externalapi.svc/';
 
 function session(app, db, io) {
     var sessionStore = new mongoStore({
@@ -22,7 +33,7 @@ function session(app, db, io) {
 
     var sessionMiddleware = expressSession({
         saveUninitialized: true, // saved new sessions
-        resave: false, // do not automatically write to the session store
+        resave: true, // do not automatically write to the session store
         secret: config.get('session.secret'),
         cookie: {
             httpOnly: true,
@@ -37,17 +48,17 @@ function session(app, db, io) {
     app.use(flash());
 
     // Use session for Socket.IO
-    io.use(function(socket, next) {
+    io.use(function (socket, next) {
         sessionMiddleware(socket.request, {}, next);
     });
 
     /**
      * use local strategy, this matching the sent data to our db
      */
-    passport.use(new localStrategy(function(username, password, done) {
+    passport.use(new localStrategy(function (username, password, done) {
         User.findOne({
             username: username
-        }, function(err, user) {
+        }, function (err, user) {
             // mongo error
             if (err) {
                 return done(err);
@@ -78,15 +89,15 @@ function session(app, db, io) {
     }));
 
     // facebook will send back the token and profile
-    var facebookSession = function(token, refreshToken, profile, done) {
+    var facebookSession = function (token, refreshToken, profile, done) {
 
         // asynchronous
-        process.nextTick(function() {
+        process.nextTick(function () {
 
             // find the user in the database based on their facebook id
             User.findOne({
                 'facebook.id': profile.id
-            }, function(err, user) {
+            }, function (err, user) {
 
                 // if there is an error, stop everything and return that
                 // ie an error connecting to the database
@@ -124,7 +135,7 @@ function session(app, db, io) {
                     newUser.setPassword(token);
 
                     // save our user to the database
-                    newUser.save(function(err) {
+                    newUser.save(function (err) {
                         if (err) {
                             debug(err);
                             done(err, null);
@@ -149,7 +160,120 @@ function session(app, db, io) {
         profileFields: ['id', 'emails', 'name']
     }, facebookSession));
 
-    passport.serializeUser(function(user, done) {
+    passport.use(new BasicStrategy(
+        function (username, password, done) {
+            User.findOne({username: username}, function (err, user) {
+                if (err) {
+                    return done(err);
+                }
+
+                if (!user) {
+                    return done(null, false);
+                }
+
+                if (!user.isValidPassword(password)) {
+                    return done(null, false);
+                }
+
+                return done(null, user);
+            });
+        }
+    ));
+
+    passport.use(new CustomStrategy(
+        function (req, callback) {
+            var ap = req.query.accessToken;
+            if (ap) {
+                var getr = l2pEndpoint + 'Context?token=' + ap;
+                request(getr, function (error, response, body) {
+                    if (error) {
+                        return callback(new Error('wrong token'), null);
+                    }
+
+                    if (response.statusCode == 200) {
+                        /*{
+                         CourseId: "15ss-51899",
+                         Details: [ ],
+                         Success: true,
+                         System: "coursemapper",
+                         UserId: "FA72075F90B697CD487857F565DE30F029502E6BABE78A63D1A946B45BB11983",
+                         UserRoles: "managers"
+                         }*/
+                        var l2p = JSON.parse(body);
+
+                        if (l2p.UserId) {
+                            User.findOne({l2pUserId: l2p.UserId})
+                                .exec(function (err, doc) {
+                                    if (doc) {
+                                        callback(err, doc);
+                                    } else {
+                                        var newUser = new User();
+                                        newUser.l2p = l2p;
+                                        newUser.l2pUserId = l2p.UserId;
+
+                                        // set all of the facebook information in our user model
+                                        newUser.username = 'l2p_' + newUser.l2p.UserId;
+                                        newUser.displayName = newUser.username;
+                                        var em = newUser.l2pUserId.substring(0, 9);
+                                        newUser.email = em + '@rwth-aachen.de';
+
+                                        newUser.setPassword(newUser.l2p.UserId);
+
+                                        // save our user to the database
+                                        newUser.save(function (err) {
+                                            if (err) {
+                                                debug(err);
+                                                return callback(err, null);
+                                            }
+
+                                            // if successful, return the new user
+                                            return callback(null, newUser);
+                                        });
+                                    }
+                                });
+                        } else {
+                            callback(new Error('wrong token'), null);
+                        }
+                    } else {
+                        return callback(new Error('wrong token'), null);
+                    }
+                });
+            } else {
+                callback(new Error('access token invalid'), null);
+            }
+        }
+    ));
+
+    passport.use(new BearerStrategy(
+        function (accessToken, callback) {
+            Token.findOne({token: accessToken}, function (err, token) {
+                if (err) {
+                    return callback(err);
+                }
+
+                // No token found
+                if (!token) {
+                    return callback(null, false);
+                }
+
+                User.findOne({_id: token.userId}, function (err, user) {
+                    if (err) {
+                        return callback(err);
+                    }
+
+                    // No user found
+                    if (!user) {
+                        return callback(null, false);
+                    }
+
+                    // Simple example with no scope
+                    callback(null, user, {scope: '*'});
+                });
+            });
+        }
+    ));
+
+    passport.serializeUser(function (user, done) {
         var sessionUser = {
             _id: user._id,
             username: user.username,
@@ -161,7 +285,25 @@ function session(app, db, io) {
         done(null, sessionUser);
     });
 
-    passport.deserializeUser(function(sessionUser, done) {
+    passport.use('client-basic', new BasicStrategy(
+        function (username, password, callback) {
+            Client.findOne({clientId: username}, function (err, client) {
+                if (err) {
+                    return callback(err);
+                }
+
+                // No client found with that id or bad password
+                if (!client || client.clientSecret !== password) {
+                    return callback(null, false);
+                }
+
+                // Success
+                return callback(null, client);
+            });
+        }
+    ));
+
+    passport.deserializeUser(function (sessionUser, done) {
         done(null, sessionUser);
     });
 }

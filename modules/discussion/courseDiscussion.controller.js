@@ -40,8 +40,11 @@ courseDiscussion.prototype.getCourseDiscussions = function (error, courseId, pag
         pageParams.lastPage = 0;
     }
 
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Posts.find(whereParams)
-        .sort({dateAdded: -1})
+        .sort(sortOption)
         .skip(pageParams.lastPage)
         .limit(pageParams.limit)
         .populate('createdBy', 'username displayName image')
@@ -77,7 +80,11 @@ courseDiscussion.prototype.getDiscussion = function (error, pId, success) {
  * @param params
  * @param success
  */
-courseDiscussion.prototype.getReplies = function (error, parentId, success) {
+courseDiscussion.prototype.getReplies = function (error, parentId, pageParams, success) {
+
+    var sortOption = {};
+    sortOption[pageParams.sortBy] = pageParams.orderBy;
+
     Posts.find({
             $or: [
                 {parentPost: parentId}
@@ -86,7 +93,7 @@ courseDiscussion.prototype.getReplies = function (error, parentId, success) {
                 {isDeleted: false}
             ]
         })
-        .sort({dateAdded: -1})
+        .sort(sortOption)
         .populate('createdBy', 'username displayName image')
         .exec(function (err, docs) {
             if (!err) {
@@ -124,7 +131,7 @@ courseDiscussion.prototype.getReplies = function (error, parentId, success) {
         });
 };
 
-courseDiscussion.prototype.editPost = function (error, params, success) {
+courseDiscussion.prototype.editPost = function (error, params, user, success) {
     Posts.findOne({
         _id: params.postId
     }).exec(function (err, doc) {
@@ -135,7 +142,7 @@ courseDiscussion.prototype.editPost = function (error, params, success) {
             doc.title = params.title;
             doc.content = params.content;
             doc.save(function () {
-                Plugin.doAction('onAfterDiscussionEdited', doc);
+                Plugin.doAction('onAfterDiscussionEdited', doc, user);
                 success(doc);
             });
 
@@ -146,7 +153,7 @@ courseDiscussion.prototype.editPost = function (error, params, success) {
 
 };
 
-courseDiscussion.prototype.deletePost = function (error, params, success) {
+courseDiscussion.prototype.deletePost = function (error, params, user, success) {
     Posts.update(
         {
             _id: params.postId
@@ -161,7 +168,7 @@ courseDiscussion.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterDiscussionDeleted', params.postId);
+                Plugin.doAction('onAfterDiscussionDeleted', params, user);
                 success(doc);
             }
         });
