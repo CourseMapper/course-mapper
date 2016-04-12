@@ -69,6 +69,9 @@ angular.module('MyCreatedCourses', [''])
         $scope.isAdded = function (action) {
             return action.actionType == 'added';
         };
+        $scope.isDeleted = function (action) {
+            return action.actionType == 'deleted';
+        };
 
         //filtering scope resources
         $scope.isPdf = function (action) {

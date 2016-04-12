@@ -19,20 +19,16 @@
                             <tbody>
                                 <tr ng-repeat="resource in courseCreatedResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == created._id && resource.treeNodeId.name">
                                     <td ng-if="resource.type=='pdf'">
-                                        <!--<a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf" class="" title="pdf material">-->
                                             <i class="fa fa-file-pdf-o"></i> {{resource.treeNodeId.name}}
-                                        <!--</a>-->
-                                        <small class="label label-primary pull-right" style="font-size: 12px;" title="number of pdf annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-pdf-o"></i> {{(newsfeedData | filter:isPdfAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
-                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px;" title="number of link you created"><i class="fa fa-link"></i> {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
-                                        <i class="fa fa-user pull-right" style="color: #3c8dbc; font-size: 14px; margin-right: 2px;" ng-if="resource.createdBy == created.createdBy" title="this is the content you created"></i>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; cursor: pointer;" title="number of pdf annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-pdf-o"></i> {{(newsfeedData | filter:isPdfAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length - (newsfeedData | filter:isPdfAnno | filter:isDeleted | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px; cursor: pointer;" title="number of link you created"><i class="fa fa-link"></i> {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length - (newsfeedData | filter:isLink | filter:isDeleted | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="badge bg-light-blue pull-right" style="font-size: 12px; margin-right: 2px; cursor: pointer;" ng-if="resource.createdBy == created.createdBy" title="you created this content node">mine</small>
                                     </td>
                                     <td ng-if="resource.type!='pdf'">
-                                        <!--<a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video" class="" title="video material">-->
                                             <i class="fa fa-file-movie-o"></i> {{resource.treeNodeId.name}}
-                                        <!--</a>-->
-                                        <small class="label label-primary pull-right" style="font-size: 12px;" title="number of video annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-movie-o"></i> {{(newsfeedData | filter:isPdfAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
-                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px;" title="number of link you created"><i class="fa fa-link"></i> {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
-                                        <i class="fa fa-user pull-right" style="color: #3c8dbc; font-size: 14px; margin-right: 2px;" ng-if="resource.createdBy == created.createdBy" title="this is the content you created"></i>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; cursor: pointer;" title="number of video annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-movie-o"></i> {{(newsfeedData | filter:isVideoAnno | filter:isAdded | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px; cursor: pointer;" title="number of link you created"><i class="fa fa-link"></i> {{(newsfeedData | filter:isLink | filter:isAdded | filter:(resource.treeNodeId._id)).length - (newsfeedData | filter:isLink | filter:isDeleted | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="badge bg-light-blue pull-right" style="font-size: 12px; margin-right: 2px; cursor: pointer;" ng-if="resource.createdBy == created.createdBy" title="you created this content node">mine</small>
                                     </td>
                                 </tr>
                             </tbody>
