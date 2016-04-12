@@ -177,8 +177,6 @@ app.factory('widgetService', [
             },
 
             initiateDraggableGrid: function (locs, enableDragging) {
-                var self = this;
-
                 var loc = '#' + locs + '-widgets';
 
                 var options = {
@@ -193,17 +191,45 @@ app.factory('widgetService', [
 
                 var $gs = $(loc);
                 $gs.gridstack(options);
+            },
 
-                $gs.on('change', function (evt, node) {
-                    if (node && node[0]) {
-                        var c = $(node[0].el);
-
+            onchangelistener: function (evt, node) {
+                var self = this;
+                for (var i in node) {
+                    var nd = node[i];
+                    var c = $(nd.el);
+                    if (c) {
                         var wId = c.attr('id').substr(1);
-                        if (node[0]._updating) {
-                            var x = node[0].x;
-                            var y = node[0].y;
+                        //if (nd._updating)
+                        {
+                            var x = nd.x;
+                            var y = nd.y;
 
                             self.setPosition(wId, x, y);
+                        }
+                    }
+                }
+            },
+
+            initiateDragStop: function (locs) {
+                var self = this;
+
+                var loc = '#' + locs + '-widgets';
+                var $gs = $(loc);
+                //$gs.off('change', self.onchangelistener);
+                $gs.on('change', function (evt, node) {
+                    for (var i in node) {
+                        var nd = node[i];
+                        var c = $(nd.el);
+                        if (c) {
+                            var wId = c.attr('id').substr(1);
+                            //if (nd._updating)
+                            {
+                                var x = nd.x;
+                                var y = nd.y;
+
+                                self.setPosition(wId, x, y);
+                            }
                         }
                     }
                 });

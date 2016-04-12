@@ -5,6 +5,7 @@ admin.controller('AdminUserController', function ($scope, $route, $routeParams, 
     $scope.routeParams = $routeParams;
     $scope.users = null;
     $scope.formData = {};
+    $scope.currentUser = null;
 
     $scope.init = function () {
         $http.get('/api/accounts/all').success(function (res) {
@@ -13,6 +14,10 @@ admin.controller('AdminUserController', function ($scope, $route, $routeParams, 
             }
         });
     };
+
+    $scope.$on('onAfterInitUser', function (event, user) {
+        $scope.currentUser = user.user;
+    });
 
 
     /*$scope.activate = function (tabName) {
