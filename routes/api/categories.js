@@ -141,7 +141,10 @@ router.get('/category/:category', function (req, res, next) {
         }
         ,
         function (categories) {
-            res.status(200).json({result: true, category: categories});
+            if (categories)
+                res.status(200).json({result: true, category: categories});
+            else
+                helper.resReturn(helper.createError404('Category'), res);
         }
     );
 });

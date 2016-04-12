@@ -126,7 +126,8 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
                                 });
                             },
                             function (err) {
-
+                                $scope.nodeError = true;
+                                $scope.error = err;
                             }
                         );
                     }

@@ -137,19 +137,23 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     /**
      * init category data by slug
      */
-    $http.get('/api/category/' + $scope.slug).success(function (data) {
-        $scope.category = data.category;
+    $http.get('/api/category/' + $scope.slug)
+        .success(function (data) {
+            $scope.category = data.category;
 
-        Page.setTitleWithPrefix($scope.category.name);
+            Page.setTitleWithPrefix($scope.category.name);
 
-        // once we get the complete category structure, we operate by id
-        $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function (data) {
-            $scope.courseTags = data.courseTags;
-            $scope.availableTags = data.courseTags;
+            // once we get the complete category structure, we operate by id
+            $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function (data) {
+                $scope.courseTags = data.courseTags;
+                $scope.availableTags = data.courseTags;
 
-            $scope.initTagFromSearch();
+                $scope.initTagFromSearch();
+            });
+        })
+        .error(function (err) {
+            $scope.error = err;
         });
-    });
 
     $scope.paginationReset = function () {
         return $scope.pageReset;

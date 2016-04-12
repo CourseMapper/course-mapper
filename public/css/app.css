@@ -102,8 +102,12 @@ a.profile-picture {
   cursor: move
 }
 
-.ng-cloak, [ng-cloak], [ng\:cloak] {
+.ng-cloak, [ng-cloak], [ng\:cloak], .hideOnError {
   display: none !important
+}
+
+.showOnError{
+    display: block;
 }
 
 .form_hover {

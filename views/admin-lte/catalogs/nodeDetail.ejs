@@ -40,8 +40,11 @@
     <div class="box no-border" id="courseTabs">
         <div class="box-body no-border">
 
+            <div ng-show="error">
+                <error-block messages="error.errors"></error-block>
+            </div>
             <!-- tabs left -->
-            <div class="tabbable tabs-left">
+            <div class="tabbable tabs-left" ng-class="{'hideOnError':error}">
                 <% include nodeDetailLeftTab %>
                 <!-- end tab menu -->
 
