@@ -1,0 +1,18 @@
+{
+  "name": "videogular-overlay-play",
+  "version": "1.4.3",
+  "main": "./vg-overlay-play.js",
+  "dependencies": {
+    "videogular": "~1.4.3"
+  },
+  "homepage": "https://github.com/2fdevs/bower-videogular-overlay-play",
+  "_release": "1.4.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.4.3",
+    "commit": "c6777a58785a4f10aeea1394802d0cb34ecb1104"
+  },
+  "_source": "git://github.com/2fdevs/bower-videogular-overlay-play.git",
+  "_target": "*",
+  "_originalSource": "videogular-overlay-play"
+}

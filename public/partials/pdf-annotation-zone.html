@@ -1,0 +1,91 @@
+<div movable-pdf="" can-move="{{canMove}}" on-moved="updateAnnZonePos" ng-mousemove="isDragging = true" ng-mousedown="isDragging = false" ng-hide="(switchShowAnnoZones == 'Off')" id={{annZoneID}} ng-class="{true: 'annoFadeEffect', false:'annoEditEffect'}[!inEditMode && !isBeingCreated]" class="slideRect1" position="absolute" opacity={{opacityFactorHighlight}} data-tagName={{tagName}} data-relstartcoord="{{dataRelCoord}}" style="position:absolute;'transition': 'background 0.1s linear'" ng-style="{  'background-color': color, 'top' : relativePositionY * localCanHeight+'px','left' : relativePositionX * localCanWidth+'px','width' : relativeSizeX * localCanWidth+'px', 'height' : relativeSizeY * localCanHeight+'px'}"  ng-click="localAddReference(listId)">
+  <div id ="caRect-{{divCounter}}" class="caRect" style= "width:'100%';height:'100%'">
+
+    <!--<div id="slideRectWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:'1px'; padding-top:'1px';">
+      <span id="slideRectSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt';">
+        <span>#</span><span ng-hide="(inEditMode)">{{tagName}}</span>
+      </span>
+    </div>-->
+    <div id="slideRectWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px">
+      <div  class="colorPickerWrapper" ng-hide="!dragable && !inEditMode">
+        <select id="colorPicker-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker colorPickerSingleSelector-{{divCounter}}" ng-model= "color">
+          <option value="#ac725e">#ac725e</option>
+          <option value="#d06b64">#d06b64</option>
+          <option value="#f83a22">#f83a22</option>
+          <option value="#fa573c">#fa573c</option>
+          <option value="#ff7537">#ff7537</option>
+          <option value="#ffad46">#ffad46</option>
+          <option value="#42d692">#42d692</option>
+          <option value="#16a765">#16a765</option>
+          <option value="#7bd148">#7bd148</option>
+          <option value="#b3dc6c">#b3dc6c</option>
+          <option value="#fbe983">#fbe983</option>
+          <option value="#fad165">#fad165</option>
+          <option value="#92e1c0">#92e1c0</option>
+          <option value="#9fe1e7">#9fe1e7</option>
+          <option value="#9fc6e7">#9fc6e7</option>
+          <option value="#4986e7">#4986e7</option>
+          <option value="#9a9cff">#9a9cff</option>
+          <option value="#b99aff">#b99aff</option>
+          <option value="#c2c2c2">#c2c2c2</option>
+          <option value="#cabdbf">#cabdbf</option>
+          <option value="#cca6ac">#cca6ac</option>
+          <option value="#f691b2">#f691b2</option>
+          <option value="#cd74e6">#cd74e6</option>
+          <option value="#a47ae2">#a47ae2</option>
+        </select>
+      </div>
+      <span id="slideRectEditSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
+        <span>#</span><span ng-hide="(inEditMode || isBeingCreated)">{{tagName}}</span>
+        <input type="text" id="rectEditInputField-{{divCounter}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="editTagNameTemp" ng-hide="(!inEditMode)" ng-click="$event.stopPropagation();"></input>
+        <input type="text" id="rectSubmitInputField-{{divCounter}}" class="slideRectInput" style="color:black;transition:'width 0.25s'; border:'0'" ng-model="tagName" ng-hide="(!isBeingCreated)" ng-click="$event.stopPropagation();"></input>
+      </span>
+      <span id="editSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-pencil" aria-hidden="true" ng-click="localSetEditZoneMode(listId);" ng-hide="(inEditMode || !canBeEdited)" style="float:'right';color:'white';margin:'2px';cursor:'pointer'"/>
+      <span id="cancelSaveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-remove" aria-hidden="true" ng-click="localResetEditZoneMode()"
+      ng-hide="(!inEditMode)" />
+      <span id="saveSpan-{{divCounter}}" class="slideEditIcon glyphicon glyphicon-floppy-saved" aria-hidden="true" ng-click="localUpdateAnnZone(listId)"
+      ng-hide="(!inEditMode)" />
+      <span id="validationIcon-{{divCounter}}" ng-hide="!isBeingCreated" class="slideValidationIcon validationIcon glyphicon" ng-class="{true: 'glyphicon-ok-sign', false: 'glyphicon-remove-sign'}[tagNameIsValidated]" aria-hidden="true" style="color:'white'"></span>
+    <button class ="btn btn-white btn-link" ng-click="localRemoveAnnotationZone(listId)" style="float:right" ng-hide="!isBeingCreated">X</button>
+    </div>
+
+
+
+    <!--<div id="slideRectCreateWrapper-{{divCounter}}" class="slideRectWrapper" style="padding-bottom:1px;padding-top:1px;'margin-left':'-20px'">
+      <span id="slideRectCreateSpan-{{divCounter}}" class="slideRectSpan" style="margin-right:'2pt'">
+        <span>#</span><input type="text" id="rectInputField-{{divCounter}}" class="slideRectInput" ng-model="tagNameList['rect-{{divCounter}}']" style="color:'black';transition:'width 0-25s';border:'0'"/>
+      </span>
+      <div ng-hide="!inEditMode">
+        <select id="colorPickerEdit-{{divCounter}}" name="colorpicker-change-background-color" class="slideRectColorPicker" value= "#ac725e">
+          <option value="#ac725e">#ac725e</option>
+          <option value="#d06b64">#d06b64</option>
+          <option value="#f83a22">#f83a22</option>
+          <option value="#fa573c">#fa573c</option>
+          <option value="#ff7537">#ff7537</option>
+          <option value="#ffad46">#ffad46</option>
+          <option value="#42d692">#42d692</option>
+          <option value="#16a765">#16a765</option>
+          <option value="#7bd148">#7bd148</option>
+          <option value="#b3dc6c">#b3dc6c</option>
+          <option value="#fbe983">#fbe983</option>
+          <option value="#fad165">#fad165</option>
+          <option value="#92e1c0">#92e1c0</option>
+          <option value="#9fe1e7">#9fe1e7</option>
+          <option value="#9fc6e7">#9fc6e7</option>
+          <option value="#4986e7">#4986e7</option>
+          <option value="#9a9cff">#9a9cff</option>
+          <option value="#b99aff">#b99aff</option>
+          <option value="#c2c2c2">#c2c2c2</option>
+          <option value="#cabdbf">#cabdbf</option>
+          <option value="#cca6ac">#cca6ac</option>
+          <option value="#f691b2">#f691b2</option>
+          <option value="#cd74e6">#cd74e6</option>
+          <option value="#a47ae2">#a47ae2</option>
+        </select>
+      </div>
+      <span id="rectspan-{{divCounter}}" class='slideRectSpan' style="'margin-right':'2pt'">
+      <span id="validationIcon-{{divCounter}}" class="validationIcon" aria-hidden="true" style="color:'white'"></span>
+      <button class ="btn btn-white btn-link" ng-click="removeAnnotationZone('rect-{{divCounter}}')" style="float:right">X</button>
+    </div>-->
+  </div>
+</div>

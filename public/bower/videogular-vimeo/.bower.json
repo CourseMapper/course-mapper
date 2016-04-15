@@ -1,0 +1,39 @@
+{
+  "name": "videogular-vimeo",
+  "version": "0.1.3",
+  "authors": [
+    "Momchil Marinov <momchil@mail.com>"
+  ],
+  "description": "Vimeo Plugin for Videogular",
+  "main": "./dist/vg-vimeo.min.js",
+  "ignore": [
+    ".gitignore",
+    "src",
+    "webpack.config.js",
+    "package.json",
+    "bower.json",
+    "example",
+    "README.md"
+  ],
+  "keywords": [
+    "videogular",
+    "videogular-plugin",
+    "videogular-vimeo",
+    "vimeo"
+  ],
+  "dependencies": {
+    "videogular": "latest",
+    "vimeo-jquery-api": "^0.10.1"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/bagabont",
+  "_release": "0.1.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.1.3",
+    "commit": "352e05388374aa3ace831fcf8cf6a329a4c8644d"
+  },
+  "_source": "git://github.com/bagabont/videogular-vimeo.git",
+  "_target": "^0.1.0",
+  "_originalSource": "videogular-vimeo"
+}

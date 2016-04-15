@@ -1,0 +1,29 @@
+<div class="grid-stack-item-content">
+    <div class="box no-shadow">
+        <div class="box-header with-border">
+            <h3 class="box-title">{{title}}</h3>
+
+            <div class="box-tools pull-right" ng-show="showTools">
+                <button ng-show="showConfigButton" class="btn btn-box-tool" data-widget="edit"
+                        data-toggle="tooltip" title="Edit"
+                        ng-click="editAction()">
+                    <i class="ionicons ion-wrench"></i>
+                </button>
+
+                <button class="btn btn-box-tool" data-widget="remove"
+                        data-toggle="tooltip" title="Remove"
+                        ng-click="closeAction()">
+                    <i class="fa fa-times"></i>
+                </button>
+
+            </div>
+        </div>
+        <div class="box-body-widget">
+
+            <div ng-include src="entryPoint" onload="onloadAction()">
+            </div>
+
+        </div>
+        <div class="box-footer"></div>
+    </div>
+</div>
