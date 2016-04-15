@@ -62,12 +62,12 @@ router.get('/createl2pCourse/:courseId/:courseName' , function (req, res, next) 
     var urlPre = "https://lanzarote.informatik.rwth-aachen.de:8449";
     if(courseData){
       res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify({result: true, url: urlPre+"/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true"}));
+      res.send(JSON.stringify({result: true, url: urlPre+"/course/"+courseData.slug+"/#/cid/"+courseData._id+"?iframe=true&tab=map"}));
     }
     else {
       if(salvage){
         res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({result: false, error: err, url: urlPre+"/course/"+salvage.slug+"/#/cid/"+salvage._id+"?iframe=true"}));
+        res.send(JSON.stringify({result: false, error: err, url: urlPre+"/course/"+salvage.slug+"/#/cid/"+salvage._id+"?iframe=true&tab=map"}));
       }
       else {
         res.setHeader('Content-Type', 'application/json');
