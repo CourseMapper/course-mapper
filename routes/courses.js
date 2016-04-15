@@ -375,7 +375,7 @@ function l2pPrep(req,res,next,courseId,callback){
           var l2pUserExists = false;
            var l2pUserName = l2pContext.Details.filter(function(x) {return x.Key=='User.FirstName';})[0].Value;
 
-          var roleArray = ["admins","managers","students"];
+          var roleArray = ["admins","managers","students", "extra", "tutors"];
           var roleIsValid = (roleArray.indexOf(l2pRole) != -1);
 
           if(roleIsValid){
@@ -386,6 +386,15 @@ function l2pPrep(req,res,next,courseId,callback){
                 case "managers":
                   l2pRole = "user";
                   userIsManager = true;
+                break;
+                case "students":
+                  l2pRole = "user";
+                break;
+                case "extra":
+                   l2pRole = "user";
+                break;
+                case "tutors":
+                    l2pRole = "user";
                 break;
                 default:
                   l2pRole = "user";
