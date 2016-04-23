@@ -148,29 +148,33 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     };
 
     $scope.deletePost = function (postId) {
-        $http({
-            method: 'DELETE',
-            url: '/api/discussion/' + postId,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .success(function (data) {
+        var r = confirm("Are you sure you want to delete this reply?");
 
-                if (data.result) {
-                    $scope.$emit('onAfterDeletePost', postId);
-
-                    toastr.success('Successfully Deleted');
-
+        if (r == true) {
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
+                .success(function (data) {
 
-            .error(function (data) {
-                $scope.errors = data.errors;
-                $scope.isLoading = false;
+                    if (data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
 
-                toastr.error('Delete Failed');
-            });
+                        toastr.success('Successfully Deleted');
+
+                    }
+                })
+
+                .error(function (data) {
+                    $scope.errors = data.errors;
+                    $scope.isLoading = false;
+
+                    toastr.error('Delete Failed');
+                });
+        }
     };
 
     $scope.deleteTopic = function (postId) {
