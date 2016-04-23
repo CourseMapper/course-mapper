@@ -13,7 +13,7 @@ app.factory('widgetService', [
                 if (!force && self.installedWidgets[location]) {
                     self.initializeWidgets(self.installedWidgets[location], location, function () {
                         if (success) {
-                            success(self.widgets[location]);
+                            success(self.installedWidgets[location]);
                         }
                     });
                 }
@@ -206,6 +206,22 @@ app.factory('widgetService', [
                             var y = nd.y;
 
                             self.setPosition(wId, x, y);
+                            self.setLocalPosition(wId, x, y);
+                        }
+                    }
+                }
+            },
+
+            setLocalPosition: function (wId, x, y) {
+                for (var i in this.widgets) {
+                    var wdgs = this.widgets[i];
+                    for (var j in wdgs) {
+                        var wdg = wdgs[j];
+                        if (wdg && wdg._id == wId) {
+                            this.widgets[i][j].position.x = x;
+                            this.widgets[i][j].position.y = y;
+                            wdg.position.x = x;
+                            wdg.position.y = y;
                         }
                     }
                 }
@@ -229,6 +245,7 @@ app.factory('widgetService', [
                                 var y = nd.y;
 
                                 self.setPosition(wId, x, y);
+                                self.setLocalPosition(wId, x, y);
                             }
                         }
                     }
