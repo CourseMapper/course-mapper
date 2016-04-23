@@ -1,0 +1,27 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="confirmDeleteSolutionModal" tabindex="-1" role="dialog"
+         aria-hidden="true" ng-controller="SolutionsController">
+        <section class="content">
+            <div class="row row-centered" style="margin-top: 20%">
+                <div class="col-xs-12 col-lg-5 col-md-5 col-sm-5 col col-centered">
+                    <div class="box no-border no-round">
+                        <div class="box-body">
+                            Are you sure you want delete this Solution? The changes cannot be undone later.
+                        </div>
+                    </div>
+                    <div class="box-footer control-group">
+                        <div class="controls pull-right">
+                            <button class="btn btn-danger" ng-click="deleteSolution(deleteSolutionId)"> Delete
+                            </button>
+
+                            <cancel></cancel>
+                        </div>
+                        <br class="clear">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
