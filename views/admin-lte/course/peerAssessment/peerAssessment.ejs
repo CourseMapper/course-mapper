@@ -1,19 +1,19 @@
 <div ng-controller="PeerAssessmentController">
     <div ng-include="currentView"></div>
-    <% include addNewAssignmentModal %>
-    <% include editAssignmentModal%>
-    <% include confirmDeleteAssignmentModal %>
-    <% include addEditSolutionModal%>
-    <% include confirmDeleteSolutionModal %>
+    <% include peerReview/modals/addNewAssignmentModal %>
+    <% include peerReview/modals/editAssignmentModal%>
+    <% include peerReview/modals/confirmDeleteAssignmentModal %>
+    <% include solution/modals/addEditSolutionModal%>
+    <% include solution/modals/confirmDeleteSolutionModal %>
 </div>
 <script type="text/ng-template" id="viewAssignment.tpl">
-    <% include viewAssignment%>
+    <% include peerReview/pages/viewAssignment%>
 </script>
 <script type="text/ng-template" id="seeAllSolutions.tpl">
-    <% include seeAllSolutions%>
+    <% include solution/pages/seeAllSolutions%>
 </script>
 <script type="text/ng-template" id="viewSolution.tpl">
-    <% include viewSolution%>
+    <% include solution/pages/viewSolution%>
 </script>
 <script type="text/ng-template" id="main.tpl">
     <div>
