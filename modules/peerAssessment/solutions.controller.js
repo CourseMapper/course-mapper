@@ -1,6 +1,8 @@
 var config = require('config');
 var Solution = require('./models/solutions.js');
 var PeerReview = require('./models/peerReview.js');
+var appRoot = require('app-root-path');
+var peerAssessment = require(appRoot + '/modules/peerAssessment/peerAssessment.controller.js');
 var users = require('../accounts/users.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('pa:db');
@@ -17,8 +19,34 @@ function solutions() {
 
 }
 
+solutions.prototype.getSolutions = function (error, params , success) {
+    var solutions = [];
+    Solution.find(params).sort({dateAdded: 1}).exec(function(err, docs) {
+        if(!err) {
+            _.each(docs, function(doc) {
+                var solution = {};
+                solution._id = doc._id;
+                solution.studentName = doc.studentName;
+                solution.title = doc.title;
+                PeerReview.findOne({_id: doc.peerReviewId}).exec(function(err, doc) {
+                    if(doc) {
+                        solution.peerReviewTitle = doc.title;
+                    }
+                    solutions.push(solution);
+                    if(docs.length == solutions.length) {
+                        success(solutions);
+                    }
+                })
+                //solutions.push(solution);
+            })
+        } else {
+            error(err);
+        }
+    })
+}
+
 solutions.prototype.addSolution = function(error, params, success) {
-    if (!helper.checkRequiredParams(params, ['courseId', 'reviewId', 'reviewTitle', 'userId'], error)) {
+    if (!helper.checkRequiredParams(params, ['courseId', 'reviewId', 'userId'], error)) {
         return;
     }
 
@@ -163,6 +191,35 @@ solutions.prototype.editSolution = function(error, params, files, success) {
         })
 }
 
+/* Get a plain javascript object and not a model instance. What ever you change here should be reflected in
+   the other method as well which return model instance.
+*/
+solutions.prototype.getSolutionWithLean = function (error, params, success) {
+    Solution.findOne(params)
+        .lean().exec(function (err, doc) {
+        if (err) {
+            error(err);
+        } else {
+            if (doc) {
+                PeerReview.findOne({_id: doc.peerReviewId}).exec(function(err, reviewDoc) {
+                    if(err) {
+                        error(helper.createError404('Solution'));
+                    }
+                    if(reviewDoc) {
+                        doc.peerReviewTitle = reviewDoc.title;
+                    }
+                    success(doc);
+                })
+            }
+            else
+                error(helper.createError404('Solution'));
+        }
+    });
+};
+
+/*
+    Duplicate method for return model instance.
+ */
 solutions.prototype.getSolution = function (error, params, success) {
     Solution.findOne(params)
         .exec(function (err, doc) {
@@ -177,6 +234,48 @@ solutions.prototype.getSolution = function (error, params, success) {
             }
         });
 };
+
+solutions.prototype.deleteSolution = function(error, params, success) {
+    userHelper.isAuthorized(error,
+        {
+            userId: params.userId,
+            courseId: params.courseId
+        },
+
+        function (isAllowed) {
+            if (isAllowed) {
+                Solution.findOne(
+                    {_id: mongoose.Types.ObjectId(params.sId)}
+                ).exec(function(err, doc) {
+                    if(!err) {
+                        _.each(doc.solutionDocuments, function(docPath) {
+                            fs.unlink(appRoot + '/public/' + docPath, function(err) {
+                                if(err) {
+                                    debug(err);
+                                }
+                                debug("File deleted successfully");
+                            });
+                        })
+
+
+                        Solution.remove(
+                            {_id: mongoose.Types.ObjectId(params.sId)}
+                        ).exec(function(err, res){
+                            if(!err) {
+                                success();
+                            } else {
+                                error(err);
+                            }
+                        })
+                    } else {
+                        error(err);
+                    }
+                })
+            } else {
+                error(helper.createError401());
+            }
+        });
+}
 
 solutions.prototype.saveResourceFile = function (error, file, type, helper, success) {
     var fileType = ['pdf'];

@@ -79,6 +79,88 @@ router.put('/peerassessment/:courseId/peerreviews/:pRId/solutions/:id',
             }
         );
     });
+
+/**
+ * GET
+ * fetch all solutions
+ */
+router.get('/peerassessment/:courseId/solutions', function(req, res) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var rs = new solutions();
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    rs.getSolutions(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+        req.body,
+        function (solutions) {
+            res.status(200).json({result: true, solutions: solutions});
+        }
+    )
+})
+
+/**
+ * GET
+ * get solution
+ */
+router.get('/peerassessment/:courseId/solutions/:id',
+    function (req, res, next) {
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        var rs = new solutions();
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+        req.body.sId = mongoose.Types.ObjectId(req.params.id);
+
+        var params = {
+            _id: mongoose.Types.ObjectId(req.params.id)
+        }
+
+        rs.getSolutionWithLean(
+            function (err) {
+                console.log(err);
+                // res.status(200).json({result: false, errors: [err.message]});
+                helper.resReturn(err, res);
+            },
+
+            // parameters
+            params,
+
+            function (solution) {
+                res.status(200).json({result: true, solution: solution});
+            }
+        );
+    });
+
+/**
+ * DELETE
+ * delete a solution
+ */
+router.delete('/peerassessment/:courseId/solutions/:id', function(req, res) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var rs = new solutions();
+    req.body.userId = mongoose.Types.ObjectId(req.user._id);
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    req.body.sId = mongoose.Types.ObjectId(req.params.id);
+
+    rs.deleteSolution(
+        function(err){
+            helper.resReturn(err, res);
+        },
+        req.body,
+        function () {
+            res.status(200).json({result: true});
+        }
+    )
+})
 /***************************************************************************/
 /*********************************PeerReviews*******************************/
 /***************************************************************************/

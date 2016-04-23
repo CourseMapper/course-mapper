@@ -103,7 +103,7 @@ peerAssessment.prototype.deletePeerReview = function(error, params, success) {
 }
 
 peerAssessment.prototype.getPeerReviews = function (error, params , success) {
-    PeerReview.find(params).exec(function(err, docs) {
+    PeerReview.find(params).sort({dateAdded: -1}).exec(function(err, docs) {
         if(!err) {
             success(docs);
         } else {
