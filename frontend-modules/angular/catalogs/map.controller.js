@@ -602,6 +602,8 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
                         // this will reinitiate the model, and thus also jsplumb connection
                         $scope.reInitiateJSPlumb();
+
+                        mapService.deleteNode(data);
                     }
                 })
                 .error(function (data) {
