@@ -13,6 +13,7 @@
                     <small class="label label-success pull-right" style="font-size: 13px; cursor: pointer;" title="number of discussion you created"><i class="fa fa-comments-o"></i> {{(myDiscussionStatus | filter:isDiscussion | filter:isTrue | filter:(enrolled.course._id)).length}}</small>
                     <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px; cursor: pointer;" title="number of Pdf material you added"><i class="fa fa-file-pdf-o"></i> {{(courseEnrolledResources | filter:isPdf | filter:(enrolled.course._id) | filter:(user._id)).length}}</small>
                     <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px; cursor: pointer;" title="number of video material you added"><i class="fa fa-file-movie-o"></i> {{(courseEnrolledResources | filter:isVideo | filter:(enrolled.course._id) | filter:(user._id)).length}}</small>
+                    <a type="button" class="btn btn-default btn-xs pull-right" style="font-size: 13px; margin-right: 2px; " href="/course/{{enrolled.course.slug}}/#/cid/{{enrolled.course._id}}">Go</a>
                 </div>
                 <div id="collapse{{$index}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
                     <div class="box-body">
