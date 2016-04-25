@@ -148,6 +148,7 @@ AppStore.prototype.populateApplications = function (failed, success) {
                         if (existing = isWidgetExist(wdg, widgets)) {
                             // this widget is already in DB
                             // update with the newest value
+                            wdg.applicationName = this.app.name;
                             _.extend(existing, wdg);
 
                             existing.save();
@@ -155,6 +156,7 @@ AppStore.prototype.populateApplications = function (failed, success) {
                         else {
                             // create new because it doesnt exist yet
                             wdg.application = p.application;
+                            wdg.applicationName = this.app.name;
                             var newApp = new Widgets(wdg);
                             newApp.save();
                         }
