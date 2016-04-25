@@ -69,7 +69,7 @@ app.factory('widgetService', [
                     var wdg = widgets[i];
 
                     // loop to load the js (if exist)
-                    if (wdg.widgetId.widgetJavascript) {
+                    if (wdg.widgetId != null && wdg.widgetId.widgetJavascript) {
                         this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0], location);
                     } else {
                         self.widgets[location].push(wdg);

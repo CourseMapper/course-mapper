@@ -237,6 +237,16 @@ AppStore.prototype.getInstalledWidgets = function (error, params, success) {
         function (err, widgets) {
             if (err) error(err);
             else {
+
+                for (var i in widgets) {
+                    var wdg = widgets[i];
+                    if (wdg.widgetId == null) {
+                        widgets.splice(i, 1);
+                    } else if (!wdg.widgetId.isActive) {
+                        widgets.splice(i, 1);
+                    }
+                }
+
                 success(widgets);
             }
         }
