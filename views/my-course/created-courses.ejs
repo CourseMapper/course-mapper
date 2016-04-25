@@ -20,13 +20,13 @@
                             <tbody>
                                 <tr ng-repeat="resource in courseCreatedResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == created._id && resource.treeNodeId.name">
                                     <td ng-if="resource.type=='pdf'">
-                                            <i class="fa fa-file-pdf-o"></i> {{resource.treeNodeId.name}}
+                                            <i class="fa fa-file-pdf-o"></i> <a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf">{{resource.treeNodeId.name}} </a>
                                         <small class="label label-primary pull-right" style="font-size: 12px; cursor: context-menu;" title="number of pdf annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-pdf-o"></i> {{(myNodeActivity | filter:isPdfAnno | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
                                         <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" title="number of link you created"><i class="fa fa-link"></i> {{(myNodeActivity | filter:isLink | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
                                         <small class="badge bg-light-blue pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" ng-if="resource.createdBy == created.createdBy" title="you created this content node">mine</small>
                                     </td>
                                     <td ng-if="resource.type!='pdf'">
-                                            <i class="fa fa-file-movie-o"></i> {{resource.treeNodeId.name}}
+                                            <i class="fa fa-file-movie-o"></i> <a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video">{{resource.treeNodeId.name}} </a>
                                         <small class="label label-primary pull-right" style="font-size: 12px; cursor: context-menu;" title="number of video annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-movie-o"></i> {{(myNodeActivity | filter:isVideoAnno | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
                                         <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" title="number of link you created"><i class="fa fa-link"></i> {{(myNodeActivity | filter:isLink | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
                                         <small class="badge bg-light-blue pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" ng-if="resource.createdBy == created.createdBy" title="you created this content node">mine</small>
