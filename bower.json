@@ -50,7 +50,9 @@
     "ng-tags-input": "^3.0.0",
     "gridstack": "^0.2.5",
     "oclazyload": "~1.0.9",
-    "videogular-vimeo": "^0.1.0"
+    "videogular-vimeo": "^0.1.0",
+    "highcharts-ng": "^0.0.11",
+    "highcharts": "^4.2.4"
   },
   "devDependencies": {
     "livereload-js": "^2.2.1"

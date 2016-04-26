@@ -10,8 +10,8 @@
                     <i ng-show="sortType == 'nodeId.name' && sortReverse" class="fa fa-caret-up"></i>
                 </a>
             </th>
-            <th>Total Time</th>
             <th>Current Time</th>
+            <th>Total Time</th>
             <th>
                 <a href="#" ng-click="sortType = 'dateUpdated'; sortReverse = !sortReverse">
                     Date Accessed
@@ -23,8 +23,8 @@
         </tr>
         <tr ng-repeat="video in videoHistory | orderBy:sortType:sortReverse" ng-if="video.nodeId.name">
             <td>{{video.nodeId.name}}</td>
-            <td>{{video.totalTime | msToTime}}</td>
             <td>{{video.currentTime | msToTime}}</td>
+            <td>{{video.totalTime | msToTime}}</td>
             <td>{{video.dateUpdated | relativeDate}}</td>
             <td>
                 <a type="button" class="btn btn-block btn-primary btn-xs" href="/treeNode/{{video.nodeId._id}}/#/cid/{{video.courseId._id}}/nid/{{video.nodeId._id}}?tab=video">Resume</a>

@@ -4,8 +4,7 @@ angular.module('MyPdfStatus', [''])
         //$scope.title = "List of PDF History";
         $http.get('/api/my-course/pdf-history').success(function (data) {
             $scope.pdfHistory = data.pdfHistory;
-            $scope.sortType = 'courseId.dateAdded';
+            $scope.sortType = 'dateUpdated';
             $scope.sortReverse = 'false';
-
         });
     });
