@@ -131,7 +131,7 @@ courseHistory.prototype.getHistoryVideoAnnotations = function (error, params, do
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            VideoAnnotation.find({video_id: {$in: ids},date_modified: {'$gte': lastYear} })
+            VideoAnnotation.find({video_id: {$in: ids},date_created: {'$gte': lastYear} })
             .sort('date_modified')
             .exec(function (error, docs){
                 if (error) error (error);
@@ -155,8 +155,8 @@ courseHistory.prototype.getHistoryLinks = function (error, params, done) {
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            Links.find({contentNode: {$in: ids},dateUpdated: {'$gte': lastYear} })
-                .sort('-dateUpdated')
+            Links.find({contentNode: {$in: ids},dateAdded: {'$gte': lastYear} })
+                .sort('dateAdded')
                 .exec(function (error, docs){
                     if (error) error (error);
                     else {done(docs)}

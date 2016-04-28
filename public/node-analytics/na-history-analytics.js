@@ -120,9 +120,9 @@ angular.module('NodeHistoryAnalytics', ['chart.js', 'highcharts-ng'])
             var temp ={};
             $scope.resultVideoAnnotations = result.videoAnnotations;
             $scope.resultVideoAnnotations.forEach(function(r){
-                var year = new Date(r.date_modified).getFullYear();
-                var mth = new Date(r.date_modified).getMonth();
-                var day = new Date(r.date_modified).getDate();
+                var year = new Date(r.date_created).getFullYear();
+                var mth = new Date(r.date_created).getMonth();
+                var day = new Date(r.date_created).getDate();
                 var objectName = Date.UTC(year, mth, day);
                 if (typeof temp[objectName] != "undefined")
                     temp[objectName].value = temp[objectName].value + 1;

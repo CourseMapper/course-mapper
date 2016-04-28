@@ -123,9 +123,9 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
 
         $scope.resultPdfUpload = result.pdf;
         $scope.resultPdfUpload.forEach(function(r){
-            var year = new Date(r.dateUpdated).getFullYear();
-            var mth = new Date(r.dateUpdated).getMonth();
-            var day = new Date(r.dateUpdated).getDate();
+            var year = new Date(r.dateAdded).getFullYear();
+            var mth = new Date(r.dateAdded).getMonth();
+            var day = new Date(r.dateAdded).getDate();
             var objectName = Date.UTC(year, mth, day);
             if (typeof temp[objectName] != "undefined")
                 temp[objectName].value = temp[objectName].value + 1;
@@ -314,9 +314,9 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
         var temp ={};
         $scope.resultVideoAnnotations = result.videoAnnotations;
         $scope.resultVideoAnnotations.forEach(function(r){
-            var year = new Date(r.date_modified).getFullYear();
-            var mth = new Date(r.date_modified).getMonth();
-            var day = new Date(r.date_modified).getDate();
+            var year = new Date(r.date_created).getFullYear();
+            var mth = new Date(r.date_created).getMonth();
+            var day = new Date(r.date_created).getDate();
             var objectName = Date.UTC(year, mth, day);
             if (typeof temp[objectName] != "undefined")
                 temp[objectName].value = temp[objectName].value + 1;
