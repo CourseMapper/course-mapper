@@ -81,16 +81,17 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
                 if (data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
-                    $timeout(function () {
-                        $scope.$apply()
-                    });
+                    $scope.formData = {};
+                    $scope.addTopicForm.$setPristine();
 
                     $('#addNewTopicModal').modal('hide');
-
                     toastr.success('Successfully Saved');
+
+                    $timeout(function () {
+                        $scope.$apply();
+                    });
                 }
 
-                $scope.addTopicForm.$setPristine();
                 $scope.isLoading = false;
             })
             .error(function (data) {
@@ -328,8 +329,6 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     });
 
     $scope.$on('onAfterCreateNewTopic', function (e, f) {
-        $scope.formData.title = "";
-        $scope.formData.content = "";
     });
 
     $scope.$on('onAfterEditReply', function (e, f) {

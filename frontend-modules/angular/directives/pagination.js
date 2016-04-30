@@ -7,6 +7,7 @@ app.directive('pagination',
                 totalRows: '=',
                 limit: '=',
                 useSearch: '=',
+                terms: '=',
                 objectService: '@',
                 sortBy: '@',
                 orderBy: '@',
@@ -23,6 +24,10 @@ app.directive('pagination',
                     var factoryInstance = element.injector().get(scope.objectService);
                     scope.objectServiceInstance = factoryInstance;
                     factoryInstance.setPageParams(scope);
+                });
+
+                attrs.$observe('terms', function () {
+                    scope.terms = attrs.terms;
                 });
             },
 
