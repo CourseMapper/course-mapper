@@ -283,8 +283,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
             .on('click mousedown mouseup touchstart', function (event) {
 
                 if (
+                    event.type == 'touchstart' && (
                     event.target.className.indexOf('fa-plus-square') > -1 ||
-                    event.target.className.indexOf('fa-minus-square') > -1
+                    event.target.className.indexOf('fa-minus-square') > -1 )
                 ) {
                     var el = event.target.parentNode;
                     $timeout(function () {
@@ -309,13 +310,15 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
                                     if (mdlName)
                                         $(mdlName).modal('show');
                                 }, 0);
+
                                 return true;
                             }
-                        }
+                        } else
+                            return true;
                     }
 
                     $('.open').removeClass('open');
-                    return true;
+                    return false;
                 }
 
                 var simulated = $(this).attr('is-simulated');
