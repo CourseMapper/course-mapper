@@ -37,6 +37,23 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
                 delete review.solutionPublicationDate;
                 review.reviewDescription = review.description;
                 delete review.description;
+
+                // Processing review settings
+                if(review.reviewSettings && review.reviewSettings.reviewStartDate) {
+                    review.reviewSettings.reviewStartDate = new Date(review.reviewSettings.reviewStartDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.reviewEndDate) {
+                    review.reviewSettings.reviewEndDate = new Date(review.reviewSettings.reviewEndDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.secondDueDate) {
+                    review.reviewSettings.secondDueDate = new Date(review.reviewSettings.secondDueDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.secondReviewStartDate) {
+                    review.reviewSettings.secondReviewStartDate = new Date(review.reviewSettings.secondReviewStartDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.secondReviewEndDate) {
+                    review.reviewSettings.secondReviewEndDate = new Date(review.reviewSettings.secondReviewEndDate)
+                }
             });
             $scope.peerreviews = response.data.peerreviews;
         }, function(err){
@@ -242,6 +259,11 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
         }
     };
 
+    $(document).on('hidden.bs.modal', function () {
+        console.log("Removing modal data", this)
+        $('#addNewAssignmentModal').removeData('bs.modal');
+    });
+
     $scope.tabOpened();
 });
 
@@ -358,6 +380,7 @@ app.controller('SolutionsController', function($scope, $location, $http, toastr,
 })
 
 app.controller('ViewPeerReviewController', function($scope, $location, $http, toastr, ActionBarService) {
+    console.log('Debug: ViewPeerReviewController')
     $scope.vId = $location.search().vId;
     if($scope.vName && $scope.vId) {
         $scope.viewReview = null;
@@ -458,7 +481,8 @@ app.controller('NewPeerReviewController', function($scope, $http, toastr, $windo
         totalMarks: 0,
         //publicationDate: null,
         dueDate: null,
-        ssPublicationDate: null
+        ssPublicationDate: null,
+        reviewSettings: {}
     }
     $scope.reviewDocuments = false;
     $scope.sampleSolutions = false;
@@ -535,7 +559,7 @@ app.controller('NewPeerReviewController', function($scope, $http, toastr, $windo
 
 app.controller('EditPeerReviewController', function($scope, $http, toastr, $window, Upload){
 
-    console.log($scope, $scope.newAssignObj);
+    console.log('Edit Peer Review Controller', $scope, $scope.newAssignObj);
 
     $scope.reviewDocuments = false;
     $scope.sampleSolutions = false;
@@ -610,7 +634,7 @@ app.controller('EditPeerReviewController', function($scope, $http, toastr, $wind
         }
 
         $scope.upload = Upload.upload(
-            uploadParams
+                uploadParams
             )
             .progress(function (evt) {
                 if (!evt.config.file)

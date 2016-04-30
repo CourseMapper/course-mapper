@@ -7371,6 +7371,23 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
                 delete review.solutionPublicationDate;
                 review.reviewDescription = review.description;
                 delete review.description;
+
+                // Processing review settings
+                if(review.reviewSettings && review.reviewSettings.reviewStartDate) {
+                    review.reviewSettings.reviewStartDate = new Date(review.reviewSettings.reviewStartDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.reviewEndDate) {
+                    review.reviewSettings.reviewEndDate = new Date(review.reviewSettings.reviewEndDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.secondDueDate) {
+                    review.reviewSettings.secondDueDate = new Date(review.reviewSettings.secondDueDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.secondReviewStartDate) {
+                    review.reviewSettings.secondReviewStartDate = new Date(review.reviewSettings.secondReviewStartDate)
+                }
+                if(review.reviewSettings && review.reviewSettings.secondReviewEndDate) {
+                    review.reviewSettings.secondReviewEndDate = new Date(review.reviewSettings.secondReviewEndDate)
+                }
             });
             $scope.peerreviews = response.data.peerreviews;
         }, function(err){
@@ -7576,6 +7593,11 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     };
 
+    $(document).on('hidden.bs.modal', function () {
+        console.log("Removing modal data", this)
+        $('#addNewAssignmentModal').removeData('bs.modal');
+    });
+
     $scope.tabOpened();
 });
 
@@ -7692,6 +7714,7 @@ app.controller('SolutionsController', function($scope, $location, $http, toastr,
 })
 
 app.controller('ViewPeerReviewController', function($scope, $location, $http, toastr, ActionBarService) {
+    console.log('Debug: ViewPeerReviewController')
     $scope.vId = $location.search().vId;
     if($scope.vName && $scope.vId) {
         $scope.viewReview = null;
@@ -7792,7 +7815,8 @@ app.controller('NewPeerReviewController', function($scope, $http, toastr, $windo
         totalMarks: 0,
         //publicationDate: null,
         dueDate: null,
-        ssPublicationDate: null
+        ssPublicationDate: null,
+        reviewSettings: {}
     }
     $scope.reviewDocuments = false;
     $scope.sampleSolutions = false;
@@ -7869,7 +7893,7 @@ app.controller('NewPeerReviewController', function($scope, $http, toastr, $windo
 
 app.controller('EditPeerReviewController', function($scope, $http, toastr, $window, Upload){
 
-    console.log($scope, $scope.newAssignObj);
+    console.log('Edit Peer Review Controller', $scope, $scope.newAssignObj);
 
     $scope.reviewDocuments = false;
     $scope.sampleSolutions = false;
@@ -7944,7 +7968,7 @@ app.controller('EditPeerReviewController', function($scope, $http, toastr, $wind
         }
 
         $scope.upload = Upload.upload(
-            uploadParams
+                uploadParams
             )
             .progress(function (evt) {
                 if (!evt.config.file)
@@ -8059,7 +8083,34 @@ app.controller('AddEditSolutionController', function($scope, $http, toastr, $win
             });
     }
 })
-;app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, Page) {
+;app.controller('BlindController', function($scope) {
+    console.log('Debug: BlindController')
+    // Setup default values for the view to be populated correctly
+    if($scope.newAssignObj) {
+        $scope.newAssignObj.reviewSettings.blind = 'double'
+    }
+});app.controller('LoopController', function($scope) {
+    console.log('Debug: LoopController')
+    // Setup default values for the view to be populated correctly
+    $scope.multipleView = false
+    if($scope.newAssignObj) {
+        $scope.newAssignObj.reviewSettings.loop = 'single'
+    }
+    $scope.toggleView = function(val) {
+        console.log('Checking object', $scope.newAssignObj)
+        if(val == 'multiple') {
+            $scope.multipleView = true
+        } else {
+            $scope.multipleView = false
+        }
+    }
+});app.controller('ReviewAssignmentController', function($scope) {
+    console.log('Debug: ReviewAssignmentController')
+    // Setup default values for the view to be populated correctly
+    if($scope.newAssignObj) {
+        $scope.newAssignObj.reviewSettings.reviewAssignment = 'single'
+    }
+});app.controller('HomePageController', function ($scope, $http, $rootScope, $sce, Page) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
     $scope.widgets = [];

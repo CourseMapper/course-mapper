@@ -19,6 +19,25 @@ var peerReviewSchema = new mongoose.Schema({
     solutions: [{ type: String }],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'courses', required: true},
+    reviewSettings: {
+        loop: {
+            type: String,
+            enum: ['single','multiple']
+        },
+        reviewStartDate: { type: Date },
+        reviewEndDate: { type: Date },
+        secondDueDate: { type: Date },
+        secondReviewStartDate: { type: Date },
+        secondReviewEndDate: { type: Date },
+        blind: {
+            type: String,
+            enum: ['single', 'double']
+        },
+        reviewAssignment: {
+            type: String,
+            enum: ['single','multiple']
+        }
+    },
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
 });

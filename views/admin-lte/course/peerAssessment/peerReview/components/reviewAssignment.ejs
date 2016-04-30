@@ -1,0 +1,15 @@
+<div class="form-horizontal horizontal-max" ng-controller="ReviewAssignmentController">
+    <fieldset>
+        <div class="form-group">
+            <label class="col-sm-5 control-label">Assignment</label>
+            <div class="col-sm-7">
+                <div class="col-sm-3">
+                    <label class="radio-inline"><input type="radio" name="assignmentType" ng-model="newAssignObj.reviewSettings.reviewAssignment" value="single">1-to-1</label>
+                </div>
+                <div class="col-sm-4">
+                    <label class="radio-inline"><input type="radio" name="assignmentType" ng-model="newAssignObj.reviewSettings.reviewAssignment" value="multiple">M-to-N</label>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>

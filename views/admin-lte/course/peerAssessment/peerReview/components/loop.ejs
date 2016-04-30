@@ -1,0 +1,49 @@
+<div class="form-horizontal horizontal-max" ng-controller="LoopController">
+    <fieldset>
+        <div class="form-group">
+            <label class="col-sm-5 control-label">Loop</label>
+            <div class="col-sm-7">
+                <div class="col-sm-2">
+                    <label class="radio-inline"><input type="radio" name="loop" ng-model="newAssignObj.reviewSettings.loop" value="single" ng-click="toggleView('single')">Single</label>
+                </div>
+                <div class="col-sm-2">
+                    <label class="radio-inline"><input type="radio" name="loop" ng-model="newAssignObj.reviewSettings.loop" value="multiple" ng-click="toggleView('multiple')">Multiple</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputReviewStartDate" class="col-sm-5 control-label">Review Start Date</label>
+            <div class="col-sm-4">
+                <input type="datetime-local" class="form-control original-form-control" id="inputReviewStartDate" ng-model="newAssignObj.reviewSettings.reviewStartDate">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputReviewEndDate" class="col-sm-5 control-label">Review End Date</label>
+            <div class="col-sm-4">
+                <input type="datetime-local" class="form-control original-form-control" id="inputReviewEndDate" ng-model="newAssignObj.reviewSettings.reviewEndDate">
+            </div>
+        </div>
+
+        <div id="multiple" ng-show="multipleView">
+            <div class="form-group">
+                <label for="inputSecondDueDate" class="col-sm-5 control-label">Second Due Date</label>
+                <div class="col-sm-4">
+                    <input type="datetime-local" class="form-control original-form-control" id="inputSecondDueDate" ng-model="newAssignObj.reviewSettings.secondDueDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputReviewStartDate" class="col-sm-5 control-label">Second Review Start Date</label>
+                <div class="col-sm-4">
+                    <input type="datetime-local" class="form-control original-form-control" id="inputReviewStartDate" ng-model="newAssignObj.reviewSettings.secondReviewStartDate">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="inputReviewEndDate" class="col-sm-5 control-label">Second Review End Date</label>
+                <div class="col-sm-4">
+                    <input type="datetime-local" class="form-control original-form-control" id="inputReviewEndDate" ng-model="newAssignObj.reviewSettings.secondReviewEndDate">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>

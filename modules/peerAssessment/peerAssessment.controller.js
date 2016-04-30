@@ -140,6 +140,7 @@ peerAssessment.prototype.editPeerReview = function (error, params, files, succes
                         peerReview.totalMarks = params.totalMarks;
                         peerReview.documents = params.documents || [];
                         peerReview.solutions = params.solutions || [];
+                        peerReview.reviewSettings = params.reviewSettings;
 
                         if(params.publicationDate instanceof Date) {
                             _.extend(peerReview, { publicationDate: params.publicationDate });
@@ -271,7 +272,8 @@ peerAssessment.prototype.addPeerReview = function (error, params, files, success
                     courseId: mongoose.Types.ObjectId(params.courseId),
                     description: params.reviewDescription,
                     groupSubmission: params.groupSubmission,
-                    totalMarks: params.totalMarks
+                    totalMarks: params.totalMarks,
+                    reviewSettings: params.reviewSettings
                 });
 
                 if(params.publicationDate instanceof Date) {
