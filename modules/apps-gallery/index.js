@@ -374,9 +374,12 @@ AppStore.prototype.installWidget = function (error, params, success) {
                         location: wdg.location
                     };
 
-                    if (params.userId) {
+                    if (params.userId && params.location == "user-profile") {
                         where.userId = params.userId
                     }
+
+                    if (params.courseId)
+                        where.courseId = params.courseId;
 
                     // this widget can be installed multiple of times
                     if (wdg.allowMultipleInstallation) {
