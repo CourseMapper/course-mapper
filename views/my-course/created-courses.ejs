@@ -12,7 +12,7 @@
                     <small class="label label-success pull-right" style="font-size: 13px; cursor: context-menu;" title="number of discussion you created"><i class="fa fa-comments-o"></i> {{(myDiscussionStatus | filter:isDiscussion | filter:isTrue | filter:(created._id)).length}}</small>
                     <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px; cursor: context-menu;" title="number of Pdf material you added"><i class="fa fa-file-pdf-o"></i> {{(courseCreatedResources | filter:isPdf | filter:(created._id) | filter:(created.createdBy)).length}}</small>
                     <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px; cursor: context-menu;" title="number of video material you added"><i class="fa fa-file-movie-o"></i> {{(courseCreatedResources | filter:isVideo | filter:(created._id) | filter:(created.createdBy)).length}}</small>
-                    <a type="button" class="btn btn-default btn-xs pull-right" style="font-size: 13px; margin-right: 2px; " href="/course/{{created.slug}}/#/cid/{{created._id}}">Go</a>
+                    <a type="button" class="label label-default label-xs" style="font-size: 10px; margin-left: 8px; " href="/course/{{created.slug}}/#/cid/{{created._id}}"><i class="fa fa-external-link"></i></a>
                 </div>
                 <div id="collapse-created{{$index}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
                     <div class="box-body">
