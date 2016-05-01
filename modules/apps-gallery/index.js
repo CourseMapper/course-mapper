@@ -369,8 +369,8 @@ AppStore.prototype.installWidget = function (error, params, success) {
                         ins.categoryId = params.categoryId;
 
                     var where = {
-                        application: wdg.application,
-                        widget: wdg.name,
+                        //application: wdg.application,
+                        //widget: wdg.name,
                         location: wdg.location
                     };
 
@@ -382,6 +382,12 @@ AppStore.prototype.installWidget = function (error, params, success) {
 
                     if (params.courseId)
                         where.courseId = params.courseId;
+
+                    if (params.nodeId)
+                        where.nodeId = params.nodeId;
+
+                    if (wdg._id)
+                        where.widgetId = wdg._id;
 
                     // this widget can be installed multiple of times
                     if (wdg.allowMultipleInstallation) {
