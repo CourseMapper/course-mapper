@@ -79,6 +79,7 @@
         <div class="grid-stack-item"
              data-gs-no-resize="yes"
              ng-repeat="wdg in widgets" id="w{{wdg._id}}"
+             on-finish-render="afterAllWidgetsRendered"
         >
 
             <widget-box onload-action="initWidgetButton(wdg._id);"
