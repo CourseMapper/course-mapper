@@ -374,6 +374,8 @@ AppStore.prototype.installWidget = function (error, params, success) {
                         location: wdg.location
                     };
 
+                    // added params.location == user-profile, because only this location is user specific.
+                    // if this filter is not placed, then it can install widget if they are different user, (admin/manager)
                     if (params.userId && params.location == "user-profile") {
                         where.userId = params.userId
                     }
