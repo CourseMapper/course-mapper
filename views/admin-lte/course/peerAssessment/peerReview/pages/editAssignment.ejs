@@ -1,18 +1,11 @@
 <!-- course edit form -->
-<div class="row">
-    <div class="modal" id="editAssignmentModal" tabindex="-1" role="dialog"
-         aria-labelledby="Edit Peer Review" aria-hidden="true" ng-controller="EditPeerReviewController">
+<div class="row" ng-controller="EditPeerReviewController">
         <section class="content">
             <div class="row row-centered">
                 <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
                     <div class="box no-border no-round">
                         <div class="box-header with-border">
                             <h3 class="box-title">Edit Peer Review</h3>
-
-                            <div class="box-tools pull-right">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span
-                                            aria-hidden="true">&times;</span></button>
-                            </div>
                         </div>
                         <div class="box-body">
                             <div class="tabbable">
@@ -166,14 +159,10 @@
                                 <button class="btn btn-primary" ng-click="editPeerReview()"> Save
                                     <spinner show="isLoading"></spinner>
                                 </button>
-
-                                <cancel></cancel>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-
-    </div>
 </div>

@@ -1,11 +1,18 @@
 <div ng-controller="PeerAssessmentController">
     <div ng-include="currentView"></div>
-    <% include peerReview/modals/addNewAssignmentModal %>
-    <% include peerReview/modals/editAssignmentModal%>
     <% include peerReview/modals/confirmDeleteAssignmentModal %>
     <% include solution/modals/addEditSolutionModal%>
     <% include solution/modals/confirmDeleteSolutionModal %>
 </div>
+<script type="text/ng-template" id="reviewAssignment.tpl">
+    <% include review/pages/assignReviews%>
+</script>
+<script type="text/ng-template" id="addNewAssignment.tpl">
+    <% include peerReview/pages/addNewAssignment%>
+</script>
+<script type="text/ng-template" id="editAssignment.tpl">
+    <% include peerReview/pages/editAssignment%>
+</script>
 <script type="text/ng-template" id="viewAssignment.tpl">
     <% include peerReview/pages/viewAssignment%>
 </script>
@@ -32,13 +39,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="review in peerreviews" ng-click="viewPeerReview(review)">
+                <tr ng-repeat="review in peerreviews" ng-click="viewPeerReview(review._id)">
                     <td>{{review.title}}</td>
                     <td>{{review.publicationDate | date:'dd.MM.yyyy HH:mm'}}</td>
                     <td>{{review.dueDate | date:'dd.MM.yyyy HH:mm'}}</td>
                     <td>{{review.totalMarks}}</td>
                     <td ng-show="isOwner || isManager || isAdmin">
-                        <a href="" ng-click="openEditConfirmationModal(review, $event)"> <i class="ion-edit" style="font-size: medium"></i> </a> &nbsp;
+                        <a href="" ng-click="editPeerReview(review, $event)"> <i class="ion-edit" style="font-size: medium"></i> </a> &nbsp;
                         <a href="" ng-click="openDeleteConfirmationModal(review._id, $event)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
                     </td>
                 </tr>

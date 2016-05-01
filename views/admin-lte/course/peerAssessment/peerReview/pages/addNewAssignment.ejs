@@ -1,27 +1,21 @@
 <!-- course edit form -->
-<div class="row">
-    <div class="modal" id="editAssignmentModal" tabindex="-1" role="dialog"
-         aria-labelledby="Edit Peer Review" aria-hidden="true" ng-controller="EditPeerReviewController">
+<div class="row" ng-controller="NewPeerReviewController">
         <section class="content">
             <div class="row row-centered">
                 <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
                     <div class="box no-border no-round">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Edit Peer Review</h3>
+                            <h3 class="box-title">New Peer Review</h3>
 
-                            <div class="box-tools pull-right">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span
-                                            aria-hidden="true">&times;</span></button>
-                            </div>
                         </div>
                         <div class="box-body">
                             <div class="tabbable">
                                 <ul class="nav nav-tabs nav-justified" id="tabContent">
-                                    <li class="active"><a data-toggle="tab" data-target="#editBasicTab">Basic</a></li>
-                                    <li><a data-toggle="tab" data-target="#editAdvancedTab">Advanced</a></li>
+                                    <li class="active"><a data-toggle="tab" data-target="#basicTab">Basic</a></li>
+                                    <li><a data-toggle="tab" data-target="#advancedTab">Advanced</a></li>
                                 </ul>
                                 <div class="tab-content">
-                                    <div id="editBasicTab" class="tab-pane fade in active">
+                                    <div id="basicTab" class="tab-pane fade in active">
                                         <br/>
                                         <form class="form-horizontal horizontal-max" name="addAssignmentForm" role="form" ng-submit="saveNewPost(addAssignmentForm.$valid)" novalidate>
 
@@ -65,21 +59,13 @@
                                                             <a href="" ng-click="deleteSelectedFiles(f.name)"> <i class="ion-close-round"></i></a>
                                                             <br>
                                                         </div>
-                                                        <div ng-repeat="doc in newAssignObj.displayDocumentsList">
-                                                            <div class="label label-info">
-                                                                <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
-                                                            </div>
-                                                            &nbsp;
-                                                            <a href="" ng-click="deleteUploadedFiles(doc.link)"> <i class="ion-close-round"></i></a>
-                                                            <br>
-                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <label for="inputGroupSubmmission" class="col-sm-4 control-label">Allow Group Submission</label>
                                                     <div class="col-sm-1">
-                                                        <input type="checkbox" id="inputGroupSubmission" ng-model="newAssignObj.groupSubmission" class="checkbox-line-adjust"/>
+                                                        <input type="checkbox" id="inputGroupSubmmission" ng-model="newAssignObj.groupSubmission" class="checkbox-line-adjust"/>
                                                     </div>
                                                 </div>
 
@@ -136,20 +122,13 @@
                                                             <a href="" ng-click="deleteSelectedSolutions(f.name)"> <i class="ion-close-round"></i></a>
                                                             <br>
                                                         </div>
-                                                        <div ng-repeat="doc in newAssignObj.displaySolutionsList">
-                                                            <div class="label label-info">
-                                                                <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
-                                                            </div>
-                                                            &nbsp;
-                                                            <a href="" ng-click="deleteUploadedSolutions(doc.link)"> <i class="ion-close-round"></i></a>
-                                                            <br>
-                                                        </div>
                                                     </div>
                                                 </div>
+
                                             </fieldset>
                                         </form>
                                     </div>
-                                    <div id="editAdvancedTab" class="tab-pane fade">
+                                    <div id="advancedTab" class="tab-pane fade">
                                         <br/>
                                         <% include ../components/reviewAssignment %>
                                         <% include ../components/loop %>
@@ -163,11 +142,9 @@
                             <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                             <!-- Button -->
                             <div class="controls pull-right">
-                                <button class="btn btn-primary" ng-click="editPeerReview()"> Save
+                                <button class="btn btn-primary" ng-click="createPeerReview()"> Save
                                     <spinner show="isLoading"></spinner>
                                 </button>
-
-                                <cancel></cancel>
                             </div>
                         </div>
                     </div>
@@ -175,5 +152,4 @@
             </div>
         </section>
 
-    </div>
 </div>
