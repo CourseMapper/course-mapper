@@ -289,20 +289,20 @@ AppStore.prototype.setPosition = function (error, params, x, y, success) {
         };
 
         if (doc.courseId) {
-            userHelper.isAuthorized(error,
-                {
+            userHelper.isCourseAuthorizedAsync({
                     userId: params.userId,
                     courseId: doc.courseId
-                },
-
-                function (isAllowed) {
-                    if (isAllowed) {
+                })
+                .then(function (isAllwd) {
+                    if (isAllwd) {
                         docSave(doc);
                     } else {
                         error(helper.createError401());
                     }
-                }
-            );
+                })
+                .catch(function (err) {
+                    error(err);
+                });
         }
 
         else if (doc.userId.equals(params.userId)) {
