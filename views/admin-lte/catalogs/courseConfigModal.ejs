@@ -71,7 +71,7 @@
                             </div>
 
                             <br>
-                            <% if(isInIframe){ %>
+                            <% if(isInIframe && (course.settings && course.settings['disableTop'] !== undefined && course.settings['disableTop'])){ %>
                             <% } else { %>
                             <div class="control-group">
                                 <label class="control-label">Embed Settings<br>

@@ -18,7 +18,8 @@ topContentSchema.add({
     contentName : {type: String},
     contentType : {type: String},
     countType : { type: String},
-    count : {type: Number}
+    count : {type: Number},
+    isDeleted: Boolean
 });
 
 var topContentAgg = mongoose.model('topContent', topContentSchema);

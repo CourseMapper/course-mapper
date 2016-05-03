@@ -14,7 +14,8 @@ topContributorSchema.add({
     },
     countCourseActivity : {type: Number},
     countNodeActivity : {type:Number},
-    totalCount : {type:Number}
+    totalCount : {type:Number},
+    isEnrolled : Boolean
 });
 
 var topContributorAgg = mongoose.model('topContributor', topContributorSchema);

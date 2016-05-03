@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var widgetSchema = new mongoose.Schema({
     application: {type: String, required: true},
+    applicationName: {type: String},
 
     name: {type: String, required: true},
     location: {type: String},

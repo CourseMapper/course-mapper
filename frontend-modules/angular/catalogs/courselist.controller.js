@@ -18,11 +18,12 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     $scope.sortBy = 'dateAdded';
     $scope.currentPage = 1;
     $scope.pageReset = false;
+    $scope.lastPage = false;
 
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
-        {id: 'totalVotes.-1', name: 'Most Popular'}
+        {id: 'totalEnrollment.-1', name: 'Most Popular'}
     ];
 
     $scope.widgets = [];
@@ -32,6 +33,14 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     };
 
     $scope.getCoursesFromThisCategory = function (force) {
+
+        courseListService.setPageParams({
+            sortBy: $scope.sortBy,
+            orderBy: $scope.orderBy,
+            limit: 12,
+            lastPage: false
+        });
+
         courseListService.init($scope.category._id, $scope.filterTags,
             function (courses) {
                 $scope.courses = courses;
@@ -107,6 +116,7 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
             $location.search({});
 
         $scope.getCoursesFromThisCategory(true);
+        $scope.pageReset = Math.random();
     };
 
     $scope.removeFilter = function (tag) {
@@ -127,22 +137,57 @@ app.controller('CourseListController', function ($scope, $rootScope, $http,
     /**
      * init category data by slug
      */
-    $http.get('/api/category/' + $scope.slug).success(function (data) {
-        $scope.category = data.category;
+    $http.get('/api/category/' + $scope.slug)
+        .success(function (data) {
+            $scope.category = data.category;
 
-        Page.setTitleWithPrefix($scope.category.name);
+            Page.setTitleWithPrefix($scope.category.name);
 
-        // once we get the complete category structure, we operate by id
-        $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function (data) {
-            $scope.courseTags = data.courseTags;
-            $scope.availableTags = data.courseTags;
+            // once we get the complete category structure, we operate by id
+            $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function (data) {
+                $scope.courseTags = data.courseTags;
+                $scope.availableTags = data.courseTags;
 
-            $scope.initTagFromSearch();
+                $scope.initTagFromSearch();
+            });
+        })
+        .error(function (err) {
+            $scope.error = err;
         });
-    });
 
     $scope.paginationReset = function () {
         return $scope.pageReset;
     };
+
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
+
+            courseListService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 12,
+                lastPage: false
+            });
+
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
+            courseListService.init($scope.category._id, $scope.filterTags,
+                function (courses) {
+                    $scope.courses = courses;
+                    $scope.coursesLength = courses.length;
+                },
+                function (errors) {
+                    console.log(JSON.stringify(errors));
+                }
+                , true
+            );
+        }
+    });
 
 });

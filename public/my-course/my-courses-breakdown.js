@@ -18,26 +18,40 @@ angular.module('MyCoursesBreakdown', [])
 
         });
 
-        $http.get('/api/my-course/newsfeed').success(function (data) {
+       /* $http.get('/api/my-course/newsfeed').success(function (data) {
             $scope.newsfeedData  = data.newsfeed;
+        });*/
+
+        $http.get('/api/my-course/my-node-activity-status').success(function (data) {
+            $scope.myNodeActivity  = data.myNodeActivityStatus;
+        });
+
+        $http.get('/api/my-course/my-discussion-status').success(function (data) {
+            $scope.myDiscussionStatus  = data.myDiscussionStatus;
         });
 
 
         //filtering scope
         $scope.isPdfAnno = function (action) {
-            return action.actionSubject == 'pdf annotation';
+            return action.type == 'pdf annotation';
         };
         $scope.isVideoAnno = function (action) {
-            return action.actionSubject == 'video annotation';
+            return action.type == 'video annotation';
         };
         $scope.isDiscussion = function (action) {
-            return action.actionSubject == 'discussion';
+            return action.type == 'discussion';
         };
         $scope.isLink = function (action) {
-            return action.actionSubject == 'link';
+            return action.type == 'link';
         };
         $scope.isAdded = function (action) {
             return action.actionType == 'added';
+        };
+        $scope.isThisDeleted = function (action) {
+            return action.actionType == 'deleted';
+        };
+        $scope.isTrue = function (action) {
+            return action.isDeleted == false;
         };
 
         //filtering scope resources

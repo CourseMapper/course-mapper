@@ -39,7 +39,11 @@ router.post('/courses',
 
             catalog.addCourse(
                 function (err) {
-                    res.status(200).json({result: false, errors: [err.message]});
+                    if (err.message.indexOf('duplicate key error index') > -1)
+                        helper.resReturn(helper.createError('Course with the same name is already exist.', 400), res);
+                    else
+                        helper.resReturn(err, res);
+                    //res.status(200).json({result: false, errors: [err.message]});
                 },
 
                 // parameters

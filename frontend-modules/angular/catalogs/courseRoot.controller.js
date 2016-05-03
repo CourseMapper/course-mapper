@@ -31,14 +31,14 @@ app.controller('CourseRootController', function ($scope, $rootScope, $filter, $h
         $timeout(function () {
             if (!authService.isLoggedIn && $scope.currentTab != $scope.defaultPath) {
                 authService.showLoginForm();
+            } else {
+                $scope.include = '/course/tab/' + $scope.currentTab;
+                $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
             }
         }, 120);
 
         if ($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
-
-        $scope.include = '/course/tab/' + $scope.currentTab;
-        $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
 
         $scope.getTabDisplayName($scope.currentTab);
 

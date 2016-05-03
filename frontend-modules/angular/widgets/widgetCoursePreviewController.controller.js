@@ -87,6 +87,10 @@ app.controller('widgetCoursePreviewController', function ($scope, $http, $rootSc
 
         return false;
     };
+ 
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
 
     $scope.initWidgets();
 });

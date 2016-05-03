@@ -32,10 +32,12 @@ nodeHistory.prototype.getHistoryPdfAnnotations = function (error, params, done) 
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            PdfAnnotation.find({pdfId: {$in: ids},dateOfCreation: {'$gte': lastYear}, hasParent: false }, function (error, docs){
-                if (error) error (error);
-                else {done(docs)}
-            });
+            PdfAnnotation.find({pdfId: {$in: ids},dateOfCreation: {'$gte': lastYear}, hasParent: false })
+                .sort('dateOfCreation')
+                .exec(function (error, docs){
+                    if (error) error (error);
+                    else {done(docs)}
+                });
 
         }
     });
@@ -54,10 +56,12 @@ nodeHistory.prototype.getHistoryVideoAnnotations = function (error, params, done
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            VideoAnnotation.find({video_id: {$in: ids},date_modified: {'$gte': lastYear} }, function (error, docs){
-                if (error) error (error);
-                else {done(docs)}
-            });
+            VideoAnnotation.find({video_id: {$in: ids},date_created: {'$gte': lastYear} })
+                .sort('date_created')
+                .exec(function (error, docs){
+                    if (error) error (error);
+                    else {done(docs)}
+                });
 
         }
     });
@@ -69,7 +73,7 @@ nodeHistory.prototype.getHistoryLinks = function (error, params, done) {
         return;
     }
 
-    Links.find({contentNode: params.treeNodeId, isDeleted: false, dateUpdated: {$gte: lastYear}}).exec(function (err, res){
+    Links.find({contentNode: params.treeNodeId, isDeleted: false, dateAdded: {$gte: lastYear}}).sort('dateAdded').exec(function (err, res){
         if (err) error(err);
         else {done(res)}
     });

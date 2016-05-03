@@ -13,7 +13,7 @@ app.factory('widgetService', [
                 if (!force && self.installedWidgets[location]) {
                     self.initializeWidgets(self.installedWidgets[location], location, function () {
                         if (success) {
-                            success(self.widgets[location]);
+                            success(self.installedWidgets[location]);
                         }
                     });
                 }
@@ -69,7 +69,7 @@ app.factory('widgetService', [
                     var wdg = widgets[i];
 
                     // loop to load the js (if exist)
-                    if (wdg.widgetId.widgetJavascript) {
+                    if (wdg.widgetId != null && wdg.widgetId.widgetJavascript) {
                         this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0], location);
                     } else {
                         self.widgets[location].push(wdg);
@@ -177,8 +177,6 @@ app.factory('widgetService', [
             },
 
             initiateDraggableGrid: function (locs, enableDragging) {
-                var self = this;
-
                 var loc = '#' + locs + '-widgets';
 
                 var options = {
@@ -193,17 +191,62 @@ app.factory('widgetService', [
 
                 var $gs = $(loc);
                 $gs.gridstack(options);
+            },
 
-                $gs.on('change', function (evt, node) {
-                    if (node && node[0]) {
-                        var c = $(node[0].el);
-
+            onchangelistener: function (evt, node) {
+                var self = this;
+                for (var i in node) {
+                    var nd = node[i];
+                    var c = $(nd.el);
+                    if (c) {
                         var wId = c.attr('id').substr(1);
-                        if (node[0]._updating) {
-                            var x = node[0].x;
-                            var y = node[0].y;
+                        //if (nd._updating)
+                        {
+                            var x = nd.x;
+                            var y = nd.y;
 
                             self.setPosition(wId, x, y);
+                            self.setLocalPosition(wId, x, y);
+                        }
+                    }
+                }
+            },
+
+            setLocalPosition: function (wId, x, y) {
+                for (var i in this.widgets) {
+                    var wdgs = this.widgets[i];
+                    for (var j in wdgs) {
+                        var wdg = wdgs[j];
+                        if (wdg && wdg._id == wId) {
+                            this.widgets[i][j].position.x = x;
+                            this.widgets[i][j].position.y = y;
+                            wdg.position.x = x;
+                            wdg.position.y = y;
+                        }
+                    }
+                }
+            },
+
+            initiateDragStop: function (locs) {
+                var self = this;
+
+                var loc = '#' + locs + '-widgets';
+                var $gs = $(loc);
+                //$gs.off('change', self.onchangelistener);
+                $gs.on('change', function (evt, node) {
+                    for (var i in node) {
+                        var nd = node[i];
+                        var c = $(nd.el);
+                        if (c) {
+                            var wId = c.attr('id').substr(1);
+                            //if (nd._updating)
+                            {
+                                var x = nd.x;
+                                var y = nd.y;
+
+                                self.setPosition(wId, x, y);
+                                self.setLocalPosition(wId, x, y);
+                            }
                         }
                     }
                 });

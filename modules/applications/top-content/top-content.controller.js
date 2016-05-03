@@ -30,9 +30,9 @@ topContent.prototype.getTopAnnotatedPdf = function (error, params, done) {
     params.courseId = mongoose.Types.ObjectId(params.courseId);
     params.contentType = "pdf";
     params.countType = "annotation";
-    //params.isDeleted = false;
-
-    TopContent.findOne(params).sort('-count').exec(function(err, docs){
+    params.isDeleted = false;
+    
+    TopContent.findOne(params).populate('nodeId', '_id name').sort('-count').exec(function(err, docs){
         if (err){
             error(err);
         } else {
@@ -51,8 +51,9 @@ topContent.prototype.getTopAnnotatedVideo = function (error, params, done) {
     params.courseId = mongoose.Types.ObjectId(params.courseId);
     params.contentType = "video";
     params.countType = "annotation";
+    params.isDeleted = false;
 
-    TopContent.findOne(params).sort('-count').exec(function(err, docs){
+    TopContent.findOne(params).populate('nodeId', '_id name').sort('-count').exec(function(err, docs){
         if (err){
             error(err);
         } else {
@@ -71,8 +72,9 @@ topContent.prototype.getTopLinkNode = function (error, params, done) {
     params.courseId = mongoose.Types.ObjectId(params.courseId);
     params.contentType = "node";
     params.countType = "link";
+    params.isDeleted = false;
 
-    TopContent.findOne(params).sort('-count').exec(function(err, docs){
+    TopContent.findOne(params).populate('nodeId', '_id name').sort('-count').exec(function(err, docs){
         if (err){
             error(err);
         } else {

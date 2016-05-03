@@ -45,7 +45,9 @@ var topContentListener = {
                                                                         contentName : res.name,
                                                                         contentType : "pdf",
                                                                         countType : "annotation",
+                                                                        isDeleted: false,
                                                                         count : 1
+                                                                        
                                                                     }
                                                                 );
                                                                 nf.save(
@@ -78,6 +80,40 @@ var topContentListener = {
 
     },
 
+    onAfterPdfAnnotationDeleted: function (deletePdfAnnotation) {
+        var pdfId = deletePdfAnnotation.pdfId;
+        if (pdfId) {
+            Resources.findOne({_id: pdfId})
+                .exec(function(err, result){
+                    if (result) {
+                        var treeNodeId = result.treeNodeId;
+                        if (treeNodeId){
+                            SubTopics.findOne({_id:treeNodeId})
+                                .exec(function(err, res){
+                                    if (res) {
+                                        var condition = {contentId: pdfId, contentType:"pdf"}, update = {$inc: {count: -1}};
+                                        TopContentAgg.findOne(condition)
+                                            .exec(function(err, resTC){
+                                                if (resTC) {
+                                                    TopContentAgg.update(condition, update).exec();
+                                                }
+                                                else {
+                                                    console.log('can not find document');
+                                                }
+                                            });
+                                    }
+
+                                })
+
+
+
+                        }
+
+                    }
+                })
+        }
+    },
+
     //Listener for Video
     onAfterVideoAnnotationCreated: function (newVideoAnnotation) {
         VideoAnnotation.findOne({_id:newVideoAnnotation})
@@ -108,6 +144,7 @@ var topContentListener = {
                                                                         contentName : res.name,
                                                                         contentType : "video",
                                                                         countType : "annotation",
+                                                                        isDeleted: false,
                                                                         count : 1
                                                                     }
                                                                 );
@@ -200,6 +237,7 @@ var topContentListener = {
                                                             contentName : result.name,
                                                             contentType : "node",
                                                             countType : "link",
+                                                            isDeleted: false,
                                                             count : 1
                                                         }
                                                     );
@@ -222,9 +260,9 @@ var topContentListener = {
             });
 
     },
-    
+
     onAfterLinkDeleted: function (deleteLink) {
-        Links.findOne({_id: deleteLink})
+        Links.findOne({_id: deleteLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
@@ -248,6 +286,13 @@ var topContentListener = {
 
                 }
             });
+
+    },
+
+    //set isDeleted true for all affected top-content documents when a node is deleted
+    onAfterNodeDeleted: function (deleteNode) {
+        var nodeId = deleteNode._id;
+        TopContentAgg.update({nodeId: nodeId, isDeleted: false}, {isDeleted: true}, {multi: true}).exec();
 
     }
 };

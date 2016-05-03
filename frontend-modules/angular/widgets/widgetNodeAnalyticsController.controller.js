@@ -1,6 +1,6 @@
 app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootScope,
-                                                            $timeout, toastr,
-                                                            widgetService, courseService, authService) {
+                                                          $timeout, toastr,
+                                                          widgetService, courseService, authService) {
     $scope.location = "node-analytics";
     $scope.widgets = [];
 
@@ -89,4 +89,8 @@ app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootSc
     };
 
     $scope.initWidgets();
+
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
 });

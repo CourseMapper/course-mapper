@@ -27,6 +27,7 @@ topContributor.prototype.getTopContributorList = function (error, params, done) 
         return;
     }
     params.courseId = mongoose.Types.ObjectId(params.courseId);
+    params.isEnrolled = true;
     TopContributor.find(params).limit(5).populate('userId', '_id image displayName').sort('-totalCount').exec(function(err, docs){
         if (err){
             error(err);

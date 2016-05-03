@@ -89,4 +89,8 @@ app.controller('widgetCourseAnalyticsController', function ($scope, $http, $root
     };
 
     $scope.initWidgets();
+
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
 });

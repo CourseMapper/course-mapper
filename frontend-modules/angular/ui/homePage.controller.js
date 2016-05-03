@@ -111,6 +111,16 @@ app.controller('HomePageController', function ($scope, $http, $rootScope,
                 $('.open').not($(this).parents('ul')).removeClass('open');
                 $(this).find('ul').addClass('open');
 
+                if (event.type == 'touchstart') {
+                    $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
+                        function (res) {
+                            if (res.result) {
+                                $scope.widgets[slug] = $sce.trustAsHtml(res.widgets);
+                            }
+                        }
+                    );
+                }
+
                 return false;
             })
             .on('mouseenter', function () {
