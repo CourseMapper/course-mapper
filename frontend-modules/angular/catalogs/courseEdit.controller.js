@@ -80,7 +80,8 @@ app.controller('CourseEditController', function ($scope, $filter, $http, $locati
                 $scope.progressPercentage = 0;
 
                 var slg = data.course.slug;
-                window.location.href = '/course/' + slg + '/#/cid/' + data.course._id + '?tab=preview';
+                //window.location.href = '/course/' + slg + '/#/cid/' + data.course._id + '?tab=preview';
+                window.location.reload();
             })
 
             .error(function (data) {
