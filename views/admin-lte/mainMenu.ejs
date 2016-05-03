@@ -34,6 +34,25 @@
                 </li>
             </ul>
         </div>
+
+        <form class="navbar-form navbar-left" role="search" ng-controller="SearchBoxController">
+            <div class="form-group">
+                <input id="navbar-search-input"
+                       type="text"
+                       class="form-control"
+                       placeholder="Search"
+                       ng-model="queryText"
+                       list="results"
+                       autocomplete="off"
+                       ng-model-options="{debounce: 300}">
+                <datalist id="results">
+                    <option ng-repeat="category in categories" value="{{category.name}}"></option>
+                    <option ng-repeat="course in courses" value="{{course.name}}"></option>
+                    <option ng-repeat="annotation in annotations" value="{{annotation.text}}"></option>
+                </datalist>
+            </div>
+        </form>
+
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">

@@ -2,6 +2,8 @@
 
 var VideoAnnotation = require('../../modules/annotations/video-annotation');
 var Courses = require('../../modules/catalogs/courses');
+var Categories = require('../../modules/catalogs/categories');
+
 var mongoose = require('mongoose');
 var _ = require('lodash');
 var Promise = require('bluebird');
@@ -11,6 +13,7 @@ Promise.promisifyAll(mongoose);
 var SearchBuilder = function (term) {
   var courseSearchOptions = {$text: {$search: term}};
   var annotationSearchOptions = {$text: {$search: term}};
+  var categoriesSearchOptions = {$text: {$search: term}};
 
   var searchableResources = [];
 
@@ -30,6 +33,7 @@ var SearchBuilder = function (term) {
 
   this.build = function () {
     var engines = {
+      categories: Categories.find(categoriesSearchOptions).execAsync(),
       courses: Courses.find(courseSearchOptions).execAsync(),
       annotations: VideoAnnotation.find(annotationSearchOptions).execAsync()
     };

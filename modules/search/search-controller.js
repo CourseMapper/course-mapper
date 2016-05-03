@@ -10,11 +10,10 @@ var search = function (req, res, next) {
     return res.status(400).json();
   }
 
-  var searchBuilder = new SearchBuilder(term);
-  searchBuilder.searchByResource(req.query.resources);
-  searchBuilder.searchByOwnership(req.query.owner);
-
-  var query = searchBuilder.build();
+  var query = new SearchBuilder(term)
+    .searchByResource(req.query.resources)
+    .searchByOwnership(req.query.owner)
+    .build();
 
   Promise.props(query)
     .then(function (results) {
