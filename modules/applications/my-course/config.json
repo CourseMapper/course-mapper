@@ -1,5 +1,5 @@
 {
-  "name": "My Courses",
+  "name": "My Analytics",
   "widgets":[
     {
       "name": "My PDF Activity",
@@ -27,7 +27,7 @@
       "description": "Show your created courses list, including the statistics of your activities for each node in the courses that you created",
       "entryPoint": "/my-course/my-created-courses",
       "widgetJavascript": ["my-created-courses.js"],
-      "width": 5,
+      "width": 6,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     },
@@ -37,7 +37,7 @@
       "description": "Show your enrolled courses list, including the statistics of your activities for each node in the courses that you have enrolled",
       "entryPoint": "/my-course/my-courses-breakdown",
       "widgetJavascript": ["my-courses-breakdown.js"],
-      "width": 5,
+      "width": 6,
       "height":1,
       "icon":"/img/appPlaceholder.png"
     },
