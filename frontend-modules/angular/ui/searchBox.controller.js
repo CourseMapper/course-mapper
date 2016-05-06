@@ -1,4 +1,9 @@
 app.controller('SearchBoxController', function ($scope, $http, $rootScope) {
+
+  $scope.categoryClicked = function () {
+    console.log('xaxa')
+  };
+
   $scope.$watch('queryText', function (searchTerm) {
     if (!searchTerm || searchTerm.length == 0) {
       return 0;

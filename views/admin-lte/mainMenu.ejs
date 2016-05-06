@@ -14,7 +14,33 @@
     <a href="/" class="logo"><b>Course</b>Mapper</a>
 
     <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController">
-        <div class="navbar-left">
+
+        <form class="navbar-form navbar-left" role="search" ng-controller="SearchBoxController">
+            <div class="input-group">
+                <input id="navbar-search-input"
+                       type="text"
+                       class="form-control"
+                       placeholder="Search"
+                       ng-model="queryText"
+                       list="results"
+                       autocomplete="off"
+                       ng-model-options="{debounce: 300}">
+                <span class="input-group-btn">
+                    <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+                <datalist id="results" ng-model="selectedItem">
+                    <option ng-changed="categoryClicked(selectedItem)" ng-repeat="category in categories"
+                            value="{{category.name}}"></option>
+                    <option ng-repeat="course in courses" value="{{course.name}}"></option>
+                    <option value="Annotations" ></option>
+                    <option ng-repeat="annotation in annotations" value="{{annotation.text}}"></option>
+                </datalist>
+            </div>
+        </form>
+
+        <div class="navbar-right">
             <% if(locals.showSidebar && showSidebar){ %>
             <a class="top-menu-left visible-xs" data-toggle="offcanvas" role="button"><i class="ionicons ion-more"> </i>
             </a>
@@ -34,24 +60,6 @@
                 </li>
             </ul>
         </div>
-
-        <form class="navbar-form navbar-left" role="search" ng-controller="SearchBoxController">
-            <div class="form-group">
-                <input id="navbar-search-input"
-                       type="text"
-                       class="form-control"
-                       placeholder="Search"
-                       ng-model="queryText"
-                       list="results"
-                       autocomplete="off"
-                       ng-model-options="{debounce: 300}">
-                <datalist id="results">
-                    <option ng-repeat="category in categories" value="{{category.name}}"></option>
-                    <option ng-repeat="course in courses" value="{{course.name}}"></option>
-                    <option ng-repeat="annotation in annotations" value="{{annotation.text}}"></option>
-                </datalist>
-            </div>
-        </form>
 
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
