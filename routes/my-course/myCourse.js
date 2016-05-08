@@ -34,6 +34,10 @@ router.get('/my-pdf-status', function(req, res, next){
     res.render('my-course/pdf-status');
 });
 
+router.get('/my-video-status', function(req, res, next){
+    res.render('my-course/video-status');
+});
+
 //routes to my-activity-summary
 router.get('/my-activity-summary', function(req, res, next) {
     res.render('my-course/activity-summary');
@@ -43,6 +47,13 @@ router.get('/my-course-progress', function(req, res, next) {
     res.render('my-course/course-history');
 });
 
+router.get('/my-courses-breakdown', function(req, res, next) {
+    res.render('my-course/courses-breakdown');
+});
+
+router.get('/my-activity-summary', function(req, res, next) {
+    res.render('my-course/activity-summary');
+});
 
 
 

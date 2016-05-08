@@ -26,7 +26,7 @@ AppStore.prototype.init = function () {
  * @param success cb
  */
 AppStore.prototype.getWidgets = function (error, params, success) {
-    Widgets.find(params, function (err, widgets) {
+    Widgets.find(params).sort({location: 1}).exec(function (err, widgets) {
         if (err)
             error();
         else
@@ -148,6 +148,7 @@ AppStore.prototype.populateApplications = function (failed, success) {
                         if (existing = isWidgetExist(wdg, widgets)) {
                             // this widget is already in DB
                             // update with the newest value
+                            wdg.applicationName = this.app.name;
                             _.extend(existing, wdg);
 
                             existing.save();
@@ -155,6 +156,7 @@ AppStore.prototype.populateApplications = function (failed, success) {
                         else {
                             // create new because it doesnt exist yet
                             wdg.application = p.application;
+                            wdg.applicationName = this.app.name;
                             var newApp = new Widgets(wdg);
                             newApp.save();
                         }
@@ -235,6 +237,16 @@ AppStore.prototype.getInstalledWidgets = function (error, params, success) {
         function (err, widgets) {
             if (err) error(err);
             else {
+
+                for (var i in widgets) {
+                    var wdg = widgets[i];
+                    if (wdg.widgetId == null) {
+                        widgets.splice(i, 1);
+                    } else if (!wdg.widgetId.isActive) {
+                        widgets.splice(i, 1);
+                    }
+                }
+
                 success(widgets);
             }
         }
@@ -277,20 +289,20 @@ AppStore.prototype.setPosition = function (error, params, x, y, success) {
         };
 
         if (doc.courseId) {
-            userHelper.isAuthorized(error,
-                {
+            userHelper.isCourseAuthorizedAsync({
                     userId: params.userId,
                     courseId: doc.courseId
-                },
-
-                function (isAllowed) {
-                    if (isAllowed) {
+                })
+                .then(function (isAllwd) {
+                    if (isAllwd) {
                         docSave(doc);
                     } else {
                         error(helper.createError401());
                     }
-                }
-            );
+                })
+                .catch(function (err) {
+                    error(err);
+                });
         }
 
         else if (doc.userId.equals(params.userId)) {
@@ -350,18 +362,32 @@ AppStore.prototype.installWidget = function (error, params, success) {
                     if (params.courseId)
                         ins.courseId = params.courseId;
 
+                    if (params.nodeId)
+                        ins.nodeId = params.nodeId;
+
                     if (params.categoryId)
                         ins.categoryId = params.categoryId;
 
                     var where = {
-                        application: wdg.application,
-                        widget: wdg.name,
+                        //application: wdg.application,
+                        //widget: wdg.name,
                         location: wdg.location
                     };
 
-                    if (params.userId) {
+                    // added params.location == user-profile, because only this location is user specific.
+                    // if this filter is not placed, then it can install widget if they are different user, (admin/manager)
+                    if (params.userId && params.location == "user-profile") {
                         where.userId = params.userId
                     }
+
+                    if (params.courseId)
+                        where.courseId = params.courseId;
+
+                    if (params.nodeId)
+                        where.nodeId = params.nodeId;
+
+                    if (wdg._id)
+                        where.widgetId = wdg._id;
 
                     // this widget can be installed multiple of times
                     if (wdg.allowMultipleInstallation) {
@@ -371,7 +397,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                                 error(err);
                             } else {
                                 success(newInstall);
-                                Plugin.doAction('onAfterWidgetInstalled', newInstall);
+                                Plugin.doAction('onAfterWidgetInstalled', newInstall, params);
                             }
                         });
 
@@ -388,7 +414,7 @@ AppStore.prototype.installWidget = function (error, params, success) {
                                     error(err);
                                 else {
                                     success(doc);
-                                    Plugin.doAction('onAfterWidgetInstalled', doc);
+                                    Plugin.doAction('onAfterWidgetInstalled', doc, params);
                                 }
                             }
                         );
@@ -406,23 +432,22 @@ AppStore.prototype.installWidget = function (error, params, success) {
             return;
         }
 
-        userHelper.isAuthorized(
-            error,
-
-            {
+        userHelper.isCourseAuthorizedAsync({
                 userId: params.userId,
                 courseId: params.courseId
-            },
+            })
+            .then(function (isAllwd) {
 
-            function (ret) {
-                // isOwnerOrManager
-                if (ret) {
+                if (isAllwd) {
                     saveWidgetInstall();
                 } else {
-                    error(helper.createError('Cannot edit course', 401));
+                    error(helper.createError('Cannot add/edit widgets', 401));
                 }
-            }
-        );
+
+            })
+            .catch(function () {
+                error(helper.createError401());
+            });
     }
 
     else {
@@ -455,7 +480,7 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
                     error(err);
                 else if (doc) {
                     success(doc);
-                    Plugin.doAction('onAfterWidgetUninstalled', doc);
+                    Plugin.doAction('onAfterWidgetUninstalled', doc, deleteParams);
                 }
                 else {
                     error(helper.createError404('Widget Installation'));
@@ -465,15 +490,10 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
     }
 
     if (params.courseId) {
-        userHelper.isAuthorized(
-            function (err) {
-                error(err);
-            },
-            {
-                userId: params.userId,
-                courseId: params.courseId
-            },
-            function (isAllowed) {
+        userHelper.isCourseAuthorizedAsync({
+            userId: params.userId,
+            courseId: params.courseId
+        }).then(function (isAllowed) {
                 if (isAllowed) {
                     var deleteParams = {
                         _id: params._id
@@ -483,8 +503,11 @@ AppStore.prototype.uninstallWidget = function (error, params, success) {
                 } else {
                     error(helper.createError401());
                 }
-            }
-        );
+
+            })
+            .catch(function () {
+                error(helper.createError401());
+            });
     }
 
     else {

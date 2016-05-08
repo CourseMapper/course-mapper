@@ -191,9 +191,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
                 success(tn);
 
                 if (params.type == 'contentNode') {
-                    Plugin.doAction('onAfterContentNodeEdited', tn);
-                } else {
-                    Plugin.doAction('onAfterSubTopicEdited', tn);
+                    Plugin.doAction('onAfterContentNodeEdited', tn, params);
                 }
 
             })
@@ -379,7 +377,7 @@ catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdat
     });
 };
 
-catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, success) {
+catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, user, success) {
     TreeNodes.findById(paramsWhere).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -396,7 +394,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
                     else {
                         // success saved the cat
                         success(tn);
-                        Plugin.doAction('onAfterNodeEdited', tn);
+                        Plugin.doAction('onAfterSubTopicEdited', tn, user);
                     }
                 });
             }
@@ -404,7 +402,7 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, succe
     });
 };
 
-catalog.prototype.deleteNode = function (error, params, success) {
+catalog.prototype.deleteNode = function (error, params, user, success) {
     TreeNodes.findById(params).exec(function (err, tn) {
         if (err) error(err);
         else {
@@ -431,18 +429,39 @@ catalog.prototype.deleteNode = function (error, params, success) {
                     error(helper.createError('Cannot delete node with childrens'));
                 }
 
+                Resources.update({
+                        treeNodeId: tn._id
+                    },
+                    {
+                        $set: {isDeleted: true}
+                    },
+                    {
+                       multi: true
+                    }).exec();
+
             } else {
                 tn.isDeleted = true;
                 tn.dateDeleted = new Date();
                 tn.save(
                     function (err) {
                         if (err) {
-                            debug('failed update node position');
+                            debug('failed delete node');
                             error(err);
                         }
                         else {
+                            Resources.update({
+                                    treeNodeId: tn._id
+                                },
+                                {
+                                    $set: {isDeleted: true}
+                                },
+                                {
+                                    multi: true
+                                }
+                            ).exec();
+
                             success(tn);
-                            Plugin.doAction('onAfterNodeDeleted', tn);
+                            Plugin.doAction('onAfterNodeDeleted', tn, user);
                         }
                     }
                 );

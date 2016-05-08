@@ -8,15 +8,16 @@
             <div class="installedApps">
                 <ul>
                     <li ng-repeat="app in installedApps">
-                        <p>{{app.app.name}}</p>
+                        <p>{{app.name}}</p>
                         <button type="button" class="btn btn-xs btn-warning"
                                 aria-label="Delete Installation"
-                                ng-click="deleteInstallation(app._id)">Delete Permission
+                                ng-click="deleteInstallation(app.clientId)">Delete Permission
                         </button>
                     </li>
                 </ul>
             </div>
-            <div ng-show="installedApps.length == 0">
+
+            <div ng-show="isEmptyObject(installedApps)">
                 There is no application installed.
             </div>
         </div>

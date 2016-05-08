@@ -1,0 +1,22 @@
+<div class="box-body" ng-controller="TopContributorController">
+    <ul class="products-list product-list-in-box" ng-if="topContributor.length != 0">
+        <li class="item" ng-repeat="user in topContributor">
+            <div class="product-img">
+                <img src="{{user.userId.image}}" alt="Product Image" style="border-radius: 50%">
+            </div>
+            <div class="product-info">
+                <div class="product-title">{{user.userId.displayName | capitalize}}
+                    <span class="label label-warning pull-right">{{user.totalCount}} <ng-pluralize count="user.totalCount" when="{'0': 'activity', '1': 'activity', 'other': 'activities'}"></ng-pluralize></span>
+                </div>
+                <span class="product-description" title="course activity such as add material and discussion" style="cursor: default">
+                  <b>{{user.countCourseActivity}}</b> <ng-pluralize count="user.countCourseActivity" when="{'0': 'course activity', '1': ' course activity', 'other': 'course activities'}"></ng-pluralize>
+                </span>
+                <span class="product-description" title="node activity such as  annotate material and add link" style="cursor: default">
+                  <b>{{user.countNodeActivity}}</b> <ng-pluralize count="user.countNodeActivity" when="{'0': 'node activity', '1': 'node activity', 'other': 'node activities'}"></ng-pluralize>
+                </span>
+            </div>
+        </li>
+        <!-- /.item -->
+    </ul>
+    <div ng-if="topContributor.length == 0" style="margin: 20px 15px;">No activity</div>
+</div>

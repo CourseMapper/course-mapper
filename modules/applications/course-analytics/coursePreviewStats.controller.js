@@ -79,6 +79,7 @@ coursePreviewStats.prototype.getTotalDiscussion = function (error, params, done)
 
     //var self = this;
     params.course = mongoose.Types.ObjectId(params.course);
+    params.isDeleted = false;
 
     Posts.find(params).count().exec(function (err, res) {
         if (err) error(err);

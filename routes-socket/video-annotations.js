@@ -48,7 +48,7 @@ module.exports = function (io) {
         var model = params.annotation;
         var annotation = await(VAController.updateAsync(model, user));
         if (annotation) {
-          Plugin.doAction('onAfterVideoAnnotationEdited', annotation);
+          Plugin.doAction('onAfterVideoAnnotationEdited', annotation, user);
         } else {
           annotation = await(VAController.addAsync(model, user));
           Plugin.doAction('onAfterVideoAnnotationCreated', annotation);
@@ -68,7 +68,7 @@ module.exports = function (io) {
           return;
         }
         var videoId = annotation.video_id;
-        Plugin.doAction('onAfterVideoAnnotationDeleted', videoId);
+        Plugin.doAction('onAfterVideoAnnotationDeleted', annotation, getUser());
         await(emitAnnotationUpdatedAsync(videoId));
       } catch (e) {
         console.log('Error removing video annotation: ' + e);
@@ -78,6 +78,7 @@ module.exports = function (io) {
     socket.on('comments:post', async(function (params) {
       try {
         var annotation = await(VAController.addCommentAsync(params, getUser()));
+        Plugin.doAction('onAfterVideoCommentCreated', annotation, getUser());
         await(emitCommentsUpdatedAsync(annotation));
       } catch (e) {
         console.log('Error posting comment: ' + e);
@@ -87,6 +88,7 @@ module.exports = function (io) {
     socket.on('comments:remove', async(function (params) {
       try {
         var annotation = await(VAController.removeCommentAsync(params, getUser()));
+        Plugin.doAction('onAfterVideoCommentDeleted', annotation, getUser());
         await(emitCommentsUpdatedAsync(annotation));
       } catch (e) {
         console.log('Error removing comment: ' + e);

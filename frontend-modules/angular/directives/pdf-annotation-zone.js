@@ -28,7 +28,7 @@ app.directive('pdfAnnotationZone',
               addReference: '&',
             },
 
-            templateUrl: '/angular/views/pdf-annotation-zone.html',
+            templateUrl: '/partials/pdf-annotation-zone.html',
             //replace: true,
             //transclude: true,
             controller: function($http, $scope, $rootScope, $sce, $timeout, $parse){

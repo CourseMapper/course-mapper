@@ -69,7 +69,7 @@ NodeLinks.prototype.getNodeLink = function (error, pId, success) {
         });
 };
 
-NodeLinks.prototype.editPost = function (error, params, success) {
+NodeLinks.prototype.editPost = function (error, params, user, success) {
     Links.findOneAndUpdate(
         {
             _id: params.linkId
@@ -86,13 +86,13 @@ NodeLinks.prototype.editPost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterLinkEdited', doc);
+                Plugin.doAction('onAfterLinkEdited', params, user);
                 success(doc);
             }
         });
 };
 
-NodeLinks.prototype.deletePost = function (error, params, success) {
+NodeLinks.prototype.deletePost = function (error, params, user, success) {
     Links.update(
         {
             _id: params.linkId
@@ -106,7 +106,7 @@ NodeLinks.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterLinkDeleted', params.linkId);
+                Plugin.doAction('onAfterLinkDeleted', params, user);
                 success(doc);
             }
         });

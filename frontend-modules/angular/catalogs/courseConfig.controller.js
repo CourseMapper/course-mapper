@@ -1,4 +1,4 @@
-app.controller('CourseConfigController', function ($scope, $http, toastr, $window) {
+app.controller('CourseConfigController', function ($scope, $http, toastr, $window, $timeout) {
     $scope.courseEdit = null;
     $scope.errors = [];
     $scope.managersRaw = [];
@@ -86,10 +86,10 @@ app.controller('CourseConfigController', function ($scope, $http, toastr, $windo
             managers: JSON.stringify($scope.managersIdRaw)
         };
 
-        if($scope.tabsActive){
+        if ($scope.tabsActive) {
             params.tabsActive = $scope.tabsActive;
         }
-        if($scope.settings){
+        if ($scope.settings) {
             params.settings = $scope.settings;
         }
 
@@ -120,5 +120,26 @@ app.controller('CourseConfigController', function ($scope, $http, toastr, $windo
 
     $scope.cancel = function () {
         $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+    };
+
+    $scope.deleteCourse = function () {
+        if (confirm('Are you sure you want to delete this course?')) {
+            $http.delete('/api/course/' + $scope.courseId)
+                .success(function (data) {
+                    if (data.result) {
+                        toastr.success('Successfully deleted');
+
+                        $timeout(function () {
+                            $('#configView').modal('hide');
+                            $('.content-course').css('display', 'none');
+                            $('.action-header').css('visibility', 'hidden');
+                            $scope.$parent.isDeleted = true;
+                        });
+                    }
+                })
+                .error(function (data) {
+                    $scope.errors = data.errors;
+                });
+        }
     };
 });

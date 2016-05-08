@@ -5,6 +5,6 @@
   "description": "to show updates on every actions on this course",
   "isDefaultActivated": true,
   "icon": "ionicons ion-clock",
-  "ngShow": "isEnrolled || isOwner || isManager",
+  "ngShow": "isEnrolled || isOwner || isManager || isAdmin",
   "hasJsFiles": true
 }

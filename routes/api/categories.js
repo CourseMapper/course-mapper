@@ -50,7 +50,7 @@ router.get('/category/:category/courseTags', function (req, res, next) {
  * return: json
  */
 router.get('/category/:category/courses', function (req, res, next) {
-    var getCParam = {category: req.params.category};
+    var getCParam = {category: req.params.category, $or: [{isDeleted: {$exists: false}}, {isDeleted: false}]};
 
     // converting tag ids csv into tag (object ids)
     var tags = req.query.tags;
@@ -71,6 +71,10 @@ router.get('/category/:category/courses', function (req, res, next) {
             limit = limitTemp;
     }
 
+    var orderBy = -1;
+    if (req.query['orderBy'])
+        orderBy = req.query['orderBy'];
+
     var sortBy = 'dateAdded';
     if (req.query['sortBy'])
         sortBy = req.query['sortBy'];
@@ -82,7 +86,8 @@ router.get('/category/:category/courses', function (req, res, next) {
     var pageParams = {
         lastPage: lastPage,
         limit: limit,
-        sortBy: sortBy
+        sortBy: sortBy,
+        orderBy: parseInt(orderBy)
     };
 
     var cat = new Course();
@@ -136,7 +141,10 @@ router.get('/category/:category', function (req, res, next) {
         }
         ,
         function (categories) {
-            res.status(200).json({result: true, category: categories});
+            if (categories)
+                res.status(200).json({result: true, category: categories});
+            else
+                helper.resReturn(helper.createError404('Category'), res);
         }
     );
 });

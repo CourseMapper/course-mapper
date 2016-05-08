@@ -7,7 +7,7 @@ externalApp.controller('InstalledAppsController', function ($scope, $rootScope, 
             externalAppService.deleteInstallation(installId,
                 function () {
                     toastr.success('Application deleted.');
-                    var deleted = _.remove($scope.$parent.installedApps, {_id: installId});
+                    var deleted = _.remove($scope.$parent.installedApps, {clientId: installId});
                 },
                 function () {
                     toastr.error('Delete failed.');

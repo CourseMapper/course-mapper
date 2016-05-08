@@ -2,6 +2,12 @@ angular.module('UIWidgets', ['toastr'])
     .controller("HtmlSidebarToolController", function ($scope, $http, $timeout) {
 
         $scope.editAction = function (wdg) {
+            $('#sidebarEditForm').on('shown.bs.modal', function () {
+                $timeout(function () {
+                    $('#sidebarEditForm .box-body').css('height', '500px');
+                }, 100);
+            });
+            
             $('#sidebarEditForm').modal('show');
 
             var grid = $('.grid-stack').data('gridstack');

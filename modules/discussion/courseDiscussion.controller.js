@@ -131,7 +131,7 @@ courseDiscussion.prototype.getReplies = function (error, parentId, pageParams, s
         });
 };
 
-courseDiscussion.prototype.editPost = function (error, params, success) {
+courseDiscussion.prototype.editPost = function (error, params, user, success) {
     Posts.findOne({
         _id: params.postId
     }).exec(function (err, doc) {
@@ -142,7 +142,7 @@ courseDiscussion.prototype.editPost = function (error, params, success) {
             doc.title = params.title;
             doc.content = params.content;
             doc.save(function () {
-                Plugin.doAction('onAfterDiscussionEdited', doc);
+                Plugin.doAction('onAfterDiscussionEdited', doc, user);
                 success(doc);
             });
 
@@ -153,7 +153,7 @@ courseDiscussion.prototype.editPost = function (error, params, success) {
 
 };
 
-courseDiscussion.prototype.deletePost = function (error, params, success) {
+courseDiscussion.prototype.deletePost = function (error, params, user, success) {
     Posts.update(
         {
             _id: params.postId
@@ -168,7 +168,7 @@ courseDiscussion.prototype.deletePost = function (error, params, success) {
             if (err)
                 error(err);
             else {
-                Plugin.doAction('onAfterDiscussionDeleted', params.postId);
+                Plugin.doAction('onAfterDiscussionDeleted', params, user);
                 success(doc);
             }
         });

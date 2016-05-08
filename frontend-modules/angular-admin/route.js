@@ -37,9 +37,9 @@ admin.config(['$routeProvider',
             resolve: {
                 pd: function ($q) {
                     return ( {
-                        title: 'Manage Widgets',
+                        title: 'Manage Widgets and Background Plugins',
                         breads: [
-                            {a: '#/widgets', active: false, title: 'Widgets'}
+                            {a: '#/widgets', active: false, title: 'Widgets and Background Plugins'}
                         ]
                     });
                 }
@@ -55,6 +55,21 @@ admin.config(['$routeProvider',
                         title: 'Manage Tabs',
                         breads: [
                             {a: '#/tabs', active: false, title: 'Tabs'}
+                        ]
+                    });
+                }
+            }
+        }).
+
+        when('/adminusers', {
+            templateUrl: '/cm-admin/adminusers',
+            controller: 'AdminUserController',
+            resolve: {
+                pd: function ($q) {
+                    return ( {
+                        title: 'Manage Admin Users',
+                        breads: [
+                            {a: '#/adminusers', active: false, title: 'Admin Users'}
                         ]
                     });
                 }

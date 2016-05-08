@@ -281,9 +281,40 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     $scope.initDropDown = function (slug) {
         $('#' + slug)
             .on('click mousedown mouseup touchstart', function (event) {
+
+                if (
+                    event.type == 'touchstart' && (
+                    event.target.className.indexOf('fa-plus-square') > -1 ||
+                    event.target.className.indexOf('fa-minus-square') > -1 )
+                ) {
+                    var el = event.target.parentNode;
+                    $timeout(function () {
+                        angular.element(el).triggerHandler('click');
+                    }, 0);
+                }
+
                 if ($(this).find('ul').hasClass('open')) {
                     if ($(this).find('ul').hasClass('dropdown-course')) {
-                        return true;
+                        if (event.type == 'touchstart') {
+                            if (event.target.href) {
+                                window.location.href = event.target.href;
+                            } else if (event.target.innerText == ' Edit' ||
+                                event.target.innerText == ' Delete' ||
+                                event.target.innerText == ' Delete Forever' ||
+                                event.target.innerText.indexOf('Add') > -1
+                            ) {
+                                var el = event.target;
+                                $timeout(function () {
+                                    angular.element(el).triggerHandler('click');
+                                    var mdlName = $(el).attr('data-target');
+                                    if (mdlName)
+                                        $(mdlName).modal('show');
+                                }, 0);
+
+                                return true;
+                            }
+                        } else
+                            return true;
                     }
 
                     $('.open').removeClass('open');
@@ -297,6 +328,11 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
                 $('.open').not($(this).parents('ul')).removeClass('open');
                 $(this).find('ul').addClass('open');
+
+                if (event.type == 'touchstart') {
+                    $scope.requestIconAnalyitics(slug);
+                    return true;
+                }
 
                 return false;
             })
@@ -490,6 +526,26 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         }
     };
 
+    $scope.hasPdf = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
+                return true;
+            }
+        }
+
+        return false;
+    };
+
+    $scope.getPdfLink = function (resources) {
+        for (var i in resources) {
+            if (resources[i].type == 'pdf') {
+                return resources[i].link;
+            }
+        }
+
+        return false;
+    };
+
     $scope.getDataShape = function (nodeType) {
         if (nodeType == 'subTopic')
             return 'Ellipse';
@@ -582,6 +638,8 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
 
                         // this will reinitiate the model, and thus also jsplumb connection
                         $scope.reInitiateJSPlumb();
+
+                        mapService.deleteNode(data);
                     }
                 })
                 .error(function (data) {
@@ -591,7 +649,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
         }
     };
 
-    $scope.isOwner = function (tn) {
+    $scope.isNodeOwner = function (tn) {
         if (tn.createdBy._id == $scope.user._id)
             return true;
         else if (tn.createdBy == $scope.user._id)
@@ -601,7 +659,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     };
 
     $scope.isAuthorized = function (tn) {
-        return ($scope.isOwner(tn) || $scope.isAdmin || $scope.isManager);
+        return ($scope.isNodeOwner(tn) || $scope.isAdmin || $scope.isManager || $scope.isOwner);
     };
 
     $scope.addNewNodeIntoPool = function (treeNode) {

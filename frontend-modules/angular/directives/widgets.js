@@ -17,6 +17,6 @@ app.directive('widgetBox',
                 widget: '='
             },
 
-            templateUrl: '/angular/views/widget-box.html'
+            templateUrl: '/partials/widget-box.html'
         };
     });

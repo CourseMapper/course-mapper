@@ -113,9 +113,9 @@ AnnZones.prototype.convertRawText2 = function(rawText,id,data, pdfPage){
     //console.log(data);
 
 
-    var renderedText = rawText.replace(/#(\w+)((@)(\w+))?/g, function (x) {
+    var renderedText = rawText.replace(/#(\w+)((@p)(\w+))?/g, function (x) {
       //console.log("Found tag with name: "+x);
-      var strSplit = x.split("@");
+      var strSplit = x.split("@p");
       var hasPage = false;
       var page = 0;
       var originalX = x;
@@ -213,13 +213,13 @@ AnnZones.prototype.updateAllReferences = function(oldName, newName, pageNumber, 
             });
           }
           else{
-            var newRawText = rawText.replace(/#(\w+)@[0-9]+/g, function(x){
+            var newRawText = rawText.replace(/#(\w+)@p[0-9]+/g, function(x){
               //console.log(x);
               //console.log(oldName + "@" + pageNumber);
 
-              if(x == oldName + "@" + pageNumber){
+              if(x == oldName + "@p" + pageNumber){
                 //console.log("found one");
-                var ret = newName2 + "@" + pageNumber;
+                var ret = newName2 + "@p" + pageNumber;
                 changed = true;
                 return ret;
               }

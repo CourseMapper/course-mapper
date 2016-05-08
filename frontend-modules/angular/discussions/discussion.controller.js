@@ -19,10 +19,15 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     $scope.topicsLength = 0;
     $scope.replies = [];
 
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+
     $scope.orderingOptions = [
         {id: 'dateAdded.-1', name: 'Newest First'},
         {id: 'dateAdded.1', name: 'Oldest First'},
-        {id: 'totalVotes.-1', name: 'Popularity'}
+        {id: 'totalVotes.-1', name: 'Most Popular'}
     ];
 
     $scope.newRowsFetched = function (newRows, allRows) {
@@ -76,16 +81,17 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
                 if (data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
-                    $timeout(function () {
-                        $scope.$apply()
-                    });
+                    $scope.formData = {};
+                    $scope.addTopicForm.$setPristine();
 
                     $('#addNewTopicModal').modal('hide');
-
                     toastr.success('Successfully Saved');
+
+                    $timeout(function () {
+                        $scope.$apply();
+                    });
                 }
 
-                $scope.addTopicForm.$setPristine();
                 $scope.isLoading = false;
             })
             .error(function (data) {
@@ -143,29 +149,33 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     };
 
     $scope.deletePost = function (postId) {
-        $http({
-            method: 'DELETE',
-            url: '/api/discussion/' + postId,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .success(function (data) {
+        var r = confirm("Are you sure you want to delete this reply?");
 
-                if (data.result) {
-                    $scope.$emit('onAfterDeletePost', postId);
-
-                    toastr.success('Successfully Deleted');
-
+        if (r == true) {
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
+                .success(function (data) {
 
-            .error(function (data) {
-                $scope.errors = data.errors;
-                $scope.isLoading = false;
+                    if (data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
 
-                toastr.error('Delete Failed');
-            });
+                        toastr.success('Successfully Deleted');
+
+                    }
+                })
+
+                .error(function (data) {
+                    $scope.errors = data.errors;
+                    $scope.isLoading = false;
+
+                    toastr.error('Delete Failed');
+                });
+        }
     };
 
     $scope.deleteTopic = function (postId) {
@@ -319,8 +329,6 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
     });
 
     $scope.$on('onAfterCreateNewTopic', function (e, f) {
-        $scope.formData.title = "";
-        $scope.formData.content = "";
     });
 
     $scope.$on('onAfterEditReply', function (e, f) {
@@ -384,6 +392,13 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
                 lastPage: false
             });
 
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
             discussionService.init(courseService.course._id,
 
                 function (posts) {
@@ -398,6 +413,10 @@ app.controller('DiscussionController', function ($scope, $rootScope, $http, $loc
             );
         }
     });
+
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
+    };
 
     $scope.$watch('orderTypeReply', function (newVal, oldVal) {
         if (newVal != oldVal) {

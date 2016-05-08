@@ -46,7 +46,8 @@
                         <p></p>
                         <label class="control-label" for="callback">Callback URL</label>
 
-                        <p class="help-block">URL that will be redirected to once user has successfully logged in. Please avoid adding forward slash at the end of the URL</p>
+                        <p class="help-block">URL that will be redirected to once user has successfully logged in.
+                            Please avoid adding forward slash at the end of the URL</p>
 
                         <div class="controls"
                              ng-class="{ 'has-error' : editAppForm.callback.$invalid && !editAppForm.$pristine }">
@@ -129,8 +130,3 @@
         </div>
     </div>
 </div>
-<br>
-<h3>Test</h3>
-<a target="_blank" href="/api/oauth2/authorize?client_id={{app.clientId}}&response_type=code&redirect_uri={{app.callbackUrl}}">
-    login
-</a>

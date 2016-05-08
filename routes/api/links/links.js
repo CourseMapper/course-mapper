@@ -30,7 +30,7 @@ router.get('/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
         if (req.query['sortBy'])
             sortBy = req.query['sortBy'];
 
-        var orderBy = 'desc';
+        var orderBy = -1;
         if (req.query['orderBy'])
             orderBy = req.query['orderBy'];
 
@@ -205,6 +205,7 @@ router.put('/:postId', helper.l2pAuth, helper.ensureAuthenticated,
                         userId: userId,
                         linkId: linkId
                     },
+                    req.user,
                     function (post) {
                         res.status(200).json({
                             result: true, post: post
@@ -243,6 +244,7 @@ router.delete('/:postId', helper.l2pAuth, helper.ensureAuthenticated,
                     {
                         linkId: linkId
                     },
+                    req.user,
                     function (post) {
                         res.status(200).json({
                             result: true, post: post
@@ -283,6 +285,7 @@ router.delete('/:nodeId/link/:postId', helper.l2pAuth, helper.ensureAuthenticate
                         linkId: linkId,
                         nodeId: mongoose.Types.ObjectId(req.params.nodeId)
                     },
+                    req.user,
                     function (post) {
                         res.status(200).json({
                             result: true, post: post
