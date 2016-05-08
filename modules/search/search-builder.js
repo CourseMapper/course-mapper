@@ -4,6 +4,7 @@ var VideoAnnotation = require('../../modules/annotations/video-annotation');
 var PdfAnnotation = require('../../modules/slide-viewer/annotation');
 var Courses = require('../../modules/catalogs/courses');
 var Categories = require('../../modules/catalogs/categories');
+var Resources = require('../../modules/trees/resources');
 
 var mongoose = require('mongoose');
 var _ = require('lodash');
@@ -35,11 +36,28 @@ var SearchBuilder = function (term) {
   };
 
   this.build = function () {
+
+    var videoSearch = VideoAnnotation
+      .findAsync(videoAnnotationArgs)
+      .then(function (videoAnnotations) {
+        var promises = [];
+        _.each(videoAnnotations, function (videoAnnotation) {
+          promises.push(Resources.findByIdAsync(videoAnnotation.video_id)
+            .then(function (content) {
+              var va = videoAnnotation.toJSON();
+              va.courseId = content.courseId;
+              va.nodeId = content.treeNodeId;
+              return va;
+            }));
+        });
+        return Promise.all(promises);
+      });
+
     var engines = {
-      categories: Categories.find(categoryArgs).execAsync(),
-      courses: Courses.find(courseArgs).execAsync(),
-      videoAnnotations: VideoAnnotation.find(videoAnnotationArgs).execAsync(),
-      pdfAnnotations: PdfAnnotation.find(pdfAnnotationArgs).execAsync()
+      categories: Categories.findAsync(categoryArgs),
+      courses: Courses.findAsync(courseArgs),
+      videoAnnotations: videoSearch,
+      pdfAnnotations: PdfAnnotation.findAsync(pdfAnnotationArgs)
     };
 
     if (!searchableResources) {

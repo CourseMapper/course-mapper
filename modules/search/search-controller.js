@@ -18,6 +18,7 @@ var search = function (req, res, next) {
   Promise.props(query)
     .then(function (results) {
       res.json(results);
+      console.log(results);
     })
     .catch(function (err) {
       res.status(500).send(err);

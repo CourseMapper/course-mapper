@@ -54,9 +54,9 @@
                         <div ng-show="result.videoAnnotations.length > 0">
                             <h4>Video Annotations:</h4>
                             <ul class="list-unstyled">
-                                <li ng-repeat="annotation in result.videoAnnotations">
-                                    <a href="">
-                                        {{annotation.text | cut:true:30:' ...'}}
+                                <li ng-repeat="va in result.videoAnnotations">
+                                    <a href="/treeNode/{{va.nodeId}}/#/cid/{{va.courseId}}/nid/{{va.nodeId}}?tab=video">
+                                        {{va.text | cut:true:30:' ...'}}
                                     </a>
                                 </li>
                             </ul>
