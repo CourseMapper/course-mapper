@@ -37,7 +37,7 @@ var SearchBuilder = function (term) {
 
   this.build = function () {
 
-    var videoSearch = VideoAnnotation
+    var findVideoAnnotations = VideoAnnotation
       .findAsync(videoAnnotationArgs)
       .then(function (videoAnnotations) {
         var promises = [];
@@ -52,12 +52,27 @@ var SearchBuilder = function (term) {
         });
         return Promise.all(promises);
       });
+    var findPdfAnnotations = PdfAnnotation
+      .findAsync(pdfAnnotationArgs)
+      .then(function (pdfAnnotations) {
+        var promises = [];
+        _.each(pdfAnnotations, function (pdfAnnotation) {
+          promises.push(Resources.findByIdAsync(pdfAnnotation.pdfId)
+            .then(function (content) {
+              var pa = pdfAnnotation.toJSON();
+              pa.courseId = content.courseId;
+              pa.nodeId = content.treeNodeId;
+              return pa;
+            }));
+        });
+        return Promise.all(promises);
+      });
 
     var engines = {
       categories: Categories.findAsync(categoryArgs),
       courses: Courses.findAsync(courseArgs),
-      videoAnnotations: videoSearch,
-      pdfAnnotations: PdfAnnotation.findAsync(pdfAnnotationArgs)
+      videoAnnotations: findVideoAnnotations,
+      pdfAnnotations: findPdfAnnotations
     };
 
     if (!searchableResources) {
