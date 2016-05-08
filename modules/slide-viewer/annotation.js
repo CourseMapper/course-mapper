@@ -1,6 +1,5 @@
 var mongoose = require('mongoose');
 
-
 var annotationPDFSchema = new mongoose.Schema({
   parentId: {type: String},
   hasParent: {type: Boolean},
