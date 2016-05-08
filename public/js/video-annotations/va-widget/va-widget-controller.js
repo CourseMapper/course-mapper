@@ -3,7 +3,7 @@
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http', '$location', '$anchorScroll',
   function ($scope, socket, rootScope, $http, $location, $anchorScroll) {
     var videoPulse;
-    var videoPulseHost = 'https://gomera.informatik.rwth-aachen.de:3005';
+    var videoPulseHost = 'https://gomera.informatik.rwth-aachen.de:8447';
 
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
