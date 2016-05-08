@@ -48,6 +48,9 @@ var VideoAnnotationSchema = new mongoose.Schema({
   comments: [CommentSchema]
 });
 
+// Define indexes
+VideoAnnotationSchema.index({'text': 'text'});
+
 VideoAnnotationSchema.pre('save', function (next) {
   var now = Date.now();
   if (!this.date_created) {
