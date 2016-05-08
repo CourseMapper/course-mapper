@@ -1,6 +1,7 @@
 'use strict';
 
 var VideoAnnotation = require('../../modules/annotations/video-annotation');
+var PdfAnnotation = require('../../modules/slide-viewer/annotation');
 var Courses = require('../../modules/catalogs/courses');
 var Categories = require('../../modules/catalogs/categories');
 
@@ -11,9 +12,10 @@ var Promise = require('bluebird');
 Promise.promisifyAll(mongoose);
 
 var SearchBuilder = function (term) {
-  var courseSearchOptions = {$text: {$search: term}};
-  var annotationSearchOptions = {$text: {$search: term}};
-  var categoriesSearchOptions = {$text: {$search: term}};
+  var courseArgs = {$text: {$search: term}};
+  var categoryArgs = {$text: {$search: term}};
+  var videoAnnotationArgs = {$text: {$search: term}};
+  var pdfAnnotationArgs = {$text: {$search: term}};
 
   var searchableResources = [];
 
@@ -21,8 +23,9 @@ var SearchBuilder = function (term) {
     if (!ownerId) {
       return this;
     }
-    annotationSearchOptions.authorId = ownerId;
-    courseSearchOptions.createdBy = ownerId;
+    videoAnnotationArgs.authorId = ownerId;
+    courseArgs.authorID = ownerId;
+    courseArgs.createdBy = ownerId;
     return this;
   };
 
@@ -33,9 +36,10 @@ var SearchBuilder = function (term) {
 
   this.build = function () {
     var engines = {
-      categories: Categories.find(categoriesSearchOptions).execAsync(),
-      courses: Courses.find(courseSearchOptions).execAsync(),
-      annotations: VideoAnnotation.find(annotationSearchOptions).execAsync()
+      categories: Categories.find(categoryArgs).execAsync(),
+      courses: Courses.find(courseArgs).execAsync(),
+      videoAnnotations: VideoAnnotation.find(videoAnnotationArgs).execAsync(),
+      pdfAnnotations: PdfAnnotation.find(pdfAnnotationArgs).execAsync()
     };
 
     if (!searchableResources) {

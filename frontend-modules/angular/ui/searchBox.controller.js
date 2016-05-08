@@ -1,19 +1,30 @@
-app.controller('SearchBoxController', function ($scope, $http, $rootScope) {
+app.controller('SearchBoxController', function ($scope, $http) {
 
-  $scope.categoryClicked = function () {
-    console.log('xaxa')
+  $scope.isEmpty = function () {
+    var str = $scope.queryText;
+    return (!str || /^\s*$/.test(str));
+  };
+
+  $scope.hasResults = function () {
+    var r = $scope.result;
+    return r != null && (
+        r.categories.length > 0 ||
+        r.courses.length > 0 ||
+        r.videoAnnotations.length > 0 ||
+        r.pdfAnnotations.length > 0
+      );
   };
 
   $scope.$watch('queryText', function (searchTerm) {
     if (!searchTerm || searchTerm.length == 0) {
-      return 0;
+      $scope.result = null;
+      return;
     }
+
     if (searchTerm === $scope.queryText) {
       $http.get('/api/search?term=' + searchTerm)
         .success(function (data) {
-          $scope.courses = data.courses;
-          $scope.categories = data.categories;
-          $scope.annotations = data.annotations;
+          $scope.result = data;
         });
     }
   });

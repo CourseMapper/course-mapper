@@ -15,28 +15,68 @@
 
     <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController">
 
-        <form class="navbar-form navbar-left" role="search" ng-controller="SearchBoxController">
-            <div class="input-group">
-                <input id="navbar-search-input"
-                       type="text"
-                       class="form-control"
-                       placeholder="Search"
-                       ng-model="queryText"
-                       list="results"
-                       autocomplete="off"
-                       ng-model-options="{debounce: 300}">
-                <span class="input-group-btn">
-                    <button type="submit" name="search" id="search-btn" class="btn btn-flat">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </span>
-                <datalist id="results" ng-model="selectedItem">
-                    <option ng-changed="categoryClicked(selectedItem)" ng-repeat="category in categories"
-                            value="{{category.name}}"></option>
-                    <option ng-repeat="course in courses" value="{{course.name}}"></option>
-                    <option value="Annotations" ></option>
-                    <option ng-repeat="annotation in annotations" value="{{annotation.text}}"></option>
-                </datalist>
+        <form class="navbar-form navbar-left search-box" role="search" ng-controller="SearchBoxController">
+            <div class="input-group search">
+                <input class="form-control" id="navbar-search-input" type="text" placeholder="Search" autocomplete="off"
+                       ng-model="queryText" ng-model-options="{debounce: 300}">
+
+
+                <div class="results dropdown-menu" ng-show="isEmpty()==false">
+                    <div class="results-box">
+
+                        <span ng-show="hasResults() === false">
+                            No results found.
+                            <br/>Please, try a different search term.
+                        </span>
+
+                        <div ng-show="result.categories.length > 0">
+                            <h4>Categories:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="category in result.categories">
+                                    <a href="/courses/#/category/{{category.slug}}">
+                                        {{category.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.courses.length > 0">
+                            <h4>Courses:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="course in result.courses">
+                                    <a href="/course/{{course.slug}}/#/cid/{{course._id}}?tab=preview">
+                                        {{course.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.videoAnnotations.length > 0">
+                            <h4>Video Annotations:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="annotation in result.videoAnnotations">
+                                    <a href="">
+                                        {{annotation.text | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.pdfAnnotations.length > 0">
+                            <h4>PDF Annotations:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="annotation in result.pdfAnnotations">
+                                    <a href="">
+                                        {{annotation.rawText | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <br/>
+                    <button class="btn btn-primary btn-sm pull-right"> Advanced Search</button>
+                </div>
             </div>
         </form>
 
