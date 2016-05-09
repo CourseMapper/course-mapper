@@ -136,8 +136,10 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
         $scope.cuePoints.points.push(cuePoint);
 
-        // Check if annotation was scrolled
-        annotation.isScrolled = annotation._id === $location.hash();
+        //Scroll to annotation
+        if (annotation._id === $location.hash()) {
+          annotation.isScrolled = true;
+        }
 
         annotation.canEdit = checkCanEdit(annotation);
         annotation.reposition = function (params) {
