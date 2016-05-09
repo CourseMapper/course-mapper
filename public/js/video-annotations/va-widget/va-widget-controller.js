@@ -18,7 +18,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     };
 
     var onUpdate = function (currentTime, timeLapse, params) {
-
       if (!params.showing) {
         params.completed = false;
         params.showing = true;
@@ -27,6 +26,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       var scrolled = _.find($scope.annotations, function (a) {
         return a.isScrolled;
       });
+
       // Scroll to annotation if there
       // isn't a scrolled annotation in the viewer
       if (!scrolled) {
@@ -111,6 +111,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
           return ann.isEditMode;
         });
       }
+
       // clear current annotations state
       $scope.annotations = [];
       $scope.cuePoints.points = [];
@@ -135,6 +136,9 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
         $scope.cuePoints.points.push(cuePoint);
 
+        // Check if annotation was scrolled
+        annotation.isScrolled = annotation._id === $location.hash();
+
         annotation.canEdit = checkCanEdit(annotation);
         annotation.reposition = function (params) {
           if (params.position) {
@@ -144,6 +148,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             annotation.size = params.size;
           }
         };
+
         $scope.annotations.push(annotation);
 
         // find current user comments

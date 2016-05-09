@@ -20,7 +20,6 @@
                 <input class="form-control" id="navbar-search-input" type="text" placeholder="Search" autocomplete="off"
                        ng-model="queryText" ng-model-options="{debounce: 300}">
 
-
                 <div class="results dropdown-menu" ng-show="isEmpty()==false">
                     <div class="results-box">
 
@@ -55,7 +54,7 @@
                             <h4>Video Annotations:</h4>
                             <ul class="list-unstyled">
                                 <li ng-repeat="va in result.videoAnnotations">
-                                    <a href="/treeNode/{{va.nodeId}}/#/cid/{{va.courseId}}/nid/{{va.nodeId}}?tab=video">
+                                    <a href="/treeNode/{{va.nodeId}}/#/cid/{{va.courseId}}/nid/{{va.nodeId}}?tab=video#{{va._id}}">
                                         {{va.text | cut:true:30:' ...'}}
                                     </a>
                                 </li>
