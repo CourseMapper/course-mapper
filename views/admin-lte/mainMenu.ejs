@@ -65,7 +65,7 @@
                             <h4>PDF Annotations:</h4>
                             <ul class="list-unstyled">
                                 <li ng-repeat="pa in result.pdfAnnotations">
-                                    <a href="/treeNode/{{pa.nodeId}}/#/cid/{{pa.courseId}}/nid/{{pa.nodeId}}?tab=pdf">
+                                    <a href="/treeNode/{{pa.nodeId}}/#/cid/{{pa.courseId}}/nid/{{pa.nodeId}}?tab=pdf&slidePage={{pa.pdfPageNumber}}">
                                         {{pa.rawText | cut:true:30:' ...'}}
                                     </a>
                                 </li>
