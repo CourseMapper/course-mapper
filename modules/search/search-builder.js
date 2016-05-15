@@ -1,17 +1,16 @@
 'use strict';
 
+var mongoose = require('mongoose');
+var _ = require('lodash');
+var Promise = require('bluebird');
+Promise.promisifyAll(mongoose); // Promisify Mongoose
+
 var VideoAnnotation = require('../../modules/annotations/video-annotation');
 var PdfAnnotation = require('../../modules/slide-viewer/annotation');
 var Courses = require('../../modules/catalogs/courses');
 var Categories = require('../../modules/catalogs/categories');
 var Resources = require('../../modules/trees/resources');
 var ContentNodes = require('../../modules/trees/treeNodes');
-
-var mongoose = require('mongoose');
-var _ = require('lodash');
-var Promise = require('bluebird');
-
-Promise.promisifyAll(mongoose);
 
 var SearchBuilder = function (term) {
   var courseArgs = {$text: {$search: term}};
@@ -55,6 +54,7 @@ var SearchBuilder = function (term) {
         });
         return Promise.all(promises);
       });
+
     var findPdfAnnotations = PdfAnnotation
       .findAsync(pdfAnnotationArgs)
       .then(function (pdfAnnotations) {
