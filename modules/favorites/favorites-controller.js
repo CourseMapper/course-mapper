@@ -1,33 +1,59 @@
 'use strict';
-var UserCourses = require('../../modules/catalogs/userCourses');
+var FavoriteCourses = require('../../modules/favorites/favorite-courses');
 
 var getAll = function (req, res, next) {
-  var query = {
+  if (!req.user) return;
+
+  FavoriteCourses
+    .find({user: req.user._id, isFavorite: true})
+    .populate('course')
+    .exec(function (err, courses) {
+      if (err) {
+        return res.json([]);
+      }
+      return res.json(courses);
+    });
+};
+
+var getByCourseId = function (req, res, next) {
+  if (!req.user) return;
+
+  FavoriteCourses
+    .findOne({user: req.user._id, course: req.params.cid})
+    .exec(function (err, course) {
+      if (err) {
+        return res.status(500).json();
+      }
+      var isFavorite = course ? course.isFavorite : false;
+      return res.json({isFavorite: isFavorite});
+    });
+};
+
+var toggleFavorite = function (req, res, isFavorite) {
+  if (!req.user || !req.params.cid) return;
+
+  var favorite = {
+    course: req.params.cid,
     user: req.user._id,
-    isFavorite: true
+    isFavorite: isFavorite
   };
-  UserCourses.find(query).populate('course').exec(function (err, courses) {
-    if (err) return res.json([]);
-    return res.json(courses);
+
+  FavoriteCourses.update({course: req.params.cid}, favorite, {upsert: true}, function (err, data) {
+    return res.status(204).json();
   });
 };
 
 var add = function (req, res, next) {
-  var courseId = req.params.cid;
-  var query = {courseId: courseId};
+  toggleFavorite(req, res, true);
+};
 
-  UserCourses.findOne(query, function (err, course) {
-    if (err) return next(err);
-    if (!course) return res.status(404).json();
-
-    course.isFavorite = true;
-    course.save();
-
-    return res.status(201).json();
-  });
+var remove = function (req, res, next) {
+  toggleFavorite(req, res, false);
 };
 
 module.exports = {
   getAll: getAll,
-  add: add
+  getByCourseId: getByCourseId,
+  add: add,
+  remove: remove
 };

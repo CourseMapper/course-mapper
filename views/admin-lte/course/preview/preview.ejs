@@ -4,9 +4,15 @@
         <div class="row">
             <div class="box box-solid excerpt">
                 <div class="box-header with-border">
-                    <h3 class="box-title"> {{course.name}} </h3>
-                </div><!-- /.box-header -->
+                    <h3 class="box-title"> {{course.name}}
+                        <a href="" ng-click="toggleFavorite()">
+                            <i ng-class="isFavorite ? 'ion-ios-star' : 'ion-ios-star-outline'"></i>
+                            <span>{{isFavorite ? 'Remove from favorites' : 'Add to favorites'}}</span>
+                        </a>
 
+                    </h3>
+
+                </div><!-- /.box-header -->
             </div>
         </div>
         <div class="row">

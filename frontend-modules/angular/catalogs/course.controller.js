@@ -7,6 +7,17 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
   $scope.videoSources = false;
   $scope.isPlaying = false;
   $scope.isDeleted = false;
+  $scope.isFavorite = null;
+
+  var checkFavorite = function () {
+    var course = $scope.course;
+    if (!course) return;
+
+    $http.get('/api/favorites/' + course._id)
+      .then(function (result) {
+        $scope.isFavorite = result.data.isFavorite;
+      })
+  };
 
   $scope.tabOpened = function () {
     if (courseService.course) {
@@ -17,7 +28,7 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
         $scope.initTab(course, refreshPicture);
       });
     }
-
+    checkFavorite();
     $rootScope.$broadcast('onCoursePreviewTabOpened', $scope.currentTab);
   };
 
@@ -69,7 +80,30 @@ app.controller('CourseController', function ($scope, $rootScope, $filter, $http,
           toastr.error(JSON.stringify(res.errors));
         }
       );
+  };
 
+  $scope.toggleFavorite = function () {
+    if ($scope.isFavorite === null) return;
+
+    var method = $scope.isFavorite === true ? 'DELETE' : 'POST';
+
+    $http({
+      method: method,
+      url: '/api/favorites/' + $scope.course._id
+    }).then(
+      function (result) {
+        $scope.isFavorite = !$scope.isFavorite;
+        if ($scope.isFavorite) {
+          toastr.success('Added course to favorites.');
+        } else {
+          toastr.success('Removed course from favorites.');
+        }
+        $scope.$emit('favorites.update');
+      },
+      function (err) {
+        var op = $scope.isFavorite ? 'remove from' : 'add to';
+        toastr.error('Failed to ' + op + ' favorites.');
+      })
   };
 
   /**
