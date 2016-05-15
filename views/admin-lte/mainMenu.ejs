@@ -90,6 +90,30 @@
             </div>
         </form>
 
+        <ul class="nav navbar-nav" ng-hide="user == null">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Favorites <span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu" ng-controller="FavoritesController">
+                    <li ng-show="favorites != null" ng-repeat="fav in favorites">
+                        <a href="/course/{{fav.course.slug}}/#/cid/{{fav.course._id}}?tab=preview">
+                            {{fav.course.name | cut:true:30:' ...'}}
+                        </a>
+                    </li>
+                    <li ng-show="favorites == null">
+                        <a href="#">
+                            <span>
+                                You do not have any favorite courses, yet!
+                                <br/>
+                                <br/>
+                                You can favorite any course to which <br/>
+                                you are enrolled and it will appear here.
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
         <div class="navbar-right">
             <% if(locals.showSidebar && showSidebar){ %>
             <a class="top-menu-left visible-xs" data-toggle="offcanvas" role="button"><i class="ionicons ion-more"> </i>
