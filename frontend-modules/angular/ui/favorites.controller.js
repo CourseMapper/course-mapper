@@ -4,7 +4,6 @@ app.controller('FavoritesController', function ($rootScope, $scope, $http) {
     $http.get('/api/favorites')
       .success(function (data) {
         $scope.favorites = data;
-        console.log(data)
       });
   };
 
