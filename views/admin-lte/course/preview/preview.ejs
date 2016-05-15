@@ -3,15 +3,14 @@
     <div class="col-xs-12 col-md-8">
         <div class="row">
             <div class="box box-solid excerpt">
-                <div class="box-header with-border">
-                    <h3 class="box-title"> {{course.name}}
+                <div style="padding-left:15px;" class="box-title with-border">
+                    <h3 class="box-title"> {{course.name}}</h3>
+                    <h4>
                         <a href="" ng-click="toggleFavorite()">
                             <i ng-class="isFavorite ? 'ion-ios-star' : 'ion-ios-star-outline'"></i>
                             <span>{{isFavorite ? 'Remove from favorites' : 'Add to favorites'}}</span>
                         </a>
-
-                    </h3>
-
+                    </h4>
                 </div><!-- /.box-header -->
             </div>
         </div>
@@ -49,7 +48,6 @@
                 </p>
                 <p ng-show="!isEnrolled && !isOwner && !isAuthorized()">
                     <button class="btn btn-primary btn-block" ng-click="enroll()">Enroll</button>
-
                 </p>
             </div>
         </div>
@@ -65,7 +63,6 @@
                         </p>
                     </div><!-- /.box-body -->
                 </div>
-
             </div>
         </div>
 
