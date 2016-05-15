@@ -2,7 +2,7 @@
 var FavoriteCourses = require('../../modules/favorites/favorite-courses');
 
 var getAll = function (req, res, next) {
-  if (!req.user) return;
+  if (!req.user) return res.status(400).json();
 
   FavoriteCourses
     .find({user: req.user._id, isFavorite: true})
@@ -11,12 +11,12 @@ var getAll = function (req, res, next) {
       if (err) {
         return res.json([]);
       }
-      return res.json(courses);
+      return res.json(courses || []);
     });
 };
 
 var getByCourseId = function (req, res, next) {
-  if (!req.user) return;
+  if (!req.user) return res.status(400).json();
 
   FavoriteCourses
     .findOne({user: req.user._id, course: req.params.cid})
@@ -30,7 +30,9 @@ var getByCourseId = function (req, res, next) {
 };
 
 var toggleFavorite = function (req, res, isFavorite) {
-  if (!req.user || !req.params.cid) return;
+  if (!req.user || !req.params.cid) {
+    return res.status(400).json();
+  }
 
   var favorite = {
     course: req.params.cid,
