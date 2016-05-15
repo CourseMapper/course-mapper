@@ -96,13 +96,13 @@
 
                 <ul class="dropdown-menu" role="menu" ng-controller="FavoritesController">
 
-                    <li ng-show="favorites.length > 0" ng-repeat="fav in favorites">
+                    <li ng-show="favorites==null && favorites.length > 0" ng-repeat="fav in favorites">
                         <a href="/course/{{fav.course.slug}}/#/cid/{{fav.course._id}}?tab=preview">
                             {{fav.course.name | cut:true:30:' ...'}}
                         </a>
                     </li>
 
-                    <li ng-show="favorites.length <= 0">
+                    <li ng-show="favorites==null || favorites.length <= 0">
                         <a href="">
                             <span>
                                 You do not have any favorite courses, yet!
