@@ -71,17 +71,18 @@
                                 </li>
                             </ul>
                         </div>
-                    </div>
 
-                    <div ng-show="result.categories.length > 0">
-                        <h4>Categories:</h4>
-                        <ul class="list-unstyled">
-                            <li ng-repeat="category in result.categories">
-                                <a href="/courses/#/category/{{category.slug}}">
-                                    {{category.name | cut:true:30:' ...'}}
-                                </a>
-                            </li>
-                        </ul>
+                        <div ng-show="result.categories.length > 0">
+                            <h4>Categories:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="category in result.categories">
+                                    <a href="/courses/#/category/{{category.slug}}">
+                                        {{category.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
                     </div>
 
                     <!--<br/>-->
