@@ -66,7 +66,7 @@
                             <ul class="list-unstyled">
                                 <li ng-repeat="pa in result.pdfAnnotations">
                                     <a href="/treeNode/{{pa.nodeId}}/#/cid/{{pa.courseId}}/nid/{{pa.nodeId}}?tab=pdf&slidePage={{pa.pdfPageNumber}}">
-                                        {{pa.rawText | cut:true:30:' ...'}}
+                                        {{pa.rawText | htmlToPlaintext | cut:true:30:' ...'}}
                                     </a>
                                 </li>
                             </ul>
