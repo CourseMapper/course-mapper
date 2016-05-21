@@ -74,9 +74,9 @@
 
         <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
             There is no registered widget here.
-        <span ng-show="isOwner" class="empty-widget">
-          Go to the widget store to add one.
-        </span>
+            <span ng-show="isOwner" class="empty-widget">
+              Go to the widget store to add one.
+            </span>
         </div>
 
         <div class="grid-stack-item"
@@ -84,18 +84,39 @@
              ng-repeat="wdg in widgets" id="w{{wdg._id}}"
              on-finish-render="afterAllWidgetsRendered"
         >
+            <div class="widget-box">
+                <div class="grid-stack-item-content">
+                    <div class="box no-shadow">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">{{wdg.widget}}</h3>
 
-            <widget-box onload-action="initWidgetButton(wdg._id);"
-                        entry-point="{{wdg.widgetId.entryPoint + '?cid=' + course._id}}"
-                        title="{{wdg.widget}}"
-                        show-tools="checkOwnership(wdg.userId);"
-                        show-config-button="checkOwnership(wdg.userId) && wdg.widgetId.hasConfigButton"
-                        close-action="closeWidget(wdg._id)"
-                        edit-action="editAction(wdg)"
-                        widget="wdg"
-                        dynamic-controller="wdg.widgetId.controller"
-            >
-            </widget-box>
+                            <div class="box-tools pull-right" ng-show="checkOwnership(wdg.userId)">
+                                <button ng-show="wdg.widgetId.hasConfigButton"
+                                        class="btn btn-box-tool config-button" data-widget="edit"
+                                        data-toggle="tooltip" title="Edit">
+                                    <i class="ionicons ion-wrench"></i>
+                                </button>
+
+                                <!--ng-click="editAction(wdg)">-->
+                                <button class="btn btn-box-tool" data-widget="remove"
+                                        data-toggle="tooltip" title="Remove"
+                                        ng-click="closeWidget(wdg._id)">
+                                    <i class="fa fa-times"></i>
+                                </button>
+
+                            </div>
+                        </div>
+                        <div class="box-body-widget">
+
+                            <div ng-include src="wdg.widgetId.entryPoint + '?cid=' + course._id"
+                                 onload="initWidgetButton(wdg._id)">
+                            </div>
+
+                        </div>
+                        <div class="box-footer"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -124,3 +145,4 @@
 
 
 </div>
+
