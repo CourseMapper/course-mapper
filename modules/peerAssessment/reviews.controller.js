@@ -75,6 +75,18 @@ reviews.prototype.populateReviewAssignmentData = function (error, params, succes
                 return filter;
             }))
             solutions = filteredSolutions
+
+            filteredUsers = await(_.filter(users, function(user) {
+                var filter = true;
+                _.each(assignedReviews, function(review) {
+                    console.log(review)
+                    if(review.assignedTo.username == user.username){
+                        filter = false;
+                    }
+                })
+                return filter;
+            }))
+            users = filteredUsers
         }
     })
 
@@ -84,7 +96,7 @@ reviews.prototype.populateReviewAssignmentData = function (error, params, succes
 }
 
 reviews.prototype.getReviews = function(error, params, success) {
-    Review.find(params).exec(function(err, docs) {
+    Review.find(params).populate('peerReviewId').exec(function(err, docs) {
         if(err) {
             error(err)
         } else {

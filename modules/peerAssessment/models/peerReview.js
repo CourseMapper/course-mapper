@@ -31,12 +31,17 @@ var peerReviewSchema = new mongoose.Schema({
         secondReviewEndDate: { type: Date },
         blind: {
             type: String,
-            enum: ['single', 'double']
+            enum: ['single', 'double', 'none']
         },
         reviewAssignment: {
             type: String,
             enum: ['single','multiple']
-        }
+        },
+        studentPercentage: {
+            type: Number,
+            required: true
+        },
+        rubrics: [{ type: String }]
     },
     dateAdded: { type: Date },
     dateUpdated: { type: Date }

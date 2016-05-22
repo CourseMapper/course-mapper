@@ -4,6 +4,7 @@ var appRoot = require('app-root-path');
 var solutions = require(appRoot + '/modules/peerAssessment/solutions.controller.js');
 var peerAssessment = require(appRoot + '/modules/peerAssessment/peerAssessment.controller.js');
 var reviews = require(appRoot + '/modules/peerAssessment/reviews.controller.js');
+var rubrics = require(appRoot + '/modules/peerAssessment/rubrics.controller.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var debug = require('debug')('pa:route');
@@ -16,6 +17,119 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 
 
+
+
+/***************************************************************************/
+/*********************************Rubrics***********************************/
+/***************************************************************************/
+/**
+ * POST
+ * create rubric
+ */
+router.post('/peerassessment/:courseId/rubrics',
+    function (req, res, next) {
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        console.log('dsadasdasdasdasd', req.body)
+
+        var rubric = new rubrics();
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+
+        rubric.addRubric(
+            function (err) {
+                console.log(err);
+                res.status(200).json({result: false, errors: [err.message]});
+            },
+
+            // parameters
+            req.body,
+
+            function () {
+                res.status(200).json({result: true});
+            }
+        );
+    });
+
+/**
+ * POST
+ * update a rubric
+ */
+router.post('/peerassessment/:courseId/rubrics/:id', function(req, res) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var rubric = new rubrics();
+    req.body.userId = mongoose.Types.ObjectId(req.user._id);
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    req.body.rId = mongoose.Types.ObjectId(req.params.id);
+
+    rubric.updateRubric(
+        function(err){
+            helper.resReturn(err, res);
+        },
+        req.body,
+        function () {
+            res.status(200).json({result: true});
+        }
+    )
+})
+
+/**
+ * GET
+ * fetch all rubrics
+ */
+router.get('/peerassessment/:courseId/rubrics', function(req, res) {
+    // Start from here **************************************************
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var rubric = new rubrics();
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    rubric.getRubrics(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+        req.body,
+        function (rubrics) {
+            res.status(200).json({result: true, rubrics: rubrics});
+        }
+    )
+})
+
+/**
+ * DELETE
+ * delete a rubric
+ */
+router.delete('/peerassessment/:courseId/rubrics/:id', function(req, res) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    var rubric = new rubrics();
+    req.body.userId = mongoose.Types.ObjectId(req.user._id);
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    req.body.rId = mongoose.Types.ObjectId(req.params.id);
+
+    rubric.deleteRubric(
+        function(err){
+            helper.resReturn(err, res);
+        },
+        req.body,
+        function () {
+            res.status(200).json({result: true});
+        }
+    )
+})
+
+
+/***************************************************************************/
+/*********************************Reviews***********************************/
+/***************************************************************************/
 /**
  * GET
  * fetches course students and peerreview solutions
@@ -106,6 +220,32 @@ router.delete('/peerassessment/:courseId/peerreviews/:pRId/reviews/:id',
             }
         )
     });
+
+/**
+ * GET
+ * fetch all reviews
+ */
+router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    var isAdmin = await(userHelper.isCourseAuthorizedAsync({userId: req.user._id, courseId: req.params.courseId}))
+    if (!isAdmin) {
+        req.body.assignedTo = mongoose.Types.ObjectId(req.user._id)
+    }
+    var sr = new reviews();
+    sr.getReviews(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+        req.body,
+        function (reviews) {
+            res.status(200).json({result: true, reviews: reviews});
+        }
+    )
+}))
 /***************************************************************************/
 /*********************************Solutions*********************************/
 /***************************************************************************/

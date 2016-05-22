@@ -10,9 +10,9 @@
                         </div>
                         <div class="box-body">
                             <div class="tabbable">
-                                <ul class="nav nav-tabs nav-justified" id="tabContent">
+                                <ul class="nav nav-tabs nav-justified" id="tabContent" style="background-color: gainsboro;">
                                     <li class="active"><a data-toggle="tab" data-target="#basicTab">Basic</a></li>
-                                    <li><a data-toggle="tab" data-target="#advancedTab">Advanced</a></li>
+                                    <li><a data-toggle="tab" data-target="#advancedTab">Review Settings</a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div id="basicTab" class="tab-pane fade in active">
@@ -133,6 +133,8 @@
                                         <% include ../components/reviewAssignment %>
                                         <% include ../components/loop %>
                                         <% include ../components/blindness %>
+                                        <% include ../components/reviewPercentage %>
+                                        <% include ../components/rubrics/rubrics %>
                                     </div>
                                 </div>
                             </div>

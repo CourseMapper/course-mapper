@@ -4,14 +4,19 @@
     <% include solution/modals/addEditSolutionModal%>
     <% include solution/modals/confirmDeleteSolutionModal %>
 </div>
+<script type="text/ng-template" id="reviewList.tpl">
+    <% include review/pages/review%>
+</script>
 <script type="text/ng-template" id="reviewAssignment.tpl">
     <% include review/pages/assignReviews%>
 </script>
 <script type="text/ng-template" id="addNewAssignment.tpl">
     <% include peerReview/pages/addNewAssignment%>
+    <% include peerReview/components/rubrics/addEditRubricModal %>
 </script>
 <script type="text/ng-template" id="editAssignment.tpl">
     <% include peerReview/pages/editAssignment%>
+    <% include peerReview/components/rubrics/addEditRubricModal %>
 </script>
 <script type="text/ng-template" id="viewAssignment.tpl">
     <% include peerReview/pages/viewAssignment%>
@@ -21,6 +26,13 @@
 </script>
 <script type="text/ng-template" id="viewSolution.tpl">
     <% include solution/pages/viewSolution%>
+</script>
+<script type="text/ng-template" id="manageRubrics.tpl">
+    <div ng-controller="ManageRubricsController">
+        <% include peerReview/components/rubrics/list %>
+        <% include peerReview/components/rubrics/addEditRubricModal %>
+        <% include peerReview/components/rubrics/viewRubricModal %>
+    <div>
 </script>
 <script type="text/ng-template" id="main.tpl">
     <div>

@@ -147,12 +147,24 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
         window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolutionsList';
     }
 
+    $scope.viewReviewsList = function() {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewReviewsList';
+    }
+
     $scope.openDeleteSolutionConfirmationModal = function(solutionId, event) {
         if(event) {
             event.stopPropagation();
         }
         $scope.deleteSolutionId = solutionId;
         $('#confirmDeleteSolutionModal').modal('show');
+    }
+
+    $scope.manageRubrics = function() {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=manageRubrics';
+    }
+
+    $scope.openRubric = function() {
+        $('#addEditRubricModal').modal('show');
     }
 
     // Home
@@ -196,6 +208,12 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
             } else if($scope.vName == 'reviewAssignment') {
                 $scope.currentView = 'reviewAssignment.tpl'
                 $scope.manageBreadCrumb('Assign Reviews');
+            } else if($scope.vName == 'viewReviewsList') {
+                $scope.currentView = 'reviewList.tpl'
+                $scope.manageBreadCrumb('See All Reviews');
+            } else if($scope.vName == 'manageRubrics') {
+                $scope.currentView = 'manageRubrics.tpl'
+                $scope.manageBreadCrumb('Manage Rubrics');
             }
         } else {
             $scope.currentView = 'main.tpl';
@@ -222,7 +240,27 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
                         aTitle: 'See All Solutions'
                     }
                 );
+            }
 
+            ActionBarService.extraActionsMenu.push(
+                {
+                    clickAction: $scope.viewReviewsList,
+                    title: '&nbsp;&nbsp; <i class="ionicons ion-android-done-all"></i> &nbsp; ASSIGNED REVIEWS',
+                    aTitle: 'Assigned Reviews'
+                }
+            )
+
+            if($scope.isAdmin || $scope.isManager || $scope.isOwner) {
+                ActionBarService.extraActionsMenu.push(
+                    {
+                        separator: true
+                    },
+                    {
+                        clickAction: $scope.manageRubrics,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-settings"></i> &nbsp; MANAGE RUBRICS',
+                        aTitle: 'Manage Rubrics'
+                    }
+                )
             }
         }
 
@@ -245,196 +283,3 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
 
     $scope.tabOpened();
 });
-
-app.controller('ViewSolutionController', function($scope, $location, $http, toastr, ActionBarService) {
-    $scope.vId = $location.search().vId;
-    if($scope.vName && $scope.vId) {
-        ActionBarService.extraActionsMenu = [];
-        ActionBarService.extraActionsMenu.push(
-            {
-                clickAction: $scope.redirectPRHome,
-                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
-                aTitle: 'Peer Review Home'
-            }
-        );
-        var url = '/api/peerassessment/' + $scope.course._id + '/solutions/' + $scope.vId;
-        $http.get(url).then( function(response) {
-            console.log('response', response);
-            if(response.data.solution) {
-                var solution = response.data.solution;
-                if(solution.solutionDocuments && solution.solutionDocuments.length>0) {
-                    solution.displayDocumentsList = [];
-                    _.each(solution.solutionDocuments, function(docName) {
-                        var temp = {};
-                        temp.link = window.location.origin + docName;
-                        var tempArr = docName.split('/');
-                        temp.name = tempArr[tempArr.length-1];
-                        solution.displayDocumentsList.push(temp);
-                    })
-                }
-                $scope.solution = solution;
-                if($scope.isAdmin || $scope.isManager || $scope.isOwner) {
-                    // for openAddEditSolutionModal to know that it has been called from this path
-                    $scope.solution.path = 'solutionList';
-                    ActionBarService.extraActionsMenu.push(
-                        {
-                            separator: true
-                        },
-                        {
-                            clickAction: $scope.openAddEditSolutionModal,
-                            clickParams: $scope.solution,
-                            title: '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT',
-                            aTitle: 'Edit Solution'
-                        },
-                        {
-                            clickAction: $scope.openDeleteSolutionConfirmationModal,
-                            clickParams: $scope.solution._id,
-                            title: '&nbsp;&nbsp; <i class="ionicons ion-ios-trash"></i> &nbsp; DELETE',
-                            aTitle: 'Delete Solution'
-                        }
-                    );
-                }
-            }
-        }, function(err){
-            // Check for proper error message later
-            toastr.error('Internal Server Error. Please try again later.');
-        })
-    }
-})
-
-app.controller('SolutionsController', function($scope, $location, $http, toastr, ActionBarService) {
-    $scope.solutions = null;
-    if($scope.vName) {
-        ActionBarService.extraActionsMenu = [];
-        ActionBarService.extraActionsMenu.push(
-            {
-                clickAction: $scope.redirectPRHome,
-                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
-                aTitle: 'Peer Review Home'
-            }
-        );
-    }
-
-    $scope.requestData = function() {
-        var url = '/api/peerassessment/' + $scope.course._id + '/solutions';
-        $http.get(url).then( function(response) {
-            _.each(response.data.solutions, function(solution) {
-                // do something if needed
-            });
-            $scope.solutions = response.data.solutions;
-            console.log('Solutions', $scope.solutions);
-        }, function(err){
-            // Check for proper error message later
-            toastr.error('Internal Server Error. Please try again later.');
-        });
-    }
-
-    $scope.deleteSolution = function() {
-        var url = '/api/peerassessment/' + $scope.course._id + '/solutions/' + $scope.deleteSolutionId;
-        $http.delete(url).then( function(response) {
-            if(response && response.data.result) {
-                if ($location.search().vId) {
-                    window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolutionsList';
-                    window.location.reload();
-                    //$location.search('vName', 'viewSolutionsList');
-                    //$location.search('vId', '');
-                } else {
-                    window.location.reload();
-                }
-            }
-            // if you want to do it with ajax check the logic of deleting peer reviews in Peer Review controller
-        }, function(err) {
-            // Check for proper error message later
-            toastr.error('Internal Server Error. Please try again later.');
-        });
-
-        $('#confirmDeleteAssignmentModal').modal('hide');
-    }
-
-    if($scope.course && $scope.course._id) {
-        $scope.requestData();
-    } else {
-        console.log('Course not initialized');
-    }
-})
-
-app.controller('AddEditSolutionController', function($scope, $http, toastr, $window, Upload) {
-    $scope.selSolutionDocuments = false;
-    $scope.progress = 0;
-
-    $scope.deleteUploadedFiles = function(fileName) {
-        for(var i=0; i<$scope.solutionObj.displayDocumentsList.length; i++) {
-            if ($scope.solutionObj.displayDocumentsList[i].link == fileName) {
-                if(!$scope.solutionObj.deletedUploadedFiles) {
-                    $scope.solutionObj.deletedUploadedFiles = [];
-                }
-                $scope.solutionObj.deletedUploadedFiles.push($scope.solutionObj.solutionDocuments[i]);
-                $scope.solutionObj.solutionDocuments.splice(i,1);
-                $scope.solutionObj.displayDocumentsList.splice(i,1);
-                break;
-            }
-        }
-        console.log('Check deleted Objects', $scope.solutionObj.deletedUploadedFiles, $scope.solutionObj.solutionDocuments, $scope.solutionObj.displayDocumentsList);
-    }
-
-    $scope.deleteSelectedFiles = function(fileName) {
-        console.log('Review Docs Selected', $scope.selSolutionDocuments, fileName);
-        for(var i=0; i<$scope.selSolutionDocuments.length; i++) {
-            if($scope.selSolutionDocuments[i].name == fileName) {
-                $scope.selSolutionDocuments.splice(i,1);
-                break;
-            }
-        }
-    }
-
-    $scope.updateSolution = function(solutionObj) {
-        console.log(solutionObj);
-        console.log('dsadasdas',$scope.solutionObj)
-        var params = {
-            //isSubmitted: true,
-            studentComments: solutionObj.studentComments,
-            solutionDocuments: solutionObj.solutionDocuments,
-            deletedUploadedFiles: solutionObj.deletedUploadedFiles
-        }
-        $scope.isLoading = true;
-        var uploadParams = {
-            method: 'PUT',
-            url: '/api/peerassessment/' + $scope.$parent.course._id + '/peerreviews/' + solutionObj.peerReviewId + '/solutions/' + solutionObj._id,
-            fields: params
-        };
-        uploadParams.file = [];
-        if($scope.selSolutionDocuments) {
-            uploadParams.file.push({'selSolutionDocuments':$scope.selSolutionDocuments});
-        }
-
-        $scope.upload = Upload.upload(
-            uploadParams
-            )
-            .progress(function (evt) {
-                if (!evt.config.file)
-                    return;
-
-                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
-                // console.log("Progress", $scope.progress);
-            })
-            .success(function (data) {
-
-                $scope.progress = 0;
-                if (data.result) {
-                    toastr.success('Successfully Saved');
-                } else {
-                    toastr.error('Updating Solution Failed');
-                }
-                $scope.isLoading = false;
-                $('#addEditSolutionModal').modal('hide');
-
-                window.location.reload();
-            })
-            .error(function (data) {
-                toastr.error('Updating Solution Failed');
-                $scope.errors = data.errors;
-                $scope.progress = 0;
-                $scope.isLoading = false;
-            });
-    }
-})

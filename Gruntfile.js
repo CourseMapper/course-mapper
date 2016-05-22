@@ -29,7 +29,8 @@ module.exports = function (grunt) {
                 src: [
                     'frontend-modules/angular/*.js',
                     'frontend-modules/angular/**/*.js',
-                    'frontend-modules/angular/**/**/**/*.js'
+                    'frontend-modules/angular/**/**/**/*.js',
+                    'frontend-modules/angular/**/**/**/**/*.js'
                 ],
                 dest: 'public/build/courseMapper.js'
             },
