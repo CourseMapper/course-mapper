@@ -182,6 +182,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
       $scope.cuePoints = {points: []};
       $scope.annotations = [];
+      $scope.selectedBar = 'va';
 
       // Trigger initial annotations update.
       socket.emit('annotations:get', {video_id: videoId});

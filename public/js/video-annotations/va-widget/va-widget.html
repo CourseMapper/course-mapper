@@ -18,6 +18,19 @@
             </vg-scrub-bar>
             <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
             <vg-footprint-info ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint-info>
+
+            <div ng-class="{invisible: (selectedBar!=='va')}">
+                <div class="fp-info-holder">
+                    <div title="This is an A-Map" class="fp-btn">?
+                        <div class="fp-tooltip">The A-Map represents number of annotations
+                            <div class="fp-tooltip-arrow"></div>
+                        </div>
+                    </div>
+                    <div class="fp-scale-holder"><span class="fp-scale-from"></span>
+                        <div class="am-scale"></div>
+                    </div>
+                </div>
+            </div>
             <vg-fullscreen-button></vg-fullscreen-button>
             <!--<vg-playback-button></vg-playback-button>-->
             <vg-volume>
@@ -38,19 +51,20 @@
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="col-md-3 form-group">
-                <button ng-hide="!lastPos" class="btn btn-block btn-primary btn-sm" type="button" ng-click="onClickedResume()">
-                    Resume: {{lastPos | msToTime}}
-                </button>
-            </div>
-            <div class="col-md-3 form-group"></div>
-            <div class="col-md-3 form-group"></div>
-            <div class="col-md-3 form-group">
                 <select class="form-control" ng-model="selectedBar">
                     <option value="" selected disabled>Select analytics bar...</option>
                     <option value="none">None</option>
                     <option value="va">Video Annotations</option>
                     <option value="fp">Footprint</option>
                 </select>
+            </div>
+            <div class="col-md-3 form-group"></div>
+            <div class="col-md-3 form-group"></div>
+            <div class="col-md-3 form-group">
+                <button ng-hide="!lastPos" class="btn btn-block btn-primary btn-sm" type="button"
+                        ng-click="onClickedResume()">
+                    Resume: {{lastPos | msToTime}}
+                </button>
             </div>
         </div>
     </div>
