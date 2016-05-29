@@ -29,8 +29,8 @@ app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $loc
 
       // Initialize CountMap
       var countMap = new CountMap({container: '#countmap'});
-      countMap.itemClicked = function (selectedPage) {
-        $rootScope.setPageNumber(selectedPage);
+      countMap.itemClicked = function (number) {
+        $rootScope.setPageNumber(number);
       };
 
       scope.updateCountMap = function () {
