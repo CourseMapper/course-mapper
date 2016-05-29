@@ -1,0 +1,14 @@
+<div class="box-body no-padding" ng-controller="ParticipationBalanceController">
+    <div id="trace-tree">
+        <ul>
+            <li ng-repeat="course in courses.created">
+                <span>{{course.name}}</span>
+            </li>
+        </ul>
+        <ul>
+            <li ng-repeat="course in courses.enrolled">
+                <span>{{course.course.name}}</span>
+            </li>
+        </ul>
+    </div>
+</div>

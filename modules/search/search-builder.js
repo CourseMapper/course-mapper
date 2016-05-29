@@ -39,8 +39,7 @@ var SearchBuilder = function (term) {
 
   this.build = function () {
 
-    var findVideoAnnotations = VideoAnnotation
-      .findAsync(videoAnnotationArgs)
+    var findVideoAnnotations = VideoAnnotation.findAsync(videoAnnotationArgs)
       .then(function (videoAnnotations) {
         var promises = [];
         _.each(videoAnnotations, function (videoAnnotation) {
@@ -55,8 +54,7 @@ var SearchBuilder = function (term) {
         return Promise.all(promises);
       });
 
-    var findPdfAnnotations = PdfAnnotation
-      .findAsync(pdfAnnotationArgs)
+    var findPdfAnnotations = PdfAnnotation.findAsync(pdfAnnotationArgs)
       .then(function (pdfAnnotations) {
         var promises = [];
         _.each(pdfAnnotations, function (pdfAnnotation) {
