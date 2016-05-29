@@ -4,17 +4,16 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
   function ($scope, socket, rootScope, $http, $location, $anchorScroll) {
     var videoPulse;
     var videoPulseHost = 'https://gomera.informatik.rwth-aachen.de:8447';
+    var startTime = 0;
 
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
       params.showing = false;
-      params.isScrolled = false;
     };
 
     var onComplete = function (currentTime, timeLapse, params) {
       params.completed = true;
       params.showing = false;
-      params.isScrolled = false;
     };
 
     var onUpdate = function (currentTime, timeLapse, params) {
@@ -23,16 +22,9 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         params.showing = true;
       }
 
-      var scrolled = _.find($scope.annotations, function (a) {
-        return a.isScrolled;
-      });
-
-      // Scroll to annotation if there
-      // isn't a scrolled annotation in the viewer
-      if (!scrolled) {
-        $location.hash(params._id);
-        $anchorScroll();
-        params.isScrolled = true;
+      if (startTime > 0) {
+        $scope.API.seekTime(startTime / 1000);
+        startTime = -1; // Disable secondary seek
       }
     };
 
@@ -136,9 +128,9 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         };
         $scope.cuePoints.points.push(cuePoint);
 
-        //Scroll to annotation
-        if (annotation._id === $location.hash()) {
-          annotation.isScrolled = true;
+        //Set startup time
+        if (annotation._id === $location.hash() && startTime !== -1) {
+          startTime = annotation.start;
         }
 
         annotation.canEdit = checkCanEdit(annotation);
