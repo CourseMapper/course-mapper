@@ -7,8 +7,13 @@
         </ul>
     </script>
 
+    <h3>Enrolled</h3>
     <ul>
         <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
     </ul>
 
+    <h3>Created</h3>
+    <ul>
+        <li ng-repeat="field in courses.created" ng-include="'field_renderer.html'"></li>
+    </ul>
 </div>
