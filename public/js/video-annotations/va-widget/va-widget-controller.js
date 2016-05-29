@@ -5,6 +5,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     var videoPulse;
     var videoPulseHost = 'https://gomera.informatik.rwth-aachen.de:8447';
     var startTime = 0;
+    var cuePointsFilter;
 
     var onLeave = function (currentTime, timeLapse, params) {
       params.completed = false;
@@ -106,7 +107,6 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
       // clear current annotations state
       $scope.annotations = [];
-      $scope.cuePoints.points = [];
       $scope.selectedAnnotation = null;
 
       //Restore annotation that the user is editing.
@@ -115,18 +115,8 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       }
 
       var sorted = _.sortByAll(annotations, ['start']);
+      $scope.cuePoints.points = buildCuePoints(sorted, cuePointsFilter);
       sorted.forEach(function (annotation) {
-        var cuePoint = {
-          timeLapse: {
-            start: (new Date(annotation.start).getTime() - 0.001) / 1000,
-            end: new Date(annotation.end).getTime() / 1000
-          },
-          onLeave: onLeave,
-          onUpdate: onUpdate,
-          onComplete: onComplete,
-          params: annotation
-        };
-        $scope.cuePoints.points.push(cuePoint);
 
         //Set startup time
         if (annotation._id === $location.hash() && startTime !== -1) {
@@ -142,15 +132,33 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
             annotation.size = params.size;
           }
         };
-
         $scope.annotations.push(annotation);
-
         // find current user comments
         _.forEach(annotation.comments, function (c) {
           c.canEdit = checkCanEdit(c);
         });
       });
     });
+
+    var buildCuePoints = function (annotations, filter) {
+      var points = [];
+      _.filter(annotations, filter)
+        .forEach(function (annotation) {
+          var cuePoint = {
+            timeLapse: {
+              start: (new Date(annotation.start).getTime() - 0.001) / 1000,
+              end: new Date(annotation.end).getTime() / 1000
+            },
+            onLeave: onLeave,
+            onUpdate: onUpdate,
+            onComplete: onComplete,
+            params: annotation
+          };
+          points.push(cuePoint);
+        });
+
+      return points;
+    };
 
     $scope.getInlineAnnotationStyle = function (item) {
       return {
@@ -161,6 +169,20 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         'height': item.size.height + '%',
         'background': item.isHovered ? 'rgba(0, 0, 0, 0.3)' : 'background: rgba(0, 0, 0, 0.05)'
       };
+    };
+
+
+    $scope.isAMapPersonalChange = function () {
+      if ($scope.isAMapPersonal) {
+        cuePointsFilter = function (annotation) {
+          var isAuthor = annotation.authorId === rootScope.user._id;
+          return isAuthor;
+        };
+      }
+      else {
+        cuePointsFilter = null;
+      }
+      $scope.cuePoints.points = buildCuePoints($scope.annotations, cuePointsFilter);
     };
 
     $scope.init = function (videoId, videoSource) {
@@ -183,6 +205,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       $scope.cuePoints = {points: []};
       $scope.annotations = [];
       $scope.selectedBar = 'va';
+      $scope.isAMapPersonal = false;
 
       // Trigger initial annotations update.
       socket.emit('annotations:get', {video_id: videoId});
