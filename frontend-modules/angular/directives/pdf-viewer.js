@@ -18,13 +18,31 @@ app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $loc
       scope.pageToView = 1;
       scope.scale = 1.0;
       scope.totalPage = 1;
-      scope.container = element[0].getElementsByClassName('viewerContainer');
-      scope.container = scope.container[0];
+      scope.container = element[0].getElementsByClassName('viewerContainer')[0];
+      scope.config = {
+        countMap: {
+          segments: [],
+          filter: {},
+          isPersonal: false
+        }
+      };
 
       // Initialize CountMap
       var countMap = new CountMap({container: '#countmap'});
       countMap.itemClicked = function (selectedPage) {
         $rootScope.setPageNumber(selectedPage);
+      };
+
+      scope.updateCountMap = function () {
+        var segments = _.filter(scope.config.countMap.segments, scope.config.countMap.filter);
+        var options = {
+          segmentKey: 'page',
+          segments: segments,
+          totalSegments: scope.totalPage,
+          maxValue: 10,
+          colorful: false
+        };
+        countMap.buildHeatMap(options);
       };
 
       scope.calculateSlideNavigationProgress = function (currentPageNum) {
@@ -38,14 +56,8 @@ app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $loc
         // Update CountMap
         $http.get('/slide-viewer/countmap/' + pdfId)
           .success(function (segments) {
-            var options = {
-              segmentKey: 'page',
-              segments: segments,
-              totalSegments: totalPages,
-              maxValue: 10,
-              colorful: false
-            };
-            countMap.buildHeatMap(options);
+            scope.config.countMap.segments = segments;
+            scope.updateCountMap();
           })
           .finally(function () {
               var progressBar = $('#progress-bar');
@@ -117,6 +129,19 @@ app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $loc
       $scope.currentTab = "";
       $scope.currentNavPageNumber = $scope.currentPageNumber;
       $rootScope.switchShowAnnoZones = "On";
+
+      $scope.isAMapPersonalChange = function () {
+        if ($scope.config.countMap.isPersonal) {
+          $scope.config.countMap.filter = function (annotation) {
+            var isAuthor = annotation.authorId === $rootScope.user._id;
+            return isAuthor;
+          };
+        }
+        else {
+          $scope.config.countMap.filter = null;
+        }
+        $scope.updateCountMap();
+      };
 
       $scope.$watch("currentPageNumber", function (newVal, oldVal) {
         if (newVal != oldVal) {
