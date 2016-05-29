@@ -1,14 +1,14 @@
 <div class="box-body no-padding" ng-controller="ParticipationBalanceController">
-    <div id="trace-tree">
+
+    <script type="text/ng-template" id="field_renderer.html">
+        {{field.name}}
         <ul>
-            <li ng-repeat="course in courses.created">
-                <span>{{course.name}}</span>
-            </li>
+            <li ng-repeat="field in field.childrens" ng-include="'field_renderer.html'"></li>
         </ul>
-        <ul>
-            <li ng-repeat="course in courses.enrolled">
-                <span>{{course.course.name}}</span>
-            </li>
-        </ul>
-    </div>
+    </script>
+
+    <ul>
+        <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
+    </ul>
+
 </div>

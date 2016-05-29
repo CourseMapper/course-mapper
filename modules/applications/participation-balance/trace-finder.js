@@ -1,3 +1,5 @@
+'use strict';
+
 var mongoose = require('mongoose');
 var _ = require('lodash');
 var Promise = require('bluebird');
@@ -16,20 +18,28 @@ var Tree = require('../../trees/index.js');
 var TraceFinder = function () {
   this.findAsync = function (userId) {
 
-    function getTreeData(courses) {
-      return new Promise(function (resolve, reject) {
-        var tr = new Tree();
-        _.map(courses, function (course) {
-          tr.getTreeNodes(reject, {courseId: course._id}, resolve);
-        });
+    var loadTreeData = function (courses) {
+      var tr = new Tree();
+      var p = [];
+
+      courses.forEach(function (c) {
+        p.push(new Promise(function (resolve, reject) {
+          tr.getTreeNodes(reject, {courseId: c._id},
+            function (tree) {
+              var co = c.toObject();
+              co.childrens = tree;
+              resolve(co)
+            });
+        }));
       });
-    }
+      return Promise.all(p);
+    };
 
-    var findCreatedCourses = Courses
-      .findAsync({createdBy: userId})
-      .then(getTreeData);
+    var loadCreatedCourses = Courses
+      .find({createdBy: userId})
+      .then(loadTreeData);
 
-    var findEnrolledCourses = UserCourses
+    var loadEnrolledCourses = UserCourses
       .find({user: userId, isEnrolled: true})
       .populate('course').execAsync()
       .then(function (enrolledCourses) {
@@ -37,11 +47,11 @@ var TraceFinder = function () {
           return c.course;
         })
       })
-      .then(getTreeData);
+      .then(loadTreeData);
 
     return Promise.props({
-      created: findCreatedCourses,
-      enrolled: findEnrolledCourses
+      created: loadCreatedCourses,
+      enrolled: loadEnrolledCourses
     });
   }
 };
