@@ -11,7 +11,7 @@ var appRoot = require('app-root-path');
 var Course = require(appRoot + '/modules/applications/my-course/myCoursesList');
 var PdfStatus = require(appRoot + '/modules/applications/my-course/myPDFStatus');
 var VideoStatus = require(appRoot + '/modules/applications/my-course/myVideoStatus.controller.js');
-var TraceFinder = require(appRoot + '/modules/applications/participation-balance/trace-finder.js');
+var TraceFinder = require(appRoot + '/modules/applications/my-course/trace-finder.js');
 var router = express.Router();
 
 router.get('/', function (req, res, next) {
