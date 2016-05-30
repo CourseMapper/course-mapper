@@ -8,8 +8,8 @@
     "needActivation": false
   },
   "facebookAuth": {
-    "clientID": "",
-    "clientSecret": "",
+    "clientID": "random_id",
+    "clientSecret": "random_id",
     "callbackURL": "https://localhost:3000/api/accounts/facebook/callback"
   },
   "database": "localhost/course_mapper"
