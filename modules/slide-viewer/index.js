@@ -152,13 +152,13 @@ Comment.prototype.deleteAnnotation = function (err, params, isAdmin, user, done)
   if (typeof params.deleteId != 'undefined') {
     this.checkOwnership(params.deleteId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
-        AnnotationsPDF.findOne({_id: params.deleteId}).exec(function(err, doc){
-            if(doc) {
-                doc.remove();
-                Plugin.doAction('onAfterPdfAnnotationDeleted', doc, user);
+        AnnotationsPDF.findOne({_id: params.deleteId}).exec(function (err, doc) {
+          if (doc) {
+            doc.remove();
+            Plugin.doAction('onAfterPdfAnnotationDeleted', doc, user);
 
-                done();
-            }
+            done();
+          }
         });
       }
       else {
@@ -370,9 +370,9 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
 
         var tagId = comm.checkTagName(x, tagNameList);
         var ret;
-        if(hasPage){
-          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "' data-toggle='tooltip' data-placement='bottom' title='Referenced from page "+page+"'>" + originalX + "</label>";
-        }else{
+        if (hasPage) {
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "' data-toggle='tooltip' data-placement='bottom' title='Referenced from page " + page + "'>" + originalX + "</label>";
+        } else {
           ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "'>" + originalX + "</label>";
         }
 

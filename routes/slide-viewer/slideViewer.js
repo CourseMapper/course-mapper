@@ -75,7 +75,10 @@ router.get('/countmap/:pdfId', function (req, res, next) {
     }
     var countMap = [];
     for (var i = 0; i < annotations.length; i++) {
-      countMap.push({page: annotations[i].pdfPageNumber});
+      countMap.push({
+        page: annotations[i].pdfPageNumber,
+        authorId: annotations[i].authorID
+      });
     }
     return res.json(countMap);
   });

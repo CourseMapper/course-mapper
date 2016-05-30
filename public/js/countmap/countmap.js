@@ -11,7 +11,6 @@ function CountMap(options) {
     if (!hasSegments) {
       return;
     }
-
     var elementWidth = (100 / segments.length);
     for (var i = 0; i < segments.length; i++) {
       var percentage = (segments[i] / options.maxValue);
@@ -23,12 +22,12 @@ function CountMap(options) {
       div.css('position', 'absolute');
 
       // Set data attribute to element number
-      div.attr('title', (i + 1).toString());
-
+      div.attr('title', 'Page: ' + (i + 1).toString() + '\nAnnotations: ' + segments[i]);
+      div.attr('number', (i + 1));
       // Wire events
       div.click(function () {
         if (self.itemClicked) {
-          self.itemClicked(this.getAttribute('title'));
+          self.itemClicked(this.getAttribute('number'));
         }
       });
 

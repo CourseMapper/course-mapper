@@ -19,20 +19,22 @@ CatCountSubNodes.prototype.run = async ( function(){
         slug: self.slug
     }).exec());
     if (result._id) {
-        var countCourses = await (Courses.find({category: result._id}).count().exec());
+        var countAllCourses = await (Courses.find({category: result._id}).count().exec());
+        var countDeletedCourses = await (Courses.find({category: result._id, isDeleted:{$exists: true}}).count().exec());
+        var activeCourse = countAllCourses - countDeletedCourses;
     }
     //var catId = result._id;
 
 
-    self.result = countCourses;
+    self.result = activeCourse;
 } );
 
 
 CatCountSubNodes.prototype.render = function(){
-    var countCourses = this.result;
+    var activeCourse = this.result;
 
 
-    return '<div class="countCourses" style="font-size:80%; margin-top: 3px;"> <span class="badge bg-yellow"> Course Available: ' + countCourses + '</span></div>' ;
+    return '<div class="countCourses" style="font-size:80%; margin-top: 3px;"> <span class="badge bg-yellow"> Course Available: ' + activeCourse + '</span></div>' ;
 };
 
 module.exports = CatCountSubNodes;

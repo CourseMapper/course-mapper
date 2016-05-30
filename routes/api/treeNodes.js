@@ -67,10 +67,14 @@ router.get('/treeNode/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                 helper.resReturn(err, res);
             },
             {
-                _id: mongoose.Types.ObjectId(req.params.nodeId)
+                _id: mongoose.Types.ObjectId(req.params.nodeId),
+                isDeleted: false
             },
             function (treeNode) {
-                res.status(200).json({result: true, treeNode: treeNode});
+                if (treeNode)
+                    res.status(200).json({result: true, treeNode: treeNode});
+                else
+                    helper.resReturn(helper.createError404('Content Node'), res);
             }
         );
     });
