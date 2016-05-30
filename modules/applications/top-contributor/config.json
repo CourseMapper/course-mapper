@@ -1,0 +1,13 @@
+{
+  "name": "top contributor ",
+  "widgets": [
+    {
+      "name": "Top Contributor Aggregator",
+      "location": "background-plugin",
+      "description": "--",
+      "entryPoint": "--",
+      "icon": "/img/appPlaceholder.png",
+      "runOn": "server"
+    }
+  ]
+}

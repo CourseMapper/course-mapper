@@ -1,0 +1,318 @@
+<script type="text/ng-template" id="tree_item_renderer.html">
+    <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
+         data-from-root-y="{{data.positionFromRoot.y}}"
+         data-shape="{{getDataShape(data.type)}}"
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
+         ng-hide="data.isDeletedForever">
+
+        <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
+            <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
+            </i>
+        </span>
+
+        <div class="collapse-button" ng-show="data.type == 'subTopic'">
+            <a class="pointer" ng-click="collapse('t' + data._id )">
+                <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
+                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
+            </a>
+        </div>
+
+        <a ng-show="data.type == 'contentNode' && !data.isDeleted"
+           ng-href="{{getContentNodeLink(data)}}"> {{data.name}} </a>
+
+        <span ng-show="data.type != 'contentNode'"> {{data.name}} </span>
+
+        <span ng-show="data.type == 'contentNode' && data.isDeleted == true"> {{data.name}} </span>
+
+        <!-- subtopic menu-->
+        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
+            <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
+                <small class="label label-green">
+                    <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by
+                    {{data.createdBy.displayName}}
+                </small>
+            </li>
+            <li>
+                <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
+                   ng-click="setMode('add', 'subTopic', data)">
+                    <i class="ionicons ion-android-add"></i>
+                    <i class="ionicons ion-android-folder"></i>
+                    Add Sub Topic</a>
+            </li>
+            <li>
+                <a class="cursor" data-toggle="modal" data-target="#addContentNodeModal"
+                   ng-click="setMode('add', 'contentNode', data)">
+                    <i class="ionicons ion-android-add"></i>
+                    <i class="ionicons ion-document"></i>
+                    Add Content Node</a>
+            </li>
+            <li ng-show="isAuthorized(data)" class="separator"></li>
+            <li>
+                <a class="cursor" data-toggle="modal" data-target="#editSubTopicModal"
+                   ng-show="isAuthorized(data)"
+                   ng-click="setMode('edit', data.type, data)"><i class="ionicons ion-edit"></i> Edit</a>
+            </li>
+            <li>
+                <a class="cursor" ng-show="isAuthorized(data)"
+                   ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
+            </li>
+
+        </ul>
+
+        <!-- contentnode menu-->
+        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode' && !data.isDeleted">
+            <!-- analytics -->
+            <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
+            </li>
+            <li ng-show="isAuthorized(data)">
+                <a class="cursor" data-toggle="modal" data-target="#editContentNodeModal"
+                   ng-click="setMode('edit', 'contentNode', data)"><i class="ionicons ion-edit"></i> Edit</a>
+            </li>
+            <li ng-show="isAuthorized(data)">
+                <a class="cursor"
+                   ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
+            </li>
+
+            <li ng-show="hasPdf(data.resources)">
+                <a class="cursor" href="{{getPdfLink(data.resources)}}" target="_blank"><i class="fa fa-file-pdf-o"></i>
+                    Download PDF</a>
+            </li>
+        </ul>
+
+        <ul class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
+            <li>
+                <a class="cursor"
+                   ng-click="deleteNodeForever(data)"><i class="ionicons ion-trash-b"></i> Delete Forever</a>
+            </li>
+        </ul>
+    </div>
+
+    <div ng-repeat="data in data.childrens" ng-include="'tree_item_renderer.html'">
+    </div>
+</script>
+
+<div class="box-body no-border" id="tree" ng-controller="MapController">
+
+    <div class="course-control">
+        <button data-tooltip="tooltip" title="Center Map"
+                class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)">
+            <i class="ionicons ion-android-locate"></i></button>
+
+        <button data-tooltip="tooltip" title="Information"
+                class="btn btn-default btn-sm" ng-click="showMapInfo()">
+            <i class="ionicons ion-information"></i></button>
+    </div>
+
+    <div class="tree-container">
+        <div class="course-map" id="course-map">
+
+            <div ng-repeat="data in treeNodes" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
+            </div>
+
+            <div class="center-course" id="center" data-shape="Rectangle">
+                {{course.name}}
+
+                <ul class="dropdown-menu dropdown-course">
+                    <li>
+                        <a class="cursor" data-toggle="modal" data-target="#addSubTopicModal"
+                           ng-click="setMode('add', 'subTopic', false)">
+                            <i class="ionicons ion-android-add"></i>
+                            <i class="ionicons ion-android-folder"></i>
+                            Add Sub Topic</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- modal contents -->
+        <% include courseDetailContentMapModals %>
+        <!-- /.modal contents -->
+    </div>
+</div>
+
+<script>
+    /**
+     * Class Leave
+     *
+     * center leave -> fromCenter 0,0 'and .center-category
+     * for others -> fromCenter: from DB, and el-> .w
+     *
+     * @param jQEl
+     * @param fromCenter
+     * @constructor
+     */
+    function Leave(jQEl, fromCenter) {
+        var self = this;
+
+        self.el = jQEl;
+        self.fromCenter = fromCenter;
+        self.w = 0;
+        self.h = 0;
+
+        self.init = function (w, h) {
+            self.w = self.el.width();
+            self.h = self.el.height();
+
+            self.rePosition(w, h);
+        };
+
+        self.onWindowResize = function (w, h) {
+            self.rePosition(w, h);
+        };
+
+        self.rePosition = function (w, h) {
+            var left = w / 2 + ((self.fromCenter.x));
+            var top = h / 2 + ((self.fromCenter.y));
+
+            self.el.css({
+                left: left + "px",
+                top: top + "px"
+            });
+        };
+
+        self.getNewPosition = function (w, h) {
+            var left = w / 2 + ((self.fromCenter.x - self.w / 2)  );
+            var top = h / 2 + ((self.fromCenter.y - self.h / 2)  );
+
+            return {x: left, y: top}
+        }
+    }
+
+    var Tree = {
+        center: null,
+        leaves: {},
+        w: null,
+        h: null,
+
+        init: function (w, h) {
+            var self = this;
+            self.w = w;
+            self.h = h;
+
+            self.center = new Leave($('.center-course'), {x: 0, y: 0});
+            self.center.init(w, h);
+
+            // initiate all leaves position
+            $('.w').each(function () {
+                var xFromRoot = $(this).attr('data-from-root-x');
+                var yFromRoot = $(this).attr('data-from-root-y');
+
+                var leave = new Leave($(this), {x: parseInt(xFromRoot), y: parseInt(yFromRoot)});
+                leave.init(w, h);
+
+                self.leaves[$(this).attr('id')] = leave;
+            });
+
+        },
+
+        onWindowResize: function (w, h) {
+            var self = this;
+
+            self.w = w;
+            self.h = h;
+
+            self.center.onWindowResize(w, h);
+            for (var i in self.leaves) {
+                var el = self.leaves[i];
+                el.onWindowResize(w, h);
+            }
+        }
+    };
+
+    var Canvas = {
+        el: null,
+        draggable: null,
+        w: 4000,
+        h: 4000,
+        centerCss: {},
+
+        init: function (wWidth, wHeight) {
+            var self = this;
+
+            self.el = $('.course-map');
+            self.draggable = self.el.draggable();
+
+            // so it big enough
+            self.el.css({
+                width: self.w + 'px',
+                height: self.h + 'px'
+            });
+
+            // put it on the center
+            self.setCenter(wWidth, wHeight);
+            self.putOnCenter();
+        },
+
+        setCenter: function (wWidth, wHeight) {
+            var self = this;
+
+            self.centerCss = {
+                left: ( (wWidth - self.w) / 2) + 'px',
+                top: ( (wHeight - self.h) / 2) + 'px'
+            };
+        },
+
+        putOnCenter: function (animate) {
+            var self = this;
+
+            if (animate)
+                self.el.animate(self.centerCss, {duration: 1000, easing: 'easeOutExpo'});
+            else
+            // put it on the center
+                self.el.css(self.centerCss);
+        },
+
+        onWindowResize: function (w, h) {
+            var self = this;
+
+            // put it on the center
+            self.setCenter(w, h);
+            self.putOnCenter();
+        }
+
+    };
+
+    var Container = {
+        el: null,
+
+        init: function () {
+            this.el = $('.tree-container');
+
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+
+            this.el.css({
+                'width': w,
+                'height': h
+            });
+        },
+
+        onWindowResize: function (w, h) {
+            // resize it to follow the window size
+            this.el.css({
+                'width': w,
+                'height': h
+            });
+        }
+    };
+
+    $(document).ready(function () {
+        Container.init();
+        var offsetW = 200;
+        var offsetH = 200;
+        Canvas.init(window.innerWidth - offsetW, window.innerHeight - offsetH);
+
+        $('.tab-content #map').css('min-height', window.innerHeight - 140);
+
+        $(window).resize(function () {
+            var w = window.innerWidth - offsetW;
+            var h = window.innerHeight - offsetH;
+
+            Container.onWindowResize(w, h);
+            Canvas.onWindowResize(w, h);
+        });
+        $('[data-tooltip="tooltip"]').tooltip();
+    });
+
+</script>

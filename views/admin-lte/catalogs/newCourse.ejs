@@ -1,0 +1,95 @@
+<% include ../header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" ng-controller="NewCourseController">
+
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li><a href="/courses"> </i> Courses</a></li>
+                <li class="active">New</li>
+            </ol>
+        </section>
+        <!-- Main content -->
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-md-5 col-centered">
+                    <div class="box no-border">
+                        <div class="box-body no-border">
+                            <form class="" role="form" ng-submit="saveCourse()">
+                                <fieldset>
+                                    <div id="legend">
+                                        <h1>Create a new course</h1>
+                                    </div>
+                                    <div class="control-group">
+                                        <label class="control-label" for="course">Course Name</label>
+                                        <p class="help-block">Course name can contain any letters or numbers</p>
+
+                                    <div class="controls">
+                                        <input type="text" id="course" name="course" placeholder="" class="form-control"
+                                               ng-model="course.name">
+
+                                    </div>
+                                </div>
+
+                                <div class="control-group">
+                                    <p></p>
+                                    <label class="control-label" for="category">Category</label>
+
+                                    <p class="help-block">Please pick one category</p>
+                                    <div class="controls">
+                                        <select id="category" name="category" class="form-control"
+                                                ng-options="c.slug as c.name for c in categories"
+                                                ng-model="course.category">
+                                        </select>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p></p>
+                                        <label class="control-label" for="description">Description</label>
+                                        <p class="help-block">Description about this course</p>
+                                        <div class="controls">
+                                <textarea type="description" id="description" name="description" placeholder=""
+                                          class="form-control" ng-model="course.description">
+                                </textarea>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p class="help-block"> </p>
+                                        <p class="help-block"> </p>
+                                        <br class="clear">
+                                        <div class="box-footer">
+                                            <span class="help-block" ng-show="errorName">{{ errorName }}</span>
+                                            <!-- Button -->
+                                            <div class="controls">
+                                                <button class="btn btn-lg btn-primary btn-block">Create New Course</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                            <br class="clear">
+                        </div>
+                        <div class="box-footer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+<% include ../jsfooter %>
+<% include ../footer %>

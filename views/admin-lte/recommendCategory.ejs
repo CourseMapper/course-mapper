@@ -1,0 +1,93 @@
+<% include header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include mainMenu %>
+
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+            <li>Recommend Category</li>
+        </ol>
+    </section>
+
+
+    <!-- Content Wrapper. Contains page content --><!--ng-controller="RecommendController"-->
+    <div class="content-wrapper" ng-controller="RecommendController">
+        <section class="content">
+            <div class="row  ">
+                <div class="col-xs-12 col-md-12">
+                    <div class="box no-border">
+                        <div class="box-body no-border">
+                            <div class="control-group">
+                                <form name="recommendForm" id="recommendForm" role="form"
+                                      ng-submit="recommend(recommendForm.$valid)" novalidate>
+                                    <fieldset>
+                                        <div id="legend">
+                                            <h2>Recommend Category</h2>
+                                        </div>
+                                        <div class="control-group">
+                                            <!-- Username -->
+                                            <label class="control-label" for="category">Category Name</label>
+                                            <p class="help-block">Category name that you recommend to be
+                                                created</p>
+                                            <div class="controls"
+                                                 ng-class="{ 'has-error' : recommendForm.name.$invalid && !recommendForm.$pristine }">
+
+                                                <input type="text" id="name" name="name"
+                                                       class="form-control"
+                                                       ng-model="category.name"
+                                                       required ng-required="true">
+
+                                                <p ng-show="recommendForm.name.$invalid && !recommendForm.$pristine"
+                                                   class="help-block">Category Name is required.</p>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="control-group">
+                                            <p><br></p>
+                                            <p></p>
+                                            <label class="control-label" for="description">Description </label>
+                                            <p class="help-block">Description of the
+                                                category</p>
+                                            <div class="controls"
+                                                 ng-class="{ 'has-error' : recommendForm.description.$invalid && !recommendForm.$pristine }">
+
+                                                <input type="text" id="description" name="description"
+                                                       class="form-control"
+                                                       ng-model="category.description"
+                                                       required ng-required="true">
+
+                                                <p ng-show="recommendForm.description.$invalid && !recommendForm.$pristine"
+                                                   class="help-block">Description is required.</p>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="control-group">
+                                            <!-- Button -->
+                                            <div class="controls">
+                                                <error-block ng-show="errors.length > 0"
+                                                             messages="errors"></error-block>
+                                                <br class="clear">
+                                                <button class="btn btn-primary" ng-click="recommendForm.$setDirty()">
+                                                    Recommend
+                                                    <spinner show="isLoading"></spinner>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+</div><!-- ./wrapper -->
+<% include jsfooter %>
+<% include footer %>

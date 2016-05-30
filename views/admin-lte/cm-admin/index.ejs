@@ -1,0 +1,35 @@
+<% include header %>
+<div class="wrapper" ng-controller="adminController as adm">
+
+    <!-- Header Navbar -->
+    <% include mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper content-wrapper-admin">
+        <section class="content-header">
+            <ol class="breadcrumb" ng-cloak ng-show="$route.current.locals">
+                <li><a href="/cm-admin/"><i class="fa fa-home"></i> Admin Home</a></li>
+                <li ng-repeat="bread in $route.current.locals.pd.breads">
+                    <a ng-href="{{bread.a}}" ng-class="{'active':bread.active}"
+                       ng-show="bread.title">{{bread.title}}</a>
+                </li>
+                <li ng-show="$routeParams.category">{{$routeParams.category}}</li>
+            </ol>
+            <h1 ng-cloak ng-show="$route.current.locals.pd.title">
+                {{$route.current.locals.pd.title}}
+            </h1>
+        </section>
+        <section class="content" ng-view>
+        </section>
+    </div><!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+<script type="text/ng-template" id="/cm-admin-html.tpl">
+    <h4>Welcome to Administration Page</h4>
+    Please pick a task from the menu above.
+</script>
+
+<% include ../jsfooter %>
+<script src="/build/courseMapperAdmin.js"></script>
+<% include ../footer %>

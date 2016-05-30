@@ -1,0 +1,43 @@
+<% include header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" ng-controller="LoginPageController">
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-md-6  ">
+
+                    <div class="box no-border">
+                        <div class="box-body no-border">
+
+                            <p class="help-block">Use your facebook account to login</p>
+
+                            <facebook-button></facebook-button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6 col-centered">
+
+                    <div class="box no-border">
+                        <div class="box-body no-border">
+                            <div id="legend">
+                                <h2>Log In</h2>
+                            </div>
+                            <% include formLogin %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+<% include jsfooter %>
+<% include footer %>

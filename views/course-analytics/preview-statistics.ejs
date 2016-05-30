@@ -1,0 +1,44 @@
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-widget widget-user" ng-controller="PreviewStatsController">
+            <div class="widget-user-header bg-aqua-active" style="padding: 20px 110px 20px 20px; height: 130px;">
+                <h3 class="widget-user-username">{{creator.createdBy.displayName | capitalize}}</h3>
+                <h5 class="widget-user-desc">Course Creator</h5>
+            </div>
+            <div class="widget-user-image" style="position:absolute; top: 20px; right: 5%; ">
+                <img class="img-circle center-block" src="{{creator.createdBy.image}}" alt="User Image" ng-show="creator.createdBy.image" ng-cloak style="width: 90px; height: auto"/>
+            </div>
+            <div class="box-footer bg-green">
+                <div class="row">
+                    <div class="col-xs-4 border-right" style="padding-right: 5px; padding-left: 5px;">
+                        <div class="description-block">
+                            <h5 class="description-header" style="font-size: 25px;"><i class="ionicons ion-ios-people"></i></h5>
+                            <span class="description-text" style="font-size: 12px"><b>{{totalUser}}</b> {{totalUser <= 1 ? 'Participant': 'Participants'}}</span><br/>
+                            <span class="description-text" style="font-size: 12px"><b>{{(treeNodes | filter:isTrue).length}}</b> {{treeNodes.length <= 1 ? 'sub topic': 'sub topics'}}</span>
+                        </div>
+                        <!-- /.description-block -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-xs-4 border-right" style="padding-right: 5px; padding-left: 5px;">
+                        <div class="description-block">
+                            <h5 class="description-header" style="font-size: 20px; margin-bottom: 5px;"><i class="fa fa-file-pdf-o"></i> <i class="fa fa-file-video-o"></i></h5>
+                            <span class="description-text" style="font-size: 12px"><b>{{totalPdf}}</b> {{totalPdf <= 1 ? 'pdf': 'pdf'}}</span><br/>
+                            <span class="description-text" style="font-size: 12px"><b>{{totalVideo}}</b> {{totalVideo <= 1 ? 'video': 'videos'}}</span>
+                        </div>
+                        <!-- /.description-block -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-xs-4" style="padding-right: 5px; padding-left: 5px;">
+                        <div class="description-block">
+                            <h5 class="description-header" style="font-size: 25px;"><i class="fa fa-comments"></i></h5>
+                            <span class="description-text"  style="font-size: 12px"><b>{{totalDiscussion}}</b> {{totalDiscussion <= 1 ? 'discussion': 'discussions'}}</span>
+                        </div>
+                        <!-- /.description-block -->
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,115 @@
+{
+  "name": "Course Analytics",
+  "widgets":[
+    {
+      "name": "Home Widget - Category Date Created",
+      "location": "category-homepage",
+      "description": "Widget that show the created date of each node in the homepage",
+      "entryPoint": "/course-analytics/category-home-createdDate.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Home Widget - Count Courses",
+      "location": "category-homepage",
+      "description": "Widget that show the number of courses available inside one node",
+      "entryPoint": "/course-analytics/category-home-countCourses.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Course Listing - Author",
+      "location": "course-listing",
+      "description": "Widget that show the author of a course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-author.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Course Listing Latest Activity",
+      "location": "course-listing",
+      "description": "Widget that show the latest activity of a course in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-last-activity.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Course Listing Basic Stats",
+      "location": "course-listing",
+      "description": "Widget that show the number of enrolled participants in the course-listing page",
+      "entryPoint": "/course-analytics/course-list-basic-stats.js",
+      "icon":"/img/appPlaceholder.png",
+      "runOn": "server"
+    },
+    {
+      "name": "Enrolled Users",
+      "location": "course-preview",
+      "description": "List of users that enrolled to the course",
+      "entryPoint": "/course-analytics/ca-enrolled-users",
+      "widgetJavascript": ["ca-enrolled-users.js"],
+      "width": 12,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Course Preview Statistics",
+      "location": "course-preview",
+      "description": "Statistic summary of the course in the preview course tab",
+      "entryPoint": "/course-analytics/ca-preview-statistics",
+      "widgetJavascript": ["ca-preview-statistics.js"],
+      "width": 12,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Enrolled User List",
+      "location": "course-analytics",
+      "description": "List of users that enrolled to the course",
+      "entryPoint": "/course-analytics/ca-enrolled-users",
+      "widgetJavascript": ["ca-enrolled-users.js"],
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Course Activity History",
+      "location": "course-analytics",
+      "description": "Analytics bar graph to show history activity in this particular course",
+      "entryPoint": "/course-analytics/ca-history-analytics",
+      "widgetJavascript": ["ca-history-analytics.js"],
+      "width": 6,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Content Node Activity History",
+      "location": "course-analytics",
+      "description": "Analytics bar graph to show the history of activity in all of the nodes in this course",
+      "entryPoint": "/course-analytics/ca-node-history-analytics",
+      "widgetJavascript": ["ca-history-analytics.js"],
+      "width": 6,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Top Content",
+      "location": "course-analytics",
+      "description": "Top material content based on the number of annotations",
+      "entryPoint": "/course-analytics/ca-top-content",
+      "widgetJavascript": ["ca-top-content.js"],
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    },
+    {
+      "name": "Top Contributor",
+      "location": "course-analytics",
+      "description": "List of top contributor based on the number of participant activity in the course",
+      "entryPoint": "/course-analytics/ca-top-contributor",
+      "widgetJavascript": ["ca-top-contributor.js"],
+      "width": 4,
+      "height":1,
+      "icon":"/img/appPlaceholder.png"
+    }
+  ]
+}

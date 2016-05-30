@@ -1,0 +1,23 @@
+<div class="box-body no-padding  panel-heading" ng-controller="ParticipationBalanceController">
+
+    <!--  Recursive template  -->
+    <script class="panel-collapse collapse" type="text/ng-template" id="field_renderer.html">
+        <div>
+            <a>{{field.name}}</a>
+            <ul>
+                <li ng-repeat="field in field.childrens" ng-include="'field_renderer.html'"></li>
+            </ul>
+        </div>
+
+    </script>
+
+    <h3>Enrolled</h3>
+    <ul>
+        <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
+    </ul>
+
+    <h3>Created</h3>
+    <ul>
+        <li ng-repeat="field in courses.created" ng-include="'field_renderer.html'"></li>
+    </ul>
+</div>

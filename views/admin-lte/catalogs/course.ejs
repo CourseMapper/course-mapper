@@ -1,0 +1,33 @@
+<% include ../header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
+
+    <div class="content-wrapper" ng-view>
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+<% include ../jsfooter %>
+
+<!--Add angular chart to wrap whole tabs here-->
+<script src="/chartjs/Chart.min.js"></script>
+<script src="/chartjs/angular-chart.min.js"></script>
+<% if(course != undefined && course.settings && course.settings['disableTop'] !== undefined && course.settings['disableTop']){%>
+<script>
+    if(window.location.href.indexOf('iframe=true') > -1){
+        $('header').remove();
+        $('.main-breadcrumb').remove();
+    }
+</script>
+<% } else if(typeof(treeNode) != 'undefined' && treeNode.settings && treeNode.settings['disableTop'] !== undefined && treeNode.settings['disableTop']){%>
+<script>
+    if(window.location.href.indexOf('iframe=true') > -1){
+        $('header').remove();
+        $('.main-breadcrumb').remove();
+    }
+</script>
+<% } %>
+<% include ../footer %>

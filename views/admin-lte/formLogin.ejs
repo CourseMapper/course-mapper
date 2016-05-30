@@ -1,0 +1,56 @@
+<form name="loginForm" ng-submit="login(loginForm.$valid)" novalidate>
+    <fieldset>
+        <div class="control-group" ng-class="{ 'has-error' : loginForm.username.$invalid && !loginForm.username.$pristine }">
+            <!-- Username -->
+            <label class="control-label" for="username">Username</label>
+
+            <div class="controls">
+                <input type="text" id="username" name="username" placeholder=""
+                       class="form-control" ng-model="loginData.username"
+                       required ng-required="true"
+                        >
+
+                <p ng-show="loginForm.username.$invalid && !loginForm.username.$pristine" class="help-block">Username is
+                    required.</p>
+
+            </div>
+        </div>
+
+        <div class="control-group" ng-class="{ 'has-error' : loginForm.password.$invalid && !loginForm.password.$pristine }">
+            <!-- Password-->
+            <label class="control-label" for="password">Password</label>
+
+            <div class="controls">
+                <input type="password" id="password" name="password" placeholder=""
+                       class="form-control" ng-model="loginData.password"
+                       required ng-required="true"
+                        >
+
+                <p ng-show="loginForm.password.$invalid && !loginForm.password.$pristine" class="help-block">Password is
+                    required.</p>
+
+            </div>
+        </div>
+
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" value="yes" name="rememberMe" ng-model="rememberMe"
+                       ng-checked="rememberMe"> Remember me
+            </label>
+
+            <p class="help-block"></p>
+        </div>
+
+        <div class="control-group">
+        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+        </div>
+        <div class="control-group">
+            <!-- Button -->
+            <div class="controls">
+                <button class="btn btn-primary btn-block">Login <spinner show="isLoading"></spinner></button>
+            </div>
+        </div>
+
+        <a href="/accounts/forgot-password">Forgot Password</a>
+    </fieldset>
+</form>

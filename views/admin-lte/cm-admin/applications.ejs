@@ -1,0 +1,209 @@
+<!-- Main content -->
+<div class="col-lg-12" id="Applications">
+    <!-- Custom Tabs -->
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" data-target="#tab_1">All Widgets</a></li>
+            <li>
+                <a data-toggle="tab" data-target="#tab_2">Active</a></li>
+            <li>
+                <a data-toggle="tab" data-target="#tab_3">Not Active</a></li>
+            <li>
+                <a data-toggle="tab" data-target="#tab_4">Background Plugins</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse"
+                        ng-show="widget.location != 'background-plugin'">
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.applicationName}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_2">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse"
+                        ng-show="widget.isActive && widget.location != 'background-plugin'">
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.applicationName}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_3">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse"
+                        ng-hide="widget.isActive || widget.location=='background-plugin'">
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.applicationName}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!-- /.tab-pane -->
+
+            <div class="tab-pane" id="tab_4">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'location'; sortReverse = !sortReverse">Location</a>
+                            <span ng-show="sortType == 'location' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'location' && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th><a class="pointer" ng-click="sortType = 'name'; sortReverse = !sortReverse">Widget</a>
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name'  && sortReverse" class="fa fa-caret-up"></span>
+                        </th>
+                        <th>
+                            <a class="pointer" ng-click="sortType = 'application'; sortReverse = !sortReverse">Group</a>
+                            <span ng-show="sortType == 'application' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'application' && sortReverse" class="fa fa-caret-up"></span>
+
+                        </th>
+                        <th>Activate</th>
+                    </tr>
+                    <tr ng-repeat="widget in widgets | orderBy:sortType:sortReverse" ng-show="widget.location == 'background-plugin'">
+                        <td>
+                            {{widget.location}}
+                        </td>
+                        <td>
+                            {{widget.name}}
+                        </td>
+                        <td>
+                            {{widget.applicationName}}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" ng-show="!widget.isActive"
+                                    ng-click="activate(widget.application, widget.name)">
+                                Activate
+                            </button>
+
+                            <button class="btn btn-sm btn-warning" ng-show="widget.isActive"
+                                    ng-click="deactivate(widget.application, widget.name)">
+                                Deactivate
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- /.tab-content -->
+</div>
+<!-- nav-tabs-custom -->
+
+<div class="clear"></div>

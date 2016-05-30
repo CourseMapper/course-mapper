@@ -1,0 +1,16 @@
+{
+  "theme": "admin-lte",
+  "session": {
+    "secret": "CHANGETHISSECRETKEY",
+    "maxAge": 2419200000
+  },
+  "signUp": {
+    "needActivation": false
+  },
+  "facebookAuth": {
+    "clientID": "",
+    "clientSecret": "",
+    "callbackURL": "https://localhost:3000/api/accounts/facebook/callback"
+  },
+  "database": "localhost/course_mapper"
+}

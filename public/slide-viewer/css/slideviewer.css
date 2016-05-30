@@ -1,0 +1,324 @@
+.debug {
+  border-style: solid;
+  border-color: #ff0000;
+}
+
+.hasOnClick {
+  cursor: pointer;
+}
+
+.blueText {
+  color: blue;
+}
+
+.slideRectWrapper {
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+
+.colorPickerWrapper {
+  float: left;
+  margin-left: -20px;
+  width: 20px;
+}
+
+.annoFadeEffect {
+  opacity: 0.125;
+  transition: opacity .2s ease-in-out;
+  -moz-transition: opacity .2s ease-in-out;
+  -webkit-transition: opacity .2s ease-in-out;
+}
+
+.annoFadeEffect:hover {
+  opacity: 0.75;
+}
+
+.annoEditEffect {
+  opacity: 0.75;
+  border: 1px dashed white;
+  transition: background-color .1s linear;
+  -moz-transition: background-color .1s linear;
+  -webkit-transition: background-color .1s linear;
+}
+
+.slideEditIcon {
+  float: right;
+  color: #fff;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.slideValidationIcon {
+  color: #fff;
+  margin: 2px;
+}
+
+.filter-header {
+  margin-bottom: 20px;
+}
+
+#inpFieldCurrPage {
+  width: 25pt;
+  color: #fff;
+  text-align: center;
+  background-color: #333;
+  border-width: 0px;
+  border: none;
+
+}
+
+#annoZonesTriggersId {
+  color: #fff;
+  cursor: pointer;
+  font-size: 10pt;
+}
+
+input#searchInput {
+  height: 34px;
+  margin-top: 10px;
+
+}
+
+.cmtBx {
+  background-color: rgba(0, 0, 255, 0.05);
+}
+
+#replyAnno.replyControl {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.CreatedAnnoZones-header {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #545454;
+  margin-bottom: 0px;
+}
+
+.currentCommentPageClass {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #545454;
+  margin-bottom: 0px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.currentCommentPageClass:hover {
+  text-decoration: underline;
+}
+
+.createdAnnoZoneButton {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+  padding: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 2px;
+  float: left;
+}
+
+.createdAnnoZoneButton:hover {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+}
+
+.annoZonesNote {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #7e7e7e;
+  text-align: left;
+  float: left;
+}
+
+.filter-header {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #545454;
+}
+
+.filter-tag {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+  background-color: #B4CDCD;
+  padding: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 2px;
+}
+
+.filter-tag:hover {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+  background-color: #B4CDCD !important;
+
+}
+
+.filter-tag:active {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+  background-color: #B4CDCD !important;
+
+}
+
+.filter-tag:focus {
+  font-size: 9pt;
+  font-weight: bold;
+  color: #fff;
+  background-color: #B4CDCD !important;
+}
+
+#tagErrorList {
+  font-size: 9pt;
+  font-weight: bold;
+  color: red;
+}
+
+.slideRectSpan > .slideRectInput {
+  width: 80%;
+  max-width: 50px;
+  min-width: 10px;
+  color: #000
+
+}
+
+.slideRect {
+  min-width: 126px;
+  min-height: 26px;
+}
+
+.btn.btn-white.btn-link {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-right: 6px;
+  padding-left: 6px;
+}
+
+.btn.btn-default.color-dropdown.dropdown-toggle.no-hex {
+  padding: 1px;
+}
+
+.slideRect > .ui-resizable-handle.ui-resizable-ne {
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle.ui-resizable-nw {
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle.ui-resizable-sw {
+  height: 0px;
+  width: 0px;
+}
+
+.slideRect > .ui-resizable-handle {
+  background-color: white;
+}
+
+#viewerWrapper {
+  position: relative;
+  top: 0px;
+  left: 0px;
+}
+
+#annotationZone {
+  bottom: 65px;
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 0px;
+}
+
+.slideRectSpan {
+  color: white;
+  font-weight: bold;
+  padding-left: 2pt;
+  padding-right: 2pt;
+  margin-left: 2px;
+}
+
+.commentZoneList {
+  /*max-height: 600px;*/
+  /*  overflow-y: auto;
+    overflow-x: hidden;*/
+}
+
+#commentList {
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.slideRect1 {
+  min-width: 126px;
+  min-height: 30px;
+
+}
+
+.btn-white {
+  color: #FFF;
+}
+
+.btn-white:hover {
+  color: #FFF;
+}
+
+#viewerContainer {
+}
+
+.notSelectable {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+}
+
+.iconSlideNav {
+  font-size: 15pt;
+  vertical-align: middle;
+  display: inline-block;
+  color: #fff;
+  cursor: pointer;
+}
+
+#slideNavText {
+  font-size: 12pt;
+  vertical-align: middle;
+  display: inline-block;
+  color: #fff
+}
+
+#progress-bar {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#progress-indicator {
+  height: 33%;
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  background: orange;
+}
+
+#slideNavigation,
+.slideNavigation {
+  background-color: black;
+  margin-right: 0;
+  margin-left: 0;
+  padding-top: 1%;
+  padding-bottom: 1%;
+  width: 100%;
+}
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}

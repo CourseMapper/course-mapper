@@ -1,0 +1,137 @@
+<!-- Main content -->
+<section class="content">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-5 col-centered">
+            <div class="box no-border" ng-controller="CourseConfigController" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Course Configuration: {{courseEdit.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form role="form" ng-submit="saveCourseSetting(configCourseForm.$valid)" name="configCourseForm"
+                          novalidate>
+                        <fieldset>
+                            <div class="control-group addCourseManagers">
+                                <label class="control-label" for="description">Add Course Managers</label>
+
+                                <p class="help-block">Course Manager can act as a Course Creator.
+                                    A user with this privilege can edit or delete
+                                    contents that have been added into this course.
+                                </p>
+
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" placeholder="username" ng-model="username"
+                                           id="usernameSearchBox">
+                                    <span class="input-group-btn">
+                                      <button class="btn btn-info btn-flat" type="button" ng-click="findUsername()">
+                                          <i class="ionicons ion-plus"></i>
+                                          <spinner show="isLoading"></spinner>
+                                      </button>
+                                    </span>
+                                </div>
+                                <br>
+                                <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                <div class="controls">
+                                    <tags-input id="managerTagForm"
+                                                ng-model="managersRaw" placeholder="Course Managers" readonly="readonly"
+                                                on-tag-removed="removeUsername($tag)">
+                                    </tags-input>
+                                </div>
+                            </div>
+                            <br>
+
+                            <div class="control-group">
+                                <label class="control-label">Tabs Settings</label>
+
+                                <div class="form-group">
+
+                                    <% for(var i = 0; i < tabs.length; i++){
+                                        var isActive = tabs[i].isActive;
+                                        if (!isActive) {
+                                            continue;
+                                        }
+
+                                        if (tabsActive && typeof(tabsActive[tabs[i].name]) != "undefined") {
+                                            isActive = tabsActive[tabs[i].name];
+                                        }
+                                    %>
+                                    <div class="checkbox" ng-init="tabsActive.<%= tabs[i].name %> = <%= isActive %>">
+                                        <label>
+                                            <input type="checkbox"
+                                                   ng-model="tabsActive.<%= tabs[i].name %>"/> <%= tabs[i].displayName %>
+                                        </label>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <br>
+                            <% if(isInIframe && (course.settings && course.settings['disableTop'] !== undefined && course.settings['disableTop'])){ %>
+                            <% } else { %>
+                            <div class="control-group">
+                                <label class="control-label">Embed Settings<br>
+                                    <small>These settings will take effect only if the page is loaded through an
+                                        iframe.
+                                    </small>
+                                </label>
+
+                                <div class="form-group">
+                                    <%
+                                        var dc = false;
+                                        var dt = false;
+                                        if (course.settings && course.settings['disableControls'] !== undefined) {
+                                            dc = course.settings['disableControls'];
+                                        }
+                                        if (course.settings && course.settings['disableTop'] !== undefined) {
+                                            dt = course.settings['disableTop'];
+                                        }
+                                    %>
+
+                                    <div class="checkbox">
+                                        <label ng-init="settings.disableTop = <%= dt %>">
+                                            <input type="checkbox" name="disableTop" ng-model="settings.disableTop">
+                                            Disable Top
+                                            Navigations</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                            <div class="control-group" ng-show="isOwner || isAdmin">
+                                <label class="control-label">Delete Course<br>
+                                    <small>If you are sure that you want to delete this course, please click this link below.
+                                    </small>
+                                </label><br>
+                                <a class="cursor" ng-click="deleteCourse();">Delete Course</a>
+
+                            </div>
+                            <div class="control-group">
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-md btn-primary"
+                                                ng-click="configCourseForm.$pristine=false">Save Edit
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+
+                                        <button type="button" class="btn btn btn-warning"
+                                                data-dismiss="modal" aria-label="Close" ng-click="cancel()">
+                                            <span aria-hidden="true">Cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <!-- ./CourseEditController-->
+        </div>
+    </div>
+</section>

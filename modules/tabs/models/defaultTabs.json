@@ -1,0 +1,82 @@
+[
+  {
+    "orderNo": 1,
+    "name": "preview",
+    "displayName": "Preview",
+    "location": "course",
+    "description": "to show preview of the course",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-ios-home-outline",
+    "ngShow": ""
+  },
+  {
+    "orderNo": 2,
+    "name": "map",
+    "displayName": "Map",
+    "location": "course",
+    "description": "to show tree map on course",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-map",
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
+  },
+  {
+    "orderNo": 3,
+    "name": "discussion",
+    "displayName": "Discussion",
+    "location": "course",
+    "description": "to show discussion",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-ios-chatboxes-outline",
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
+  },
+  {
+    "orderNo": 4,
+    "name": "analytics",
+    "displayName": "Analytics",
+    "location": "course",
+    "description": "to show analytics",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-stats-bars",
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
+  },
+  {
+    "orderNo": 1,
+    "name": "video",
+    "displayName": "Video",
+    "location": "contentNode",
+    "description": "to show video",
+    "isDefaultActivated": true,
+    "icon": "fa fa-file-video-o",
+    "ngShow": "(isEnrolled || isOwner || isManager || isAdmin) && videoFile"
+  },
+  {
+    "orderNo": 2,
+    "name": "pdf",
+    "displayName": "PDF",
+    "location": "contentNode",
+    "description": "to show pdf",
+    "isDefaultActivated": true,
+    "icon": "fa fa-file-pdf-o",
+    "ngShow": "(isEnrolled || isOwner || isManager || isAdmin) && pdfFile"
+  },
+  {
+    "orderNo": 3,
+    "name": "links",
+    "displayName": "Links",
+    "location": "contentNode",
+    "description": "to show discussion",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-link",
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
+  },
+  {
+    "orderNo": 4,
+    "name": "nodeAnalytics",
+    "displayName": "Analytics",
+    "location": "contentNode",
+    "description": "to show analytics",
+    "isDefaultActivated": true,
+    "icon": "ionicons ion-stats-bars",
+    "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
+  }
+]

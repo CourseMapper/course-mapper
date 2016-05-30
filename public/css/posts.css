@@ -1,0 +1,64 @@
+.posts-list ul.posts, ul.replies {
+    list-style-type: none;
+    padding: 0
+}
+
+.currentTopic h4, .posts-list li.post h4 {
+    font-size: 20px;
+    margin-bottom: 0;
+    margin-top: 0
+}
+
+.currentTopic h4 {
+    color: #3c8dbc
+}
+
+iframe.link {
+    width: 100%;
+    min-height: 640px;
+    overflow: scroll
+}
+
+li.post, li.reply {
+    padding: 15px
+}
+
+li.post:hover {
+    background: #ecf0f5
+}
+
+p.topicContent {
+    padding-left: 15px
+}
+
+span.posted-at {
+    font-size: 12px
+}
+
+.separator {
+    width: 50%;
+    height: 1px;
+    background: #3C8DBC;
+    margin-top: 30px;
+    margin-bottom: 30px
+}
+
+li.post.active {
+    background: #ecf0f5
+}
+
+.replyControl {
+    text-align: right
+}
+
+.replyControl > div {
+    display: inline
+}
+
+.currentTopic .box {
+    box-shadow: 0 0 37px 2px rgba(0, 0, 0, .4)
+}
+
+.replies .box {
+    box-shadow: 3px 4px 4px rgba(0, 0, 0, .1)
+}

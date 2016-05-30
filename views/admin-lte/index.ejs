@@ -1,0 +1,314 @@
+<% include header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include mainMenu %>
+
+    <section class="content-header">
+        <ol class="breadcrumb">
+            <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+            <li>Browse Categories</li>
+        </ol>
+
+        <a ng-show="user" class="btn btn-primary btn-xs" style="float: right"
+           href="/recommend-category">Recommend Category</a>
+
+    </section>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" ng-controller="HomePageController">
+        <div class="control">
+            <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i
+                        class="ionicons ion-android-locate"></i></button>
+        </div>
+
+        <!-- Main content -->
+        <script type="text/ng-template" id="tree_item_renderer.html">
+            <div class="w" id="{{data.slug}}"
+                 data-from-root-x="{{data.positionFromRoot.x}}" data-from-root-y="{{data.positionFromRoot.y}}"
+                 data-shape="Rectangle">
+
+                {{data.name}}
+
+                <div class="collapse-button-home" ng-show="data.subCategories.length > 0">
+                    <a class="pointer" ng-click="collapse('t' + data._id )">
+                        <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
+                        <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
+                    </a>
+                </div>
+
+                <ul class="dropdown-menu box box-primary category">
+                    <li><b>{{data.name}}</b></li>
+                    <li class="divider"></li>
+                    <li id="analytics-{{data.slug}}" ng-bind-html="widgets[data.slug]">
+                    </li>
+                    <li class="divider"></li>
+                    <li class="goto-button">
+                        <button class="btn btn-block btn-primary btn-sm" ng-click="goToDetail(data.slug)">Browse
+                            Courses
+                        </button>
+                    </li>
+                    <li>
+                        <div class="collapse-button-home2" ng-show="data.subCategories.length > 0">
+                            <a class="pointer" ng-click="collapse('t' + data._id )">
+                                <i class="fa fa-minus-square" ng-show="!collapseStatus[data._id]"></i>
+                                <i class="fa fa-plus-square" ng-show="collapseStatus[data._id] === true"></i>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+
+            </div>
+            <div ng-repeat="data in data.subCategories" ng-include="'tree_item_renderer.html'">
+            </div>
+        </script>
+
+        <div class="tree-container">
+            <div class="category-map" id="category-map">
+                <div ng-repeat="data in categories" ng-include="'tree_item_renderer.html'"
+                     on-finish-render="jsTreeInit">
+                </div>
+                <div class="center-category" id="center" data-shape="Rectangle">
+                    <h4>CourseMapper</h4>
+                    is a Mind Map Based Collaborative Course Annotation and Analytics Platform
+                </div>
+            </div>
+        </div>
+
+    </div><!-- ./wrapper -->
+    <% include jsfooter %>
+    <script>
+        /**
+         * Class Leave
+         *
+         * center leave -> fromCenter 0,0 'and .center-category
+         * for others -> fromCenter: from DB, and el-> .w
+         *
+         * @param jQEl
+         * @param fromCenter
+         * @constructor
+         */
+        function Leave(jQEl, fromCenter) {
+            var self = this;
+
+            self.el = jQEl;
+            self.fromCenter = fromCenter;
+            self.w = 0;
+            self.h = 0;
+
+            self.init = function (w, h) {
+                self.w = self.el.width();
+                self.h = self.el.height();
+
+                self.rePosition(w, h);
+            };
+
+            self.onWindowResize = function (w, h) {
+                self.rePosition(w, h);
+            };
+
+            self.rePosition = function (w, h) {
+                var left = w / 2 + ((self.fromCenter.x - self.w / 2)  );
+                var top = h / 2 + ((self.fromCenter.y - self.h / 2)  );
+
+                self.el.css({
+                    left: left + "px",
+                    top: top + "px"
+                });
+            };
+        }
+
+        var Tree = {
+            center: null,
+            leaves: {},
+
+            init: function (w, h) {
+                var self = this;
+
+                self.center = new Leave($('.center-category'), {x: 0, y: 0});
+                self.center.init(w, h);
+
+                // initiate all leaves position
+                $('.w').each(function () {
+                    var xFromRoot = $(this).attr('data-from-root-x');
+                    var yFromRoot = $(this).attr('data-from-root-y');
+
+                    var leave = new Leave($(this), {x: parseInt(xFromRoot), y: parseInt(yFromRoot)});
+                    leave.init(w, h);
+
+                    self.leaves[$(this).attr('id')] = leave;
+                });
+
+            },
+
+            onWindowResize: function (w, h) {
+                var self = this;
+
+                self.center.onWindowResize(w, h);
+                for (var i in self.leaves) {
+                    var el = self.leaves[i];
+                    el.onWindowResize(w, h);
+                }
+            }
+        };
+
+        var Canvas = {
+            el: null,
+            draggable: null,
+            w: 2000,
+            h: 2000,
+            centerCss: {},
+
+            init: function (wWidth, wHeight) {
+                var self = this;
+
+                self.el = $('.category-map');
+                self.draggable = self.el.draggable();
+
+                // so it big enough
+                self.el.css({
+                    width: self.w + 'px',
+                    height: self.h + 'px'
+                });
+
+                // put it on the center
+                self.setCenter(wWidth, wHeight);
+                self.putOnCenter();
+            },
+
+            setCenter: function (wWidth, wHeight) {
+                var self = this;
+
+                self.centerCss = {
+                    left: ( (wWidth - self.w) / 2) + 'px',
+                    top: ( (wHeight - self.h) / 2) + 'px'
+                };
+            },
+
+            putOnCenter: function (animate) {
+                var self = this;
+
+                if (animate)
+                    self.el.animate(self.centerCss, {duration: 1000, easing: 'easeOutExpo'});
+                else
+                // put it on the center
+                    self.el.css(self.centerCss);
+            },
+
+            onWindowResize: function (w, h) {
+                var self = this;
+
+                // put it on the center
+                self.setCenter(w, h);
+                self.putOnCenter();
+            }
+
+        };
+
+        var Container = {
+            el: null,
+
+            init: function () {
+                this.el = $('.tree-container');
+
+                var w = window.innerWidth;
+                var h = window.innerHeight;
+
+                this.el.css({
+                    'width': w,
+                    'height': h
+                });
+            },
+
+            onWindowResize: function (w, h) {
+                // resize it to follow the window size
+                this.el.css({
+                    'width': w,
+                    'height': h
+                });
+            }
+        };
+
+        $(document).ready(function () {
+            Container.init();
+            Canvas.init(window.innerWidth, window.innerHeight);
+
+            $(window).resize(function () {
+                var w = window.innerWidth;
+                var h = window.innerHeight;
+
+                Container.onWindowResize(w, h);
+                Canvas.onWindowResize(w, h);
+            });
+
+        });
+
+
+    </script>
+    <% if(user && user.role == 'admin'){ %>
+    <div ng-controller="AdminHomePageController"></div>
+    <script>
+        app.controller('AdminHomePageController', function ($scope, $http, $rootScope) {
+            /**
+             * script enabled when the logged in user is an admin.
+             * it will allow this user to drag and save categories position
+             */
+            $rootScope.initDraggable = function (jsPlumbInstance) {
+                var w = window.innerWidth;
+                var h = window.innerHeight;
+
+                // let us drag and drop the cats
+                var mapEl = jsPlumb.getSelector(".category-map .w");
+                jsPlumbInstance.draggable(mapEl, {
+                    // update position on drag stop
+                    stop: function (params) {
+                        var el = $(params.el);
+                        var pos = el.position();
+                        var distanceFromCenter = {
+                            x: pos.left - Canvas.w / 2,
+                            y: pos.top - Canvas.h / 2
+                        };
+
+                        $http.put('/api/category/' + el.attr('id') + '/positionFromRoot', distanceFromCenter)
+                                .success(function (res, status) {
+                                    console.log(res);
+                                })
+                                .error(function (res, status) {
+                                    console.log('err');
+                                    console.log(res);
+                                });
+                    }
+                });
+            }
+        });
+    </script>
+    <style>
+        .category-map {
+            border: 1px solid black;
+        }
+    </style>
+    <% } else { %>
+    <div ng-controller="SController"></div>
+    <script>
+        app.controller('SController', function ($rootScope) {
+            $rootScope.initDraggable = function (a, b) {
+                return true;
+            }
+        });
+    </script>
+    <% } %>
+    <script>
+        $(document).ready(function configureSliderButton() {
+            // configure slider so it can be displayed on the center
+            //Get window height and the wrapper height
+            var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
+            var neg2 = $('.content-header').outerHeight();
+            var window_height = $(window).height();
+            //Set the min-height of the content and sidebar based on the
+            //the height of the document.
+            $(".carousel").css('max-height', window_height - neg);
+            $(".content-wrapper").css('max-height', window_height - neg - neg2);
+            $(".content-wrapper").css('min-height', window_height - neg - neg2);
+        });
+    </script>
+    <% include footer %>

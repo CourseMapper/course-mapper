@@ -1,0 +1,88 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="<%= operation %>LinksModal" tabindex="-1" role="dialog"
+         aria-labelledby="<%= operation %> Link" aria-hidden="true">
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
+                    <div class="widget-item box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><%= operation %> Link</h3>
+
+                            <modal-close></modal-close>
+                        </div>
+                        <div class="box-body">
+                            <form name="<%= operation %>LinkForm" role="form"
+                                  ng-submit="<%= actionMethodName %>(<%= operation %>LinkForm.$valid)"
+                                  novalidate>
+                                <fieldset>
+                                    <div class="control-group">
+                                        <label class="control-label" for="title">Title</label>
+
+                                        <p class="help-block">Title can contain any letters or numbers</p>
+
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : <%= operation %>LinkForm.title.$invalid && !<%= operation %>LinkForm.$pristine }">
+                                            <input type="text" id="title" name="title" placeholder=""
+                                                   class="form-control"
+                                                   ng-model="<%= variableContainer %>.title"
+                                                   ng-required="true" required>
+
+                                            <p ng-show="<%= operation %>LinkForm.title.$invalid && !<%= operation %>LinkForm.$pristine"
+                                               class="help-block">A link must contain title</p>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="control-group">
+                                        <label class="control-label" for="title">Description</label>
+
+                                        <p class="help-block">Small description about this link</p>
+
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : <%= operation %>LinkForm.description.$invalid && !<%= operation %>LinkForm.$pristine }">
+                                            <input type="text" id="description" name="description" placeholder=""
+                                                   class="form-control"
+                                                   ng-model="<%= variableContainer %>.description">
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="control-group">
+                                        <label class="control-label">Link</label>
+
+                                        <p class="help-block">Link must start with http:// or https://</p>
+
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : (<%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine )}">
+
+                                            <input type="url" id="link" name="content" placeholder="http://"
+                                                   class="form-control"
+                                                   ng-model="<%= variableContainer %>.content"
+                                                   ng-required="true" required>
+
+                                            <p ng-show="<%= operation %>LinkForm.content.$invalid && !<%= operation %>LinkForm.content.$pristine "
+                                               class="help-block">A link must contain a URL</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <br class="clear">
+                                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <button class="btn btn-primary"
+                                                    ng-click="<%= operation %>LinkForm.$setDirty()">Save
+                                                <spinner show="isLoading"></spinner>
+                                            </button>
+                                            <cancel></cancel>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

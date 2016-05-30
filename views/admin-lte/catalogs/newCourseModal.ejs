@@ -1,0 +1,106 @@
+<!-- Main content -->
+<section class="content">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-5 col-centered">
+            <div class="box no-border" ng-controller="NewCourseController">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Create a new course under {{category.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form ng-submit="saveCourse(newCourseForm.$valid)" name="newCourseForm" novalidate>
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="course">Course Name </label>
+
+                                <p class="help-block">Course name can contain any letters or numbers, minimum 3
+                                    characters</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : newCourseForm.course.$invalid && !newCourseForm.$pristine }">
+                                    <input type="text" id="course" name="course" placeholder="" class="form-control"
+                                           ng-model="course.name"
+                                           required ng-required="true"
+                                           ng-minlength="3">
+
+                                    <p ng-show="newCourseForm.course.$invalid && !newCourseForm.$pristine"
+                                       class="help-block">Course name is required.</p>
+                                </div>
+                            </div>
+
+                            <br>
+                            <div class="control-group">
+                                <label class="control-label" for="Small Description">Small Description </label>
+
+                                <p class="help-block">A small introduction words about this course</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : newCourseForm.smallDescription.$invalid && !newCourseForm.$pristine }">
+                                    <input type="text" id="course" name="smallDescription" placeholder=""
+                                           class="form-control"
+                                           ng-model="course.smallDescription">
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Description </label>
+
+                                <p class="help-block">Description about this course</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : newCourseForm.description.$invalid && !newCourseForm.$pristine }">
+
+                                    <div id="description" name="description"
+                                         ng-model="course.description"
+                                         quill>
+                                    </div>
+                                    <p ng-show="newCourseForm.description.$invalid && !newCourseForm.$pristine"
+                                       class="help-block">Please fill in a little bit of description about this
+                                        course.</p>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Tagging (optional)</label>
+
+                                <p class="help-block">Put some tags related to this course</p>
+
+                                <div class="controls">
+                                    <tags-input ng-model="tagsRaw">
+                                    </tags-input>
+
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p class="help-block"></p>
+
+                                <p class="help-block"></p>
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button name="submitButton" class="btn btn-primary btn-block"
+                                                ng-click="newCourseForm.$pristine=false">
+                                            Create New Course
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

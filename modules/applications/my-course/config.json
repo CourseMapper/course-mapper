@@ -1,0 +1,77 @@
+{
+  "name": "My Analytics",
+  "widgets": [
+    {
+      "name": "My PDF Activity",
+      "location": "user-profile",
+      "description": "Show your reading PDF list contains the file information and link to resume your reading progress",
+      "entryPoint": "/my-course/my-pdf-status",
+      "widgetJavascript": [
+        "my-pdf-status.js"
+      ],
+      "width": 6,
+      "height": 1,
+      "icon": "/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Video Activity",
+      "location": "user-profile",
+      "description": "Show your video list contains the file information and the link to resume your video learning progress",
+      "entryPoint": "/my-course/my-video-status",
+      "widgetJavascript": [
+        "my-video-status.js"
+      ],
+      "width": 6,
+      "height": 1,
+      "icon": "/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Activity in Created Courses",
+      "location": "user-profile",
+      "description": "Show your created courses list, including the statistics of your activities for each node in the courses that you created",
+      "entryPoint": "/my-course/my-created-courses",
+      "widgetJavascript": [
+        "my-created-courses.js"
+      ],
+      "width": 6,
+      "height": 1,
+      "icon": "/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Activity in Enrolled Courses",
+      "location": "user-profile",
+      "description": "Show your enrolled courses list, including the statistics of your activities for each node in the courses that you have enrolled",
+      "entryPoint": "/my-course/my-courses-breakdown",
+      "widgetJavascript": [
+        "my-courses-breakdown.js"
+      ],
+      "width": 6,
+      "height": 1,
+      "icon": "/img/appPlaceholder.png"
+    },
+    {
+      "name": "My Activity Summary",
+      "location": "user-profile",
+      "description": "Show the statistic summary of your activities",
+      "entryPoint": "/my-course/my-activity-summary",
+      "widgetJavascript": [
+        "my-activity-summary.js"
+      ],
+      "width": 7,
+      "height": 1,
+      "icon": "/img/appPlaceholder.png"
+    },
+    {
+      "name": "Participation Balance",
+      "location": "user-profile",
+      "description": "Shows your course participation balance",
+      "entryPoint": "/my-course/participation-balance",
+      "widgetJavascript": [
+        "participation-balance.js"
+      ],
+      "width": 6,
+      "height": 2,
+      "icon": "/img/appPlaceholder.png"
+    }
+  ]
+}

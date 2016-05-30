@@ -1,0 +1,105 @@
+<div ng-controller="LinksController">
+
+    <div class="row">
+        <div class="col-xs-11" id="LinksList">
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <h4>Links</h4>
+                </div>
+                <div class="col-xs-12 col-sm-6" ng-show="links.length > 1">
+                    <select id="orderTypeSelect"
+                            ng-model="orderType"
+                            ng-init="orderType = orderingOptions[0]"
+                            ng-options="item as item.name for item in orderingOptions"
+                            class="form-control">
+                    </select>
+                </div>
+            </div>
+
+            <div ng-show="links.length == 0" class="posts-list">
+                <ul class="posts">
+                    <li class="post">
+                        <h5>There is no links to show, you can add a new one by clicking the
+                            "ADD NEW LINK" button on the top right of this page</h5>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="posts-list"
+                 ng-show="links.length > 0">
+
+                <ul class="posts">
+                    <li class="post cursor"
+                        ng-repeat="bookmark in links" ng-class="(pid==bookmark._id)?'active':''"
+                        ng-hide="bookmark.isDeleted"
+                        ng-click="initiateLink(bookmark._id)"
+                    >
+                        <div class="changePage" ng-if="$index !=0 && $index % 10 == 0"></div>
+
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <voting vote-type="link" vote-type-id="{{bookmark._id}}" vote-value=""></voting>
+                            </div>
+                            <div class="col-xs-11">
+                                <a title="Open in a New Tab"
+                                   href="{{bookmark.content}}" target="_blank"><h4> {{bookmark.title}} </h4>
+                                </a>
+                                <br class="clear">
+                                <br class="clear">
+                                <p class="description">
+                                    {{bookmark.description}}
+                                </p>
+                                <a class="" title="Open in a New Tab"
+                                   href="{{bookmark.content}}" target="_blank">
+                                    <i class="fa fa-external-link"></i>
+                                    {{bookmark.content}}</a>
+                                <br class="clear">
+
+                                <span class="posted-at">
+                                    Posted <strong>{{bookmark.dateAdded | relativeDate}}</strong>
+                                    By <strong>{{bookmark.createdBy.displayName}}</strong>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <pagination total-rows="linksLength()"
+                            terms="Links"
+                            set-reset="paginationReset()"
+                            limit="10"
+                            use-search="false"
+                            sort-by="{{sortBy}}"
+                            order-by="{{orderBy}}"
+                            current-page="{{currentPage}}"
+                            object-service="linkService"
+                            success-cb="newRowsFetched">
+                </pagination>
+            </div>
+        </div>
+        <div class="col-md-8" id="linksContent" ng-hide="true">
+
+            <div ng-hide="pid || links.length == 0" class="hidden-sm hidden-xs">
+                <h4>Please pick one from the existing links</h4>
+            </div>
+
+            <div ng-show="pid" class="replies-wrapper">
+
+                <div ng-show="currentLink" class="currentTopic">
+                    <div class="box box-solid">
+                        <div class="box-body">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /. show when pid -->
+        </div>
+    </div>
+
+    <% var operation = 'Add'; var actionMethodName = 'saveNewPost'; var variableContainer = 'formData'; %>
+    <% include linksModal %>
+    <% var operation = 'Edit'; var actionMethodName = 'saveEditPost'; var variableContainer = 'currentLink'; %>
+    <% include linksModal %>
+
+</div>

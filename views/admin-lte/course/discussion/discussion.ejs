@@ -1,0 +1,157 @@
+<div ng-controller="DiscussionController">
+    <div class="row">
+        <div class="col-md-5" id="topicLists">
+            <div class="row">
+                <div class="col-xs-12 col-sm-6">
+                    <h4>Discussion Topics</h4>
+                </div>
+                <div class="col-xs-12 col-sm-6" ng-show="topics.length > 1">
+                    <select id="orderTypeSelect"
+                            ng-model="orderType"
+                            ng-init="orderType = orderingOptions[0]"
+                            ng-options="item as item.name for item in orderingOptions"
+                            class="form-control">
+                    </select>
+                </div>
+            </div>
+
+            <div ng-show="topics.length == 0 && (!pid && (wSize != 'xs' || wSize != 'sm'))" class="posts-list">
+                <ul class="posts">
+                    <li class="post">
+                        <h5>There is no topic to show, you can add a new one by clicking the
+                            "ADD NEW TOPIC" button on the top right of this page</h5>
+                    </li>
+                </ul>
+            </div>
+
+            <!--Posts List-->
+            <div class="posts-list"
+                 ng-show="topics.length > 0 && (
+                  (pid && (wSize != 'xs' && wSize != 'sm')) ||
+                  (!pid) )
+                 ">
+
+                <ul class="posts">
+                    <li class="post" ng-repeat="topic in topics" ng-class="(pid==topic._id)?'active':''"
+                        ng-hide="topic.isDeleted">
+                        <div class="changePage" ng-if="$index !=0 && $index % 10 == 0"></div>
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <voting vote-type="discussion" vote-type-id="{{topic._id}}" vote-value=""></voting>
+                            </div>
+                            <div class="col-xs-11">
+                                <h4><a ng-href="#/cid/{{course._id}}?tab=discussion&pid={{topic._id}}">
+                                        {{topic.title}}
+                                    </a></h4>
+                                <span class="posted-at">
+                                    Posted <strong>{{topic.dateAdded | relativeDate}}</strong>
+                                    By <strong>{{topic.createdBy.displayName}}</strong>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+
+                <pagination total-rows="topicsLength"
+                            set-reset="paginationReset()"
+                            limit="10"
+                            terms="Discussions"
+                            use-search="false"
+                            current-page="{{currentPage}}"
+                            sort-by="{{sortBy}}"
+                            order-by="{{orderBy}}"
+                            object-service="discussionService"
+                            success-cb="newRowsFetched">
+                </pagination>
+            </div>
+
+        </div>
+        <div class="col-md-6" id="topicContents" ng-hide="(!pid && (wSize == 'xs' || wSize == 'sm'))">
+            <div ng-hide="(pid || topics.length == 0)" class="hidden-sm hidden-xs">
+                <h4>Please pick one from the existing topics</h4>
+            </div>
+
+            <div ng-show="pid" class="replies-wrapper">
+
+                <div ng-show="currentTopic" class="currentTopic">
+                    <div class="box box-solid">
+                        <div class="box-header with-border">
+                            <div class="col-xs-11">
+                                <h4>{{currentTopic.title}}</h4>
+                                <span class="posted-at">
+                                    Posted <strong>{{currentTopic.dateAdded | relativeDate}}</strong>
+                                By <strong>{{currentTopic.createdBy.displayName}}</strong>
+                            </span>
+                            </div>
+                        </div>
+                        <div class="box-body">
+
+                            <p class="topicContent" ng-bind-html="currentTopic.content | unsafe">
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-show="replies.length == 0 && pid">
+                    <br><br>
+
+                    <div class="box box-solid">
+                        <div class="box-body">There is no reply yet.
+                            You can reply by clicking "REPLY" button at the top right of this page.
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-show="replies && pid">
+
+                    <div class="row">
+                        <br>
+                        <div class="col-xs-12 col-sm-4" ng-show="replies.length > 1">
+                            <select id="orderTypeSelect"
+                                    ng-model="orderTypeReply"
+                                    ng-init="orderTypeReply = orderingOptions[0]"
+                                    ng-options="item as item.name for item in orderingOptions"
+                                    class="form-control">
+                            </select>
+                        </div>
+                    </div>
+
+                    <ul class="replies">
+                        <li class="reply" ng-repeat="re in replies">
+                            <div class="col-xs-1">
+                                <voting vote-type="discussionReply" vote-type-id="{{re._id}}"></voting>
+                            </div>
+                            <div class="col-xs-11">
+                                <comment posted-by="{{re.createdBy.displayName}}"
+                                         post-id="{{re._id}}"
+                                         posted-date="{{re.dateAdded}}"
+                                         post-content="re.content"
+                                         is-post-owner="re.createdBy._id==$root.user._id || isAdmin || isManager || isOwner"
+                                         is-deleted="re.content =='[DELETED]'"
+                                         edit-action="editReply(re)"
+                                         delete-action="deletePost(re._id)"
+                                         show-delete-button="true"
+                                         show-edit-button="true"
+                                         show-control="true"
+                                ></comment>
+                            </div>
+
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /. show when pid -->
+        </div>
+    </div>
+
+    <% include addNewTopicModal %>
+    <% include editTopicModal %>
+
+    <% var formName = 'addNewReply'; var formTitle = 'Add'; var actionMethod = 'saveNewReply'; %>
+    <% include replyModal %>
+    <% var formName = 'editReply'; var formTitle = 'Edit'; var actionMethod = 'saveEditReply'; %>
+    <% include replyModal %>
+
+</div>

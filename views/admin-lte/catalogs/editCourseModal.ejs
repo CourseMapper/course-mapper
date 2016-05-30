@@ -1,0 +1,178 @@
+<!-- Main content -->
+<section class="content">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-7 col-centered">
+            <div class="box no-border" ng-controller="CourseEditController" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Editing a course: {{courseEdit.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form role="form" ng-submit="saveCourse(editCourseForm.$valid)" name="editCourseForm" novalidate>
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="course">Course Name</label>
+
+                                <p class="help-block">Course name can contain any letters or numbers</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : editCourseForm.course.$invalid && !editCourseForm.$pristine }">
+                                    <input type="text" id="course" name="course" placeholder="" class="form-control"
+                                           ng-model="courseEdit.name" required ng-required="true"
+                                           ng-minlength="3">
+
+                                    <p ng-show="editCourseForm.course.$invalid && !editCourseForm.$pristine"
+                                       class="help-block">Course name is required.</p>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <br>
+                                <label class="control-label" for="Small Description">Small Description </label>
+
+                                <p class="help-block">A small introduction words about this course</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : editCourseForm.smallDescription.$invalid && !editCourseForm.$pristine }">
+                                    <input type="text" id="course" name="smallDescription" placeholder=""
+                                           class="form-control"
+                                           ng-model="courseEdit.smallDescription">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Description</label>
+
+                                <p class="help-block">Description about this course</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : editCourseForm.description.$invalid && !editCourseForm.$pristine }">
+
+                                    <div id="description" name="description"
+                                         ng-model="courseEdit.description"
+                                         quill type="complete">
+                                    </div>
+
+                                    <p ng-show="editCourseForm.description.$invalid && !editCourseForm.$pristine"
+                                       class="help-block">Please fill in a little bit of description about this
+                                        course.</p>
+
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p></p>
+                                <label class="control-label" for="description">Tagging</label>
+
+                                <p class="help-block">Put some tags related to this course</p>
+
+                                <div class="controls">
+                                    <tags-input ng-model="tagsRaw">
+                                    </tags-input>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="picture">
+                                <div class="control-group">
+                                    <p></p>
+                                    <label class="control-label" for="description">Intro Picture</label>
+
+                                    <p class="help-block">Select a jpg/png file (900 × 320 pixels) from your
+                                        computer</p>
+
+                                    <div class="controls">
+                                        <p class="help-block" ng-show="courseEdit.picture">
+                                            You have uploaded a picture. You can reupload the picture.
+                                        </p>
+
+                                        <div class="btn btn-sm btn-default"
+                                             ngf-select accept="image/*"
+                                             ng-model="filespicture" ngf-multiple="false" ngf-max-size='1000000'><i
+                                                    class="ionicons ion-image"></i> &nbsp; Select a picture
+                                        </div>
+                                        <div class="label label-info" ng-show="filespicture"><br>
+                                            &nbsp; <span>{{filespicture.name}}</span>
+                                        </div>
+
+                                        <div ng-show="courseEdit.picture">
+                                            <p class="help-block" ng-show="courseEdit.picture">or delete the picture</p>
+                                            <a class="pointer btn btn-sm btn-danger" ng-click="deletePicture()">
+                                                Delete Picture
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="video">
+                                <div class="control-group">
+                                    <p></p>
+                                    <label class="control-label" for="video">Upload Intro Video</label>
+
+                                    <p class="help-block"></p>
+
+                                    <div class="controls">
+                                        <p class="help-block" ng-show="courseEdit.video">
+                                            You have uploaded a video. You can change it by reuploading the video.
+                                        </p>
+
+                                        <div class="btn btn-sm btn-default"
+                                             ngf-select accept="video/mp4,video/x-m4v,video/*"
+                                             ng-model="filesvideo" ngf-multiple="false" ngf-max-size='100000000'><i
+                                                    class="`"></i> &nbsp; Select a video file
+                                        </div>
+                                        <div class="label label-info" ng-show="filesvideo"><br>
+                                            <span>{{filesvideo.name}}</span>
+                                        </div>
+
+                                        <div ng-show="courseEdit.video">
+                                            <p class="help-block" ng-show="courseEdit.video">or delete the video</p>
+                                            <a class="pointer btn btn-sm btn-danger" ng-click="deleteVideo()">
+                                                Delete Video
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12" ng-show="progressPercentage > 0">
+                                <div class="progress">
+                                    <div class="progress-bar"
+                                         ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p class="help-block"></p>
+
+                                <p class="help-block"></p>
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-md btn-primary"
+                                                ng-click="editCourseForm.$pristine=false">Save Edit
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+
+                                        <button type="button" class="btn btn btn-warning"
+                                                data-dismiss="modal" aria-label="Close" ng-click="cancel()">
+                                            <span aria-hidden="true">Cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <!-- ./CourseEditController-->
+        </div>
+    </div>
+</section>

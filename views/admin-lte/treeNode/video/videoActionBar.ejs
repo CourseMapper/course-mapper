@@ -1,0 +1,36 @@
+<ul ng-controller="ActionBarController">
+    <li ng-show="isNodeOwner && !isOwner">
+        You created this content node
+    </li>
+    <li ng-show="isOwner && !isNodeOwner">
+        You created this course
+    </li>
+    <li ng-show="isManager">
+        You are a manager
+    </li>
+
+    <li ng-show="isAdmin && !isManager && !isOwner && !isNodeOwner">
+        You are an admin
+    </li>
+    <li ng-show="isOwner || isManager || isNodeOwner || isAdmin">
+        <a style="cursor: pointer"
+           data-toggle="modal" data-target="#editContentNodeModal"
+           title="Edit this content node">
+            <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
+    </li>
+
+    <li ng-show="isOwner || isManager || isNodeOwner || isAdmin">
+        <a style="cursor: pointer"
+           data-toggle="modal" data-target="#configView"
+           title="Edit this node's settings">
+            <i class="ionicons ion-gear-a"></i> &nbsp; SETTINGS</a>
+    </li>
+
+    <li ng-repeat="EAM in extraActionsMenu">
+        <a ng-if="EAM.html" ng-bind-html="EAM.html|unsafe"></a>
+        <i class="ionicons ion-android-more-vertical" ng-if="EAM.separator">&nbsp;</i>
+        <a class="cursor" title="EAM.aTitle" ng-show="EAM.clickAction" ng-click="EAM.clickAction(EAM.clickParams)"
+           ng-bind-html="EAM.title|unsafe">
+        </a>
+    </li>
+</ul>

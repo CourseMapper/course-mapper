@@ -1,0 +1,53 @@
+<!-- reply form -->
+<div class="row">
+    <div class="modal" id="<%= formName %>Modal" tabindex="-1" role="dialog"
+         aria-labelledby="Reply Form" aria-hidden="true">
+
+        <section class="content" ng-controller="ReplyController">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
+                    <div class="widget-item box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title"><%= formTitle %> Reply</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                        ng-click="cancel()">
+                                    <span aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <form name="<%= formName %>Form" role="form"
+                                  ng-submit="<%= actionMethod%>(<%= formName %>Form.$valid)"
+                                  novalidate>
+                                <fieldset>
+                                    <div class="control-group">
+
+                                        <div class="controls">
+                                            <div id="<%= formName %>Content" name="content" ng-model="<%= formTitle %>FormData.content" quill></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <br class="clear">
+                                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <button class="btn btn-primary" ng-click="<%= formName %>Form.$setDirty()">
+                                                Save
+                                                <spinner show="isLoading"></spinner>
+                                            </button>
+
+                                            <cancel></cancel>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

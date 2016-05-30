@@ -1,0 +1,13 @@
+{
+  "name": "top content",
+  "widgets": [
+    {
+      "name": "Top Content Aggregator",
+      "location": "background-plugin",
+      "description": "-",
+      "entryPoint": "-",
+      "icon": "/img/appPlaceholder.png",
+      "runOn": "server"
+    }
+  ]
+}

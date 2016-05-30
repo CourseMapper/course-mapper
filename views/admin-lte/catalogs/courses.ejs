@@ -1,0 +1,163 @@
+<% include ../header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include ../mainMenu %>
+    <!-- Content Wrapper. Contains page content -->
+    <div id="courses" class="content-wrapper">
+        <ng-view></ng-view>
+        <!-- Main content -->
+        <script type="text/ng-template" id="courses_list.html">
+            <div ng-show="error">
+                <error-block messages="error.errors"></error-block>
+            </div>
+            <div ng-class="{'hideOnError': error}">
+                <section class="content-header">
+                    <ol class="breadcrumb">
+                        <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="active">Browse Courses</li>
+                        <li class="active">{{category.name}}</li>
+                    </ol>
+
+                    <a ng-show="user" class="btn btn-primary btn-xs" style="float: right" data-toggle="modal"
+                       data-target="#modalCreateCourse">Create A Course</a>
+                </section>
+
+                <!-- for routing purpose we write it as an ng-view although we write the html also in this file. -->
+                <section class="content">
+
+                    <div class="col-md-12">
+
+                        <div class="row">
+                            <div class="col-md-12 filter">
+                                <h4 ng-show="filterTags.length > 0">Filtered By:</h4>
+                    <span class="label label-primary" ng-repeat="tag in filterTags">
+                        <button class="btn btn-box-tool" ng-click="removeFilter(tag)">
+                            <i class="fa fa-times"></i></button>
+                         {{tag.name}}</span>
+
+                                <h4>Available Filters:</h4>
+                                <a class="label label-primary" ng-repeat="tag in availableTags"
+                                   ng-click="applyFilter(tag)">
+                                    {{tag.name}}</a>
+                                <span class="label label-primary" ng-show="availableTags.length == 0">-</span>
+
+                                <br> <br>
+                                <div class="col-xs-12 col-sm-4" ng-show="courses.length > 1">
+                                    <select id="orderTypeSelect"
+                                            ng-model="orderType"
+                                            ng-init="orderType = orderingOptions[0]"
+                                            ng-options="item as item.name for item in orderingOptions"
+                                            class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-xs-10 col-md-4">
+                                    <h4 class="courses-title">Courses:</h4>
+
+                                    <a ng-click="toggle = !toggle"
+                                       class="cursor ionicons ion-search course-search-icon"></a>
+                                    <input class="form-control course-search-box"
+                                           id="search-box"
+                                           placeholder="Search..." ng-show="toggle" ng-model="query">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row" ng-show="courses.length == 0" ng-cloak>
+                            <div class="col-sm-12">
+                                No course has been created.
+                            </div>
+                            <div ng-show="isLoggedIn()" class="col-sm-12">
+                                You can add a new one by clicking on "create course" button located on the top right of
+                                the
+                                page.
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-3" ng-repeat="c in courses | filter:query">
+                                <div class="form_hover" ng-mouseenter="getCourseAnalytics(c._id)">
+                                    <div class="box box-primary peekCourse">
+                                        <div class="box-header with-border">
+                                            <a href="/course/{{c.slug}}/#/cid/{{c._id}}"
+                                               class="box-title">{{c.name}}</a>
+                                        </div>
+                                        <div class="box-body" style="text-align: center">
+                                            <img class="course-picture" ng-show="c.picture" ng-src="{{c.picture}}">
+                                            <img ng-hide="c.picture" src="/img/default-tree.png">
+                                        </div>
+                                    </div>
+
+                                    <div class="header">
+                                        <div class="blur"></div>
+                                        <div class="box box-primary caption-text">
+                                            <div class="box-header with-border">
+                                                <a href="/course/{{c.slug}}/#/cid/{{c._id}}"
+                                                   class="box-title">{{c.name}}</a>
+                                            </div>
+                                            <div class="box-body course-list" style="height: 140px;">
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <div class="small-box bg-aqua">
+                                                            <div class="inner">
+                                                                <div class="courses-analytics"
+                                                                     ng-bind-html="widgets[c._id]"></div>
+                                                            </div>
+                                                            <div class="icon">
+                                                                <i class="fa fa-mortar-board"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="box-footer">
+                                                <a class="btn btn-primary" href="/course/{{c.slug}}/#/cid/{{c._id}}"
+                                                   style="margin: 0 auto; display: block;"><i
+                                                            class=""></i> Go to course</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <pagination total-rows="coursesLength"
+                                terms="Courses"
+                                set-reset="paginationReset()"
+                                limit="12"
+                                use-search="false"
+                                object-service="courseListService"
+                                current-page="{{currentPage}}"
+                                sort-by="{{sortBy}}"
+                                order-by="{{orderBy}}"
+                                success-cb="newRowsFetched">
+                    </pagination>
+
+                    <div class="row">
+                        <div class="modal" id="modalCreateCourse" tabindex="-1" role="dialog"
+                             aria-labelledby="modalCreateCourse" aria-hidden="true">
+                            <div ng-include="'/course/create/'"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </script>
+
+        <br class="clear">
+        <!-- /.content -->
+
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+<% include ../jsfooter %>
+<% include ../footer %>

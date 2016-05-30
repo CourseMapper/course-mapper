@@ -1,0 +1,38 @@
+<section class="content"  >
+    <div class="row row-centered">
+        <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
+            <div class="widget-item box no-border no-round">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Widgets Store on {{location}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="widget in widgets">
+                        <div class="thumbnail center">
+                            <img ng-src="{{widget.icon}}">
+                            <div class="caption">
+                                <h4>{{widget.name}}</h4>
+                                <p>{{widget.description}}</p>
+                                <a ng-hide="isInstalled(widget._id)" style="cursor: pointer"
+                                   ng-click="install(location, widget.application, widget.name, {courseId: course._id})"
+                                   class="btn btn-primary btn-sm" role="button"><i class="fa fa-download"></i> Install </a>
+                                <a ng-show="isInstalled(widget._id)"
+                                   class="btn btn-warning btn-sm" role="button"> Installed </a>
+
+                                <span class="label label-info">W:{{widget.width}} by H:{{widget.height}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <br class="clear" />
+                </div>
+                <div class="box-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

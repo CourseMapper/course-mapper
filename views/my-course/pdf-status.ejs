@@ -1,0 +1,37 @@
+<div class="box-body no-padding" ng-controller="PdfStatusController">
+    <table class="table table-striped" ng-if="pdfHistory.length !=0">
+        <tbody>
+        <tr>
+            <th>
+                <a href="#" ng-click="sortType = 'nodeId.name'; sortReverse = !sortReverse">
+                    PDF Name
+                    <i ng-show="sortType == 'nodeId.name' && !sortReverse" class="fa fa-caret-down"></i>
+                    <i ng-show="sortType == 'nodeId.name' && sortReverse" class="fa fa-caret-up"></i>
+                </a>
+            </th>
+            <th>Last Page Opened</th>
+            <th>Total Page</th>
+            <!--<th>Percentage Finished</th>-->
+            <th>
+                <a href="#" ng-click="sortType = 'dateUpdated'; sortReverse = !sortReverse">
+                    Date Accessed
+                    <i ng-show="sortType == 'dateUpdated' && !sortReverse" class="fa fa-caret-down"></i>
+                    <i ng-show="sortType == 'dateUpdated' && sortReverse" class="fa fa-caret-up"></i>
+                </a>
+            </th>
+            <th></th>
+        </tr>
+        <tr ng-repeat="pdf in pdfHistory | orderBy:sortType:sortReverse" ng-if="pdf.nodeId.name">
+            <td>{{pdf.nodeId.name}}</td>
+            <td>{{pdf.pageNumber}}</td>
+            <td>{{pdf.totalPage}}</td>
+            <!--<td>{{((pdf.pageNumber/pdf.totalPage)*100).toFixed(2)}}%</td>-->
+            <td>{{pdf.dateUpdated | relativeDate}}</td>
+            <td>
+                <a type="button" class="btn btn-block btn-primary btn-xs" href="/treeNode/{{pdf.nodeId._id}}/#/cid/{{pdf.courseId._id}}/nid/{{pdf.nodeId._id}}?tab=pdf&slidePage={{pdf.pageNumber}}">Resume</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div ng-if="pdfHistory.length == 0" style="margin-top: 20px; margin-left: 10px;">You have not read any PDF document yet.</div>
+</div>

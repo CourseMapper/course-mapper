@@ -1,0 +1,10 @@
+{
+  "orderNo": 5,
+  "displayName": "Newsfeed",
+  "location": "contentNode",
+  "description": "to show updates on every actions on this node",
+  "isDefaultActivated": true,
+  "icon": "ionicons ion-clock",
+  "ngShow": "isEnrolled || isOwner || isManager || isAdmin",
+  "hasJsFiles": true
+}

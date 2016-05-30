@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../countmap.css">
+</head>
+<body style="padding-top: 100px">
+<div class="countmap">
+    <span class="countmap-tooltip"></span>
+</div>
+
+<script src="./lodash.min.js"></script>
+<script src="../countmap.js"></script>
+<script>
+
+    var annotations = [
+        {page: 1},
+        {page: 1},
+        {page: 1},
+        {page: 2},
+        {page: 2},
+        {page: 2},
+        {page: 2},
+        {page: 2},
+        {page: 3},
+        {page: 2},
+        {page: 11},
+        {page: 7},
+        {page: 3},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20},
+        {page: 20}
+    ];
+
+    var cm = new CountMap({
+        segments: annotations,
+        segmentKey: 'page',
+        totalSegments: 30,
+        container: 'countmap',
+        tooltip: 'countmap-tooltip',
+        maxValue: 10,
+        colorful: true
+    });
+    cm.onCountSelected = function (page) {
+        console.log('Selected page: ' + page);
+    };
+</script>
+</body>
+</html>

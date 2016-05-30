@@ -1,0 +1,70 @@
+<div ng-controller="HtmlSidebarController" ng-init="init(wdg)">
+    <div class="box-body no-padding html-sidebar-content" ng-bind-html="widget.options.content | unsafe">
+    </div>
+</div>
+
+<% if(isAuthorized){ %>
+<div class="modal" tabindex="-1" role="dialog" id="sidebarEditForm"
+     aria-labelledby="Sidebar Edit Form" aria-hidden="true" ng-controller="EditHtmlController">
+
+    <section class="content" ng-init="init(wdg)">
+        <div class="row row-centered">
+            <div class="col-xs-12 col-md-7 col-centered">
+                <div class="box no-border">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Edit HTML Widget</h3>
+                        <div class="box-tools pull-right">
+                            <button ng-click="cancel()"
+                                    type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                        aria-hidden="true">&times;</span></button>
+                        </div>
+                    </div>
+
+                    <div class="box-body no-border">
+                        <form role="form" ng-submit="saveWidget(editWidgetForm.$valid)" name="editWidgetForm"
+                              novalidate>
+                            <fieldset>
+                                <div class="control-group">
+                                    <label class="control-label" for="course">Widget Title</label>
+
+                                    <div class="controls"
+                                         ng-class="{ 'has-error' : editWidgetForm.name.$invalid && !editWidgetForm.$pristine }">
+                                        <input type="text" id="name" name="name" placeholder="" class="form-control"
+                                               ng-model="widgetData.widget">
+                                    </div>
+                                </div>
+                                <div class="control-group description">
+                                    <p></p>
+                                    <label class="control-label" for="description">HTML Content</label>
+
+                                    <div id="optionContent" name="content"
+                                         ng-model="widgetData.options.content"
+                                         quill type="complete">
+                                    </div>
+                                </div>
+
+                                <!-- Button -->
+                                <div class="control-group"><p></p>
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+
+                                    <button class="btn btn-md btn-primary"
+                                            ng-click="editWidgetForm.$pristine=false">
+                                        Save Edit
+                                        <spinner show="isLoading"></spinner>
+                                    </button>
+
+                                    <button type="button" class="btn btn btn-warning"
+                                            data-dismiss="modal" aria-label="Close" ng-click="cancel()">
+                                        <span aria-hidden="true">Cancel</span>
+                                    </button>
+                                </div>
+
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<% } %>

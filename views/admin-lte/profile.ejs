@@ -1,0 +1,118 @@
+<% include header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" ng-controller="ProfileController">
+
+        <section class="content-header">
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+                <li class="active">My Account</li>
+            </ol>
+        </section>
+        <section class="content-header action-header blue">
+            <ol class="breadcrumb">
+                <li class="home">My Account</li>
+            </ol>
+
+            <div class="navbar-custom-menu">
+                <ul>
+                    <li>
+                        <a class="cursor"
+                           data-toggle="modal" data-target="#editAccountModal"
+                           title="Change password settings">
+                            <i class="ionicons ion-ios-gear"></i> Account Settings</a></li>
+
+                    <li>
+                        <a class="cursor"
+                           href="/settings/apps"
+                           title="Manage your permission to permited 3rd party apps">
+                            <i class="ionicons ion-settings"></i> App Settings</a></li>
+
+                    <li>
+                        <a style="cursor: pointer;"
+                           title="Add or remove dashboard widgets"
+                           data-toggle="modal" data-target="#widgetGallery"><i
+                                    class="ionicons ion-android-apps"></i> Widgets Store</a></li>
+
+                    <% if(user.role == 'admin'){ %>
+                    <li><a href="/cm-admin/" title="admin"> Admin Panel</a></li>
+                    <% } %>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Main content -->
+        <section class="content" ng-controller="profileWidgetController">
+            <div class="row" id="dashboard">
+
+                <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
+                    There is no registered widget here.
+                    <span class="empty-widget">
+                      Go to the widget store to add one.
+                    </span>
+                </div>
+
+                <!-- analytics-->
+                <div class="grid-stack col-sm-12 col-md-12" id="user-profile-widgets">
+                    <div class="grid-stack-item"
+                         data-gs-no-resize="yes"
+                         ng-repeat="wdg in widgets" id="w{{wdg._id}}"
+                         on-finish-render="afterAllWidgetsRendered">
+
+                        <div class="grid-stack-item-content">
+                            <div class="box no-shadow">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">{{wdg.widget}}</h3>
+
+                                    <div class="box-tools pull-right">
+                                        <button class="btn btn-box-tool" data-widget="remove"
+                                                data-toggle="tooltip" title="Remove"
+                                                ng-click="closeWidget(wdg._id);"
+                                        >
+                                            <i class="fa fa-times"></i></button>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+
+                                    <!-- start widget render -->
+                                    <div ng-include src="wdg.widgetId.entryPoint"
+                                         onload="initWidgetButton(wdg._id)"></div>
+                                    <!-- start widget render -->
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="row" ng-controller="WidgetGalleryController">
+                        <div class="modal" id="widgetGallery" tabindex="-1" role="dialog"
+                             aria-labelledby="wigets gallery" aria-hidden="true" ng-init="initData('user-profile')">
+                            <div ng-include="'/widgets/gallery'"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- analytics-->
+
+            </div>
+        </section>
+        <!-- /.content -->
+
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+
+<% include profiles/editAccountModal %>
+<% include jsfooter %>
+
+<!--add chart.js source-->
+<script src="/chartjs/Chart.min.js"></script>
+<script src="/chartjs/angular-chart.min.js"></script>
+
+<% include footer %>

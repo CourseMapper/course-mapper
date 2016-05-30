@@ -1,0 +1,89 @@
+
+<header class="main-header">
+    <nav class="navbar navbar-static-top" ng-controller="MainMenuController">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="/" class="logo"><b>Course</b>Mapper</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="admin-mobile collapse navbar-collapse" id="navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Messages: style can be found in dropdown.less-->
+                    <li class="dropdown tasks-menu">
+                        <a href="/cm-admin"><i class="fa fa-cogs">&nbsp;&nbsp;&nbsp;</i><b>Admin Home</b></a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown">Manage <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#/categories">Categories</a></li>
+                            <li><a href="#/category-recommendations">Category Recommendations</a></li>
+                            <li><a href="#/widgets">Widgets and Background Plugins</a></li>
+                            <li><a href="#/tabs">Tabs</a></li>
+                            <li><a href="#/adminusers">Admin Users</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <ul class="nav navbar-nav navbar-right">
+                    <!-- Messages: style can be found in dropdown.less-->
+                    <li class="dropdown tasks-menu ng-hide" ng-hide="user">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <b>Login</b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form class="form-signin" action="/accounts/login" method="post">
+                                    <h3 class="form-signin-heading">Please log in</h3>
+                                    <label for="inputUsername" class="sr-only">Username</label>
+                                    <input name="username" type="text" id="inputUsername" class="form-control"
+                                           placeholder="Username" required autofocus>
+                                    <label for="inputPassword" class="sr-only">Password</label>
+                                    <input name="password" type="password" id="inputPassword" class="form-control"
+                                           placeholder="Password" required>
+
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="yes" name="rememberMe" > Remember me
+                                        </label>
+                                    </div>
+                                    <button class="btn btn-lg btn-primary btn-block" type="submit">Log in</button>
+                                </form>
+
+                            </li>
+                        </ul>
+                    </li>
+                    <li ng-hide="user">
+                        <a href="/accounts/signup">
+                            <b>Sign Up</b>
+                        </a>
+                    </li>
+
+                    <li class="dropdown user user-menu notifications-menu ng-hide" ng-cloak ng-show="user">
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="/img/admin-lte/user2-160x160.png" class="user-image" alt="User Image"/>
+                            <i ng-hide="user" class="fa fa-refresh fa-spin"></i>
+                        <span class="ng-hide" ng-show="user"
+                              class="hidden-xs">{{user.username | capitalize:true}}</span>
+                        </a>
+                        <ul class="dropdown-menu">
+
+                            <li>
+                                <!-- inner menu: contains the actual data -->
+                                <ul class="menu">
+                                    <li>
+                                        <a href="/accounts/{{user.username}}">
+                                            <i class="ionicons ion-gear-a"></i> My Account
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="footer"><a href="/accounts/logout"><i class="ionicons ion-log-out"></i> Log Out </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</header>

@@ -1,0 +1,51 @@
+<div ng-controller="BarProgressController">
+    <div class="col-xs-12">
+        <div class="activity-summary-widget box-body">
+            <div class="col-xs-3" style="padding-left: 0px; padding-right: 0px;">
+                <div class="box box-widget widget-user-2">
+                    <!-- Add the bg color to the header using any of the bg-* classes -->
+                    <div class="widget-user-header bg-light-blue">
+                        <div class="widget-user-image"  align="center">
+                            <img class="img-circle" src="{{user.image}}" alt="User Image" ng-show="user.image" alt="User Avatar" style="width: 60px; height: auto; margin-top: 10px; ">
+                        </div>
+                        <!-- /.widget-user-image -->
+                        <h3 class="widget-user-username" align="center">{{user.displayName}}</h3>
+                        <h5 class="widget-user-desc" align="center" style="padding-bottom: 5px;">Member Since: {{user.dateAdded | date:'dd-MM-yyyy'}}</h5>
+                    </div>
+                    <div class="box-footer no-padding">
+                        <ul class="nav nav-stacked">
+                            <li><a style="cursor: default">Course Enrolled <span class="pull-right badge bg-blue">{{courseEnrolled.length}}</span></a></li>
+                            <li><a style="cursor: default">Course Created <span class="pull-right badge bg-aqua">{{courseCreated.length}}</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-xs-9">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="small-box">
+                            <div class="inner">
+                                <p align="center">Course Activity Summary</p>
+                                <canvas id="pie" class="chart chart-pie"
+                                        chart-data="courseActivityData" chart-labels="courseActivityLabels" chart-legend="true">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="small-box">
+                            <div class="inner">
+                                <p align="center">Content Node Activity Summary</p>
+                                <canvas id="pie2" class="chart chart-pie"
+                                        chart-data="contentNodeActivityData" chart-labels="contentNodeActivityLabels" chart-legend="true">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!--/.row-->
+            </div>
+            <!-- /.col -->
+        </div>
+    </div>
+</div>

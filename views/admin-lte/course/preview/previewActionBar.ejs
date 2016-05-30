@@ -1,0 +1,42 @@
+<ul class="previewActionBar" ng-controller="actionBarCoursePreviewController">
+    <li ng-hide="isOwner || isManager">
+            <span ng-hide="user">Please
+                login to enroll to this course</span>
+
+        <i ng-show="loading" class="fa fa-refresh fa-spin"></i>
+        <a ng-show="user && !isEnrolled && !isAdmin" ng-click="enroll()" style="cursor: pointer"><strong>Enroll here to
+                participate in this course</strong></a>
+
+        <span ng-show="isEnrolled && !loading && !isAdmin">You are following this course.</span>
+        <a ng-show="isEnrolled" class="" style="cursor:pointer" ng-click="leave()">
+            LEAVE COURSE</a>
+    </li>
+    <li ng-show="isAdmin && !isOwner && !isManager">
+        You are an admin
+    </li>
+    <li ng-show="isOwner">
+        You created this course
+    </li>
+    <li ng-show="isManager">
+        You are a manager
+    </li>
+    <li ng-show="isOwner || isManager || isAdmin">
+        <a style="cursor: pointer"
+           data-toggle="modal" data-target="#editView"
+           title="Edit this course's details">
+            <i class="ionicons ion-edit"></i> &nbsp; EDIT</a>
+    </li>
+    <li ng-show="isOwner || isManager || isAdmin">
+        <a style="cursor: pointer"
+           data-toggle="modal" data-target="#configView"
+           title="Edit this course's settings">
+            <i class="ionicons ion-gear-a"></i> &nbsp; SETTINGS</a>
+    </li>
+    <li ng-show="isOwner || isManager  || isAdmin">
+        <a style="cursor: pointer;"
+           data-toggle="modal" data-target="#widgetGallery"
+           title="Add or remove preview widgets">
+            <i class="ionicons ion-android-apps"></i> &nbsp; WIDGETS STORE</a>
+    </li>
+</ul>
+

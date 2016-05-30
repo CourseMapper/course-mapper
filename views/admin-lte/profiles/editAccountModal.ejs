@@ -1,0 +1,140 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="editAccountModal" tabindex="-1" role="dialog"
+         aria-labelledby="Reply Form" aria-hidden="true">
+        <section class="content" ng-controller="UserEditController">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-8 col-md-8 col-sm-8 col col-centered">
+                    <div class="widget-item box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Edit Account</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <form class="" role="form" ng-submit="saveEditUser()">
+                                <fieldset>
+                                    <div class="control-group">
+                                        <!-- Username -->
+                                        <label class="control-label" for="username">Username</label>
+
+                                        <div class="controls">
+                                            <input type="text" id="username" name="username" placeholder=""
+                                                   class="form-control" ng-model="user.username" disabled>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p></p>
+                                        <!-- E-mail -->
+                                        <label class="control-label" for="email">E-mail</label>
+
+                                        <div class="controls">
+                                            <input type="text" id="email" name="email" placeholder=""
+                                                   class="form-control" ng-model="user.email" disabled>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p></p>
+                                        <!-- Username -->
+                                        <label class="control-label" for="displayName">Display Name</label>
+
+                                        <p class="help-block">Display Name will be the name that will be displayed
+                                            through out the site</p>
+
+                                        <div class="controls">
+                                            <input type="text" id="displayName" name="displayName" placeholder=""
+                                                   class="form-control" ng-model="user.displayName">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group" ng-hide="user.facebook">
+                                        <p></p>
+                                        <!-- Password-->
+                                        <label class="control-label" for="password">Old Password</label>
+
+                                        <div class="controls">
+                                            <input type="password" id="oldPassword" name="oldPassword" placeholder=""
+                                                   class="form-control" ng-model="formData.oldPassword">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group" ng-hide="user.facebook">
+                                        <p></p>
+                                        <!-- Password-->
+                                        <label class="control-label" for="password">New Password</label>
+
+                                        <div class="controls">
+                                            <p class="help-block">Password should be at least 4 characters</p>
+
+                                            <input type="password" id="password" name="password"
+                                                   class="form-control" ng-model="formData.password">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group" ng-hide="user.facebook">
+                                        <p></p>
+                                        <!-- Password -->
+                                        <label class="control-label" for="passwordConfirm">New Password
+                                            (Confirm)</label>
+
+                                        <div class="controls">
+                                            <p class="help-block">Please confirm password</p>
+                                            <input type="password" id="passwordConfirm" name="passwordConfirm"
+                                                   class="form-control" ng-model="formData.passwordConfirm">
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p></p>
+                                        <!-- Password -->
+                                        <label class="control-label" for="passwordConfirm">Image</label>
+
+                                        <div class="controls">
+
+                                            <div class="callout callout-info">
+                                                <p>Your image is obtained from Gravatar API.<br>
+                                                    Please visit this <a
+                                                            href="https://en.gravatar.com/support/activating-your-account/"
+                                                            target="_blank"> Gravatar's page</a> to get more info on how
+                                                    to upload or edit your image.
+                                                </p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div class="control-group">
+                                        <br class="clear">
+                                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <button class="btn btn-md btn-primary">Save</button>
+                                            <button type="button" class="btn btn-md btn-warning"
+                                                    data-dismiss="modal" aria-label="Close"
+                                                    ng-click="cancel()">
+                                                <span aria-hidden="true">Cancel</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

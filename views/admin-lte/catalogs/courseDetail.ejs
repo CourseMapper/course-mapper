@@ -1,0 +1,76 @@
+<% if(isInIframe && course && course.settings && course.settings['disableTop']){ %>
+<% } else { %>
+<section class="content-header main-breadcrumb">
+    <ol class="breadcrumb">
+        <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
+        <li><a href="/courses/#/category/{{course.category.slug}}"> </i> {{course.category.name}}</a></li>
+    </ol>
+</section>
+<% } %>
+
+<section class="content-header action-header blue">
+    <li class="visible-sm-inline-block visible-xs-inline-block draw-tab-button">
+        <a class="cursor" onclick="toggleTabMenu()" style="color: white">
+            <i class="ionicons ion-navicon-round"></i>
+        </a>
+    </li>
+    <ol class="breadcrumb">
+        <li class="home"><a href="#/cid/{{course._id}}?tab=preview">{{course.name}}</a></li>
+        <li class="active tabName">{{tabDisplayName}}</li>
+    </ol>
+
+    <div class="navbar-custom-menu" ng-include="includeActionBar"></div>
+
+</section>
+
+<!-- Main content -->
+<section class="content-course">
+    <div class="box no-border" id="courseTabs">
+        <div class="box-body no-border">
+
+            <!-- tabs left -->
+            <div class="tabbable tabs-left">
+
+                <% include courseDetailLeftTab %>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" ng-class="currentTab" id="tabContent">
+                        <div ng-include="include"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- /tabs -->
+
+        </div>
+        <div class="clear"></div>
+    </div>
+</section>
+<!-- /.content -->
+
+<section class="delete-notice" ng-show="isDeleted" style="padding: 15px;">
+    <h4>Course is deleted.</h4>
+</section>
+
+<!-- modal contents -->
+<% include courseDetailModals %>
+<div ng-include="'/accounts/loginform'"></div>
+<!-- /.modal contents -->
+
+<script>
+    $(document).ready(function () {
+        handleTab();
+
+        if (location.hash !== '')
+            $(document).scrollTop(0);
+
+        //Get window height and the wrapper height
+        var neg = $('.main-header').outerHeight() + $('.main-footer').outerHeight();
+        var neg2 = $('.content-header').outerHeight();
+        var window_height = $(window).height();
+        //Set the min-height of the content and sidebar based on the
+        //the height of the document.
+        $(".content-wrapper #courseTabs").css('min-height', window_height - neg - neg2 - neg2);
+
+        $('[data-tooltip="tooltip"]').tooltip();
+    });
+</script>

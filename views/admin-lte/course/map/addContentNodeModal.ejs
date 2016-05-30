@@ -1,0 +1,208 @@
+<!-- Main content -->
+<section class="content" ng-controller="NodeEditController">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-6 col-centered">
+            <div class="box no-border" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{nodeModaltitle}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form name="addContentNodeForm" role="form" ng-submit="saveContentNode(addContentNodeForm.$valid)"
+                          novalidate>
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label" for="name">{{currentNodeAction.typeText}} name</label>
+
+                                <p class="help-block">{{currentNodeAction.typeText}} name can contain any letters or
+                                    numbers</p>
+
+                                <div class="controls"
+                                     ng-class="{ 'has-error' : addContentNodeForm.name.$invalid && !addContentNodeForm.$pristine }">
+                                    <input type="text" id="name" name="name" placeholder="" class="form-control"
+                                           ng-model="formData.name"
+                                           required ng-required="true"
+                                    >
+
+                                    <p ng-show="addContentNodeForm.name.$invalid && !addContentNodeForm.$pristine"
+                                       class="help-block">Content Node Name is required.</p>
+                                </div>
+                            </div>
+                            <br>
+
+                            <p class="help-block">Please attach at least a pdf or a video</p>
+
+                            <div class="col-md-6" id="pdf">
+                                <div class="control-group">
+                                    <label class="control-label" for="pdf">Upload PDF</label>
+
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a data-toggle="tab" data-target="#upload-pdf">
+                                                <i class="fa fa-hdd-o"></i>
+                                            </a>
+                                        </li>
+                                        <li ng-hide="true">
+                                            <a data-toggle="tab" data-target="#upload-pdf-link">
+                                                <i class="fa fa-globe"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" style="min-height:80px;">
+                                        <div id="upload-pdf" class="tab-pane fade in active">
+                                            <div class="controls">
+                                                <br>
+                                                <div ng-show="pdfHostLink.trim()!=''">
+                                                    You have added a link to an external pdf,
+                                                    please remove it if you want to upload from local drive.
+                                                </div>
+
+                                                <div class="btn btn-sm btn-default"
+                                                     ngf-select accept="application/pdf"
+                                                     ng-model="filespdf" ngf-multiple="false" ngf-max-size='50000000'
+                                                     ng-hide="pdfHostLink.trim()!=''">
+                                                    <i class="fa fa-file-pdf-o"></i> &nbsp; Select a pdf file (Max 24MB)
+                                                </div>
+                                                <br>
+                                                <span ng-show="filespdf">
+                                                    <div class="label label-info ">
+                                                        {{filespdf.name}}
+                                                        <a ng-click="clearPdf()">
+                                                            <i class="fa fa-close"></i>
+                                                        </a>
+                                                    </div>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div id="upload-pdf-link" class="tab-pane fade in">
+                                            <div ng-hide="!filespdf">
+                                                <br>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="fa fa-chain"></i></span>
+                                                    <input type="url" class="form-control" placeholder="http://"
+                                                           ng-model="pdfHostLink">
+                                                </div>
+
+                                                <span class="error" ng-show="addContentNodeForm.pdfHostLink.$error.url">
+                                                    Not a valid url!</span>
+                                            </div>
+                                            <div ng-show="filespdf">
+                                                <br>
+                                                You have added a pdf, please remove it if you want to use an external
+                                                link
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6" id="video">
+                                <div class="control-group">
+
+                                    <label class="control-label" for="video">Add Video</label>
+
+                                    <ul class="nav nav-tabs">
+                                        <li class="active">
+                                            <a data-toggle="tab" data-target="#upload-video">
+                                                <i class="fa fa-hdd-o"></i>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a data-toggle="tab" data-target="#upload-link">
+                                                <i class="fa fa-youtube"></i>
+                                                <i class="fa fa-vimeo-square"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" style="min-height:80px;">
+                                        <div id="upload-video" class="tab-pane fade in active">
+                                            <br>
+                                            <div ng-show="videoHostLink.trim()!=''">
+                                                You have added a link to an external video, please remove it if you want
+                                                to upload from local drive.
+                                            </div>
+                                            <div class="controls" ng-hide="videoHostLink.trim() != ''">
+                                                <div class="btn btn-sm btn-default"
+                                                     ngf-select accept="video/mp4,video/x-m4v,video/*"
+                                                     ng-model="filesvideo" ngf-multiple="false"
+                                                     ngf-max-size='100000000'><i
+                                                            class="fa fa-file-video-o"></i> &nbsp; Select a video file
+                                                    (Max 75MB)
+                                                </div>
+                                                <br>
+                                                <span ng-show="filesvideo">
+                                                <div class="label label-info ">
+                                                    {{filesvideo.name}}
+                                                    <a ng-click="clearVideo()" class="cursor"> <i
+                                                                class="fa fa-close"></i> </a>
+                                                </div>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div id="upload-link" class="tab-pane fade">
+                                            <div ng-hide="filesvideo">
+                                                <br>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><i class="fa fa-chain"></i></span>
+                                                    <input type="url" class="form-control"
+                                                           placeholder="http://example.com" ng-model="videoHostLink">
+                                                </div>
+
+                                                <span class="error"
+                                                      ng-show="addContentNodeForm.videoHostLink.$error.url">
+                                                    Not a valid url!</span>
+                                            </div>
+                                            <div ng-show="filesvideo">
+                                                <br>
+                                                You have added a file video, please remove it if you want to use an
+                                                external link
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12" ng-show="progressPercentage > 0">
+                                <div class="progress">
+                                    <div class="progress-bar"
+                                         ng-style="{'width': progressPercentage + '%','height': '2px'}"></div>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <p class="help-block"></p>
+
+                                <p class="help-block"></p>
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-primary" ng-click="addContentNodeForm.$setDirty()">Save
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+                                        <button type="button" class="btn btn-warning"
+                                                data-dismiss="modal" aria-label="Close"
+                                                ng-click="cancel()">
+                                            <span aria-hidden="true">Cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+            <!-- ./CourseEditController-->
+        </div>
+    </div>
+</section>

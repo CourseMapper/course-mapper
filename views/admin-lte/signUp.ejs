@@ -1,0 +1,138 @@
+<% include header %>
+<div class="wrapper">
+
+    <!-- Header Navbar -->
+    <% include mainMenu %>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-md-6">
+                    <div class="box no-border">
+                        <div class="box-body no-border">
+                            <div class="control-group">
+                                <p class="help-block">Use your facebook account to login</p>
+                                <a href="/api/accounts/login/facebook">
+                                    <img src="/img/admin-lte/fb.png">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-md-6 col-centered" ng-controller="SignUpController">
+                    <div class="box no-border">
+                        <div class="box-body no-border">
+                            <form name="signUpForm" id="signUpForm" role="form" ng-submit="signUp(signUpForm.$valid)" novalidate>
+                                <fieldset>
+                                    <div id="legend">
+                                        <h2>User Registration Form</h2>
+                                    </div>
+                                    <div class="control-group">
+                                        <!-- Username -->
+                                        <label class="control-label" for="username">Username</label>
+                                        <p class="help-block">Username can contain any letters or numbers, without
+                                            spaces</p>
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : signUpForm.username.$invalid && !signUpForm.username.$pristine }">
+
+                                            <input type="text" id="username" name="username"
+                                                   class="form-control"
+                                                   ng-model="loginData.username"
+                                                   required ng-required="true">
+
+                                            <p ng-show="signUpForm.username.$invalid && !signUpForm.username.$pristine"
+                                               class="help-block">Username is
+                                                required.</p>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p></p>
+                                        <!-- E-mail -->
+                                        <label class="control-label" for="email">E-mail</label>
+
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : signUpForm.email.$invalid && !signUpForm.email.$pristine }">
+                                            <p class="help-block">Please provide your E-mail</p>
+                                            <input type="email" id="email" name="email"
+                                                   class="form-control"
+                                                   ng-model="loginData.email"
+                                                   required ng-required="true">
+
+                                            <p ng-show="signUpForm.email.$invalid && !signUpForm.email.$pristine"
+                                               class="help-block">Email is
+                                                required.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p></p>
+                                        <!-- Password-->
+                                        <label class="control-label" for="password">Password</label>
+                                        <p class="help-block">Password should be at least 4 characters</p>
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : signUpForm.password.$invalid && !signUpForm.password.$pristine }">
+                                            <input type="password" id="passwordOriginal" name="password"
+                                                   class="form-control"
+                                                   required ng-required="true"
+                                                   ng-model="loginData.password"
+                                                   ng-minlength="4"
+                                                    >
+
+                                            <p ng-show="signUpForm.password.$invalid && !signUpForm.password.$pristine"
+                                               class="help-block">Password is invalid.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <p></p>
+                                        <!-- Password -->
+                                        <label class="control-label" for="password_confirm">Password (Confirm)</label>
+
+                                        <p class="help-block">Please confirm your password</p>
+                                        <div class="controls"
+                                             ng-class="{ 'has-error' : signUpForm.password_confirm.$invalid && !signUpForm.password_confirm.$pristine }">
+                                            <input type="password" id="password_confirm" name="password_confirm"
+                                                   placeholder="" class="form-control"
+                                                   required ng-required="true"
+                                                   pw-check="passwordOriginal"
+                                                   ng-model="loginData.password_confirm"
+                                                   original="loginData.password" >
+
+                                            <p ng-show="signUpForm.password_confirm.$error.pwmatch && !signUpForm.password_confirm.$pristine"
+                                               class="help-block">The confirmed password is not matching with your password.</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <!-- Button -->
+                                        <div class="controls">
+                                            <br class="clear">
+                                            <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                            <br class="clear">
+                                            <button class="btn btn-primary" ng-click="signUpForm.$setDirty()">Register
+                                                <spinner show="isLoading"></spinner>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+</div><!-- ./wrapper -->
+<% include jsfooter %>
+<% include footer %>

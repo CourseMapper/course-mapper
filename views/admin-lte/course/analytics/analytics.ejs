@@ -1,0 +1,45 @@
+<!-- analytics-->
+<div id="course-analytics-widgets" class="grid-stack col-xs-12 col-md-11"
+     ng-controller="widgetCourseAnalyticsController">
+    
+    <div ng-show="!widgets || widgets.length == 0" class="empty-widget">
+        There is no registered widget here.
+        <span ng-show="isOwner" class="empty-widget">
+          Go to the widget store to add one.
+        </span>
+    </div>
+    <div class="grid-stack-item"
+         data-gs-no-resize="yes"
+         ng-repeat="wdg in widgets" id="w{{wdg._id}}"
+         on-finish-render="afterAllWidgetsRendered"
+    >
+        <div class="grid-stack-item-content">
+
+            <div class="box no-shadow">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{wdg.widget}}</h3>
+                    <div class="box-tools pull-right" ng-show="checkOwnership(wdg.userId)">
+                        <button class="btn btn-box-tool" data-widget="remove"
+                                data-toggle="tooltip" title="Remove"
+                                ng-click="closeWidget(wdg._id);"
+                        >
+                            <i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body-widget">
+
+                    <!-- start widget render -->
+                    <div ng-include src="wdg.widgetId.entryPoint"
+                         onload="initWidgetButton(wdg._id)">
+                    </div>
+                    <!-- start widget render -->
+
+                </div>
+                <div class="box-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- analytics-->

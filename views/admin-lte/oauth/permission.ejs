@@ -1,0 +1,44 @@
+<% include oHeader %>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box no-border" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Permission Request</h3>
+                </div>
+
+                <div class="box-body with-border">
+
+                    <p>Hi <%= user.username %>!</p>
+                    <h4> <%= client.name %> </h4>
+
+                    <%= client.description %>
+                    <br><br>
+                    <p> is requesting <b>full access</b> to your account.</p>
+                    <p>Do you approve?</p>
+
+                </div>
+
+                <div class="box-footer">
+
+                    <form action="/api/oauth2/authorize" method="post">
+                        <input name="transaction_id" type="hidden" value="<%= transactionID %>">
+                        <div>
+                            <input type="submit" class="btn btn-primary" value="Allow" id="allow">
+
+                            <input type="submit" class="btn btn-warning"
+                                   aria-label="Cancel" value="Deny" name="cancel" id="deny"/>
+
+
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</section>
+<% include oFooter %>

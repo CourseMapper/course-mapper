@@ -1,0 +1,51 @@
+<div class="modal" id="loginFormModal" tabindex="-1" role="dialog"
+     aria-labelledby="login Form Modal" aria-hidden="true">
+    <section class="content" ng-controller="MainMenuController">
+        <div class="row row-centered">
+            <div class="col-xs-6 col-centered">
+
+                <div class="box no-border">
+                    <div class="box-body no-border">
+                        <h3>Log In</h3>
+
+                        <small>You have not logged in, please login to see this content</small>
+
+                        <% include formLogin %>
+                        <br>
+                        <strong>OR</strong><br><br>
+                        <p class="help-block">Use your facebook account to login</p>
+                        <% if(typeof (isNode) != 'undefined'){ %>
+                        <facebook-button
+                                login-url="/api/accounts/login/facebook/treeNode/{{courseId}}/{{nodeId}}/{{currentTab}}">
+                        </facebook-button>
+                        <% } else { %>
+                        <facebook-button
+                                login-url="/api/accounts/login/facebook/course/{{course.slug}}/{{course._id}}/{{currentTab}}">
+                        </facebook-button>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal" id="enrollForm" tabindex="-1" role="dialog"
+     aria-labelledby="enroll Form" aria-hidden="true">
+    <section class="content" ng-controller="actionBarCoursePreviewController">
+        <div class="row row-centered">
+            <div class="col-xs-6 col-centered">
+
+                <div class="box no-border">
+                    <div class="box-body no-border">
+
+                        <p>You are not enrolled in this course</p>
+                        <p>Please Enroll to see this content</p>
+                        <button class="btn btn-primary btn-block" ng-click="enroll()">Enroll</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+

@@ -1,0 +1,69 @@
+<h3>
+    Create External Application for CourseMapper
+</h3>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box-body no-border">
+            <form role="form" ng-submit="saveApp(editAppForm.$valid)" name="editAppForm" novalidate>
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label" for="name">Application Name</label>
+
+                        <p class="help-block">Application name can contain any letters or numbers</p>
+
+                        <div class="controls"
+                             ng-class="{ 'has-error' : editAppForm.name.$invalid && !editAppForm.$pristine }">
+                            <input type="text" id="name" name="name" placeholder="" class="form-control"
+                                   ng-model="name" required ng-required="true"
+                                   ng-minlength="3">
+
+                            <p ng-show="editAppForm.name.$invalid && !editAppForm.$pristine"
+                               class="help-block">Application name is required.</p>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <p></p>
+                        <label class="control-label" for="description">Description</label>
+
+                        <p class="help-block">This description will be displayed on the permission window when a user is
+                            logging in through this Application.</p>
+
+                        <div class="controls"
+                             ng-class="{ 'has-error' : editAppForm.description.$invalid && !editAppForm.$pristine }">
+
+                            <input type="text" id="description" name="description" placeholder="" class="form-control"
+                                   ng-model="description" required ng-required="true"
+                                   ng-minlength="6">
+
+                            <p ng-show="editAppForm.description.$invalid && !editAppForm.$pristine"
+                               class="help-block">Please fill in a little bit of description about this
+                                Application.</p>
+
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <p class="help-block"></p>
+
+                        <br class="clear">
+
+                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                        <!-- Button -->
+                        <div class="controls">
+                            <button class="btn btn-md btn-primary"
+                                    ng-click="editAppForm.$pristine=false">Create Application
+                                <spinner show="isLoading"></spinner>
+                            </button>
+
+                            <button type="button" class="btn btn btn-warning"
+                                    data-dismiss="modal" aria-label="Close" ng-click="cancel()">
+                                <span aria-hidden="true">Cancel</span>
+                            </button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>

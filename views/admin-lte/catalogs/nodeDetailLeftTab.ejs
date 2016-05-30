@@ -1,0 +1,42 @@
+<ul class="nav nav-tabs tabs-hide hidden-xs hidden-sm">
+    <% for(var i = 0; i < activeTabs.length; i++){ %>
+    <li
+            <% if(activeTabs[i].ngShow && activeTabs[i].ngShow != ''){ %>
+            ng-show="<%= activeTabs[i].ngShow %>"
+            <% } %>
+            class="<%= activeTabs[i].name %>"
+            data-displayName="<%= activeTabs[i].displayName %>"
+    >
+        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
+           data-tooltip="tooltip" title="<%= activeTabs[i].displayName %>"
+           data-toggle="tab" data-target="#<%= activeTabs[i].name %>">
+            <i class="<%= activeTabs[i].icon %>"></i><br>
+            <span><%= activeTabs[i].displayName %></span>
+        </a>
+    </li>
+    <%
+    }
+    %>
+</ul>
+
+<ul class="nav nav-tabs tabs-hide visible-xs visible-sm draw-tab ">
+    <% for(var i = 0; i < activeTabs.length; i++){ %>
+    <li
+            <% if(activeTabs[i].ngShow && activeTabs[i].ngShow != ''){ %>
+            ng-show="<%= activeTabs[i].ngShow %>"
+            <% } %>
+            class="<%= activeTabs[i].name %>"
+            data-displayName="<%= activeTabs[i].displayName %>"
+    >
+        <a href="#/cid/{{course._id}}/nid/{{nodeId}}?tab=<%= activeTabs[i].name %>"
+           data-tooltip="tooltip" title="<%= activeTabs[i].displayName %>"
+           data-toggle="tab" data-target="#<%= activeTabs[i].name %>"
+           onclick="hideTabMenu()">
+            <i class="<%= activeTabs[i].icon %>"></i><br>
+            <span><%= activeTabs[i].displayName %></span>
+        </a>
+    </li>
+    <%
+    }
+    %>
+</ul>

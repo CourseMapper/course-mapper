@@ -1,0 +1,43 @@
+<div ng-controller="CourseListCreatedController">
+    <div class="col-xs-12">
+        <div ng-if="courseCreated.length == 0" style="font-weight: 400; margin-top: 10px;">you have not created any courses yet</div>
+        <div class="box-group" id="accordion-created">
+            <div class="panel box box-primary" ng-repeat="created in courseCreated | orderBy: '-dateAdded'" ng-show="created.isDeleted != true">
+                <div class="box-header with-border">
+                    <h4 class="box-title">
+                        <a data-toggle="collapse" data-parent="#accordion-created" href="#collapse-created{{$index}}" aria-expanded="false" class="collapsed">
+                            {{created.name}} <i class="fa fa-caret-down"></i>
+                        </a>
+                    </h4>
+                    <small class="label label-success pull-right" style="font-size: 13px; cursor: context-menu;" title="number of discussion you created"><i class="fa fa-comments-o"></i> {{(myDiscussionStatus | filter:isDiscussion | filter:isTrue | filter:(created._id)).length}}</small>
+                    <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px; cursor: context-menu;" title="number of Pdf material you added"><i class="fa fa-file-pdf-o"></i> {{(courseCreatedResources | filter:isPdf | filter:(created._id) | filter:(created.createdBy)).length}}</small>
+                    <small class="label label-success pull-right" style="font-size: 13px; margin-right: 2px; cursor: context-menu;" title="number of video material you added"><i class="fa fa-file-movie-o"></i> {{(courseCreatedResources | filter:isVideo | filter:(created._id) | filter:(created.createdBy)).length}}</small>
+                    <a type="button" class="label label-default label-xs" title="Go to course" style="font-size: 10px; margin-left: 8px; " href="/course/{{created.slug}}/#/cid/{{created._id}}"><i class="fa fa-external-link"></i></a>
+                </div>
+                <div id="collapse-created{{$index}}" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                    <div class="box-body">
+                        <table class="table table-striped">
+                            <tbody>
+                                <tr ng-repeat="resource in courseCreatedResources | orderBy: 'treeNodeId.name'" ng-if="resource.courseId == created._id && resource.treeNodeId.name">
+                                    <td ng-if="resource.type=='pdf'">
+                                            <i class="fa fa-file-pdf-o"></i> <a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=pdf">{{resource.treeNodeId.name}} </a>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; cursor: context-menu;" title="number of pdf annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-pdf-o"></i> {{(myNodeActivity | filter:isPdfAnno | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" title="number of link you created"><i class="fa fa-link"></i> {{(myNodeActivity | filter:isLink | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="badge bg-light-blue pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" ng-if="resource.createdBy == created.createdBy" title="you created this content node">mine</small>
+                                    </td>
+                                    <td ng-if="resource.type!='pdf'">
+                                            <i class="fa fa-file-movie-o"></i> <a href="/treeNode/{{resource.treeNodeId._id}}/#/cid/{{resource.courseId}}/nid/{{resource.treeNodeId._id}}?tab=video">{{resource.treeNodeId.name}} </a>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; cursor: context-menu;" title="number of video annotation you created"><i class="fa fa-pencil"></i> <i class="fa fa-file-movie-o"></i> {{(myNodeActivity | filter:isVideoAnno | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="label label-primary pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" title="number of link you created"><i class="fa fa-link"></i> {{(myNodeActivity | filter:isLink | filter:isTrue | filter:(resource.treeNodeId._id)).length}}</small>
+                                        <small class="badge bg-light-blue pull-right" style="font-size: 12px; margin-right: 2px; cursor: context-menu;" ng-if="resource.createdBy == created.createdBy" title="you created this content node">mine</small>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

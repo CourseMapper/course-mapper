@@ -1,0 +1,106 @@
+<!-- Main content -->
+<section class="content">
+    <div class="row row-centered">
+        <div class="col-xs-12 col-md-5 col-centered">
+            <div class="box no-border" ng-controller="NodeConfigController" ng-init="init()">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Content Node Configuration: {{nodeEdit.name}}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                    </div>
+                </div>
+
+                <div class="box-body no-border">
+                    <form role="form" ng-submit="saveNodeSetting(configNodeForm.$valid)" name="configNodeForm"
+                          novalidate>
+                        <fieldset>
+                            <div class="control-group">
+                                <label class="control-label">Tabs Settings</label>
+
+                                <div class="form-group">
+
+                                    <% for(var i = 0; i < tabs.length; i++){
+                                        var isActive = tabs[i].isActive;
+                                        if (!isActive) {
+                                            continue;
+                                        }
+
+                                        if (tabs[i].name == 'pdf' || tabs[i].name == 'video') {
+                                            continue;
+                                        }
+
+                                        if (tabsActive && typeof(tabsActive[tabs[i].name]) != "undefined") {
+                                            isActive = tabsActive[tabs[i].name];
+                                        }
+                                    %>
+                                    <div class="checkbox" ng-init="tabsActive.<%= tabs[i].name %> = <%= isActive %>">
+                                        <label>
+                                            <input type="checkbox"
+                                                   ng-model="tabsActive.<%= tabs[i].name %>"/> <%= tabs[i].displayName %>
+                                        </label>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <br>
+                            <% if(isInIframe && treeNode.settings && treeNode.settings['disableTop'] !== undefined){ %>
+                            <% } else { %>
+                            <div class="control-group">
+                                <label class="control-label">Embed Settings<br>
+                                    <small>These settings will take effect only if the page is loaded through an
+                                        iframe.
+                                    </small>
+                                </label>
+                                <div class="form-group">
+                                    <%
+                                        var dc = false;
+                                        var dt = false;
+                                        if (treeNode.settings && treeNode.settings['disableControls'] !== undefined) {
+                                            dc = treeNode.settings['disableControls'];
+                                        }
+                                        if (treeNode.settings && treeNode.settings['disableTop'] !== undefined) {
+                                            dt = treeNode.settings['disableTop'];
+                                        }
+                                    %>
+                                    <!--<div class="checkbox">
+                                        <label ng-init="settings.disableControls = <%= dc %>">
+                                            <input type="checkbox" name="disableControl"
+                                                   ng-model="settings.disableControls"> Disable Controls</label>
+                                    </div>-->
+                                    <div class="checkbox">
+                                        <label ng-init="settings.disableTop = <%= dt %>">
+                                            <input type="checkbox" name="disableTop" ng-model="settings.disableTop">
+                                            Disable Top
+                                            Navigations</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                            <div class="control-group">
+                                <br class="clear">
+
+                                <div class="box-footer">
+                                    <!-- Button -->
+                                    <div class="controls">
+                                        <button class="btn btn-md btn-primary"
+                                                ng-click="configNodeForm.$pristine=false">Save Edit
+                                            <spinner show="isLoading"></spinner>
+                                        </button>
+
+                                        <button type="button" class="btn btn btn-warning"
+                                                data-dismiss="modal" aria-label="Close" ng-click="cancel()">
+                                            <span aria-hidden="true">Cancel</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

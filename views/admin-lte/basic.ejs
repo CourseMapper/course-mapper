@@ -1,0 +1,116 @@
+<% include header %>
+<div class="wrapper">
+
+    <!-- Main Header -->
+    <header class="main-header">
+
+        <!-- Logo -->
+        <a href="/" class="logo"><b>Course</b>Mapper</a>
+
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Navbar Right Menu -->
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <!-- Messages: style can be found in dropdown.less-->
+                    <li class="dropdown tasks-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <b>Login</b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form class="form-signin" action="/accounts/login" method="post">
+                                    <h3 class="form-signin-heading">Please log in</h3>
+                                    <label for="inputUsername" class="sr-only">Username</label>
+                                    <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+                                    <label for="inputPassword" class="sr-only">Password</label>
+                                    <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="yes" name="rememberMe"> Remember me
+                                        </label>
+                                    </div>
+                                    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                                </form>
+
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="/accounts/signUp">
+                            <b>Sign Up</b>
+                        </a>
+                    </li>
+
+                    <!-- User Account Menu
+                    <li class="dropdown user user-menu">
+
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
+                        <img src="images/user2-160x160.png" class="user-image" alt="User Image"/>
+
+                        <span class="hidden-xs">Alexander Pierce</span>
+                      </a>
+                      <ul class="dropdown-menu">
+
+                        <li class="user-header">
+                          <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
+                          <p>
+                            Alexander Pierce - Web Developer
+                            <small>Member since Nov. 2012</small>
+                          </p>
+                        </li>
+
+                        <li class="user-body">
+                          <div class="col-xs-4 text-center">
+                            <a href="#">Followers</a>
+                          </div>
+                          <div class="col-xs-4 text-center">
+                            <a href="#">Sales</a>
+                          </div>
+                          <div class="col-xs-4 text-center">
+                            <a href="#">Friends</a>
+                          </div>
+                        </li>
+
+                        <li class="user-footer">
+                          <div class="pull-left">
+                            <a href="#" class="btn btn-default btn-flat">Profile</a>
+                          </div>
+                          <div class="pull-right">
+                            <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                    -->
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Your Page Content Here -->
+
+        </section><!-- /.content -->
+    </div><!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- To the right -->
+        <div class="pull-right hidden-xs">
+            &nbsp;
+        </div>
+        <!-- Default to the left -->
+        <strong>Copyright &copy; 2015 <a href="#">i9</a>.</strong> All rights reserved.
+    </footer>
+
+</div><!-- ./wrapper -->
+<% include jsfooter %>
+<% include footer %>
