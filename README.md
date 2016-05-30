@@ -41,10 +41,11 @@ router.get('/accounts/createAdmin/:username', function (req, res, next) {
 ```
 
 After that modification, please visit this URL in the browser.
-Please modify the [username] part to your prefered username, and please makesure make it without the square bracket.
+Please modify the [username] part to your prefered username, and please make sure make it without the square bracket.
 
 `http://localhost:3000/accounts/createAdmin/[username]`
 
 Once you create this admin, please comment back that codes.
 
-and you can login to the system using your new username and password "1"
+And you can login to the system using your new username and password "1".
+Please change your password to a saver one on your profile page.
