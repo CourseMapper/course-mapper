@@ -102,7 +102,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
     }
     var stuff = async(function () {
     for (var i = 0; i < dataSet.length; i++){
-     
+
         if (!dataSet[i].isDirectory){
             filename = dataSet[i].fileInformation.fileName;
             console.log("File Name: "+filename)
@@ -119,7 +119,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
 
-                
+
                         lastNode = null;
                          var inserted = 0;
                         for (var j = 0; j < folders.length; j++){
@@ -159,15 +159,15 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                           ws.on('error', function(err) { console.log(err); });
                           request(url).pipe(ws);
                         }
-                        
-                       
-                          
-                        
 
-                
-                
-               
-            
+
+
+
+
+
+
+
+
             }
 
         } else {
@@ -175,12 +175,12 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
 
         }
-      
+
     }
     callback();
     });
 
-                
+
                 stuff();
 }
 
@@ -276,5 +276,3 @@ exports.getUserRole = getUserRole;
 exports.getContext = getContext;
 exports.getLearningMaterials = getLearningMaterials;
 exports.downloadLearningMaterials = downloadLearningMaterials;
-
-
