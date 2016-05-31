@@ -298,8 +298,8 @@
         $('.tab-content #map').css('min-height', window.innerHeight - 140);
 
         $(window).resize(function () {
-            var w = window.innerWidth - offsetW;
-            var h = window.innerHeight - offsetH;
+            var w = window.innerWidth; //- offsetW;
+            var h = window.innerHeight; //- offsetH;
 
             Container.onWindowResize(w, h);
             Canvas.onWindowResize(w, h);
