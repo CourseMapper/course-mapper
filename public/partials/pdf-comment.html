@@ -1,6 +1,6 @@
 <div class="box box-solid">
     <div class="box-body">
-      <span class="posted-at">
+        <span class="posted-at">
       Posted <strong>{{postedDate | relativeDate}}</strong>
       By <strong>
           <a class="cursor"
@@ -16,19 +16,14 @@
         <div class="replyControl"
              ng-show="!isDeleted">
             <div class="replyButton">
-                <a ng-show="showReplyButton"
-                   title="Reply"
-                   ng-click="replyAction()"
-                   class="btn btn-primary btn-xs cursor"
-                        >REPLY</a>
+                <a ng-show="showReplyButton" title="Reply" ng-click="replyAction()"
+                   class="btn btn-primary btn-xs cursor"> REPLY
+                </a>
             </div>
 
             <div class="editReplyButton">
-                <a ng-show="showEditButton"
-                   title="Edit"
-                   ng-click="editAction()"
-                   class="btn btn-primary btn-xs"
-                        >EDIT</a>
+                <a ng-show="showEditButton" title="Edit" ng-click="editAction()" class="btn btn-primary btn-xs">
+                    EDIT</a>
             </div>
 
             <div class="deleteReplyButton">
@@ -40,7 +35,8 @@
         </div>
 
         <a class="cursor" ng-show="showCommentingArea" ng-click="toggle = !toggle">
-            {{!toggle ? ((comments === undefined || comments === null) ? 0 : comments.length) + ' comment(s)' : 'hide comments'}}
+            {{!toggle ? ((comments === undefined || comments === null) ? 0 : comments.length) + ' comment(s)' : 'hide
+            comments'}}
         </a>
         <article ng-show="toggle && showCommentingArea">
             <div id="comment-box">
@@ -52,6 +48,7 @@
                 </div>
             </div>
             <br>
+
             <section ng-repeat="comment in comments">
                 <div class="box box-solid" style="background: rgba(0, 0, 255, 0.05)">
                     <div class="box-body">
@@ -59,11 +56,12 @@
                               Posted <strong>{{comment.date | relativeDate}}</strong>
                               By <strong><span>{{comment.author}}</span></strong>
                             </span>
-                            <a class="pull-right" style="cursor: pointer;" ng-show="(comment.isAuthor || isAdmin)" title="delete" ng-click="removeComment(comment._id)">X</a>
+                        <a class="pull-right" style="cursor: pointer;" ng-show="(comment.isAuthor || isAdmin)"
+                           title="delete" ng-click="removeComment(comment._id)">X</a>
 
                         <p class="reply" ng-bind-html="comment.html | unsafe"></p>
                     </div>
-<!--rgba(0, 0, 255, 0.05)-->
+                    <!--rgba(0, 0, 255, 0.05)-->
                 </div>
             </section>
         </article>

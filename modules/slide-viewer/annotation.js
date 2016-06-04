@@ -15,7 +15,8 @@ var annotationPDFSchema = new mongoose.Schema({
     required: true,
     ref: 'resources'
   },
-  pdfPageNumber: {type: Number}
+  pdfPageNumber: {type: Number},
+  isPrivate: {type: Boolean}
 });
 
 // Define indexes
