@@ -1,8 +1,8 @@
 <div class="box box-solid">
     <div class="box-body" ng-show="!source.isEditMode">
         <div class="privacy-icon" ng-show="source.canEdit">
-            <i class="fa fa-lock private" ng-show="source.isPrivate"></i>
-            <i class="fa fa-unlock public" ng-show="!source.isPrivate"></i>
+            <i class="fa fa-lock private" ng-show="source.isPrivate === true"></i>
+            <i class="fa fa-unlock public" ng-show="source.isPrivate !== true"></i>
         </div>
         <p>
             <span>[{{source.start | msToTime}} - {{source.end | msToTime}}]</span>
