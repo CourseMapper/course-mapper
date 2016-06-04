@@ -1,18 +1,13 @@
 app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
   $scope.recentSubmitOnAnnotation = "";
-
   $scope.comment = {};
-
   $scope.editRawText = [];
   $scope.editMode = -1;
-
   $scope.replyRawText = [];
   $scope.replyMode = -1;
-
   $scope.comments = [];
   $scope.replies = [];
-
   $scope.orderType = false;
   $scope.orderBy = false;
   $scope.ascending = "true";
@@ -20,26 +15,20 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   $scope.filtersRaw = {};
   $scope.currentPageNumber = 1;
   $scope.annotationZones = [];
-
   $scope.rawSearchTerm = "";
   var baseFilterString = "Currently no filters are active";
   $scope.activeFilterString = baseFilterString;
-
   /*var visibleString = "visibility: visible;";
    var invisibleString = "visibility: hidden;";
    $scope.removeFiltersVisible = visibleString;
    */
-
   // zones
   $scope.tagNames = [];
   $scope.tagRelPos = [];
   $scope.tagRelCoord = [];
   $scope.tagColor = [];
-
   $scope.writeCommentMode = false;
-
   $scope.decouplePDFAndComments = false;
-
 
   var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function (e, params) {
     $scope.currentPageNumber = params[0];
@@ -111,7 +100,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   $scope.populateAnnotationZone = function () {
     $scope.annotationZones = [];
 
-
     var tagNamesList = $rootScope.getTagNamesList();
     var annotationZoneList = $rootScope.getAnnotationZoneList();
     for (var inputId in annotationZoneList) {
@@ -120,13 +108,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         var relPosY = annotationZoneList[inputId].relativePosition.y;
         var relWidth = annotationZoneList[inputId].relativeSize.x;
         var relHeight = annotationZoneList[inputId].relativeSize.y;
-
         var name = annotationZoneList[inputId].tagName;
         var color = annotationZoneList[inputId].color;
-
         var errorText = $rootScope.checkTagName(name);
-
-
         if (annotationZoneList[inputId].hasErrors) {
           return "The annotation zone with name " + name + " has errors and could not be submitted.";
         }
@@ -143,12 +127,9 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         var relPosY = annZone.relativePosition.y;
         var relWidth = annZone.relativeSize.x;
         var relHeight = annZone.relativeSize.y;
-
         var name = annZone.tagName;
         var color = annZone.color;
-
         //var errorText = $rootScope.checkTagName(name);
-
         if (annZone.hasErrors == true) {
           return "An annotation zone on page " + page + " and name " + name + " has errors and prevents submission";
         }
@@ -159,10 +140,10 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     }
 
     /*$scope.comment.tagNames = $scope.tagNames.join(',');
-    $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
-    $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
-    $scope.comment.tagColor = $scope.tagColor.join(',');
-*/
+     $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
+     $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
+     $scope.comment.tagColor = $scope.tagColor.join(',');
+     */
     return "";
   };
 
@@ -175,14 +156,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
     var zone = {
       annotationZoneName: name,
-      relativeCoordinates: {
-        X: relPosX,
-        Y: relPosY
-      },
-      relativeDimensions: {
-        X: relWidth,
-        Y: relHeight
-      },
+      relativeCoordinates: {X: relPosX, Y: relPosY},
+      relativeDimensions: {X: relWidth, Y: relHeight},
       color: color,
       pdfId: pdfId,
       pdfPageNumber: pdfPageNumber,
@@ -219,8 +194,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   };
 
   $scope.submitReply = function (id) {
-
-
     var config = {
       params: {
         rawText: $scope.replyRawText[id],
@@ -234,32 +207,24 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       }
     };
 
-
     $http.post("/slide-viewer/submitComment/", null, config)
       .success(function (data, status, headers, config) {
         $scope.updateScope($scope.commentGetUrl);
         //$scope.savedZones = data.annotationZones;
-
         if (data.result == false) {
           displayCommentSubmissionResponse(data.error);
         }
         else {
           displayCommentSubmissionResponse("Comment submission successful!");
-
           //TODO: reset everything
         }
         //console.log("commReplyEv");
-
         $scope.recentSubmitOnAnnotation = id;
-
         //console.log("Recent: "+ $scope.recentSubmitOnAnnotation);
-
         $rootScope.$broadcast('reloadTags');
-
         $scope.writeCommentMode = false;
         $scope.replyRawText = [];
         $scope.replyMode = -1;
-
       })
       .error(function (data, status, headers, config) {
         displayCommentSubmissionResponse("Error: Unexpected Server Response!");
@@ -280,7 +245,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       .success(function (data, status, headers, config) {
         $scope.updateScope($scope.commentGetUrl);
         //$scope.savedZones = data.annotationZones;
-
         if (data.result == false) {
           displayCommentSubmissionResponse(data.error);
         }
@@ -288,7 +252,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
           displayCommentSubmissionResponse("Comment deletion successful!");
         }
         //console.log("commDeleteEv");
-
         $rootScope.$broadcast('reloadTags');
       })
       .error(function (data, status, headers, config) {
@@ -302,17 +265,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
       displayCommentSubmissionResponse("Client Error: Some annotation zones are invalid: " + annZoneCheckResult);
       return false;
     }
-
     $rootScope.clearTagNameErrors();
-
     var submitPage = ($rootScope.annotationSubmitPage != -1) ? $rootScope.annotationSubmitPage : $scope.currentPageNumber;
-
-    var annTextWOWhitespace = $scope.comment.rawText.replace(/&nbsp;/gi,'');
-    annTextWOWhitespace = annTextWOWhitespace.replace(/<[a-zA-Z]+>/gi,'');
-    annTextWOWhitespace = annTextWOWhitespace.replace(/<\/[a-zA-Z]+>/gi,'');
+    var annTextWOWhitespace = $scope.comment.rawText.replace(/&nbsp;/gi, '');
+    annTextWOWhitespace = annTextWOWhitespace.replace(/<[a-zA-Z]+>/gi, '');
+    annTextWOWhitespace = annTextWOWhitespace.replace(/<\/[a-zA-Z]+>/gi, '');
     annTextWOWhitespace = $.trim(annTextWOWhitespace);
 
-    if(annTextWOWhitespace == ""){
+    if (annTextWOWhitespace == "") {
       displayCommentSubmissionResponse("Client Error: Your annotation was not submitted, since it does not contain any text yet.");
       return false;
     }
@@ -366,8 +326,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
 
   $scope.submitEdit = function (comment) {
-
-
+    
     var config = {
       params: {
         updateId: comment._id,
@@ -375,8 +334,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         authorId: $scope.currentUser._id,
         rawText: $scope.editRawText[$scope.editMode],
         pageNumber: $scope.currentPageNumber,
-        pdfId: $scope.pdfFile._id
-
+        pdfId: $scope.pdfFile._id,
+        isPrivate: comment.isPrivate
       }
     };
 
@@ -435,18 +394,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     displayCommentSubmissionResponse(text);
   };
 
-
   //$scope.pageFilter;
-
   $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-
   $scope.setRegexFilter = function (value) {
     if (typeof $scope.filtersRaw['rawText'] == 'undefined') {
       $scope.filtersRaw['rawText'] = {'regex': value};
     }
     else
       $scope.filtersRaw['rawText'].regex = value;
-
     $scope.$broadcast('onFiltersRawChange');
   };
 
@@ -912,7 +867,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   };
 
   $scope.setReplyRawText = function (id, newText) {
-
     $scope.replyRawText[id] = newText;
     $timeout(function () {
       $scope.$apply();

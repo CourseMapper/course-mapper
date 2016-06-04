@@ -104,17 +104,14 @@ router.post('/updateAnnZone/', function (req, res, next) {
   annZone.handleUpdatePost(req, res, next);
 });
 
-
 /*router.post('/submitTag/', function(req, res, next){
  var annZone = new AnnZones();
  annZone.handleZoneSubmitPost(req, res, next);
  });*/
 
-
 router.get('/slide-viewer', function (req, res, next) {
   var comment = new Comment();
   comment.getAllComments(function (err, data) {
-
     //res.json(data);
     res.render('slide-viewer/slideViewer', {
         numComments: data.length,
@@ -122,10 +119,7 @@ router.get('/slide-viewer', function (req, res, next) {
         currentUser: req.user
       }
     );
-
   });
-
-
 });
 
 /**

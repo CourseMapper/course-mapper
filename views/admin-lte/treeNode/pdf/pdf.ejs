@@ -1,7 +1,6 @@
 <div class="row" ng-controller="PdfTabController">
 
 
-
     <div id="commentController" class="col-xs-11 container-fluid" ng-controller="CommentListController">
         <div class="slide-container col-sm-7 col-md-7">
             <div id="viewerWrapper">
@@ -9,37 +8,36 @@
                 <pdf-viewer source="{{pdfFile.link}}" current-page-number="1" pdf-id="{{pdfFile._id}}"></pdf-viewer>
 
 
-
                 <div id="annZoneList" ng-controller="AnnotationZoneListController">
-                  <div id="annotationZone">
+                    <div id="annotationZone">
 
 
                         <pdf-annotation-zone
-                          ng-repeat="(key, item) in annotationZoneList"
-                          relative-position-x="annotationZoneList[key].relativePosition.x"
-                          relative-position-y="annotationZoneList[key].relativePosition.y"
-                          relative-size-x="annotationZoneList[key].relativeSize.x"
-                          relative-size-y="annotationZoneList[key].relativeSize.y"
-                          color="annotationZoneList[key].color"
-                          tag-name="annotationZoneList[key].tagName"
-                          edit-tag-name-temp="annotationZoneList[key].editTagNameTemp"
-                          dragable="annotationZoneList[key].dragable"
-                          is-being-created="annotationZoneList[key].isBeingCreated"
-                          can-be-edited="annotationZoneList[key].canBeEdited && !isInWriteCommentMode()"
-                          ann-zone-id="annotationZoneList[key].annZoneId"
-                          div-counter="annotationZoneList[key].divCounter"
-                          list-id="annotationZoneList[key].id"
-                          switch-show-anno-zones="switchShowAnnoZones"
-                          tag-name-is-validated="annotationZoneList[key].tagNameIsValidated"
-                          set-edit-zone-mode="setEditZoneMode(id)"
-                          reset-edit-zone-mode="resetEditZoneMode()"
-                          update-ann-zone="updateAnnZone(id)"
-                          remove-annotation-zone="removeAnnotationZone(id)"
-                          add-reference="addReference(id)"
+                                ng-repeat="(key, item) in annotationZoneList"
+                                relative-position-x="annotationZoneList[key].relativePosition.x"
+                                relative-position-y="annotationZoneList[key].relativePosition.y"
+                                relative-size-x="annotationZoneList[key].relativeSize.x"
+                                relative-size-y="annotationZoneList[key].relativeSize.y"
+                                color="annotationZoneList[key].color"
+                                tag-name="annotationZoneList[key].tagName"
+                                edit-tag-name-temp="annotationZoneList[key].editTagNameTemp"
+                                dragable="annotationZoneList[key].dragable"
+                                is-being-created="annotationZoneList[key].isBeingCreated"
+                                can-be-edited="annotationZoneList[key].canBeEdited && !isInWriteCommentMode()"
+                                ann-zone-id="annotationZoneList[key].annZoneId"
+                                div-counter="annotationZoneList[key].divCounter"
+                                list-id="annotationZoneList[key].id"
+                                switch-show-anno-zones="switchShowAnnoZones"
+                                tag-name-is-validated="annotationZoneList[key].tagNameIsValidated"
+                                set-edit-zone-mode="setEditZoneMode(id)"
+                                reset-edit-zone-mode="resetEditZoneMode()"
+                                update-ann-zone="updateAnnZone(id)"
+                                remove-annotation-zone="removeAnnotationZone(id)"
+                                add-reference="addReference(id)"
                         ></pdf-annotation-zone>
 
 
-                  </div>
+                    </div>
                 </div>
 
 
@@ -51,23 +49,26 @@
 
                 <!--<button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>-->
                 <div class="panel panel-default">
-                  <div class="panel-body">
-                      <button class="col-xs-4 btn btn-primary btn-md"  ng-click="switchCommentSubmissionDisplay()">Annotate</button>
-                      <div class="col-xs-8">
-                        <select id="orderTypeSelect"
-                                placeholder = "bla"
-                                ng-model="orderType"
-                                ng-init="orderType = orderType || orderingOptionsDefault"
-                                ng-options="item as item.name for item in orderingOptions"
-                                class="form-control">
-                                  <option value="" selected ng-disabled="true">{{orderingOptionsDefault.name}}</option>
+                    <div class="panel-body">
+                        <button class="col-xs-4 btn btn-primary btn-md" ng-click="switchCommentSubmissionDisplay()">
+                            Annotate
+                        </button>
+                        <div class="col-xs-8">
+                            <select id="orderTypeSelect"
+                                    placeholder="bla"
+                                    ng-model="orderType"
+                                    ng-init="orderType = orderType || orderingOptionsDefault"
+                                    ng-options="item as item.name for item in orderingOptions"
+                                    class="form-control">
+                                <option value="" selected ng-disabled="true">{{orderingOptionsDefault.name}}</option>
 
 
-                        </select>
-                          <input id="searchInput" placeholder="Search..." class="form-control" ng-model="rawSearchTerm"></input>
-                      </div>
-                  </div>
-              </div>
+                            </select>
+                            <input id="searchInput" placeholder="Search..." class="form-control"
+                                   ng-model="rawSearchTerm"></input>
+                        </div>
+                    </div>
+                </div>
                 <div id="commentSubmissionDiv" ng-show="writeCommentMode">
 
                     <span class="currentCommentPageClass" ng-click="setPageNumber(annotationSubmitPage)">Annotation for Page {{annotationSubmitPage}}</span>
@@ -76,22 +77,23 @@
 
                         <fieldset>
                             <div class="control-group">
-                                    <div id="rawText" name="rawText"
-                                         ng-model="comment.rawText"
-                                         quill
-                                         type="pdf-comment"
-                                         annotation-zone-action="annotationZoneAction()">
-                                    </div>
+                                <div id="rawText" name="rawText"
+                                     ng-model="comment.rawText"
+                                     quill
+                                     type="pdf-comment"
+                                     annotation-zone-action="annotationZoneAction()">
+                                </div>
                             </div>
 
                             <!-- Will be filled when annotation zones are created -->
                             <div id="annotationZoneSubmitList">
                             </div>
 
-                           <div id="annZoneListOld"
-                                 >
+                            <div id="annZoneListOld"
+                            >
 
-                                <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags" ng-show="tagNameErrors">
+                                <div id="errorResponseAreaforTagIds" class="errorResponseAreaforTags"
+                                     ng-show="tagNameErrors">
                                     <div id="tagErrorList" ng-repeat="(key, item) in tagNameErrors">
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
                                     </div>
@@ -119,15 +121,19 @@
                                 <div class="editReplyButton">
                                     <a class="btn btn-primary btn-xs" ng-click="submitComment()">SAVE</a>
                                 </div>
-                                <div class="deleteReplyButton" >
+                                <div class="deleteReplyButton">
                                     <a class="btn btn-danger btn-xs" ng-click="writeCommentMode=false">CANCEL</a>
                                 </div>
                             </div>
                             <!--<div id="createdAnnoZonesId" class="createdAnnoZonesClass CreatedAnnoZones-header" ng-hide="(annotationZonesOnOtherSlides=={})">Created Annotation Zones:</div>-->
                             <div id="createdAnnoZoneButtons">
                                 <div ng-repeat-start="(page,annZonesList) in annotationZonesOnOtherSlides"></div>
-                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton" style="background-color:{{val.color}} !important"ng-repeat="(key,val) in annZonesList" ng-click="setPageNumber(page)">
-                                <span class="glyphicon glyphicon-remove " aria-hidden="true" ng-click="$event.stopPropagation(); deleteCurrentAnnotationZones(page,key); "></span> {{val.tagName}}@{{page}}
+                                <button type="button" class="btn btn-default btn-xs createdAnnoZoneButton"
+                                        style="background-color:{{val.color}} !important"
+                                        ng-repeat="(key,val) in annZonesList" ng-click="setPageNumber(page)">
+                                    <span class="glyphicon glyphicon-remove " aria-hidden="true"
+                                          ng-click="$event.stopPropagation(); deleteCurrentAnnotationZones(page,key); "></span>
+                                    {{val.tagName}}@{{page}}
                                 </button>
                                 <div ng-repeat-end></div>
                             </div>
@@ -136,7 +142,6 @@
 
                     </form>
                 </div>
-
 
 
                 <!--<div id="annotationZoneSubmitListMovables">
@@ -149,17 +154,20 @@
 
             </div>
             <div class="col-xs-12">
-            <div class="filter-wrapper col-xs-2">
-              <span class="filter-header">Filter: </span>
-            </div>
-            <div >
-              <!--<span class="filter-header">None</span> class="col-xs-11"-->
-              <button type="button" class="btn btn-default btn-xs filter-tag" ng-hide="((key == 'pdfId')||(key == 'pdfPageNumber')||(key == 'rawText')) " ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
-                <span class="glyphicon glyphicon-remove " aria-hidden="true" ></span> {{ (key == 'author') ? filter : "#"+filter.regex_hash }}
-              </button>
-            </div>
+                <div class="filter-wrapper col-xs-2">
+                    <span class="filter-header">Filter: </span>
+                </div>
+                <div>
+                    <!--<span class="filter-header">None</span> class="col-xs-11"-->
+                    <button type="button" class="btn btn-default btn-xs filter-tag"
+                            ng-hide="((key == 'pdfId')||(key == 'pdfPageNumber')||(key == 'rawText')) "
+                            ng-repeat="(key,filter) in filtersRaw" ng-click="removeFilterRawField(key)">
+                        <span class="glyphicon glyphicon-remove " aria-hidden="true"></span> {{ (key == 'author') ?
+                        filter : "#"+filter.regex_hash }}
+                    </button>
+                </div>
 
-            <div class="commentZoneList">
+                <div class="commentZoneList">
 
                     <!--<div>
                       <label id="activeFilterLabel" ng-bind="activeFilterString"></label>
@@ -172,42 +180,50 @@
                         <div class="replies" ng-repeat="comment in comments" ng-cloak>
                             <div class="col-xs-11">
                                 <pdf-comment posted-by="{{comment.author}}"
-                                         post-id="{{comment._id}}"
-                                         posted-date="{{comment.date}}"
-                                         post-content="comment.html"
-                                         is-post-owner="comment.author==$root.user.username"
-                                         post-owner="comment.author"
-                                         show-control="true"
-                                         show-reply-button="false"
-                                         show-delete-button="true"
-                                         delete-action="deleteCommentById(comment.id)"
-                                         show-edit-button="true"
-                                         edit-action="changeEditMode(comment._id, true);setEditRawText(comment._id,comment.html);"
-                                         author-clickable="true"
-                                         author-click-action="authorLabelClick(comment.author)"
-                                         ng-hide="editMode == comment._id"
-                                         show-commenting-area="true"
-                                         comments="replies[comment._id]"
-                                         post-comment= "submitReply(comment._id)"
-                                         recent-submit-on-annotation = "(recentSubmitOnAnnotation == comment._id)"
-                                         comment-text= "replyRawText[comment._id]"
-                                         remove-function = "deleteCommentById(id)"
-                                        ></pdf-comment>
+                                             post-id="{{comment._id}}"
+                                             posted-date="{{comment.date}}"
+                                             post-content="comment.html"
+                                             is-post-owner="comment.author==$root.user.username"
+                                             post-owner="comment.author"
+                                             show-control="true"
+                                             show-reply-button="false"
+                                             show-delete-button="true"
+                                             delete-action="deleteCommentById(comment.id)"
+                                             show-edit-button="true"
+                                             edit-action="changeEditMode(comment._id, true);setEditRawText(comment._id,comment.html);"
+                                             author-clickable="true"
+                                             author-click-action="authorLabelClick(comment.author)"
+                                             ng-hide="editMode == comment._id"
+                                             show-commenting-area="true"
+                                             comments="replies[comment._id]"
+                                             post-comment="submitReply(comment._id)"
+                                             recent-submit-on-annotation="(recentSubmitOnAnnotation == comment._id)"
+                                             comment-text="replyRawText[comment._id]"
+                                             remove-function="deleteCommentById(id)">
+                                </pdf-comment>
 
                                 <div ng-hide="editMode != comment._id">
-                                  You are editing your post:
-                                  <div id="editQuill_{{comment._id}}" name="editQuill"
-                                       ng-model="editRawText[comment._id]"
-                                       quill
-                                       type="pdf-comment"
-                                       hide-ann-zone-button="true"
-                                       >
-                                  </div>
-                                  <button class="btn btn-primary" ng-click="submitEdit(comment)"> Submit
-                                      <spinner show="isLoading"></spinner>
-                                  </button>
-
-                                  <button type="button" class="btn btn-warning" ng-click="changeEditMode(comment._id, false)">Cancel</button>
+                                    You are editing your post:
+                                    <div id="editQuill_{{comment._id}}" name="editQuill"
+                                         ng-model="editRawText[comment._id]"
+                                         quill
+                                         type="pdf-comment"
+                                         hide-ann-zone-button="true">
+                                    </div>
+                                    <br/>
+                                    <div class="form-control">
+                                        <label>
+                                            <input type="checkbox" ng-model="comment.isPrivate">
+                                            Private annotation
+                                        </label>
+                                    </div>
+                                    <br/>
+                                    <button class="btn btn-primary" ng-click="submitEdit(comment)"> Submit
+                                        <spinner show="isLoading"></spinner>
+                                    </button>
+                                    <button type="button" class="btn btn-warning"
+                                            ng-click="changeEditMode(comment._id, false)">Cancel
+                                    </button>
                                 </div>
 
                             </div>
@@ -215,7 +231,7 @@
                         </div>
                     </div>
                 </div>
-              </div>
+            </div>
 
         </div>
 

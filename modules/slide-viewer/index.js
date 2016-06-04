@@ -171,23 +171,20 @@ Comment.prototype.deleteAnnotation = function (err, params, isAdmin, user, done)
   }
 };
 
-
 Comment.prototype.updateAnnotation = function (err, params, isAdmin, user, done) {
   //console.log("STARTED");
-  //console.log(params);
   if (typeof params.updateId != 'undefined') {
     this.checkOwnership(params.updateId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
         var temp = Comment.prototype.convertRawTextSpecific;
-
         //var htmlEscapedRawText = validator.escape(params.rawText);
         var htmlEscapedRawText = params.rawText;
         temp(htmlEscapedRawText, function (renderedText) {
           var updatedAnnotationsPDF = {
             rawText: htmlEscapedRawText,
-            renderedText: renderedText
+            renderedText: renderedText,
+            isPrivate: params.isPrivate
           };
-
           // save it to db
           AnnotationsPDF.update({_id: params.updateId}, updatedAnnotationsPDF, function (errBool) {
             if (errBool) {
@@ -325,12 +322,8 @@ Comment.prototype.convertRawTextID = function (rawText, callback, pdfID) {
   Comment.prototype.convertRawTextSpecific(rawText, callback, pdfID, -1)
 };
 
-
 Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, pdfPage) {
-
-
   var check = this.checkTagName;
-
   var comm = new Comment();
 
   var getNamesCallback = function (success, data) {
@@ -345,8 +338,6 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
       tagPageList[i] = data[i].pdfPageNumber;
     }
     //console.log(data);
-
-
     var renderedText = rawText.replace(/#(\w+)((@p)(\w+))?/g, function (x) {
       var comm = new Comment();
       //console.log("Found tag with name: "+x);
@@ -383,10 +374,7 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
 
         return ret;
       }
-
-
       return x;
-
     });
 
     callback(renderedText);
