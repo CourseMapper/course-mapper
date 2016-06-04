@@ -359,7 +359,8 @@ li.disabled i {
     text-align: left;
     border: 1px solid #3C8DBC;
     max-width: 200px;
-    min-width: 160px
+    min-width: 160px;
+    background: rgba(255, 255, 225, 1);
 }
 
 .w.contentNode span i {
