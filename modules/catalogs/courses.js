@@ -26,7 +26,7 @@ var courseSchema = new mongoose.Schema({
   isDeleted: {type: Boolean},
   dateAdded: {type: Date},
   dateUpdated: {type: Date},
-  totalEnrollment: {type:Number}
+  totalEnrollment: {type: Number}
 });
 
 // Define indexes

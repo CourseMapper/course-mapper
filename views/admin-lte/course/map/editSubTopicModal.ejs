@@ -25,8 +25,13 @@
                                      ng-class="{ 'has-error' : editSubTopicForm.name.$invalid && !editSubTopicForm.$pristine }">
                                     <input type="text" id="name" name="name" placeholder="" class="form-control"
                                            ng-model="currentEditNode.name"
-                                           required ng-required="true"
-                                    >
+                                           required ng-required="true">
+                                    <br/>
+                                    <label>
+                                        <input type="checkbox" ng-model="currentEditNode.isPrivate">
+                                        Is private
+                                    </label>
+
                                     <p ng-show="editSubTopicForm.name.$invalid && !editSubTopicForm.$pristine"
                                        class="help-block">{{currentNodeAction.typeText}} Name is required.</p>
                                 </div>

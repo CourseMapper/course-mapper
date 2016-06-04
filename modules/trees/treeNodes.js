@@ -30,7 +30,8 @@ var treeNodesSchema = new mongoose.Schema({
   createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
   dateAdded: {type: Date},
   dateUpdated: {type: Date},
-  dateDeleted: {type: Date}
+  dateDeleted: {type: Date},
+  isPrivate: {type: Boolean, default: true}
 });
 
 // Define indexes

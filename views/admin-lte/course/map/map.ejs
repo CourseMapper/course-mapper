@@ -5,6 +5,11 @@
          ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
          ng-hide="data.isDeletedForever">
 
+        <div class="privacy-icon" ng-show="isAuthorized(data)">
+            <i class="fa fa-lock" ng-show="data.isPrivate"></i>
+            <i class="fa fa-unlock" ng-show="!data.isPrivate"></i>
+        </div>
+
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
             </i>

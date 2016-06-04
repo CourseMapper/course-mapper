@@ -843,6 +843,15 @@ li.active .voting .vote-total {
     user-select: none
 }
 
+.privacy-icon {
+    position: absolute;
+    top: 1px;
+    right: 10px;
+    background: transparent;
+    height: 10px;
+    width: 10px;
+}
+
 .collapse-button {
     display: none;
     position: absolute;

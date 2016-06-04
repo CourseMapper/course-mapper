@@ -204,7 +204,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
 
       $scope.cuePoints = {points: []};
       $scope.annotations = [];
-      $scope.selectedBar = 'va';
+      $scope.selectedBar = '';
       $scope.isAMapPersonal = false;
 
       // Trigger initial annotations update.
