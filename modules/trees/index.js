@@ -161,11 +161,11 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
       var tn = await(TreeNodes.findOne({_id: node._id}).populate('parent').exec()
       );
 
-      // Don't allow publishing nodes, which parent is private.
-      if (params.isPrivate == 'false' && (tn.parent.isPrivate === true)) {
-        error(helper.createError('Cannot publish node. Parent node is private.'));
-        return;
-      }
+      // // Don't allow publishing nodes, which parent is private.
+      // if (params.isPrivate == 'false' && (tn.parent.isPrivate === true)) {
+      //   error(helper.createError('Cannot publish node. Parent node is private.'));
+      //   return;
+      // }
 
       if (tn) {
         tn.name = node.name;
@@ -302,6 +302,13 @@ catalog.prototype.getNodeAsync = function () {
 catalog.prototype.getTreeNodes = function (error, params, success) {
 
   var user = params.user;
+  var isAdmin = user.role === 'admin';
+
+  var checkAccess = function (node) {
+    var isOwner = node.createdBy._id == user._id;
+    // Filter private nodes
+    return (node.isPrivate !== true || isOwner || isAdmin);
+  };
 
   TreeNodes.find(params.query)
     .populate('resources')
@@ -323,9 +330,9 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
             for (var e in cat[children]) {
               var catId = cat[children][e];
               var childCat = cats[catId];
-              var isOwner = childCat.createdBy._id == user._id;
-              var isAdmin = user.role === 'admin';
-              if (childCat.isPrivate !== true || isOwner || isAdmin) {
+
+              // Filter private nodes
+              if (checkAccess(childCat)) {
                 childrens.push(childCat);
                 again(childCat);
               }
@@ -399,19 +406,19 @@ catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, user,
         return error(helper.createError404("Node"));
       }
 
-      // Don't allow publishing nodes, which parent is private.
-      var isParentPrivate = paramsUpdate.isPrivate == 'false' && (tn.parent && tn.parent.isPrivate === true);
-      if (isParentPrivate) {
-        return error(helper.createError('Cannot publish node. Parent node is private.'));
-      }
-
-      // If node is set to private, update all children to private too
-      if (paramsUpdate.isPrivate == 'true') {
-        // TreeNodes.findAsync({courseId: tn.courseId, isDeleted: false})
-        //   .then(function (nodes) {
-        //
-        //   })
-      }
+      // // Don't allow publishing nodes, which parent is private.
+      // var isParentPrivate = paramsUpdate.isPrivate == 'false' && (tn.parent && tn.parent.isPrivate === true);
+      // if (isParentPrivate) {
+      //   return error(helper.createError('Cannot publish node. Parent node is private.'));
+      // }
+      //
+      // // If node is set to private, update all children to private too
+      // if (paramsUpdate.isPrivate == 'true') {
+      //   // TreeNodes.findAsync({courseId: tn.courseId, isDeleted: false})
+      //   //   .then(function (nodes) {
+      //   //
+      //   //   })
+      // }
 
       _.extend(tn, paramsUpdate);
 

@@ -30,7 +30,7 @@ app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload
 
     if (treeNode) {
       $scope.formData.name = treeNode.name;
-      $scope.formData.isPrivate = treeNode.isPrivate;
+      //$scope.formData.isPrivate = treeNode.isPrivate;
       $scope.formData.nodeId = treeNode._id;
       $scope.currentEditNode = treeNode;
     }
@@ -104,7 +104,7 @@ app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload
 
     var updateValue = {
       name: $scope.currentEditNode.name,
-      isPrivate: $scope.currentEditNode.isPrivate
+      // isPrivate: $scope.currentEditNode.isPrivate
     };
 
     $scope.isLoading = true;
