@@ -13,13 +13,13 @@ var checkHasRightToModify = function (model, user) {
 };
 
 var checkAccess = function (item, user) {
-  return (item.isPrivate !== true || checkHasRightToModify(item, user));
+  return item.isPrivate !== true || checkHasRightToModify(item, user);
 };
 
 var findByVideoIdAsync = async(function (videoId, user) {
   var items = await(VideoAnnotation.find({video_id: videoId}).sort('start').exec());
   return _.filter(items, function (item) {
-    return checkAccess(item, user)
+    return checkAccess(item, user);
   });
 });
 
