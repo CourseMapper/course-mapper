@@ -6,6 +6,7 @@ var AnnZones = require('../annotationZones/index');
 var validator = require('validator');
 var appRoot = require('app-root-path');
 var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
+var _ = require('lodash');
 
 function Comment() {
 }
@@ -487,51 +488,56 @@ Comment.prototype.getPdfAnnotations = function (pdfId, done) {
   return AnnotationsPDF.find({pdfId: pdfId}, done).exec();
 };
 
-Comment.prototype.getOrderedFilteredComments = function (order, filters, callback) {
+Comment.prototype.getOrderedFilteredComments = function (req, callback) {
+
+  var order = JSON.parse(req.params.order);
+  var filters = JSON.parse(req.params.filters);
+  var user = req.user;
+
+  var checkHasRightToModify = function (model, user) {
+    if (!model || !user || !user.role) {
+      return false;
+    }
+    var isAuthor = model.authorID === user._id;
+    var isAdmin = user.role === 'admin';
+    return isAuthor || isAdmin;
+  };
+
+  var checkAccess = function (item, user) {
+    return item.isPrivate !== true || checkHasRightToModify(item, user);
+  };
 
   var orderString = "" + order.type;
   if (order.ascending == "false") {
-    //console.log("inside if");
     orderString = "-" + orderString;
   }
-
 
   if (typeof filters["renderedText"] != 'undefined') {
     if (typeof filters["renderedText"]["regex_hash"] != 'undefined') {
       filters["renderedText"] = new RegExp('#' + filters["renderedText"]["regex_hash"], 'i');
-      //console.log("found tag request");
     }
   }
 
   if (typeof filters["renderedText"] != 'undefined') {
     if (typeof filters["renderedText"]["regex"] != 'undefined') {
       filters["renderedText"] = new RegExp(filters["renderedText"]["regex"], 'i');
-      //console.log("found tag request");
     }
   }
 
   if (typeof filters["rawText"] != 'undefined') {
     if (typeof filters["rawText"]["regex"] != 'undefined') {
       filters["rawText"] = new RegExp(filters["rawText"]["regex"], 'i');
-      //console.log("found tag request");
     }
   }
 
-
-  AnnotationsPDF.find(filters, function (err, data) {
+  AnnotationsPDF.find(filters).sort(orderString).exec(function (err, data) {
     if (err) {
-      console.log(err);
+      return err;
     }
-  }).sort(orderString).exec(function (err, data) {
-    if (err) {
-      console.log(err);
-    }
-    else {
-      callback(0, data);
-    }
-
+    var items = _.filter(data, function (item) {
+      return checkAccess(item, user);
+    });
+    callback(0, items);
   });
-
-
 };
 module.exports = Comment;

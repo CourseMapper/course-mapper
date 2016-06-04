@@ -167,6 +167,7 @@ router.get('/disComm', function (req, res, next) {
         date: data[i].dateOfCreation,
         slide: data[i].originSlide,
         html: data[i].renderedText,
+        isPrivate: data[i].isPrivate
       };
     }
     res.status(200).json({result: true, comments: modifiedData});
@@ -199,11 +200,7 @@ router.get('/disComm', function (req, res, next) {
 
 router.get('/disComm/:order/:filters/', function (req, res, next) {
   var comment = new Comment();
-
-  var order = JSON.parse(req.params.order);
-  var filter = JSON.parse(req.params.filters);
-
-  comment.getOrderedFilteredComments(order, filter, function (err, data) {
+  comment.getOrderedFilteredComments(req, function (err, data) {
     var modifiedData = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
       modifiedData[i] = {
@@ -219,7 +216,6 @@ router.get('/disComm/:order/:filters/', function (req, res, next) {
       };
     }
     res.status(200).json({result: true, comments: modifiedData});
-
   });
 });
 
