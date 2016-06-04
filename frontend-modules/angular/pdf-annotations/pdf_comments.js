@@ -538,7 +538,6 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
        }*/
       $scope.comments = [];
       $scope.replies = [];
-      console.log(data)
 
       for (var item in data.comments) {
         if (data.comments[item].hasParent == false) {
