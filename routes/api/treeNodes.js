@@ -18,6 +18,7 @@ var router = express.Router();
  */
 router.get('/treeNodes/course/:courseId', helper.l2pAuth, helper.ensureAuthenticated,
   function (req, res, next) {
+
     if (!req.user) {
       res.status(401).send('Unauthorized');
       return;
@@ -28,16 +29,19 @@ router.get('/treeNodes/course/:courseId', helper.l2pAuth, helper.ensureAuthentic
 
     userHelper.isEnrolledAsync({userId: userId, courseId: courseId})
       .then(function (isAllowd) {
+
         if (!isAllowd)
           return helper.resReturn(helper.createError401(), res);
 
         var tr = new Tree();
 
+        var params = {
+          query: {courseId: courseId},
+          user: req.user
+        };
         tr.getTreeNodes(function (err) {
             helper.resReturn(err, res);
-          }, {
-            courseId: courseId
-          }, function (treeNodes) {
+          }, params, function (treeNodes) {
             res.status(200).json({result: true, treeNodes: treeNodes});
           }
         );

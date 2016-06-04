@@ -51,6 +51,4 @@ treeNodesSchema.pre('update', function (next) {
   next();
 });
 
-var tn = mongoose.model('treeNodes', treeNodesSchema);
-
-module.exports = tn;
+module.exports = mongoose.model('treeNodes', treeNodesSchema);

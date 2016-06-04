@@ -158,9 +158,14 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
   if (params._id) {
     node._id = params._id;
     var op = async(function () {
-      var tn = await(TreeNodes.findOne({_id: node._id})
-        .exec()
+      var tn = await(TreeNodes.findOne({_id: node._id}).populate('parent').exec()
       );
+
+      // Don't allow publishing nodes, which parent is private.
+      if (params.isPrivate == 'false' && (tn.parent.isPrivate === true)) {
+        error(helper.createError('Cannot publish node. Parent node is private.'));
+        return;
+      }
 
       if (tn) {
         tn.name = node.name;
@@ -295,17 +300,21 @@ catalog.prototype.getNodeAsync = function () {
  * @param success
  */
 catalog.prototype.getTreeNodes = function (error, params, success) {
-  TreeNodes.find(params)
+
+  var user = params.user;
+
+  TreeNodes.find(params.query)
     .populate('resources')
     .populate('createdBy', 'displayName _id')
     .exec(function (err, docs) {
-      if (!err) {
+        if (err) {
+          return error(err);
+        }
         var cats = helper.convertToDictionary(docs);
 
         // keys for the ref ids of parent and childrens
         var parent = 'parent';
         var children = 'childrens';
-
         var tree = [];
 
         function again(cat) {
@@ -314,10 +323,13 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
             for (var e in cat[children]) {
               var catId = cat[children][e];
               var childCat = cats[catId];
-              childrens.push(childCat);
-              again(childCat);
+              var isOwner = childCat.createdBy._id == user._id;
+              var isAdmin = user.role === 'admin';
+              if (childCat.isPrivate !== true || isOwner || isAdmin) {
+                childrens.push(childCat);
+                again(childCat);
+              }
             }
-
             cat[children] = childrens;
           }
         }
@@ -325,23 +337,20 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
         for (var i in cats) {
           // get the root
           var doc = cats[i];
-
           if (doc.isDeleted) {
             doc.name = "[DELETED]";
           }
-
           if (!doc[parent]) {
             again(doc);
             tree.push(doc);
           }
         }
-
         success(tree);
-      } else {
-        error(err);
       }
-    });
-};
+    )
+  ;
+}
+;
 
 catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdate, success) {
   if (!helper.checkRequiredParams(paramsUpdate, ['x', 'y'], error)) {
@@ -380,28 +389,41 @@ catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdat
 };
 
 catalog.prototype.updateNode = function (error, paramsWhere, paramsUpdate, user, success) {
-  TreeNodes.findById(paramsWhere).exec(function (err, tn) {
-    if (err) error(err);
-    else {
-      if (!tn)
-        error(helper.createError404("Node"));
-      else {
-        _.extend(tn, paramsUpdate);
-
-        tn.save(function (err) {
-          if (err) {
-            debug('failed update node content');
-            error(err);
-          }
-          else {
-            // success saved the cat
-            success(tn);
-            Plugin.doAction('onAfterSubTopicEdited', tn, user);
-          }
-        });
+  TreeNodes.findById(paramsWhere)
+    .populate('parent')
+    .exec(function (err, tn) {
+      if (err) {
+        return error(err);
       }
-    }
-  });
+      if (!tn) {
+        return error(helper.createError404("Node"));
+      }
+
+      // Don't allow publishing nodes, which parent is private.
+      var isParentPrivate = paramsUpdate.isPrivate == 'false' && (tn.parent && tn.parent.isPrivate === true);
+      if (isParentPrivate) {
+        return error(helper.createError('Cannot publish node. Parent node is private.'));
+      }
+
+      // If node is set to private, update all children to private too
+      if (paramsUpdate.isPrivate == 'true') {
+        // TreeNodes.findAsync({courseId: tn.courseId, isDeleted: false})
+        //   .then(function (nodes) {
+        //
+        //   })
+      }
+
+      _.extend(tn, paramsUpdate);
+
+      tn.save(function (err) {
+        if (err) {
+          debug('failed update node content');
+          return error(err);
+        }
+        success(tn);
+        Plugin.doAction('onAfterSubTopicEdited', tn, user);
+      });
+    });
 };
 
 catalog.prototype.deleteNode = function (error, params, user, success) {
