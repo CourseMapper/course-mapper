@@ -326,7 +326,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
 
 
   $scope.submitEdit = function (comment) {
-    
+
     var config = {
       params: {
         updateId: comment._id,
@@ -531,18 +531,14 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     $http.get(url).success(function (data) {
       //console.log('COMMENTS UPDATED');
       //console.log("url: " + url);
-
-
       $scope.editMode = -1;
       /*for (var i in $scope.comments) {
        var cmnt = $scope.comments[i];
        //cmnt.html = $sce.trustAsHtml(cmnt.html);
-
-
-
        }*/
       $scope.comments = [];
       $scope.replies = [];
+      console.log(data)
 
       for (var item in data.comments) {
         if (data.comments[item].hasParent == false) {

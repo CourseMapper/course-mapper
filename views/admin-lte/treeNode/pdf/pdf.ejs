@@ -175,8 +175,6 @@
                     </div>-->
 
                     <div id="commentList" class="row">
-
-
                         <div class="replies" ng-repeat="comment in comments" ng-cloak>
                             <div class="col-xs-11">
                                 <pdf-comment posted-by="{{comment.author}}"
@@ -195,6 +193,7 @@
                                              author-click-action="authorLabelClick(comment.author)"
                                              ng-hide="editMode == comment._id"
                                              show-commenting-area="true"
+                                             is-private="comment.isPrivate"
                                              comments="replies[comment._id]"
                                              post-comment="submitReply(comment._id)"
                                              recent-submit-on-annotation="(recentSubmitOnAnnotation == comment._id)"

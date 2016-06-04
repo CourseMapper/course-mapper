@@ -12,7 +12,6 @@ app.directive('pdfComment', function ($compile, $timeout) {
       authorClickAction: '&',
       authorClickable: '=',
       postContent: '=',
-      isPrivate: '=',
       isPostOwner: '=',
       postOwner: '=',
       isDeleted: '=',
@@ -25,7 +24,8 @@ app.directive('pdfComment', function ($compile, $timeout) {
       postComment: '&',
       recentSubmitOnAnnotation: '=',
       commentText: '=',
-      removeFunction: '&'
+      removeFunction: '&',
+      isPrivate: '='
     },
     templateUrl: '/partials/pdf-comment.html',
     controller: function ($http, $scope, $rootScope, $sce) {
