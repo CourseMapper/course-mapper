@@ -1,6 +1,7 @@
 var VideoAnnotation = require('./video-annotation');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
+var _ = require('lodash');
 
 var checkHasRightToModify = function (model, user) {
   if (!model || !user || !user.role) {
@@ -11,8 +12,15 @@ var checkHasRightToModify = function (model, user) {
   return isAuthor || isAdmin;
 };
 
-var findByVideoIdAsync = async(function (videoId) {
-  return await(VideoAnnotation.find({video_id: videoId}).sort('start').exec());
+var checkAccess = function (item, user) {
+  return (item.isPrivate !== true || checkHasRightToModify(item, user));
+};
+
+var findByVideoIdAsync = async(function (videoId, user) {
+  var items = await(VideoAnnotation.find({video_id: videoId}).sort('start').exec());
+  return _.filter(items, function (item) {
+    return checkAccess(item, user)
+  });
 });
 
 var findByIdAsync = async(function (id) {
@@ -42,6 +50,8 @@ var updateAsync = async(function (model, user) {
   annotation.position = model.position;
   annotation.size = model.size;
   annotation.type = model.type;
+  annotation.isPrivate = model.isPrivate;
+
   // Update model
   await(annotation.save());
   return annotation;

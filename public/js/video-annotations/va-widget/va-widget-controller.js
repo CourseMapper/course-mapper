@@ -58,6 +58,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         "isDefault": true,
         "isAuthor": true,
         "canEdit": true,
+        "isPrivate": true,
         "start": startTime,
         "end": endTime,
         "position": {
@@ -97,7 +98,12 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       $scope.API = API;
     };
 
-    socket.on('annotations:updated', function (annotations) {
+    socket.on($scope.videoId + ':annotations:invalidate', function (annotations) {
+      socket.emit('annotations:get', {video_id: $scope.videoId});
+    });
+
+    socket.on($scope.videoId + ':annotations:updated', function (annotations) {
+      
       var editedAnnotation = null;
       if ($scope.annotations && $scope.annotations.length > 0) {
         editedAnnotation = _.find($scope.annotations, function (ann) {
