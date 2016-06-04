@@ -852,6 +852,16 @@ li.active .voting .vote-total {
     width: 10px;
 }
 
+.privacy-icon .private {
+    color: #b90000;
+    opacity: 0.75;
+}
+
+.privacy-icon .public {
+    color: #008600;
+    opacity: 0.75;
+}
+
 .collapse-button {
     display: none;
     position: absolute;

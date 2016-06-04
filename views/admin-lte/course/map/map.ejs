@@ -6,8 +6,8 @@
          ng-hide="data.isDeletedForever">
 
         <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
-            <i class="fa fa-lock" ng-show="data.isPrivate"></i>
-            <i class="fa fa-unlock" ng-show="!data.isPrivate"></i>
+            <i class="fa fa-lock private" ng-show="data.isPrivate"></i>
+            <i class="fa fa-unlock public" ng-show="!data.isPrivate"></i>
         </div>
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
