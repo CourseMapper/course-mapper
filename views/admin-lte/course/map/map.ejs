@@ -101,11 +101,17 @@
     <div class="course-control">
         <button data-tooltip="tooltip" title="Center Map"
                 class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)">
-            <i class="ionicons ion-android-locate"></i></button>
-
+            <i class="ionicons ion-android-locate"></i>
+        </button>
         <button data-tooltip="tooltip" title="Information"
                 class="btn btn-default btn-sm" ng-click="showMapInfo()">
-            <i class="ionicons ion-information"></i></button>
+            <i class="ionicons ion-information"></i>
+        </button>
+        <br/>
+        <input type="search" class="form-control search-box"
+               ng-model="queryText"
+               ng-change="lookupInTree()"
+               placeholder="Search..."/>
     </div>
 
     <div class="tree-container">
