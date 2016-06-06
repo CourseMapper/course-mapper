@@ -1,8 +1,6 @@
-app.controller('MapController', function ($scope, $http, $rootScope, authService,
-                                          $timeout, $sce, $location, socket,
-                                          toastr, mapService, courseService, $element,
-                                          collapseService) {
-
+app.controller('MapController', function ($scope, $http, $rootScope, $element, $filter,
+                                          $timeout, $sce, $location, authService, socket,
+                                          toastr, mapService, courseService, collapseService) {
   $scope.treeNodes = [];
   $scope.jsPlumbConnections = [];
   $scope.widgets = [];
@@ -31,12 +29,16 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
    */
   var findNodes = function (obj, col, searchKey, searchValue) {
     var result = [];
+    if (!searchValue)return result;
+
     var findInternal = function (obj, col, searchKey, searchValue) {
       for (var i in obj) {
         var tn = obj[i];
-        if (tn[searchKey] && tn[searchKey] == searchValue) {
+
+        if (tn[searchKey] && tn[searchKey].toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
           result.push(tn);
         }
+
         if (tn[col] && tn[col].length > 0) {
           findInternal(tn[col], col, searchKey, searchValue);
         }
