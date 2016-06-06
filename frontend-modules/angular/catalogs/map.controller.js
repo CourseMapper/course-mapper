@@ -1,6 +1,6 @@
 app.controller('MapController', function ($scope, $http, $rootScope, authService,
                                           $timeout, $sce, $location, socket,
-                                          toastr, mapService, courseService,
+                                          toastr, mapService, courseService, $element,
                                           collapseService) {
 
   $scope.treeNodes = [];
@@ -50,10 +50,17 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
     return findNodes(obj, col, searchKey, searchValue)[0];
   };
 
+  $scope.matchesFound = {};
+
   $scope.lookupInTree = function () {
+    $scope.matchesFound = {};
+
     var items = findNodes($scope.treeNodes, 'childrens', 'name', $scope.queryText);
+    if (items.length <= 0)return;
+
     _.each(items, function (item) {
-      //collapseService.setExpand(item._id);
+      $scope.matchesFound[item._id] = true;
+
       var parent = findNodes($scope.treeNodes, 'childrens', '_id', item.parent)[0];
       while (parent) {
         collapseService.setExpand(parent._id);

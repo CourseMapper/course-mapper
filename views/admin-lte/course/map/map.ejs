@@ -1,9 +1,11 @@
 <script type="text/ng-template" id="tree_item_renderer.html">
-    <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
+    <div class="w {{data.type}}" id="t{{data._id}}"
+         data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
          ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
-         ng-hide="data.isDeletedForever">
+         ng-hide="data.isDeletedForever"
+         ng-style="{'opacity' : (queryText && matchesFound[data._id] !== true) ? 0.25 : 1}">
 
         <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
             <i class="fa fa-lock private" ng-show="data.isPrivate === true"></i>
@@ -107,8 +109,8 @@
                 class="btn btn-default btn-sm" ng-click="showMapInfo()">
             <i class="ionicons ion-information"></i>
         </button>
-        <br/>
         <input type="search" class="form-control search-box"
+               title="Search"
                ng-model="queryText"
                ng-change="lookupInTree()"
                placeholder="Search..."/>
