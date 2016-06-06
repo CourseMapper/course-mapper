@@ -7,10 +7,8 @@
 
                 <pdf-viewer source="{{pdfFile.link}}" current-page-number="1" pdf-id="{{pdfFile._id}}"></pdf-viewer>
 
-
                 <div id="annZoneList" ng-controller="AnnotationZoneListController">
                     <div id="annotationZone">
-
 
                         <pdf-annotation-zone
                                 ng-repeat="(key, item) in annotationZoneList"
@@ -33,20 +31,13 @@
                                 reset-edit-zone-mode="resetEditZoneMode()"
                                 update-ann-zone="updateAnnZone(id)"
                                 remove-annotation-zone="removeAnnotationZone(id)"
-                                add-reference="addReference(id)"
-                        ></pdf-annotation-zone>
-
-
+                                add-reference="addReference(id)"></pdf-annotation-zone>
                     </div>
                 </div>
-
-
             </div>
         </div>
         <div class="posts-list col-sm-4 col-md-4">
-
             <div class="annotation-wrapper">
-
                 <!--<button class="btn btn-default" onclick="switchCommentSubmissionDisplay();">Write comment</button>-->
                 <div class="panel panel-default">
                     <div class="panel-body">
@@ -61,8 +52,6 @@
                                     ng-options="item as item.name for item in orderingOptions"
                                     class="form-control">
                                 <option value="" selected ng-disabled="true">{{orderingOptionsDefault.name}}</option>
-
-
                             </select>
                             <input id="searchInput" placeholder="Search..." class="form-control"
                                    ng-model="rawSearchTerm"></input>
@@ -70,11 +59,8 @@
                     </div>
                 </div>
                 <div id="commentSubmissionDiv" ng-show="writeCommentMode">
-
                     <span class="currentCommentPageClass" ng-click="setPageNumber(annotationSubmitPage)">Annotation for Page {{annotationSubmitPage}}</span>
-
                     <form name="commentForm" ng-submit="submitComment()">
-
                         <fieldset>
                             <div class="control-group">
                                 <div id="rawText" name="rawText"
@@ -150,8 +136,6 @@
                     </button>
                 </div>-->
                 <label id="commentSubmissionResponse"></label>
-
-
             </div>
             <div class="col-xs-12">
                 <div class="filter-wrapper col-xs-2">
@@ -175,7 +159,9 @@
                     </div>-->
 
                     <div id="commentList" class="row">
-                        <div class="replies" ng-repeat="comment in comments" ng-cloak>
+                        <div class="replies"
+                             ng-repeat="comment in comments | filter:(showPersonal === true ? {authorId: currentUser._id} : '' )"
+                             ng-cloak>
                             <div class="col-xs-11">
                                 <pdf-comment posted-by="{{comment.author}}"
                                              post-id="{{comment._id}}"
@@ -231,11 +217,8 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 <script>

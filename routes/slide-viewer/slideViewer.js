@@ -167,7 +167,8 @@ router.get('/disComm', function (req, res, next) {
         date: data[i].dateOfCreation,
         slide: data[i].originSlide,
         html: data[i].renderedText,
-        isPrivate: data[i].isPrivate
+        isPrivate: data[i].isPrivate,
+        authorId:data[i].authorID
       };
     }
     res.status(200).json({result: true, comments: modifiedData});
@@ -212,7 +213,8 @@ router.get('/disComm/:order/:filters/', function (req, res, next) {
         html: data[i].renderedText,
         hasParent: data[i].hasParent,
         parentId: data[i].parentId,
-        isPrivate: data[i].isPrivate
+        isPrivate: data[i].isPrivate,
+        authorId:data[i].authorID
       };
     }
     res.status(200).json({result: true, comments: modifiedData});

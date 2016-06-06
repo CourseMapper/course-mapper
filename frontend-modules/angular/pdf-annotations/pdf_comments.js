@@ -527,6 +527,12 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
     }
   };
 
+  $scope.showPersonal = false;
+
+  $scope.$on('showPersonalPdfAnnotations', function (event, value) {
+    $scope.showPersonal = value;
+  });
+
   $scope.updateScope = function (url) {
     $http.get(url).success(function (data) {
       //console.log('COMMENTS UPDATED');
