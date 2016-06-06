@@ -1,7 +1,9 @@
 'use strict';
 
-videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http', '$location', '$anchorScroll',
-  function ($scope, socket, rootScope, $http, $location, $anchorScroll) {
+videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http', '$location',
+  function ($scope, socket, rootScope, $http, $location) {
+    $scope.user = rootScope.user;
+
     var videoPulse;
     var videoPulseHost = 'https://gomera.informatik.rwth-aachen.de:8447';
     var startTime = 0;
@@ -103,7 +105,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     });
 
     socket.on($scope.videoId + ':annotations:updated', function (annotations) {
-      
+
       var editedAnnotation = null;
       if ($scope.annotations && $scope.annotations.length > 0) {
         editedAnnotation = _.find($scope.annotations, function (ann) {
@@ -181,8 +183,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     $scope.isAMapPersonalChange = function () {
       if ($scope.isAMapPersonal) {
         cuePointsFilter = function (annotation) {
-          var isAuthor = annotation.authorId === rootScope.user._id;
-          return isAuthor;
+          return annotation.authorId === rootScope.user._id;
         };
       }
       else {
