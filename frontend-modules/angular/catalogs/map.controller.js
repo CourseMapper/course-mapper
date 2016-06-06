@@ -55,6 +55,10 @@ app.controller('MapController', function ($scope, $http, $rootScope, authService
   $scope.lookupInTree = function () {
     $scope.matchesFound = {};
 
+    _.each($element.find('._jsPlumb_connector'), function (c) {
+      c.style.opacity = $scope.queryText ? 0.25 : 1.0;
+    });
+
     var items = findNodes($scope.treeNodes, 'childrens', 'name', $scope.queryText);
     if (items.length <= 0)return;
 
