@@ -9,11 +9,7 @@ module.exports = function (io) {
 
   // notifies all users about changes
   var emitAnnotationUpdatedAsync = async(function (videoId) {
-    if (!videoId) {
-      throw 'Invalid video ID: ' + videoId;
-    }
-    var annotations = await(VAController.findByVideoIdAsync(videoId));
-    io.sockets.emit('annotations:updated', annotations);
+    io.sockets.emit(videoId + ':annotations:invalidate');
   });
 
   // Notify users that the annotation
@@ -37,9 +33,11 @@ module.exports = function (io) {
     };
 
     socket.on('annotations:get', async(function (params) {
-      var annotations = await(VAController.findByVideoIdAsync(params.video_id));
+      var user = getUser();
+      var videoId = params.video_id;
+      var annotations = await(VAController.findByVideoIdAsync(videoId, user));
       // return annotations only to requester
-      socket.emit('annotations:updated', annotations);
+      socket.emit(videoId + ':annotations:updated', annotations);
     }));
 
     socket.on('annotations:save', async(function (params) {
@@ -53,8 +51,7 @@ module.exports = function (io) {
           annotation = await(VAController.addAsync(model, user));
           Plugin.doAction('onAfterVideoAnnotationCreated', annotation);
         }
-        var videoId = annotation.video_id;
-        await(emitAnnotationUpdatedAsync(videoId));
+        await(emitAnnotationUpdatedAsync(annotation.video_id));
       }
       catch (e) {
         console.log('Error saving video annotation: ' + e);
@@ -67,9 +64,9 @@ module.exports = function (io) {
         if (!annotation) {
           return;
         }
-        var videoId = annotation.video_id;
-        Plugin.doAction('onAfterVideoAnnotationDeleted', annotation, getUser());
-        await(emitAnnotationUpdatedAsync(videoId));
+        var user = getUser();
+        Plugin.doAction('onAfterVideoAnnotationDeleted', annotation, user);
+        await(emitAnnotationUpdatedAsync(annotation.video_id));
       } catch (e) {
         console.log('Error removing video annotation: ' + e);
       }

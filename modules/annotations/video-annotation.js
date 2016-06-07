@@ -45,7 +45,8 @@ var VideoAnnotationSchema = new mongoose.Schema({
     width: {type: String},
     height: {type: String}
   },
-  comments: [CommentSchema]
+  comments: [CommentSchema],
+  isPrivate: {type: Boolean}
 });
 
 // Define indexes

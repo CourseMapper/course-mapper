@@ -58,11 +58,11 @@
                     <option value="fp">Footprint</option>
                 </select>
             </div>
-            <div ng-show="selectedBar==='va' " class="col-md-3 form-group">
+            <div class="col-md-4 form-group">
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" ng-model="isAMapPersonal" ng-change="isAMapPersonalChange()">
-                        Show my annotations only
+                        Show only personal annotations
                     </label>
                 </div>
             </div>
@@ -96,7 +96,7 @@
     </div>
     <div class="col-xs-12">
         <section class="row" id="annotations-view" ng-show="annotations.length > 0">
-            <div ng-repeat="annotation in annotations | filter:query | orderBy:sortBy">
+            <div ng-repeat="annotation in annotations | filter:query | filter:(isAMapPersonal ? {'authorId': user._id} : '') | orderBy:sortBy">
                 <div class="col-xs-11" id="{{annotation._id}}">
                     <video-annotation ng-mouseover="annotation.isHovered=true"
                                       ng-mouseleave="annotation.isHovered=false"

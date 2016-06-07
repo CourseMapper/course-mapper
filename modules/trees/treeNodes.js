@@ -30,7 +30,8 @@ var treeNodesSchema = new mongoose.Schema({
   createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
   dateAdded: {type: Date},
   dateUpdated: {type: Date},
-  dateDeleted: {type: Date}
+  dateDeleted: {type: Date},
+  isPrivate: {type: Boolean}
 });
 
 // Define indexes
@@ -50,6 +51,4 @@ treeNodesSchema.pre('update', function (next) {
   next();
 });
 
-var tn = mongoose.model('treeNodes', treeNodesSchema);
-
-module.exports = tn;
+module.exports = mongoose.model('treeNodes', treeNodesSchema);

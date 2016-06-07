@@ -359,7 +359,8 @@ li.disabled i {
     text-align: left;
     border: 1px solid #3C8DBC;
     max-width: 200px;
-    min-width: 160px
+    min-width: 160px;
+    background: rgba(255, 255, 225, 1);
 }
 
 .w.contentNode span i {
@@ -841,6 +842,25 @@ li.active .voting .vote-total {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none
+}
+
+.privacy-icon {
+    position: absolute;
+    top: 1px;
+    right: 10px;
+    background: transparent;
+    height: 10px;
+    width: 10px;
+}
+
+.privacy-icon .private {
+    color: #b90000;
+    opacity: 0.75;
+}
+
+.privacy-icon .public {
+    color: #008600;
+    opacity: 0.75;
 }
 
 .collapse-button {

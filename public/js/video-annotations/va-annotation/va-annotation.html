@@ -1,5 +1,9 @@
 <div class="box box-solid">
     <div class="box-body" ng-show="!source.isEditMode">
+        <div class="privacy-icon" ng-show="source.canEdit">
+            <i class="fa fa-lock private" ng-show="source.isPrivate === true"></i>
+            <i class="fa fa-unlock public" ng-show="source.isPrivate !== true"></i>
+        </div>
         <p>
             <span>[{{source.start | msToTime}} - {{source.end | msToTime}}]</span>
             <span class="posted-at">
@@ -38,11 +42,18 @@
             </div>
             <br/>
         </div>
+        <div class="form-control">
+            <label>
+                <input type="checkbox" ng-model="source.isPrivate">
+                Private annotation
+            </label>
+        </div>
     </div>
     <div class="box-footer">
         <div>
             <div class="pull-left" ng-hide="source.isEditMode">
-                <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments' }}</a>
+                <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'
+                    }}</a>
             </div>
             <div class="pull-right" ng-show="source.canEdit && !source.isEditMode">
                 <a class="btn btn-primary btn-xs" ng-click="editAnnotation()">EDIT</a>
@@ -58,7 +69,6 @@
         <div ng-hide="source.isEditMode" id="comments">
             <article ng-show="toggle">
                 <br/>
-
                 <div id="comment-box" class="input-group input-group-sm">
                     <input class="form-control" placeholder="Write a comment..." type="text" ng-model="commentText">
                     <span class="input-group-btn">
