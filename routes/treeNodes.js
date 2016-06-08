@@ -107,7 +107,6 @@ function nodeDetailRender(req,res,next){
 
           var le = _.extend(ret, {activeTabs: activeTabs, isInIframe: isInIframe});
           res.render(theme + '/catalogs/nodeDetail', le);
-          console.log("ALREADY GOT HERE");
       })
       .catch(function (err) {
           helper.resReturn(err, res);
