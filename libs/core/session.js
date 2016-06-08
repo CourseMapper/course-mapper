@@ -200,7 +200,7 @@ function session(app, db, io) {
                          UserRoles: "managers"
                          }*/
                         var l2p = JSON.parse(body);
-
+                        console.log("HERE "+l2p.UserId)
                         if (l2p.UserId) {
                             User.findOne({l2pUserId: l2p.UserId})
                                 .exec(function (err, doc) {

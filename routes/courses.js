@@ -54,7 +54,6 @@ router.get('/courses', function (req, res, next) {
         user: req.user,
         showSidebar: true
     });
-
 });
 
 router.get('/createl2pCourse/:courseId/:courseName' , function (req, res, next) {
@@ -377,7 +376,6 @@ function l2pPrep(req,res,next,courseId,callback){
 
           var roleArray = ["admins","managers","students", "extra", "tutors"];
           var roleIsValid = (roleArray.indexOf(l2pRole) != -1);
-
           if(roleIsValid){
             switch(l2pRole){
                 case "admins":
@@ -427,6 +425,19 @@ function l2pPrep(req,res,next,courseId,callback){
                         callback(false);
                       }
                     });
+                  }
+                });
+              }else{
+                loginL2PUser(req, res,next, currL2pUserId,function(success,logInUser,err){
+                  if(success){
+                    crs.enroll(function(err){
+                      callback(false);
+                    },
+                    {id: logInUser._id},
+                    {id: courseId}, function(followed){console.log("");callback(true)},true);
+                  }
+                  else {
+                    callback(false);
                   }
                 });
               }

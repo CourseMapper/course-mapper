@@ -91,10 +91,10 @@ function getLearningMaterials(token,course_id,callback){
 }
 
 function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,callback){
-    console.log("user id: "+userid);
+    /*console.log("user id: "+userid);
     console.log("course_id: "+course_id);
     console.log("cid_internal: "+cid_internal);
-    console.log("token: "+token);
+    console.log("token: "+token);*/
     var dir = './temp';
     //console.log(userid);
     if (!fs.existsSync(dir)){
@@ -105,7 +105,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
 
         if (!dataSet[i].isDirectory){
             filename = dataSet[i].fileInformation.fileName;
-            console.log("File Name: "+filename)
+            /*console.log("File Name: "+filename)*/
             downloadUrl = dataSet[i].fileInformation.downloadUrl;
             is_root = false;
             if (dataSet[i].itemId == dataSet[i].parentFolderId){
@@ -113,7 +113,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                 is_root = true;
             } else {
                 fullPath = dataSet[i].sourceDirectory;
-                console.log("Full Path: "+fullPath);
+                /*console.log("Full Path: "+fullPath);*/
                 fullPath = fullPath.split("Lists/StructuredMaterials/")[1];
                 folders = fullPath.split("/");
 
@@ -124,15 +124,15 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                          var inserted = 0;
                         for (var j = 0; j < folders.length; j++){
                             current_folder = folders[j];
-                            console.log('current folder: '+current_folder)
+                            //console.log('current folder: '+current_folder)
 
                             var node = await(TreeNodes.findOne({name: folders[j],courseId:cid_internal}).exec());
 
                             if(node){
-                                console.log("tree node '"+ current_folder +"' found");
+                                //console.log("tree node '"+ current_folder +"' found");
                             } else {
-                                console.log("tree node '"+ current_folder +"' not found");
-                                console.log('last node: '+lastNode);
+                                //console.log("tree node '"+ current_folder +"' not found");
+                                //console.log('last node: '+lastNode);
                                 node = await(addSubTopicNode(current_folder,userid,cid_internal,lastNode));
                                 //console.log(node)
                             }
@@ -143,7 +143,7 @@ function downloadLearningMaterials(token,course_id,cid_internal,dataSet, userid,
                         }
                         var node = await(TreeNodes.findOne({name: filename,courseId:cid_internal}).exec());
                         if (node){
-                          console.log("content node: "+filename+" already exists")
+                          //console.log("content node: "+filename+" already exists")
                         } else {
 
                           parent = lastNode;
