@@ -41,8 +41,9 @@ app.controller('ReviewAssignmentController', function($scope, $http, toastr, $wi
         }
         console.log($scope.user, $scope.solution)
 
-        var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + vId + '/reviews';
+        var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + vId + '/reviews/assign';
         $http.post(url, {assignedTo: $scope.user, solutionId: $scope.solution}).then(function(response) {
+            console.log($scope.solution)
             if(response && response.data && response.data.result) {
                 toastr.success('Review successfully created');
                 window.location.reload();

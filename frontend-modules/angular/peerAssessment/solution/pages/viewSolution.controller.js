@@ -43,6 +43,15 @@ app.controller('ViewSolutionController', function($scope, $location, $http, toas
                             clickParams: $scope.solution._id,
                             title: '&nbsp;&nbsp; <i class="ionicons ion-ios-trash"></i> &nbsp; DELETE',
                             aTitle: 'Delete Solution'
+                        },
+                        {
+                            separator: true
+                        },
+                        {
+                            clickAction: $scope.giveFeedback,
+                            clickParams: $scope.solution._id,
+                            title: '&nbsp;&nbsp; <i class="ionicons ion-checkmark-circled"></i> &nbsp; FEEDBACK',
+                            aTitle: 'Feedback'
                         }
                     );
                 }

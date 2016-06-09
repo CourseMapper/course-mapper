@@ -34,6 +34,21 @@
         <% include peerReview/components/rubrics/viewRubricModal %>
     <div>
 </script>
+<script type="text/ng-template" id="reviewSubmission.tpl">
+    <% include review/pages/reviewSubmission%>
+</script>
+<script type="text/ng-template" id="adminFeedback.tpl">
+    <div ng-controller="AdminFeedbackController">
+        <% include review/pages/adminFeedback %>
+        <% include review/modals/viewReviewModal %>
+    </div>
+</script>
+<script type="text/ng-template" id="viewFeedback.tpl">
+    <div ng-controller="ViewFeedbackController">
+        <% include review/pages/viewFeedback %>
+        <% include review/modals/viewReviewModal %>
+    </div>
+</script>
 <script type="text/ng-template" id="main.tpl">
     <div>
         <div class="col-md-11">

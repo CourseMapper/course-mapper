@@ -196,7 +196,7 @@ solutions.prototype.editSolution = function(error, params, files, success) {
 */
 solutions.prototype.getSolutionWithLean = function (error, params, success) {
     Solution.findOne(params)
-        .lean().exec(function (err, doc) {
+        .populate('peerReviewId').lean().exec(function (err, doc) {
         if (err) {
             error(err);
         } else {

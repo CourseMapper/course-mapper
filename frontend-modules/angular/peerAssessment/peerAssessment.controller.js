@@ -139,8 +139,12 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
         })
     }
 
-    $scope.viewSolution = function(solution) {
-        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolution&vId=' + solution._id;
+    $scope.giveFeedback = function(solutionId) {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=giveFeedback&vId=' + solutionId;
+    }
+
+    $scope.viewSolution = function(solutionId) {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolution&vId=' + solutionId;
     }
 
     $scope.viewAllSolutions = function() {
@@ -214,6 +218,15 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
             } else if($scope.vName == 'manageRubrics') {
                 $scope.currentView = 'manageRubrics.tpl'
                 $scope.manageBreadCrumb('Manage Rubrics');
+            } else if($scope.vName == 'reviewSubmission') {
+                $scope.currentView = 'reviewSubmission.tpl'
+                $scope.manageBreadCrumb('Submit Review');
+            } else if($scope.vName == 'giveFeedback') {
+                $scope.currentView = 'adminFeedback.tpl'
+                $scope.manageBreadCrumb('Feedback')
+            }  else if($scope.vName == 'viewFeedback') {
+                $scope.currentView = 'viewFeedback.tpl'
+                $scope.manageBreadCrumb('View Feedback')
             }
         } else {
             $scope.currentView = 'main.tpl';

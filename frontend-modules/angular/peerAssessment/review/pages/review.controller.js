@@ -11,7 +11,7 @@ app.controller('ReviewController', function($scope, $http, ActionBarService, toa
     }
 
     var requestData = function() {
-        var url = '/api/peerassessment/' + $scope.course._id + '/rubrics';
+        var url = '/api/peerassessment/' + $scope.course._id + '/reviews?rName=RCRequestData';
         $http.get(url).then( function(response) {
             _.each(response.data.reviews, function(solution) {
                 // do something if needed
@@ -31,5 +31,6 @@ app.controller('ReviewController', function($scope, $http, ActionBarService, toa
             event.stopPropagation();
         }
         console.log('Opening Review: ', review);
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + review._id;
     }
 })

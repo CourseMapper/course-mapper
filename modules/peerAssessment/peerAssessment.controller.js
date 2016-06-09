@@ -134,6 +134,12 @@ peerAssessment.prototype.editPeerReview = function (error, params, files, succes
                 function (isAllowed) {
                     if (isAllowed) {
 
+                        if(params.reviewSettings.rubrics) {
+                            _.map(params.reviewSettings.rubrics, function(r) {
+                                return mongoose.Types.ObjectId(r)
+                            })
+                        }
+
                         peerReview.title = params.title;
                         peerReview.description = params.reviewDescription;
                         peerReview.groupSubmission = params.groupSubmission;
@@ -265,6 +271,11 @@ peerAssessment.prototype.addPeerReview = function (error, params, files, success
 
         function (isAllowed) {
             if (isAllowed) {
+                if(params.reviewSettings.rubrics) {
+                    _.map(params.reviewSettings.rubrics, function(r) {
+                        return mongoose.Types.ObjectId(r)
+                    })
+                }
 
                 var peerReview = new PeerReview({
                     title: params.title,

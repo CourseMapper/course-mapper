@@ -91,6 +91,14 @@ app.controller('ViewPeerReviewController', function($scope, $location, $http, to
                         clickParams: $scope.viewReview,
                         title: '&nbsp;&nbsp; <i class="ionicons ion-ios-paper"></i> &nbsp; ADD/EDIT SOLUTION',
                         aTitle: 'Add/Edit Solution'
+                    },
+                    {
+                        separator: true
+                    },
+                    {
+                        clickAction: function() { window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewFeedback&vId=' + $scope.viewReview._id; },
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-checkmark-circled"></i> &nbsp; VIEW FEEDBACK',
+                        aTitle: 'View Feedback'
                     }
                 );
             }

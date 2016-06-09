@@ -41,7 +41,7 @@ var peerReviewSchema = new mongoose.Schema({
             type: Number,
             required: true
         },
-        rubrics: [{ type: String }]
+        rubrics: [{ type: mongoose.Schema.Types.ObjectId, ref: 'rubrics' }]
     },
     dateAdded: { type: Date },
     dateUpdated: { type: Date }

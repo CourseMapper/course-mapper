@@ -7,7 +7,7 @@ var reviews = require(appRoot + '/modules/peerAssessment/reviews.controller.js')
 var rubrics = require(appRoot + '/modules/peerAssessment/rubrics.controller.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
-var debug = require('debug')('pa:route');
+var debug = require('debug')('cm:server');
 var moment = require('moment');
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty();
@@ -83,7 +83,6 @@ router.post('/peerassessment/:courseId/rubrics/:id', function(req, res) {
  * fetch all rubrics
  */
 router.get('/peerassessment/:courseId/rubrics', function(req, res) {
-    // Start from here **************************************************
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -162,9 +161,9 @@ router.get('/peerassessment/:courseId/peerreviews/:pRId/reviews/new',
 
 /**
  * POST
- * create review
+ * assign review
  */
-router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews',
+router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/assign',
     function(req, res) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -179,6 +178,39 @@ router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews',
             req.body.solutionId = mongoose.Types.ObjectId(req.body.solutionId);
 
         var sr = new reviews();
+        sr.assignReview(
+            function(err) {
+                debug('Review:: Assignment =>', err);
+                res.status(200).json({result: false, errors: [err.message]});
+            },
+            // parameters
+            req.body,
+
+            function () {
+                res.status(200).json({result: true});
+            }
+        )
+    });
+
+/**
+ * POST
+ * add review
+ */
+router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/add',
+    multipartyMiddleware,
+    function(req, res) {
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+        req.body.reviewId = mongoose.Types.ObjectId(req.params.pRId);
+        if(req.body.solutionId)
+            req.body.solutionId = mongoose.Types.ObjectId(req.body.solutionId);
+
+        debug('Request Body =>', req.body)
+        var sr = new reviews();
         sr.addReview(
             function(err) {
                 console.log(err);
@@ -186,6 +218,39 @@ router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews',
             },
             // parameters
             req.body,
+            req.files,
+
+            function () {
+                res.status(200).json({result: true});
+            }
+        )
+    });
+
+/**
+ * PUT
+ * update review
+ */
+router.put('/peerassessment/:courseId/reviews/:id',
+    multipartyMiddleware,
+    function(req, res) {
+        console.log('PUT INVOKED')
+        if (!req.user) {
+            return res.status(401).send('Unauthorized');
+        }
+
+        req.body.userId = mongoose.Types.ObjectId(req.user._id);
+        req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+        req.body.reviewId = mongoose.Types.ObjectId(req.params.id);
+
+        var sr = new reviews();
+        sr.editReview(
+            function(err) {
+                console.log(err);
+                res.status(200).json({result: false, errors: [err.message]});
+            },
+            // parameters
+            req.body,
+            req.files,
 
             function () {
                 res.status(200).json({result: true});
@@ -231,10 +296,42 @@ router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
     }
 
     req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
-    var isAdmin = await(userHelper.isCourseAuthorizedAsync({userId: req.user._id, courseId: req.params.courseId}))
-    if (!isAdmin) {
-        req.body.assignedTo = mongoose.Types.ObjectId(req.user._id)
+    // For view Feedback page
+    if(req.query.rName == 'VFCFetchReviews') {
+        if(req.query.peerReviewId) {
+            req.body.peerReviewId = mongoose.Types.ObjectId(req.query.peerReviewId)
+            req.body.submittedBy = mongoose.Types.ObjectId(req.user._id)
+            req.body.isSubmitted = true
+        }
     }
+    // For admin Feedback page
+    if(req.query.rName == 'AFCFetchPeerReviews') {
+        if(req.query.solutionId)
+            req.body.solutionId = mongoose.Types.ObjectId(req.query.solutionId)
+        if(req.query.isAdminReview) {
+            switch((req.query.isAdminReview).toLowerCase().trim()) {
+                case "true": case "yes": case "1": req.body.isAdminReview = true; break;
+                case "false": case "no": case "0": case null: req.body.isAdminReview = false; break;
+                default: req.body.isAdminReview = Boolean(req.query.isAdminReview);
+            }
+        }
+        if(req.body.isAdminReview == true) {
+            req.body.assignedTo = mongoose.Types.ObjectId(req.user._id)
+        }
+        if(req.query.isSubmitted && req.body.isAdminReview == false)
+            req.body.isSubmitted = Boolean(req.query.isSubmitted)
+    }
+
+    // for lists in Assigned reviews section
+    if(req.query.rName == 'RCRequestData') {
+        var isAdmin = await(userHelper.isCourseAuthorizedAsync({userId: req.user._id, courseId: req.params.courseId}))
+        if (!isAdmin && !req.query.peerReviewId) {
+            req.body.assignedTo = mongoose.Types.ObjectId(req.user._id)
+        } else  {
+            req.body.isAdminReview = false
+        }
+    }
+    debug('Request body =>', req.body)
     var sr = new reviews();
     sr.getReviews(
         function (err) {
@@ -243,6 +340,33 @@ router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
         req.body,
         function (reviews) {
             res.status(200).json({result: true, reviews: reviews});
+        }
+    )
+}))
+
+/**
+ * GET
+ * fetch review
+ */
+router.get('/peerassessment/:courseId/reviews/:id', async(function(req, res) {
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+
+    req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    req.body._id = mongoose.Types.ObjectId(req.params.id)
+    var isAdmin = await(userHelper.isCourseAuthorizedAsync({userId: req.user._id, courseId: req.params.courseId}))
+    if (!isAdmin) {
+        req.body.assignedTo = mongoose.Types.ObjectId(req.user._id)
+    }
+    var sr = new reviews();
+    sr.getReview(
+        function (err) {
+            helper.resReturn(err, res);
+        },
+        req.body,
+        function (review) {
+            res.status(200).json({result: true, review: review});
         }
     )
 }))
@@ -354,7 +478,6 @@ router.get('/peerassessment/:courseId/solutions/:id',
         var params = {
             _id: mongoose.Types.ObjectId(req.params.id)
         }
-
         rs.getSolutionWithLean(
             function (err) {
                 console.log(err);
