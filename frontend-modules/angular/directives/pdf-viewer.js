@@ -131,10 +131,10 @@ app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $loc
       $rootScope.switchShowAnnoZones = "On";
 
       $scope.isAMapPersonalChange = function () {
+        $scope.$emit('showPersonalPdfAnnotations', $scope.config.countMap.isPersonal);
         if ($scope.config.countMap.isPersonal) {
           $scope.config.countMap.filter = function (annotation) {
-            var isAuthor = annotation.authorId === $rootScope.user._id;
-            return isAuthor;
+            return annotation.authorId === $rootScope.user._id;
           };
         }
         else {

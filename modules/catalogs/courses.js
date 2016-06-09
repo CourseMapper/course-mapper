@@ -25,7 +25,8 @@ var courseSchema = new mongoose.Schema({
   courseTags: [{type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
   isDeleted: {type: Boolean},
   dateAdded: {type: Date},
-  dateUpdated: {type: Date}
+  dateUpdated: {type: Date},
+  totalEnrollment: {type: Number}
 });
 
 // Define indexes

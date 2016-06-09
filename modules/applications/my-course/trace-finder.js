@@ -9,7 +9,7 @@ var UserCourses = require('../../catalogs/userCourses.js');
 var Courses = require('../../catalogs/courses');
 var Tree = require('../../trees/index.js');
 
-// var VideoAnnotation = require('../../modules/annotations/video-annotation');
+//var VideoAnnotation = require('../../modules/annotations/video-annotation');
 // var PdfAnnotation = require('../../modules/slide-viewer/annotation');
 // var Categories = require('../../modules/catalogs/categories');
 // var Resources = require('../../modules/trees/resources');
@@ -18,12 +18,25 @@ var Tree = require('../../trees/index.js');
 var TraceFinder = function () {
   this.findAsync = function (userId) {
 
+    // Traverse via recursion
+    // var getAnnotations = function (children, callback) {
+    //   _.each(children, function (node) {
+    //     if (node.resources) {
+    //
+    //     }
+    //
+    //     if (node.childrens) {
+    //       getAnnotations(node.childrens, callback);
+    //     }
+    //   });
+    // };
+
     var loadTreeData = function (courses) {
       var tr = new Tree();
-      var p = [];
+      var promises = [];
 
       courses.forEach(function (c) {
-        p.push(new Promise(function (resolve, reject) {
+        promises.push(new Promise(function (resolve, reject) {
           tr.getTreeNodes(reject, {courseId: c._id},
             function (tree) {
               var co = c.toObject();
@@ -32,7 +45,7 @@ var TraceFinder = function () {
             });
         }));
       });
-      return Promise.all(p);
+      return Promise.all(promises);
     };
 
     var loadCreatedCourses = Courses
