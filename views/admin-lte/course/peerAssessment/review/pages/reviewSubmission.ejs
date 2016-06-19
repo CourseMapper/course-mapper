@@ -29,7 +29,7 @@
                                             <label class="col-sm-5 control-label">Solution Documents</label>
                                             <div class="col-sm-6 control-label" style="text-align: left;">
                                                 <div class="label label-info" ng-repeat="doc in solutionDocumentsList">
-                                                    <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                                    <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -76,7 +76,7 @@
                                                 </div>
                                                 <div ng-repeat="doc in review.displayDocumentsList">
                                                     <div class="label label-info">
-                                                        <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
+                                                        <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
                                                     </div>
                                                     &nbsp;
                                                     <a href="" ng-click="deleteUploadedFiles(doc.link)"> <i class="ion-close-round"></i></a>

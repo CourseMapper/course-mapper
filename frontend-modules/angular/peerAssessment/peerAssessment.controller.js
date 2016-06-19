@@ -117,23 +117,27 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
 
         $http(config).then(function(response) {
             console.log('response', response);
-            $scope.solutionObj = response.data.solution;
-            if(paramsObj.path !== 'solutionList') {
-                $scope.solutionObj.peerReviewTitle = response.data.title;
-            }
+            if (response.data.result) {
+                $scope.solutionObj = response.data.solution;
+                if (paramsObj.path !== 'solutionList') {
+                    $scope.solutionObj.peerReviewTitle = response.data.title;
+                }
 
-            if($scope.solutionObj && $scope.solutionObj.solutionDocuments && $scope.solutionObj.solutionDocuments.length>0) {
-                $scope.solutionObj.displayDocumentsList = [];
-                _.each($scope.solutionObj.solutionDocuments, function(docName) {
-                    var temp = {};
-                    temp.link = window.location.origin + docName;
-                    var tempArr = docName.split('/');
-                    temp.name = tempArr[tempArr.length-1];
-                    $scope.solutionObj.displayDocumentsList.push(temp);
-                })
-            }
+                if ($scope.solutionObj && $scope.solutionObj.solutionDocuments && $scope.solutionObj.solutionDocuments.length > 0) {
+                    $scope.solutionObj.displayDocumentsList = [];
+                    _.each($scope.solutionObj.solutionDocuments, function (docName) {
+                        var temp = {};
+                        temp.link = window.location.origin + docName;
+                        var tempArr = docName.split('/');
+                        temp.name = tempArr[tempArr.length - 1];
+                        $scope.solutionObj.displayDocumentsList.push(temp);
+                    })
+                }
 
-            $('#addEditSolutionModal').modal('show');
+                $('#addEditSolutionModal').modal('show');
+            } else {
+                toastr.warning('Deadline has been passed. Unable to upload the solution');
+            }
         }, function(err) {
             console.log('err', err);
         })

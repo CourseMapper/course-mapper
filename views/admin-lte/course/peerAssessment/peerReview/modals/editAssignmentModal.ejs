@@ -67,7 +67,7 @@
                                                         </div>
                                                         <div ng-repeat="doc in newAssignObj.displayDocumentsList">
                                                             <div class="label label-info">
-                                                                <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
+                                                                <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
                                                             </div>
                                                             &nbsp;
                                                             <a href="" ng-click="deleteUploadedFiles(doc.link)"> <i class="ion-close-round"></i></a>
@@ -138,7 +138,7 @@
                                                         </div>
                                                         <div ng-repeat="doc in newAssignObj.displaySolutionsList">
                                                             <div class="label label-info">
-                                                                <a href="{{doc.link}}" target="_blank" style="color: white"> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
+                                                                <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
                                                             </div>
                                                             &nbsp;
                                                             <a href="" ng-click="deleteUploadedSolutions(doc.link)"> <i class="ion-close-round"></i></a>

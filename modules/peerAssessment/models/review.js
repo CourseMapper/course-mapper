@@ -10,6 +10,8 @@ var reviewSchema = new mongoose.Schema({
     rubricReview:   mongoose.Schema.Types.Mixed,
     isSubmitted: { type: Boolean },
     isAdminReview : { type: Boolean },
+    isSecondLoop : { type: Boolean },
+    oldReviewId : { type: mongoose.Schema.Types.ObjectId, ref: 'reviews' },
     assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
     submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true },
     solutionId: { type: mongoose.Schema.Types.ObjectId, ref: 'solutions', required: true },

@@ -59,69 +59,77 @@ solutions.prototype.addSolution = function(error, params, success) {
             var err = new Error('No such Peer review exists');
             error(err);
             return;
-
         }
-        Solution.findOne({
-            courseId: mongoose.Types.ObjectId(params.courseId),
-            peerReviewId: mongoose.Types.ObjectId(params.reviewId),
-            createdBy: mongoose.Types.ObjectId(params.userId),
-        }).exec(function(err,doc) {
-            if(err) {
-                error(err)
-            }
-            if(doc) {
-                console.log('Found Solution: ', doc);
-                success(doc, peerReview.title);
-            } else {
-                // its a new solution
-                Solution.find({
-                    courseId: mongoose.Types.ObjectId(params.courseId),
-                }).limit(1).sort({_id: -1}).exec(function(err, doc) {
-                    if(err) {
-                        console.log('Error', err);
-                        error(err);
-                        return;
-                    }
-                    var title = 'S01';
-                    if(doc.length>0) {
-                        console.log('Doc', doc);
-                        title = doc[0].title;
-                        var tempArr = title.split('S')
-                        var temp = parseInt(tempArr[1]);
-                        temp = temp + 1;
-                        title = temp.toString();
-                        if(temp < 10) {
-                            title = 'S0' + temp.toString();
-                        } else  {
-                            title = 'S' + temp.toString();
-                        }
-                    }
 
-                    var solution = new Solution({
-                        title: title,
-                        createdBy: mongoose.Types.ObjectId(params.userId),
+        var now = new Date()
+        console.log(now, peerReview.dueDate)
+        if (now < peerReview.dueDate || (peerReview.reviewSettings.loop == 'multiple' && now > peerReview.reviewSettings.reviewEndDate && now < peerReview.reviewSettings.secondDueDate)) {
+            Solution.findOne({
+                courseId: mongoose.Types.ObjectId(params.courseId),
+                peerReviewId: mongoose.Types.ObjectId(params.reviewId),
+                createdBy: mongoose.Types.ObjectId(params.userId),
+            }).exec(function (err, doc) {
+                if (err) {
+                    error(err)
+                }
+                if (doc) {
+                    console.log('Found Solution: ', doc);
+                    success(doc, peerReview.title);
+                } else {
+                    // its a new solution
+                    Solution.find({
                         courseId: mongoose.Types.ObjectId(params.courseId),
-                        //peerReviewTitle: peerReview.title,
-                        peerReviewId: mongoose.Types.ObjectId(params.reviewId),
-                        isSubmitted: false,
-                        studentName: params.username
-                    });
-
-                    solution.save(function (err, doc) {
+                    }).limit(1).sort({_id: -1}).exec(function (err, doc) {
                         if (err) {
-                            console.log('err', err);
+                            console.log('Error', err);
                             error(err);
+                            return;
                         }
-                        else {
-                            console.log('Solution', doc);
-                            // adding peer review title
-                            // doc.peerReviewTitle = peerReview.title;
-                            success(doc, peerReview.title);
+                        var title = 'S01';
+                        if (doc.length > 0) {
+                            console.log('Doc', doc);
+                            title = doc[0].title;
+                            var tempArr = title.split('S')
+                            var temp = parseInt(tempArr[1]);
+                            temp = temp + 1;
+                            title = temp.toString();
+                            if (temp < 10) {
+                                title = 'S0' + temp.toString();
+                            } else {
+                                title = 'S' + temp.toString();
+                            }
                         }
-                    });
-                })
-            }
-        })
+
+                        var solution = new Solution({
+                            title: title,
+                            createdBy: mongoose.Types.ObjectId(params.userId),
+                            courseId: mongoose.Types.ObjectId(params.courseId),
+                            //peerReviewTitle: peerReview.title,
+                            peerReviewId: mongoose.Types.ObjectId(params.reviewId),
+                            isSubmitted: false,
+                            studentName: params.username
+                        });
+
+                        solution.save(function (err, doc) {
+                            if (err) {
+                                console.log('err', err);
+                                error(err);
+                            }
+                            else {
+                                console.log('Solution', doc);
+                                // adding peer review title
+                                // doc.peerReviewTitle = peerReview.title;
+                                success(doc, peerReview.title);
+                            }
+                        });
+                    })
+                }
+            })
+        } else  {
+            var err = new Error('Deadline has passed. Cannot submit now')
+            error(err)
+            return
+        }
     });
 }
 

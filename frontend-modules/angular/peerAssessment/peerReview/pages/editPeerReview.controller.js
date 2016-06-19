@@ -172,8 +172,6 @@ app.controller('EditPeerReviewController', function($scope, $http, toastr, $wind
                     toastr.error('Updating Peer Review Failed');
                 }
                 $scope.isLoading = false;
-                $('#addNewAssignmentModal').modal('hide');
-
                 window.location.reload();
             })
             .error(function (data) {

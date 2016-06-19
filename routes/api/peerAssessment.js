@@ -15,7 +15,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var async = require('asyncawait/async');
 var await = require('asyncawait/await');
-
+var _ = require('lodash');
 
 
 
@@ -252,8 +252,8 @@ router.put('/peerassessment/:courseId/reviews/:id',
             req.body,
             req.files,
 
-            function () {
-                res.status(200).json({result: true});
+            function (reviewId) {
+                res.status(200).json({result: true, reviewId: reviewId});
             }
         )
     });
@@ -339,6 +339,20 @@ router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
         },
         req.body,
         function (reviews) {
+            if(req.query.rName == 'RCRequestData') {
+                var now = new Date()
+                reviews = _.each(reviews, function(review) {
+                    var reviewSettings = review.peerReviewId.reviewSettings
+                    if(reviewSettings.loop == 'multiple') {
+                        if(now >= reviewSettings.reviewStartDate && now < reviewSettings.reviewEndDate) {
+                            review.loop = 'First'
+                        } else {
+                            review.loop = 'Second'
+                        }
+                    }
+                    debug(review, review.loop)
+                })
+            }
             res.status(200).json({result: true, reviews: reviews});
         }
     )
@@ -625,13 +639,17 @@ router.get('/peerassessment/:courseId/peerreviews/:id',
  * GET
  * fetch all peer reviews
  */
-router.get('/peerassessment/:courseId/peerreviews', function(req, res) {
+router.get('/peerassessment/:courseId/peerreviews', async(function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
 
     var pa = new peerAssessment();
     req.body.courseId = mongoose.Types.ObjectId(req.params.courseId);
+    var isAdmin = await(userHelper.isCourseAuthorizedAsync({userId: req.user._id, courseId: req.params.courseId}))
+    if (!isAdmin) {
+        req.body.publicationDate = {"$lte": new Date()}
+    }
     pa.getPeerReviews(
         function (err) {
             helper.resReturn(err, res);
@@ -641,7 +659,7 @@ router.get('/peerassessment/:courseId/peerreviews', function(req, res) {
             res.status(200).json({result: true, peerreviews: peerreviews});
         }
     )
-})
+}))
 
 /**
  * DELETE

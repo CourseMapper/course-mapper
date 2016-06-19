@@ -39,12 +39,26 @@ app.controller('AdminFeedbackController', function($scope, $http, toastr, $windo
         })
     }
 
+    var reviews;
     var fetchPeerReviews = function() {
         var url = '/api/peerassessment/' + $scope.course._id + '/reviews?rName=AFCFetchPeerReviews&solutionId=' + vId + '&isAdminReview=false&isSubmitted=true';
         $http.get(url).then( function(response) {
             console.log('Students', response)
             if(response.data.reviews) {
-                $scope.reviews = response.data.reviews
+                reviews = response.data.reviews
+                var oldReviewsID = []
+                _.each(reviews, function(review) {
+                    // handling removal of old reviews if there is a second loop review
+                    if(review.oldReviewId) {
+                        oldReviewsID.push(review.oldReviewId)
+                    }
+                });
+                $scope.reviews = _.filter(reviews, function(review) {
+                    if (_.indexOf(oldReviewsID, review._id) == -1 || review.isSecondLoop) {
+                        return review
+                    }
+                })
+                //$scope.reviews = response.data.reviews
             }
         }, function(err){
             // Check for proper error message later
@@ -171,6 +185,15 @@ app.controller('AdminFeedbackController', function($scope, $http, toastr, $windo
             })
         }
         $scope.peerReview = review
+
+        if(review.isSecondLoop && review.oldReviewId) {
+            reviews.every(function(r) {
+                if(review.oldReviewId == r._id) {
+                    $scope.firstReview = r
+                    return
+                }
+            })
+        }
         console.log(review);
         $('#viewReviewModal').modal('show');
     }

@@ -96,7 +96,7 @@ reviews.prototype.populateReviewAssignmentData = function (error, params, succes
 }
 
 reviews.prototype.getReviews = function(error, params, success) {
-    Review.find(params).populate('peerReviewId assignedTo solutionId submittedBy').exec(function(err, docs) {
+    Review.find(params).populate('peerReviewId assignedTo solutionId submittedBy').lean().exec(function(err, docs) {
         if(err) {
             error(err)
         } else {
@@ -255,6 +255,71 @@ reviews.prototype.addReview = function(error, params, files, success) {
     )
 }
 
+reviews.prototype.addSecondReview = function(error, params, oldReview, files, success) {
+    var self = this
+    var solution = await(Solution.findOne({_id: oldReview.solutionId}).exec())
+    if(!solution) {
+        error(new Error('Invalid Solution'))
+    }
+    var review = new Review({
+        peerReviewId: oldReview.peerReviewId,
+        courseId: oldReview.courseId,
+        solutionId: oldReview.solutionId,
+        isAdminReview: false,
+        assignedTo: oldReview.assignedTo,
+        submittedBy: oldReview.submittedBy,
+        isSubmitted: true,
+        comments : params.comments,
+        marksObtained : params.marksObtained,
+        documents : params.documents || [],
+        isSecondLoop : true,
+        oldReviewId : oldReview._id,
+        rubricReview : params.rubricReview
+    })
+    // TODO: add review files to it own folder
+    if(files && files.file) {
+        var reviewDocuments = files.file[0].reviewDocuments
+        if(reviewDocuments && reviewDocuments.constructor == Array) {
+            for (var i in reviewDocuments) {
+                var f = reviewDocuments[i];
+                self.saveResourceFile(error,
+                    f,
+                    'review',
+                    oldReview,
+                    function (fn) {
+                        var duplicate = false;
+                        _.each(review.documents, function (doc) {
+                            if (fn == doc) {
+                                duplicate = true;
+                            }
+                        })
+                        if (!duplicate) {
+                            review.documents.push(fn);
+                        }
+                    })
+            }
+        }
+    }
+    _.each(params.deletedUploadedFiles, function(filePath) {
+        fs.unlink(appRoot + '/public/' + filePath, function(err) {
+            if(err) {
+                debug(err);
+            }
+            debug("File deleted successfully");
+        });
+    })
+    review.save(function (err, res) {
+        if (err) {
+            debug('failed saving new review');
+            error(err);
+        }
+        else {
+            debug('review saved successfully', res);
+            success(res._id);
+        }
+    });
+}
+
 reviews.prototype.editReview = function(error, params, files, success) {
     var self = this;
 
@@ -264,7 +329,7 @@ reviews.prototype.editReview = function(error, params, files, success) {
 
     Review.findOne({
         _id: params.reviewId
-    }).exec(async(function(err, review) {
+    }).populate('peerReviewId').exec(async(function(err, review) {
         var isAdmin = await(userHelper.isCourseAuthorizedAsync({userId: params.userId, courseId: params.courseId}))
 
         if ((review.assignedTo.toString != params.userId.toString) && !isAdmin) {
@@ -274,13 +339,34 @@ reviews.prototype.editReview = function(error, params, files, success) {
             // Start working from here
             // Admin check should be added and review date as well
         }
+        if(!isAdmin) {
+            var now = new Date();
+            var reviewSettings = review.peerReviewId.reviewSettings;
+            var isReviewTime = false
+            if((now > reviewSettings.reviewStartDate && now < reviewSettings.reviewEndDate) || (reviewSettings.loop == 'multiple' && now > reviewSettings.secondReviewStartDate && now < reviewSettings.secondReviewEndDate )) {
+                isReviewTime = true
+            }
+            if(!isReviewTime) {
+                var err = new Error('Deadline has passed. Cannot submit review now')
+                error(err)
+                return
+            }
+            if(reviewSettings.loop == 'multiple' && now > reviewSettings.secondReviewStartDate && now < reviewSettings.secondReviewEndDate) {
+                // Creating another record for 2nd loop
+                if(!review.isSecondLoop) {
+                    self.addSecondReview(error, params, review, files, success)
+                    return
+                }
+            }
+        }
         review.comments = params.comments
         review.marksObtained = params.marksObtained
         review.documents = params.documents || []
         review.rubricReview = params.rubricReview
         review.isSubmitted = true
-        console.log(review)
-        console.log('Review files', files)
+
+        //console.log(review)
+        //console.log('Review files', files)
         if(files && files.file) {
             var reviewDocuments = files.file[0].reviewDocuments
             if(reviewDocuments && reviewDocuments.constructor == Array) {
@@ -319,7 +405,7 @@ reviews.prototype.editReview = function(error, params, files, success) {
             }
             else {
                 debug('review saved successfully');
-                success();
+                success(res._id);
             }
         });
     }))
@@ -363,7 +449,7 @@ reviews.prototype.saveResourceFile = function (error, file, type, helper, succes
     //    // extension not right
     //    error(new Error("File extension not right"));
     //} else {
-        var fn = '/pa/'+ helper.courseId +'/'+ helper.peerReviewId+'/'+ type +'/'+ helper._id +'/'+ file.name;
+        var fn = '/pa/'+ helper.courseId +'/'+ helper.peerReviewId._id+'/'+ type +'/'+ helper._id +'/'+ file.name;
         var dest = appRoot + '/public/'+ fn;
         try {
             handleUpload(file, dest, true);

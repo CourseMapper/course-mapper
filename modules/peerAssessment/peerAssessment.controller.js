@@ -148,14 +148,14 @@ peerAssessment.prototype.editPeerReview = function (error, params, files, succes
                         peerReview.solutions = params.solutions || [];
                         peerReview.reviewSettings = params.reviewSettings;
 
-                        if(params.publicationDate instanceof Date) {
-                            _.extend(peerReview, { publicationDate: params.publicationDate });
+                        if(params.publicationDate) {
+                            _.extend(peerReview, { publicationDate: new Date(params.publicationDate) });
                         }
-                        if(params.dueDate instanceof Date) {
-                            _.extend(peerReview, { dueDate: params.dueDate });
+                        if(params.dueDate) {
+                            _.extend(peerReview, { dueDate: new Date(params.dueDate) });
                         }
-                        if(params.ssPublicationDate instanceof Date) {
-                            _.extend(peerReview, { solutionPublicationDate: params.ssPublicationDate });
+                        if(params.ssPublicationDate) {
+                            _.extend(peerReview, { solutionPublicationDate: new Date(params.ssPublicationDate) });
                         }
                         // peerReview.save();
                         if(files && files.file) {

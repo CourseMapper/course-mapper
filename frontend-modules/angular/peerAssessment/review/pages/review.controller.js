@@ -13,10 +13,19 @@ app.controller('ReviewController', function($scope, $http, ActionBarService, toa
     var requestData = function() {
         var url = '/api/peerassessment/' + $scope.course._id + '/reviews?rName=RCRequestData';
         $http.get(url).then( function(response) {
-            _.each(response.data.reviews, function(solution) {
-                // do something if needed
+            var oldReviewsID = [];
+            console.log('Reviews', response.data.reviews);
+            _.each(response.data.reviews, function(review) {
+                // handling removal of old reviews if there is a second loop review
+                if(review.oldReviewId) {
+                    oldReviewsID.push(review.oldReviewId)
+                }
             });
-            $scope.reviews = response.data.reviews;
+            $scope.reviews = _.filter(response.data.reviews, function(review) {
+                if (_.indexOf(oldReviewsID, review._id) == -1 || review.isSecondLoop) {
+                    return review
+                }
+            })
             console.log('Reviews', $scope.reviews);
         }, function(err){
             // Check for proper error message later

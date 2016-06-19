@@ -44,7 +44,7 @@ app.controller('ReviewSubmissionController', function($scope, $http, toastr, $wi
                 })
             }
             $scope.review = review
-            console.log('Reviews', $scope.review);
+            console.log('Review', $scope.review);
         }, function(err){
             // Check for proper error message later
             toastr.error('Internal Server Error. Please try again later.');
@@ -108,7 +108,11 @@ app.controller('ReviewSubmissionController', function($scope, $http, toastr, $wi
                     toastr.error(data.errors[0] || 'Failed');
                 }
                 $scope.isLoading = false;
-                window.location.reload();
+                if(data.reviewId == vId) {
+                    window.location.reload();
+                } else {
+                    window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + data.reviewId;
+                }
             })
             .error(function (data) {
                 toastr.error('Internal Server Error');
