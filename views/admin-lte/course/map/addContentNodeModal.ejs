@@ -26,8 +26,11 @@
                                      ng-class="{ 'has-error' : addContentNodeForm.name.$invalid && !addContentNodeForm.$pristine }">
                                     <input type="text" id="name" name="name" placeholder="" class="form-control"
                                            ng-model="formData.name"
-                                           required ng-required="true"
-                                    >
+                                           required ng-required="true">
+                                    <label>
+                                        <input type="checkbox" ng-model="formData.isPrivate">
+                                        Is private
+                                    </label>
 
                                     <p ng-show="addContentNodeForm.name.$invalid && !addContentNodeForm.$pristine"
                                        class="help-block">Content Node Name is required.</p>
@@ -151,7 +154,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-addon"><i class="fa fa-chain"></i></span>
                                                     <input type="url" class="form-control"
-                                                           placeholder="http://youtube.com/" ng-model="videoHostLink">
+                                                           placeholder="http://example.com" ng-model="videoHostLink">
                                                 </div>
 
                                                 <span class="error"

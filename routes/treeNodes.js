@@ -62,6 +62,15 @@ router.get('/treeNode/:cid/nodeDetail/:nid', function (req, res, next) {
         var ta = await(TC.getActiveTabs('contentNode')());
         var nd = await(nod.getNodeAsync()({_id: nid}));
 
+        // to avoid returning json 404, instead, we create a mockup object that says it s already deleted
+        if (!nd) {
+            nd = {
+                tabsActive: null,
+                isDeleted: true,
+                courseId: {name: ""}
+            }
+        }
+
         return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId, treeNode: nd};
     });
 
@@ -115,6 +124,15 @@ router.get('/treeNode/:nid', function (req, res, next) {
     var op = async(function () {
         var ta = await(TC.getActiveTabs('contentNode')());
         var nd = await(nod.getNodeAsync()({_id: nid}));
+
+        // to avoid returning json 404, instead, we create a mockup object that says it s already deleted
+        if (!nd) {
+            nd = {
+                tabsActive: null,
+                isDeleted: true,
+                courseId: {name: ""}
+            }
+        }
 
         return {tabs: ta, tabsActive: nd.tabsActive, course: nd.courseId};
     });

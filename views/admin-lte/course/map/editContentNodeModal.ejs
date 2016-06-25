@@ -19,15 +19,18 @@
                             <div class="control-group">
                                 <label class="control-label" for="name">Content Node Name</label>
 
-                                <p class="help-block">It can contain any letters or
-                                    numbers</p>
+                                <p class="help-block">It can contain any letters or numbers</p>
 
                                 <div class="controls"
                                      ng-class="{ 'has-error' : editContentNodeForm.name.$invalid && !editContentNodeForm.$pristine }">
                                     <input type="text" id="name" name="name" placeholder="" class="form-control"
                                            ng-model="currentEditNode.name"
-                                           required ng-required="true"
-                                    >
+                                           required ng-required="true">
+                                    <br/>
+                                    <label>
+                                        <input type="checkbox" ng-model="currentEditNode.isPrivate">
+                                        Is private
+                                    </label>
 
                                     <p ng-show="editContentNodeForm.name.$invalid && !editContentNodeForm.$pristine"
                                        class="help-block">Content Node Name is required.</p>

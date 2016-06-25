@@ -29,7 +29,7 @@
         </li>
         <% } %>
         <li ng-show="treeNode">
-            <a href="/course/{{course.slug}}/#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a>
+            <a href="/treeNode/{{nodeId}}/#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a>
         </li>
         <li class="active">{{tabDisplayName}}</li>
     </ol>
