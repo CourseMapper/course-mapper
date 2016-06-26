@@ -96,7 +96,14 @@ reviews.prototype.populateReviewAssignmentData = function (error, params, succes
 }
 
 reviews.prototype.getReviews = function(error, params, success) {
-    Review.find(params).populate('peerReviewId assignedTo solutionId submittedBy').lean().exec(function(err, docs) {
+    Review.find(params).populate({
+        path: 'peerReviewId',
+        model: 'peerreviews',
+        populate: {
+            path: 'reviewSettings.rubrics',
+            model: 'rubrics'
+        }
+    }).populate('assignedTo solutionId submittedBy').lean().exec(function(err, docs) {
         if(err) {
             error(err)
         } else {

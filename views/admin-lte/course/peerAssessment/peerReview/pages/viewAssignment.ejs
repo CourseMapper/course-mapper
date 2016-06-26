@@ -37,13 +37,6 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-sm-5 control-label">Allow Group Submission</label>
-                                    <div class="col-sm-6 control-label" style="text-align: left;">
-                                        <label style="font-weight: normal">{{viewReview.groupSubmission}}</label>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
                                     <label class="col-sm-5 control-label">Total Marks</label>
                                     <div class="col-sm-6 control-label" style="text-align: left;">
                                         <label style="font-weight: normal">{{viewReview.totalMarks}}</label>
@@ -71,7 +64,16 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" ng-show="isOwner || isManager || isAdmin">
+                                    <label class="col-sm-5 control-label">Sample Solutions</label>
+                                    <div class="col-sm-6 control-label" style="text-align: left;">
+                                        <div class="label label-info" ng-repeat="doc in viewReview.displaySolutionsList">
+                                            <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ng-if="viewReview.solutions" ng-hide="isOwner || isManager || isAdmin">
                                     <label class="col-sm-5 control-label">Sample Solutions</label>
                                     <div class="col-sm-6 control-label" style="text-align: left;">
                                         <div class="label label-info" ng-repeat="doc in viewReview.displaySolutionsList">

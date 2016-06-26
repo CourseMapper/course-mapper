@@ -51,6 +51,7 @@ app.controller('ViewFeedbackController', function($scope, $http, toastr, $window
                             review.displayDocumentsList.push(temp);
                         })
                     }
+                    calculateMarks(review, $scope.reviews)
                     $scope.review = review
                 }
                 console.log('AdminReview', $scope.review)
@@ -59,6 +60,20 @@ app.controller('ViewFeedbackController', function($scope, $http, toastr, $window
             // Check for proper error message later
             toastr.error('Internal Server Error. Please try again later.');
         })
+    }
+
+    var calculateMarks = function(adminReview, peerreviews) {
+        studentReviewPercentage = adminReview.peerReviewId.reviewSettings.studentPercentage;
+        var totalMarks = 0
+        _.each(peerreviews, function(review) {
+            totalMarks = totalMarks + review.marksObtained
+        })
+        var average = totalMarks/peerreviews.length
+        var studentMarks = average * studentReviewPercentage/100
+        var adminMarks = adminReview.marksObtained * ((100-studentReviewPercentage)/100)
+        var finalMarks = adminMarks + studentMarks
+        console.log(finalMarks)
+        adminReview.marksObtained = finalMarks
     }
 
     fetchReviews()
@@ -74,17 +89,29 @@ app.controller('ViewFeedbackController', function($scope, $http, toastr, $window
                 review.displayDocumentsList.push(temp);
             })
         }
+        populateRubrics(review)
         $scope.peerReview = review
 
         if(review.isSecondLoop && review.oldReviewId) {
+            console.log('All reviews', reviews)
             reviews.every(function(r) {
+                console.log(review.oldReviewId, r._id)
                 if(review.oldReviewId == r._id) {
+                    console.log('Old review matched')
+                    populateRubrics(r)
                     $scope.firstReview = r
-                    return
+                    return false
                 }
+                return true
             })
         }
         console.log(review);
         $('#viewReviewModal').modal('show');
+    }
+
+    populateRubrics = function(review) {
+        if(review.peerReviewId.reviewSettings.rubrics && review.peerReviewId.reviewSettings.rubrics.length) {
+            review.rubrics = review.peerReviewId.reviewSettings.rubrics
+        }
     }
 })

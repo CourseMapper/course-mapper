@@ -41,6 +41,13 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="form-group" ng-repeat="rubric in peerReview.rubrics">
+                                        <label data-toggle="tooltip" data-placement="right" title="{{rubric.description}}" class="col-sm-5 control-label">{{rubric.title}}</label>
+                                        <div class="col-sm-6">
+                                            <label class="control-label">{{peerReview.rubricReview[rubric._id]}}</label>
+                                        </div>
+                                    </div>
                                 </fieldset>
                             </div>
                         </div>
@@ -68,6 +75,13 @@
                                             <div class="label label-info" ng-repeat="doc in firstReview.displayDocumentsList">
                                                 <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" ng-repeat="rubric in firstReview.rubrics">
+                                        <label data-toggle="tooltip" data-placement="right" title="{{rubric.description}}" class="col-sm-5 control-label">{{rubric.title}}</label>
+                                        <div class="col-sm-6">
+                                            <label class="control-label">{{firstReview.rubricReview[rubric._id]}}</label>
                                         </div>
                                     </div>
                                 </fieldset>

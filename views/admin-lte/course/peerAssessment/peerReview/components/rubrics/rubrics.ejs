@@ -10,7 +10,7 @@
             <label class="col-sm-5 control-label"></label>
             <div class="col-sm-7">
                 <div class="checkbox" ng-repeat="r in rubrics">
-                    <label><input type="checkbox" value="{{r._id}}" ng-checked="newAssignObj.reviewSettings.rubrics.indexOf(r._id) > -1" ng-click="toggleSelection(r._id)">{{r.title}}</label>
+                    <label data-toggle="tooltip" title="{{r.description}}"><input type="checkbox" value="{{r._id}}" ng-checked="newAssignObj.reviewSettings.rubrics.indexOf(r._id) > -1" ng-click="toggleSelection(r._id)">{{r.title}}</label>
                 </div>
             </div>
         </div>

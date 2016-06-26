@@ -2,7 +2,7 @@ var config = require('config');
 var PeerReview = require('./models/peerReview.js');
 var users = require('../accounts/users.js');
 var mongoose = require('mongoose');
-var debug = require('debug')('cm:db');
+var debug = require('debug')('cm:server');
 var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
@@ -11,6 +11,7 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var _ = require('lodash');
 var fs = require('fs-extra');
+var moment = require('moment');
 
 function peerAssessment() {
 
@@ -148,13 +149,15 @@ peerAssessment.prototype.editPeerReview = function (error, params, files, succes
                         peerReview.solutions = params.solutions || [];
                         peerReview.reviewSettings = params.reviewSettings;
 
-                        if(params.publicationDate) {
+                        debug(params)
+
+                        if(params.publicationDate && params.publicationDate !== 'null' && moment(params.publicationDate).isValid()) {
                             _.extend(peerReview, { publicationDate: new Date(params.publicationDate) });
                         }
-                        if(params.dueDate) {
+                        if(params.dueDate && params.dueDate !== 'null' && moment(params.dueDate).isValid()) {
                             _.extend(peerReview, { dueDate: new Date(params.dueDate) });
                         }
-                        if(params.ssPublicationDate) {
+                        if(params.ssPublicationDate && params.ssPublicationDate !== null && moment(params.ssPublicationDate).isValid()) {
                             _.extend(peerReview, { solutionPublicationDate: new Date(params.ssPublicationDate) });
                         }
                         // peerReview.save();
@@ -287,14 +290,14 @@ peerAssessment.prototype.addPeerReview = function (error, params, files, success
                     reviewSettings: params.reviewSettings
                 });
 
-                if(params.publicationDate instanceof Date) {
-                    _.extend(peerReview, { publicationDate: params.publicationDate });
+                if(params.publicationDate && params.publicationDate !== 'null' && moment(params.publicationDate).isValid()) {
+                    _.extend(peerReview, { publicationDate: new Date(params.publicationDate) });
                 }
-                if(params.dueDate instanceof Date) {
-                    _.extend(peerReview, { dueDate: params.dueDate });
+                if(params.dueDate && params.dueDate !== 'null' && moment(params.dueDate).isValid()) {
+                    _.extend(peerReview, { dueDate: new Date(params.dueDate) });
                 }
-                if(params.ssPublicationDate instanceof Date) {
-                    _.extend(peerReview, { solutionPublicationDate: params.ssPublicationDate });
+                if(params.ssPublicationDate && params.ssPublicationDate !== null && moment(params.ssPublicationDate).isValid()) {
+                    _.extend(peerReview, { solutionPublicationDate: new Date(params.ssPublicationDate) });
                 }
 
                 peerReview.save(function (err, peerReview) {
@@ -379,15 +382,15 @@ peerAssessment.prototype.addPeerReview = function (error, params, files, success
 }
 
 peerAssessment.prototype.saveResourceFile = function (error, file, type, helper, success) {
-    var fileType = ['pdf'];
-
-    var extension = file.name.split('.');
-    extension = extension[extension.length - 1].toLowerCase();
-
-    if (fileType.indexOf(extension) < 0) {
-        // extension not right
-        error(new Error("File extension not right"));
-    } else {
+    //var fileType = ['pdf'];
+    //
+    //var extension = file.name.split('.');
+    //extension = extension[extension.length - 1].toLowerCase();
+    //
+    //if (fileType.indexOf(extension) < 0) {
+    //    // extension not right
+    //    error(new Error("File extension not right"));
+    //} else {
         var fn = '/pa/'+ helper.courseId +'/'+ helper._id+'/'+ type +'/'+ file.name;
         var dest = appRoot + '/public/'+ fn;
         try {
@@ -401,7 +404,7 @@ peerAssessment.prototype.saveResourceFile = function (error, file, type, helper,
         if (success) {
             success(fn);
         }
-    }
+    //}
 }
 
 module.exports = peerAssessment;

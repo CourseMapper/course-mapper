@@ -286,15 +286,15 @@ solutions.prototype.deleteSolution = function(error, params, success) {
 }
 
 solutions.prototype.saveResourceFile = function (error, file, type, helper, success) {
-    var fileType = ['pdf'];
-
-    var extension = file.name.split('.');
-    extension = extension[extension.length - 1].toLowerCase();
-
-    if (fileType.indexOf(extension) < 0) {
-        // extension not right
-        error(new Error("File extension not right"));
-    } else {
+    //var fileType = ['pdf'];
+    //
+    //var extension = file.name.split('.');
+    //extension = extension[extension.length - 1].toLowerCase();
+    //
+    //if (fileType.indexOf(extension) < 0) {
+    //    // extension not right
+    //    error(new Error("File extension not right"));
+    //} else {
         var fn = '/pa/'+ helper.courseId +'/'+ helper.peerReviewId+'/'+ type +'/'+ helper._id+'/' + file.name;
         var dest = appRoot + '/public/'+ fn;
         try {
@@ -308,7 +308,7 @@ solutions.prototype.saveResourceFile = function (error, file, type, helper, succ
         if (success) {
             success(fn);
         }
-    }
+    //}
 }
 
 module.exports = solutions;

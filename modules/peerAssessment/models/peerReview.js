@@ -47,21 +47,8 @@ var peerReviewSchema = new mongoose.Schema({
     dateUpdated: { type: Date }
 });
 
-peerReviewSchema.pre('save', function(next){
+peerReviewSchema.pre('save', function(next) {
     var now = new Date();
-
-    if (!this.publicationDate) {
-        this.publicationDate = now;
-    }
-
-    if (!this.dueDate) {
-        this.dueDate = now;
-    }
-
-    // Ask what should be done for this
-    if (!this.solutionPublicationDate) {
-        this.solutionPublicationDate = now;
-    }
 
     if ( !this.dateAdded ) {
         this.dateAdded = now;

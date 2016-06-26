@@ -38,7 +38,7 @@
                                                     <label for="inputReviewDocuments" class="col-sm-4 control-label">Review Documents</label>
                                                     <div class="col-sm-2">
                                                         <div class="btn btn-sm btn-default"
-                                                             ngf-select accept=".pdf"
+                                                             ngf-select accept="*"
                                                              ng-model="reviewDocuments" ngf-multiple="true" ngf-keep="true" ngf-max-size='1000000'><i
                                                                     class="ionicons ion-document-text"></i> &nbsp; Upload Files
                                                         </div>
@@ -59,13 +59,6 @@
                                                             <a href="" ng-click="deleteSelectedFiles(f.name)"> <i class="ion-close-round"></i></a>
                                                             <br>
                                                         </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="form-group">
-                                                    <label for="inputGroupSubmmission" class="col-sm-4 control-label">Allow Group Submission</label>
-                                                    <div class="col-sm-1">
-                                                        <input type="checkbox" id="inputGroupSubmmission" ng-model="newAssignObj.groupSubmission" class="checkbox-line-adjust"/>
                                                     </div>
                                                 </div>
 
@@ -101,7 +94,7 @@
                                                     <label for="inputSampleSolutions" class="col-sm-4 control-label">Sample Solutions</label>
                                                     <div class="col-sm-2">
                                                         <div class="btn btn-sm btn-default"
-                                                             ngf-select accept=".pdf"
+                                                             ngf-select accept="*"
                                                              ng-model="sampleSolutions" ngf-multiple="true" ngf-keep="true" ngf-max-size='1000000'><i
                                                                     class="ionicons ion-document-text"></i> &nbsp; Upload Files
                                                         </div>

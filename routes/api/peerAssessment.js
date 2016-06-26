@@ -339,8 +339,9 @@ router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
         },
         req.body,
         function (reviews) {
+            var now = new Date()
             if(req.query.rName == 'RCRequestData') {
-                var now = new Date()
+                // Admin Assigned Review List might need some changes here
                 reviews = _.each(reviews, function(review) {
                     var reviewSettings = review.peerReviewId.reviewSettings
                     if(reviewSettings.loop == 'multiple') {
@@ -352,6 +353,24 @@ router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
                     }
                     debug(review, review.loop)
                 })
+
+                filteredReviews = _.filter(reviews, function(review) {
+                    var filter = false
+                    var reviewSettings = review.peerReviewId.reviewSettings
+                    if((now > reviewSettings.reviewStartDate && now < reviewSettings.reviewEndDate) || (reviewSettings.loop == 'multiple' && now > reviewSettings.secondReviewStartDate && now < reviewSettings.secondReviewEndDate )) {
+                        filter = true
+                    }
+                    return filter
+                })
+                reviews = filteredReviews
+            }
+            if(req.query.rName == 'VFCFetchReviews') {
+                if(reviews && reviews.length) {
+                    var pr = reviews[0].peerReviewId
+                    if(now<pr.reviewSettings.reviewEndDate) {
+                        reviews = []
+                    }
+                }
             }
             res.status(200).json({result: true, reviews: reviews});
         }
@@ -629,9 +648,18 @@ router.get('/peerassessment/:courseId/peerreviews/:id',
             // parameters
             params,
 
-            function (peerReview) {
+            async(function (peerReview) {
+                var isAdmin = await(userHelper.isCourseAuthorizedAsync({userId: req.user._id, courseId: req.params.courseId}))
+                if (!isAdmin) {
+                    var now = new Date()
+                    if (!peerReview.solutionPublicationDate || now < peerReview.solutionPublicationDate ) {
+                        peerReview = peerReview.toObject()
+                        delete peerReview.solutions
+                    }
+                    debug(peerReview)
+                }
                 res.status(200).json({result: true, peerReview: peerReview});
-            }
+            })
         );
     });
 
