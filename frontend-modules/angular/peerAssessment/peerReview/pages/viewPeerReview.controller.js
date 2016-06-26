@@ -19,7 +19,6 @@ app.controller('ViewPeerReviewController', function($scope, $location, $http, to
 
         var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + $scope.vId;
         $http.get(url).then( function(response) {
-            console.log('Resp', response);
             var review = response.data.peerReview;
             review.publicationDate = new Date(review.publicationDate);
             review.dueDate = new Date(review.dueDate);
@@ -49,12 +48,6 @@ app.controller('ViewPeerReviewController', function($scope, $location, $http, to
                     temp.name = tempArr[tempArr.length-1];
                     review.displaySolutionsList.push(temp);
                 })
-            }
-
-            if(review.groupSubmission) {
-                review.groupSubmission = 'Yes';
-            } else {
-                review.groupSubmission = 'No';
             }
 
             $scope.viewReview = review;

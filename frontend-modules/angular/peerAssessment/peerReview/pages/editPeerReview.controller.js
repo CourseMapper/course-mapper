@@ -75,11 +75,17 @@ app.controller('EditPeerReviewController', function($scope, $http, toastr, $wind
             $http.get(url).then(function (response) {
                 console.log('Resp', response);
                 var review = response.data.peerReview;
-                review.publicationDate = new Date(review.publicationDate);
-                review.dueDate = new Date(review.dueDate);
-                review.solutionPublicationDate = new Date(review.solutionPublicationDate);
-                review.ssPublicationDate = review.solutionPublicationDate;
-                delete review.solutionPublicationDate;
+                if (review.publicationDate) {
+                    review.publicationDate = new Date(review.publicationDate);
+                }
+                if (review.dueDate) {
+                    review.dueDate = new Date(review.dueDate);
+                }
+                if (review.solutionPublicationDate) {
+                    review.solutionPublicationDate = new Date(review.solutionPublicationDate);
+                    review.ssPublicationDate = review.solutionPublicationDate;
+                    delete review.solutionPublicationDate;
+                }
                 review.reviewDescription = review.description;
                 delete review.description;
 
@@ -103,12 +109,6 @@ app.controller('EditPeerReviewController', function($scope, $http, toastr, $wind
                         temp.name = tempArr[tempArr.length - 1];
                         review.displaySolutionsList.push(temp);
                     })
-                }
-
-                if (review.groupSubmission) {
-                    review.groupSubmission = 'Yes';
-                } else {
-                    review.groupSubmission = 'No';
                 }
 
                 // Processing review settings

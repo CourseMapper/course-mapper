@@ -4,7 +4,7 @@
   "displayName": "Peer Reviews",
   "location": "course",
   "description": "Peer Reviews module",
-  "isDefaultActivated": true,
+  "isDefaultActivated": false,
   "icon": "ionicons ion-ios-people-outline",
-  "ngShow": "isEnrolled || isOwner || isManager"
+  "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
 }

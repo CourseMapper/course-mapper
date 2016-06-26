@@ -184,17 +184,26 @@ app.controller('AdminFeedbackController', function($scope, $http, toastr, $windo
                 review.displayDocumentsList.push(temp);
             })
         }
+        populateRubrics(review)
         $scope.peerReview = review
 
         if(review.isSecondLoop && review.oldReviewId) {
             reviews.every(function(r) {
                 if(review.oldReviewId == r._id) {
+                    populateRubrics(r)
                     $scope.firstReview = r
-                    return
+                    return false
                 }
+                return true
             })
         }
         console.log(review);
         $('#viewReviewModal').modal('show');
+    }
+
+    populateRubrics = function(review) {
+        if(review.peerReviewId.reviewSettings.rubrics && review.peerReviewId.reviewSettings.rubrics.length) {
+            review.rubrics = review.peerReviewId.reviewSettings.rubrics
+        }
     }
 })
