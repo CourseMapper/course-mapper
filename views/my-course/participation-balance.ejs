@@ -10,8 +10,17 @@
             </ul>
         </div>
 
-        <li ng-if="field.type == 'contentNode'" class="file">
-            <a href="" ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false"> {{field.name}} </a>
+        <li ng-if="field.type == 'contentNode'" class="file" style="width: 50%">
+            <a href="" ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false"
+               style="display: inline-block; padding: 2px 5px">
+                <span ng-style="{
+                    'background': 'gray',
+                    'color': percentToHSLColor(getPBP(field), true),
+                    'display': 'inline-block'}">
+                    [{{getPBP(field) * 100}}%]
+                </span>
+                {{field.name}}
+            </a>
             <div ng-show="isVisible" class="info-box bg-aqua" style="position: absolute; z-index: 5;">
                 <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
                 <div class="info-box-content">
@@ -19,11 +28,11 @@
                     <span class="info-box-number">Contributions {{field.userAnnotations}} / {{field.totalAnnotations }}</span>
                     <div class="progress">
                         <div class="progress-bar"
-                             ng-style="{ 'width' : field.totalAnnotations > 0 ? (field.userAnnotations / field.totalAnnotations * 100 )+'%' : 0 }">
+                             ng-style="{ 'width' : getPBP(field) * 100 + '%' : 0 }">
                         </div>
                     </div>
                     <span class="progress-description">
-                        {{field.totalAnnotations > 0 ? (field.userAnnotations / field.totalAnnotations * 100 ) : 0 }}% participation
+                        {{getPBP(field) * 100}}% participation
                     </span>
                 </div>
             </div>
