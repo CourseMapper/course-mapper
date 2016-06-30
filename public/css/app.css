@@ -1006,8 +1006,8 @@ ul.tree {
 }
 
 .tree li input + ul {
-    background: url(../img/tree/toggle-small-expand.png) 40px 0 no-repeat;
-    margin: -23px 0 0 -44px;
+    background: url(../img/tree/toggle-small-expand.png) 51px 0 no-repeat;
+    margin: -23px 0 0 -60px;
     height: 1em;
 }
 
@@ -1018,15 +1018,16 @@ ul.tree {
 }
 
 .tree li label {
-    background: url(../img/tree/folder-horizontal.png) 15px 1px no-repeat;
+    background: url(../img/tree/folder-horizontal.png) 10px 1px no-repeat;
     cursor: pointer;
     display: block;
-    padding-left: 37px;
+    padding-left: 30px;
+    margin-left: -15px;
 }
 
 .tree li input:checked + ul {
-    background: url(../img/tree/toggle-small.png) 40px 5px no-repeat;
-    margin: -28px 0 0 -44px;
+    background: url(../img/tree/toggle-small.png) 51px 5px no-repeat;
+    margin: -28px 0 0 -60px;
     padding: 22px 0 0 80px;
     height: auto;
 }
