@@ -1,23 +1,46 @@
-<div class="box-body no-padding  panel-heading" ng-controller="ParticipationBalanceController">
+<div ng-controller="ParticipationBalanceController">
 
     <!--  Recursive template  -->
-    <script class="panel-collapse collapse" type="text/ng-template" id="field_renderer.html">
-        <div>
-            <a>{{field.name}}</a>
-            <ul>
+    <script type="text/ng-template" id="field_renderer.html">
+        <div ng-if="field.type != 'contentNode'">
+            <label for="{{field._id}}">{{field.name}}</label>
+            <input id="{{field._id}}" type="checkbox"/>
+            <ul ng-if="field.childrens.length > 0">
                 <li ng-repeat="field in field.childrens" ng-include="'field_renderer.html'"></li>
             </ul>
         </div>
 
+        <li ng-if="field.type == 'contentNode'" class="file">
+            <a href="" ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false"> {{field.name}} </a>
+            <div ng-show="isVisible" class="info-box bg-aqua" style="position: absolute; z-index: 5;">
+                <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text"> {{field.name}}</span>
+                    <span class="info-box-number">Contributions {{field.userAnnotations}} / {{field.totalAnnotations }}</span>
+                    <div class="progress">
+                        <div class="progress-bar"
+                             ng-style="{ 'width' : field.totalAnnotations > 0 ? (field.userAnnotations / field.totalAnnotations * 100 )+'%' : 0 }">
+                        </div>
+                    </div>
+                    <span class="progress-description">
+                        {{field.totalAnnotations > 0 ? (field.userAnnotations / field.totalAnnotations * 100 ) : 0 }}% participation
+                    </span>
+                </div>
+            </div>
+        </li>
     </script>
 
-    <h3>Enrolled</h3>
-    <ul>
-        <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
-    </ul>
+    <div ng-show="courses.enrolled.length > 0">
+        <h3>Enrolled</h3>
+        <ul class="tree">
+            <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
+        </ul>
+    </div>
 
-    <h3>Created</h3>
-    <ul>
-        <li ng-repeat="field in courses.created" ng-include="'field_renderer.html'"></li>
-    </ul>
+    <div ng-show="courses.created.length > 0">
+        <h3>Created</h3>
+        <ul class="tree">
+            <li ng-repeat="field in courses.created" ng-include="'field_renderer.html'"></li>
+        </ul>
+    </div>
 </div>

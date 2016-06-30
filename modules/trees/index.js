@@ -354,10 +354,8 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
         }
         success(tree);
       }
-    )
-  ;
-}
-;
+    );
+};
 
 catalog.prototype.updateNodePosition = function (error, paramsWhere, paramsUpdate, success) {
   if (!helper.checkRequiredParams(paramsUpdate, ['x', 'y'], error)) {

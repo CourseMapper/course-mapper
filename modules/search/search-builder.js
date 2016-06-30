@@ -11,13 +11,14 @@ var Courses = require('../../modules/catalogs/courses');
 var Categories = require('../../modules/catalogs/categories');
 var Resources = require('../../modules/trees/resources');
 var ContentNodes = require('../../modules/trees/treeNodes');
+let a;
 
 var SearchBuilder = function (term) {
-  var courseArgs = {$text: {$search: term}};
-  var contentNodeArgs = {$text: {$search: term}};
-  var categoryArgs = {$text: {$search: term}};
-  var videoAnnotationArgs = {$text: {$search: term}};
-  var pdfAnnotationArgs = {$text: {$search: term}};
+  var courseArgs = { $text: { $search: term } };
+  var contentNodeArgs = { $text: { $search: term } };
+  var categoryArgs = { $text: { $search: term } };
+  var videoAnnotationArgs = { $text: { $search: term } };
+  var pdfAnnotationArgs = { $text: { $search: term } };
 
   var searchableResources = [];
 

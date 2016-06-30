@@ -1,13 +1,12 @@
 angular.module('ParticipationBalance', [''])
-
   .controller('ParticipationBalanceController', function ($scope, $http) {
 
-    $scope.loadCourses = function (res) {
-      $scope.courses = res.data;
-    };
-
     $scope.init = function () {
-      $http.get('/api/my-course/participation-balance').then($scope.loadCourses);
+      $http.get('/api/my-course/participation-balance')
+        .then(function (res) {
+          $scope.courses = res.data;
+          console.log(res.data)
+        });
     };
 
     $scope.init();

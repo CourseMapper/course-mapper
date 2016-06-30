@@ -184,8 +184,8 @@ router.get('/participation-balance', function (req, res, next) {
   if (!req.user) {
     return res.status(401).send('Unauthorized');
   }
-  var query = new TraceFinder().findAsync(req.user._id);
-  Promise.props(query)
+  var task = new TraceFinder().findAsync(req.user);
+  Promise.props(task)
     .then(function (results) {
       res.json(results);
     })
