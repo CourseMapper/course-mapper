@@ -73,36 +73,7 @@ var userHelper = {
     },
 
     isAuthorized: function (error, params, success) {
-        if (params.userId) {
-            userHelper.isAdmin(error, params.userId, success);
-        }
-        else if (params.userId && params.courseId) {
-            userHelper.isManager(
-                error, params.userId, params.courseId,
-
-                function (ret) {
-                    // is manager
-                    if (ret) {
-                        success(true);
-                    } else {
-                        // check is owner
-                        userHelper.isUserCreatedCourse(
-                            error, params.userId, params.courseId,
-
-                            function (ret) {
-                                // is owner
-                                if (ret) {
-                                    success(true);
-                                }
-                                else {
-                                    success(false);
-                                }
-                            }
-                        )
-                    }
-                }
-            );
-        }
+        userHelper.isCourseAuthorizedAsync(params).then(success).catch(error);
     },
 
     isAdminAsync: async(function (params) {
