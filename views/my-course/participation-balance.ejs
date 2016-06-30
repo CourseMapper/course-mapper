@@ -11,7 +11,9 @@
         </div>
 
         <li ng-if="field.type == 'contentNode'" class="file" style="width: 50%">
-            <a href="" ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false"
+            <a href="/treeNode/{{field._id}}/#/cid/{{field.courseId}}/nid/{{field._id}}"
+               ng-mouseover="isVisible=true"
+               ng-mouseleave="isVisible=false"
                style="display: inline-block; padding: 2px 5px">
                 <span ng-style="{
                     'background': 'gray',
@@ -21,15 +23,13 @@
                 </span>
                 {{field.name}}
             </a>
-            <div ng-show="isVisible" class="info-box bg-aqua" style="position: absolute; z-index: 5;">
+            <div ng-show="isVisible" class="info-box bg-aqua" style="opacity: 0.95; position: absolute; z-index: 5;">
                 <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text"> {{field.name}}</span>
                     <span class="info-box-number">Contributions {{field.userAnnotations}} / {{field.totalAnnotations }}</span>
                     <div class="progress">
-                        <div class="progress-bar"
-                             ng-style="{ 'width' : getPBP(field) * 100 + '%' : 0 }">
-                        </div>
+                        <div class="progress-bar" ng-style="{ 'width' : getPBP(field)*100 + '%'}"></div>
                     </div>
                     <span class="progress-description">
                         {{getPBP(field) * 100}}% participation
