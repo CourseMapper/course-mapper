@@ -38,11 +38,22 @@ angular.module('ParticipationBalance', [''])
       return node.totalAnnotations > 0 ? (node.userAnnotations / node.totalAnnotations).toFixed(2) : 0
     };
 
+    $scope.expandState = {};
+
+    $scope.setExpandState = function (value) {
+      var states = $scope.expandState;
+      console.log(states)
+
+      for (var id in states) {
+        states[id] = value;
+      }
+      console.log(states)
+    };
+
     $scope.init = function () {
       $http.get('/api/my-course/participation-balance')
         .then(function (res) {
           $scope.courses = res.data;
-          console.log(res.data)
         });
     };
 

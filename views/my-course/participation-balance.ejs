@@ -4,7 +4,9 @@
     <script type="text/ng-template" id="field_renderer.html">
         <div ng-if="field.type != 'contentNode'">
             <label for="{{field._id}}">{{field.name}}</label>
-            <input id="{{field._id}}" type="checkbox"/>
+            <input id="{{field._id}}" type="checkbox"
+                   ng-init="expandState[field._id]=false"
+                   ng-model="expandState[field._id]"/>
             <ul ng-if="field.childrens.length > 0">
                 <li ng-repeat="field in field.childrens" ng-include="'field_renderer.html'"></li>
             </ul>
@@ -15,12 +17,10 @@
                ng-mouseover="isVisible=true"
                ng-mouseleave="isVisible=false"
                style="display: inline-block; padding: 2px 5px">
-                <span ng-style="{
-                    'background': 'gray',
-                    'color': percentToHSLColor(getPBP(field), true),
-                    'display': 'inline-block'}">
-                    [{{getPBP(field) * 100}}%]
-                </span>
+
+                <div style="background: gray; width: 40px; padding: 0 2px; display: inline-block">
+                    <span class="pull-right" ng-style="{ 'color': percentToHSLColor(getPBP(field), true)}">{{getPBP(field) * 100}}%</span>
+                </div>
                 {{field.name}}
             </a>
             <div ng-show="isVisible" class="info-box bg-aqua" style="opacity: 0.95; position: absolute; z-index: 5;">
@@ -39,15 +39,31 @@
         </li>
     </script>
 
+
     <div ng-show="courses.enrolled.length > 0">
-        <h3>Enrolled</h3>
+        <h3>Enrolled
+            <div style="display: inline-block">
+                <button ng-click="setExpandState(true)" type="button" class="btn btn-box-tool"><i
+                            class="fa fa-plus"></i></button>
+                <button ng-click="setExpandState(false)" type="button" class="btn btn-box-tool"><i
+                            class="fa fa-minus"></i></button>
+            </div>
+        </h3>
         <ul class="tree">
             <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
         </ul>
     </div>
 
     <div ng-show="courses.created.length > 0">
-        <h3>Created</h3>
+        <h3>Created
+            <div style="display: inline-block">
+                <button ng-click="setExpandState(true)" type="button" class="btn btn-box-tool"><i
+                            class="fa fa-plus"></i></button>
+                <button ng-click="setExpandState(false)" type="button" class="btn btn-box-tool"><i
+                            class="fa fa-minus"></i></button>
+            </div>
+        </h3>
+
         <ul class="tree">
             <li ng-repeat="field in courses.created" ng-include="'field_renderer.html'"></li>
         </ul>
