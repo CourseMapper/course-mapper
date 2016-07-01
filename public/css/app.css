@@ -970,3 +970,73 @@ li.info-links li a:hover {
     height: auto;
     max-height: 400px;
 }
+
+/* CSS Tree menu styles */
+ul.tree {
+    padding: 0 0 0 20px;
+}
+
+.tree li {
+    position: relative;
+    margin-left: -15px;
+    list-style: none;
+}
+
+.tree li.file {
+    margin-left: -1px !important;
+}
+
+.tree li.file a {
+    /* background: url(../img/tree/document.png) 0 0 no-repeat; */
+    /*padding-left: 21px;*/
+    text-decoration: none;
+    display: block;
+}
+
+.tree li input {
+    position: absolute;
+    left: 0;
+    margin-left: 0;
+    opacity: 0;
+    z-index: 2;
+    cursor: pointer;
+    height: 1em;
+    width: 1em;
+    top: 0;
+}
+
+.tree li input + ul {
+    background: url(../img/tree/toggle-small-expand.png) 51px 0 no-repeat;
+    margin: -23px 0 0 -60px;
+    height: 1em;
+}
+
+.tree li input + ul > li {
+    display: none;
+    margin-left: -14px !important;
+    padding-left: 1px;
+}
+
+.tree li label {
+    background: url(../img/tree/folder-horizontal.png) 10px 1px no-repeat;
+    cursor: pointer;
+    display: block;
+    padding-left: 30px;
+    margin-left: -15px;
+}
+
+.tree li input:checked + ul {
+    background: url(../img/tree/toggle-small.png) 51px 5px no-repeat;
+    margin: -28px 0 0 -60px;
+    padding: 22px 0 0 80px;
+    height: auto;
+}
+
+.tree li input:checked + ul > li {
+    display: block;
+    margin: 0 0 0.125em; /* 2px */
+}
+
+.tree li input:checked + ul > li:last-child {
+    margin: 0 0 0.063em; /* 1px */
+}

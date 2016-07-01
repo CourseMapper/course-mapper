@@ -10,46 +10,42 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
 
-    grunt.initConfig({
-        bowercopy: {
-            views: {
-                options: {
-                    srcPrefix: 'frontend-modules/angular'
-                },
-                files: {
-                    'public/partials': 'views/**/*.html'
-                }
-            }
-        },
-        concat: {
-            options: {
-                separator: ';'
-            },
-            dist: {
-                src: [
-                    'frontend-modules/angular/*.js',
-                    'frontend-modules/angular/**/*.js',
-                    'frontend-modules/angular/**/**/**/*.js',
-                    'frontend-modules/angular/**/**/**/**/*.js'
-                ],
-                dest: 'public/build/courseMapper.js'
-            },
-            js: {
-                src: 'frontend-modules/angular-admin/*.js',
-                dest: 'public/build/courseMapperAdmin.js'
-            },
-            libsJS: {
-                src: 'frontend-modules/libs/*.js',
-                dest: 'public/build/cm-utils.js'
-            },
-            va: {
-                src: [
-                    'public/js/video-annotations/*.js',
-                    'public/js/video-annotations/**/*.js'
-                ],
-                dest: 'public/build/video-annotations.js'
-            }
-        },
+  grunt.initConfig({
+    bowercopy: {
+      views: {
+        options: { srcPrefix: 'frontend-modules/angular' },
+        files: { 'public/partials': 'views/**/*.html' }
+      }
+    },
+    concat: {
+      options: {
+        separator: ';'
+      },
+      dist: {
+        src: [
+          'frontend-modules/angular/*.js',
+          'frontend-modules/angular/**/*.js',
+          'frontend-modules/angular/**/**/**/*.js',
+          'frontend-modules/angular/**/**/**/**/*.js'
+        ],
+        dest: 'public/build/courseMapper.js'
+      },
+      js: {
+        src: 'frontend-modules/angular-admin/*.js',
+        dest: 'public/build/courseMapperAdmin.js'
+      },
+      libsJS: {
+        src: 'frontend-modules/libs/*.js',
+        dest: 'public/build/cm-utils.js'
+      },
+      va: {
+        src: [
+          'public/js/video-annotations/*.js',
+          'public/js/video-annotations/**/*.js'
+        ],
+        dest: 'public/build/video-annotations.js'
+      }
+    },
 
     watch: {
       scripts: {
