@@ -28,11 +28,11 @@
         </div>
 
         <!-- Content node -->
-        <li ng-if="field.type == 'contentNode'" class="file" style="margin-bottom: 5px" >
+        <li ng-if="field.type == 'contentNode'" class="file" style="margin-bottom: 5px">
             <a href="/treeNode/{{field._id}}/#/cid/{{field.courseId}}/nid/{{field._id}}"
                ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false">
-                <span style="background: #ecf0f5; width: 40px; padding: 0; display: inline-block; text-align: right"
-                      ng-style="{ 'color': percentToHSLColor(getPBP(field), true)}">{{getPBP(field) * 100}}%</span>
+                <span style="font-weight: bold; background: #ecf0f5; width: 40px; padding: 0; display: inline-block; text-align: right"
+                      ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">{{getParticipationBalance(field) * 100 | number:0}}%</span>
                 <span>{{field.name}}</span>
             </a>
 
@@ -42,12 +42,23 @@
                 <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text"> {{field.name}}</span>
-                    <span class="info-box-number">Contributions {{field.userAnnotations}} / {{field.totalAnnotations }}</span>
+                    <span class="info-box-number">Participation Balance
+                        <span ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">
+                            ({{getParticipationBalance(field) * 100 | number:0}}%)
+                        </span>
+                    </span>
                     <div class="progress">
-                        <div class="progress-bar" ng-style="{ 'width' : getPBP(field)*100 + '%'}"></div>
+                        <div class="progress-bar"
+                             ng-style="{ 'width' : getParticipationBalance(field)*100 + '%'}"></div>
                     </div>
                     <span class="progress-description">
-                        {{getPBP(field) * 100}}% participation
+                        {{getAnnotationProgress(field) * 100 | number:0}}% annotation ({{field.userAnnotations}} / {{field.totalAnnotations }})
+                    </span>
+                    <span class="progress-description">
+                        {{getWatchProgress(field) * 100 | number:0}}% watch progress
+                    </span>
+                    <span class="progress-description">
+                        {{getLinksProgress(field) * 100 | number:0}}% linked content
                     </span>
                 </div>
             </div>
