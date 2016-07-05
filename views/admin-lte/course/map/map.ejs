@@ -8,14 +8,14 @@
          ng-style="getNodeStyle(data)">
 
         <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
-            <i class="fa fa-lock private" ng-show="data.isPrivate === true"></i>
-            <i class="fa fa-unlock public" ng-show="data.isPrivate !== true"></i>
+            <i title="This node is private. It is visible only to you." class="fa fa-lock private" ng-show="data.isPrivate === true"></i>
+            <i title="This node is public. It is visible to everyone. " class="fa fa-unlock public" ng-show="data.isPrivate !== true"></i>
         </div>
 
         <div class="hide-node-icon" ng-hide="data.isDeleted">
             <a class="pointer" ng-click="toggleNodeVisibility(data)">
-                <i class="ionicons ion-eye" ng-show="data.isHidden"></i>
-                <i class="ionicons ion-eye-disabled" ng-hide="data.isHidden"></i>
+                <i title="Show node" class="ionicons ion-eye" ng-show="data.isHidden"></i>
+                <i title="Hide node" class="ionicons ion-eye-disabled" ng-hide="data.isHidden"></i>
             </a>
         </div>
 
