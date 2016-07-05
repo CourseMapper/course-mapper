@@ -2,15 +2,17 @@
     <div class="w {{data.type}}" id="t{{data._id}}"
          data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
-         style="z-index: 5"
+         style="z-index: 1"
          data-shape="{{getDataShape(data.type)}}"
          ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
          ng-hide="data.isDeletedForever"
          ng-style="getNodeStyle(data)">
 
         <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
-            <i title="This node is private. It is visible only to you." class="fa fa-lock private" ng-show="data.isPrivate === true"></i>
-            <i title="This node is public. It is visible to everyone. " class="fa fa-unlock public" ng-show="data.isPrivate !== true"></i>
+            <i title="This node is private. It is visible only to you." class="fa fa-lock private"
+               ng-show="data.isPrivate === true"></i>
+            <i title="This node is public. It is visible to everyone. " class="fa fa-unlock public"
+               ng-show="data.isPrivate !== true"></i>
         </div>
 
         <div class="hide-node-icon" ng-hide="data.isDeleted">
@@ -40,7 +42,8 @@
         <span ng-show="data.type == 'contentNode' && data.isDeleted == true"> {{data.name}} </span>
 
         <!-- subtopic menu-->
-        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
+        <ul style="z-index: 3" class="dropdown-menu dropdown-course"
+            ng-show="data.type=='subTopic' && !data.isDeleted && !data.isHidden">
             <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
                 <small class="label label-green">
                     <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by
@@ -75,7 +78,8 @@
         </ul>
 
         <!-- contentnode menu-->
-        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode' && !data.isDeleted">
+        <ul style="z-index: 3" class="dropdown-menu dropdown-course"
+            ng-show="data.type=='contentNode' && !data.isDeleted && !data.isHidden">
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>
@@ -94,7 +98,7 @@
             </li>
         </ul>
 
-        <ul class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
+        <ul style="z-index: 3" class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
             <li>
                 <a class="cursor"
                    ng-click="deleteNodeForever(data)"><i class="ionicons ion-trash-b"></i> Delete Forever</a>

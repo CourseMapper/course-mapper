@@ -363,7 +363,7 @@ li.disabled i {
     transition: background-color .25s ease-in;
     text-align: center;
     text-transform: capitalize;
-    font-weight: 500
+    font-weight: 500;
 }
 
 .w.contentNode {
@@ -386,7 +386,7 @@ li.disabled i {
     max-width: 180px;
     min-width: 160px;
     height: auto;
-    z-index: 1
+    z-index: 1;
 }
 
 .w.contentNode .contentNode-analytics i {
@@ -792,7 +792,7 @@ a.cursor {
 .center-course:hover > ul,
 .open,
 .w:hover > ul {
-    display: block
+    display: block;
 }
 
 .course-picture {
