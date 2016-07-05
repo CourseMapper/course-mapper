@@ -868,6 +868,14 @@ li.active .voting .vote-total {
     user-select: none
 }
 
+.hide-node-icon {
+    position: absolute;
+    bottom: -5px;
+    right: 10px;
+    background: transparent;
+    font-size: 1.5em;
+}
+
 .privacy-icon {
     position: absolute;
     top: 1px;

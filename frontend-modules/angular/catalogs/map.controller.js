@@ -16,7 +16,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
   // {"0": {nodeId:isCollapsed},}
   $scope.nodeChildrens = {};
   $scope.firstloaded = true;
-
+  $scope.queryText = '';
 
   /**
    * find node recursively
@@ -46,6 +46,16 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       return result;
     };
     return findInternal(obj, col, searchKey, searchValue);
+  };
+
+  $scope.getNodeStyle = function (node) {
+    var style = {opacity: node.isHidden ? 0.15 : 1.0};
+
+    if ($scope.queryText) {
+      style.opacity = ($scope.matchesFound[node._id] !== true) ? 0.25 : 1.0;
+    }
+
+    return style;
   };
 
   $scope.findNode = function (obj, col, searchKey, searchValue) {
@@ -683,6 +693,16 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       return true;
 
     return false;
+  };
+
+  $scope.toggleNodeVisibility = function (node) {
+
+    var isHidden = !node.isHidden; //toggle visibility
+
+    $http.put('/api/visibility/' + node._id + '/' + isHidden)
+      .then(function (res) {
+        node.isHidden = isHidden;
+      });
   };
 
   $scope.isAuthorized = function (tn) {

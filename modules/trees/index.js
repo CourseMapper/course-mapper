@@ -2,6 +2,7 @@ var config = require('config');
 var mongoose = require('mongoose');
 var TreeNodes = require('./treeNodes.js');
 var Resources = require('./resources.js');
+var NodeVisibility = require('./node-visibility');
 var appRoot = require('app-root-path');
 var handleUpload = require(appRoot + '/libs/core/handleUpload.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
@@ -292,6 +293,16 @@ catalog.prototype.getNodeAsync = function () {
   });
 };
 
+catalog.prototype.toggleNodeVisibilityAsync = function (userId, nodeId, isHidden) {
+  return NodeVisibility.update({user: userId, node: nodeId}, {
+      user: userId,
+      node: nodeId,
+      isHidden: isHidden
+    },
+    {upsert: true})
+    .exec();
+};
+
 /**
  * get all tree nodes based on params,
  * and return it in a recursived tree manners
@@ -310,10 +321,26 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
     return (node.isPrivate !== true || isOwner || isAdmin);
   };
 
+  var getUserHiddenNodeIdsAsync = function (nodes) {
+    var allIds = _(nodes).map(function (c) {
+      return c._id;
+    });
+
+    var nodeVisibilities = await(NodeVisibility.find({user: user._id}).where('node').in(allIds).exec());
+
+    return nodeVisibilities
+      .filter(function (vis) {
+        return vis.isHidden;
+      })
+      .map(function (vis) {
+        return vis.node.toString();
+      });
+  };
+
   TreeNodes.find(params.query)
     .populate('resources')
     .populate('createdBy', 'displayName _id')
-    .exec(function (err, docs) {
+    .exec(async(function (err, docs) {
         if (err) {
           return error(err);
         }
@@ -341,9 +368,15 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
           }
         }
 
+        var userHiddenNodeIds = await(getUserHiddenNodeIdsAsync(cats));
+
         for (var i in cats) {
           // get the root
           var doc = cats[i];
+
+          // Check if the node is hidden by the user
+          doc.isHidden = userHiddenNodeIds.indexOf(doc._id.toString()) > -1;
+
           if (doc.isDeleted) {
             doc.name = "[DELETED]";
           }
@@ -353,7 +386,7 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
           }
         }
         success(tree);
-      }
+      })
     );
 };
 
