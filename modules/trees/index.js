@@ -300,7 +300,7 @@ catalog.prototype.toggleNodeVisibilityAsync = function (userId, nodeId, isHidden
       isHidden: isHidden
     },
     {upsert: true})
-    .exec();
+    .execAsync();
 };
 
 /**
