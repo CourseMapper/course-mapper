@@ -48,12 +48,28 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
     return findInternal(obj, col, searchKey, searchValue);
   };
 
+  // var hideNodeSourceEdges = function (node) {
+  //   _.each($element.find("[data-source='t" + node.parent + "']"), function (c) {
+  //     c.style.opacity = node.isHidden ? 0.15 : 1.0;
+  //   });
+  // };
+  //
+  // var hideNodeTargetEdges = function (node) {
+  //   _.each($element.find("[data-target='t" + node._id + "']"), function (c) {
+  //     c.style.opacity = node.isHidden ? 0.15 : 1.0;
+  //   });
+  // };
+
   $scope.getNodeStyle = function (node) {
     var style = {opacity: node.isHidden ? 0.15 : 1.0};
 
-    if ($scope.queryText) {
+    // Search mode hiding
+    if ($scope.queryText !== '') {
       style.opacity = ($scope.matchesFound[node._id] !== true) ? 0.25 : 1.0;
+      return style;
     }
+
+    //hideNodeTargetEdges(node);
 
     return style;
   };
