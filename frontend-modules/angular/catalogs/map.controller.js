@@ -64,13 +64,12 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
     var style = {opacity: node.isHidden ? 0.15 : 1.0};
 
     // Search mode hiding
-    if ($scope.queryText !== '') {
+    if ($scope.queryText != '') {
       style.opacity = ($scope.matchesFound[node._id] !== true) ? 0.25 : 1.0;
-      return style;
     }
-
-    hideNodeTargetEdges(node);
-
+    else {
+      hideNodeTargetEdges(node);
+    }
     return style;
   };
 
@@ -238,7 +237,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
     jsPlumb.ready(function () {
       $scope.instance = jsPlumb.getInstance({
         Endpoint: ["Blank", {radius: 2}],
-        HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+        //HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
         PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
         ConnectionOverlays: [],
         Container: "course-map"
