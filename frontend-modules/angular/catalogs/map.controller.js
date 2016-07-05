@@ -54,11 +54,11 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
   //   });
   // };
   //
-  // var hideNodeTargetEdges = function (node) {
-  //   _.each($element.find("[data-target='t" + node._id + "']"), function (c) {
-  //     c.style.opacity = node.isHidden ? 0.15 : 1.0;
-  //   });
-  // };
+  var hideNodeTargetEdges = function (node) {
+    _.each($element.find("[data-target='t" + node._id + "']"), function (c) {
+      c.style.opacity = node.isHidden ? 0.15 : 1.0;
+    });
+  };
 
   $scope.getNodeStyle = function (node) {
     var style = {opacity: node.isHidden ? 0.15 : 1.0};
@@ -69,7 +69,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       return style;
     }
 
-    //hideNodeTargetEdges(node);
+    hideNodeTargetEdges(node);
 
     return style;
   };
