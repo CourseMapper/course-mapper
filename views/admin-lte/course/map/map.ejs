@@ -2,6 +2,7 @@
     <div class="w {{data.type}}" id="t{{data._id}}"
          data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
+         style="z-index: 5"
          data-shape="{{getDataShape(data.type)}}"
          ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
          ng-hide="data.isDeletedForever"
