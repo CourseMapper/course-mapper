@@ -16,10 +16,6 @@ var PdfAnnotation = require('../../../modules/slide-viewer/annotation');
 var WatchJournal = require('../../../modules/applications/my-course/models/myVideoStatus.model');
 var Links = require('../../../modules/links/models/links');
 
-// var Categories = require('../../modules/catalogs/categories');
-// var Resources = require('../../modules/trees/resources');
-// var ContentNodes = require('../../modules/trees/treeNodes');
-
 var TraceFinder = function () {
   this.findAsync = function (user) {
 
