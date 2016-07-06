@@ -66,30 +66,24 @@
 
     </script>
 
+    <div>
+        <button title="Expand all" ng-click="setExpandState(true)" type="button" class="btn btn-box-tool">
+            <i class="fa fa-plus"></i>
+        </button>
+        <button title="Collapse all" ng-click="setExpandState(false)" type="button" class="btn btn-box-tool">
+            <i class="fa fa-minus"></i>
+        </button>
+    </div>
+
     <div ng-show="courses.enrolled.length > 0">
-        <h3><a>Enrolled</a>
-            <div style="display: inline-block">
-                <button ng-click="setExpandState(true)" type="button" class="btn btn-box-tool"><i
-                            class="fa fa-plus"></i></button>
-                <button ng-click="setExpandState(false)" type="button" class="btn btn-box-tool"><i
-                            class="fa fa-minus"></i></button>
-            </div>
-        </h3>
+        <a class="h3">Enrolled</a>
         <ul class="tree">
             <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
         </ul>
     </div>
 
     <div ng-show="courses.created.length > 0">
-        <h3><a>Created</a>
-            <div style="display: inline-block">
-                <button title="Expand all" ng-click="setExpandState(true)" type="button" class="btn btn-box-tool"><i
-                            class="fa fa-plus"></i></button>
-                <button title="Collapse all" ng-click="setExpandState(false)" type="button" class="btn btn-box-tool"><i
-                            class="fa fa-minus"></i></button>
-            </div>
-        </h3>
-
+        <a class="h3">Created</a>
         <ul class="tree">
             <li ng-repeat="field in courses.created" ng-include="'field_renderer.html'"></li>
         </ul>
