@@ -2,9 +2,9 @@
     <div class="w {{data.type}}" id="t{{data._id}}"
          data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
-         style="z-index: 1"
          data-shape="{{getDataShape(data.type)}}"
-         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
+         style="z-index:1" 
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden}"
          ng-hide="data.isDeletedForever"
          ng-style="getNodeStyle(data)">
 
@@ -42,7 +42,7 @@
         <span ng-show="data.type == 'contentNode' && data.isDeleted == true"> {{data.name}} </span>
 
         <!-- subtopic menu-->
-        <ul style="z-index: 3" class="dropdown-menu dropdown-course"
+        <ul class="dropdown-menu dropdown-course"
             ng-show="data.type=='subTopic' && !data.isDeleted && !data.isHidden">
             <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
                 <small class="label label-green">
@@ -78,7 +78,7 @@
         </ul>
 
         <!-- contentnode menu-->
-        <ul style="z-index: 3" class="dropdown-menu dropdown-course"
+        <ul class="dropdown-menu dropdown-course"
             ng-show="data.type=='contentNode' && !data.isDeleted && !data.isHidden">
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
@@ -98,7 +98,7 @@
             </li>
         </ul>
 
-        <ul style="z-index: 3" class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
+        <ul class="dropdown-menu dropdown-course" ng-show="data.isDeleted && isAuthorized(data)">
             <li>
                 <a class="cursor"
                    ng-click="deleteNodeForever(data)"><i class="ionicons ion-trash-b"></i> Delete Forever</a>
