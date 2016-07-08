@@ -3,13 +3,23 @@
          data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
+         style="z-index:1" 
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden}"
          ng-hide="data.isDeletedForever"
-         ng-style="{'opacity' : (queryText && matchesFound[data._id] !== true) ? 0.25 : 1}">
+         ng-style="getNodeStyle(data)">
 
         <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
-            <i class="fa fa-lock private" ng-show="data.isPrivate === true"></i>
-            <i class="fa fa-unlock public" ng-show="data.isPrivate !== true"></i>
+            <i title="This node is private. It is visible only to you." class="fa fa-lock private"
+               ng-show="data.isPrivate === true"></i>
+            <i title="This node is public. It is visible to everyone. " class="fa fa-unlock public"
+               ng-show="data.isPrivate !== true"></i>
+        </div>
+
+        <div class="hide-node-icon" ng-hide="data.isDeleted">
+            <a class="pointer" ng-click="toggleNodeVisibility(data)">
+                <i title="Show node" class="ionicons ion-eye" ng-show="data.isHidden"></i>
+                <i title="Hide node" class="ionicons ion-eye-disabled" ng-hide="data.isHidden"></i>
+            </a>
         </div>
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
@@ -32,7 +42,8 @@
         <span ng-show="data.type == 'contentNode' && data.isDeleted == true"> {{data.name}} </span>
 
         <!-- subtopic menu-->
-        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
+        <ul class="dropdown-menu dropdown-course"
+            ng-show="data.type=='subTopic' && !data.isDeleted && !data.isHidden">
             <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
                 <small class="label label-green">
                     <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by
@@ -67,7 +78,8 @@
         </ul>
 
         <!-- contentnode menu-->
-        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode' && !data.isDeleted">
+        <ul class="dropdown-menu dropdown-course"
+            ng-show="data.type=='contentNode' && !data.isDeleted && !data.isHidden">
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>

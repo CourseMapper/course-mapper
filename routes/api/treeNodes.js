@@ -311,4 +311,27 @@ router.delete('/treeNodes/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
       });
   });
 
+/**
+ * update node visibility
+ */
+router.put('/visibility/:nodeId/:isHidden', helper.l2pAuth, helper.ensureAuthenticated,
+  function (req, res, next) {
+    if (!req.user) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+    var userId = mongoose.Types.ObjectId(req.user._id);
+    var isHidden = req.params.isHidden;
+
+    var tree = new Tree();
+    tree.toggleNodeVisibilityAsync(userId, nodeId, isHidden)
+      .then(function (data) {
+        res.status(204).send();
+      })
+      .catch(function (err) {
+        helper.resReturn(err, res);
+      })
+  });
+
 module.exports = router;
