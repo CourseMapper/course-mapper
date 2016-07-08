@@ -4,4 +4,6 @@ app.controller('ReviewAssignmentTypeController', function($scope) {
     if($scope.newAssignObj && $scope.newAssignObj.reviewSettings && !$scope.newAssignObj.reviewSettings.reviewAssignment) {
         $scope.newAssignObj.reviewSettings.reviewAssignment = 'single'
     }
+
+    $scope.tooltip = "States if the solution will be reviewed by 1 or multiple"
 })

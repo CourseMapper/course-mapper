@@ -100,3 +100,7 @@ public/bower
 public/build
 public/partials
 data
+
+# should switch to public/resources after testing
+# resources for peer assessment module
+public/pa

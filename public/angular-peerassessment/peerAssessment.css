@@ -45,3 +45,15 @@
     background: orange;
     width: 0;
 }
+
+.pa .tooltip-inner {
+    background-color: #3C8DBC;
+
+    /*color: #fff;*/
+}
+
+.pa .pa-tooltip .ionicons {
+    color: #3C8DBC;
+    padding-top: 5px;
+    font-size: 20px
+}

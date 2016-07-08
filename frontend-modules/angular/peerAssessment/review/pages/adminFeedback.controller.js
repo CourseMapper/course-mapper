@@ -122,6 +122,19 @@ app.controller('AdminFeedbackController', function($scope, $http, toastr, $windo
         }
     }
 
+    $scope.isFormValid = function() {
+        if ($scope.form.$error.min && $scope.form.$error.min.length) {
+            return false
+        } else if ($scope.form.$error.number && $scope.form.$error.number.length) {
+            return false
+        } else if ($scope.form.$error.required && $scope.form.$error.required.length) {
+            return false
+        } else if ($scope.form.$error.max && $scope.form.$error.max.length) {
+            return false
+        }
+        return true
+    }
+
     $scope.submitReview = function() {
         console.log($scope.review)
         $scope.isLoading = true;

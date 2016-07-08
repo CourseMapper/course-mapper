@@ -2,7 +2,7 @@
     <fieldset>
         <div class="form-group">
             <label class="col-sm-5 control-label">Blindness</label>
-            <div class="col-sm-7">
+            <div class="col-sm-6">
                 <div class="col-sm-2">
                     <label class="radio-inline"><input type="radio" name="blindness" ng-model="newAssignObj.reviewSettings.blind" value="single">Single</label>
                 </div>
@@ -12,6 +12,9 @@
                 <div class="col-sm-2">
                     <label class="radio-inline"><input type="radio" name="blindness" ng-model="newAssignObj.reviewSettings.blind" value="none">None</label>
                 </div>
+            </div>
+            <div class="col-sm-1 pa-tooltip">
+                <i class="ionicons ion-ios-help" data-toggle="tooltip" data-html="true" title="{{tooltip}}"></i>
             </div>
         </div>
     </fieldset>

@@ -7,7 +7,7 @@
                         <h3 class="box-title">Admin Feedback</h3>
                     </div>
                     <div class="box-body">
-                        <form class="form-horizontal horizontal-max" name="reviewSubmissionForm" role="form" ng-submit="saveNewPost(addAssignmentForm.$valid)" novalidate>
+                        <form class="form-horizontal horizontal-max" name="form" role="form" novalidate>
 
                             <div class="panel panel-default">
                                 <div class="panel-heading">Submitted Solution</div>
@@ -85,11 +85,15 @@
                                                 <textarea rows="3" class="form-control original-form-control" id="inputReviewComments" ng-model="review.comments" placeholder="Comments"/>
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group" ng-class="{ 'has-error' : form.marks.$invalid && !form.marks.$pristine }">
                                             <label for="inputObtainedMarks" class="col-sm-4 control-label">Obtained Marks(Total: {{solution.peerReviewId.totalMarks}}) *</label>
                                             <div class="col-sm-2">
-                                                <input type="number" min="0" max="{{solution.peerReviewId.totalMarks}}" class="form-control original-form-control" id="inputObtainedMarks" ng-model="review.marksObtained">
+                                                <input type="number" name="marks" min="0" max="{{solution.peerReviewId.totalMarks}}" class="form-control original-form-control" id="inputObtainedMarks" ng-model="review.marksObtained" required>
                                             </div>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.min" class="help-block">Marks should be a positive number</p>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.number" class="help-block">Marks should be a number</p>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.max" class="help-block">Marks cannot exceed total marks</p>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.required" class="help-block">Marks are required</p>
                                         </div>
                                     </fieldset>
                                 </div>
@@ -97,7 +101,7 @@
                                     <!--<error-block ng-show="errors.length > 0" messages="errors"></error-block>-->
                                     <!-- Button -->
                                     <div class="controls pull-right">
-                                        <button class="btn btn-primary" ng-click="submitReview()"> Save
+                                        <button class="btn btn-primary" ng-disabled="!isFormValid()" ng-click="submitReview()"> Save
                                             <spinner show="isLoading"></spinner>
                                         </button>
                                     </div>

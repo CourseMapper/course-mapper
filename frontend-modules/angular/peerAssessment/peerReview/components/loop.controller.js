@@ -29,4 +29,6 @@ app.controller('LoopController', function($scope) {
             $scope.multipleView = false
         }
     }
+
+    $scope.tooltip = "States the number of time the review process will happen"
 })
