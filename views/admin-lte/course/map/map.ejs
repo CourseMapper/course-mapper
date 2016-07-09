@@ -3,7 +3,7 @@
          data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-         style="z-index:1" 
+         style="z-index:1"
          ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden}"
          ng-hide="data.isDeletedForever"
          ng-style="getNodeStyle(data)">
