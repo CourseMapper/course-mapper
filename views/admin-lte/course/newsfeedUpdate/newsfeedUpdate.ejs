@@ -5,22 +5,27 @@
                 <div class="content-header">
                     <h4 class="pull-left">Newsfeed Timeline</h4>
                     <select name="show-filter" ng-model="filterDropDown"
-                            ng-options="type.name for type in nfType" class="form-control pull-right" style="float: right; max-width: 300px; text-transform: capitalize;">
+                            ng-options="type.name for type in nfType" class="form-control pull-right"
+                            style="float: right; max-width: 300px; text-transform: capitalize;">
                         <option value="">-- Filter --</option>
                     </select>
                     <select name="show-filter" ng-model="filterDateDropDown"
-                            ng-options="type.name for type in nfFilterDate" class="form-control pull-right" style="float: right; max-width: 200px; text-transform: capitalize; margin-right: 10px;">
+                            ng-options="type.name for type in nfFilterDate" class="form-control pull-right"
+                            style="float: right; max-width: 200px; text-transform: capitalize; margin-right: 10px;">
                         <option value="">-- Date Filter --</option>
                     </select>
-                    <form class="form-inline" style="max-width: 200px; float: right; margin-right: 10px; margin-top: 3px;">
+                    <form class="form-inline"
+                          style="max-width: 200px; float: right; margin-right: 10px; margin-top: 3px;">
                         <input type="text" ng-model="query" placeholder="Search"/>
                     </form>
                 </div>
 
             </div>
-            <div class="content" style="max-height: 1500px; overflow: auto; background-color: #ECF0F5; border-radius: 3px;">
+            <div class="content"
+                 style="max-height: 1500px; overflow: auto; background-color: #ECF0F5; border-radius: 3px;">
                 <ul class="timeline">
-                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: filterDropDown.name | filter: query" ng-switch on="nfData.actionSubject">
+                    <li ng-repeat="nfData in newsfeedData | orderBy: '-dateAdded'| filter: filterDropDown.name | filter: query"
+                        ng-switch on="nfData.actionSubject">
                         <i class="fa fa-book bg-navy" ng-switch-when="course"></i>
                         <i class="fa fa-arrow-up bg-teal-active" ng-switch-when="up vote"></i>
                         <i class="fa fa-arrow-down bg-teal" ng-switch-when="down vote"></i>
@@ -43,20 +48,42 @@
                             <div class="timeline-body">
                                 <div class="products-list products-list-in-box">
                                     <div class="">
-                                        <div class="product-img" style="margin-left: 10px;"><img src="{{nfData.userId.image}}" alt="user image" class="img-circle" style="width: 30px; height: auto;"/></div>
+                                        <div class="product-img" style="margin-left: 10px;"><img
+                                                    src="{{nfData.userId.image}}" alt="user image" class="img-circle"
+                                                    style="width: 30px; height: auto;"/></div>
                                         <div class="product-info">
                                             <!--<b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'canceled vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> </span>
                                             <a><b>{{nfData.actionName}}</b></a>-->
-                                            <b>{{nfData.userId.displayName | capitalize}}</b> {{nfData.actionType}} <span ng-if="nfData.actionType == 'enrolled'">in</span><span ng-if="nfData.actionType == 'replied'">to</span> {{nfData.actionSubject}} <span ng-if="nfData.actionSubject == 'pdf annotation' || nfData.actionSubject == 'video annotation'">in</span>
-                                            <a ng-show="nfData.actionSubject == 'node' || nfData.actionSubject == 'sub topic'" href="#/cid/{{curUrl.courseId}}?tab=map"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <b>{{nfData.userId.displayName | capitalize}}</b> {{nfData.actionType}}
+                                            <span ng-if="nfData.actionType == 'enrolled'">in</span><span
+                                                    ng-if="nfData.actionType == 'replied'">to</span>
+                                            {{nfData.actionSubject}} <span
+                                                    ng-if="nfData.actionSubject == 'pdf annotation' || nfData.actionSubject == 'video annotation'">in</span>
+                                            <a ng-show="nfData.actionSubject == 'node' || nfData.actionSubject == 'sub topic'"
+                                               href="#/cid/{{curUrl.courseId}}?tab=map&queryText={{nfData.actionName}}"><b>{{nfData.actionName
+                                                    | capitalize}}</b></a>
                                             <!-- if type deleted content node, don't show a-href to avoid error url -->
-                                            <span ng-if="nfData.actionType == 'deleted'" ng-show="nfData.actionSubject == 'content node'"><b>{{nfData.actionName | capitalize}}</b></span>
-                                            <a ng-if="nfData.actionType != 'deleted'" ng-show="nfData.actionSubject == 'content node'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{curUrl.courseId}}/nid/{{nfData.nodeId._id}}"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'discussion'" href="#/cid/{{curUrl.courseId}}?tab=discussion"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'course'" href="#/cid/{{curUrl.courseId}}?tab=preview"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'pdf annotation'" href="/treeNode/{{nfData.nodeId}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId}}?tab=pdf"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'video annotation'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=video"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'link'" href="/treeNode/{{nfData.nodeId}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId}}?tab=links"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <span ng-if="nfData.actionType == 'deleted'"
+                                                  ng-show="nfData.actionSubject == 'content node'"><b>{{nfData.actionName | capitalize}}</b></span>
+                                            <a ng-if="nfData.actionType != 'deleted'"
+                                               ng-show="nfData.actionSubject == 'content node'"
+                                               href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{curUrl.courseId}}/nid/{{nfData.nodeId._id}}"><b>{{nfData.actionName
+                                                    | capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'discussion'"
+                                               href="#/cid/{{curUrl.courseId}}?tab=discussion"><b>{{nfData.actionName |
+                                                    capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'course'"
+                                               href="#/cid/{{curUrl.courseId}}?tab=preview"><b>{{nfData.actionName |
+                                                    capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'pdf annotation'"
+                                               href="/treeNode/{{nfData.nodeId}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId}}?tab=pdf"><b>{{nfData.actionName
+                                                    | capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'video annotation'"
+                                               href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=video"><b>{{nfData.actionName
+                                                    | capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'link'"
+                                               href="/treeNode/{{nfData.nodeId}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId}}?tab=links"><b>{{nfData.actionName
+                                                    | capitalize}}</b></a>
                                             <br/>
                                             <small class="text-muted">
                                                 <i class="fa fa-clock-o"> {{nfData.dateAdded | relativeDate}}</i>
@@ -69,7 +96,8 @@
                         </div>
                     </li>
                 </ul>
-                <p ng-show="(newsfeedData|filter: filterDropDown.name).length==0 || (newsfeedData|filter: query).length==0">There are no such activities </p>
+                <p ng-show="(newsfeedData|filter: filterDropDown.name).length==0 || (newsfeedData|filter: query).length==0">
+                    There are no such activities </p>
             </div>
 
         </div>
