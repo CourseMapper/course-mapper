@@ -50,7 +50,7 @@ reviews.prototype.populateReviewAssignmentData = function (error, params, succes
                 return res;
         }))
 
-        assignedReviews = await(Review.find({ peerReviewId: params.reviewId, isAdminReview: false }, {solutionId: 1, assignedTo: 1, isSubmitted: 1}).populate('solutionId assignedTo').lean().exec(function(err, res) {
+        assignedReviews = await(Review.find({ peerReviewId: params.reviewId, isAdminReview: false, isSecondLoop: null }, {solutionId: 1, assignedTo: 1, isSubmitted: 1}).populate('solutionId assignedTo').lean().exec(function(err, res) {
             if(err) {
                 console.log(err);
             } else {
@@ -262,6 +262,33 @@ reviews.prototype.addReview = function(error, params, files, success) {
     )
 }
 
+var handleCopy = function(oldPath, destination, overwrite) {
+    if(!overwrite)
+        overwrite = false;
+
+    fs.copy(oldPath, destination, {replace: overwrite}, function (err) {
+        if (err) return debug(err);
+        debug("success copied file");
+    });
+};
+
+reviews.prototype.copyFile = function (error, filePath, type, helper, success) {
+    var filePathPieces = filePath.split('/')
+    var name = filePathPieces[filePathPieces.length - 1]
+    var fn = '/pa/'+ helper.courseId +'/'+ helper.peerReviewId._id+'/'+ type +'/'+ helper._id +'/'+ name;
+    var dest = appRoot + '/public/'+ fn;
+    try {
+        handleCopy(appRoot + '/public' + filePath, dest, true);
+    } catch (ex) {
+        error(new Error("Failed uploading"));
+        return;
+    }
+
+    if (success) {
+        success(fn);
+    }
+}
+
 reviews.prototype.addSecondReview = function(error, params, oldReview, files, success) {
     var self = this
     var solution = await(Solution.findOne({_id: oldReview.solutionId}).exec())
@@ -278,51 +305,50 @@ reviews.prototype.addSecondReview = function(error, params, oldReview, files, su
         isSubmitted: true,
         comments : params.comments,
         marksObtained : params.marksObtained,
-        documents : params.documents || [],
+        //documents : params.documents || [],
         isSecondLoop : true,
         oldReviewId : oldReview._id,
         rubricReview : params.rubricReview
     })
-    // TODO: add review files to it own folder
-    if(files && files.file) {
-        var reviewDocuments = files.file[0].reviewDocuments
-        if(reviewDocuments && reviewDocuments.constructor == Array) {
-            for (var i in reviewDocuments) {
-                var f = reviewDocuments[i];
-                self.saveResourceFile(error,
-                    f,
-                    'review',
-                    oldReview,
-                    function (fn) {
+
+    review.save(function (err, secondReview) {
+        if (err) {
+            debug('failed saving new review');
+            error(err);
+        } else {
+            if(files && files.file) {
+                var reviewDocuments = files.file[0].reviewDocuments
+                if(reviewDocuments && reviewDocuments.constructor == Array) {
+                    for (var i in reviewDocuments) {
+                        var f = reviewDocuments[i];
+                        self.saveResourceFile(error,
+                            f,
+                            'review',
+                            secondReview,
+                            function (fn) {
+                                secondReview.documents.push(fn);
+                            })
+                    }
+                }
+            }
+            // Copy the old review files if user keeps them
+            if(params.documents && params.documents.length) {
+                for (var i in params.documents) {
+                    self.copyFile(error, params.documents[i], 'review', secondReview, function (fn) {
                         var duplicate = false;
-                        _.each(review.documents, function (doc) {
+                        _.each(secondReview.documents, function (doc) {
                             if (fn == doc) {
                                 duplicate = true;
                             }
                         })
                         if (!duplicate) {
-                            review.documents.push(fn);
+                            secondReview.documents.push(fn);
                         }
                     })
+                }
             }
-        }
-    }
-    _.each(params.deletedUploadedFiles, function(filePath) {
-        fs.unlink(appRoot + '/public/' + filePath, function(err) {
-            if(err) {
-                debug(err);
-            }
-            debug("File deleted successfully");
-        });
-    })
-    review.save(function (err, res) {
-        if (err) {
-            debug('failed saving new review');
-            error(err);
-        }
-        else {
-            debug('review saved successfully', res);
-            success(res._id);
+            secondReview.save()
+            success(secondReview._id);
         }
     });
 }
@@ -430,14 +456,24 @@ reviews.prototype.deleteReview = function(error, params, success) {
 
         function (isAllowed) {
             if (isAllowed) {
-                Review.remove(
-                    {_id: params.reviewId}
-                ).exec(function(err){
-                    if(!err) {
-                        success();
-                    } else {
-                        error(err);
-                    }
+                Review.find({
+                    $or: [{_id: params.reviewId}, {oldReviewId: params.reviewId}]
+                }).exec(function(err, reviews) {
+                    if(err) { error(err) }
+                    _.each(reviews, function(review) {
+                        debug('RID: ', review._id)
+                        _.each(review.documents, function(docPath) {
+                            debug('Path: ', docPath)
+                            fs.unlink(appRoot + '/public' + docPath, function(err) {
+                                if(err) {
+                                    debug(err);
+                                }
+                                debug("File deleted successfully");
+                            });
+                        })
+                        review.remove()
+                    })
+                    success()
                 })
             } else {
                 error(helper.createError401());

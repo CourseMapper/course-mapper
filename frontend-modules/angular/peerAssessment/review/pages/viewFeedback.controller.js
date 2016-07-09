@@ -79,17 +79,8 @@ app.controller('ViewFeedbackController', function($scope, $http, toastr, $window
     fetchReviews()
 
     $scope.openReview = function(review) {
-        if(review.documents && review.documents.length>0) {
-            review.displayDocumentsList = [];
-            _.each(review.documents, function(docName) {
-                var temp = {};
-                temp.link = window.location.origin + docName;
-                var tempArr = docName.split('/');
-                temp.name = tempArr[tempArr.length-1];
-                review.displayDocumentsList.push(temp);
-            })
-        }
         populateRubrics(review)
+        populateDisplayDocumentList(review)
         $scope.peerReview = review
 
         if(review.isSecondLoop && review.oldReviewId) {
@@ -97,8 +88,9 @@ app.controller('ViewFeedbackController', function($scope, $http, toastr, $window
             reviews.every(function(r) {
                 console.log(review.oldReviewId, r._id)
                 if(review.oldReviewId == r._id) {
-                    console.log('Old review matched')
+                    console.log('Old review matched', r)
                     populateRubrics(r)
+                    populateDisplayDocumentList(r)
                     $scope.firstReview = r
                     return false
                 }
@@ -112,6 +104,19 @@ app.controller('ViewFeedbackController', function($scope, $http, toastr, $window
     populateRubrics = function(review) {
         if(review.peerReviewId.reviewSettings.rubrics && review.peerReviewId.reviewSettings.rubrics.length) {
             review.rubrics = review.peerReviewId.reviewSettings.rubrics
+        }
+    }
+
+    populateDisplayDocumentList = function(review) {
+        if(review.documents && review.documents.length>0) {
+            review.displayDocumentsList = [];
+            _.each(review.documents, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displayDocumentsList.push(temp);
+            })
         }
     }
 })

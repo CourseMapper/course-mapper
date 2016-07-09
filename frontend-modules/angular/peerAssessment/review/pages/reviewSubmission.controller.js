@@ -125,6 +125,7 @@ app.controller('ReviewSubmissionController', function($scope, $http, toastr, $wi
                     window.location.reload();
                 } else {
                     window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + data.reviewId;
+                    window.location.reload();
                 }
             })
             .error(function (data) {
