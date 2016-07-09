@@ -17,9 +17,10 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
   $scope.nodeChildrens = {};
   $scope.firstloaded = true;
   $scope.queryText = '';
-  var markedNode = '';
-
   $scope.matchesFound = {};
+  var markedNode = '';
+  var searchMatches;
+  var searchMatchIndex = 0;
 
   /**
    * find node recursively
@@ -57,6 +58,17 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
     });
   };
 
+  $scope.findNextMatch = function () {
+    if (!searchMatches || searchMatches.length <= 0) {
+      return;
+    }
+    searchMatchIndex++;
+    if (searchMatchIndex >= searchMatches.length) {
+      searchMatchIndex = 0;
+    }
+    positionCanvasToNode(searchMatches[searchMatchIndex]);
+  };
+
   $scope.getNodeStyle = function (node) {
     var style = {};
     var isSearching = $scope.queryText != '' || markedNode != '';
@@ -83,16 +95,20 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
         parent = findNodes($scope.treeNodes, 'childrens', '_id', parent.parent)[0];
       }
     });
+    if (items && items.length > 0) {
+      positionCanvasToNode(items[0]);
+    }
     setConnectorsOpacity(!(_.isEmpty($scope.matchesFound)) ? 0.25 : 1.0)
   };
 
   $scope.lookupInTree = function () {
     $scope.matchesFound = {};
-    var items = findNodes($scope.treeNodes, 'childrens', 'name', $scope.queryText);
-    if (items.length <= 0) {
+    searchMatches = null;
+    searchMatches = findNodes($scope.treeNodes, 'childrens', 'name', $scope.queryText);
+    if (searchMatches.length <= 0) {
       return;
     }
-    updateMatchedResults(items);
+    updateMatchedResults(searchMatches);
   };
 
   //find the node from the query string and highlight it
@@ -123,15 +139,6 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       });
       updateMatchedResults(items);
       setConnectorsOpacity(0.15);
-      var node = items[0];
-      var offsetX = node.positionFromRoot.x;
-      var offsetY = node.positionFromRoot.y;
-      var pos = {
-        left: Canvas.centerX - offsetX + 'px',
-        top: Canvas.centerY - offsetY + 'px'
-      };
-      console.log(pos);
-      Canvas.position(pos, true);
     }, 600);
 
     $timeout(function () {
@@ -145,6 +152,17 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       setConnectorsOpacity(1.0);
     }, 5000)
   }
+
+  var positionCanvasToNode = function (node) {
+    if (!node) return;
+    var offsetX = node.positionFromRoot.x;
+    var offsetY = node.positionFromRoot.y;
+    var pos = {
+      left: Canvas.centerX - offsetX + 'px',
+      top: Canvas.centerY - offsetY + 'px'
+    };
+    Canvas.position(pos, true);
+  };
 
   var setConnectorsOpacity = function (opacity) {
     _.each($element.find('._jsPlumb_connector'), function (c) {

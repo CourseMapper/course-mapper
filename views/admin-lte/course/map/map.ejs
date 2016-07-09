@@ -123,6 +123,7 @@
         </button>
         <input type="search" class="form-control search-box"
                title="Search"
+               ng-keyup="$event.keyCode == 13 && findNextMatch()"
                ng-model="queryText"
                ng-change="lookupInTree()"
                placeholder="Search map..."/>
@@ -311,7 +312,7 @@
         position: function (position, animate) {
             var self = this;
             if (animate) {
-                self.el.animate(position, {duration: 1000, easing: 'easeOutExpo'});
+                self.el.animate(position, {duration: 600, easing: 'easeOutExpo'});
             }
             else {
                 self.el.css(position);
