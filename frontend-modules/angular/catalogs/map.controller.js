@@ -17,6 +17,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
   $scope.nodeChildrens = {};
   $scope.firstloaded = true;
   $scope.queryText = '';
+  var markedNode = '';
+
+  $scope.matchesFound = {};
 
   /**
    * find node recursively
@@ -34,11 +37,10 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
     var findInternal = function (obj, col, searchKey, searchValue) {
       for (var i in obj) {
         var tn = obj[i];
-
-        if (tn[searchKey] && tn[searchKey].toLowerCase().indexOf(searchValue.toLowerCase()) > -1) {
+        var isMatch = tn[searchKey].toLowerCase().indexOf(searchValue.toLowerCase()) > -1;
+        if (tn[searchKey] && isMatch) {
           result.push(tn);
         }
-
         if (tn[col] && tn[col].length > 0) {
           findInternal(tn[col], col, searchKey, searchValue);
         }
@@ -57,7 +59,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
 
   $scope.getNodeStyle = function (node) {
     var style = {};
-    var isSearching = $scope.queryText != '';
+    var isSearching = $scope.queryText != '' || markedNode != '';
     if (isSearching) {
       style.opacity = ($scope.matchesFound[node._id] !== true) ? 0.25 : 1.0;
     } else {
@@ -70,21 +72,9 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
     return findNodes(obj, col, searchKey, searchValue)[0];
   };
 
-  $scope.matchesFound = {};
-
-  $scope.lookupInTree = function () {
-    $scope.matchesFound = {};
-
-    _.each($element.find('._jsPlumb_connector'), function (c) {
-      c.style.opacity = $scope.queryText ? 0.25 : 1.0;
-    });
-
-    var items = findNodes($scope.treeNodes, 'childrens', 'name', $scope.queryText);
-    if (items.length <= 0) return;
-
+  var updateMatchedResults = function (items) {
     _.each(items, function (item) {
       $scope.matchesFound[item._id] = true;
-
       var parent = findNodes($scope.treeNodes, 'childrens', '_id', item.parent)[0];
       while (parent) {
         collapseService.setExpand(parent._id);
@@ -92,7 +82,52 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
         $scope.collapseStatus[parent._id] = false;
         parent = findNodes($scope.treeNodes, 'childrens', '_id', parent.parent)[0];
       }
-    })
+    });
+    setConnectorsOpacity(!(_.isEmpty($scope.matchesFound)) ? 0.25 : 1.0)
+  };
+
+  $scope.lookupInTree = function () {
+    $scope.matchesFound = {};
+    var items = findNodes($scope.treeNodes, 'childrens', 'name', $scope.queryText);
+    if (items.length <= 0) {
+      return;
+    }
+    updateMatchedResults(items);
+  };
+
+  //find the node from the query string and highlight it
+  function highlightMarkedNode() {
+    $scope.matchesFound = {};
+    markedNode = $location.search().markedNode || '';
+    if (!markedNode) {
+      return;
+    }
+    var items = findNodes($scope.treeNodes, 'childrens', '_id', markedNode);
+    if (items.length <= 0) {
+      return;
+    }
+    $timeout(function () {
+      items.forEach(function (item) {
+        item.isMarked = true;
+      });
+      updateMatchedResults(items)
+    }, 600);
+
+    $timeout(function () {
+      $scope.matchesFound = {};
+      items.forEach(function (item) {
+        item.isMarked = false;
+      });
+      $location.search('markedNode', null);
+      markedNode = '';
+      updateMatchedResults(items);
+    }, 5000)
+  }
+
+  var setConnectorsOpacity = function (opacity) {
+    _.each($element.find('._jsPlumb_connector'), function (c) {
+      c.style.opacity = opacity;
+    });
   };
 
   $scope.initDropDownMenuHybrid = function () {
@@ -126,11 +161,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       function (treeNodes) {
         if (treeNodes.length > 0) {
           $scope.treeNodes = treeNodes;
-          var highlightedNode = $location.search().queryText || '';
-          if (highlightedNode) {
-            $scope.queryText = highlightedNode;
-            $scope.lookupInTree()
-          }
+          highlightMarkedNode();
         } else {
           $scope.initJSPlumb();
           $scope.showMapEmptyInfo();

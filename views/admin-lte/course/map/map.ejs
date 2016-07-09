@@ -4,10 +4,9 @@
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
          style="z-index:1"
-         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden}"
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden, 'marked': data.isMarked}"
          ng-hide="data.isDeletedForever"
          ng-style="getNodeStyle(data)">
-
         <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
             <i title="This node is private. It is visible only to you." class="fa fa-lock private"
                ng-show="data.isPrivate === true"></i>

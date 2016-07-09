@@ -36,7 +36,7 @@
                                     <a ng-if="content.type=='contentNode'" href="/treeNode/{{content._id}}/#/cid/{{content.courseId._id}}/nid/{{content._id}}">
                                         [{{content.courseId.name}}] {{content.name | cut:true:30:' ...'}}
                                     </a>
-                                    <a ng-if="content.type=='subTopic'" href="/course/{{content.courseId.slug}}/#/cid/{{content.courseId._id}}?tab=map&queryText={{content.name}}">
+                                    <a ng-if="content.type=='subTopic'" href="/course/{{content.courseId.slug}}/#/cid/{{content.courseId._id}}?tab=map&markedNode={{content._id}}">
                                         [{{content.courseId.name}}] {{content.name | cut:true:30:' ...'}}
                                     </a>
                                 </li>
