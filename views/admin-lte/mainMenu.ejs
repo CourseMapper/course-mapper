@@ -18,7 +18,7 @@
         <form class="navbar-form navbar-left search-box hidden-xs" role="search" ng-controller="SearchBoxController">
             <div class="input-group search">
                 <input class="form-control" id="navbar-search-input" type="text" placeholder="Search" autocomplete="off"
-                       ng-model="queryText" ng-model-options="{debounce: 300}">
+                       ng-model="queryText" ng-model-options="{debounce: 200}">
 
                 <div class="results dropdown-menu" ng-show="isEmpty()==false">
                     <div class="results-box">
@@ -32,8 +32,12 @@
                             <h4>Content:</h4>
                             <ul class="list-unstyled">
                                 <li ng-repeat="content in result.contentNodes">
-                                    <a href="/treeNode/{{content._id}}/#/cid/{{content.courseId}}/nid/{{content._id}}">
-                                        {{content.name | cut:true:30:' ...'}}
+
+                                    <a ng-if="content.type=='contentNode'" href="/treeNode/{{content._id}}/#/cid/{{content.courseId._id}}/nid/{{content._id}}">
+                                        [{{content.courseId.name}}] {{content.name | cut:true:30:' ...'}}
+                                    </a>
+                                    <a ng-if="content.type=='subTopic'" href="/course/{{content.courseId.slug}}/#/cid/{{content.courseId._id}}?tab=map&queryText={{content.name}}">
+                                        [{{content.courseId.name}}] {{content.name | cut:true:30:' ...'}}
                                     </a>
                                 </li>
                             </ul>

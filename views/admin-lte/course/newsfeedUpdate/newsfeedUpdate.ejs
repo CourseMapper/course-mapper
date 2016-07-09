@@ -51,11 +51,11 @@
                                             <a ng-show="nfData.actionSubject == 'node' || nfData.actionSubject == 'sub topic'" href="#/cid/{{curUrl.courseId}}?tab=map"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <!-- if type deleted content node, don't show a-href to avoid error url -->
                                             <span ng-if="nfData.actionType == 'deleted'" ng-show="nfData.actionSubject == 'content node'"><b>{{nfData.actionName | capitalize}}</b></span>
-                                            <a ng-if="nfData.actionType != 'deleted'" ng-show="nfData.actionSubject == 'content node'" href="/treeNode/{{nfData.nodeId}}/#/cid/{{curUrl.courseId}}/nid/{{nfData.nodeId}}"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <a ng-if="nfData.actionType != 'deleted'" ng-show="nfData.actionSubject == 'content node'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{curUrl.courseId}}/nid/{{nfData.nodeId._id}}"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <a ng-show="nfData.actionSubject == 'discussion'" href="#/cid/{{curUrl.courseId}}?tab=discussion"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <a ng-show="nfData.actionSubject == 'course'" href="#/cid/{{curUrl.courseId}}?tab=preview"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <a ng-show="nfData.actionSubject == 'pdf annotation'" href="/treeNode/{{nfData.nodeId}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId}}?tab=pdf"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'video annotation'" href="/treeNode/{{nfData.nodeId}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId}}?tab=video"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <a ng-show="nfData.actionSubject == 'video annotation'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=video"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <a ng-show="nfData.actionSubject == 'link'" href="/treeNode/{{nfData.nodeId}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId}}?tab=links"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <br/>
                                             <small class="text-muted">
