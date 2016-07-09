@@ -123,6 +123,15 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       });
       updateMatchedResults(items);
       setConnectorsOpacity(0.15);
+      var node = items[0];
+      var offsetX = node.positionFromRoot.x;
+      var offsetY = node.positionFromRoot.y;
+      var pos = {
+        left: Canvas.centerX - offsetX + 'px',
+        top: Canvas.centerY - offsetY + 'px'
+      };
+      console.log(pos);
+      Canvas.position(pos, true);
     }, 600);
 
     $timeout(function () {
