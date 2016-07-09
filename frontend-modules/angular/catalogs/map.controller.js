@@ -104,13 +104,25 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
     }
     var items = findNodes($scope.treeNodes, 'childrens', '_id', markedNode);
     if (items.length <= 0) {
+      markedNode = '';
+      toastr.warning(
+        'Node does not exist', {
+          allowHtml: true,
+          autoDismiss: true,
+          tapToDismiss: true,
+          extendedTimeOut: 2000,
+          timeOut: 5000,
+          toastClass: 'toast wide'
+        });
       return;
     }
+
     $timeout(function () {
       items.forEach(function (item) {
         item.isMarked = true;
       });
-      updateMatchedResults(items)
+      updateMatchedResults(items);
+      setConnectorsOpacity(0.15);
     }, 600);
 
     $timeout(function () {
@@ -121,6 +133,7 @@ app.controller('MapController', function ($scope, $http, $rootScope, $element, $
       $location.search('markedNode', null);
       markedNode = '';
       updateMatchedResults(items);
+      setConnectorsOpacity(1.0);
     }, 5000)
   }
 
