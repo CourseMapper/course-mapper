@@ -8,10 +8,23 @@ app.controller('ReviewSubmissionController', function($scope, $http, toastr, $wi
 
     ActionBarService.extraActionsMenu.push(
         {
-            clickAction: $scope.viewReviewsList,
+            clickAction: $scope.goBack,
             title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
             aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
         }
+        //{
+        //    clickAction: $scope.viewReviewsList,
+        //    title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+        //    aTitle: 'Back'
+        //}
     );
 
     var requestData = function() {
@@ -124,7 +137,8 @@ app.controller('ReviewSubmissionController', function($scope, $http, toastr, $wi
                 if(data.reviewId == vId) {
                     window.location.reload();
                 } else {
-                    window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + data.reviewId;
+                    window.history.replaceState({},"", '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + data.reviewId)
+                    //window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + data.reviewId;
                     window.location.reload();
                 }
             })

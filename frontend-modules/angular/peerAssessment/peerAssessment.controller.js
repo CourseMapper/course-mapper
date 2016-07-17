@@ -83,6 +83,10 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
         $('#confirmDeleteAssignmentModal').modal('hide');
     }
 
+    $scope.goBack = function() {
+        window.history.back();
+    }
+
     $scope.editPeerReview = function(review, event) {
         if(event) {
             event.stopPropagation();
@@ -147,6 +151,7 @@ app.controller('PeerAssessmentController', function($scope, $http, courseService
         window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=giveFeedback&vId=' + solutionId;
     }
 
+    // Was used in adminfeeback which has now been changed so its not needed any more but still verify
     $scope.viewSolution = function(solutionId) {
         window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolution&vId=' + solutionId;
     }

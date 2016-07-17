@@ -16,6 +16,14 @@ app.controller('ManageRubricsController', function($scope, ActionBarService, $ht
         ActionBarService.extraActionsMenu = [];
         ActionBarService.extraActionsMenu.push(
             {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
+            {
                 clickAction: $scope.redirectPRHome,
                 title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
                 aTitle: 'Peer Review Home'

@@ -8,10 +8,17 @@ app.controller('AdminFeedbackController', function($scope, $http, toastr, $windo
 
     ActionBarService.extraActionsMenu.push(
         {
-            clickAction: $scope.viewSolution,
-            clickParams: vId,
+            clickAction: $scope.goBack,
             title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
             aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
         }
     );
 
@@ -187,23 +194,15 @@ app.controller('AdminFeedbackController', function($scope, $http, toastr, $windo
     }
 
     $scope.openReview = function(review) {
-        if(review.documents && review.documents.length>0) {
-            review.displayDocumentsList = [];
-            _.each(review.documents, function(docName) {
-                var temp = {};
-                temp.link = window.location.origin + docName;
-                var tempArr = docName.split('/');
-                temp.name = tempArr[tempArr.length-1];
-                review.displayDocumentsList.push(temp);
-            })
-        }
         populateRubrics(review)
+        populateDisplayDocumentList(review)
         $scope.peerReview = review
 
         if(review.isSecondLoop && review.oldReviewId) {
             reviews.every(function(r) {
                 if(review.oldReviewId == r._id) {
                     populateRubrics(r)
+                    populateDisplayDocumentList(r)
                     $scope.firstReview = r
                     return false
                 }
@@ -217,6 +216,19 @@ app.controller('AdminFeedbackController', function($scope, $http, toastr, $windo
     populateRubrics = function(review) {
         if(review.peerReviewId.reviewSettings.rubrics && review.peerReviewId.reviewSettings.rubrics.length) {
             review.rubrics = review.peerReviewId.reviewSettings.rubrics
+        }
+    }
+
+    populateDisplayDocumentList = function(review) {
+        if(review.documents && review.documents.length>0) {
+            review.displayDocumentsList = [];
+            _.each(review.documents, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displayDocumentsList.push(temp);
+            })
         }
     }
 })

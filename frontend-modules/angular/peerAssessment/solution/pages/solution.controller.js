@@ -1,8 +1,21 @@
-app.controller('SolutionsController', function($scope, $location, $http, toastr, ActionBarService) {
-    $scope.solutions = null;
+app.controller('SolutionsController', function($scope, $location, $http, toastr, ActionBarService, SolutionFilterService) {
+    var solutions = null;
+    $scope.filteredSolutions = null;
+    $scope.peerReviewList = null;
+    $scope.filterCondition = '';
+    $scope.filterCondition = SolutionFilterService.getPeerReview()
+    console.log('FilterCondition: ', $scope.filterCondition)
     if($scope.vName) {
         ActionBarService.extraActionsMenu = [];
         ActionBarService.extraActionsMenu.push(
+            {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
             {
                 clickAction: $scope.redirectPRHome,
                 title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
@@ -14,15 +27,46 @@ app.controller('SolutionsController', function($scope, $location, $http, toastr,
     $scope.requestData = function() {
         var url = '/api/peerassessment/' + $scope.course._id + '/solutions';
         $http.get(url).then( function(response) {
-            _.each(response.data.solutions, function(solution) {
-                // do something if needed
-            });
-            $scope.solutions = response.data.solutions;
-            console.log('Solutions', $scope.solutions);
+            if(response.data.solutions && response.data.solutions.length) {
+                console.log('PeerReviewList', $scope.peerReviewList)
+                $scope.peerReviewList = _.pluck(response.data.solutions, 'peerReviewId')
+                $scope.peerReviewList = _.uniq($scope.peerReviewList, function(p) {return p._id})
+                $scope.peerReviewList.push({_id: '', title: 'No Filter'})
+                solutions = response.data.solutions;
+                console.log('Solutions', solutions);
+                if($scope.filterCondition != '') {
+                    var matched = false;
+                    _.each($scope.peerReviewList, function(pr) {
+                        if(pr._id == $scope.filterCondition) {
+                            matched = true
+                        }
+                    })
+                    if(!matched) {
+                        SolutionFilterService.setPeerReview('')
+                        $scope.filterCondition = SolutionFilterService.getPeerReview()
+                    }
+                }
+                $scope.filter()
+            }
         }, function(err){
             // Check for proper error message later
             toastr.error('Internal Server Error. Please try again later.');
         });
+    }
+
+    $scope.filter = function() {
+        console.log('FilteredSolutions: ', $scope.filterCondition)
+        if($scope.filterCondition == '') {
+            console.log('Null')
+            SolutionFilterService.setPeerReview('')
+            $scope.filteredSolutions = solutions
+        } else {
+            console.log('Not null')
+            SolutionFilterService.setPeerReview($scope.filterCondition)
+            $scope.filteredSolutions = _.filter(solutions, function(solution) {
+                return solution.peerReviewId._id == $scope.filterCondition
+            })
+        }
     }
 
     $scope.deleteSolution = function() {

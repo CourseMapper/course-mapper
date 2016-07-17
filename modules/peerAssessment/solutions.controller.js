@@ -20,25 +20,9 @@ function solutions() {
 }
 
 solutions.prototype.getSolutions = function (error, params , success) {
-    var solutions = [];
-    Solution.find(params).sort({dateAdded: 1}).exec(function(err, docs) {
+    Solution.find(params).sort({dateAdded: 1}).populate('peerReviewId').exec(function(err, docs) {
         if(!err) {
-            _.each(docs, function(doc) {
-                var solution = {};
-                solution._id = doc._id;
-                solution.studentName = doc.studentName;
-                solution.title = doc.title;
-                PeerReview.findOne({_id: doc.peerReviewId}).exec(function(err, doc) {
-                    if(doc) {
-                        solution.peerReviewTitle = doc.title;
-                    }
-                    solutions.push(solution);
-                    if(docs.length == solutions.length) {
-                        success(solutions);
-                    }
-                })
-                //solutions.push(solution);
-            })
+            success(docs)
         } else {
             error(err);
         }

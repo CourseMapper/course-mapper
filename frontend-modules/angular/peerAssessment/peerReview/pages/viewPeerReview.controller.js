@@ -7,6 +7,14 @@ app.controller('ViewPeerReviewController', function($scope, $location, $http, to
 
         ActionBarService.extraActionsMenu.push(
             {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
+            {
                 clickAction: $scope.redirectPRHome,
                 title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
                 aTitle: 'Peer Review Home'
@@ -27,6 +35,22 @@ app.controller('ViewPeerReviewController', function($scope, $location, $http, to
             delete review.solutionPublicationDate;
             review.reviewDescription = review.description;
             delete review.description;
+
+            if(review.reviewSettings.reviewStartDate) {
+                review.reviewSettings.reviewStartDate = new Date(review.reviewSettings.reviewStartDate)
+            }
+            if(review.reviewSettings.reviewEndDate) {
+                review.reviewSettings.reviewEndDate = new Date(review.reviewSettings.reviewEndDate)
+            }
+            if(review.reviewSettings.secondDueDate) {
+                review.reviewSettings.secondDueDate = new Date(review.reviewSettings.secondDueDate)
+            }
+            if(review.reviewSettings.secondReviewStartDate) {
+                review.reviewSettings.secondReviewStartDate = new Date(review.reviewSettings.secondReviewStartDate)
+            }
+            if(review.reviewSettings.secondReviewEndDate) {
+                review.reviewSettings.secondReviewEndDate = new Date(review.reviewSettings.secondReviewEndDate)
+            }
 
             if(review.documents && review.documents.length>0) {
                 review.displayDocumentsList = [];
@@ -51,6 +75,7 @@ app.controller('ViewPeerReviewController', function($scope, $location, $http, to
             }
 
             $scope.viewReview = review;
+            console.log('ViewPeerReview: ', review)
             if($scope.isAdmin || $scope.isManager || $scope.isOwner) {
                 ActionBarService.extraActionsMenu.push(
                     {

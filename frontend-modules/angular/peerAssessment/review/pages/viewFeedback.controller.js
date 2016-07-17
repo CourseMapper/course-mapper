@@ -8,10 +8,17 @@ app.controller('ViewFeedbackController', function($scope, $http, toastr, $window
 
     ActionBarService.extraActionsMenu.push(
         {
-            clickAction: $scope.viewPeerReview,
-            clickParams: vId,
+            clickAction: $scope.goBack,
             title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
             aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
         }
     );
 
