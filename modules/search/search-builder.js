@@ -10,15 +10,14 @@ var PdfAnnotation = require('../../modules/slide-viewer/annotation');
 var Courses = require('../../modules/catalogs/courses');
 var Categories = require('../../modules/catalogs/categories');
 var Resources = require('../../modules/trees/resources');
-var ContentNodes = require('../../modules/trees/treeNodes');
-let a;
+var TreeNodes = require('../../modules/trees/treeNodes');
 
 var SearchBuilder = function (term) {
-  var courseArgs = { $text: { $search: term } };
-  var contentNodeArgs = { $text: { $search: term } };
-  var categoryArgs = { $text: { $search: term } };
-  var videoAnnotationArgs = { $text: { $search: term } };
-  var pdfAnnotationArgs = { $text: { $search: term } };
+  var courseArgs = {$text: {$search: term}};
+  var contentNodeArgs = {$text: {$search: term}, isDeleted: false};
+  var categoryArgs = {$text: {$search: term}};
+  var videoAnnotationArgs = {$text: {$search: term}};
+  var pdfAnnotationArgs = {$text: {$search: term}};
 
   var searchableResources = [];
 
@@ -71,11 +70,11 @@ var SearchBuilder = function (term) {
       });
 
     var engines = {
-      contentNodes: ContentNodes.findAsync(contentNodeArgs),
-      courses: Courses.findAsync(courseArgs),
+      contentNodes: TreeNodes.find(contentNodeArgs).populate('courseId').execAsync(),
+      courses: Courses.find(courseArgs).execAsync(),
       videoAnnotations: findVideoAnnotations,
       pdfAnnotations: findPdfAnnotations,
-      categories: Categories.findAsync(categoryArgs)
+      categories: Categories.find(categoryArgs).execAsync()
     };
 
     if (!searchableResources) {

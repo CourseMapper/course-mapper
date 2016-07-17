@@ -3,11 +3,10 @@
          data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-         style="z-index:1" 
-         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden}"
+         style="z-index:1"
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden, 'marked': data.isMarked}"
          ng-hide="data.isDeletedForever"
          ng-style="getNodeStyle(data)">
-
         <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
             <i title="This node is private. It is visible only to you." class="fa fa-lock private"
                ng-show="data.isPrivate === true"></i>
@@ -124,6 +123,7 @@
         </button>
         <input type="search" class="form-control search-box"
                title="Search"
+               ng-keyup="$event.keyCode == 13 && findNextMatch()"
                ng-model="queryText"
                ng-change="lookupInTree()"
                placeholder="Search map..."/>
@@ -275,6 +275,8 @@
         w: 4000,
         h: 4000,
         centerCss: {},
+        centerX: 0,
+        centerY: 0,
 
         init: function (wWidth, wHeight) {
             var self = this;
@@ -295,21 +297,26 @@
 
         setCenter: function (wWidth, wHeight) {
             var self = this;
-
-            self.centerCss = {
-                left: ( (wWidth - self.w) / 2) + 'px',
-                top: ( (wHeight - self.h) / 2) + 'px'
-            };
+            var x = (wWidth - self.w) / 2;
+            var y = (wHeight - self.h) / 2;
+            self.centerX = x;
+            self.centerY = y;
+            self.centerCss = {left: x + 'px', top: y + 'px'};
         },
 
         putOnCenter: function (animate) {
             var self = this;
+            self.position(self.centerCss, animate);
+        },
 
-            if (animate)
-                self.el.animate(self.centerCss, {duration: 1000, easing: 'easeOutExpo'});
-            else
-            // put it on the center
-                self.el.css(self.centerCss);
+        position: function (position, animate) {
+            var self = this;
+            if (animate) {
+                self.el.animate(position, {duration: 350, easing: 'easeOutExpo'});
+            }
+            else {
+                self.el.css(position);
+            }
         },
 
         zoomChanged: function (value) {
@@ -323,12 +330,10 @@
             self.setCenter(w, h);
             self.putOnCenter();
         }
-
     };
 
     var Container = {
         el: null,
-
         init: function () {
             this.el = $('.tree-container');
 

@@ -545,11 +545,13 @@ ul.dropdown-menu.course {
     #courseTabs .tree-container {
         left: 5px !important
     }
+
     .action-header .navbar-custom-menu {
         float: none !important;
         text-align: left;
         margin-top: 10px
     }
+
     .action-header .navbar-custom-menu > ul {
         padding: 0
     }
@@ -853,6 +855,11 @@ li.active .voting .vote-total {
     cursor: move
 }
 
+.jsplumb-draggable.marked {
+    opacity: 1;
+    background: #c6e6f4;
+}
+
 .jsplumb-draggable.userHidden {
     opacity: 0.15;
     filter: grayscale(100%);
@@ -958,7 +965,8 @@ li.info-links li a:hover {
     padding: 5px;
 }
 
-.activity-summary-widget .widget-user-2 {}
+.activity-summary-widget .widget-user-2 {
+}
 
 .activity-summary-widget .info-box {
     min-height: 50px;
@@ -1007,7 +1015,6 @@ li.info-links li a:hover {
     height: auto;
     max-height: 400px;
 }
-
 
 /* CSS Tree menu styles */
 

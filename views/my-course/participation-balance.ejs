@@ -29,20 +29,22 @@
 
         <!-- Content node -->
         <li ng-if="field.type == 'contentNode'" class="file" style="margin-bottom: 5px">
-            <a href="/treeNode/{{field._id}}/#/cid/{{field.courseId}}/nid/{{field._id}}"
-               ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false">
+            <a href="/treeNode/{{field._id}}/#/cid/{{field.courseId}}/nid/{{field._id}}" ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false">
                 <span style="font-weight: bold; background: #ecf0f5; width: 40px; padding: 0; display: inline-block; text-align: right"
-                      ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">{{getParticipationBalance(field) * 100 | number:0}}%</span>
+                      ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">
+                      {{getParticipationBalance(field) * 100 | number:0}}%
+                </span>
                 <span>{{field.name}}</span>
             </a>
 
             <!-- Popup -->
             <div ng-show="isVisible" class="info-box bg-aqua"
-                 style="opacity: 0.95; position: absolute; z-index: 5; width: 50%">
+                 style="position: absolute; z-index: 5; width: 50%">
                 <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
                 <div class="info-box-content">
-                    <span class="info-box-text"> {{field.name}}</span>
-                    <span class="info-box-number">Participation Balance
+                    <span class="info-box-text">Overall Participation Balance</span>
+                    <span class="info-box-number">
+                        {{field.name}}
                         <span ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">
                             ({{getParticipationBalance(field) * 100 | number:0}}%)
                         </span>
@@ -52,13 +54,13 @@
                              ng-style="{ 'width' : getParticipationBalance(field)*100 + '%'}"></div>
                     </div>
                     <span class="progress-description">
-                        {{getAnnotationProgress(field) * 100 | number:0}}% annotation ({{field.userAnnotations}} / {{field.totalAnnotations }})
+                        {{getAnnotationProgress(field) * 100 | number:0}}% annotation ({{field.userAnnotations}} of {{field.totalAnnotations }})
                     </span>
                     <span class="progress-description">
                         {{getWatchProgress(field) * 100 | number:0}}% video watch progress
                     </span>
                     <span class="progress-description">
-                        {{getLinksProgress(field) * 100 | number:0}}% linked content
+                        {{getLinksProgress(field) * 100 | number:0}}% links ({{field.userLinks}} of {{field.totalLinks }})
                     </span>
                 </div>
             </div>
