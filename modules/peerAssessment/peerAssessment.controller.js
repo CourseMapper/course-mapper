@@ -12,6 +12,7 @@ var await = require('asyncawait/await');
 var _ = require('lodash');
 var fs = require('fs-extra');
 var moment = require('moment');
+var solutions = require('./solutions.controller.js');;
 
 function peerAssessment() {
 
@@ -39,34 +40,36 @@ peerAssessment.prototype.deletePeerReview = function(error, params, success) {
             courseId: params.courseId
         },
 
-        function (isAllowed) {
+        async(function (isAllowed) {
             if (isAllowed) {
+                console.log('Deleting peer review: ' + params.pRId)
+                var sc = new solutions();
+                await(sc.getSolutions(
+                        function (err) {
+                            error(err)
+                        },
+                        {peerReviewId: mongoose.Types.ObjectId(params.pRId)},
+                        function (docs) {
+                            _.each(docs, function(doc) {
+                                sc.deleteSolution(
+                                    function(err){
+                                        error(err)
+                                    },
+                                    {
+                                        userId: params.userId,
+                                        courseId: params.courseId,
+                                        sId: doc._id
+                                    },
+                                    function () {
+                                        console.log("Solution successfully deleted: " + doc._id)
+                                    })
+                            })
+                        }
+                    ))
                 PeerReview.findOne(
                     {_id: mongoose.Types.ObjectId(params.pRId)}
                 ).exec(function(err, doc) {
                     if(!err) {
-                        // Couldn't delete the directory yet coz it was non empty. Rimraf npm package is the solution.
-
-                        //var path = null;
-                        //if(doc.documents && doc.documents.length > 0) {
-                        //    path = doc.documents[0];
-                        //}
-                        //
-                        //if(!path && doc.solutions && doc.solutions.length >0) {
-                        //    path = doc.solutions[0];
-                        //}
-                        //
-                        //if(path) {
-                        //    var pathArr = path.split('/');
-                        //    path = pathArr[0] + '/'+ pathArr[1] + '/' + pathArr[2];
-                        //    fs.rmdir(appRoot + '/public/' + path, function(err) {
-                        //        if(err) {
-                        //            debug(err);
-                        //            console.log(err);
-                        //        }
-                        //        debug("File deleted successfully");
-                        //    });
-                        //}
                         _.each(doc.documents, function(docPath) {
                             fs.unlink(appRoot + '/public/' + docPath, function(err) {
                                 if(err) {
@@ -100,7 +103,7 @@ peerAssessment.prototype.deletePeerReview = function(error, params, success) {
             } else {
                 error(helper.createError401());
             }
-        });
+        }));
 }
 
 peerAssessment.prototype.getPeerReviews = function (error, params , success) {

@@ -28,8 +28,9 @@ app.controller('SolutionsController', function($scope, $location, $http, toastr,
         var url = '/api/peerassessment/' + $scope.course._id + '/solutions';
         $http.get(url).then( function(response) {
             if(response.data.solutions && response.data.solutions.length) {
-                console.log('PeerReviewList', $scope.peerReviewList)
                 $scope.peerReviewList = _.pluck(response.data.solutions, 'peerReviewId')
+                $scope.peerReviewList = _.without($scope.peerReviewList, null, undefined)
+                console.log('PeerReviewList', $scope.peerReviewList)
                 $scope.peerReviewList = _.uniq($scope.peerReviewList, function(p) {return p._id})
                 $scope.peerReviewList.push({_id: '', title: 'No Filter'})
                 solutions = response.data.solutions;

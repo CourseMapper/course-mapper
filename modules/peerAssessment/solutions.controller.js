@@ -2,7 +2,7 @@ var config = require('config');
 var Solution = require('./models/solutions.js');
 var PeerReview = require('./models/peerReview.js');
 var appRoot = require('app-root-path');
-var peerAssessment = require(appRoot + '/modules/peerAssessment/peerAssessment.controller.js');
+var reviews = require('./reviews.controller.js');
 var users = require('../accounts/users.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('pa:db');
@@ -234,12 +234,35 @@ solutions.prototype.deleteSolution = function(error, params, success) {
             courseId: params.courseId
         },
 
-        function (isAllowed) {
+        async(function (isAllowed) {
             if (isAllowed) {
+                console.log('Deleting Solution: ' + params.sId)
                 Solution.findOne(
                     {_id: mongoose.Types.ObjectId(params.sId)}
                 ).exec(function(err, doc) {
                     if(!err) {
+                        var sr = new reviews()
+                        sr.getReviews(
+                            function (err) {
+                                error(err)
+                            },{
+                                solutionId: mongoose.Types.ObjectId(doc._id)
+                            },function(docs) {
+                                _.each(docs, function(doc) {
+                                    sr.deleteReview(
+                                        function(err){
+                                            error(err)
+                                        },
+                                        {
+                                            userId: params.userId,
+                                            courseId: params.courseId,
+                                            reviewId: mongoose.Types.ObjectId(doc._id)
+                                        },
+                                        function () {
+                                            console.log("Review successfully deleted: " + doc._id)
+                                        })
+                                })
+                            })
                         _.each(doc.solutionDocuments, function(docPath) {
                             fs.unlink(appRoot + '/public/' + docPath, function(err) {
                                 if(err) {
@@ -266,7 +289,7 @@ solutions.prototype.deleteSolution = function(error, params, success) {
             } else {
                 error(helper.createError401());
             }
-        });
+        }));
 }
 
 solutions.prototype.saveResourceFile = function (error, file, type, helper, success) {

@@ -4,7 +4,6 @@ var PeerReview = require('./models/peerReview.js');
 var Review = require('./models/review.js')
 var UserCourses = require('../catalogs/userCourses.js')
 var appRoot = require('app-root-path');
-var peerAssessment = require(appRoot + '/modules/peerAssessment/peerAssessment.controller.js');
 var users = require('../accounts/users.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:server');
@@ -456,6 +455,7 @@ reviews.prototype.deleteReview = function(error, params, success) {
 
         function (isAllowed) {
             if (isAllowed) {
+                console.log('Deleting Review: ' + params.reviewId)
                 Review.find({
                     $or: [{_id: params.reviewId}, {oldReviewId: params.reviewId}]
                 }).exec(function(err, reviews) {
