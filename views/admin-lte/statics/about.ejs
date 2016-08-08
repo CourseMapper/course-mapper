@@ -4,7 +4,7 @@
     <!-- Header Navbar -->
     <% include ../mainMenu %>
 
-    <section class="content-header">
+    <section class="content-header" ng-controller="aboutController">
         <ol class="breadcrumb">
             <li><a href="/"><i class="fa fa-home"></i> Home</a></li>
             <li>About CourseMapper</li>
@@ -20,22 +20,21 @@
                 </div>
                 <div class="box-body">
                     <p>
-                        CourseMapper is a collaborative learning tools, where students can work together on course
-                        contents.
-                        CourseMapper contains many features, such as: Collaborative Tool to create course map, Video
-                        viewer and
-                        annotation tool for lecture videos, and PDF reader and annotation tool.
-                        And many other new features that may come in the future.
+                        CourseMapper is a mind map-based collaborative course annotation and analytics platform that
+                        fosters collaboration and interaction around pdf/video learning materials, supported by visual
+                        learning analytics.
                     </p>
-
+                    <br>
+                    <p>
+                        The CourseMapper project is supervised by <strong> Dr. Mohamed Amine Chatti</strong></p>
                 </div>
             </div>
             <div class="box-header">
-                <h3>Teams </h3>
+                <h3>Features/Team </h3>
             </div>
             <div class="box">
                 <div class="box-header">
-                    <h4>Overall UX, Widget System, REST API Implementation and Course Map Tool</h4>
+                    <h4>Overall UX, Widget System, REST API Implementation and CourseMapper Tool</h4>
                 </div>
                 <div class="box-body">
                     <div class="row">
@@ -44,15 +43,10 @@
                         </div>
 
                         <div class="col-xs-12 col-sm-6">
-                            Implemented by R. Laksono <br>
-                            <h4>Technologies:</h4>
-                            <ul>
-                                <li>NodeJS, ExpressJS, PassportJS, Socket.io</li>
-                                <li>MongoDB, Mongoose</li>
-                                <li>AdminLTE, Bootstrap framework, jQuery, jQueryUI</li>
-                                <li>GridStack, JSPlumb, QuillJS</li>
-                                <li>Angular and many others</li>
-                            </ul>
+                            Implemented by R. Laksono. <br><br>
+
+                            A tool to collaboratively organise pdf and video
+                            lecture materials as a mind-map.
                         </div>
                     </div>
                 </div>
@@ -67,11 +61,9 @@
                             <img src="/img/pdf.png" style="width:100%">
                         </div>
                         <div class="col-xs-12 col-sm-6">
-                            Implemented by J. Klöckner and I. Dimitrialis.<br><h4>Technologies:</h4>
-                            <ul>
-                                <li>PDF.js</li>
-                                <li>Including some libraries from the list above and many other smaller libraries.</li>
-                            </ul>
+                            Implemented by J. Klöckner and I. Dimitrialis.<br><br>
+                            A tool to collaboratively annotate PDF lecture materials.
+
                         </div>
                     </div>
 
@@ -80,19 +72,14 @@
             </div>
             <div class="box">
                 <div class="box-header">
-                    <h4>Video Viewer and Annotation tools</h4></div>
+                    <h4>Video Viewer and Annotation Tool</h4></div>
 
                 <div class="box-body">
                     <div class="row">
                         <div class="col-xs-12 col-sm-6"><img src="/img/video.png" style="width:100%">
                         </div>
-                        <div class="col-xs-12 col-sm-6">Implemented by M. Momchil.<br> <h4>Technologies:</h4>
-                            <ul>
-                                <li>Videogular</li>
-                                <li>FootprintJS</li>
-                                <li>Including some libraries from the list above and many other smaller libraries.</li>
-
-                            </ul>
+                        <div class="col-xs-12 col-sm-6">Implemented by M. Marinov.<br><br>
+                            A tool to collaboratively annotate video lecture materials.
                         </div>
                     </div>
                 </div>
@@ -102,23 +89,71 @@
                 </div>
                 <div class="box-body">
                     <div class="row">
-                        <div class="col-xs-12 col-sm-6"><h4>Technologies:</h4>
-                            <ul>
-                                <li>ChartJS</li>
-                                <li>Including some libraries from the list above and many other smaller libraries.</li>
-
-                            </ul>
+                        <div class="col-xs-12 col-sm-6">
+                            <img src="/img/analytics.png" style="width: 100%">
                         </div>
-                        <div class="col-xs-12 col-sm-6"> Implemented by Z. Sofyan.<br>
+
+                        <div class="col-xs-12 col-sm-6">
+                            Implemented by Z. Sofyan. <br><br>
+
+                            Different analytics widgets to support monitoring, awareness,
+                            self-reflection, motivation, feedback, and recommendation in CourseMapper.
+
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="box">
+                <div class="box-header"><h4>Footprint</h4>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <img src="/img/footprint.png" style="width: 100%">
+                        </div>
+                        <div class="col-xs-12 col-sm-6"> Implemented by S. Oleksandr<br> <br>
+                            Visual learning analytics with heatmaps as a plugin on the video player and the embedded PDF reader.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="box-header"><h4>Past Team Members</h4>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <ul>
+                                <li>Dr. Ahmed Mohamed Fahmy Yousef (Fayoum University, Egypt)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box">
+                <div class="box-header"><h4>Technologies</h4>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <ul>
+                                <li>NodeJS, ExpressJS, PassportJS, Socket.io</li>
+                                <li>MongoDB, Mongoose</li>
+                                <li>AdminLTE, Bootstrap framework, jQuery, jQueryUI</li>
+                                <li>GridStack, JSPlumb, QuillJS</li>
+                                <li>Angular and many others</li>
+                                <li>PDF.js</li>
+                                <li>Videogular</li>
+                                <li>FootprintJS</li>
+                                <li>ChartJS</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-</div>
-
-</section>
-</div>
 </div><!-- ./wrapper -->
 <% include ../jsfooter %>
 <% include ../footer %>

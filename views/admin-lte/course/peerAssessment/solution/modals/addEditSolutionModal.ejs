@@ -1,0 +1,100 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="addEditSolutionModal" tabindex="-1" role="dialog"
+         aria-labelledby="Add/Edit Solution Modal" aria-hidden="true" ng-controller="AddEditSolutionController">
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                    <div class="box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Add/Edit Solution</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span
+                                            aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <form class="form-horizontal horizontal-max" name="addEditSolutionForm" role="form" ng-submit="saveNewPost(addEditSolutionForm.$valid)" novalidate>
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label for="inputTitle" class="col-sm-4 control-label">Title *</label>
+                                        <div class="col-sm-5">
+                                            <input type="text" class="form-control original-form-control" id="inputTitle" ng-disabled="solutionObj.title" ng-model="solutionObj.title" placeholder="Title">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputReviewTaskTitle" class="col-sm-4 control-label">Review Task Title</label>
+                                        <div class="col-sm-5">
+                                            <input type="text" class="form-control original-form-control" id="inputReviewTaskTitle" ng-disabled="solutionObj.peerReviewTitle" ng-model="solutionObj.peerReviewTitle" placeholder="Review Task Title">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputReviewDocuments" class="col-sm-4 control-label">Solution Documents</label>
+                                        <div class="col-sm-2">
+                                            <div class="btn btn-sm btn-default"
+                                                 ngf-select accept="*"
+                                                 ng-model="selSolutionDocuments" ngf-multiple="true" ngf-keep="true" ngf-max-size='1000000'><i
+                                                        class="ionicons ion-document-text"></i> &nbsp; Upload Files
+                                            </div>
+                                        </div>
+                                        <!--<div class="col-sm-4 progress label label-info" ng-show="progress > 0"><br>
+                                            &nbsp; <div ng-bind="progress + '%'"></div>
+                                        </div>-->
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-4 control-label"></label>
+                                        <div class="col-sm-8">
+                                            <div ng-show="selSolutionDocuments" ng-repeat="f in selSolutionDocuments">
+                                                <div class="label label-info">
+                                                    &nbsp; <span>{{f.name}}</span> &nbsp;
+                                                </div>
+                                                &nbsp;
+                                                <a href="" ng-click="deleteSelectedFiles(f.name)"> <i class="ion-close-round"></i></a>
+                                                <br>
+                                            </div>
+                                            <div ng-repeat="doc in solutionObj.displayDocumentsList">
+                                                <div class="label label-info">
+                                                    <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
+                                                </div>
+                                                &nbsp;
+                                                <a href="" ng-click="deleteUploadedFiles(doc.link)"> <i class="ion-close-round"></i></a>
+                                                <br>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="inputStudentComments" class="col-sm-4 control-label">Student Comments</label>
+                                        <div class="col-sm-5">
+                                            <textarea rows="7" class="form-control original-form-control" id="inputStudentComments" ng-model="solutionObj.studentComments" placeholder="Student Comments"/>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="box-footer control-group">
+                                        <br class="clear">
+                                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                                        <!-- Button -->
+                                        <div class="controls pull-right">
+                                            <button class="btn btn-primary" ng-click="updateSolution(solutionObj)"> Save
+                                                <spinner show="isLoading"></spinner>
+                                            </button>
+
+                                            <cancel></cancel>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

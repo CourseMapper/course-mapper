@@ -45,8 +45,12 @@ var VideoAnnotationSchema = new mongoose.Schema({
     width: {type: String},
     height: {type: String}
   },
-  comments: [CommentSchema]
+  comments: [CommentSchema],
+  isPrivate: {type: Boolean}
 });
+
+// Define indexes
+VideoAnnotationSchema.index({'text': 'text'});
 
 VideoAnnotationSchema.pre('save', function (next) {
   var now = Date.now();

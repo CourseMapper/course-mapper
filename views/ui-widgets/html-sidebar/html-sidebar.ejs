@@ -1,13 +1,13 @@
-<div ng-controller="HtmlSidebarController" ng-init="init(widget)">
+<div ng-controller="HtmlSidebarController" ng-init="init(wdg)">
     <div class="box-body no-padding html-sidebar-content" ng-bind-html="widget.options.content | unsafe">
     </div>
 </div>
 
 <% if(isAuthorized){ %>
 <div class="modal" tabindex="-1" role="dialog" id="sidebarEditForm"
-     aria-labelledby="sidebar Edit Form" aria-hidden="true" ng-controller="EditHtmlController">
+     aria-labelledby="Sidebar Edit Form" aria-hidden="true" ng-controller="EditHtmlController">
 
-    <section class="content" ng-init="init(widget)">
+    <section class="content" ng-init="init(wdg)">
         <div class="row row-centered">
             <div class="col-xs-12 col-md-7 col-centered">
                 <div class="box no-border">
@@ -33,7 +33,7 @@
                                                ng-model="widgetData.widget">
                                     </div>
                                 </div>
-                                <div class="control-group">
+                                <div class="control-group description">
                                     <p></p>
                                     <label class="control-label" for="description">HTML Content</label>
 
@@ -47,7 +47,8 @@
                                 <div class="control-group"><p></p>
                                     <error-block ng-show="errors.length > 0" messages="errors"></error-block>
 
-                                    <button class="btn btn-md btn-primary" ng-click="editWidgetForm.$pristine=false">
+                                    <button class="btn btn-md btn-primary"
+                                            ng-click="editWidgetForm.$pristine=false">
                                         Save Edit
                                         <spinner show="isLoading"></spinner>
                                     </button>

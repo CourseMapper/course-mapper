@@ -1,0 +1,171 @@
+<!-- course edit form -->
+<div class="row" ng-controller="ViewPeerReviewController">
+    <!--<div class="modal" id="viewAssignmentModal" tabindex="-1" role="dialog"-->
+         <!--aria-labelledby="New Peer Review" aria-hidden="true">-->
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                    <div class="box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">View Peer Review</h3>
+                        </div>
+                        <div class="box-body form-horizontal horizontal-max">
+                            <!--<form class="form-horizontal horizontal-max" name="addAssignmentForm" role="form" ng-submit="saveNewPost(addAssignmentForm.$valid)" novalidate>-->
+                            <div class="tabbable">
+                                <ul class="nav nav-tabs nav-justified" id="tabContent" style="background-color: gainsboro;">
+                                    <li class="active"><a data-toggle="tab" data-target="#basicTab">Basic</a></li>
+                                    <li><a data-toggle="tab" data-target="#advancedTab">Review Settings</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div id="basicTab" class="tab-pane fade in active">
+                                        <br/>
+                                        <fieldset>
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Title</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.title}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Review Description</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewDescription}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Review Documents</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <div class="label label-info" ng-repeat="doc in viewReview.displayDocumentsList">
+                                                        <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Total Marks</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.totalMarks}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Publication Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.publicationDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Due Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.dueDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-5 control-label">Sample Solution Publication Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.ssPublicationDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-show="isOwner || isManager || isAdmin">
+                                                <label class="col-sm-5 control-label">Sample Solutions</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <div class="label label-info" ng-repeat="doc in viewReview.displaySolutionsList">
+                                                        <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-if="viewReview.solutions" ng-hide="isOwner || isManager || isAdmin">
+                                                <label class="col-sm-5 control-label">Sample Solutions</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <div class="label label-info" ng-repeat="doc in viewReview.displaySolutionsList">
+                                                        <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                    <div id="advancedTab" class="tab-pane fade">
+                                        <br/>
+                                        <fieldset>
+                                            <div class="form-group" ng-show="isOwner || isManager || isAdmin">
+                                                <label class="col-sm-6 control-label">Review Mapping</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.reviewAssignment == 'single' ? '1 to 1': 'M to N'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-6 control-label">Review Loop</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.loop == 'single' ? 'Single': 'Multiple'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-if="viewReview.reviewSettings.reviewStartDate">
+                                                <label class="col-sm-6 control-label">Review Start Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.reviewStartDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-if="viewReview.reviewSettings.reviewEndDate">
+                                                <label class="col-sm-6 control-label">Review End Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.reviewEndDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-if="viewReview.reviewSettings.secondDueDate">
+                                                <label class="col-sm-6 control-label">Second Due Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.secondDueDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-if="viewReview.reviewSettings.secondReviewStartDate">
+                                                <label class="col-sm-6 control-label">Second Review Start Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.secondReviewStartDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-if="viewReview.reviewSettings.secondReviewEndDate">
+                                                <label class="col-sm-6 control-label">Second Review End Date</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.secondReviewEndDate | date:'dd.MM.yyyy HH:mm'}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-6 control-label">Review Blindness</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.blind}}</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-6 control-label">Student Review Percentage</label>
+                                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                                    <label style="font-weight: normal">{{viewReview.reviewSettings.studentPercentage}} %</label>
+                                                </div>
+                                            </div>
+
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--</form>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <!--</div>-->
+</div>

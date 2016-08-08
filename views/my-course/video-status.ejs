@@ -1,0 +1,37 @@
+<div class="box-body no-padding" ng-controller="VideoStatusController">
+    <table class="table table-striped" ng-if="videoHistory.length !=0">
+
+        <tbody>
+        <tr>
+            <th>
+                <a href="#" ng-click="sortType = 'nodeId.name'; sortReverse = !sortReverse">
+                    Video Name
+                    <i ng-show="sortType == 'nodeId.name' && !sortReverse" class="fa fa-caret-down"></i>
+                    <i ng-show="sortType == 'nodeId.name' && sortReverse" class="fa fa-caret-up"></i>
+                </a>
+            </th>
+            <th>Current Time</th>
+            <th>Total Time</th>
+            <th>
+                <a href="#" ng-click="sortType = 'dateUpdated'; sortReverse = !sortReverse">
+                    Date Accessed
+                    <i ng-show="sortType == 'dateUpdated' && !sortReverse" class="fa fa-caret-down"></i>
+                    <i ng-show="sortType == 'dateUpdated' && sortReverse" class="fa fa-caret-up"></i>
+                </a>
+            </th>
+            <th></th>
+        </tr>
+        <tr ng-repeat="video in videoHistory | orderBy:sortType:sortReverse" ng-if="video.nodeId.name">
+            <td>{{video.nodeId.name}}</td>
+            <td>{{video.currentTime | msToTime}}</td>
+            <td>{{video.totalTime | msToTime}}</td>
+            <td>{{video.dateUpdated | relativeDate}}</td>
+            <td>
+                <a type="button" class="btn btn-block btn-primary btn-xs" href="/treeNode/{{video.nodeId._id}}/#/cid/{{video.courseId._id}}/nid/{{video.nodeId._id}}?tab=video">Resume</a>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+    <div ng-if="videoHistory.length == 0" style="margin-top: 20px; margin-left: 10px;">You have not watched any videos yet.</div>
+</div>

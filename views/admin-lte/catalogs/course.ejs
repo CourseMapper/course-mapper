@@ -12,11 +12,11 @@
 
 <% include ../jsfooter %>
 
-<script src="/gridstack/gridstack.js"></script>
 <!--Add angular chart to wrap whole tabs here-->
 <script src="/chartjs/Chart.min.js"></script>
 <script src="/chartjs/angular-chart.min.js"></script>
 <% if(course != undefined && course.settings && course.settings['disableTop'] !== undefined && course.settings['disableTop']){%>
+<<<<<<< HEAD
   <script>
      if(window.location.href.indexOf('iframe=true') > -1){
          $('header').remove();
@@ -31,4 +31,20 @@
      }
  </script>
  <% } %>
+=======
+<script>
+    if(window.location.href.indexOf('iframe=true') > -1){
+        $('header').remove();
+        $('.main-breadcrumb').remove();
+    }
+</script>
+<% } else if(typeof(treeNode) != 'undefined' && treeNode.settings && treeNode.settings['disableTop'] !== undefined && treeNode.settings['disableTop']){%>
+<script>
+    if(window.location.href.indexOf('iframe=true') > -1){
+        $('header').remove();
+        $('.main-breadcrumb').remove();
+    }
+</script>
+<% } %>
+>>>>>>> dev
 <% include ../footer %>

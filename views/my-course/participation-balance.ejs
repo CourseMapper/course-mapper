@@ -1,0 +1,93 @@
+<div ng-controller="ParticipationBalanceController">
+
+    <!--  Recursive template  -->
+    <script type="text/ng-template" id="field_renderer.html">
+        <div class="panel box box-primary ng-scope"
+             ng-style="{'background' : !field.type ? '#ecf0f5' : ''}"
+             ng-show="field.type != 'contentNode'">
+            <!-- Topic/Subtopic node -->
+            <div ng-if="field.type != 'contentNode'">
+                <label for="{{field._id}}">
+                    <h4 style="padding-left: 15px">
+                        <i ng-show="field.childrens.length > 0 || field.resources.length > 0"
+                           ng-class="expandState[field._id]==true ? 'fa fa-caret-up':'fa fa-caret-down'"></i>
+                        {{field.name}}
+                        <a type="button" ng-show="!field.type" class="label label-default" title="Go to course"
+                           style="font-size: 10px; padding: 5px;"
+                           href="/course/{{field.slug}}/#/cid/{{field._id}}">
+                            <i style="margin-right: 5px" class=" fa fa-external-link"></i>
+                        </a>
+                    </h4>
+                </label>
+                <input id="{{field._id}}" type="checkbox" ng-init="expandState[field._id]=false"
+                       ng-model="expandState[field._id]"/>
+                <ul ng-if="field.childrens.length > 0">
+                    <li ng-repeat="field in field.childrens" ng-include="'field_renderer.html'"></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Content node -->
+        <li ng-if="field.type == 'contentNode'" class="file" style="margin-bottom: 5px">
+            <a href="/treeNode/{{field._id}}/#/cid/{{field.courseId}}/nid/{{field._id}}" ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false">
+                <span style="font-weight: bold; background: #ecf0f5; width: 40px; padding: 0; display: inline-block; text-align: right"
+                      ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">
+                      {{getParticipationBalance(field) * 100 | number:0}}%
+                </span>
+                <span>{{field.name}}</span>
+            </a>
+
+            <!-- Popup -->
+            <div ng-show="isVisible" class="info-box bg-aqua"
+                 style="position: absolute; z-index: 5; width: 50%">
+                <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Overall Participation Balance</span>
+                    <span class="info-box-number">
+                        {{field.name}}
+                        <span ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">
+                            ({{getParticipationBalance(field) * 100 | number:0}}%)
+                        </span>
+                    </span>
+                    <div class="progress">
+                        <div class="progress-bar"
+                             ng-style="{ 'width' : getParticipationBalance(field)*100 + '%'}"></div>
+                    </div>
+                    <span class="progress-description">
+                        {{getAnnotationProgress(field) * 100 | number:0}}% annotation ({{field.userAnnotations}} of {{field.totalAnnotations }})
+                    </span>
+                    <span class="progress-description">
+                        {{getWatchProgress(field) * 100 | number:0}}% video watch progress
+                    </span>
+                    <span class="progress-description">
+                        {{getLinksProgress(field) * 100 | number:0}}% links ({{field.userLinks}} of {{field.totalLinks }})
+                    </span>
+                </div>
+            </div>
+        </li>
+
+    </script>
+
+    <div>
+        <button title="Expand all" ng-click="setExpandState(true)" type="button" class="btn btn-box-tool">
+            <i class="fa fa-plus"></i>
+        </button>
+        <button title="Collapse all" ng-click="setExpandState(false)" type="button" class="btn btn-box-tool">
+            <i class="fa fa-minus"></i>
+        </button>
+    </div>
+
+    <div ng-show="courses.enrolled.length > 0">
+        <a class="h3">Enrolled</a>
+        <ul class="tree">
+            <li ng-repeat="field in courses.enrolled" ng-include="'field_renderer.html'"></li>
+        </ul>
+    </div>
+
+    <div ng-show="courses.created.length > 0">
+        <a class="h3">Created</a>
+        <ul class="tree">
+            <li ng-repeat="field in courses.created" ng-include="'field_renderer.html'"></li>
+        </ul>
+    </div>
+</div>

@@ -14,7 +14,123 @@
     <a href="/" class="logo"><b>Course</b>Mapper</a>
 
     <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController">
-        <div class="navbar-left">
+
+        <form class="navbar-form navbar-left search-box hidden-xs" role="search" ng-controller="SearchBoxController">
+            <div class="input-group search">
+                <input class="form-control" id="navbar-search-input" type="text" placeholder="Search" autocomplete="off"
+                       ng-model="queryText" ng-model-options="{debounce: 200}">
+
+                <div class="results dropdown-menu" ng-show="isEmpty()==false">
+                    <div class="results-box">
+
+                        <span ng-show="hasResults() === false">
+                            No results found.
+                            <br/>Please, try a different search term.
+                        </span>
+
+                        <div ng-show="result.contentNodes.length > 0">
+                            <h4>Content:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="content in result.contentNodes">
+                                    <a ng-if="content.type=='contentNode'"
+                                       href="/treeNode/{{content._id}}/#/cid/{{content.courseId._id}}/nid/{{content._id}}">
+                                        [{{content.courseId.name}}] {{content.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.contentNodes.length > 0">
+                            <h4>Topics:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="content in result.contentNodes">
+                                    <a ng-if="content.type=='subTopic'"
+                                       href="/course/{{content.courseId.slug}}/#/cid/{{content.courseId._id}}?tab=map&markedNode={{content._id}}">
+                                        [{{content.courseId.name}}] {{content.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.courses.length > 0">
+                            <h4>Courses:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="course in result.courses">
+                                    <a href="/course/{{course.slug}}/#/cid/{{course._id}}?tab=preview">
+                                        {{course.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.videoAnnotations.length > 0">
+                            <h4>Video Annotations:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="va in result.videoAnnotations">
+                                    <a href="/treeNode/{{va.nodeId}}/#/cid/{{va.courseId}}/nid/{{va.nodeId}}?tab=video#{{va._id}}">
+                                        {{va.text | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.pdfAnnotations.length > 0">
+                            <h4>PDF Annotations:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="pa in result.pdfAnnotations">
+                                    <a href="/treeNode/{{pa.nodeId}}/#/cid/{{pa.courseId}}/nid/{{pa.nodeId}}?tab=pdf&slidePage={{pa.pdfPageNumber}}">
+                                        {{pa.rawText | htmlToPlaintext | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.categories.length > 0">
+                            <h4>Categories:</h4>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="category in result.categories">
+                                    <a href="/courses/#/category/{{category.slug}}">
+                                        {{category.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!--<br/>-->
+                    <!--<button class="btn btn-primary btn-sm pull-right"> Advanced Search</button>-->
+                </div>
+            </div>
+        </form>
+
+        <ul class="nav navbar-nav hidden-xs" ng-hide="user == null">
+            <li class="dropdown">
+                <a href="" class="dropdown-toggle" data-toggle="dropdown">Favorites <span class="caret"></span></a>
+
+                <ul class="dropdown-menu" role="menu" ng-controller="FavoritesController">
+
+                    <li ng-show="favorites != null && favorites.length > 0" ng-repeat="fav in favorites">
+                        <a href="/course/{{fav.course.slug}}/#/cid/{{fav.course._id}}?tab=preview">
+                            {{fav.course.name | cut:true:30:' ...'}}
+                        </a>
+                    </li>
+
+                    <li ng-show="favorites==null || favorites.length <= 0">
+                        <a href="">
+                            <span>
+                                You do not have any favorite courses, yet!
+                                <br/>
+                                <br/>
+                                You can favorite any course to which <br/>
+                                you are enrolled and it will appear here.
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="navbar-right">
             <% if(locals.showSidebar && showSidebar){ %>
             <a class="top-menu-left visible-xs" data-toggle="offcanvas" role="button"><i class="ionicons ion-more"> </i>
             </a>
@@ -30,15 +146,11 @@
                                 About CourseMapper
                             </a>
                         </li>
-                        <li ng-show="user">
-                            <a href="/recommend-category">
-                                Recommend Categories
-                            </a>
-                        </li>
                     </ul>
                 </li>
             </ul>
         </div>
+
         <!-- Navbar Right Menu -->
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
@@ -86,7 +198,7 @@
 
                 <li class="dropdown user user-menu notifications-menu" ng-show="user" ng-cloak>
                     <a href="" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="/admin-lte/images/user2-160x160.png" class="user-image" alt="User Image"
+                        <img src="/img/admin-lte/user2-160x160.png" class="user-image" alt="User Image"
                              ng-hide="user.image" ng-cloak/>
                         <img ng-src="{{user.image}}" class="user-image" alt="User Image" ng-show="user.image" ng-cloak/>
                         <i ng-hide="user" class="fa fa-refresh fa-spin"></i>
@@ -94,7 +206,6 @@
                         <span ng-show="user.displayName" class="hidden-xs">{{user.displayName | capitalize:true}}</span>
                     </a>
                     <ul class="dropdown-menu">
-
                         <li>
                             <!-- inner menu: contains the actual data -->
                             <ul class="menu">

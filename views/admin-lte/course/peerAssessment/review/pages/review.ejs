@@ -1,0 +1,23 @@
+<div ng-controller="ReviewController">
+    <div class="col-md-11">
+        <div ng-show="!reviews || reviews.length == 0">
+            <h5>No reviews available currently</h5>
+        </div>
+        <table class="table table-hover" ng-show="reviews.length > 0">
+            <thead>
+            <tr>
+                <th>Review Task Title</th>
+                <th>Student Review Title</th>
+                <th>Review Loop</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="review in reviews">
+                <td>{{review.peerReviewId.title}}</td>
+                <td><a href="" ng-click="openReview(review, $event)">{{review.isSubmitted?'Edit Review': 'Add Review'}}</a></td>
+                <td>{{review.loop?review.loop: 'First'}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

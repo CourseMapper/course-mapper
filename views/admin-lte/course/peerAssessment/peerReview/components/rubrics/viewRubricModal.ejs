@@ -1,0 +1,51 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="viewRubricModal" tabindex="-1" role="dialog"
+         aria-labelledby="View Rubric Modal" aria-hidden="true">
+        <section class="content">
+            <div class="row row-centered">
+                <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                    <div class="box no-border no-round">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">View Rubric</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                            aria-hidden="true">&times;</span></button>
+                            </div>
+                        </div>
+                        <div class="box-body form-horizontal horizontal-max">
+                            <!--<form class="form-horizontal horizontal-max" name="addEditRubricForm" role="form" ng-submit="saveNewPost(addEditRubricForm.$valid)" novalidate>-->
+
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Title</label>
+                                        <div class="col-sm-5 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{rubric.title}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Rubric Description</label>
+                                        <div class="col-sm-5 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{rubric.description}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="box-footer control-group">
+                                        <br class="clear">
+                                        <!-- Button -->
+                                        <div class="controls pull-right">
+                                            <button class="btn btn-primary" data-dismiss="modal"> Close </button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            <!--</form>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>

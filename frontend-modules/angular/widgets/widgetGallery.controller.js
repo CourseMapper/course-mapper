@@ -56,7 +56,7 @@ app.controller('WidgetGalleryController', function ($scope, $http, $rootScope, t
 
     $scope.uninstall = function (installId) {
 
-        widgetService.uninstall(installId,
+        widgetService.uninstall(installId, {},
             function (uninstalled) {
                 $scope.uninstalledWidget = uninstalled;
 

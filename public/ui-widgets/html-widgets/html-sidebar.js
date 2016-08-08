@@ -1,18 +1,27 @@
 angular.module('UIWidgets', ['toastr'])
-    .controller("HtmlSidebarToolController", function ($scope, $http, $timeout) {
+    .controller("HtmlSidebarController", function ($scope, $http, $timeout) {
+        $scope.editAction = function () {
+            $('#sidebarEditForm').on('shown.bs.modal', function () {
+                $timeout(function () {
+                    $('#sidebarEditForm .box-body').css('height', '500px');
+                }, 100);
+            });
 
-        $scope.editAction = function (wdg) {
             $('#sidebarEditForm').modal('show');
 
             var grid = $('.grid-stack').data('gridstack');
             grid.movable('.grid-stack-item', false);
         };
-    })
-
-    .controller("HtmlSidebarController", function ($scope, $http, $timeout) {
 
         $scope.init = function (wdg) {
             $scope.widget = wdg;
+
+            $('#w' + $scope.widget._id + ' .config-button').bind('click mousedown mouseup touchstart', $scope.editAction);
+
+            /*var editModalOrig = jQuery('#sidebarEditFormWrapper');
+            var editModal = editModalOrig.html().replace('sidebarEditForm', 'sidebarEditForm2');
+            editModalOrig.hide();
+            jQuery('body').append(editModal);*/
         };
 
         $scope.refresh = function (wdg) {

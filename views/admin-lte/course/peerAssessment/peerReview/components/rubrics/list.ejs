@@ -1,0 +1,26 @@
+<div>
+    <div class="col-md-11">
+        <div ng-show="!rubrics || rubrics.length == 0">
+            <h5>No Rubrics created for this course</h5>
+        </div>
+        <table class="table table-hover" ng-show="rubrics && rubrics.length > 0">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th ng-show="isOwner || isManager || isAdmin"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="r in rubrics" ng-click="viewRubric(r)">
+                <td>{{r.title}}</td>
+                <td>{{r.description}}</td>
+                <td ng-show="isOwner || isManager || isAdmin">
+                    <a href="" ng-click="editRubric(r, $event)"> <i class="ion-edit" style="font-size: medium"></i> </a> &nbsp;
+                    <a href="" ng-click="deleteRubric(r._id, $event)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

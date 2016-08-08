@@ -75,7 +75,10 @@ router.get('/countmap/:pdfId', function (req, res, next) {
     }
     var countMap = [];
     for (var i = 0; i < annotations.length; i++) {
-      countMap.push({page: annotations[i].pdfPageNumber});
+      countMap.push({
+        page: annotations[i].pdfPageNumber,
+        authorId: annotations[i].authorID
+      });
     }
     return res.json(countMap);
   });
@@ -101,17 +104,15 @@ router.post('/updateAnnZone/', function (req, res, next) {
   annZone.handleUpdatePost(req, res, next);
 });
 
-
 /*router.post('/submitTag/', function(req, res, next){
  var annZone = new AnnZones();
  annZone.handleZoneSubmitPost(req, res, next);
  });*/
 
 
-/*router.get('/slide-viewer', function (req, res, next) {
+router.get('/slide-viewer', function (req, res, next) {
   var comment = new Comment();
   comment.getAllComments(function (err, data) {
-
     //res.json(data);
     res.render('slide-viewer/slideViewer', {
         numComments: data.length,
@@ -119,11 +120,8 @@ router.post('/updateAnnZone/', function (req, res, next) {
         currentUser: req.user
       }
     );
-
   });
-
-
-});*/
+});
 
 /**
  * GET to let the server know that the user is opening which pdf and page
@@ -169,7 +167,9 @@ router.get('/disComm', function (req, res, next) {
         author: data[i].author,
         date: data[i].dateOfCreation,
         slide: data[i].originSlide,
-        html: data[i].renderedText
+        html: data[i].renderedText,
+        isPrivate: data[i].isPrivate,
+        authorId:data[i].authorID
       };
     }
     res.status(200).json({result: true, comments: modifiedData});
@@ -202,11 +202,7 @@ router.get('/disComm', function (req, res, next) {
 
 router.get('/disComm/:order/:filters/', function (req, res, next) {
   var comment = new Comment();
-
-  var order = JSON.parse(req.params.order);
-  var filter = JSON.parse(req.params.filters);
-
-  comment.getOrderedFilteredComments(order, filter, function (err, data) {
+  comment.getOrderedFilteredComments(req, function (err, data) {
     var modifiedData = new Array(data.length);
     for (var i = 0; i < data.length; i++) {
       modifiedData[i] = {
@@ -217,11 +213,12 @@ router.get('/disComm/:order/:filters/', function (req, res, next) {
         slide: data[i].originSlide,
         html: data[i].renderedText,
         hasParent: data[i].hasParent,
-        parentId: data[i].parentId
+        parentId: data[i].parentId,
+        isPrivate: data[i].isPrivate,
+        authorId:data[i].authorID
       };
     }
     res.status(200).json({result: true, comments: modifiedData});
-
   });
 });
 

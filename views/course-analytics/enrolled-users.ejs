@@ -4,8 +4,8 @@
         <li class="item" ng-repeat="user in userList">
             <div class="product-img"><img class="online img-circle" src="{{user.user.image}}" alt=""/></div>
             <div class="product-info">
-                <span class="product-title">{{user.user.displayName}}</span><br/>
-                <span class="label label-success"><i class="fa fa-clock-o"></i> {{user.dateUpdated | date : 'dd.MMM.yyyy HH:mm:ss'}}</span>
+                <span class="product-title">{{user.user.displayName | capitalize}}</span><br/>
+                <span class="label label-success"><i class="fa fa-clock-o"></i> Enrolled since: {{user.dateUpdated | date : 'dd.MMM.yyyy'}}</span>
             </div>
         </li>
     </ul>

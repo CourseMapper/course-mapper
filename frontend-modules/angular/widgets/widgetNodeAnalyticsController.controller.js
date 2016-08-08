@@ -1,11 +1,11 @@
 app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootScope,
-                                                            $timeout, toastr,
-                                                            widgetService, courseService, authService) {
+                                                          $timeout, toastr,
+                                                          widgetService, courseService, authService) {
     $scope.location = "node-analytics";
     $scope.widgets = [];
 
     $scope.getWidgets = function (force) {
-        widgetService.getWidgetsOnLocation($scope.location, $scope.course._id,
+        widgetService.getWidgetsOnLocation($scope.location, $scope.treeNode._id,
 
             function (widgets) {
                 $scope.widgets = widgets;
@@ -24,7 +24,7 @@ app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootSc
         widgetService.uninstall(id, {courseId: $scope.course._id},
             function (wdg) {
                 var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-                grid.remove_all();
+                grid.removeAll();
                 $scope.getWidgets(true);
                 toastr.success('Widget is uninstalled');
             },
@@ -40,7 +40,7 @@ app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootSc
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.remove_all();
+            grid.removeAll();
 
             $scope.getWidgets(true);
         });
@@ -49,7 +49,7 @@ app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootSc
         $scope.$on(onafter2, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.remove_all();
+            grid.removeAll();
 
             $scope.getWidgets(true);
         });
@@ -89,4 +89,8 @@ app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootSc
     };
 
     $scope.initWidgets();
+
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
 });

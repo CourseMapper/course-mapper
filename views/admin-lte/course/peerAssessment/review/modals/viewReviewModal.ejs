@@ -1,0 +1,98 @@
+<!-- course edit form -->
+<div class="row">
+    <div class="modal" id="viewReviewModal" tabindex="-1" role="dialog"
+    aria-labelledby="View Review" aria-hidden="true">
+    <section class="content">
+        <div class="row row-centered">
+            <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                <div class="box no-border no-round">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">View Review</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" ng-click="cancel()"><span
+                                        aria-hidden="true">&times;</span></button>
+                        </div>
+                    </div>
+                    <div class="box-body form-horizontal horizontal-max">
+                        <!--<form class="form-horizontal horizontal-max" name="addAssignmentForm" role="form" ng-submit="saveNewPost(addAssignmentForm.$valid)" novalidate>-->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">{{peerReview.isSecondLoop?'Second Review':'Review'}}</div>
+                            <div class="panel-body">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Comments</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{peerReview.comments}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Obtained Marks</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{peerReview.marksObtained}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Review Documents</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <div class="label label-info" ng-repeat="doc in peerReview.displayDocumentsList">
+                                                <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" ng-repeat="rubric in peerReview.rubrics">
+                                        <label data-toggle="tooltip" data-placement="right" title="{{rubric.description}}" class="col-sm-5 control-label">{{rubric.title}}</label>
+                                        <div class="col-sm-6">
+                                            <label class="control-label">{{peerReview.rubricReview[rubric._id]}}</label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <div class="panel panel-default" ng-if="firstReview">
+                            <div class="panel-heading">First Review</div>
+                            <div class="panel-body">
+                                <fieldset>
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Comments</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{firstReview.comments}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Obtained Marks</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <label style="font-weight: normal">{{firstReview.marksObtained}}</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-sm-5 control-label">Review Documents</label>
+                                        <div class="col-sm-6 control-label" style="text-align: left;">
+                                            <div class="label label-info" ng-repeat="doc in firstReview.displayDocumentsList">
+                                                <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group" ng-repeat="rubric in firstReview.rubrics">
+                                        <label data-toggle="tooltip" data-placement="right" title="{{rubric.description}}" class="col-sm-5 control-label">{{rubric.title}}</label>
+                                        <div class="col-sm-6">
+                                            <label class="control-label">{{firstReview.rubricReview[rubric._id]}}</label>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <!--</form>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    </div>
+</div>

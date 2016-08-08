@@ -1,0 +1,18 @@
+<div class="form-horizontal horizontal-max" ng-controller="ReviewAssignmentTypeController">
+    <fieldset>
+        <div class="form-group">
+            <label class="col-sm-5 control-label">Mapping</label>
+            <div class="col-sm-6">
+                <div class="col-sm-3">
+                    <label class="radio-inline"><input type="radio" name="assignmentType" ng-model="newAssignObj.reviewSettings.reviewAssignment" value="single">1-to-1</label>
+                </div>
+                <div class="col-sm-3">
+                    <label class="radio-inline"><input type="radio" name="assignmentType" ng-model="newAssignObj.reviewSettings.reviewAssignment" value="multiple">M-to-N</label>
+                </div>
+            </div>
+            <div class="col-sm-1 pa-tooltip">
+                <i class="ionicons ion-ios-help" data-toggle="tooltip" title="{{tooltip}}"></i>
+            </div>
+        </div>
+    </fieldset>
+</div>

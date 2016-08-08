@@ -24,7 +24,7 @@ app.controller('widgetCoursePreviewController', function ($scope, $http, $rootSc
         widgetService.uninstall(id, {courseId: $scope.course._id},
             function (wdg) {
                 var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-                grid.remove_all();
+                grid.removeAll();
                 $scope.getWidgets(true);
                 toastr.success('Widget is uninstalled');
             },
@@ -40,7 +40,7 @@ app.controller('widgetCoursePreviewController', function ($scope, $http, $rootSc
         $scope.$on(onafter, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.remove_all();
+            grid.removeAll();
 
             $scope.getWidgets(true);
         });
@@ -49,7 +49,7 @@ app.controller('widgetCoursePreviewController', function ($scope, $http, $rootSc
         $scope.$on(onafter2, function (event, newWidget) {
             // remove all widget in the page
             var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.remove_all();
+            grid.removeAll();
 
             $scope.getWidgets(true);
         });
@@ -87,6 +87,10 @@ app.controller('widgetCoursePreviewController', function ($scope, $http, $rootSc
 
         return false;
     };
+ 
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
 
     $scope.initWidgets();
 });

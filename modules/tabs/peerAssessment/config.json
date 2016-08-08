@@ -1,0 +1,10 @@
+{
+  "orderNo": 6,
+  "name": "peerAssessment",
+  "displayName": "Peer Reviews",
+  "location": "course",
+  "description": "Peer Reviews module",
+  "isDefaultActivated": false,
+  "icon": "ionicons ion-ios-people-outline",
+  "ngShow": "isEnrolled || isOwner || isManager || isAdmin"
+}

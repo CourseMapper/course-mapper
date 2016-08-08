@@ -1,0 +1,77 @@
+<div class="row">
+    <section class="content">
+        <div class="row row-centered">
+            <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                <div class="box no-border no-round">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">View Feedback</h3>
+                    </div>
+                    <div class="box-body">
+                        <form class="form-horizontal horizontal-max" name="reviewSubmissionForm" role="form" ng-submit="saveNewPost(addAssignmentForm.$valid)" novalidate>
+
+                            <div class="panel panel-default" ng-show="review">
+                                <div class="panel-heading">Final Result</div>
+                                <div class="panel-body">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 control-label">Solution Title</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <label style="font-weight: normal">{{review.solutionId.title}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 control-label">Review Documents</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <div class="label label-info" ng-repeat="doc in review.displayDocumentsList">
+                                                    <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 control-label">Review Comments</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <label style="font-weight: normal">{{review.comments}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 control-label">Marks Obtained(Total: {{review.peerReviewId.totalMarks}})</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <label style="font-weight: normal">{{review.marksObtained}}</label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Peer Reviews</div>
+                                <div class="panel-body">
+                                    <fieldset>
+                                        <div ng-show="!reviews || reviews.length == 0">
+                                            <h5>No reviews available currently</h5>
+                                        </div>
+                                        <table class="table table-hover" ng-show="reviews.length > 0">
+                                            <thead>
+                                            <tr>
+                                                <th ng-show="reviews[0].peerReviewId.reviewSettings.blind == 'none'">Student Name</th>
+                                                <th>Obtained Marks</th>
+                                                <th>Comments</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr ng-repeat="review in reviews" ng-click="openReview(review)">
+                                                <td ng-show="reviews[0].peerReviewId.reviewSettings.blind == 'none'">{{review.assignedTo.displayName}}</td>
+                                                <td>{{review.marksObtained}}</td>
+                                                <td>{{review.comments}}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

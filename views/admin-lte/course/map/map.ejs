@@ -1,9 +1,25 @@
 <script type="text/ng-template" id="tree_item_renderer.html">
-    <div class="w {{data.type}}" id="t{{data._id}}" data-from-root-x="{{data.positionFromRoot.x}}"
+    <div class="w {{data.type}}" id="t{{data._id}}"
+         data-from-root-x="{{data.positionFromRoot.x}}"
          data-from-root-y="{{data.positionFromRoot.y}}"
          data-shape="{{getDataShape(data.type)}}"
-         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted}"
-         ng-hide="data.isDeletedForever">
+         style="z-index:1"
+         ng-class="{'owned': isAuthorized(data), 'deleted': data.isDeleted, 'userHidden': data.isHidden, 'marked': data.isMarked}"
+         ng-hide="data.isDeletedForever"
+         ng-style="getNodeStyle(data)">
+        <div class="privacy-icon" ng-show="isAuthorized(data) && data.type=='contentNode'">
+            <i title="This node is private. It is visible only to you." class="fa fa-lock private"
+               ng-show="data.isPrivate === true"></i>
+            <i title="This node is public. It is visible to everyone. " class="fa fa-unlock public"
+               ng-show="data.isPrivate !== true"></i>
+        </div>
+
+        <div class="hide-node-icon" ng-hide="data.isDeleted">
+            <a class="pointer" ng-click="toggleNodeVisibility(data)">
+                <i title="Show node" class="ionicons ion-eye" ng-show="data.isHidden"></i>
+                <i title="Hide node" class="ionicons ion-eye-disabled" ng-hide="data.isHidden"></i>
+            </a>
+        </div>
 
         <span ng-show="data.type == 'contentNode' && data.resources.length > 0">
             <i ng-repeat="file in data.resources" ng-class="resourceIcon(file.type)">
@@ -25,10 +41,12 @@
         <span ng-show="data.type == 'contentNode' && data.isDeleted == true"> {{data.name}} </span>
 
         <!-- subtopic menu-->
-        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='subTopic' && !data.isDeleted">
+        <ul class="dropdown-menu dropdown-course"
+            ng-show="data.type=='subTopic' && !data.isDeleted && !data.isHidden">
             <li class="bg-green" style="text-align: center; margin-bottom: 5px;">
                 <small class="label label-green">
-                    <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by {{data.createdBy.displayName}}
+                    <i class="fa fa-clock-o"></i> Created {{data.dateAdded | relativeDate}} <br>by
+                    {{data.createdBy.displayName}}
                 </small>
             </li>
             <li>
@@ -59,7 +77,8 @@
         </ul>
 
         <!-- contentnode menu-->
-        <ul class="dropdown-menu dropdown-course" ng-show="data.type=='contentNode' && !data.isDeleted">
+        <ul class="dropdown-menu dropdown-course"
+            ng-show="data.type=='contentNode' && !data.isDeleted && !data.isHidden">
             <!-- analytics -->
             <li class="topic-icon-analytics" ng-bind-html="widgets[data._id]">
             </li>
@@ -70,6 +89,11 @@
             <li ng-show="isAuthorized(data)">
                 <a class="cursor"
                    ng-click="deleteNode(data)"><i class="ionicons ion-close"></i> Delete</a>
+            </li>
+
+            <li ng-show="hasPdf(data.resources)">
+                <a class="cursor" href="{{getPdfLink(data.resources)}}" target="_blank"><i class="fa fa-file-pdf-o"></i>
+                    Download PDF</a>
             </li>
         </ul>
 
@@ -88,18 +112,51 @@
 <div class="box-body no-border" id="tree" ng-controller="MapController">
 
     <div class="course-control">
-        <button class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)"><i
-                    class="ionicons ion-android-locate"></i></button>
+        <button data-tooltip="tooltip" title="Information"
+                class="btn btn-default btn-sm" ng-click="showMapInfo()">
+            <i class="ionicons ion-information"></i>
+        </button>
 
-        <button class="btn btn-default btn-sm" ng-click="showMapInfo()">
-            <i class="ionicons ion-information"></i></button>
+        <button data-tooltip="tooltip" title="Center Map"
+                class="btn btn-default btn-sm" onclick="Canvas.putOnCenter(true)">
+            <i class="ionicons ion-android-locate"></i>
+        </button>
+        <input type="search" class="form-control search-box"
+               title="Search"
+               ng-keyup="$event.keyCode == 13 && findNextMatch()"
+               ng-model="queryText"
+               ng-change="lookupInTree()"
+               placeholder="Search map..."/>
+    </div>
+
+    <div style="position: absolute;bottom: 10px;right: 20px;z-index: 5;">
+
+        <label class="pull-right"> Zoom
+            <input type="range" min="0.5" max="1.5" step="0.1"
+                   placeholder="Zoom"
+                   tooltip="Zoom"
+                   list="zoomSettings"
+                   oninput="Canvas.zoomChanged(this.value)" onchange="Canvas.zoomChanged(this.value)">
+            <datalist id="zoomSettings">
+                <option>0.5</option>
+                <option>0.6</option>
+                <option>0.7</option>
+                <option>0.8</option>
+                <option>0.9</option>
+                <option>1.0</option>
+                <option>1.1</option>
+                <option>1.2</option>
+                <option>1.3</option>
+                <option>1.4</option>
+                <option>1.5</option>
+            </datalist>
+        </label>
     </div>
 
     <div class="tree-container">
         <div class="course-map" id="course-map">
-
-            <div ng-repeat="data in treeNodes" ng-include="'tree_item_renderer.html'" on-finish-render="jsTreeInit">
-            </div>
+            <div ng-repeat="data in treeNodes" ng-include="'tree_item_renderer.html'"
+                 on-finish-render="jsTreeInit"></div>
 
             <div class="center-course" id="center" data-shape="Rectangle">
                 {{course.name}}
@@ -218,6 +275,8 @@
         w: 4000,
         h: 4000,
         centerCss: {},
+        centerX: 0,
+        centerY: 0,
 
         init: function (wWidth, wHeight) {
             var self = this;
@@ -238,21 +297,30 @@
 
         setCenter: function (wWidth, wHeight) {
             var self = this;
-
-            self.centerCss = {
-                left: ( (wWidth - self.w) / 2) + 'px',
-                top: ( (wHeight - self.h) / 2) + 'px'
-            };
+            var x = (wWidth - self.w) / 2;
+            var y = (wHeight - self.h) / 2;
+            self.centerX = x;
+            self.centerY = y;
+            self.centerCss = {left: x + 'px', top: y + 'px'};
         },
 
         putOnCenter: function (animate) {
             var self = this;
+            self.position(self.centerCss, animate);
+        },
 
-            if (animate)
-                self.el.animate(self.centerCss, {duration: 1000, easing: 'easeOutExpo'});
-            else
-            // put it on the center
-                self.el.css(self.centerCss);
+        position: function (position, animate) {
+            var self = this;
+            if (animate) {
+                self.el.animate(position, {duration: 350, easing: 'easeOutExpo'});
+            }
+            else {
+                self.el.css(position);
+            }
+        },
+
+        zoomChanged: function (value) {
+            this.el.animate({'zoom': value}, 0);
         },
 
         onWindowResize: function (w, h) {
@@ -262,12 +330,10 @@
             self.setCenter(w, h);
             self.putOnCenter();
         }
-
     };
 
     var Container = {
         el: null,
-
         init: function () {
             this.el = $('.tree-container');
 
@@ -304,6 +370,7 @@
             Container.onWindowResize(w, h);
             Canvas.onWindowResize(w, h);
         });
+        $('[data-tooltip="tooltip"]').tooltip();
     });
 
 </script>

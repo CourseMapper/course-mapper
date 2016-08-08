@@ -2,6 +2,10 @@ angular.module('PreviewStats', [''])
     .controller('PreviewStatsController', function($scope, $http, $location, $log) {
         //$scope.HeaderTitle = "User Name";
 
+        $scope.isTrue = function (action) {
+            return action.isDeleted == false;
+        };
+        
         var loc = $location.path();
         var parseLoc = loc.replace ('/cid/', '');
         //alert(parseLoc);

@@ -15,7 +15,6 @@
                  ng-click="switchShowAnnotationZone()">
                 Annotation Zones: {{$root.switchShowAnnoZones}}
             </div>
-
         </div>
         <div class="col-md-2 text-center">
             <div class="row">
@@ -33,9 +32,12 @@
             </div>
         </div>
         <div class="col-md-5 text-right">
-            <!--<a id="btn-fullscreen"
-                class="glyphicon glyphicon-fullscreen iconSlideNav cursor"
-                aria-hidden="true"></a>-->
+            <div class="checkbox">
+                <label style="color: white">
+                    <input type="checkbox" ng-model="config.countMap.isPersonal" ng-change="isAMapPersonalChange()">
+                    Show only my annotations
+                </label>
+            </div>
         </div>
     </div>
 </div>

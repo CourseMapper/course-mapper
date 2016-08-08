@@ -1,0 +1,111 @@
+<div class="col-md-7">
+    <videogular class="embed-responsive embed-responsive-16by9"
+                vg-youtube="rel=1;showinfo=0"
+                vg-vimeo=""
+                vg-player-ready="onPlayerReady($API)"
+                vg-cue-points="cuePoints"
+                vg-update-state="onUpdateState($state)">
+        <vg-media vg-src="sources"></vg-media>
+        <vg-controls vg-autohide="true" vg-autohide-time="10000">
+            <vg-play-pause-button></vg-play-pause-button>
+            <vg-time-display>{{ currentTime | date:'HH:mm:ss':'UTC' }}</vg-time-display>
+            <vg-scrub-bar>
+                <vg-scrub-bar-current-time ng-show="selectedBar!=='fp' "></vg-scrub-bar-current-time>
+                <vg-scrub-bar-cue-points class="default"
+                                         ng-show="selectedBar==='va' "
+                                         vg-cue-points="cuePoints.points"></vg-scrub-bar-cue-points>
+                <vg-footprint ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint>
+            </vg-scrub-bar>
+            <vg-time-display>{{ totalTime | date:'HH:mm:ss':'UTC'}}</vg-time-display>
+            <vg-footprint-info ng-class="{invisible: (selectedBar!=='fp')}"></vg-footprint-info>
+
+            <div ng-class="{invisible: (selectedBar!=='va')}">
+                <div class="fp-info-holder">
+                    <div title="This is an A-Map" class="fp-btn">?
+                        <div class="fp-tooltip">The A-Map represents number of annotations
+                            <div class="fp-tooltip-arrow"></div>
+                        </div>
+                    </div>
+                    <div class="fp-scale-holder"><span class="fp-scale-from"></span>
+                        <div class="am-scale"></div>
+                    </div>
+                </div>
+            </div>
+            <vg-fullscreen-button></vg-fullscreen-button>
+            <!--<vg-playback-button></vg-playback-button>-->
+            <vg-volume>
+                <vg-mute-button></vg-mute-button>
+                <vg-volume-bar></vg-volume-bar>
+            </vg-volume>
+        </vg-controls>
+        <!--<vg-overlay-play></vg-overlay-play>-->
+        <div id="inline-va-container">
+            <div ng-mouseover="item.isHovered=true" ng-mouseleave="item.isHovered=false" movable
+                 can-move="{{item.isEditMode===true}}" on-moved="item.reposition"
+                 ng-repeat="item in annotations | filter:{type: 'embedded-note'}" class="inline-va-annotation"
+                 ng-show="item.showing" ng-style="getInlineAnnotationStyle(item)">
+                <span ng-show="item.isHovered">{{item.text}}</span>
+            </div>
+        </div>
+    </videogular>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="col-md-3 form-group">
+                <select class="row form-control" ng-model="selectedBar">
+                    <option value="" selected disabled>Select analytics bar...</option>
+                    <option value="none">None</option>
+                    <option value="va">Video Annotations</option>
+                    <option value="fp">Footprint</option>
+                </select>
+            </div>
+            <div class="col-md-4 form-group">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="isAMapPersonal" ng-change="isAMapPersonalChange()">
+                        Show only personal annotations
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3 form-group"></div>
+            <div class="col-md-3 form-group">
+                <button ng-hide="!lastPos" class="btn btn-block btn-primary btn-sm" type="button"
+                        ng-click="onClickedResume()">
+                    Resume: {{lastPos | msToTime}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-4 replies">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <button class="col-md-4 btn btn-primary btn-md" ng-click="createAnnotation()">Annotate</button>
+                <div class="col-md-8">
+                    <select class="form-control" ng-model="sortBy">
+                        <option value="" selected disabled>-- Sort by --</option>
+                        <option value="start">Start time</option>
+                        <option value="text">Alphabetical</option>
+                        <option value="author">Author</option>
+                    </select>
+                    <input class="form-control" id="search-box" ng-hide="hideSearch" placeholder="Search..."
+                           ng-model="query">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <section class="row" id="annotations-view" ng-show="annotations.length > 0">
+            <div ng-repeat="annotation in annotations | filter:query | filter:(isAMapPersonal ? {'authorId': user._id} : '') | orderBy:sortBy">
+                <div class="col-xs-11" id="{{annotation._id}}">
+                    <video-annotation ng-mouseover="annotation.isHovered=true"
+                                      ng-mouseleave="annotation.isHovered=false"
+                                      source="annotation"
+                                      ng-class="{showing: annotation.showing, completed: annotation.completed}">
+                    </video-annotation>
+                </div>
+                <voting class="col-xs-1" vote-type="videoAnnotation" vote-type-id="{{annotation._id}}"></voting>
+            </div>
+        </section>
+    </div>
+</div>

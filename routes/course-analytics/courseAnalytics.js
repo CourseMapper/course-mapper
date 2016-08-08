@@ -40,7 +40,13 @@ router.get('/ca-enrolled-users', function(req, res, next) {
     res.render('course-analytics/enrolled-users');
 });
 
+router.get('/ca-top-content',function (req, res, next){
+   res.render('course-analytics/top-content');
+});
 
+router.get('/ca-top-contributor', function(req, res, next){
+    res.render('course-analytics/top-contributor');
+});
 
 
 module.exports = router;

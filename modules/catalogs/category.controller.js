@@ -9,14 +9,14 @@ var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 
-function catalog(){
+function catalog() {
 }
 
-function convertToDictionary(documents){
+function convertToDictionary(documents) {
     var ret = {};
-    for(var i in documents){
+    for (var i in documents) {
         var doc = documents[i];
-        ret[doc._id] = doc.toObject({ getters: true, virtuals: false });
+        ret[doc._id] = doc.toObject({getters: true, virtuals: false});
     }
 
     return ret;
@@ -30,9 +30,9 @@ function convertToDictionary(documents){
  * @param params
  * @param success
  */
-catalog.prototype.getCategories = function(error, params, success){
-    Category.find(params, function(err, docs) {
-        if (!err){
+catalog.prototype.getCategories = function (error, params, success) {
+    Category.find(params, function (err, docs) {
+        if (!err) {
             var cats = convertToDictionary(docs);
 
             var parent = 'parentCategory';
@@ -40,10 +40,10 @@ catalog.prototype.getCategories = function(error, params, success){
 
             var tree = [];
 
-            function again(cat){
-                if(cat && cat[children]){
+            function again(cat) {
+                if (cat && cat[children]) {
                     var childrens = [];
-                    for(var e in cat[children]){
+                    for (var e in cat[children]) {
                         var catId = cat[children][e];
                         var childCat = cats[catId];
                         childrens.push(childCat);
@@ -54,10 +54,10 @@ catalog.prototype.getCategories = function(error, params, success){
                 }
             }
 
-            for(var i in cats){
+            for (var i in cats) {
                 // get the root
                 var doc = cats[i];
-                if(!doc[parent]){
+                if (!doc[parent]) {
                     again(doc);
                     tree.push(doc);
                 }
@@ -82,18 +82,18 @@ catalog.prototype.categoryExists = function(error, params, success){
 
 catalog.prototype.getCategory = function(error, params, success){
     Category.findOne(params)
-        .populate('subCategories courseTags').exec(function(err, docs) {
-            if (!err){
-                success(docs);
-            } else {
-                error(err);
-            }
-        });
+        .populate('subCategories courseTags').exec(function (err, docs) {
+        if (!err) {
+            success(docs);
+        } else {
+            error(err);
+        }
+    });
 };
 
-catalog.prototype.updateCategoryPosition = function(error, paramsWhere, paramsUpdate, success){
-    Category.findOne(paramsWhere).exec(function(err, cat){
-        if(err) error(err);
+catalog.prototype.updateCategoryPosition = function (error, paramsWhere, paramsUpdate, success) {
+    Category.findOne(paramsWhere).exec(function (err, cat) {
+        if (err) error(err);
         else
             cat.update({
                 $set: {
@@ -102,7 +102,7 @@ catalog.prototype.updateCategoryPosition = function(error, paramsWhere, paramsUp
                         y: paramsUpdate.y
                     }
                 }
-            }, function(err){
+            }, function (err) {
                 if (err) {
                     debug('failed update cat position');
                     error(err);
@@ -115,13 +115,18 @@ catalog.prototype.updateCategoryPosition = function(error, paramsWhere, paramsUp
 };
 
 
-catalog.prototype.updateCategory = function(error, paramsWhere, paramsUpdate, success){
-    Category.findOne(paramsWhere).exec(function(err, cat){
-        if(err) error(err);
-        else
+catalog.prototype.updateCategory = function (error, paramsWhere, paramsUpdate, success) {
+    Category.findOne(paramsWhere).exec(function (err, cat) {
+        if (err) error(err);
+        else {
+            if (paramsUpdate.name) {
+                cat.setSlug(paramsUpdate.name);
+                cat.save();
+            }
+
             cat.update({
                 $set: paramsUpdate
-            }, function(err){
+            }, function (err) {
                 if (err) {
                     debug('failed update cat');
                     error(err);
@@ -130,24 +135,25 @@ catalog.prototype.updateCategory = function(error, paramsWhere, paramsUpdate, su
                 // success saved the cat
                     success(cat);
             });
+        }
     });
 };
 
-catalog.prototype.deleteCategory = function(error, params, success){
+catalog.prototype.deleteCategory = function (error, params, success) {
     var self = this;
 
     if (!helper.checkRequiredParams(params, ['categoryId'], error)) {
         return;
     }
 
-    Category.findOne({_id: params.categoryId}, function(err, doc){
-        if(err){
+    Category.findOne({_id: params.categoryId}, function (err, doc) {
+        if (err) {
             error(err);
             return;
         }
 
-        if(doc){
-            if(doc.parentCategory) {
+        if (doc) {
+            if (doc.parentCategory) {
                 // remove from parent
                 Category.findById(doc.parentCategory,
                     function (err, parentCat) {
@@ -170,10 +176,12 @@ catalog.prototype.deleteCategory = function(error, params, success){
                     });
             }
 
-            if(doc.subCategories) {
-                for(var i in doc.subCategories){
+            if (doc.subCategories) {
+                for (var i in doc.subCategories) {
                     var subCatId = doc.subCategories[i];
-                    self.deleteCategory(function(){}, {categoryId: subCatId}, function(){});
+                    self.deleteCategory(function () {
+                    }, {categoryId: subCatId}, function () {
+                    });
                 }
             }
 
@@ -181,8 +189,8 @@ catalog.prototype.deleteCategory = function(error, params, success){
             Category.remove({
                     _id: params.categoryId
                 },
-                function(err){
-                    if(err)
+                function (err) {
+                    if (err)
                         error(err);
                     else {
                         success();
@@ -198,16 +206,16 @@ catalog.prototype.deleteCategory = function(error, params, success){
  * @param params
  * @param success
  */
-catalog.prototype.getCategoryTags = function(error, params, success){
-    this.getCategory(error, params, function(docs){
-        if(docs && docs.courseTags)
+catalog.prototype.getCategoryTags = function (error, params, success) {
+    this.getCategory(error, params, function (docs) {
+        if (docs && docs.courseTags)
             success(docs.courseTags);
         else
             success([]);
     });
 };
 
-catalog.prototype.addCategory = function(error, params, success){
+catalog.prototype.addCategory = function (error, params, success) {
 
     if(!params.positionFromRoot){
       params.positionFromRoot = {
@@ -230,7 +238,7 @@ catalog.prototype.addCategory = function(error, params, success){
             debug('save cat error');
             error(err);
         } else {
-            if(params.parentCategory) {
+            if (params.parentCategory) {
                 console.log("finding parent Category");
                 // if it has parent category, lets add it as its child
                 Category.findById(mongoose.Types.ObjectId(params.parentCategory),
@@ -244,7 +252,7 @@ catalog.prototype.addCategory = function(error, params, success){
                                 $addToSet: {
                                     subCategories: mongoose.Types.ObjectId(cat.id)
                                 }
-                            }, function(err, subCat){
+                            }, function (err, subCat) {
                                 if (err) {
                                     debug('failed updated parent cat');
                                     error(err);

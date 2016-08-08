@@ -98,7 +98,7 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
                         var q = $location.search();
                         if (q.tab)
                             $scope.currentTab = q.tab;
-                        
+
                         authService.showLoginForm();
                     }
                     else if ($scope.course && !$scope.isAuthorized() && !$scope.isEnrolled) {
@@ -112,10 +112,10 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
 
                                 Page.setTitleWithPrefix($scope.course.name + ' > Map > ' + $scope.treeNode.name);
 
-                                if ($scope.isAdmin || $scope.isManager) {
-                                    if ($scope.treeNode.createdBy == $rootScope.user._id)
-                                        $scope.isNodeOwner = true;
+                                if ($scope.treeNode.createdBy == $rootScope.user._id)
+                                    $scope.isNodeOwner = true;
 
+                                if ($scope.isAuthorized()) {
                                     $scope.setEditMode();
                                 }
 
@@ -126,7 +126,8 @@ app.controller('NodeRootController', function ($scope, $rootScope, $filter, $htt
                                 });
                             },
                             function (err) {
-
+                                $scope.nodeError = true;
+                                $scope.error = err;
                             }
                         );
                     }

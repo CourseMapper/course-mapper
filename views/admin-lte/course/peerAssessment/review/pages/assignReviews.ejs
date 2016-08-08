@@ -1,0 +1,89 @@
+<div class="row" ng-controller="ReviewAssignmentController">
+    <section class="content">
+        <div class="row row-centered">
+            <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                <div class="box no-round">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Assign Reviews</h3>
+                    </div>
+                    <div class="box-body no-border form-horizontal horizontal-max">
+                        <fieldset>
+                            <div class="form-group col-sm-12 control-label">
+                                <div class="col-sm-5">
+                                    <div class="row">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-10" style="text-align: center">
+                                            <label>Students</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-10">
+                                            <select ng-model="user" size=5 class="form-control" style="border-radius: 4px !important;">
+                                                <option ng-repeat="option in users" ng-selected="$index == 0" value="{{option._id}}">{{option.username}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="row">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-10" style="text-align: center">
+                                            <label>Solutions</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2"></div>
+                                        <div class="col-sm-10">
+                                            <select ng-model="solution" size=5 class="form-control" style="border-radius: 4px !important;">
+                                                <option ng-repeat="option in solutions" ng-selected="$index == 0" value="{{option._id}}">{{option.title}}, {{option.studentName}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2" style="line-height: 9;">
+                                    <button class="btn btn-primary" ng-click="assignReview()">Assign</button>
+                                </div>
+                            </div>
+
+
+
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+            <br/><br/><br/><br/>
+            <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered" ng-show="assignedReviews.length">
+                <div class="box no-round">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Assigned Reviews</h3>
+                    </div>
+                    <div class="box-body no-border form-horizontal horizontal-max">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Solution Title</th>
+                                <th>Submitted By</th>
+                                <th>Assigned To</th>
+                                <th>Review Submitted</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="review in assignedReviews">
+                                <td>{{review.solutionId.title}}</td>
+                                <td>{{review.solutionId.studentName}}</td>
+                                <td>{{review.assignedTo.displayName}}</td>
+                                <td>{{review.isSubmitted?'Yes':'No'}}</td>
+                                <td>
+                                    <a href="" ng-click="deleteReview(review._id, $event)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

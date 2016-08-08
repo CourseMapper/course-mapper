@@ -1,0 +1,48 @@
+<div ng-controller="SolutionsController">
+    <div class="col-md-11">
+        <div class="col-md-7" ng-show="filteredSolutions.length > 0">
+            <div class="panel panel-info">
+                <div class="panel-heading">Search Filter</div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label for="solutionFilter" class="control-label checkbox-line-adjust">Peer Review Title:</label>
+                        </div>
+                        <div class="col-md-5" style="margin-left: -25px">
+                            <select class="form-control" id="solutionFilter" ng-model="filterCondition">
+                                <option ng-repeat="pr in peerReviewList" value="{{pr._id}}">{{pr.title}}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input class="btn btn-primary pull-right" type="button" value="Filter" ng-click="filter()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="!filteredSolutions || filteredSolutions.length == 0">
+            <h5>No Solutions submitted for this course yet</h5>
+        </div>
+        <table class="table table-hover" ng-show="filteredSolutions.length > 0">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Review Task Title</th>
+                <th>Student(s)</th>
+                <th ng-show="isOwner || isManager || isAdmin"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="solution in filteredSolutions" ng-click="viewSolution(solution._id)">
+                <td>{{solution.title}}</td>
+                <td>{{solution.peerReviewId.title}}</td>
+                <td>{{solution.studentName}}</td>
+                <td ng-show="isOwner || isManager || isAdmin">
+                    <!--<a href="" ng-click="openEditConfirmationModal(review, $event)"> <i class="ion-edit" style="font-size: medium"></i> </a> &nbsp;-->
+                    <a href="" ng-click="openDeleteSolutionConfirmationModal(solution._id, $event)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

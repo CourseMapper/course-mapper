@@ -6,6 +6,7 @@ var AnnZones = require('../annotationZones/index');
 var validator = require('validator');
 var appRoot = require('app-root-path');
 var Plugin = require(appRoot + '/modules/apps-gallery/backgroundPlugins.js');
+var _ = require('lodash');
 
 function Comment() {
 }
@@ -148,12 +149,18 @@ Comment.prototype.submitFirstLevelAnnotation = function (err, params, done) {
 };
 
 
-Comment.prototype.deleteAnnotation = function (err, params, isAdmin, done) {
+Comment.prototype.deleteAnnotation = function (err, params, isAdmin, user, done) {
   if (typeof params.deleteId != 'undefined') {
     this.checkOwnership(params.deleteId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
-        AnnotationsPDF.findOne({_id: params.deleteId}).remove().exec();
-        done();
+        AnnotationsPDF.findOne({_id: params.deleteId}).exec(function (err, doc) {
+          if (doc) {
+            doc.remove();
+            Plugin.doAction('onAfterPdfAnnotationDeleted', doc, user);
+
+            done();
+          }
+        });
       }
       else {
         err("Server Error: Unable to delete annotation since access was denied or the entry was not found");
@@ -165,29 +172,27 @@ Comment.prototype.deleteAnnotation = function (err, params, isAdmin, done) {
   }
 };
 
-
-Comment.prototype.updateAnnotation = function (err, params, isAdmin, done) {
+Comment.prototype.updateAnnotation = function (err, params, isAdmin, user, done) {
   //console.log("STARTED");
-  //console.log(params);
   if (typeof params.updateId != 'undefined') {
     this.checkOwnership(params.updateId, params.author, params.authorId, isAdmin, function (success) {
       if (success) {
         var temp = Comment.prototype.convertRawTextSpecific;
-
         //var htmlEscapedRawText = validator.escape(params.rawText);
         var htmlEscapedRawText = params.rawText;
         temp(htmlEscapedRawText, function (renderedText) {
           var updatedAnnotationsPDF = {
             rawText: htmlEscapedRawText,
-            renderedText: renderedText
+            renderedText: renderedText,
+            isPrivate: params.isPrivate
           };
-
           // save it to db
           AnnotationsPDF.update({_id: params.updateId}, updatedAnnotationsPDF, function (errBool) {
             if (errBool) {
               err("Server Error: Unable to update annotation");
             } else {
               // call success callback
+              Plugin.doAction('onAfterPdfAnnotationEdited', params, user);
               done();
             }
           });
@@ -318,12 +323,8 @@ Comment.prototype.convertRawTextID = function (rawText, callback, pdfID) {
   Comment.prototype.convertRawTextSpecific(rawText, callback, pdfID, -1)
 };
 
-
 Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, pdfPage) {
-
-
   var check = this.checkTagName;
-
   var comm = new Comment();
 
   var getNamesCallback = function (success, data) {
@@ -338,12 +339,10 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
       tagPageList[i] = data[i].pdfPageNumber;
     }
     //console.log(data);
-
-
-    var renderedText = rawText.replace(/#(\w+)((@)(\w+))?/g, function (x) {
+    var renderedText = rawText.replace(/#(\w+)((@p)(\w+))?/g, function (x) {
       var comm = new Comment();
       //console.log("Found tag with name: "+x);
-      var strSplit = x.split("@");
+      var strSplit = x.split("@p");
       var hasPage = false;
       var page = 0;
       var originalX = x;
@@ -363,9 +362,9 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
 
         var tagId = comm.checkTagName(x, tagNameList);
         var ret;
-        if(hasPage){
-          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "' data-toggle='tooltip' data-placement='bottom' title='Referenced from page "+page+"'>" + originalX + "</label>";
-        }else{
+        if (hasPage) {
+          ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "' data-toggle='tooltip' data-placement='bottom' title='Referenced from page " + page + "'>" + originalX + "</label>";
+        } else {
           ret = "<label class='annotationZoneReference' style='color: " + tagColorList[tagId] + "'>" + originalX + "</label>";
         }
 
@@ -376,10 +375,7 @@ Comment.prototype.convertRawTextSpecific = function (rawText, callback, pdfID, p
 
         return ret;
       }
-
-
       return x;
-
     });
 
     callback(renderedText);
@@ -434,6 +430,7 @@ Comment.prototype.handleDeletePost = function (req, res, next) {
     },
     req.query,
     req.user.role == "admin",
+    req.user,
     function done() {
       // todo: implement flash
       return res.status(200).send({result: true});
@@ -450,6 +447,7 @@ Comment.prototype.handleUpdatePost = function (req, res, next) {
     },
     req.query,
     req.user.role == "admin",
+    req.user,
     function done() {
       // todo: implement flash
       return res.status(200).send({result: true});
@@ -490,51 +488,56 @@ Comment.prototype.getPdfAnnotations = function (pdfId, done) {
   return AnnotationsPDF.find({pdfId: pdfId}, done).exec();
 };
 
-Comment.prototype.getOrderedFilteredComments = function (order, filters, callback) {
+Comment.prototype.getOrderedFilteredComments = function (req, callback) {
+
+  var order = JSON.parse(req.params.order);
+  var filters = JSON.parse(req.params.filters);
+  var user = req.user;
+
+  var checkHasRightToModify = function (model, user) {
+    if (!model || !user || !user.role) {
+      return false;
+    }
+    var isAuthor = model.authorID === user._id;
+    var isAdmin = user.role === 'admin';
+    return isAuthor || isAdmin;
+  };
+
+  var checkAccess = function (item, user) {
+    return item.isPrivate !== true || checkHasRightToModify(item, user);
+  };
 
   var orderString = "" + order.type;
   if (order.ascending == "false") {
-    //console.log("inside if");
     orderString = "-" + orderString;
   }
-
 
   if (typeof filters["renderedText"] != 'undefined') {
     if (typeof filters["renderedText"]["regex_hash"] != 'undefined') {
       filters["renderedText"] = new RegExp('#' + filters["renderedText"]["regex_hash"], 'i');
-      //console.log("found tag request");
     }
   }
 
   if (typeof filters["renderedText"] != 'undefined') {
     if (typeof filters["renderedText"]["regex"] != 'undefined') {
       filters["renderedText"] = new RegExp(filters["renderedText"]["regex"], 'i');
-      //console.log("found tag request");
     }
   }
 
   if (typeof filters["rawText"] != 'undefined') {
     if (typeof filters["rawText"]["regex"] != 'undefined') {
       filters["rawText"] = new RegExp(filters["rawText"]["regex"], 'i');
-      //console.log("found tag request");
     }
   }
 
-
-  AnnotationsPDF.find(filters, function (err, data) {
+  AnnotationsPDF.find(filters).sort(orderString).exec(function (err, data) {
     if (err) {
-      console.log(err);
+      return err;
     }
-  }).sort(orderString).exec(function (err, data) {
-    if (err) {
-      console.log(err);
-    }
-    else {
-      callback(0, data);
-    }
-
+    var items = _.filter(data, function (item) {
+      return checkAccess(item, user);
+    });
+    callback(0, items);
   });
-
-
 };
 module.exports = Comment;

@@ -1,4 +1,3 @@
-<link href="/admin-lte/css/posts.css" rel="stylesheet" type="text/css"/>
 <div ng-controller="LinksController">
 
     <div class="row">
@@ -36,6 +35,8 @@
                         ng-hide="bookmark.isDeleted"
                         ng-click="initiateLink(bookmark._id)"
                     >
+                        <div class="changePage" ng-if="$index !=0 && $index % 10 == 0"></div>
+
                         <div class="row">
                             <div class="col-xs-1">
                                 <voting vote-type="link" vote-type-id="{{bookmark._id}}" vote-value=""></voting>
@@ -65,10 +66,13 @@
                 </ul>
 
                 <pagination total-rows="linksLength()"
+                            terms="Links"
+                            set-reset="paginationReset()"
                             limit="10"
                             use-search="false"
-                            sort-by="dateAdded"
-                            order-by="desc"
+                            sort-by="{{sortBy}}"
+                            order-by="{{orderBy}}"
+                            current-page="{{currentPage}}"
                             object-service="linkService"
                             success-cb="newRowsFetched">
                 </pagination>

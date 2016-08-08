@@ -1,0 +1,9 @@
+<ul ng-controller="PeerAssessmentController">
+    <li ng-repeat="EAM in extraActionsMenu">
+        <a ng-if="EAM.html" ng-bind-html="EAM.html|unsafe"></a>
+        <i class="ionicons ion-android-more-vertical" ng-if="EAM.separator">&nbsp;</i>
+        <a class="cursor" title="EAM.aTitle" ng-show="EAM.clickAction" ng-click="EAM.clickAction(EAM.clickParams)"
+           ng-bind-html="EAM.title|unsafe">
+        </a>
+    </li>
+</ul>

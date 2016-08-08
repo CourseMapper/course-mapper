@@ -1,0 +1,57 @@
+<div class="form-horizontal horizontal-max" ng-controller="LoopController">
+    <fieldset>
+        <div class="form-group">
+            <label class="col-sm-5 control-label">Loop</label>
+            <div class="col-sm-6">
+                <div class="col-sm-2">
+                    <label class="radio-inline"><input type="radio" name="loop" ng-model="newAssignObj.reviewSettings.loop" value="single" ng-click="toggleView('single')">Single</label>
+                </div>
+                <div class="col-sm-2">
+                    <label class="radio-inline"><input type="radio" name="loop" ng-model="newAssignObj.reviewSettings.loop" value="multiple" ng-click="toggleView('multiple')">Multiple</label>
+                </div>
+            </div>
+            <div class="col-sm-1 pa-tooltip">
+                <i class="ionicons ion-ios-help" data-toggle="tooltip" title="{{tooltip}}"></i>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.reviewStartDate.valid }">
+            <label for="inputReviewStartDate" class="col-sm-5 control-label">Review Start Date</label>
+            <div class="col-sm-4">
+                <input type="datetime-local" class="form-control original-form-control" id="inputReviewStartDate" ng-model="newAssignObj.reviewSettings.reviewStartDate" ng-change="formValidation()">
+            </div>
+            <p ng-show="!dateValidationObject.reviewStartDate.valid" class="help-block">{{dateValidationObject.reviewStartDate.message}}</p>
+        </div>
+        <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.reviewEndDate.valid }">
+            <label for="inputReviewEndDate" class="col-sm-5 control-label">Review End Date</label>
+            <div class="col-sm-4">
+                <input type="datetime-local" class="form-control original-form-control" id="inputReviewEndDate" ng-model="newAssignObj.reviewSettings.reviewEndDate" ng-change="formValidation()">
+            </div>
+            <p ng-show="!dateValidationObject.reviewEndDate.valid" class="help-block">{{dateValidationObject.reviewEndDate.message}}</p>
+        </div>
+
+        <div id="multiple" ng-show="multipleView">
+            <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.secondDueDate.valid }">
+                <label for="inputSecondDueDate" class="col-sm-5 control-label">Second Due Date</label>
+                <div class="col-sm-4">
+                    <input type="datetime-local" class="form-control original-form-control" id="inputSecondDueDate" ng-model="newAssignObj.reviewSettings.secondDueDate" ng-change="formValidation()">
+                </div>
+                <p ng-show="!dateValidationObject.secondDueDate.valid" class="help-block">{{dateValidationObject.secondDueDate.message}}</p>
+            </div>
+            <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.secondReviewStartDate.valid }">
+                <label for="inputReviewStartDate" class="col-sm-5 control-label">Second Review Start Date</label>
+                <div class="col-sm-4">
+                    <input type="datetime-local" class="form-control original-form-control" id="inputReviewStartDate" ng-model="newAssignObj.reviewSettings.secondReviewStartDate" ng-change="formValidation()">
+                </div>
+                <p ng-show="!dateValidationObject.secondReviewStartDate.valid" class="help-block">{{dateValidationObject.secondReviewStartDate.message}}</p>
+            </div>
+            <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.secondReviewEndDate.valid }">
+                <label for="inputReviewEndDate" class="col-sm-5 control-label">Second Review End Date</label>
+                <div class="col-sm-4">
+                    <input type="datetime-local" class="form-control original-form-control" id="inputReviewEndDate" ng-model="newAssignObj.reviewSettings.secondReviewEndDate" ng-change="formValidation()">
+                </div>
+                <p ng-show="!dateValidationObject.secondReviewEndDate.valid" class="help-block">{{dateValidationObject.secondReviewEndDate.message}}</p>
+            </div>
+        </div>
+    </fieldset>
+</div>

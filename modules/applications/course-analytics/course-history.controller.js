@@ -31,7 +31,7 @@ courseHistory.prototype.getHistoryFollower = function (error, params, done) {
         $gte: lastYear
     };
 
-    UserCourses.find(params).exec(function (err, res) {
+    UserCourses.find(params).sort('dateUpdated').exec(function (err, res) {
         if (err) error(err);
         else {
             done(res);
@@ -71,7 +71,7 @@ courseHistory.prototype.getHistoryVideo = function (error, params, done) {
     params.dateAdded = {
         $gte: lastYear
     };
-    Resources.find(params).exec(function (err, res){
+    Resources.find(params).sort('dateAdded').exec(function (err, res){
         if (err) error(err);
         else {done(res)}
     });
@@ -88,7 +88,7 @@ courseHistory.prototype.getHistoryDiscussion = function (error, params, done) {
     params.dateAdded = {
         '$gte': lastYear
     };
-    Posts.find(params).exec(function (err, res){
+    Posts.find(params).sort('dateAdded').exec(function (err, res){
         if (err) error(err);
         else {done(res)}
     });
@@ -107,7 +107,9 @@ courseHistory.prototype.getHistoryPdfAnnotations = function (error, params, done
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            PdfAnnotation.find({pdfId: {$in: ids},dateOfCreation: {'$gte': lastYear} }, function (error, docs){
+            PdfAnnotation.find({pdfId: {$in: ids},dateOfCreation: {'$gte': lastYear}, hasParent: false })
+            .sort('dateOfCreation')
+            .exec(function (error, docs){
                 if (error) error (error);
                 else {done(docs)}
             });
@@ -129,7 +131,9 @@ courseHistory.prototype.getHistoryVideoAnnotations = function (error, params, do
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            VideoAnnotation.find({video_id: {$in: ids},date_modified: {'$gte': lastYear} }, function (error, docs){
+            VideoAnnotation.find({video_id: {$in: ids},date_created: {'$gte': lastYear} })
+            .sort('date_modified')
+            .exec(function (error, docs){
                 if (error) error (error);
                 else {done(docs)}
             });
@@ -151,10 +155,12 @@ courseHistory.prototype.getHistoryLinks = function (error, params, done) {
         if (err) error(err);
         else {
             var ids = res.map(function(doc){return doc._id});
-            Links.find({contentNode: {$in: ids},dateUpdated: {'$gte': lastYear} }, function (error, docs){
-                if (error) error (error);
-                else {done(docs)}
-            });
+            Links.find({contentNode: {$in: ids},dateAdded: {'$gte': lastYear} })
+                .sort('dateAdded')
+                .exec(function (error, docs){
+                    if (error) error (error);
+                    else {done(docs)}
+                });
 
         }
     });

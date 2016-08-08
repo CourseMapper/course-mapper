@@ -1,0 +1,83 @@
+<div class = "pa" ng-controller="PeerAssessmentController">
+    <div ng-include="currentView"></div>
+    <% include peerReview/modals/confirmDeleteAssignmentModal %>
+    <% include solution/modals/addEditSolutionModal%>
+    <% include solution/modals/confirmDeleteSolutionModal %>
+</div>
+<script type="text/ng-template" id="reviewList.tpl">
+    <% include review/pages/review%>
+</script>
+<script type="text/ng-template" id="reviewAssignment.tpl">
+    <% include review/pages/assignReviews%>
+</script>
+<script type="text/ng-template" id="addNewAssignment.tpl">
+    <% include peerReview/pages/addNewAssignment%>
+    <% include peerReview/components/rubrics/addEditRubricModal %>
+</script>
+<script type="text/ng-template" id="editAssignment.tpl">
+    <% include peerReview/pages/editAssignment%>
+    <% include peerReview/components/rubrics/addEditRubricModal %>
+</script>
+<script type="text/ng-template" id="viewAssignment.tpl">
+    <% include peerReview/pages/viewAssignment%>
+</script>
+<script type="text/ng-template" id="seeAllSolutions.tpl">
+    <% include solution/pages/seeAllSolutions%>
+</script>
+<script type="text/ng-template" id="viewSolution.tpl">
+    <% include solution/pages/viewSolution%>
+</script>
+<script type="text/ng-template" id="manageRubrics.tpl">
+    <div ng-controller="ManageRubricsController">
+        <% include peerReview/components/rubrics/list %>
+        <% include peerReview/components/rubrics/addEditRubricModal %>
+        <% include peerReview/components/rubrics/viewRubricModal %>
+    <div>
+</script>
+<script type="text/ng-template" id="reviewSubmission.tpl">
+    <% include review/pages/reviewSubmission%>
+</script>
+<script type="text/ng-template" id="adminFeedback.tpl">
+    <div ng-controller="AdminFeedbackController">
+        <% include review/pages/adminFeedback %>
+        <% include review/modals/viewReviewModal %>
+    </div>
+</script>
+<script type="text/ng-template" id="viewFeedback.tpl">
+    <div ng-controller="ViewFeedbackController">
+        <% include review/pages/viewFeedback %>
+        <% include review/modals/viewReviewModal %>
+    </div>
+</script>
+<script type="text/ng-template" id="main.tpl">
+    <div>
+        <div class="col-md-11">
+            <div ng-show="peerreviews.length == 0">
+                <h5>No Peer Reviews for this course yet</h5>
+            </div>
+            <table class="table table-hover" ng-show="peerreviews.length > 0">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Publication Date</th>
+                    <th>Due Date</th>
+                    <th>Total Marks</th>
+                    <th ng-show="isOwner || isManager || isAdmin"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="review in peerreviews" ng-click="viewPeerReview(review._id)">
+                    <td>{{review.title}}</td>
+                    <td>{{review.publicationDate | date:'dd.MM.yyyy HH:mm'}}</td>
+                    <td>{{review.dueDate | date:'dd.MM.yyyy HH:mm'}}</td>
+                    <td>{{review.totalMarks}}</td>
+                    <td ng-show="isOwner || isManager || isAdmin">
+                        <a href="" ng-click="editPeerReview(review, $event)"> <i class="ion-edit" style="font-size: medium"></i> </a> &nbsp;
+                        <a href="" ng-click="openDeleteConfirmationModal(review._id, $event)"> <i class="ion-ios-trash" style="font-size: large"></i> </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</script>

@@ -1,0 +1,62 @@
+<!-- course edit form -->
+<div class="row" ng-controller="ViewSolutionController">
+    <!--<div class="modal" id="viewAssignmentModal" tabindex="-1" role="dialog"-->
+    <!--aria-labelledby="New Peer Review" aria-hidden="true">-->
+    <section class="content">
+        <div class="row row-centered">
+            <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                <div class="box no-border no-round">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">View Solution</h3>
+                    </div>
+                    <div class="box-body form-horizontal horizontal-max">
+                        <!--<form class="form-horizontal horizontal-max" name="addAssignmentForm" role="form" ng-submit="saveNewPost(addAssignmentForm.$valid)" novalidate>-->
+
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Title</label>
+                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                    <label style="font-weight: normal">{{solution.title}}</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Review Task Title</label>
+                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                    <label style="font-weight: normal">{{solution.peerReviewTitle}}</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Solution Documents</label>
+                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                    <label style="font-weight: normal" ng-if="solution.solutionDocuments.length == 0">No documents avalaible!</label>
+                                    <div class="label label-info" ng-repeat="doc in solution.displayDocumentsList">
+                                        <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Student Comments</label>
+                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                    <label style="font-weight: normal">{{solution.studentComments}}</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-5 control-label">Student(s)</label>
+                                <div class="col-sm-6 control-label" style="text-align: left;">
+                                    <label style="font-weight: normal">{{solution.studentName}}</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <!--</form>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!--</div>-->
+</div>

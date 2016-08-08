@@ -56,34 +56,24 @@ var userHelper = {
         );
     },
 
-    isAuthorized: function (error, params, success) {
-        if (params.userId && params.courseId) {
-            userHelper.isManager(
-                error, params.userId, params.courseId,
-
-                function (ret) {
-                    // is manager
-                    if (ret) {
-                        success(true);
-                    } else {
-                        // check is owner
-                        userHelper.isUserCreatedCourse(
-                            error, params.userId, params.courseId,
-
-                            function (ret) {
-                                // is owner
-                                if (ret) {
-                                    success(true);
-                                }
-                                else {
-                                    success(false);
-                                }
-                            }
-                        )
-                    }
+    isAdmin: function (error, userId, success) {
+        Users.findOne({
+            _id: userId
+        }, function (err, doc) {
+            if (err)
+                error();
+            else {
+                if (doc && doc.role == 'admin') {
+                    success(true);
+                } else {
+                    success(false);
                 }
-            );
-        }
+            }
+        });
+    },
+
+    isAuthorized: function (error, params, success) {
+        userHelper.isCourseAuthorizedAsync(params).then(success).catch(error);
     },
 
     isAdminAsync: async(function (params) {

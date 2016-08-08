@@ -1,0 +1,123 @@
+<div class="row" ng-controller="ReviewSubmissionController">
+    <section class="content">
+        <div class="row row-centered">
+            <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                <div class="box no-border no-round">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Review Submission</h3>
+                    </div>
+                    <div class="box-body">
+                        <form class="form-horizontal horizontal-max" name="form" role="form" novalidate>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Submitted Solution</div>
+                                <div class="panel-body">
+                                    <fieldset>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 control-label">Solution Title</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <label style="font-weight: normal">{{review.solutionId.title}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-if="review.peerReviewId.reviewSettings.blind == 'single' || review.peerReviewId.reviewSettings.blind == 'none'">
+                                            <label class="col-sm-5 control-label">Student Name</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <label style="font-weight: normal">{{review.solutionId.studentName}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 control-label">Solution Documents</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <div class="label label-info" ng-repeat="doc in solutionDocumentsList">
+                                                    <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp; <br></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-5 control-label">Solution Comments</label>
+                                            <div class="col-sm-6 control-label" style="text-align: left;">
+                                                <label style="font-weight: normal">{{review.solutionId.studentComments}}</label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Review</div>
+                                <div class="panel-body">
+                                    <fieldset>
+                                        <div class="form-group" ng-repeat="rubric in rubrics">
+                                            <label for="inputReviewDescription" class="col-sm-4 control-label">{{rubric.title}}</label>
+                                            <div class="col-sm-4">
+                                                <textarea rows="2" class="form-control original-form-control" ng-model="review.rubricReview[rubric._id]"/>
+                                            </div>
+                                        </div>
+                                        <!-- file upload component -->
+                                        <div class="form-group">
+                                            <label for="inputReviewDocuments" class="col-sm-4 control-label">Review Documents</label>
+                                            <div class="col-sm-2">
+                                                <div class="btn btn-sm btn-default"
+                                                     ngf-select accept="*"
+                                                     ng-model="reviewDocuments" ngf-multiple="true" ngf-keep="true" ngf-max-size='1000000'><i
+                                                            class="ionicons ion-document-text"></i> &nbsp; Upload Files
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label"></label>
+                                            <div class="col-sm-8">
+                                                <div ng-show="reviewDocuments" ng-repeat="f in reviewDocuments">
+                                                    <div class="label label-info">
+                                                        &nbsp; <span>{{f.name}}</span> &nbsp;
+                                                    </div>
+                                                    &nbsp;
+                                                    <a href="" ng-click="deleteSelectedFiles(f.name)"> <i class="ion-close-round"></i></a>
+                                                    <br>
+                                                </div>
+                                                <div ng-repeat="doc in review.displayDocumentsList">
+                                                    <div class="label label-info">
+                                                        <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
+                                                    </div>
+                                                    &nbsp;
+                                                    <a href="" ng-click="deleteUploadedFiles(doc.link)"> <i class="ion-close-round"></i></a>
+                                                    <br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- file upload component -->
+                                        <div class="form-group">
+                                            <label for="inputReviewComments" class="col-sm-4 control-label">Comments</label>
+                                            <div class="col-sm-4">
+                                                <textarea rows="3" class="form-control original-form-control" id="inputReviewComments" ng-model="review.comments" placeholder="Comments"/>
+                                            </div>
+                                        </div>
+                                        <div class="form-group" ng-class="{ 'has-error' : form.marks.$invalid && !form.marks.$pristine }">
+                                            <label for="inputObtainedMarks" class="col-sm-4 control-label">Obtained Marks(Total: {{review.peerReviewId.totalMarks}}) *</label>
+                                            <div class="col-sm-2">
+                                                <input type="number" name="marks" min="0" max="{{review.peerReviewId.totalMarks}}" class="form-control original-form-control" id="inputObtainedMarks" ng-model="review.marksObtained" required>
+                                            </div>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.min" class="help-block">Marks should be a positive number</p>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.number" class="help-block">Marks should be a number</p>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.max" class="help-block">Marks cannot exceed total marks</p>
+                                            <p ng-show="form.marks.$invalid && form.marks.$error.required" class="help-block">Marks are required</p>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer control-group">
+                        <br class="clear">
+                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                        <!-- Button -->
+                        <div class="controls pull-right">
+                            <button class="btn btn-primary" ng-disabled="!isFormValid()" ng-click="submitReview()"> Save
+                                <spinner show="isLoading"></spinner>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

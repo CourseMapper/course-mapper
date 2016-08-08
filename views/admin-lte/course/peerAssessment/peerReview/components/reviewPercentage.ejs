@@ -1,0 +1,12 @@
+<div class="form-horizontal horizontal-max" ng-controller="ReviewPercentageController">
+    <fieldset>
+        <div class="form-group" ng-class="{ 'has-error' : form.percentage.$invalid && !form.percentage.$pristine }">
+            <label for="inputReviewStartDate" class="col-sm-5 control-label">Student Review Percentage *</label>
+            <div class="col-sm-3 form-inline">
+                <input type="number" name="percentage" min="0" class="form-control original-form-control" id="inputStudentPercentage" ng-model="newAssignObj.reviewSettings.studentPercentage" required> %
+            </div>
+            <p ng-show="form.percentage.$invalid && form.percentage.$error.min" class="help-block">Student review % should be a positive number</p>
+            <p ng-show="form.percentage.$invalid && form.percentage.$error.required" class="help-block">Student review % is required</p>
+        </div>
+    </fieldset>
+</div>

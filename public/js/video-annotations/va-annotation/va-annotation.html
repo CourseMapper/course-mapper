@@ -1,0 +1,96 @@
+<div class="box box-solid">
+    <div class="box-body" ng-show="!source.isEditMode">
+        <div class="privacy-icon" ng-show="source.canEdit">
+            <i class="fa fa-lock private" ng-show="source.isPrivate === true"></i>
+            <i class="fa fa-unlock public" ng-show="source.isPrivate !== true"></i>
+        </div>
+        <p>
+            <span>[{{source.start | msToTime}} - {{source.end | msToTime}}]</span>
+            <span class="posted-at">
+                      Posted <strong>{{source.date_created | relativeDate}}</strong>
+                      By <strong>{{source.authorDisplayName||source.author}}</strong>
+                </span>
+        </p>
+        <p id="annotation-text" ng-click="$parent.seekPosition(source)">{{source.text}}</p>
+    </div>
+    <div class="box-body form-group" ng-show="source.isEditMode">
+        <textarea placeholder="Start annotating..." class="form-control" rows="5" id="va-text" type="text"
+                  ng-model="source.text"></textarea>
+        <br/>
+        <select class="form-control" ng-model="source.type">
+            <option ng-selected="type.id===source.type" ng-repeat="type in annotationTypes" value="{{type.id}}">
+                {{type.name}}
+            </option>
+        </select>
+        <br/>
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="glyphicon glyphicon-arrow-right"></i>
+                    </div>
+                    <cm-timepicker id="va-start" ng-model="source.start"></cm-timepicker>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="input-group">
+                    <cm-timepicker id="va-end" ng-model="source.end"></cm-timepicker>
+                    <div class="input-group-addon">
+                        <i class="glyphicon glyphicon-arrow-left"></i>
+                    </div>
+                </div>
+            </div>
+            <br/>
+        </div>
+        <div class="form-control">
+            <label>
+                <input type="checkbox" ng-model="source.isPrivate">
+                Private annotation
+            </label>
+        </div>
+    </div>
+    <div class="box-footer">
+        <div>
+            <div class="pull-left" ng-hide="source.isEditMode">
+                <a ng-click="toggle = !toggle">{{!toggle ? source.comments.length + ' comment(s)' : 'hide comments'
+                    }}</a>
+            </div>
+            <div class="pull-right" ng-show="source.canEdit && !source.isEditMode">
+                <a class="btn btn-primary btn-xs" ng-click="editAnnotation()">EDIT</a>
+                <a class="btn btn-danger btn-xs" ng-click="deleteAnnotation()">DELETE</a>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+        <div ng-show="source.isEditMode">
+            <a class="btn btn-primary btn-xs" ng-click="saveAnnotation()">SAVE</a>
+            <a ng-hide="source.isDefault" ng-click="closeAnnotation()" class="btn btn-danger btn-xs">CLOSE</a>
+            <a ng-show="source.isDefault" ng-click="cancelAnnotation()" class="btn btn-danger btn-xs">CANCEL</a>
+        </div>
+        <div ng-hide="source.isEditMode" id="comments">
+            <article ng-show="toggle">
+                <br/>
+                <div id="comment-box" class="input-group input-group-sm">
+                    <input class="form-control" placeholder="Write a comment..." type="text" ng-model="commentText">
+                    <span class="input-group-btn">
+                      <button class="btn btn-primary btn-flat" type="submit" ng-click="postComment()">REPLY</button>
+                    </span>
+                </div>
+                <br/>
+                <section ng-repeat="comment in source.comments.slice().reverse()">
+                    <div class="box box-solid" style="background: rgba(0, 0, 255, 0.05)">
+                        <div class="box-body">
+                            <span class="posted-at">
+                              Posted <strong>{{comment.date_created | relativeDate}}</strong>
+                              By <strong><span>{{comment.authorDisplayName||comment.author}}</span></strong>
+                            </span>
+                            <a class="pull-right" style="cursor: pointer;" ng-show="comment.canEdit"
+                               ng-click="removeComment(comment._id)">X</a>
+
+                            <p class="reply">{{comment.text}}</p>
+                        </div>
+                    </div>
+                </section>
+            </article>
+        </div>
+    </div>
+</div>

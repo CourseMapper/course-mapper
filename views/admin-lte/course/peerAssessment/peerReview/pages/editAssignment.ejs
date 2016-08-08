@@ -1,0 +1,168 @@
+<!-- course edit form -->
+<div class="row" ng-controller="EditPeerReviewController">
+    <section class="content">
+        <div class="row row-centered">
+            <div class="col-xs-12 col-lg-9 col-md-9 col-sm-9 col col-centered">
+                <div class="box no-border no-round">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Edit Peer Review</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="tabbable">
+                            <ul class="nav nav-tabs nav-justified" id="tabContent" style="background-color: gainsboro;">
+                                <li class="active"><a data-toggle="tab" data-target="#editBasicTab">Basic</a></li>
+                                <li><a data-toggle="tab" data-target="#editAdvancedTab">Review Settings</a></li>
+                            </ul>
+                            <form class="form-horizontal horizontal-max" name="form" role="form" novalidate>
+                            <div class="tab-content">
+                                <div id="editBasicTab" class="tab-pane fade in active">
+                                    <br/>
+                                        <fieldset>
+                                            <div class="form-group" ng-class="{ 'has-error' : form.title.$invalid && !form.title.$pristine }">
+                                                <label for="inputTitle" class="col-sm-4 control-label">Title *</label>
+                                                <div class="col-sm-4">
+                                                    <input type="text" name="title" class="form-control original-form-control" id="inputTitle" ng-model="newAssignObj.title" placeholder="Title" required>
+                                                </div>
+                                                <p ng-show="form.title.$invalid && !form.title.$pristine" class="help-block">Title is required.</p>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="inputReviewDescription" class="col-sm-4 control-label">Review Description</label>
+                                                <div class="col-sm-4">
+                                                    <textarea rows="7" class="form-control original-form-control" id="inputReviewDescription" ng-model="newAssignObj.reviewDescription" placeholder="Description"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="inputReviewDocuments" class="col-sm-4 control-label">Review Documents</label>
+                                                <div class="col-sm-2">
+                                                    <div class="btn btn-sm btn-default"
+                                                         ngf-select accept="*"
+                                                         ng-model="reviewDocuments" ngf-multiple="true" ngf-keep="true" ngf-max-size='1000000'><i
+                                                                class="ionicons ion-document-text"></i> &nbsp; Upload Files
+                                                    </div>
+                                                </div>
+                                                <!--<div class="col-sm-4 progress label label-info" ng-show="progress > 0"><br>
+                                                    &nbsp; <div ng-bind="progress + '%'"></div>
+                                                </div>-->
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label"></label>
+                                                <div class="col-sm-8">
+                                                    <div ng-show="reviewDocuments" ng-repeat="f in reviewDocuments">
+                                                        <div class="label label-info">
+                                                            &nbsp; <span>{{f.name}}</span> &nbsp;
+                                                        </div>
+                                                        &nbsp;
+                                                        <a href="" ng-click="deleteSelectedFiles(f.name)"> <i class="ion-close-round"></i></a>
+                                                        <br>
+                                                    </div>
+                                                    <div ng-repeat="doc in newAssignObj.displayDocumentsList">
+                                                        <div class="label label-info">
+                                                            <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
+                                                        </div>
+                                                        &nbsp;
+                                                        <a href="" ng-click="deleteUploadedFiles(doc.link)"> <i class="ion-close-round"></i></a>
+                                                        <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group" ng-class="{ 'has-error' : form.marks.$invalid && !form.marks.$pristine }">
+                                                <label for="inputTotalMarks" class="col-sm-4 control-label">Total Marks *</label>
+                                                <div class="col-sm-2">
+                                                    <input type="number" name="marks" min="0" class="form-control original-form-control" id="inputTotalMarks" ng-model="newAssignObj.totalMarks" required>
+                                                </div>
+                                                <p ng-show="form.marks.$invalid && form.marks.$error.min" class="help-block">Marks should be a positive number</p>
+                                                <p ng-show="form.marks.$invalid && form.marks.$error.required" class="help-block">Marks are required</p>
+                                            </div>
+
+                                            <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.publicationDate.valid }">
+                                                <label for="inputPublicationDate" class="col-sm-4 control-label">Publication Date</label>
+                                                <div class="col-sm-5">
+                                                    <input type="datetime-local" name="publicationdate" class="form-control original-form-control" id="inputPublicationDate" ng-model="newAssignObj.publicationDate" ng-change="formValidation()">
+                                                </div>
+                                                <p ng-show="!dateValidationObject.publicationDate.valid" class="help-block">{{dateValidationObject.publicationDate.message}}</p>
+                                            </div>
+
+                                            <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.dueDate.valid }">
+                                                <label for="inputDueDate" class="col-sm-4 control-label">Due Date</label>
+                                                <div class="col-sm-5">
+                                                    <input type="datetime-local" name="dueDate" class="form-control original-form-control" id="inputDueDate" ng-model="newAssignObj.dueDate" ng-change="formValidation()">
+                                                </div>
+                                                <p ng-show="!dateValidationObject.dueDate.valid" class="help-block">{{dateValidationObject.dueDate.message}}</p>
+                                            </div>
+
+                                            <div class="form-group" ng-class="{ 'has-error' : !dateValidationObject.solutionDate.valid }">
+                                                <label for="inputSSPublicationDate" class="col-sm-4 control-label">Sample Solution Publication Date</label>
+                                                <div class="col-sm-5">
+                                                    <input type="datetime-local" name="solutionDate" class="form-control original-form-control" id="inputSSPublicationDate" ng-model="newAssignObj.ssPublicationDate" ng-change="formValidation()">
+                                                </div>
+                                                <p ng-show="!dateValidationObject.solutionDate.valid" class="help-block">{{dateValidationObject.solutionDate.message}}</p>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="inputSampleSolutions" class="col-sm-4 control-label">Sample Solutions</label>
+                                                <div class="col-sm-2">
+                                                    <div class="btn btn-sm btn-default"
+                                                         ngf-select accept="*"
+                                                         ng-model="sampleSolutions" ngf-multiple="true" ngf-keep="true" ngf-max-size='1000000'><i
+                                                                class="ionicons ion-document-text"></i> &nbsp; Upload Files
+                                                    </div>
+                                                </div>
+                                                <!--<div class="col-sm-2">
+                                                    <div class="btn btn-primary btn-file"><input type="file" class="form-control"> Browse</div>
+                                                </div>-->
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-4 control-label"></label>
+                                                <div class="col-sm-8">
+                                                    <div ng-show="sampleSolutions" ng-repeat="f in sampleSolutions">
+                                                        <div class="label label-info">
+                                                            &nbsp; <span>{{f.name}}</span> &nbsp;
+                                                        </div>
+                                                        &nbsp;
+                                                        <a href="" ng-click="deleteSelectedSolutions(f.name)"> <i class="ion-close-round"></i></a>
+                                                        <br>
+                                                    </div>
+                                                    <div ng-repeat="doc in newAssignObj.displaySolutionsList">
+                                                        <div class="label label-info">
+                                                            <a href="{{doc.link}}" target="_blank" style="color: white" download> &nbsp; <span>{{doc.name}}</span> &nbsp;</a>
+                                                        </div>
+                                                        &nbsp;
+                                                        <a href="" ng-click="deleteUploadedSolutions(doc.link)"> <i class="ion-close-round"></i></a>
+                                                        <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                </div>
+                                <div id="editAdvancedTab" class="tab-pane fade">
+                                    <br/>
+                                    <% include ../components/reviewAssignment %>
+                                    <% include ../components/loop %>
+                                    <% include ../components/blindness %>
+                                    <% include ../components/reviewPercentage %>
+                                    <% include ../components/rubrics/rubrics %>
+                                </div>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="modal-footer control-group">
+                        <br class="clear">
+                        <error-block ng-show="errors.length > 0" messages="errors"></error-block>
+                        <!-- Button -->
+                        <div class="controls pull-right">
+                            <button class="btn btn-primary" ng-disabled="!isFormValid()" ng-click="editPeerReview()"> Save
+                                <spinner show="isLoading"></spinner>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

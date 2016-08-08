@@ -1,7 +1,7 @@
 app.factory('widgetService', [
     '$http', '$rootScope', '$ocLazyLoad', '$timeout',
 
-    function (  $http, $rootScope, $ocLazyLoad, $timeout) {
+    function ($http, $rootScope, $ocLazyLoad, $timeout) {
         return {
             widgets: [],
             uninstalledwidgets: [],
@@ -11,9 +11,9 @@ app.factory('widgetService', [
                 var self = this;
 
                 if (!force && self.installedWidgets[location]) {
-                    self.initializeWidgets(self.installedWidgets[location], location, function( ){
+                    self.initializeWidgets(self.installedWidgets[location], location, function () {
                         if (success) {
-                            success(self.widgets[location]);
+                            success(self.installedWidgets[location]);
                         }
                     });
                 }
@@ -23,17 +23,16 @@ app.factory('widgetService', [
                         .success(function (data) {
                             self.installedWidgets[location] = [];
 
-                            if(data.result){
+                            if (data.result) {
                                 self.installedWidgets[location] = data.widgets;
 
-                                self.initializeWidgets(data.widgets, location, function( ){
+                                self.initializeWidgets(data.widgets, location, function () {
                                     if (success) {
                                         success(self.widgets[location]);
                                     }
                                 });
-                            } else
-                                if (error)
-                                    error(data.errors);
+                            } else if (error)
+                                error(data.errors);
                         })
                         .error(function (data) {
                             if (error)
@@ -70,14 +69,14 @@ app.factory('widgetService', [
                     var wdg = widgets[i];
 
                     // loop to load the js (if exist)
-                    if (wdg.widgetId.widgetJavascript) {
+                    if (wdg.widgetId != null && wdg.widgetId.widgetJavascript) {
                         this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0], location);
                     } else {
                         self.widgets[location].push(wdg);
                     }
                 }
 
-                if(finishedCB)
+                if (finishedCB)
                     finishedCB(self.widgets[location]);
             },
 
@@ -109,15 +108,15 @@ app.factory('widgetService', [
                     y = wdg.position.y;
                 }
 
-                grid.add_widget(el, x, y, wdg.width, wdg.height, false);
+                grid.addWidget(el, x, y, wdg.width, wdg.height, false);
             },
 
             initWidgetButton: function (location, id) {
                 $.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
-                //var h = $('#w' + id + ' .grid-stack-item-content');
-                //$('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
+                var h = $('#w' + id);
+                $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
             },
 
             install: function (location, application, name, extraParams, successCb, errorCb) {
@@ -134,9 +133,8 @@ app.factory('widgetService', [
                         if (data.result) {
                             if (successCb)
                                 successCb(data.installed);
-                        } else
-                            if (errorCb)
-                                errorCb(data.errors);
+                        } else if (errorCb)
+                            errorCb(data.errors);
                     })
                     .error(function (data) {
                         if (errorCb)
@@ -150,14 +148,13 @@ app.factory('widgetService', [
                 $http.put('/api/widgets/uninstall/' + installId, extraParams)
                     .success(function (data) {
                         if (data.result) {
-                             self.uninstalledwidgets.push(installId);
+                            self.uninstalledwidgets.push(installId);
 
                             if (successCb)
                                 successCb(data.uninstalled);
                         }
-                        else
-                            if (errorCb)
-                                errorCb(data.errors);
+                        else if (errorCb)
+                            errorCb(data.errors);
                     })
                     .error(function (data) {
                         if (errorCb)
@@ -180,46 +177,79 @@ app.factory('widgetService', [
             },
 
             initiateDraggableGrid: function (locs, enableDragging) {
-                var self = this;
-
                 var loc = '#' + locs + '-widgets';
 
                 var options = {
-                    cell_height: 340,
-                    vertical_margin: 10,
+                    cellHeight: 340,
+                    verticalMargin: 10,
                     resizable: false
                 };
 
-                if(!enableDragging){
-                    options.draggable = {'disabled': true};
+                if (!enableDragging) {
+                    options.disableDrag = true;
                 }
-
-                var curNode = {x: 0, y: 0};
 
                 var $gs = $(loc);
                 $gs.gridstack(options);
+            },
 
-                if(enableDragging){
-                    $gs.on('onStartMove', function (e, node) {
-                        curNode.x = node.x;
-                        curNode.y = node.y;
-                    });
+            onchangelistener: function (evt, node) {
+                var self = this;
+                for (var i in node) {
+                    var nd = node[i];
+                    var c = $(nd.el);
+                    if (c) {
+                        var wId = c.attr('id').substr(1);
+                        //if (nd._updating)
+                        {
+                            var x = nd.x;
+                            var y = nd.y;
 
-                    $gs.on('onMove', function (e, node) {
-
-                    });
-
-                    $gs.on('onFinishDrop', function (e, node) {
-                        var o = $(node.el);
-
-                        if (options.allowed_grids && options.allowed_grids.indexOf(node.x) < 0) {
-                            o.attr('data-gs-x', curNode.x).attr('data-gs-y', curNode.y);
+                            self.setPosition(wId, x, y);
+                            self.setLocalPosition(wId, x, y);
                         }
-
-                        var wId = o.attr('id').substr(1);
-                        self.setPosition(wId, node.x, node.y);
-                    });
+                    }
                 }
+            },
+
+            setLocalPosition: function (wId, x, y) {
+                for (var i in this.widgets) {
+                    var wdgs = this.widgets[i];
+                    for (var j in wdgs) {
+                        var wdg = wdgs[j];
+                        if (wdg && wdg._id == wId) {
+                            this.widgets[i][j].position.x = x;
+                            this.widgets[i][j].position.y = y;
+                            wdg.position.x = x;
+                            wdg.position.y = y;
+                        }
+                    }
+                }
+            },
+
+            initiateDragStop: function (locs) {
+                var self = this;
+
+                var loc = '#' + locs + '-widgets';
+                var $gs = $(loc);
+                //$gs.off('change', self.onchangelistener);
+                $gs.on('change', function (evt, node) {
+                    for (var i in node) {
+                        var nd = node[i];
+                        var c = $(nd.el);
+                        if (c) {
+                            var wId = c.attr('id').substr(1);
+                            //if (nd._updating)
+                            {
+                                var x = nd.x;
+                                var y = nd.y;
+
+                                self.setPosition(wId, x, y);
+                                self.setLocalPosition(wId, x, y);
+                            }
+                        }
+                    }
+                });
             }
         }
     }

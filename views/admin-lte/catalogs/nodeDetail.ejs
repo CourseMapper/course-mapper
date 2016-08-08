@@ -31,7 +31,7 @@
         </li>
         <% } %>
         <li ng-show="treeNode">
-            <a href="/course/{{course.slug}}/#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a>
+            <a href="/treeNode/{{nodeId}}/#/cid/{{course._id}}/nid/{{nodeId}}?tab={{defaultPath}}">{{treeNode.name}}</a>
         </li>
         <li class="active">{{tabDisplayName}}</li>
     </ol>
@@ -47,8 +47,11 @@
     <div class="box no-border" id="courseTabs">
         <div class="box-body no-border">
 
+            <div ng-show="error">
+                <error-block messages="error.errors"></error-block>
+            </div>
             <!-- tabs left -->
-            <div class="tabbable tabs-left">
+            <div class="tabbable tabs-left" ng-class="{'hideOnError':error}">
                 <% include nodeDetailLeftTab %>
                 <!-- end tab menu -->
 
@@ -86,5 +89,7 @@
         //Set the min-height of the content and sidebar based on the
         //the height of the document.
         $(".content-wrapper #courseTabs").css('min-height', window_height - neg - neg2 - neg2);
+
+        $('[data-tooltip="tooltip"]').tooltip();
     });
 </script>

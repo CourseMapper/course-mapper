@@ -1,0 +1,59 @@
+.pa .horizontal-max {
+    max-width: inherit;
+}
+
+.pa .original-form-control {
+    border: 1px solid #ccc;
+    border-radius: 4px !important;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.pa .btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.pa .btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.pa .checkbox-line-adjust {
+    margin-top: 10px !important;
+}
+
+.pa form .progress {
+    line-height: 15px;
+}
+.pa .progress {
+    display: inline-block;
+    width: 100px;
+    border: 3px groove #CCC;
+}
+.pa .progress div {
+    font-size: smaller;
+    background: orange;
+    width: 0;
+}
+
+.pa .tooltip-inner {
+    background-color: #3C8DBC;
+
+    /*color: #fff;*/
+}
+
+.pa .pa-tooltip .ionicons {
+    color: #3C8DBC;
+    padding-top: 5px;
+    font-size: 20px
+}

@@ -46,6 +46,9 @@ router.put('/widgets/install', helper.ensureAuthenticated,
         if (req.body.courseId)
             req.body.courseId = mongoose.Types.ObjectId(req.body.courseId);
 
+        if (req.body.nodeId)
+            req.body.nodeId = mongoose.Types.ObjectId(req.body.nodeId);
+
         if (req.body.categoryId)
             req.body.categoryId = mongoose.Types.ObjectId(req.body.categoryId);
 
@@ -206,6 +209,8 @@ router.get('/widgets/:location/:id', function (req, res, next) {
         params.userId = req.params.id;
     } else if (params.location == 'course-preview' || params.location == 'course-analytics') {
         params.courseId = req.params.id;
+    } else if (params.location == 'node-analytics') {
+        params.nodeId = req.params.id;
     } else {
         params.id = req.params.id;
     }

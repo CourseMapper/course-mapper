@@ -46,10 +46,12 @@ CourseListLatestActivity.prototype.run = async ( function(){
 } );
 
 CourseListLatestActivity.prototype.render = function(){
-    console.log (this.content.dateUpdated);
     var momentDate = moment(this.content.dateUpdated).format('MMMM Do YYYY');
-    return '<span class="label label-info"> Latest content: ' + this.content.name + ' - ' + momentDate + '</span> <br>' +
-            '<span class="label label-info"> Last enrolled user: ' + this.userEnrolled.user.displayName + '</span> <br>';
+    if (momentDate == "Invalid date") {
+        momentDate = '';
+    }
+    return '<span class="label label-info"> Latest content: <b>' + this.content.name + '</b> - ' + momentDate + '</span> <br>' +
+            '<span class="label label-info"> Last enrolled participant: ' + this.userEnrolled.user.displayName + '</span> <br>';
 };
 
 module.exports = CourseListLatestActivity;
