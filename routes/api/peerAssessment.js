@@ -26,7 +26,7 @@ var _ = require('lodash');
  * POST
  * create rubric
  */
-router.post('/peerassessment/:courseId/rubrics',
+router.post('/peerassessment/:courseId/rubrics', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -57,7 +57,7 @@ router.post('/peerassessment/:courseId/rubrics',
  * POST
  * update a rubric
  */
-router.post('/peerassessment/:courseId/rubrics/:id', function(req, res) {
+router.post('/peerassessment/:courseId/rubrics/:id',helper.l2pAuth, helper.ensureAuthenticated, function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -82,7 +82,7 @@ router.post('/peerassessment/:courseId/rubrics/:id', function(req, res) {
  * GET
  * fetch all rubrics
  */
-router.get('/peerassessment/:courseId/rubrics', function(req, res) {
+router.get('/peerassessment/:courseId/rubrics', helper.l2pAuth, helper.ensureAuthenticated, function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -104,7 +104,7 @@ router.get('/peerassessment/:courseId/rubrics', function(req, res) {
  * DELETE
  * delete a rubric
  */
-router.delete('/peerassessment/:courseId/rubrics/:id', function(req, res) {
+router.delete('/peerassessment/:courseId/rubrics/:id', helper.l2pAuth, helper.ensureAuthenticated, function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -133,7 +133,7 @@ router.delete('/peerassessment/:courseId/rubrics/:id', function(req, res) {
  * GET
  * fetches course students and peerreview solutions
  */
-router.get('/peerassessment/:courseId/peerreviews/:pRId/reviews/new',
+router.get('/peerassessment/:courseId/peerreviews/:pRId/reviews/new', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -163,7 +163,7 @@ router.get('/peerassessment/:courseId/peerreviews/:pRId/reviews/new',
  * POST
  * assign review
  */
-router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/assign',
+router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/assign', helper.l2pAuth, helper.ensureAuthenticated,
     function(req, res) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -196,7 +196,7 @@ router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/assign',
  * POST
  * add review
  */
-router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/add',
+router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/add', helper.l2pAuth, helper.ensureAuthenticated,
     multipartyMiddleware,
     function(req, res) {
         if (!req.user) {
@@ -230,7 +230,7 @@ router.post('/peerassessment/:courseId/peerreviews/:pRId/reviews/add',
  * PUT
  * update review
  */
-router.put('/peerassessment/:courseId/reviews/:id',
+router.put('/peerassessment/:courseId/reviews/:id', helper.l2pAuth, helper.ensureAuthenticated,
     multipartyMiddleware,
     function(req, res) {
         console.log('PUT INVOKED')
@@ -262,7 +262,7 @@ router.put('/peerassessment/:courseId/reviews/:id',
  * DELETE
  * delete review
  */
-router.delete('/peerassessment/:courseId/peerreviews/:pRId/reviews/:id',
+router.delete('/peerassessment/:courseId/peerreviews/:pRId/reviews/:id', helper.l2pAuth, helper.ensureAuthenticated,
     function(req, res) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -290,7 +290,7 @@ router.delete('/peerassessment/:courseId/peerreviews/:pRId/reviews/:id',
  * GET
  * fetch all reviews
  */
-router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
+router.get('/peerassessment/:courseId/reviews', helper.l2pAuth, helper.ensureAuthenticated, async(function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -381,7 +381,7 @@ router.get('/peerassessment/:courseId/reviews', async(function(req, res) {
  * GET
  * fetch review
  */
-router.get('/peerassessment/:courseId/reviews/:id', async(function(req, res) {
+router.get('/peerassessment/:courseId/reviews/:id', helper.l2pAuth, helper.ensureAuthenticated, async(function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -410,7 +410,7 @@ router.get('/peerassessment/:courseId/reviews/:id', async(function(req, res) {
  * POST
  * create solution
  */
-router.post('/peerassessment/:courseId/peerreviews/:pRId/solutions',
+router.post('/peerassessment/:courseId/peerreviews/:pRId/solutions', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -441,7 +441,7 @@ router.post('/peerassessment/:courseId/peerreviews/:pRId/solutions',
  * PUT
  * edit solution
  */
-router.put('/peerassessment/:courseId/peerreviews/:pRId/solutions/:id',
+router.put('/peerassessment/:courseId/peerreviews/:pRId/solutions/:id', helper.l2pAuth, helper.ensureAuthenticated,
     multipartyMiddleware,
     function (req, res, next) {
         if (!req.user) {
@@ -475,7 +475,7 @@ router.put('/peerassessment/:courseId/peerreviews/:pRId/solutions/:id',
  * GET
  * fetch all solutions
  */
-router.get('/peerassessment/:courseId/solutions', function(req, res) {
+router.get('/peerassessment/:courseId/solutions', helper.l2pAuth, helper.ensureAuthenticated, function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -497,7 +497,7 @@ router.get('/peerassessment/:courseId/solutions', function(req, res) {
  * GET
  * get solution
  */
-router.get('/peerassessment/:courseId/solutions/:id',
+router.get('/peerassessment/:courseId/solutions/:id', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -531,7 +531,7 @@ router.get('/peerassessment/:courseId/solutions/:id',
  * DELETE
  * delete a solution
  */
-router.delete('/peerassessment/:courseId/solutions/:id', function(req, res) {
+router.delete('/peerassessment/:courseId/solutions/:id', helper.l2pAuth, helper.ensureAuthenticated, function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -558,7 +558,7 @@ router.delete('/peerassessment/:courseId/solutions/:id', function(req, res) {
  * POST
  * create peer review
  */
-router.post('/peerassessment/:courseId/peerreviews',
+router.post('/peerassessment/:courseId/peerreviews', helper.l2pAuth, helper.ensureAuthenticated,
     multipartyMiddleware,
     function (req, res, next) {
         if (!req.user) {
@@ -589,7 +589,7 @@ router.post('/peerassessment/:courseId/peerreviews',
  * PUT
  * edit peer review
  */
-router.put('/peerassessment/:courseId/peerreviews/:id',
+router.put('/peerassessment/:courseId/peerreviews/:id', helper.l2pAuth, helper.ensureAuthenticated,
     multipartyMiddleware,
     function (req, res, next) {
         if (!req.user) {
@@ -623,7 +623,7 @@ router.put('/peerassessment/:courseId/peerreviews/:id',
  * GET
  * get peer review
  */
-router.get('/peerassessment/:courseId/peerreviews/:id',
+router.get('/peerassessment/:courseId/peerreviews/:id', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res, next) {
         if (!req.user) {
             return res.status(401).send('Unauthorized');
@@ -667,7 +667,7 @@ router.get('/peerassessment/:courseId/peerreviews/:id',
  * GET
  * fetch all peer reviews
  */
-router.get('/peerassessment/:courseId/peerreviews', async(function(req, res) {
+router.get('/peerassessment/:courseId/peerreviews', helper.l2pAuth, helper.ensureAuthenticated, async(function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
@@ -693,7 +693,7 @@ router.get('/peerassessment/:courseId/peerreviews', async(function(req, res) {
  * DELETE
  * delete a peer review
  */
-router.delete('/peerassessment/:courseId/peerreviews/:id', function(req, res) {
+router.delete('/peerassessment/:courseId/peerreviews/:id', helper.l2pAuth, helper.ensureAuthenticated, function(req, res) {
     if (!req.user) {
         return res.status(401).send('Unauthorized');
     }
