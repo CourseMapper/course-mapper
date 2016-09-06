@@ -332,6 +332,8 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
     $http.get('/api/account').success(function(data) {
         $scope.user = data;
         $rootScope.user = data;
+ 
+        $rootScope.$broadcast('onAfterInitUser', $rootScope.user);
     });
 });;admin.config(['$routeProvider',
     function ($routeProvider) {
@@ -506,6 +508,7 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
     $scope.routeParams = $routeParams;
     $scope.users = null;
     $scope.formData = {};
+    $scope.currentUser = null;
 
     $scope.init = function () {
         $http.get('/api/accounts/all').success(function (res) {
@@ -514,6 +517,10 @@ admin.controller('categoryDetailController', function ($scope, $http, $routePara
             }
         });
     };
+
+    $scope.$on('onAfterInitUser', function (event, user) {
+        $scope.currentUser = user.user;
+    });
 
 
     /*$scope.activate = function (tabName) {

@@ -32,8 +32,35 @@ app.config(function (toastrConfig) {
         when('/cid/:courseId/nid/:nodeId', {
             templateUrl: function (params) {
                 var tUrl = '/treeNode/' + params.courseId + '/nodeDetail/' + params.nodeId;
-                if (params.iframe === 'true' || params.iframe === 'false')
-                    tUrl += '?iframe=' + params.iframe;
+                var hasQueryStringStart = false;
+                if (params.iframe === 'true' || params.iframe === 'false'){
+                  if(!hasQueryStringStart)
+                    tUrl += '?';
+                  else {
+                    tUrl += '&';
+                  }
+                  tUrl += 'iframe=' + params.iframe;
+                  hasQueryStringStart = true;
+                }
+                if(typeof(params.accessToken) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'accessToken=' + params.accessToken;
+                    hasQueryStringStart = true;
+                }
+                /*if(typeof(params.l2pCourse) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pCourse=' + params.l2pCourse;
+                    hasQueryStringStart = true;
+                }*/
+                console.log(tUrl);
                 return tUrl;
             },
             controller: 'NodeRootController',
@@ -43,12 +70,48 @@ app.config(function (toastrConfig) {
         when('/cid/:courseId', {
             templateUrl: function (params) {
                 var tUrl = '/course/courseDetail/' + params.courseId;
-                if (params.iframe === 'true' || params.iframe === 'false')
-                    tUrl += '?iframe=' + params.iframe;
+                var hasQueryStringStart = false;
+                if (params.iframe === 'true' || params.iframe === 'false'){
+                  if(!hasQueryStringStart)
+                    tUrl += '?';
+                  else {
+                    tUrl += '&';
+                  }
+                  tUrl += 'iframe=' + params.iframe;
+                  hasQueryStringStart = true;
+                }
+                if(typeof(params.accessToken) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'accessToken=' + params.accessToken;
+                    hasQueryStringStart = true;
+                }
+                /*if(typeof(params.l2pCourse) != 'undefined'){
+                    if(!hasQueryStringStart)
+                      tUrl += '?';
+                    else {
+                      tUrl += '&';
+                    }
+                    tUrl += 'l2pCourse=' + params.l2pCourse;
+                    hasQueryStringStart = true;
+                }*/
+                console.log(tUrl);
                 return tUrl;
             },
             controller: 'CourseRootController',
             reloadOnSearch: false
+        }).
+
+        when('/createL2PCourse/:id/:name', {
+          templateUrl: function (params) {
+              var tUrl = '/createl2pCourse/' + params.id + "/" + params.name + "?hideCourse=true";
+              return tUrl;
+          },
+          controller: 'CourseRootController',
+          reloadOnSearch: false
         }).
 
         otherwise({
@@ -56,7 +119,20 @@ app.config(function (toastrConfig) {
         });
 
     }]);
-;app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr, $timeout) {
+;app.controller('VideoContentPreviewController', function($scope) {
+    $scope.API = null;
+
+    $scope.onPlayerReady = function (API) {
+        $scope.API = API;
+    };
+
+    $scope.$watch('isPlaying', function(newVal, oldVal){
+        if(!$scope.isPlaying && $scope.API){
+            $scope.API.pause();
+        }
+    });
+
+});;app.controller('actionBarCoursePreviewController', function ($scope, courseService, authService, toastr, $timeout) {
 
     $scope.loading = false;
 
@@ -114,80 +190,114 @@ app.config(function (toastrConfig) {
                                              $location, $routeParams, $timeout,
                                              courseService, authService, toastr, Page) {
 
-    $scope.courseId = $routeParams.courseId;
-    $scope.course = null;
-    $scope.videoSources = false;
+  $scope.courseId = $routeParams.courseId;
+  $scope.course = null;
+  $scope.videoSources = false;
+  $scope.isPlaying = false;
+  $scope.isDeleted = false;
+  $scope.isFavorite = null;
+
+  var checkFavorite = function () {
+    var course = $scope.course;
+    if (!course) return;
+
+    $http.get('/api/favorites/' + course._id)
+      .then(function (result) {
+        $scope.isFavorite = result.data.isFavorite;
+      })
+  };
+
+  $scope.tabOpened = function () {
+    if (courseService.course) {
+      $scope.course = courseService.course;
+      $scope.initTab($scope.course);
+    } else {
+      $scope.$on('onAfterInitCourse', function (event, course, refreshPicture) {
+        $scope.initTab(course, refreshPicture);
+      });
+    }
+    checkFavorite();
+    $rootScope.$broadcast('onCoursePreviewTabOpened', $scope.currentTab);
+  };
+
+  $scope.initTab = function (course, refreshPicture) {
+    $scope.course = course;
+
+    if (refreshPicture) {
+      if ($scope.course.picture) {
+        $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
+      }
+    }
+
+    if ($scope.course.video) {
+      $scope.videoSources = [{
+        src: $scope.course.video,
+        type: 'video/mp4'
+      }];
+    }
+
+    Page.setTitleWithPrefix($scope.course.name + ' > Preview');
+  };
+
+  $scope.playVideo = function () {
+    $scope.isPlaying = true;
+  };
+
+  $scope.stopVideo = function () {
     $scope.isPlaying = false;
-    $scope.isDeleted = false;
+  };
 
-    $scope.tabOpened = function () {
-        if (courseService.course) {
-            $scope.course = courseService.course;
-            $scope.initTab($scope.course);
+  $scope.enroll = function () {
+    $scope.loading = true;
+    if (!authService.user) {
+      toastr.warning("Please Login to Enroll.", {preventDuplicates: false});
+    }
+    else
+      courseService.enroll(authService.user,
+
+        function () {
+          $scope.loading = false;
+          toastr.success('You are now enrolled.');
+          $timeout(function () {
+            window.location.reload();
+          });
+        },
+
+        function (res) {
+          $scope.loading = false;
+          toastr.error(JSON.stringify(res.errors));
+        }
+      );
+  };
+
+  $scope.toggleFavorite = function () {
+    if ($scope.isFavorite === null) return;
+
+    var method = $scope.isFavorite === true ? 'DELETE' : 'POST';
+
+    $http({
+      method: method,
+      url: '/api/favorites/' + $scope.course._id
+    }).then(
+      function (result) {
+        $scope.isFavorite = !$scope.isFavorite;
+        if ($scope.isFavorite) {
+          toastr.success('Added course to favorites.');
         } else {
-            $scope.$on('onAfterInitCourse', function (event, course, refreshPicture) {
-                $scope.initTab(course, refreshPicture);
-            });
+          toastr.success('Removed course from favorites.');
         }
+        $scope.$emit('favorites.update');
+      },
+      function (err) {
+        var op = $scope.isFavorite ? 'remove from' : 'add to';
+        toastr.error('Failed to ' + op + ' favorites.');
+      })
+  };
 
-        $rootScope.$broadcast('onCoursePreviewTabOpened', $scope.currentTab);
-    };
-
-    $scope.initTab = function (course, refreshPicture) {
-        $scope.course = course;
-
-        if (refreshPicture) {
-            if ($scope.course.picture) {
-                $scope.course.picture = $scope.course.picture + '?' + new Date().getTime();
-            }
-        }
-
-        if ($scope.course.video) {
-            $scope.videoSources = [{
-                src: $scope.course.video,
-                type: 'video/mp4'
-            }];
-        }
-
-        Page.setTitleWithPrefix($scope.course.name + ' > Preview');
-    };
-
-    $scope.playVideo = function () {
-        $scope.isPlaying = true;
-    };
-
-    $scope.stopVideo = function () {
-        $scope.isPlaying = false;
-    };
-
-    $scope.enroll = function () {
-        $scope.loading = true;
-        if (!authService.user) {
-            toastr.warning("Please Login to Enroll.", {preventDuplicates: false});
-        }
-        else
-            courseService.enroll(authService.user,
-
-                function () {
-                    $scope.loading = false;
-                    toastr.success('You are now enrolled.');
-                    $timeout(function () {
-                        window.location.reload();
-                    });
-                },
-
-                function (res) {
-                    $scope.loading = false;
-                    toastr.error(JSON.stringify(res.errors));
-                }
-            );
-
-    };
-
-    /**
-     * init tabs
-     */
-    $scope.tabOpened();
+  /**
+   * init tabs
+   */
+  $scope.tabOpened();
 });
 ;app.controller('CourseConfigController', function ($scope, $http, toastr, $window, $timeout) {
     $scope.courseEdit = null;
@@ -335,283 +445,136 @@ app.config(function (toastrConfig) {
     };
 });
 ;app.controller('CourseEditController', function ($scope, $filter, $http, $location, Upload, toastr) {
-    $scope.createdDate = new Date();
-    $scope.courseEdit = null;
+  $scope.createdDate = new Date();
+  $scope.courseEdit = null;
+  $scope.tagsRaw = [];
+  $scope.files = [];
+  $scope.filespicture = false;
+  $scope.filesvideo = false;
+
+  $scope.isLoading = false;
+  $scope.errors = [];
+
+  $scope.progressPercentage = 0;
+
+  $scope.$on('onAfterInitCourse', function (event, course) {
+    $scope.init(course);
+  });
+
+  $scope.init = function (course) {
+    if (!course)
+      return;
     $scope.tagsRaw = [];
-    $scope.files = [];
-    $scope.filespicture = false;
-    $scope.filesvideo = false;
+    $scope.courseEdit = cloneSimpleObject(course);
 
-    $scope.isLoading = false;
-    $scope.errors = [];
-
-    $scope.progressPercentage = 0;
-
-    $scope.$on('onAfterInitCourse', function (event, course) {
-        $scope.init(course);
-    });
-
-    $scope.init = function (course) {
-        if (!course)
-            return;
-
-        $scope.tagsRaw = [];
-
-        $scope.courseEdit = cloneSimpleObject(course);
-
-        if ($scope.courseEdit)
-            if ($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0) {
-                for (var i in $scope.courseEdit.courseTags) {
-                    var t = $scope.courseEdit.courseTags[i];
-                    $scope.tagsRaw.push({"text": t.name});
-                }
-            }
-    };
-
-    $scope.saveCourse = function () {
-        if ($scope.tagsRaw) {
-            $scope.courseEdit.tags = JSON.stringify($scope.tagsRaw);
+    if ($scope.courseEdit)
+      if ($scope.courseEdit.courseTags && $scope.courseEdit.courseTags.length > 0) {
+        for (var i in $scope.courseEdit.courseTags) {
+          var t = $scope.courseEdit.courseTags[i];
+          $scope.tagsRaw.push({"text": t.name});
         }
+      }
+  };
 
-        var uploadParams = {
-            url: '/api/course/' + $scope.courseEdit._id,
-            fields: {
-                name: $scope.courseEdit.name,
-                description: $scope.courseEdit.description,
-                smallDescription: $scope.courseEdit.smallDescription,
-                tags: $scope.courseEdit.tags
-            }
-        };
+  $scope.saveCourse = function () {
+    if ($scope.tagsRaw) {
+      $scope.courseEdit.tags = JSON.stringify($scope.tagsRaw);
+    }
 
-        uploadParams.file = [];
-        // we only take one picture file
-        if ($scope.filespicture) {
-            uploadParams.file.push($scope.filespicture);
-        }
-        // we only take one vid file
-        if ($scope.filesvideo) {
-            uploadParams.file.push($scope.filesvideo);
-        }
-
-        $scope.isLoading = true;
-        $scope.upload = Upload.upload(
-            uploadParams
-            )
-            .progress(function (evt) {
-                if (!evt.config.file)
-                    return;
-
-                $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-            })
-
-            .success(function (data) {
-                $scope.$emit('onAfterEditCourse', data.course);
-
-                $scope.filespicture = false;
-                $scope.filesvideo = false;
-
-                $scope.isLoading = false;
-                $('#editView').modal('hide');
-
-                $scope.progressPercentage = 0;
-
-                var slg = data.course.slug;
-                window.location.href = '/course/' + slg + '/#/cid/' + data.course._id + '?tab=preview';
-            })
-
-            .error(function (data) {
-                $scope.isLoading = false;
-                $scope.errors = data.errors;
-
-                $scope.progressPercentage = 0;
-            });
+    var uploadParams = {
+      url: '/api/course/' + $scope.courseEdit._id,
+      fields: {
+        name: $scope.courseEdit.name,
+        description: $scope.courseEdit.description,
+        smallDescription: $scope.courseEdit.smallDescription,
+        tags: $scope.courseEdit.tags
+      }
     };
 
-    $scope.deleteVideo = function () {
-        $http.post('/api/course/' + $scope.courseEdit._id, {
-                video: "delete",
-                name: $scope.courseEdit.name
-            })
-            .success(function (data) {
-                $scope.courseEdit.video = false;
-                $scope.$emit('onAfterEditCourse', data.course);
-                toastr.success('Video deleted');
-            })
-            .error(function () {
-                toastr.error('Video delete failed');
-            });
-    };
+    uploadParams.file = [];
+    // we only take one picture file
+    if ($scope.filespicture) {
+      uploadParams.file.push($scope.filespicture);
+    }
+    // we only take one vid file
+    if ($scope.filesvideo) {
+      uploadParams.file.push($scope.filesvideo);
+    }
 
-    $scope.deletePicture = function () {
-        $http.post('/api/course/' + $scope.courseEdit._id, {
-                picture: "delete",
-                name: $scope.courseEdit.name
-            })
-            .success(function (data) {
-                $scope.courseEdit.video = false;
-                $scope.$emit('onAfterEditCourse', data.course);
-                toastr.success('Picture deleted');
-            })
-            .error(function () {
-                toastr.error('Picture delete failed');
-            });
-    };
+    $scope.isLoading = true;
+    $scope.upload = Upload.upload(
+      uploadParams
+    )
+      .progress(function (evt) {
+        if (!evt.config.file)
+          return;
 
-    $scope.cancel = function () {
-        $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
+        $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+      })
 
-        if ($scope.upload) {
-            $scope.upload.abort();
-        }
-    };
-});
-;app.controller('CourseListController', function ($scope, $rootScope, $http,
-                                                 $routeParams, $location, $sce,
-                                                 Page, courseListService, authService) {
-    $scope.slug = $routeParams.slug;
+      .success(function (data) {
+        $scope.$emit('onAfterEditCourse', data.course);
 
-    // chosen filter
-    $scope.filterTags = [];
-    $scope.filterTagsText = [];
-    // this will be displayed on the available filter
-    $scope.availableTags = [];
-    // the original list
-    $scope.courseTags = [];
-    $scope.category = null;
-    $scope.courses = null;
-    $scope.coursesLength = 0;
+        $scope.filespicture = false;
+        $scope.filesvideo = false;
 
-    $scope.orderBy = -1;
-    $scope.sortBy = 'dateAdded';
-    $scope.currentPage = 1;
-    $scope.pageReset = false;
+        $scope.isLoading = false;
+        $('#editView').modal('hide');
 
-    $scope.orderingOptions = [
-        {id: 'dateAdded.-1', name: 'Newest First'},
-        {id: 'dateAdded.1', name: 'Oldest First'},
-        {id: 'totalVotes.-1', name: 'Most Popular'}
-    ];
+        $scope.progressPercentage = 0;
 
-    $scope.widgets = [];
-
-    $scope.isLoggedIn = function () {
-        return (authService.user ? true : false);
-    };
-
-    $scope.getCoursesFromThisCategory = function (force) {
-        courseListService.init($scope.category._id, $scope.filterTags,
-            function (courses) {
-                $scope.courses = courses;
-                $scope.coursesLength = courses.length;
-            },
-            function (errors) {
-                console.log(JSON.stringify(errors));
-            }
-            , force
-        );
-    };
-
-    $scope.newRowsFetched = function (newRows, allRows) {
-        if (newRows) {
-            $scope.courses = allRows;
-            $scope.coursesLength = $scope.courses.length;
-        }
-    };
-
-    $scope.initTagFromSearch = function () {
-        var tagSearch = $location.search();
-        if (tagSearch && tagSearch.tags) {
-            var tags = tagSearch.tags.split(',');
-            if (tags)
-                for (var i in tags) {
-                    var tag = tags[i];
-                    if ($scope.availableTags)
-                        for (var j in $scope.availableTags) {
-                            var t = $scope.availableTags[j];
-                            if (t.slug == tag)
-                                $scope.applyFilter(t, true);
-                        }
-                }
-        }
-
-        $scope.getCoursesFromThisCategory();
-
-        $scope.$watch(function () {
-            return $location.search()
-        }, function (newVal, oldVal) {
-            if (newVal && newVal !== oldVal)
-                $scope.getCoursesFromThisCategory();
-        }, true);
-    };
-
-    $scope.getCourseAnalytics = function (cid) {
-        $http.get('/api/server-widgets/course-listing/?cid=' + cid).success(
-            function (res) {
-                if (res.result) {
-                    $scope.widgets[cid] = $sce.trustAsHtml(res.widgets);
-                }
-            }
-        ).error(function () {
-
-        });
-    };
-
-    $scope.applyFilter = function (tag, dontgo) {
-        if (arrayObjectIndexOf($scope.filterTags, tag, 'name') < 0) {
-            $scope.filterTags.push(tag);
-            $scope.filterTagsText.push(tag.slug);
-            removeObjectFromArray($scope.availableTags, tag, 'name');
-            if (!dontgo)
-                $scope.go();
-        }
-    };
-
-    $scope.go = function () {
-        if ($scope.filterTags.length > 0) {
-            $location.search({tags: $scope.filterTagsText.join(',')});
-        }
+        var slg = data.course.slug;
+        if (data.course.name != $scope.$parent.course.name)
+          window.location.href = '/course/' + slg + '/#/cid/' + data.course._id + '?tab=preview';
         else
-            $location.search({});
+          window.location.reload();
+      })
 
-        $scope.getCoursesFromThisCategory(true);
-    };
+      .error(function (data) {
+        $scope.isLoading = false;
+        $scope.errors = data.errors;
 
-    $scope.removeFilter = function (tag) {
-        if (arrayObjectIndexOf($scope.availableTags, tag, 'name') < 0) {
-            $scope.availableTags.push(tag);
-            removeObjectFromArray($scope.filterTags, tag, 'name');
+        $scope.progressPercentage = 0;
+      });
+  };
 
-            for (var i = $scope.filterTagsText.length - 1; i >= 0; i--) {
-                if ($scope.filterTagsText[i] === tag.slug) {
-                    $scope.filterTagsText.splice(i, 1);
-                    break;
-                }
-            }
-            $scope.go();
-        }
-    };
+  $scope.deleteVideo = function () {
+    $http.post('/api/course/' + $scope.courseEdit._id, {
+      video: "delete",
+      name: $scope.courseEdit.name
+    })
+      .success(function (data) {
+        $scope.courseEdit.video = false;
+        $scope.$emit('onAfterEditCourse', data.course);
+        toastr.success('Video deleted');
+      })
+      .error(function () {
+        toastr.error('Video delete failed');
+      });
+  };
 
-    /**
-     * init category data by slug
-     */
-    $http.get('/api/category/' + $scope.slug).success(function (data) {
-        $scope.category = data.category;
+  $scope.deletePicture = function () {
+    $http.post('/api/course/' + $scope.courseEdit._id, {
+      picture: "delete",
+      name: $scope.courseEdit.name
+    })
+      .success(function (data) {
+        $scope.courseEdit.video = false;
+        $scope.$emit('onAfterEditCourse', data.course);
+        toastr.success('Picture deleted');
+      })
+      .error(function () {
+        toastr.error('Picture delete failed');
+      });
+  };
 
-        Page.setTitleWithPrefix($scope.category.name);
+  $scope.cancel = function () {
+    $scope.courseEdit = cloneSimpleObject($scope.$parent.course);
 
-        // once we get the complete category structure, we operate by id
-        $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function (data) {
-            $scope.courseTags = data.courseTags;
-            $scope.availableTags = data.courseTags;
-
-            $scope.initTagFromSearch();
-        });
-    });
-
-    $scope.paginationReset = function () {
-        return $scope.pageReset;
-    };
-
+    if ($scope.upload) {
+      $scope.upload.abort();
+    }
+  };
 });
 ;
 app.controller('NewCourseController', function($scope, $filter, $http, $location) {
@@ -701,14 +664,14 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $timeout(function () {
             if (!authService.isLoggedIn && $scope.currentTab != $scope.defaultPath) {
                 authService.showLoginForm();
+            } else {
+                $scope.include = '/course/tab/' + $scope.currentTab;
+                $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
             }
         }, 120);
 
         if ($scope.course)
             Page.setTitleWithPrefix($scope.course.name + ' > ' + q.tab);
-
-        $scope.include = '/course/tab/' + $scope.currentTab;
-        $scope.includeActionBar = '/course/actionBar/' + $scope.currentTab;
 
         $scope.getTabDisplayName($scope.currentTab);
 
@@ -821,840 +784,1218 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
     $scope.newCourseNotification();
 });
-;app.controller('MapController', function ($scope, $http, $rootScope, authService,
-                                          $timeout, $sce, $location, socket,
-                                          toastr, mapService, courseService,
-                                          collapseService) {
+;app.controller('CourseListController', function ($scope, $rootScope, $http,
+                                                 $routeParams, $location, $sce,
+                                                 Page, courseListService, authService) {
+    $scope.slug = $routeParams.slug;
 
-    $scope.treeNodes = [];
-    $scope.jsPlumbConnections = [];
+    // chosen filter
+    $scope.filterTags = [];
+    $scope.filterTagsText = [];
+    // this will be displayed on the available filter
+    $scope.availableTags = [];
+    // the original list
+    $scope.courseTags = [];
+    $scope.category = null;
+    $scope.courses = null;
+    $scope.coursesLength = 0;
+
+    $scope.orderBy = -1;
+    $scope.sortBy = 'dateAdded';
+    $scope.currentPage = 1;
+    $scope.pageReset = false;
+    $scope.lastPage = false;
+
+    $scope.orderingOptions = [
+        {id: 'dateAdded.-1', name: 'Newest First'},
+        {id: 'dateAdded.1', name: 'Oldest First'},
+        {id: 'totalEnrollment.-1', name: 'Most Popular'}
+    ];
+
     $scope.widgets = [];
-    $scope.isTreeInitiated = false;
-    $scope.infoToast = null;
-    $scope.infoEmptyToast = null;
-    $scope.instance = null;
-    $scope.nodeModaltitle = "";
-    $scope.currentNodeAction = {};
-    // for our view to show plus/minus button
-    $scope.collapseStatus = {};
 
-    // {"0": {nodeId:isCollapsed},}
-    $scope.nodeChildrens = {};
-    $scope.firstloaded = true;
-
-    /**
-     * find node recursively
-     *
-     * @param obj
-     * @param col next search will be the array value of this key
-     * @param searchKey
-     * @param searchValue
-     * @returns {*}
-     */
-    var found = false;
-    $scope.findNode = function (obj, col, searchKey, searchValue) {
-        if (found)
-            return found;
-
-        for (var i in obj) {
-            var tn = obj[i];
-
-            if (tn[searchKey] && tn[searchKey] == searchValue) {
-                found = tn;
-                return tn;
-            }
-            else if (tn[col] && tn[col].length > 0) {
-                // search again
-                $scope.findNode(tn[col], col, searchKey, searchValue);
-            }
-        }
-
-        if (found)
-            return found;
+    $scope.isLoggedIn = function () {
+        return (authService.user ? true : false);
     };
 
-    $scope.initDropDownMenuHybrid = function () {
-        $('#tree .course-map').on('click', function (event) {
-            var target = $(event.target);
-            var k = target.parents('div');
-            if (k.hasClass('ui-draggable') && k.hasClass('w')) {
-                return true;
-            } else if (k.hasClass('center-course')) {
-                return true;
-            } else if (target.hasClass('w')) {
-                return true;
-            }
+    $scope.getCoursesFromThisCategory = function (force) {
 
-            if ($('.open').length > 0) {
-                $('.open').removeClass('open');
-                return false;
-            }
+        courseListService.setPageParams({
+            sortBy: $scope.sortBy,
+            orderBy: $scope.orderBy,
+            limit: 12,
+            lastPage: false
         });
-    };
 
-    /**
-     * get all categories, recursived on the server
-     */
-    $scope.initTab = function (course) {
-        // add hover to center instantiate on hover
-        $scope.initDropDown('center');
-
-        mapService.init(course._id,
-
-            function (treeNodes) {
-                if (treeNodes.length > 0) {
-                    $scope.treeNodes = treeNodes;
-                } else {
-                    $scope.initJSPlumb();
-                    $scope.showMapEmptyInfo();
-                }
-
-                socket.subscribe('map/' + course._id);
+        courseListService.init($scope.category._id, $scope.filterTags,
+            function (courses) {
+                $scope.courses = courses;
+                $scope.coursesLength = courses.length;
             },
-
-            function (err) {
-                console.log(err);
-                //toastr.error('cannot load course tree');
+            function (errors) {
+                console.log(JSON.stringify(errors));
             }
+            , force
         );
     };
 
-    $scope.tabOpened = function () {
-
-        if (courseService.course) {
-            $scope.course = courseService.course;
-
-            if (mapService.treeNodes) {
-                $scope.treeNodes = mapService.treeNodes;
-            }
-
-            $scope.initTab(courseService.course);
-        } else {
-
-            $scope.$on('onAfterInitCourse', function (event, course) {
-                $scope.initTab(course);
-            });
+    $scope.newRowsFetched = function (newRows, allRows) {
+        if (newRows) {
+            $scope.courses = allRows;
+            $scope.coursesLength = $scope.courses.length;
         }
-
-        $rootScope.$broadcast('onCoursePreviewTabOpened', $scope.currentTab);
     };
 
-    // initiate draggable jqUI to the topic node
-    $scope.initDraggable = function (jsPlumbInstance) {
-        var w = window.innerWidth;
-        var h = window.innerHeight;
-
-        // let us drag and drop the cats
-        var mapEl = jsPlumb.getSelector(".course-map .w");
-        jsPlumbInstance.draggable(mapEl, {
-            start: function (params) {
-                var el = $(params.el);
-                var nId = el.attr('id').substring(1);
-                var simulated = el.attr('is-simulated');
-                if (simulated && simulated == 'simulated') {
-                    return;
+    $scope.initTagFromSearch = function () {
+        var tagSearch = $location.search();
+        if (tagSearch && tagSearch.tags) {
+            var tags = tagSearch.tags.split(',');
+            if (tags)
+                for (var i in tags) {
+                    var tag = tags[i];
+                    if ($scope.availableTags)
+                        for (var j in $scope.availableTags) {
+                            var t = $scope.availableTags[j];
+                            if (t.slug == tag)
+                                $scope.applyFilter(t, true);
+                        }
                 }
+        }
 
-                var owned = el.hasClass('owned');
-                if (!owned) {
-                    params.drag.abort();
+        $scope.getCoursesFromThisCategory();
+
+        $scope.$watch(function () {
+            return $location.search()
+        }, function (newVal, oldVal) {
+            if (newVal && newVal !== oldVal)
+                $scope.getCoursesFromThisCategory();
+        }, true);
+    };
+
+    $scope.getCourseAnalytics = function (cid) {
+        $http.get('/api/server-widgets/course-listing/?cid=' + cid).success(
+            function (res) {
+                if (res.result) {
+                    $scope.widgets[cid] = $sce.trustAsHtml(res.widgets);
                 }
-
-                if (collapseService.isCollapsed(nId) !== false) {
-                    params.drag.abort();
-                }
-            },
-
-            // update position on drag stop
-            stop: function (params) {
-                var el = $(params.el);
-                var pos = el.position();
-                var distanceFromCenter = {
-                    x: pos.left - Canvas.w / 2,
-                    y: pos.top - Canvas.h / 2
-                };
-
-                var simulated = el.attr('is-simulated');
-                if (simulated && simulated == 'simulated') {
-                    el.attr('is-simulated', '');
-                    return;
-                }
-
-                var nId = el.attr('id').substring(1); // remove 't' from the node id
-                found = false;
-                var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nId);
-
-                $scope.sendPosition(nId, distanceFromCenter, pNode);
             }
+        ).error(function () {
+
         });
     };
 
-    $scope.sendPosition = function (nId, distanceFromCenter, pNode) {
-        $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
-            .success(function (res, status) {
-                //console.log(res);
-                if (pNode)
-                    pNode.positionFromRoot = distanceFromCenter;
-            })
-            .error(function (res, status) {
-                console.log('err');
-                console.log(res);
-            });
-    };
-
-    $scope.initJSPlumb = function () {
-        jQuery('.tree-container').css('visibility', 'hidden');
-        Tree.init(Canvas.w, Canvas.h);
-        jsPlumb.ready(function () {
-            $scope.instance = jsPlumb.getInstance({
-                Endpoint: ["Blank", {radius: 2}],
-                HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-                PaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
-                ConnectionOverlays: [],
-                Container: "course-map"
-            });
-
-            $scope.initDraggable($scope.instance);
-
-            // initialise all '.w' elements as connection targets.
-            $scope.instance.batch(function () {
-                /* connect center to first level cats recursively*/
-                $scope.interConnect('center', $scope.treeNodes, $scope.instance);
-
-                /*blanket on click to close dropdown menu*/
-                $scope.initDropDownMenuHybrid();
-            });
-
-            $timeout(function () {
-                $scope.firstCollapse($scope.treeNodes);
-
-                $scope.initiateCollapse();
-                jQuery('.tree-container').css('visibility', 'visible');
-            })
-        });
-    };
-
-    $scope.firstCollapse = function (treeNodes) {
-        if (!$scope.firstloaded)
-            return;
-
-        $scope.firstloaded = false;
-        for (var i = 0; i < treeNodes.length; i++) {
-            var child = treeNodes[i];
-
-            if (child.isDeletedForever)
-                continue;
-
-            $scope.getChildLength(child._id, 0, child);
-        }
-
-        // collapse on first level
-        for (var j in $scope.nodeChildrens[1]) {
-            var totalKids = $scope.nodeChildrens[1][j];
-            if (totalKids > 0) {
-                collapseService.setCollapse(j);
-                $scope.collapseStatus[j] = true;
-            } else {
-                collapseService.setExpand(j);
-                $scope.collapseStatus[j] = false;
-            }
+    $scope.applyFilter = function (tag, dontgo) {
+        if (arrayObjectIndexOf($scope.filterTags, tag, 'name') < 0) {
+            $scope.filterTags.push(tag);
+            $scope.filterTagsText.push(tag.slug);
+            removeObjectFromArray($scope.availableTags, tag, 'name');
+            if (!dontgo)
+                $scope.go();
         }
     };
 
-    $scope.initiateCollapse = function () {
-        for (var i in collapseService.collapsed) {
-            var colEl = 't' + collapseService.collapsed[i];
-            $scope.collapse(colEl, true);
-        }
-    };
-
-    $scope.getChildLength = function (nid, level, treeNodes) {
-        if ($scope.nodeChildrens[level] == undefined) {
-            $scope.nodeChildrens[level] = {};
-        }
-
-        if ($scope.nodeChildrens[level][nid] == undefined) {
-            $scope.nodeChildrens[level][nid] = 0;
-        }
-
-        var add = 0;
-        if (treeNodes.childrens && treeNodes.childrens.length > 0)
-            add = 1;
-
-        $scope.nodeChildrens[level][nid] += add;
-
-        if (level > 1) {
-            if ($scope.nodeChildrens[level][nid] > 0) {
-                collapseService.setCollapse(nid);
-                $scope.collapseStatus[nid] = true;
-            }
-        }
-
-        if (treeNodes.childrens && treeNodes.childrens.length > 0) {
-            level++;
-            for (var e in treeNodes.childrens) {
-                var ch = treeNodes.childrens[e];
-                $scope.getChildLength(ch._id, level, ch);
-            }
-        } else {
-            //console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
-        }
-    };
-
-    $scope.initDropDown = function (slug) {
-        $('#' + slug)
-            .on('click mousedown mouseup touchstart', function (event) {
-                if ($(this).find('ul').hasClass('open')) {
-                    if ($(this).find('ul').hasClass('dropdown-course')) {
-                        return true;
-                    }
-
-                    $('.open').removeClass('open');
-                    return false;
-                }
-
-                var simulated = $(this).attr('is-simulated');
-                if (simulated && simulated == 'simulated') {
-                    return true;
-                }
-
-                $('.open').not($(this).parents('ul')).removeClass('open');
-                $(this).find('ul').addClass('open');
-
-                return false;
-            })
-            .on('mouseenter', function () {
-                if ($(this).hasClass('subTopic')) {
-                    return true;
-                }
-                if ($(this).hasClass('deleted')) {
-                    return true;
-                }
-                $scope.requestIconAnalyitics(slug);
-            });
-    };
-
-    $scope.showMapInfo = function () {
-        if (!$scope.infoToast) {
-            $scope.infoToast = toastr.info(
-                'To add a pdf or a video node (which we call "Content Node"), ' +
-                '<br>you need to have at least a subtopic node that acts as a hub.' +
-                '<br>' +
-                '<br>Hover over the node to see available actions, such as create subtopic or content node'
-                , {
-                    allowHtml: true,
-                    autoDismiss: false,
-                    onHidden: function () {
-                        if ($scope.infoToast)$scope.infoToast = null;
-                    },
-                    tapToDismiss: true,
-                    extendedTimeOut: 10000,
-                    timeOut: 10000,
-                    toastClass: 'toast wide',
-                });
-        } else {
-            toastr.clear();
-            $scope.infoToast = null;
-        }
-    };
-
-    $scope.showMapEmptyInfo = function () {
-        if (!$scope.infoEmptyToast) {
-            toastr.clear();
-            $scope.infoEmptyToast = toastr.info(
-                'Hi, this course is new, Please add a subtopic first, ' +
-                '<br>from there, you can add a content node, then upload a pdf or a video.' +
-                '<br>' +
-                '<br>Hover over the center node to see available actions.'
-                , {
-                    allowHtml: true,
-                    autoDismiss: false,
-                    onHidden: function () {
-                        if ($scope.infoEmptyToast)$scope.infoEmptyToast = null;
-                    },
-                    tapToDismiss: true,
-                    extendedTimeOut: 10000,
-                    timeOut: 10000,
-                    toastClass: 'toast wide'
-                });
-        } else {
-            $scope.infoEmptyToast = null;
-        }
-    };
-
-    $scope.interConnect = function (parent, treeNodes, instance) {
-        // added "t" in id because id cannot start with number
-        for (var i = 0; i < treeNodes.length; i++) {
-            var child = treeNodes[i];
-            var childId = 't' + child._id;
-
-            if (child.isDeletedForever)
-                continue;
-
-            // instantiate on hover
-            $scope.initDropDown(childId);
-
-            // connecting parent and chidlern
-            var conn = instance.connect({
-                source: parent, target: childId,
-                anchors: [
-                    ["Perimeter", {shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")}],
-                    ["Perimeter", {shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape")}]
-                ],
-                deleteEndpointsOnDetach: true,
-                connector: ["Bezier", {curviness: 5}]
-            });
-
-            $(conn.connector.canvas).attr('data-source', parent);
-            $(conn.connector.canvas).attr('data-target', childId);
-
-            var cc = {
-                source: parent,
-                target: childId,
-                conn: conn
-            };
-
-            $scope.jsPlumbConnections.push(cc);
-
-            if (child.childrens)
-                $('#' + parent + ' .collapse-button').addClass('hasChildren');
-            if (child.childrens && child.childrens.length > 0) {
-                $scope.interConnect(childId, child.childrens, instance);
-            }
-        }
-    };
-
-    $scope.setMode = function (mode, type, parent) {
-        switch (mode) {
-            case 'add':
-                $scope.currentNodeAction.mode = "add";
-                break;
-            case 'edit':
-                $scope.currentNodeAction.mode = "edit";
-                break;
-        }
-
-        switch (type) {
-            case 'subTopic':
-                $scope.currentNodeAction.type = "subTopic";
-                $scope.currentNodeAction.typeText = "Sub Topic";
-                break;
-
-            case 'contentNode':
-                $scope.currentNodeAction.type = "contentNode";
-                $scope.currentNodeAction.typeText = "Content Node";
-                break;
-        }
-
-        $scope.nodeModaltitle = $scope.currentNodeAction.mode + " " + $scope.currentNodeAction.typeText;
-
-        if (parent) {
-            $scope.currentNodeAction.parent = parent;
-            if (mode == 'add')
-                $scope.nodeModaltitle += " under " + parent.name;
+    $scope.go = function () {
+        if ($scope.filterTags.length > 0) {
+            $location.search({tags: $scope.filterTagsText.join(',')});
         }
         else
-            $scope.currentNodeAction.parent = false;
+            $location.search({});
 
-        $rootScope.$broadcast('onAfterSetMode', $scope.course);
+        $scope.getCoursesFromThisCategory(true);
+        $scope.pageReset = Math.random();
     };
 
-    $scope.parseResources = function () {
-        for (var i = 0; i < $scope.currentNodeAction.parent.resources.length; i++) {
-            var content = $scope.currentNodeAction.parent.resources[i];
-            if (content['type'] == 'mp4'
-                || content['type'] == 'video'
-                || content['type'] == 'videoLink'
-            ) {
-                $scope.currentNodeAction.parent.videoFile = content;
-            } else if (content['type'] == 'pdf'
-                || content['type'] == 'pdfLink'
-            ) {
-                $scope.currentNodeAction.parent.pdfFile = content;
+    $scope.removeFilter = function (tag) {
+        if (arrayObjectIndexOf($scope.availableTags, tag, 'name') < 0) {
+            $scope.availableTags.push(tag);
+            removeObjectFromArray($scope.filterTags, tag, 'name');
+
+            for (var i = $scope.filterTagsText.length - 1; i >= 0; i--) {
+                if ($scope.filterTagsText[i] === tag.slug) {
+                    $scope.filterTagsText.splice(i, 1);
+                    break;
+                }
             }
+            $scope.go();
         }
     };
 
     /**
-     * remove all svg generated by js plumb.
+     * init category data by slug
      */
-    $scope.destroyJSPlumb = function () {
-        for (var i in $scope.jsPlumbConnections) {
-            var conn = $scope.jsPlumbConnections[i].conn;
-            jsPlumb.detach(conn);
-        }
+    $http.get('/api/category/' + $scope.slug)
+        .success(function (data) {
+            $scope.category = data.category;
 
-        $scope.jsPlumbConnections = [];
-    };
+            Page.setTitleWithPrefix($scope.category.name);
 
-    $scope.reInitiateJSPlumb = function (cb) {
-        $scope.treeNodes = angular.copy($scope.treeNodes);
-        $timeout(
-            function () {
-                $scope.$apply();
-                $scope.initJSPlumb();
+            // once we get the complete category structure, we operate by id
+            $http.get('/api/category/' + $scope.category._id + '/courseTags').success(function (data) {
+                $scope.courseTags = data.courseTags;
+                $scope.availableTags = data.courseTags;
 
-                if (cb) {
-                    cb();
-                }
+                $scope.initTagFromSearch();
             });
-    };
-
-    $scope.resourceIcon = function (filetype) {
-        switch (filetype) {
-            case 'pdf':
-            case 'pdfLink':
-                return 'fa fa-file-pdf-o';
-
-            case 'mp4':
-            case 'videoLink':
-            case 'video':
-                return 'fa fa-file-video-o';
-        }
-    };
-
-    $scope.hasPdf = function (resources) {
-        for (var i in resources) {
-            if (resources[i].type == 'pdf') {
-                return true;
-            }
-        }
-
-        return false;
-    };
-
-    $scope.getPdfLink = function (resources) {
-        for (var i in resources) {
-            if (resources[i].type == 'pdf') {
-                return resources[i].link;
-            }
-        }
-
-        return false;
-    };
-
-    $scope.getDataShape = function (nodeType) {
-        if (nodeType == 'subTopic')
-            return 'Ellipse';
-
-        return 'Rectangle';
-    };
-
-    $scope.requestIconAnalyitics = function (nodeId) {
-        nodeId = nodeId.substring(1);
-        if (nodeId == 'enter')
-            return;
-
-        $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
-            function (res) {
-                $scope.isRequesting = false;
-                if (res.result) {
-                    $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
-                }
-            }
-        ).error(function () {
-            $scope.isRequesting = false;
-        });
-    };
-
-    $scope.getContentNodeLink = function (d) {
-        return '/treeNode/' + d._id + '/#/cid/' + $scope.course._id + '/nid/' + d._id;
-    };
-
-    $scope.deleteNode = function (data) {
-        var msg = '';
-        if (data.type == 'subTopic') {
-            msg = 'Are you sure you want to delete this sub topic?';
-        }
-        else {
-            msg = 'Are you sure you want to delete this content node?';
-        }
-
-        if (confirm(msg)) {
-            $http({
-                method: 'DELETE',
-                url: '/api/treeNodes/' + data._id,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-                .success(function (res) {
-                    //console.log(res);
-                    if (res.result) {
-                        data.isDeleted = true;
-                        data.name = '[DELETED]';
-
-                        // destroy the jsplumb instance and svg rendered
-                        $scope.destroyJSPlumb();
-
-                        // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.reInitiateJSPlumb();
-
-                    } else {
-                        if (data.result != null && !data.result) {
-                            $scope.errors = data.errors;
-                            console.log(data.errors);
-                        }
-                    }
-                });
-        }
-    };
-
-    $scope.deleteNodeForever = function (data) {
-        var msg = 'Are you sure you want to delete this content node forever?';
-        if (data.type == 'subTopic') {
-            msg = 'Are you sure you want to delete this sub topic forever?';
-        }
-
-        if (confirm(msg)) {
-            $http({
-                method: 'DELETE',
-                url: '/api/treeNodes/' + data._id,
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            })
-                .success(function (res) {
-                    if (res.result) {
-                        data.isDeleted = true;
-                        data.isDeletedForever = true;
-                        data.name = '[DELETED]';
-
-                        // destroy the jsplumb instance and svg rendered
-                        $scope.destroyJSPlumb();
-
-                        // this will reinitiate the model, and thus also jsplumb connection
-                        $scope.reInitiateJSPlumb();
-                    }
-                })
-                .error(function (data) {
-                    $scope.errors = data.errors;
-                    toastr.error(data.errors);
-                });
-        }
-    };
-
-    $scope.isNodeOwner = function (tn) {
-        if (tn.createdBy._id == $scope.user._id)
-            return true;
-        else if (tn.createdBy == $scope.user._id)
-            return true;
-
-        return false;
-    };
-
-    $scope.isAuthorized = function (tn) {
-        return ($scope.isNodeOwner(tn) || $scope.isAdmin || $scope.isManager || $scope.isOwner);
-    };
-
-    $scope.addNewNodeIntoPool = function (treeNode) {
-        if (treeNode.parent) {
-            found = false;
-            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
-
-            if (pNode) {
-                pNode.childrens.push(treeNode);
-            }
-        }
-        else
-            $scope.treeNodes.push(treeNode);
-
-        $timeout(function () {
-            $scope.$apply();
-
-            // destroy the jsplumb instance and svg rendered
-            $scope.destroyJSPlumb();
-
-            // this will reinitiate the model, and thus also jsplumb connection
-            $scope.reInitiateJSPlumb(function () {
-                $scope.donotInit = true;
-                if ($('.open').length > 0) {
-                    $('.open').removeClass('open');
-                    return true;
-                }
-            });
+        })
+        .error(function (err) {
+            $scope.error = err;
         });
 
+    $scope.paginationReset = function () {
+        return $scope.pageReset;
     };
 
-    $scope.afterEditNode = function (treeNode) {
-        if (treeNode) {
-            found = false;
-            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
-            if (pNode) {
-                pNode.name = treeNode.name;
-            }
-        }
+    $scope.$watch('orderType', function (newVal, oldVal) {
+        if (newVal != oldVal) {
+            var spl = newVal.id.split('.');
 
-        $timeout(
-            function () {
-                $scope.$apply();
+            courseListService.setPageParams({
+                sortBy: spl[0],
+                orderBy: parseInt(spl[1]),
+                limit: 12,
+                lastPage: false
             });
-    };
 
-    $scope.afterEditContentNode = function (treeNode) {
-        if (treeNode) {
-            found = false;
-            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
-            if (pNode) {
-                pNode.name = treeNode.name;
-                pNode.resources = [];
-                if (treeNode.resources.length > 0) {
-                    for (var i in treeNode.resources) {
-                        pNode.resources.push(treeNode.resources[i]);
-                    }
+            $scope.sortBy = spl[0];
+            $scope.orderBy = parseInt(spl[1]);
+            // reset the page
+            $scope.currentPage = 0;
+            $scope.lastPage = false;
+            $scope.pageReset = Math.random();
+
+            courseListService.init($scope.category._id, $scope.filterTags,
+                function (courses) {
+                    $scope.courses = courses;
+                    $scope.coursesLength = courses.length;
+                },
+                function (errors) {
+                    console.log(JSON.stringify(errors));
                 }
-            }
+                , true
+            );
         }
+    });
 
-        $timeout(
-            function () {
-                $scope.$apply();
-            });
-    };
+});
+;app.controller('MapController', function ($scope, $http, $rootScope, $element, $filter,
+                                          $timeout, $sce, $location, authService, socket,
+                                          toastr, mapService, courseService, collapseService) {
+  $scope.treeNodes = [];
+  $scope.jsPlumbConnections = [];
+  $scope.widgets = [];
+  $scope.isTreeInitiated = false;
+  $scope.infoToast = null;
+  $scope.infoEmptyToast = null;
+  $scope.instance = null;
+  $scope.nodeModaltitle = "";
+  $scope.currentNodeAction = {};
+  // for our view to show plus/minus button
+  $scope.collapseStatus = {};
 
-    $scope.collapse = function (el, isInit) {
-        var nodeId = el.substring(1);
+  // {"0": {nodeId:isCollapsed},}
+  $scope.nodeChildrens = {};
+  $scope.firstloaded = true;
+  $scope.queryText = '';
+  $scope.matchesFound = {};
+  var markedNode = '';
+  var searchMatches;
+  var searchMatchIndex = 0;
 
-        found = false;
-        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
-        if (pNode) {
-            var hide = false;
+  /**
+   * find node recursively
+   *
+   * @param obj
+   * @param col next search will be the array value of this key
+   * @param searchKey
+   * @param searchValue
+   * @returns []
+   */
+  var findNodes = function (obj, col, searchKey, searchValue) {
+    var result = [];
+    if (!searchValue) return result;
 
-            if (isInit === true)
-                hide = collapseService.isCollapsed(nodeId);
-            else
-                hide = collapseService.toggle(nodeId);
-
-            if (hide === false) {
-                $scope.collapseStatus[nodeId] = false;
-                $('#' + el).addClass('aborted');
-                collapseService.affectVisual(false, pNode, nodeId);
-            }
-            else if (hide >= 0 || hide == true) {
-                $scope.collapseStatus[nodeId] = true;
-                collapseService.affectVisual(true, pNode, nodeId);
-                $('#' + el).removeClass('aborted');
-            }
-
+    var findInternal = function (obj, col, searchKey, searchValue) {
+      for (var i in obj) {
+        var tn = obj[i];
+        var isMatch = tn[searchKey].toLowerCase().indexOf(searchValue.toLowerCase()) > -1;
+        if (tn[searchKey] && isMatch) {
+          result.push(tn);
         }
+        if (tn[col] && tn[col].length > 0) {
+          findInternal(tn[col], col, searchKey, searchValue);
+        }
+      }
+      return result;
     };
+    return findInternal(obj, col, searchKey, searchValue);
+  };
 
-    $scope.$on('onAfterCreateNode', function (event, treeNode) {
-        $scope.addNewNodeIntoPool(treeNode);
+  var hideNodeTargetEdges = function (node) {
+    _.each($element.find("[data-target='t" + node._id + "']"), function (c) {
+      c.style.opacity = node.isHidden ? 0.15 : 1.0;
+      c.style['-webkit-filter'] = 'grayscale(' + (node.isHidden ? 100 : 0) + '%)';
     });
+  };
 
-    $scope.$on('onAfterEditNode', function (event, treeNode) {
-        $scope.afterEditNode(treeNode);
+  $scope.findNextMatch = function () {
+    if (!searchMatches || searchMatches.length <= 0) {
+      return;
+    }
+    searchMatchIndex++;
+    if (searchMatchIndex >= searchMatches.length) {
+      searchMatchIndex = 0;
+    }
+    positionCanvasToNode(searchMatches[searchMatchIndex]);
+  };
+
+  $scope.getNodeStyle = function (node) {
+    var style = {};
+    var isSearching = $scope.queryText != '' || markedNode != '';
+    if (isSearching) {
+      style.opacity = ($scope.matchesFound[node._id] !== true) ? 0.25 : 1.0;
+    } else {
+      hideNodeTargetEdges(node);
+    }
+    return style;
+  };
+
+  $scope.findNode = function (obj, col, searchKey, searchValue) {
+    return findNodes(obj, col, searchKey, searchValue)[0];
+  };
+
+  var updateMatchedResults = function (items) {
+    _.each(items, function (item) {
+      $scope.matchesFound[item._id] = true;
+      var parent = findNodes($scope.treeNodes, 'childrens', '_id', item.parent)[0];
+      while (parent) {
+        collapseService.setExpand(parent._id);
+        collapseService.affectVisual(false, parent, parent._id);
+        $scope.collapseStatus[parent._id] = false;
+        parent = findNodes($scope.treeNodes, 'childrens', '_id', parent.parent)[0];
+      }
     });
+    if (items && items.length > 0) {
+      positionCanvasToNode(items[0]);
+    }
+    setConnectorsOpacity(!(_.isEmpty($scope.matchesFound)) ? 0.25 : 1.0)
+  };
 
-    $scope.$on('onAfterEditContentNode', function (event, treeNode) {
-        $scope.afterEditContentNode(treeNode);
+  $scope.lookupInTree = function () {
+    $scope.matchesFound = {};
+    searchMatches = null;
+    searchMatches = findNodes($scope.treeNodes, 'childrens', 'name', $scope.queryText);
+    if (searchMatches.length <= 0) {
+      return;
+    }
+    updateMatchedResults(searchMatches);
+  };
+
+  //find the node from the query string and highlight it
+  function highlightMarkedNode() {
+    $scope.matchesFound = {};
+    markedNode = $location.search().markedNode || '';
+    if (!markedNode) {
+      return;
+    }
+    var items = findNodes($scope.treeNodes, 'childrens', '_id', markedNode);
+    if (items.length <= 0) {
+      markedNode = '';
+      toastr.warning(
+        'Node does not exist', {
+          allowHtml: true,
+          autoDismiss: true,
+          tapToDismiss: true,
+          extendedTimeOut: 2000,
+          timeOut: 5000,
+          toastClass: 'toast wide'
+        });
+      return;
+    }
+
+    $timeout(function () {
+      items.forEach(function (item) {
+        item.isMarked = true;
+      });
+      updateMatchedResults(items);
+      setConnectorsOpacity(0.15);
+    }, 600);
+
+    $timeout(function () {
+      $scope.matchesFound = {};
+      items.forEach(function (item) {
+        item.isMarked = false;
+      });
+      $location.search('markedNode', null);
+      markedNode = '';
+      updateMatchedResults(items);
+      setConnectorsOpacity(1.0);
+    }, 5000)
+  }
+
+  var positionCanvasToNode = function (node) {
+    if (!node) return;
+    var offsetX = node.positionFromRoot.x;
+    var offsetY = node.positionFromRoot.y;
+    var pos = {
+      left: Canvas.centerX - offsetX + 'px',
+      top: Canvas.centerY - offsetY + 'px'
+    };
+    Canvas.position(pos, true);
+  };
+
+  var setConnectorsOpacity = function (opacity) {
+    _.each($element.find('._jsPlumb_connector'), function (c) {
+      c.style.opacity = opacity;
     });
+  };
 
-    $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
-        if (!$scope.isTreeInitiated && !$scope.donotInit) {
-            $scope.isTreeInitiated = true;
-            $scope.initJSPlumb();
+  $scope.initDropDownMenuHybrid = function () {
+    $('#tree .course-map').on('click', function (event) {
+      var target = $(event.target);
+      var k = target.parents('div');
+      if (k.hasClass('ui-draggable') && k.hasClass('w')) {
+        return true;
+      } else if (k.hasClass('center-course')) {
+        return true;
+      } else if (target.hasClass('w')) {
+        return true;
+      }
+
+      if ($('.open').length > 0) {
+        $('.open').removeClass('open');
+        return false;
+      }
+    });
+  };
+
+  /**
+   * get all categories, recursived on the server
+   */
+  $scope.initTab = function (course) {
+    // add hover to center instantiate on hover
+    $scope.initDropDown('center');
+
+    mapService.init(course._id,
+
+      function (treeNodes) {
+        if (treeNodes.length > 0) {
+          $scope.treeNodes = treeNodes;
+          highlightMarkedNode();
         } else {
-            $scope.donotInit = true;
+          $scope.initJSPlumb();
+          $scope.showMapEmptyInfo();
         }
-    });
 
-    $scope.$on('onAfterSetMode', function (event, course) {
-        if ($scope.currentNodeAction.type == "contentNode") {
-            $scope.parseResources();
+        socket.subscribe('map/' + course._id);
+      },
+
+      function (err) {
+        console.log(err);
+        //toastr.error('cannot load course tree');
+      }
+    );
+  };
+
+  $scope.tabOpened = function () {
+
+    if (courseService.course) {
+      $scope.course = courseService.course;
+
+      if (mapService.treeNodes) {
+        $scope.treeNodes = mapService.treeNodes;
+      }
+
+      $scope.initTab(courseService.course);
+    } else {
+
+      $scope.$on('onAfterInitCourse', function (event, course) {
+        $scope.initTab(course);
+      });
+    }
+
+    $rootScope.$broadcast('onCoursePreviewTabOpened', $scope.currentTab);
+  };
+
+  // initiate draggable jqUI to the topic node
+  $scope.initDraggable = function (jsPlumbInstance) {
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+
+    // let us drag and drop the cats
+    var mapEl = jsPlumb.getSelector(".course-map .w");
+    jsPlumbInstance.draggable(mapEl, {
+      start: function (params) {
+        var el = $(params.el);
+        var nId = el.attr('id').substring(1);
+        var simulated = el.attr('is-simulated');
+        if (simulated && simulated == 'simulated') {
+          return;
         }
+
+        var owned = el.hasClass('owned');
+        if (!owned) {
+          params.drag.abort();
+        }
+
+        if (collapseService.isCollapsed(nId) !== false) {
+          params.drag.abort();
+        }
+      },
+
+      // update position on drag stop
+      stop: function (params) {
+        var el = $(params.el);
+        var pos = el.position();
+        var distanceFromCenter = {
+          x: pos.left - Canvas.w / 2,
+          y: pos.top - Canvas.h / 2
+        };
+
+        var simulated = el.attr('is-simulated');
+        if (simulated && simulated == 'simulated') {
+          el.attr('is-simulated', '');
+          return;
+        }
+
+        var nId = el.attr('id').substring(1); // remove 't' from the node id
+        found = false;
+        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nId);
+
+        $scope.sendPosition(nId, distanceFromCenter, pNode);
+      }
     });
+  };
 
-    $(document).ready(function () {
-        $scope.width = jQuery(window).width();
-        $scope.height = jQuery(window).height();
-        $scope.center = {x: $scope.width / 2, y: ($scope.height / 2) - 100};
+  $scope.sendPosition = function (nId, distanceFromCenter, pNode) {
+    $http.put('/api/treeNodes/' + nId + '/positionFromRoot', distanceFromCenter)
+      .success(function (res, status) {
+        //console.log(res);
+        if (pNode)
+          pNode.positionFromRoot = distanceFromCenter;
+      })
+      .error(function (res, status) {
+        console.log('err');
+        console.log(res);
+      });
+  };
+
+  $scope.initJSPlumb = function () {
+    jQuery('.tree-container').css('visibility', 'hidden');
+    Tree.init(Canvas.w, Canvas.h);
+    jsPlumb.ready(function () {
+      $scope.instance = jsPlumb.getInstance({
+        Endpoint: ["Blank", {
+          radius: 2
+        }],
+        //HoverPaintStyle: {strokeStyle: "#3C8DBC", lineWidth: 2},
+        PaintStyle: {
+          strokeStyle: "#3C8DBC",
+          lineWidth: 2
+        },
+        ConnectionOverlays: [],
+        Container: "course-map"
+      });
+
+      $scope.initDraggable($scope.instance);
+
+      // initialise all '.w' elements as connection targets.
+      $scope.instance.batch(function () {
+        /* connect center to first level cats recursively*/
+        $scope.interConnect('center', $scope.treeNodes, $scope.instance);
+
+        /*blanket on click to close dropdown menu*/
+        $scope.initDropDownMenuHybrid();
+      });
+
+      $timeout(function () {
+        $scope.firstCollapse($scope.treeNodes);
+
+        $scope.initiateCollapse();
+        jQuery('.tree-container').css('visibility', 'visible');
+      })
     });
+  };
 
-    $scope.tabOpened();
+  $scope.firstCollapse = function (treeNodes) {
+    if (!$scope.firstloaded)
+      return;
 
-    socket.on('joined', function (data) {
-        //console.log(JSON.stringify(data));
-    });
+    $scope.firstloaded = false;
+    for (var i = 0; i < treeNodes.length; i++) {
+      var child = treeNodes[i];
 
-    socket.on('positionUpdated', function (data) {
-        if (authService.user && data.userId == authService.user._id)
-            return;
+      if (child.isDeletedForever)
+        continue;
 
-        var nd = data.nodeId;
-        if (nd) {
-            var elName = 't' + nd;
-            var lv = Tree.leaves[elName];
-            if (lv) {
-                lv.fromCenter.x = data.x + 70;
-                lv.fromCenter.y = data.y + 5;
-                var oldPos = lv.el.position();
-                var newPos = lv.getNewPosition(Tree.w, Tree.h);
+      $scope.getChildLength(child._id, 0, child);
+    }
 
-                var dx = newPos.x - oldPos.left;
-                var dy = newPos.y - oldPos.top;
+    // collapse on first level
+    for (var j in $scope.nodeChildrens[1]) {
+      var totalKids = $scope.nodeChildrens[1][j];
+      if (totalKids > 0) {
+        collapseService.setCollapse(j);
+        $scope.collapseStatus[j] = true;
+      } else {
+        collapseService.setExpand(j);
+        $scope.collapseStatus[j] = false;
+      }
+    }
+  };
 
-                $('#' + elName).attr("is-simulated", 'simulated');
-                $('#' + elName).simulate("drag-n-drop", {dx: dx, dy: dy})
-            }
+  $scope.initiateCollapse = function () {
+    for (var i in collapseService.collapsed) {
+      var colEl = 't' + collapseService.collapsed[i];
+      $scope.collapse(colEl, true);
+    }
+  };
 
-            found = false;
-            var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
-            if (pNode) {
-                pNode.positionFromRoot = {x: data.x, y: data.y};
-                mapService.updatePosition(nd, data);
+  $scope.getChildLength = function (nid, level, treeNodes) {
+    if ($scope.nodeChildrens[level] == undefined) {
+      $scope.nodeChildrens[level] = {};
+    }
+
+    if ($scope.nodeChildrens[level][nid] == undefined) {
+      $scope.nodeChildrens[level][nid] = 0;
+    }
+
+    var add = 0;
+    if (treeNodes.childrens && treeNodes.childrens.length > 0)
+      add = 1;
+
+    $scope.nodeChildrens[level][nid] += add;
+
+    if (level > 1) {
+      if ($scope.nodeChildrens[level][nid] > 0) {
+        collapseService.setCollapse(nid);
+        $scope.collapseStatus[nid] = true;
+      }
+    }
+
+    if (treeNodes.childrens && treeNodes.childrens.length > 0) {
+      level++;
+      for (var e in treeNodes.childrens) {
+        var ch = treeNodes.childrens[e];
+        $scope.getChildLength(ch._id, level, ch);
+      }
+    } else {
+      //console.log(level + ' ' + JSON.stringify($scope.nodeChildrens[level]));
+    }
+  };
+
+  $scope.initDropDown = function (slug) {
+    $('#' + slug)
+      .on('click mousedown mouseup touchstart', function (event) {
+
+        if (
+          event.type == 'touchstart' && (
+          event.target.className.indexOf('fa-plus-square') > -1 ||
+          event.target.className.indexOf('fa-minus-square') > -1)
+        ) {
+          var el = event.target.parentNode;
+          $timeout(function () {
+            angular.element(el).triggerHandler('click');
+          }, 0);
+        }
+
+        if ($(this).find('ul').hasClass('open')) {
+          if ($(this).find('ul').hasClass('dropdown-course')) {
+            if (event.type == 'touchstart') {
+              if (event.target.href) {
+                window.location.href = event.target.href;
+              } else if (event.target.innerText == ' Edit' ||
+                event.target.innerText == ' Delete' ||
+                event.target.innerText == ' Delete Forever' ||
+                event.target.innerText.indexOf('Add') > -1
+              ) {
+                var el = event.target;
                 $timeout(function () {
-                    $scope.$apply();
-                });
-            }
+                  angular.element(el).triggerHandler('click');
+                  var mdlName = $(el).attr('data-target');
+                  if (mdlName)
+                    $(mdlName).modal('show');
+                }, 0);
 
+                return true;
+              }
+            } else
+              return true;
+          }
+
+          $('.open').removeClass('open');
+          return false;
         }
-    });
 
-    socket.on('nodeCreated', function (data) {
-        if (authService.user && data.userId == authService.user._id)
-            return;
-
-        $scope.addNewNodeIntoPool(data);
-        mapService.addNode(data);
-    });
-
-    socket.on('nodeUpdated', function (data) {
-        if (authService.user && data.userId == authService.user._id)
-            return;
-
-        if (data.type == 'contentNode') {
-            $scope.afterEditContentNode(data);
-        } else {
-            $scope.afterEditNode(data);
+        var simulated = $(this).attr('is-simulated');
+        if (simulated && simulated == 'simulated') {
+          return true;
         }
-        mapService.updateNode(data);
+
+        $('.open').not($(this).parents('ul')).removeClass('open');
+        $(this).find('ul').addClass('open');
+
+        if (event.type == 'touchstart') {
+          $scope.requestIconAnalyitics(slug);
+          return true;
+        }
+
+        return false;
+      })
+      .on('mouseenter', function () {
+        if ($(this).hasClass('subTopic')) {
+          return true;
+        }
+        if ($(this).hasClass('deleted')) {
+          return true;
+        }
+        $scope.requestIconAnalyitics(slug);
+      });
+  };
+
+  $scope.showMapInfo = function () {
+    if (!$scope.infoToast) {
+      $scope.infoToast = toastr.info(
+        'To add a pdf or a video node (which we call "Content Node"), ' +
+        '<br>you need to have at least a subtopic node that acts as a hub.' +
+        '<br>' +
+        '<br>Hover over the node to see available actions, such as create subtopic or content node', {
+          allowHtml: true,
+          autoDismiss: false,
+          onHidden: function () {
+            if ($scope.infoToast) $scope.infoToast = null;
+          },
+          tapToDismiss: true,
+          extendedTimeOut: 10000,
+          timeOut: 10000,
+          toastClass: 'toast wide',
+        });
+    } else {
+      toastr.clear();
+      $scope.infoToast = null;
+    }
+  };
+
+  $scope.showMapEmptyInfo = function () {
+    if (!$scope.infoEmptyToast) {
+      toastr.clear();
+      $scope.infoEmptyToast = toastr.info(
+        'Hi, this course is new, Please add a subtopic first, ' +
+        '<br>from there, you can add a content node, then upload a pdf or a video.' +
+        '<br>' +
+        '<br>Hover over the center node to see available actions.', {
+          allowHtml: true,
+          autoDismiss: false,
+          onHidden: function () {
+            if ($scope.infoEmptyToast) $scope.infoEmptyToast = null;
+          },
+          tapToDismiss: true,
+          extendedTimeOut: 10000,
+          timeOut: 10000,
+          toastClass: 'toast wide'
+        });
+    } else {
+      $scope.infoEmptyToast = null;
+    }
+  };
+
+  $scope.interConnect = function (parent, treeNodes, instance) {
+    // added "t" in id because id cannot start with number
+    for (var i = 0; i < treeNodes.length; i++) {
+      var child = treeNodes[i];
+      var childId = 't' + child._id;
+
+      if (child.isDeletedForever)
+        continue;
+
+      // instantiate on hover
+      $scope.initDropDown(childId);
+
+      // connecting parent and chidlern
+      var conn = instance.connect({
+        source: parent,
+        target: childId,
+        anchors: [
+          ["Perimeter", {
+            shape: jsPlumb.getSelector('#' + parent)[0].getAttribute("data-shape")
+          }],
+          ["Perimeter", {
+            shape: jsPlumb.getSelector('#' + childId)[0].getAttribute("data-shape")
+          }]
+        ],
+        deleteEndpointsOnDetach: true,
+        connector: ["Bezier", {
+          curviness: 5
+        }]
+      });
+
+      $(conn.connector.canvas).attr('data-source', parent);
+      $(conn.connector.canvas).attr('data-target', childId);
+
+      var cc = {
+        source: parent,
+        target: childId,
+        conn: conn
+      };
+
+      $scope.jsPlumbConnections.push(cc);
+
+      if (child.childrens)
+        $('#' + parent + ' .collapse-button').addClass('hasChildren');
+      if (child.childrens && child.childrens.length > 0) {
+        $scope.interConnect(childId, child.childrens, instance);
+      }
+    }
+  };
+
+  $scope.setMode = function (mode, type, parent) {
+    switch (mode) {
+      case 'add':
+        $scope.currentNodeAction.mode = "add";
+        break;
+      case 'edit':
+        $scope.currentNodeAction.mode = "edit";
+        break;
+    }
+
+    switch (type) {
+      case 'subTopic':
+        $scope.currentNodeAction.type = "subTopic";
+        $scope.currentNodeAction.typeText = "Sub Topic";
+        break;
+
+      case 'contentNode':
+        $scope.currentNodeAction.type = "contentNode";
+        $scope.currentNodeAction.typeText = "Content Node";
+        break;
+    }
+
+    $scope.nodeModaltitle = $scope.currentNodeAction.mode + " " + $scope.currentNodeAction.typeText;
+
+    if (parent) {
+      $scope.currentNodeAction.parent = parent;
+      if (mode == 'add')
+        $scope.nodeModaltitle += " under " + parent.name;
+    } else
+      $scope.currentNodeAction.parent = false;
+
+    $rootScope.$broadcast('onAfterSetMode', $scope.course);
+  };
+
+  $scope.parseResources = function () {
+    for (var i = 0; i < $scope.currentNodeAction.parent.resources.length; i++) {
+      var content = $scope.currentNodeAction.parent.resources[i];
+      if (content['type'] == 'mp4' || content['type'] == 'video' || content['type'] == 'videoLink') {
+        $scope.currentNodeAction.parent.videoFile = content;
+      } else if (content['type'] == 'pdf' || content['type'] == 'pdfLink') {
+        $scope.currentNodeAction.parent.pdfFile = content;
+      }
+    }
+  };
+
+  /**
+   * remove all svg generated by js plumb.
+   */
+  $scope.destroyJSPlumb = function () {
+    for (var i in $scope.jsPlumbConnections) {
+      var conn = $scope.jsPlumbConnections[i].conn;
+      jsPlumb.detach(conn);
+    }
+
+    $scope.jsPlumbConnections = [];
+  };
+
+  $scope.reInitiateJSPlumb = function (cb) {
+    $scope.treeNodes = angular.copy($scope.treeNodes);
+    $timeout(
+      function () {
+        $scope.$apply();
+        $scope.initJSPlumb();
+
+        if (cb) {
+          cb();
+        }
+      });
+  };
+
+  $scope.resourceIcon = function (filetype) {
+    switch (filetype) {
+      case 'pdf':
+      case 'pdfLink':
+        return 'fa fa-file-pdf-o';
+
+      case 'mp4':
+      case 'videoLink':
+      case 'video':
+        return 'fa fa-file-video-o';
+    }
+  };
+
+  $scope.hasPdf = function (resources) {
+    for (var i in resources) {
+      if (resources[i].type == 'pdf') {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  $scope.getPdfLink = function (resources) {
+    for (var i in resources) {
+      if (resources[i].type == 'pdf') {
+        return resources[i].link;
+      }
+    }
+
+    return false;
+  };
+
+  $scope.getDataShape = function (nodeType) {
+    if (nodeType == 'subTopic')
+      return 'Ellipse';
+
+    return 'Rectangle';
+  };
+
+  $scope.requestIconAnalyitics = function (nodeId) {
+    nodeId = nodeId.substring(1);
+    if (nodeId == 'enter')
+      return;
+
+    $http.get('/api/server-widgets/topic-icon-analytics/?nodeId=' + nodeId).success(
+      function (res) {
+        $scope.isRequesting = false;
+        if (res.result) {
+          $scope.widgets[nodeId] = $sce.trustAsHtml(res.widgets);
+        }
+      }
+    ).error(function () {
+      $scope.isRequesting = false;
     });
+  };
 
-    socket.on('nodeDeleted', function (data) {
-        if (authService.user && data.userId == authService.user._id)
-            return;
+  $scope.getContentNodeLink = function (d) {
+    return '/treeNode/' + d._id + '/#/cid/' + $scope.course._id + '/nid/' + d._id;
+  };
 
-        found = false;
-        var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', data.nodeId);
-        if (pNode) {
-            pNode.isDeleted = true;
-            if (data.isDeletedForever)
-                pNode.isDeletedForever = true;
+  $scope.deleteNode = function (data) {
+    var msg = '';
+    if (data.type == 'subTopic') {
+      msg = 'Are you sure you want to delete this sub topic?';
+    } else {
+      msg = 'Are you sure you want to delete this content node?';
+    }
 
-            pNode.name = '[DELETED]';
-
-            mapService.deleteNode(data);
+    if (confirm(msg)) {
+      $http({
+        method: 'DELETE',
+        url: '/api/treeNodes/' + data._id,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+        .success(function (res) {
+          //console.log(res);
+          if (res.result) {
+            data.isDeleted = true;
+            data.name = '[DELETED]';
 
             // destroy the jsplumb instance and svg rendered
             $scope.destroyJSPlumb();
 
             // this will reinitiate the model, and thus also jsplumb connection
             $scope.reInitiateJSPlumb();
+
+          } else {
+            if (data.result != null && !data.result) {
+              $scope.errors = data.errors;
+              console.log(data.errors);
+            }
+          }
+        });
+    }
+  };
+
+  $scope.deleteNodeForever = function (data) {
+    var msg = 'Are you sure you want to delete this content node forever?';
+    if (data.type == 'subTopic') {
+      msg = 'Are you sure you want to delete this sub topic forever?';
+    }
+
+    if (confirm(msg)) {
+      $http({
+        method: 'DELETE',
+        url: '/api/treeNodes/' + data._id,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
-    })
+      })
+        .success(function (res) {
+          if (res.result) {
+            data.isDeleted = true;
+            data.isDeletedForever = true;
+            data.name = '[DELETED]';
+
+            // destroy the jsplumb instance and svg rendered
+            $scope.destroyJSPlumb();
+
+            // this will reinitiate the model, and thus also jsplumb connection
+            $scope.reInitiateJSPlumb();
+
+            mapService.deleteNode(data);
+          }
+        })
+        .error(function (data) {
+          $scope.errors = data.errors;
+          toastr.error(data.errors);
+        });
+    }
+  };
+
+  $scope.isNodeOwner = function (tn) {
+    if (tn.createdBy._id == $scope.user._id)
+      return true;
+    else if (tn.createdBy == $scope.user._id)
+      return true;
+
+    return false;
+  };
+
+  $scope.toggleNodeVisibility = function (node) {
+
+    var isHidden = !node.isHidden; //toggle visibility
+
+    $http.put('/api/visibility/' + node._id + '/' + isHidden)
+      .then(function (res) {
+        node.isHidden = isHidden;
+      });
+  };
+
+  $scope.isAuthorized = function (tn) {
+    return ($scope.isNodeOwner(tn) || $scope.isAdmin || $scope.isManager || $scope.isOwner);
+  };
+
+  /// Node.name == 'java'
+  /*
+   var $scope.findNode($scope.treeNodes, 'childrens', 'name', queryText)
+
+   */
+
+  $scope.addNewNodeIntoPool = function (treeNode) {
+    if (treeNode.parent) {
+      found = false;
+      var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode.parent);
+
+      if (pNode) {
+        pNode.childrens.push(treeNode);
+      }
+    } else
+      $scope.treeNodes.push(treeNode);
+
+    $timeout(function () {
+      $scope.$apply();
+
+      // destroy the jsplumb instance and svg rendered
+      $scope.destroyJSPlumb();
+
+      // this will reinitiate the model, and thus also jsplumb connection
+      $scope.reInitiateJSPlumb(function () {
+        $scope.donotInit = true;
+        if ($('.open').length > 0) {
+          $('.open').removeClass('open');
+          return true;
+        }
+      });
+    });
+
+  };
+
+  $scope.afterEditNode = function (treeNode) {
+    if (treeNode) {
+      found = false;
+      var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
+      if (pNode) {
+        pNode.name = treeNode.name;
+      }
+    }
+
+    $timeout(
+      function () {
+        $scope.$apply();
+      });
+  };
+
+  $scope.afterEditContentNode = function (treeNode) {
+    if (treeNode) {
+      found = false;
+      var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', treeNode._id);
+      if (pNode) {
+        pNode.name = treeNode.name;
+        pNode.resources = [];
+        if (treeNode.resources.length > 0) {
+          for (var i in treeNode.resources) {
+            pNode.resources.push(treeNode.resources[i]);
+          }
+        }
+      }
+    }
+
+    $timeout(
+      function () {
+        $scope.$apply();
+      });
+  };
+
+  $scope.collapse = function (el, isInit) {
+    var nodeId = el.substring(1);
+
+    found = false;
+    var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nodeId);
+    if (pNode) {
+      var hide = false;
+
+      if (isInit === true)
+        hide = collapseService.isCollapsed(nodeId);
+      else
+        hide = collapseService.toggle(nodeId);
+
+      if (hide === false) {
+        $scope.collapseStatus[nodeId] = false;
+        $('#' + el).addClass('aborted');
+        collapseService.affectVisual(false, pNode, nodeId);
+      } else if (hide >= 0 || hide == true) {
+        $scope.collapseStatus[nodeId] = true;
+        collapseService.affectVisual(true, pNode, nodeId);
+        $('#' + el).removeClass('aborted');
+      }
+
+    }
+  };
+
+  $scope.$on('onAfterCreateNode', function (event, treeNode) {
+    $scope.addNewNodeIntoPool(treeNode);
+  });
+
+  $scope.$on('onAfterEditNode', function (event, treeNode) {
+    $scope.afterEditNode(treeNode);
+  });
+
+  $scope.$on('onAfterEditContentNode', function (event, treeNode) {
+    $scope.afterEditContentNode(treeNode);
+  });
+
+  $scope.$on('jsTreeInit', function (ngRepeatFinishedEvent) {
+    if (!$scope.isTreeInitiated && !$scope.donotInit) {
+      $scope.isTreeInitiated = true;
+      $scope.initJSPlumb();
+    } else {
+      $scope.donotInit = true;
+    }
+  });
+
+  $scope.$on('onAfterSetMode', function (event, course) {
+    if ($scope.currentNodeAction.type == "contentNode") {
+      $scope.parseResources();
+    }
+  });
+
+  $(document).ready(function () {
+    $scope.width = jQuery(window).width();
+    $scope.height = jQuery(window).height();
+    $scope.center = {
+      x: $scope.width / 2,
+      y: ($scope.height / 2) - 100
+    };
+  });
+
+  $scope.tabOpened();
+
+  socket.on('joined', function (data) {
+    //console.log(JSON.stringify(data));
+  });
+
+  socket.on('positionUpdated', function (data) {
+    if (authService.user && data.userId == authService.user._id)
+      return;
+
+    var nd = data.nodeId;
+    if (nd) {
+      var elName = 't' + nd;
+      var lv = Tree.leaves[elName];
+      if (lv) {
+        lv.fromCenter.x = data.x + 70;
+        lv.fromCenter.y = data.y + 5;
+        var oldPos = lv.el.position();
+        var newPos = lv.getNewPosition(Tree.w, Tree.h);
+
+        var dx = newPos.x - oldPos.left;
+        var dy = newPos.y - oldPos.top;
+
+        $('#' + elName).attr("is-simulated", 'simulated');
+        $('#' + elName).simulate("drag-n-drop", {
+          dx: dx,
+          dy: dy
+        })
+      }
+
+      found = false;
+      var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', nd);
+      if (pNode) {
+        pNode.positionFromRoot = {
+          x: data.x,
+          y: data.y
+        };
+        mapService.updatePosition(nd, data);
+        $timeout(function () {
+          $scope.$apply();
+        });
+      }
+
+    }
+  });
+
+  socket.on('nodeCreated', function (data) {
+    if (authService.user && data.userId == authService.user._id)
+      return;
+
+    $scope.addNewNodeIntoPool(data);
+    mapService.addNode(data);
+  });
+
+  socket.on('nodeUpdated', function (data) {
+    if (authService.user && data.userId == authService.user._id)
+      return;
+
+    if (data.type == 'contentNode') {
+      $scope.afterEditContentNode(data);
+    } else {
+      $scope.afterEditNode(data);
+    }
+    mapService.updateNode(data);
+  });
+
+  socket.on('nodeDeleted', function (data) {
+    if (authService.user && data.userId == authService.user._id)
+      return;
+
+    found = false;
+    var pNode = $scope.findNode($scope.treeNodes, 'childrens', '_id', data.nodeId);
+    if (pNode) {
+      pNode.isDeleted = true;
+      if (data.isDeletedForever)
+        pNode.isDeletedForever = true;
+
+      pNode.name = '[DELETED]';
+
+      mapService.deleteNode(data);
+
+      // destroy the jsplumb instance and svg rendered
+      $scope.destroyJSPlumb();
+
+      // this will reinitiate the model, and thus also jsplumb connection
+      $scope.reInitiateJSPlumb();
+    }
+  })
 });
 ;app.controller('NodeConfigController', function ($scope, $http, toastr, $window) {
     $scope.nodeEdit = null;
@@ -1716,288 +2057,292 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
         $scope.nodeEdit = cloneSimpleObject($scope.$parent.treeNode);
     };
 });
-;
 ;app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload, toastr, $timeout) {
 
-    $scope.formData = {};
-    $scope.filespdf = false;
-    $scope.filesvideo = false;
-    $scope.currentEditNode = false;
-    $scope.progressPercentage = 0;
-    $scope.videoHostLink = '';
-    $scope.pdfHostLink = '';
+  $scope.formData = {};
+  $scope.filespdf = false;
+  $scope.filesvideo = false;
+  $scope.currentEditNode = false;
+  $scope.progressPercentage = 0;
+  $scope.videoHostLink = '';
+  $scope.pdfHostLink = '';
 
-    $scope.isLoading = false;
-    $scope.errors = [];
+  $scope.isLoading = false;
+  $scope.errors = [];
 
-    $scope.init = function () {
+  $scope.init = function () {
+  };
+
+  $scope.$on('onAfterSetMode', function (event, course, treeNode) {
+    $scope.formData.courseId = course._id;
+
+    if ($scope.currentNodeAction.parent)
+      $scope.formData.parent = $scope.currentNodeAction.parent._id;
+    else {
+      if ($scope.formData.parent)
+        delete $scope.formData.parent;
+    }
+
+    $scope.currentEditNode = $scope.currentNodeAction.parent;
+    $scope.currentEditNodeOriginal = cloneSimpleObject($scope.currentNodeAction.parent);
+    $scope.formData.type = $scope.currentNodeAction.type;
+
+    if (treeNode) {
+      $scope.formData.name = treeNode.name;
+      //$scope.formData.isPrivate = treeNode.isPrivate;
+      $scope.formData.nodeId = treeNode._id;
+      $scope.currentEditNode = treeNode;
+    }
+  });
+
+  $scope.parseNgFile = function (ngFile) {
+    var t = ngFile.type.split('/')[1];
+
+    var ret = {
+      type: t
     };
 
-    $scope.$on('onAfterSetMode', function (event, course, treeNode) {
-        $scope.formData.courseId = course._id;
+    return ret;
+  };
 
-        if ($scope.currentNodeAction.parent)
-            $scope.formData.parent = $scope.currentNodeAction.parent._id;
-        else {
-            if ($scope.formData.parent)
-                delete $scope.formData.parent;
-        }
+  /**
+   * save add sub topic node
+   */
+  $scope.saveNode = function (isValid) {
+    if (!isValid)
+      return;
 
-        $scope.currentEditNode = $scope.currentNodeAction.parent;
-        $scope.currentEditNodeOriginal = cloneSimpleObject($scope.currentNodeAction.parent);
-        $scope.formData.type = $scope.currentNodeAction.type;
+    $scope.isLoading = true;
+    var d = transformRequest($scope.formData);
+    $http({
+      method: 'POST',
+      url: '/api/treeNodes',
+      data: d,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+      .success(function (data) {
+        if (data.result) {
+          $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
 
-        if (treeNode) {
-            $scope.formData.name = treeNode.name;
-            $scope.formData.nodeId = treeNode._id;
-            $scope.currentEditNode = treeNode;
-        }
-    });
+          $('#addSubTopicModal').modal('hide');
+          $('#addContentNodeModal').modal('hide');
 
-    $scope.parseNgFile = function (ngFile) {
-        var t = ngFile.type.split('/')[1];
-
-        var ret = {
-            type: t
-        };
-
-        return ret;
-    };
-
-    /**
-     * save add sub topic node
-     */
-    $scope.saveNode = function (isValid) {
-        if (!isValid)
-            return;
-
-        $scope.isLoading = true;
-        var d = transformRequest($scope.formData);
-        $http({
-            method: 'POST',
-            url: '/api/treeNodes',
-            data: d,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .success(function (data) {
-                if (data.result) {
-                    $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
-
-                    $('#addSubTopicModal').modal('hide');
-                    $('#addContentNodeModal').modal('hide');
-
-                    // cleaining up formData
-                    if ($scope.formData.parent) {
-                        delete $scope.formData.parent;
-                        $timeout(function () {
-                            $scope.$apply()
-                        });
-                    }
-                    $scope.formData.name = "";
-
-                    $scope.isLoading = false;
-                    $scope.addSubTopicForm.$setPristine();
-
-                    toastr.success('Successfully Saved, You can move it away from its default position');
-                }
-            })
-            .error(function (data) {
-                $scope.errors = data.errors;
-                $scope.isLoading = false;
-
-                toastr.error('Saving Failed');
-            })
-        ;
-    };
-
-    /**
-     * save edit sub topic node
-     */
-    $scope.saveEditNode = function (isValid) {
-        if (!isValid)
-            return;
-
-        var updateValue = {
-            name: $scope.currentEditNode.name
-        };
-
-        $scope.isLoading = true;
-
-        var d = transformRequest(updateValue);
-        $http({
-            method: 'PUT',
-            url: '/api/treeNodes/' + $scope.currentEditNode._id,
-            data: d,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .success(function (data) {
-                $scope.isLoading = false;
-                if (data.result) {
-                    $rootScope.$broadcast('onAfterEditNode', data.treeNode);
-
-                    if ($scope.formData.parent) {
-                        $scope.currentEditNode = {};
-                        delete $scope.formData.parent;
-                        $timeout(function () {
-                            $scope.$apply()
-                        });
-                    }
-
-                    $('#editSubTopicModal').modal('hide');
-                    $('#editContentNodeModal').modal('hide');
-
-                    $scope.editSubTopicForm.$setPristine();
-                    toastr.success('Successfully Saved');
-                }
-            })
-            .error(function (data) {
-                $scope.isLoading = false;
-                $scope.errors = data.errors;
-                toastr.error('Saving Failed');
+          // cleaining up formData
+          if ($scope.formData.parent) {
+            delete $scope.formData.parent;
+            $timeout(function () {
+              $scope.$apply()
             });
+          }
+          $scope.formData.name = "";
+          $scope.formData.isPrivate = true;
+
+          $scope.isLoading = false;
+          $scope.addSubTopicForm.$setPristine();
+
+          toastr.success('Successfully Saved, You can move it away from its default position');
+        }
+      })
+      .error(function (data) {
+        $scope.errors = data.errors;
+        $scope.isLoading = false;
+
+        toastr.error('Saving Failed');
+      })
+    ;
+  };
+
+  /**
+   * save edit sub topic node
+   */
+  $scope.saveEditNode = function (isValid) {
+    if (!isValid)
+      return;
+
+    var updateValue = {
+      name: $scope.currentEditNode.name,
+      // isPrivate: $scope.currentEditNode.isPrivate
     };
 
-    /**
-     * save add content node
-     * save edit content node
-     */
-    $scope.saveContentNode = function (isValid) {
-        if (!isValid)
-            return;
+    $scope.isLoading = true;
 
-        if ($scope.currentNodeAction.mode == 'edit') {
-            $scope.formData = $scope.currentEditNode;
-        }
+    var d = transformRequest(updateValue);
+    $http({
+      method: 'PUT',
+      url: '/api/treeNodes/' + $scope.currentEditNode._id,
+      data: d,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+      .success(function (data) {
+        $scope.isLoading = false;
+        if (data.result) {
+          $rootScope.$broadcast('onAfterEditNode', data.treeNode);
 
-        if ($scope.videoHostLink.trim() != '') {
-            $scope.formData.videoHostLink = $scope.videoHostLink;
-        }
-        if ($scope.pdfHostLink.trim() != '') {
-            $scope.formData.pdfHostLink = $scope.pdfHostLink;
-        }
-
-        var uploadParams = {
-            url: '/api/treeNodes',
-            fields: $scope.formData
-        };
-
-        uploadParams.file = [];
-
-        // we only take one pdf file
-        if ($scope.filespdf) {
-            uploadParams.file.push($scope.filespdf);
-        }
-        // we only take one vid file
-        if ($scope.filesvideo) {
-            uploadParams.file.push($scope.filesvideo);
-        }
-
-        $scope.isLoading = true;
-
-        $scope.upload = Upload.upload(
-            uploadParams
-        ).progress(function (evt) {
-            if (!evt.config.file)
-                return;
-
-            $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-
-        }).success(function (data, status, headers, config) {
-
-                if (data.result) {
-                    if (uploadParams.file.length > 0) {
-                        /*data.treeNode['resources'] = [];
-                         for (var i in uploadParams.file) {
-                         var f = uploadParams.file[i];
-                         var resTemp = $scope.parseNgFile(f);
-                         data.treeNode['resources'].push(resTemp);
-                         }*/
-
-                        /*if ($scope.videoHostLink != '') {
-                         data.treeNode['resources'].push({
-                         type: 'videoLink'
-                         });
-                         }*/
-
-                        /*if ($scope.pdfHostLink != '') {
-                         data.treeNode['resources'].push({
-                         type: 'pdfLink'
-                         });
-                         }*/
-                    }
-                }
-
-                if ($scope.addContentNodeForm) {
-                    $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
-
-                    $('#addSubTopicModal').modal('hide');
-                    $('#addContentNodeModal').modal('hide');
-
-                    // cleaning up formData
-                    $scope.formData.name = "";
-                    $scope.filespdf = false;
-                    $scope.filesvideo = false;
-
-                    if ($scope.formData.parent)
-                        delete $scope.formData.parent;
-
-                    $scope.addContentNodeForm.$setPristine();
-
-                    toastr.success('Content Node has been created, You can move it away from its default position');
-                } else if ($scope.editContentNodeForm) {
-                    $rootScope.$broadcast('onAfterEditContentNode', data.treeNode);
-
-                    $('#editContentNodeModal').modal('hide');
-                    $scope.editContentNodeForm.$setPristine();
-
-                    toastr.success('Successfully Saved');
-                }
-
-                $scope.videoHostLink = '';
-                $scope.pdfHostLink = '';
-                $scope.formData.videoHostLink = '';
-                $scope.formData.pdfHostLink = '';
-                uploadParams.file = [];
-                $scope.progressPercentage = 0;
-
-                $scope.isLoading = false;
-            })
-            .error(function (data) {
-                $scope.isLoading = false;
-                $scope.errors = data.errors;
-
-                $scope.progressPercentage = 0;
-
-                toastr.error('Saving Failed');
+          if ($scope.formData.parent) {
+            $scope.currentEditNode = {};
+            delete $scope.formData.parent;
+            $timeout(function () {
+              $scope.$apply()
             });
+          }
 
-    };
+          $('#editSubTopicModal').modal('hide');
+          $('#editContentNodeModal').modal('hide');
 
-    $scope.cancel = function () {
-        if ($scope.upload) {
-            $scope.upload.abort();
+          $scope.editSubTopicForm.$setPristine();
+          toastr.success('Successfully Saved');
         }
+      })
+      .error(function (data) {
+        $scope.isLoading = false;
+        $scope.errors = data.errors;
+        toastr.error('Saving Failed');
+      });
+  };
 
-        $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
+  /**
+   * save add content node
+   * save edit content node
+   */
+  $scope.saveContentNode = function (isValid) {
+    if (!isValid)
+      return;
+
+    if ($scope.currentNodeAction.mode == 'edit') {
+      $scope.formData = $scope.currentEditNode;
+    }
+
+    if ($scope.videoHostLink.trim() != '') {
+      $scope.formData.videoHostLink = $scope.videoHostLink;
+    }
+    if ($scope.pdfHostLink.trim() != '') {
+      $scope.formData.pdfHostLink = $scope.pdfHostLink;
+    }
+    var uploadParams = {
+      url: '/api/treeNodes',
+      fields: $scope.formData
     };
 
-    $scope.clearVideo = function () {
-        $scope.filesvideo = false;
-        $timeout(function () {
-            $scope.$apply()
-        });
-    };
+    uploadParams.file = [];
 
-    $scope.clearPdf = function () {
+    // we only take one pdf file
+    if ($scope.filespdf) {
+      uploadParams.file.push($scope.filespdf);
+    }
+    // we only take one vid file
+    if ($scope.filesvideo) {
+      uploadParams.file.push($scope.filesvideo);
+    }
+
+    $scope.isLoading = true;
+
+    $scope.upload = Upload.upload(
+      uploadParams
+    ).progress(function (evt) {
+      if (!evt.config.file)
+        return;
+
+      $scope.progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+
+    }).success(function (data, status, headers, config) {
+
+      if (data.result) {
+        if (uploadParams.file.length > 0) {
+          /*data.treeNode['resources'] = [];
+           for (var i in uploadParams.file) {
+           var f = uploadParams.file[i];
+           var resTemp = $scope.parseNgFile(f);
+           data.treeNode['resources'].push(resTemp);
+           }*/
+
+          /*if ($scope.videoHostLink != '') {
+           data.treeNode['resources'].push({
+           type: 'videoLink'
+           });
+           }*/
+
+          /*if ($scope.pdfHostLink != '') {
+           data.treeNode['resources'].push({
+           type: 'pdfLink'
+           });
+           }*/
+        }
+      }
+
+      if ($scope.addContentNodeForm) {
+        $rootScope.$broadcast('onAfterCreateNode', data.treeNode);
+
+        $('#addSubTopicModal').modal('hide');
+        $('#addContentNodeModal').modal('hide');
+
+        // cleaning up formData
+        $scope.formData.name = "";
+        $scope.formData.isPrivate = true;
+
         $scope.filespdf = false;
-        $timeout(function () {
-            $scope.$apply()
-        });
-    };
+        $scope.filesvideo = false;
+
+        if ($scope.formData.parent)
+          delete $scope.formData.parent;
+
+        $scope.addContentNodeForm.$setPristine();
+
+        toastr.success('Content Node has been created, You can move it away from its default position');
+      } else if ($scope.editContentNodeForm) {
+        $rootScope.$broadcast('onAfterEditContentNode', data.treeNode);
+
+        $('#editContentNodeModal').modal('hide');
+        $scope.editContentNodeForm.$setPristine();
+
+        toastr.success('Successfully Saved');
+      }
+
+      $scope.videoHostLink = '';
+      $scope.pdfHostLink = '';
+      $scope.formData.videoHostLink = '';
+      $scope.formData.pdfHostLink = '';
+      uploadParams.file = [];
+      $scope.progressPercentage = 0;
+
+      $scope.isLoading = false;
+    })
+      .error(function (data) {
+        $scope.isLoading = false;
+        $scope.errors = data.errors;
+
+        $scope.progressPercentage = 0;
+
+        toastr.error('Saving Failed');
+      });
+
+  };
+
+  $scope.cancel = function () {
+    if ($scope.upload) {
+      $scope.upload.abort();
+    }
+
+    $scope.currentEditNode.name = $scope.currentEditNodeOriginal.name;
+    $scope.currentEditNode.isPrivate = $scope.currentEditNodeOriginal.isPrivate;
+  };
+
+  $scope.clearVideo = function () {
+    $scope.filesvideo = false;
+    $timeout(function () {
+      $scope.$apply()
+    });
+  };
+
+  $scope.clearPdf = function () {
+    $scope.filespdf = false;
+    $timeout(function () {
+      $scope.$apply()
+    });
+  };
 });
 ;app.controller('NodeRootController', function ($scope, $rootScope, $filter, $http, $location,
                                                $routeParams, $timeout, ActionBarService, authService,
@@ -2127,7 +2472,8 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
                                 });
                             },
                             function (err) {
-
+                                $scope.nodeError = true;
+                                $scope.error = err;
                             }
                         );
                     }
@@ -2388,78 +2734,41 @@ app.controller('AppSettingController', function(  Page) {
         }
     };
 });
-;app.controller('VideoContentPreviewController', function($scope) {
-    $scope.API = null;
-
-    $scope.onPlayerReady = function (API) {
-        $scope.API = API;
-    };
-
-    $scope.$watch('isPlaying', function(newVal, oldVal){
-        if(!$scope.isPlaying && $scope.API){
-            $scope.API.pause();
-        }
-    });
-
-});;app.controller('VideoTabController', function ($scope, $rootScope, $filter, $http, $location,
+;app.controller('VideoTabController', function ($scope, $rootScope, $filter, $http, $location,
                                                $routeParams, $timeout, ActionBarService) {
 
 });
-;app.directive('comment',
-    function ($compile, $timeout) {
-        return {
-            restrict: 'E',
+;app.directive('comment', function ($compile, $timeout) {
+  return {
+    restrict: 'E',
+    terminal: true,
+    scope: {
+      postedBy: '@',
+      postedDate: '@',
+      showControl: '=',
+      showReplyButton: '=',
+      showEditButton: '=',
+      showDeleteButton: '=',
+      authorClickAction: '&',
+      authorClickable: '=',
+      postContent: '=',
+      isPostOwner: '=',
+      isDeleted: '=',
+      postId: '@',
+      editAction: '&',
+      deleteAction: '&',
+      replyAction: '&'
+    },
 
-            terminal: true,
-
-            scope: {
-                postedBy: '@',
-                postedDate: '@',
-                showControl: '=',
-                showReplyButton: '=',
-                showEditButton: '=',
-                showDeleteButton: '=',
-                authorClickAction: '&',
-                authorClickable: '=',
-                postContent: '=',
-                isPostOwner: '=',
-                isDeleted: '=',
-                postId: '@',
-                editAction: '&',
-                deleteAction: '&',
-                replyAction: '&'
-            },
-
-            templateUrl: '/partials/discussion.reply.html'/*,
-
-            link: function (scope, element, attrs) {
-                $timeout(function () {
-                    scope.$apply();
-                });
-
-                $compile(element.contents())(scope.$new());
-            }*/
-        };
-    });;app
-    .directive('dynamicController', ['$controller', function ($controller) {
-        return {
-            restrict: 'A',
-            scope: true,
-            link: function (scope, element, attrs) {
-
-                var locals = {
-                    $scope: scope,
-                    $element: element,
-                    $attrs: attrs
-                };
-
-                var kol = scope.$eval(attrs.dynamicController);
-                if (kol)
-                    element.data('$Controller', $controller(kol, locals));
-            }
-        };
-    }
-    ]);;app.directive('errorBlock',
+    templateUrl: '/partials/discussion.reply.html'/*,
+     link: function (scope, element, attrs) {
+     $timeout(function () {
+     scope.$apply();
+     });
+     $compile(element.contents())(scope.$new());
+     }*/
+  };
+});;app.directive('errorBlock',
     function () {
         return {
             restrict: 'E',
@@ -2553,6 +2862,76 @@ app.directive('modalClose',
     });;/*jslint node: true */
 'use strict';
 
+app.directive('movable', function () {
+  var getRelativePosition = function (position, parent) {
+    return {
+      left: Math.round((100 * position.left / parent.clientWidth)),
+      top: Math.round((100 * position.top / parent.clientHeight))
+    };
+  };
+
+  var getRelativeSize = function (size, parent) {
+    return {
+      width: Math.round((100 * size.width / parent.clientWidth)),
+      height: Math.round((100 * size.height / parent.clientHeight))
+    };
+  };
+
+  return {
+    restrict: 'A',
+    scope: {
+      onMoved: '=',
+      canMove: '@'
+    },
+    link: function (scope, element, attrs) {
+      attrs.$observe('canMove', function (value) {
+        if (value === 'false') {
+          element
+            .draggable({disabled: true})
+            .resizable({disabled: true});
+        } else {
+          element
+            .draggable({disabled: false})
+            .resizable({disabled: false});
+        }
+      });
+
+      element
+        .draggable({
+          containment: 'parent',
+          cursor: 'move',
+          stop: function (event, ui) {
+            if (scope.onMoved) {
+              scope.onMoved({
+                position: getRelativePosition(ui.position, element.parent()[0])
+              });
+            }
+          }
+        })
+        .resizable({
+          containment: 'parent',
+          handles: 'ne, se, sw, nw',
+          stop: function (event, ui) {
+            if (scope.onMoved) {
+              var parent = element.parent()[0];
+              scope.onMoved({
+                position: getRelativePosition(ui.position, parent),
+                size: getRelativeSize(ui.size, parent)
+              });
+            }
+          }
+        });
+
+      // remove event handlers
+      scope.$on('$destroy', function () {
+        element.off('**');
+      });
+    }
+  };
+});
+;/*jslint node: true */
+'use strict';
+
 app.directive('movablePdf', function() {
     var getRelativePosition = function(position, parent) {
         return {
@@ -2625,76 +3004,6 @@ app.directive('movablePdf', function() {
         }
     };
 });
-;/*jslint node: true */
-'use strict';
-
-app.directive('movable', function () {
-  var getRelativePosition = function (position, parent) {
-    return {
-      left: Math.round((100 * position.left / parent.clientWidth)),
-      top: Math.round((100 * position.top / parent.clientHeight))
-    };
-  };
-
-  var getRelativeSize = function (size, parent) {
-    return {
-      width: Math.round((100 * size.width / parent.clientWidth)),
-      height: Math.round((100 * size.height / parent.clientHeight))
-    };
-  };
-
-  return {
-    restrict: 'A',
-    scope: {
-      onMoved: '=',
-      canMove: '@'
-    },
-    link: function (scope, element, attrs) {
-      attrs.$observe('canMove', function (value) {
-        if (value === 'false') {
-          element
-            .draggable({disabled: true})
-            .resizable({disabled: true});
-        } else {
-          element
-            .draggable({disabled: false})
-            .resizable({disabled: false});
-        }
-      });
-
-      element
-        .draggable({
-          containment: 'parent',
-          cursor: 'move',
-          stop: function (event, ui) {
-            if (scope.onMoved) {
-              scope.onMoved({
-                position: getRelativePosition(ui.position, element.parent()[0])
-              });
-            }
-          }
-        })
-        .resizable({
-          containment: 'parent',
-          handles: 'ne, se, sw, nw',
-          stop: function (event, ui) {
-            if (scope.onMoved) {
-              var parent = element.parent()[0];
-              scope.onMoved({
-                position: getRelativePosition(ui.position, parent),
-                size: getRelativeSize(ui.size, parent)
-              });
-            }
-          }
-        });
-
-      // remove event handlers
-      scope.$on('$destroy', function () {
-        element.off('**');
-      });
-    }
-  };
-});
 ;app.directive('pagination',
     function ($compile, $timeout) {
         return {
@@ -2704,6 +3013,7 @@ app.directive('movable', function () {
                 totalRows: '=',
                 limit: '=',
                 useSearch: '=',
+                terms: '=',
                 objectService: '@',
                 sortBy: '@',
                 orderBy: '@',
@@ -2720,6 +3030,10 @@ app.directive('movable', function () {
                     var factoryInstance = element.injector().get(scope.objectService);
                     scope.objectServiceInstance = factoryInstance;
                     factoryInstance.setPageParams(scope);
+                });
+
+                attrs.$observe('terms', function () {
+                    scope.terms = attrs.terms;
                 });
             },
 
@@ -2929,75 +3243,54 @@ app.directive('movable', function () {
         };
     }
 );
-;app.directive('pdfComment',
-    function ($compile, $timeout) {
-        return {
-            restrict: 'E',
+;app.directive('pdfComment', function ($compile, $timeout) {
+  return {
+    restrict: 'E',
+    terminal: true,
+    scope: {
+      postedBy: '@',
+      postedDate: '@',
+      showControl: '=',
+      showReplyButton: '=',
+      //showEditButton: '=',
+      //showDeleteButton: '=',
+      authorClickAction: '&',
+      authorClickable: '=',
+      postContent: '=',
+      isPostOwner: '=',
+      postOwner: '=',
+      isDeleted: '=',
+      postId: '@',
+      editAction: '&',
+      deleteAction: '&',
+      replyAction: '&',
+      showCommentingArea: '=',
+      comments: '=',
+      postComment: '&',
+      recentSubmitOnAnnotation: '=',
+      commentText: '=',
+      removeFunction: '&',
+      isPrivate: '='
+    },
+    templateUrl: '/partials/pdf-comment.html',
+    controller: function ($http, $scope, $rootScope, $sce) {
+      $scope.removeComment = function (commentId) {
+        $scope.removeFunction({id: commentId});
+      };
 
-            terminal: true,
+      var user = $rootScope.user;
+      var isAuthor = $scope.postOwner === user.username;
+      var isAdmin = user.role === 'admin';
+      var hasPermission = (isAuthor || isAdmin);
 
-            scope: {
-                postedBy: '@',
-                postedDate: '@',
-                showControl: '=',
-                showReplyButton: '=',
-                //showEditButton: '=',
-                //showDeleteButton: '=',
-                authorClickAction: '&',
-                authorClickable: '=',
-                postContent: '=',
-                isPostOwner: '=',
-                postOwner: '=',
-                isDeleted: '=',
-                postId: '@',
-                editAction: '&',
-                deleteAction: '&',
-                replyAction: '&',
-                showCommentingArea: '=',
-                comments: '=',
-                postComment: '&',
-                recentSubmitOnAnnotation: '=',
-                commentText: '=',
-                removeFunction: '&',
-            },
-
-            templateUrl: '/partials/pdf-comment.html',
-
-            controller: function($http, $scope, $rootScope, $sce){
-                //$scope.commentText = "";
-
-                //console.log($scope.postComment);
-
-
-                $scope.removeComment = function(commentId){
-                    //var id = commentId;
-                    $scope.removeFunction({id:commentId});
-                    //alert(commentId);
-                }
-
-
-                var user = $rootScope.user;
-                var isAuthor = $scope.postOwner === user.username;
-                var isAdmin = user.role === 'admin';
-                var hasPermission = (isAuthor || isAdmin);
-
-                $scope.isAdmin = isAdmin;
-
-                $scope.showEditButton = hasPermission;
-                $scope.showDeleteButton = hasPermission;
-
-                $scope.toggle = $scope.recentSubmitOnAnnotation;
-
-                $scope.postedDate = new Date($scope.postedDate);
-
-                //console.log($scope.postedDate | $scope.relativeDate);
-
-                //console.log($scope.postId);
-                //console.log($scope.toggle);
-            }
-        };
-    });
-;app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $location, $routeParams) {
+      $scope.isAdmin = isAdmin;
+      $scope.showEditButton = hasPermission;
+      $scope.showDeleteButton = hasPermission;
+      $scope.toggle = $scope.recentSubmitOnAnnotation;
+      $scope.postedDate = new Date($scope.postedDate);
+    }
+  };
+});;app.directive('pdfViewer', function ($compile, $timeout, $rootScope, $http, $location, $routeParams) {
   return {
     restrict: 'E',
     terminal: true,
@@ -3017,13 +3310,31 @@ app.directive('movable', function () {
       scope.pageToView = 1;
       scope.scale = 1.0;
       scope.totalPage = 1;
-      scope.container = element[0].getElementsByClassName('viewerContainer');
-      scope.container = scope.container[0];
+      scope.container = element[0].getElementsByClassName('viewerContainer')[0];
+      scope.config = {
+        countMap: {
+          segments: [],
+          filter: {},
+          isPersonal: false
+        }
+      };
 
       // Initialize CountMap
       var countMap = new CountMap({container: '#countmap'});
-      countMap.itemClicked = function (selectedPage) {
-        $rootScope.setPageNumber(selectedPage);
+      countMap.itemClicked = function (number) {
+        $rootScope.setPageNumber(number);
+      };
+
+      scope.updateCountMap = function () {
+        var segments = _.filter(scope.config.countMap.segments, scope.config.countMap.filter);
+        var options = {
+          segmentKey: 'page',
+          segments: segments,
+          totalSegments: scope.totalPage,
+          maxValue: 10,
+          colorful: false
+        };
+        countMap.buildHeatMap(options);
       };
 
       scope.calculateSlideNavigationProgress = function (currentPageNum) {
@@ -3037,14 +3348,8 @@ app.directive('movable', function () {
         // Update CountMap
         $http.get('/slide-viewer/countmap/' + pdfId)
           .success(function (segments) {
-            var options = {
-              segmentKey: 'page',
-              segments: segments,
-              totalSegments: totalPages,
-              maxValue: 10,
-              colorful: false
-            };
-            countMap.buildHeatMap(options);
+            scope.config.countMap.segments = segments;
+            scope.updateCountMap();
           })
           .finally(function () {
               var progressBar = $('#progress-bar');
@@ -3116,6 +3421,19 @@ app.directive('movable', function () {
       $scope.currentTab = "";
       $scope.currentNavPageNumber = $scope.currentPageNumber;
       $rootScope.switchShowAnnoZones = "On";
+
+      $scope.isAMapPersonalChange = function () {
+        $scope.$emit('showPersonalPdfAnnotations', $scope.config.countMap.isPersonal);
+        if ($scope.config.countMap.isPersonal) {
+          $scope.config.countMap.filter = function (annotation) {
+            return annotation.authorId === $rootScope.user._id;
+          };
+        }
+        else {
+          $scope.config.countMap.filter = null;
+        }
+        $scope.updateCountMap();
+      };
 
       $scope.$watch("currentPageNumber", function (newVal, oldVal) {
         if (newVal != oldVal) {
@@ -3592,29 +3910,7 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
             }
 
         };
-    });;app.directive('widgetBox',
-    function ($compile, $timeout, $rootScope, $parse) {
-        return {
-            restrict: 'E',
-
-            terminal: true,
-            transclude: true,
-
-            scope: {
-                showTools: '=',
-                showConfigButton: '=',
-                title: '@',
-                entryPoint: '@',
-                closeAction: '&',
-                editAction: '&',
-                onloadAction: '&',
-                widget: '='
-            },
-
-            templateUrl: '/partials/widget-box.html'
-        };
-    });
-;app.controller('DiscussionController', function ($scope, $rootScope, $http, $location, $sce,
+    });;app.controller('DiscussionController', function ($scope, $rootScope, $http, $location, $sce,
                                                  $compile, ActionBarService, courseService,
                                                  discussionService, $timeout,
                                                  toastr, Page, $window) {
@@ -3697,16 +3993,17 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
                 if (data.result) {
                     $scope.$emit('onAfterCreateNewTopic', data.post);
                     $scope.topics.unshift(data.post);
-                    $timeout(function () {
-                        $scope.$apply()
-                    });
+                    $scope.formData = {};
+                    $scope.addTopicForm.$setPristine();
 
                     $('#addNewTopicModal').modal('hide');
-
                     toastr.success('Successfully Saved');
+
+                    $timeout(function () {
+                        $scope.$apply();
+                    });
                 }
 
-                $scope.addTopicForm.$setPristine();
                 $scope.isLoading = false;
             })
             .error(function (data) {
@@ -3764,29 +4061,33 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
     };
 
     $scope.deletePost = function (postId) {
-        $http({
-            method: 'DELETE',
-            url: '/api/discussion/' + postId,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-            .success(function (data) {
+        var r = confirm("Are you sure you want to delete this reply?");
 
-                if (data.result) {
-                    $scope.$emit('onAfterDeletePost', postId);
-
-                    toastr.success('Successfully Deleted');
-
+        if (r == true) {
+            $http({
+                method: 'DELETE',
+                url: '/api/discussion/' + postId,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
+                .success(function (data) {
 
-            .error(function (data) {
-                $scope.errors = data.errors;
-                $scope.isLoading = false;
+                    if (data.result) {
+                        $scope.$emit('onAfterDeletePost', postId);
 
-                toastr.error('Delete Failed');
-            });
+                        toastr.success('Successfully Deleted');
+
+                    }
+                })
+
+                .error(function (data) {
+                    $scope.errors = data.errors;
+                    $scope.isLoading = false;
+
+                    toastr.error('Delete Failed');
+                });
+        }
     };
 
     $scope.deleteTopic = function (postId) {
@@ -3940,8 +4241,6 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
     });
 
     $scope.$on('onAfterCreateNewTopic', function (e, f) {
-        $scope.formData.title = "";
-        $scope.formData.content = "";
     });
 
     $scope.$on('onAfterEditReply', function (e, f) {
@@ -4193,7 +4492,9 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
             });
     };
 
-});;externalApp.controller('CreateAppController', function ($scope, $rootScope, $http, $location, $sce,
+});;var externalApp = angular.module('externalApp', [
+    'ngResource', 'ngRoute', 'ngCookies', 'oc.lazyLoad',
+    'relativeDate']);;externalApp.controller('CreateAppController', function ($scope, $rootScope, $http, $location, $sce,
                                                         $compile, $timeout,
                                                         toastr, Page, $window) {
 
@@ -4399,9 +4700,7 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
             }
         }
     }
-]);;var externalApp = angular.module('externalApp', [
-    'ngResource', 'ngRoute', 'ngCookies', 'oc.lazyLoad',
-    'relativeDate']);;externalApp.controller('ExternalAppsController', function ($scope, $rootScope, $http, $location, $sce,
+]);;externalApp.controller('ExternalAppsController', function ($scope, $rootScope, $http, $location, $sce,
                                                            $compile, ActionBarService, courseService,
                                                            discussionService, $timeout,
                                                            toastr, Page, $window, externalAppService) {
@@ -4617,159 +4916,155 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
             }
         }
     }
-]);;app.factory('collapseService', [
-    '$rootScope', '$http',
+]);;app.factory('collapseService', ['$rootScope', '$http', function ($rootScope, $http) {
+  return {
+    collapsed: [],
 
-    function ($rootScope, $http) {
-        return {
-            collapsed: [],
+    isCollapsed: function (nodeId) {
+      var idx = this.collapsed.indexOf(nodeId);
+      if (idx != -1) {
+        return idx;
+      }
 
-            isCollapsed: function (nodeId) {
-                var idx = this.collapsed.indexOf(nodeId);
-                if (idx != -1) {
-                    return idx;
-                }
+      return false;
+    },
 
-                return false;
-            },
+    /**
+     *
+     * @param nodeId
+     * @returns {boolean} true: hide, false: show
+     */
+    toggle: function (nodeId) {
+      var idx = this.isCollapsed(nodeId);
+      if (idx === false) {
+        // hidden, now set it to hide
+        this.collapsed.push(nodeId);
+        this.localStorageSave(nodeId, 1);
+        // true means hide
+        return true;
+      } else {
+        // show back
+        this.collapsed.splice(idx, 1);
+        this.localStorageSave(nodeId, 0);
+        return false;
+      }
+    },
 
-            /**
-             *
-             * @param nodeId
-             * @returns {boolean} true: hide, false: show
-             */
-            toggle: function (nodeId) {
-                var idx = this.isCollapsed(nodeId);
-                if (idx === false) {
-                    // hidden, now set it to hide
-                    this.collapsed.push(nodeId);
-                    this.localStorageSave(nodeId, 1);
-                    // true means hide
-                    return true;
-                } else {
-                    // show back
-                    this.collapsed.splice(idx, 1);
-                    this.localStorageSave(nodeId, 0);
-                    return false;
-                }
-            },
+    setCollapse: function (nodeId) {
+      var idx = this.isCollapsed(nodeId);
+      if (idx === false) {
+        // hidden, now set it to hide
+        this.collapsed.push(nodeId);
+        this.localStorageSave(nodeId, 1);
+        // true means hide
+        return true;
+      }
+      return false;
+    },
 
-            setCollapse: function (nodeId) {
-                var idx = this.isCollapsed(nodeId);
-                if (idx === false) {
-                    // hidden, now set it to hide
-                    this.collapsed.push(nodeId);
-                    this.localStorageSave(nodeId, 1);
-                    // true means hide
-                    return true;
-                }
-                return false;
-            },
-
-            setExpand: function (nodeId) {
-                var idx = this.isCollapsed(nodeId);
-                if (idx !== false) {
-                    // show back
-                    this.collapsed.splice(idx, 1);
-                    this.localStorageSave(nodeId, 0);
-                    return true;
-                }
-                return false;
-            },
+    setExpand: function (nodeId) {
+      var idx = this.isCollapsed(nodeId);
+      if (idx !== false) {
+        // show back
+        this.collapsed.splice(idx, 1);
+        this.localStorageSave(nodeId, 0);
+        return true;
+      }
+      return false;
+    },
 
 
-            setCollapseFirst: function (nodeId) {
-                var idx = this.isCollapsed(nodeId);
-                if (idx === false) {
-                    // hidden, now set it to hide
-                    this.collapsed.push(nodeId);
-                    // true means hide
-                    return true;
-                }
-                return false;
-            },
+    setCollapseFirst: function (nodeId) {
+      var idx = this.isCollapsed(nodeId);
+      if (idx === false) {
+        // hidden, now set it to hide
+        this.collapsed.push(nodeId);
+        // true means hide
+        return true;
+      }
+      return false;
+    },
 
-            setExpandFirst: function (nodeId) {
-                var idx = this.isCollapsed(nodeId);
-                if (idx !== false) {
-                    // show back
-                    this.collapsed.splice(idx, 1);
-                    return true;
-                }
-                return false;
-            },
+    setExpandFirst: function (nodeId) {
+      var idx = this.isCollapsed(nodeId);
+      if (idx !== false) {
+        // show back
+        this.collapsed.splice(idx, 1);
+        return true;
+      }
+      return false;
+    },
 
-            affectVisual: function (hide, pNode, nodeId) {
-                var self = this;
+    affectVisual: function (hide, pNode, nodeId) {
+      var self = this;
 
-                for (var i in pNode.childrens) {
-                    var chs = pNode.childrens[i];
-                    if (hide === true) {
-                        $('#t' + chs._id).hide();
-                        if (chs.childrens.length > 0) {
-                            self.affectVisual(true, chs, chs._id);
-                        }
-                    }
-                    else {
-                        $('#t' + chs._id).show();
-
-                        if (chs.childrens.length > 0) {
-                            var isChildrenCollapsed = self.isCollapsed(chs._id);
-                            if (isChildrenCollapsed === false)
-                                self.affectVisual(false, chs, chs._id);
-                            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
-                                self.affectVisual(true, chs, chs._id);
-                        }
-                    }
-                }
-
-                // hide svg
-                if (hide === true)
-                    $("svg[data-source='t" + nodeId + "'").hide();
-                else
-                    $("svg[data-source='t" + nodeId + "'").show();
-            },
-
-            affectVisualCat: function (hide, pNode, slug) {
-                var self = this;
-
-                for (var i in pNode.subCategories) {
-                    var chs = pNode.subCategories[i];
-                    if (hide === true) {
-                        $('#' + chs.slug).hide();
-                        if (chs.subCategories.length > 0) {
-                            self.affectVisual(true, chs, chs.slug);
-                        }
-                    }
-                    else {
-                        $('#' + chs.slug).show();
-
-                        if (chs.subCategories.length > 0) {
-                            var isChildrenCollapsed = self.isCollapsed(chs._id);
-                            if (isChildrenCollapsed === false)
-                                self.affectVisual(false, chs, chs.slug);
-                            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
-                                self.affectVisual(true, chs, chs.slug);
-                        }
-                    }
-                }
-
-                // hide svg
-                if (hide === true)
-                    $("svg[data-source='" + slug + "'").hide();
-                else
-                    $("svg[data-source='" + slug + "'").show();
-            },
-
-            localStorageSave: function (_id, val) {
-                if (typeof(localStorage) == "undefined")
-                    return;
-
-                localStorage['collapse.' + _id] = val;
-            }
+      for (var i in pNode.childrens) {
+        var chs = pNode.childrens[i];
+        if (hide === true) {
+          $('#t' + chs._id).hide();
+          if (chs.childrens.length > 0) {
+            self.affectVisual(true, chs, chs._id);
+          }
         }
+        else {
+          $('#t' + chs._id).show();
+
+          if (chs.childrens.length > 0) {
+            var isChildrenCollapsed = self.isCollapsed(chs._id);
+            if (isChildrenCollapsed === false)
+              self.affectVisual(false, chs, chs._id);
+            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
+              self.affectVisual(true, chs, chs._id);
+          }
+        }
+      }
+
+      // hide svg
+      if (hide === true)
+        $("svg[data-source='t" + nodeId + "'").hide();
+      else
+        $("svg[data-source='t" + nodeId + "'").show();
+    },
+
+    affectVisualCat: function (hide, pNode, slug) {
+      var self = this;
+
+      for (var i in pNode.subCategories) {
+        var chs = pNode.subCategories[i];
+        if (hide === true) {
+          $('#' + chs.slug).hide();
+          if (chs.subCategories.length > 0) {
+            self.affectVisual(true, chs, chs.slug);
+          }
+        }
+        else {
+          $('#' + chs.slug).show();
+
+          if (chs.subCategories.length > 0) {
+            var isChildrenCollapsed = self.isCollapsed(chs._id);
+            if (isChildrenCollapsed === false)
+              self.affectVisual(false, chs, chs.slug);
+            else if (isChildrenCollapsed >= 0 || isChildrenCollapsed === true)
+              self.affectVisual(true, chs, chs.slug);
+          }
+        }
+      }
+
+      // hide svg
+      if (hide === true)
+        $("svg[data-source='" + slug + "'").hide();
+      else
+        $("svg[data-source='" + slug + "'").show();
+    },
+
+    localStorageSave: function (_id, val) {
+      if (typeof(localStorage) == "undefined")
+        return;
+
+      localStorage['collapse.' + _id] = val;
     }
-]);;app.factory('courseService', [
+  }
+}]);;app.factory('courseService', [
     '$rootScope', '$http',
 
     function ($rootScope, $http) {
@@ -4903,6 +5198,7 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
         return {
             courses: null,
             pageUrl: '',
+            filterTags: [],
 
             pageParams: {
                 limit: 12,
@@ -4914,6 +5210,7 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
             init: function (categoryId, filterTags, success, error, force) {
                 var self = this;
 
+                self.filterTags = filterTags;
                 self.categoryId = categoryId;
                 self.setPageUrl();
 
@@ -4923,14 +5220,7 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
                 }
 
                 else if (force || !self.courses) {
-                    var url = '/api/category/' + categoryId + '/courses';
-                    var t = [];
-                    if (filterTags.length > 0) {
-                        for (var i in filterTags)
-                            t.push(filterTags[i]._id);
-
-                        url += '?tags=' + t.join(',');
-                    }
+                    var url = '/api/category/' + self.categoryId + '/courses' + self.pageUrl;
 
                     $http.get(url)
                         .success(function (data) {
@@ -4971,6 +5261,14 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
                 var ps = [];
                 for (var k in this.pageParams) {
                     ps.push(k + '=' + this.pageParams[k]);
+                }
+
+                var t = [];
+                if (this.filterTags && this.filterTags.length > 0) {
+                    for (var i in this.filterTags)
+                        t.push(this.filterTags[i]._id);
+
+                    ps.push('tags=' + t.join(','));
                 }
 
                 this.pageUrl += ps.join('&');
@@ -5178,127 +5476,124 @@ videoAnnotationsModule.directive('cmTimepicker', function ($timeout) {
             }
         }
     }
-]);;app.factory('mapService', [
-    '$rootScope', '$http',
+]);;app.factory('mapService', ['$rootScope', '$http', function ($rootScope, $http) {
+  return {
+    treeNodes: null,
+    /*var for testing in findNode function*/
+    found: false,
 
-    function ($rootScope, $http) {
-        return {
-            treeNodes: null,
-            /*var for testing in findNode function*/
-            found: false,
+    init: function (courseId, success, error, force) {
+      var self = this;
 
-            init: function (courseId, success, error, force) {
-                var self = this;
+      if (!force && self.treeNodes) {
+        if (success)
+          success(self.treeNodes);
+      }
 
-                if (!force && self.treeNodes) {
-                    if (success)
-                        success(self.treeNodes);
-                }
-
-                else if (force || !self.treeNodes)
-                    $http.get('/api/treeNodes/course/' + courseId)
-                        .success(function (data) {
-                            if (data.result) {
-                                self.treeNodes = data.treeNodes;
-                                if (success)
-                                    success(self.treeNodes);
-                            }
-                        })
-
-                        .error(function (data) {
-                            if (error)
-                                error(data.errors);
-                        });
-            },
-
-            //socket method
-            updatePosition: function (nid, data) {
-                this.found = false;
-                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', nid);
-                if (pNode) {
-                    pNode.positionFromRoot = {x: data.x, y: data.y};
-                }
-            },
-
-            // socket method
-            updateNode: function (treeNode) {
-                this.found = false;
-                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode._id);
-                if (pNode) {
-                    pNode.name = treeNode.name;
-                    if (pNode.type == 'contentNode') {
-                        pNode.resources = [];
-                        if (treeNode.resources.length > 0) {
-                            for (var i in treeNode.resources) {
-                                pNode.resources.push(treeNode.resources[i]);
-                            }
-                        }
-                    }
-                }
-            },
-
-            // socket method
-            deleteNode: function (treeNode) {
-                this.found = false;
-                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode._id);
-                if (pNode) {
-                    pNode.isDeleted = true;
-                    if (treeNode.isDeletedForever)
-                        pNode.isDeletedForever = true;
-
-                    pNode.name = '[DELETED]';
-                }
-            },
-
-            // socket method
-            addNode: function (treeNode) {
-                this.found = false;
-                var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode.parent);
-
-                if (!pNode) {
-                    if (treeNode.parent) {
-                        this.found = false;
-                        var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode.parent);
-
-                        if (pNode) {
-                            pNode.childrens.push(treeNode);
-                        }
-                    }
-                    else
-                        this.treeNodes.push(treeNode);
-                }
-            },
-
-            findNode: function (obj, col, searchKey, searchValue) {
-                if (this.found)
-                    return this.found;
-
-                for (var i in obj) {
-                    var tn = obj[i];
-
-                    if (tn[searchKey] && tn[searchKey] == searchValue) {
-                        this.found = tn;
-                        return tn;
-                    }
-                    else if (tn[col] && tn[col].length > 0) {
-                        // search again
-                        this.findNode(tn[col], col, searchKey, searchValue);
-                    }
-                }
-
-                if (this.found)
-                    return this.found;
-            },
-
-            isInitialized: function () {
-                if (!this.treeNodes) {
-                    return false;
-                }
-
-                return true;
+      else if (force || !self.treeNodes)
+        $http.get('/api/treeNodes/course/' + courseId)
+          .success(function (data) {
+            if (data.result) {
+              self.treeNodes = data.treeNodes;
+              if (success)
+                success(self.treeNodes);
             }
+          })
+
+          .error(function (data) {
+            if (error)
+              error(data.errors);
+          });
+    },
+
+    //socket method
+    updatePosition: function (nid, data) {
+      this.found = false;
+      var pNode = this.findNode(this.treeNodes, 'childrens', '_id', nid);
+      if (pNode) {
+        pNode.positionFromRoot = {x: data.x, y: data.y};
+      }
+    },
+
+    // socket method
+    updateNode: function (treeNode) {
+      this.found = false;
+      var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode._id);
+      if (pNode) {
+        pNode.name = treeNode.name;
+        if (pNode.type == 'contentNode') {
+          pNode.resources = [];
+          if (treeNode.resources.length > 0) {
+            for (var i in treeNode.resources) {
+              pNode.resources.push(treeNode.resources[i]);
+            }
+          }
         }
+      }
+    },
+
+    // socket method
+    deleteNode: function (treeNode) {
+      this.found = false;
+      var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode._id);
+      if (pNode) {
+        pNode.isDeleted = true;
+        if (treeNode.isDeletedForever)
+          pNode.isDeletedForever = true;
+
+        pNode.name = '[DELETED]';
+      }
+    },
+
+    // socket method
+    addNode: function (treeNode) {
+      this.found = false;
+      var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode.parent);
+
+      if (!pNode) {
+        if (treeNode.parent) {
+          this.found = false;
+          var pNode = this.findNode(this.treeNodes, 'childrens', '_id', treeNode.parent);
+
+          if (pNode) {
+            pNode.childrens.push(treeNode);
+          }
+        }
+        else
+          this.treeNodes.push(treeNode);
+      }
+    },
+
+    findNode: function (obj, col, searchKey, searchValue) {
+      if (this.found)
+        return this.found;
+
+      for (var i in obj) {
+        var tn = obj[i];
+
+        if (tn[searchKey] && tn[searchKey] == searchValue) {
+          this.found = tn;
+          return tn;
+        }
+        else if (tn[col] && tn[col].length > 0) {
+          // search again
+          this.findNode(tn[col], col, searchKey, searchValue);
+        }
+      }
+
+      if (this.found)
+        return this.found;
+    },
+
+    isInitialized: function () {
+      if (!this.treeNodes) {
+        return false;
+      }
+
+      return true;
     }
+  }
+}
 ]);;app.factory('Page', function($window) {
     var prefix = 'CourseMapper';
     var title = 'CourseMapper';
@@ -5458,7 +5753,7 @@ app.factory('socket', function ($rootScope) {
                 if (!force && self.installedWidgets[location]) {
                     self.initializeWidgets(self.installedWidgets[location], location, function () {
                         if (success) {
-                            success(self.widgets[location]);
+                            success(self.installedWidgets[location]);
                         }
                     });
                 }
@@ -5514,7 +5809,7 @@ app.factory('socket', function ($rootScope) {
                     var wdg = widgets[i];
 
                     // loop to load the js (if exist)
-                    if (wdg.widgetId.widgetJavascript) {
+                    if (wdg.widgetId != null && wdg.widgetId.widgetJavascript) {
                         this.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0], location);
                     } else {
                         self.widgets[location].push(wdg);
@@ -5622,8 +5917,6 @@ app.factory('socket', function ($rootScope) {
             },
 
             initiateDraggableGrid: function (locs, enableDragging) {
-                var self = this;
-
                 var loc = '#' + locs + '-widgets';
 
                 var options = {
@@ -5638,42 +5931,120 @@ app.factory('socket', function ($rootScope) {
 
                 var $gs = $(loc);
                 $gs.gridstack(options);
+            },
 
-                $gs.on('change', function (evt, node) {
-                    if (node && node[0]) {
-                        var c = $(node[0].el);
-
+            onchangelistener: function (evt, node) {
+                var self = this;
+                for (var i in node) {
+                    var nd = node[i];
+                    var c = $(nd.el);
+                    if (c) {
                         var wId = c.attr('id').substr(1);
-                        if (node[0]._updating) {
-                            var x = node[0].x;
-                            var y = node[0].y;
+                        //if (nd._updating)
+                        {
+                            var x = nd.x;
+                            var y = nd.y;
 
                             self.setPosition(wId, x, y);
+                            self.setLocalPosition(wId, x, y);
+                        }
+                    }
+                }
+            },
+
+            setLocalPosition: function (wId, x, y) {
+                for (var i in this.widgets) {
+                    var wdgs = this.widgets[i];
+                    for (var j in wdgs) {
+                        var wdg = wdgs[j];
+                        if (wdg && wdg._id == wId) {
+                            this.widgets[i][j].position.x = x;
+                            this.widgets[i][j].position.y = y;
+                            wdg.position.x = x;
+                            wdg.position.y = y;
+                        }
+                    }
+                }
+            },
+
+            initiateDragStop: function (locs) {
+                var self = this;
+
+                var loc = '#' + locs + '-widgets';
+                var $gs = $(loc);
+                //$gs.off('change', self.onchangelistener);
+                $gs.on('change', function (evt, node) {
+                    for (var i in node) {
+                        var nd = node[i];
+                        var c = $(nd.el);
+                        if (c) {
+                            var wId = c.attr('id').substr(1);
+                            //if (nd._updating)
+                            {
+                                var x = nd.x;
+                                var y = nd.y;
+
+                                self.setPosition(wId, x, y);
+                                self.setLocalPosition(wId, x, y);
+                            }
                         }
                     }
                 });
             }
         }
     }
-]);;app.filter('capitalize', function() {
-    return function(input, all) {
-        return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}) : '';
-    }
+]);;app.filter('capitalize', function () {
+  return function (input, all) {
+    return (!!input) ? input.replace(/([^\W_]+[^\s-]*) */g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }) : '';
+  }
 });
 
-app.filter('base64Encode', function() {
-    return function(input, all) {
-        return (!!input) ? Base64.encode(input) : '';
-    }
+app.filter('base64Encode', function () {
+  return function (input, all) {
+    return (!!input) ? Base64.encode(input) : '';
+  }
 });
 
-app.filter('base64Decode', function() {
-    return function(input, all) {
-        return (!!input) ? Base64.decode(input) : '';
-    }
+app.filter('base64Decode', function () {
+  return function (input, all) {
+    return (!!input) ? Base64.decode(input) : '';
+  }
 });
 
-app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('msToTime', function() {
+app.filter('unsafe', function ($sce) {
+  return $sce.trustAsHtml;
+});
+
+app.filter('cut', function () {
+  return function (value, wordwise, max, tail) {
+    if (!value) return '';
+
+    max = parseInt(max, 10);
+    if (!max) return value;
+    if (value.length <= max) return value;
+
+    value = value.substr(0, max);
+    if (wordwise) {
+      var lastspace = value.lastIndexOf(' ');
+      if (lastspace != -1) {
+        //Also remove . and , so its gives a cleaner result.
+        if (value.charAt(lastspace - 1) == '.' || value.charAt(lastspace - 1) == ',') {
+          lastspace = lastspace - 1;
+        }
+        value = value.substr(0, lastspace);
+      }
+    }
+
+    return value + (tail || ' …');
+  };
+});;app.filter('htmlToPlaintext', function () {
+    return function (text) {
+      return angular.element(text).text();
+    }
+  }
+);;app.filter('msToTime', function() {
     return function msToTime(s) {
         function addZ(n) {
             return (n < 10 ? '0' : '') + n;
@@ -5688,7 +6059,7 @@ app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });;app.filter('m
         return addZ(hrs) + ':' + addZ(mins) + ':' + addZ(secs);
     };
 });
-;(function(){"use strict";angular.module("relativeDate",[]).value("now",null).value("relativeDateTranslations",{just_now:"just now",seconds_ago:"{{time}} seconds ago",a_minute_ago:"a minute ago",minutes_ago:"{{time}} minutes ago",an_hour_ago:"an hour ago",hours_ago:"{{time}} hours ago",a_day_ago:"yesterday",days_ago:"{{time}} days ago",a_week_ago:"a week ago",weeks_ago:"{{time}} weeks ago",a_month_ago:"a month ago",months_ago:"{{time}} months ago",a_year_ago:"a year ago",years_ago:"{{time}} years ago",over_a_year_ago:"over a year ago",seconds_from_now:"{{time}} seconds from now",a_minute_from_now:"a minute from now",minutes_from_now:"{{time}} minutes from now",an_hour_from_now:"an hour from now",hours_from_now:"{{time}} hours from now",a_day_from_now:"tomorrow",days_from_now:"{{time}} days from now",a_week_from_now:"a week from now",weeks_from_now:"{{time}} weeks from now",a_month_from_now:"a month from now",months_from_now:"{{time}} months from now",a_year_from_now:"a year from now",years_from_now:"{{time}} years from now",over_a_year_from_now:"over a year from now"}).filter("relativeDate",["$injector","now","relativeDateTranslations",function(a,b,c){var d,e;return d=a.has("$translate")?a.get("$translate"):{instant:function(a,b){return c[a].replace("{{time}}",b.time)}},e=function(a,b){return Math.round(Math.abs(a-b)/1e3)},function(a){var c,f,g,h,i,j,k,l,m;switch(j=b?b:new Date,a instanceof Date||(a=new Date(a)),f=null,h=60,g=60*h,c=24*g,l=7*c,i=30*c,m=365*c,f=e(j,a),f>c&&l>f&&(a=new Date(a.getFullYear(),a.getMonth(),a.getDate(),0,0,0),f=e(j,a)),k=function(b,c){var e;return e="just_now"===b?b:j>=a?""+b+"_ago":""+b+"_from_now",d.instant(e,{time:c})},!1){case!(30>f):return k("just_now");case!(h>f):return k("seconds",f);case!(2*h>f):return k("a_minute");case!(g>f):return k("minutes",Math.floor(f/h));case 1!==Math.floor(f/g):return k("an_hour");case!(c>f):return k("hours",Math.floor(f/g));case!(2*c>f):return k("a_day");case!(l>f):return k("days",Math.floor(f/c));case 1!==Math.floor(f/l):return k("a_week");case!(i>f):return k("weeks",Math.floor(f/l));case 1!==Math.floor(f/i):return k("a_month");case!(m>f):return k("months",Math.floor(f/i));case 1!==Math.floor(f/m):return k("a_year");default:return k("over_a_year")}}}])}).call(this);;app.filter('secondsToDateTime', [function() {
+;app.filter('secondsToDateTime', [function() {
     return function(seconds) {
         return new Date(1970, 0, 1).setSeconds(seconds);
     };
@@ -6000,585 +6371,555 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     $scope.tabOpened();
 });
-;app.controller('AnnotationZoneListController', function($scope, $http, $rootScope, $sce, $timeout, $injector) {
+;app.controller('AnnotationZoneListController', function ($scope, $http, $rootScope, $sce, $timeout, $injector) {
 
-    $scope.storedAnnZones = [];
-    $scope.storedAnnZoneColors = [];
-    $rootScope.tagNameErrors = {};
-    //$rootScope.pdfId = "";
+  $scope.storedAnnZones = [];
+  $scope.storedAnnZoneColors = [];
+  $rootScope.tagNameErrors = {};
+  //$rootScope.pdfId = "";
+  $scope.tagNamesList = JSON.parse(JSON.stringify({}));
+  $scope.editZoneMode = -1;
+  $scope.editZoneValues = [];
+  $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
+  $scope.divCounter = 0;
+  $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
+  $rootScope.annotationSubmitPage = -1;
+  $scope.previousPageNumber = -1;
+  //$rootScope.annZoneBoxSizeX = 0;
+  //$rootScope.annZoneBoxSizeY = 0;
+  $rootScope.currCanWidth = 0;
+  $rootScope.currCanHeight = 0;
+  $scope.updateAnnZonePos = function (posObj) {
+    //console.log(posObj);
+  };
 
-    $scope.tagNamesList = JSON.parse(JSON.stringify({}));
+  $rootScope.createMovableAnnZone = function () {
+    var element = $scope.addAnnotationZone(0, 0, 0.3, 0.3, "#ac725e", "", true, false, "");
+    //addAnnotationZoneElement(element);
+    var annZoneId = element.id;
+    $scope.tagNamesList[annZoneId] = "";
+  };
 
+  $rootScope.getTagNamesList = function () {
+    return $scope.tagNamesList;
+  };
+
+  $rootScope.getAnnotationZoneList = function () {
+    return $scope.annotationZoneList;
+  };
+
+  $scope.addAnnotationZone = function (relLeft, relTop, relWidth, relHeight, color, tagName, isBeingCreated, canBeEdited, annZoneId) {
+
+
+    var newAnnZone = {
+      relativePosition: {
+        x: relLeft,
+        y: relTop
+      },
+      relativeSize: {
+        x: relWidth,
+        y: relHeight
+      },
+      color: color,
+      colorBeforeEdit: color,
+      tagName: tagName,
+      editTagNameTemp: tagName.slice(1),
+      dragable: isBeingCreated,
+      isBeingCreated: isBeingCreated,
+      canBeEdited: canBeEdited,
+      annZoneId: annZoneId,
+      divCounter: $scope.divCounter,
+      id: 'rect-' + $scope.divCounter,
+      tagNameIsValidated: false,
+    };
+    $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
+    $scope.divCounter += 1;
+    //console.log("ADDED ZONE");
+    //console.log("DivC after: "+ $scope.divCounter);
+    //console.log($scope.annotationZoneList);
+
+    $timeout(function () {
+
+      $scope.$apply();
+
+    });
+    return newAnnZone;
+  };
+
+
+  //$scope.annZoneMov = [];
+  /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
+   console.log($scope.storedAnnZones);
+   });*/
+
+  /*$scope.annZoneMov.reposition = function(params) {
+   if (params.position) {
+   annZoneMov.position = params.position;
+   }
+   if (params.size) {
+   annZoneMov.size = params.size;
+   }
+   };*/
+
+  $scope.setEditZoneMode = function (id) {
+    $rootScope.resetEditAndReplyMode();
+
+    $scope.editZoneMode = id;
+    //console.log("setEditZoneMode");
+    //console.log(id);
+
+    $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
+    $rootScope.$broadcast('editZoneModeChanged', $scope.editZoneMode);
+
+
+    /*      var ele = $('select[name="colorpicker-change-background-color2"]');
+     ele.parent().find(".simplecolorpicker").remove();
+     ele.parent().css({"margin-left":"0px"});
+     ele.remove();
+
+
+     var nColorPickerEditInput = $('<select/>');
+     nColorPickerEditInput.attr("name","colorpicker-change-background-color2");
+     nColorPickerEditInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
+     nColorPickerEditInput.attr("id", "colorPickerEditInput-" + divCounter);
+     nColorPickerEditInput.addClass("slideRectColorPickerEdit");
+     nColorPickerEditInput = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(nColorPickerEditInput);
+
+
+     $scope.editZoneValues[id].color = color;
+
+     var wrapperElement = $("#slideRectWrapper-"+divCounter);
+     wrapperElement.prepend(nColorPickerEditInput);
+     wrapperElement.css({"margin-left":"-20px"});
+
+     $("#rect-"+divCounter).hover(function () {
+     $(this).stop().fadeTo("fast", "0.75");
+     }, function () {
+     $(this).stop().fadeTo("fast", "0.75");
+     });
+     $("#rect-"+divCounter).css('border', ' 1px dashed white');
+
+     $('select[name="colorpicker-change-background-color2"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
+     $('select[name="colorpicker-change-background-color2"]').simplecolorpicker("selectColor",color);
+
+
+
+
+     nColorPickerEditInput.on('change', function() {
+     $(this).parent().parent().parent().css('background-color', $(this).val());
+     $(this).attr("value",$(this).val());
+     $scope.editZoneValues[id].color = $(this).val();
+     $timeout(function(){
+     $scope.$apply();
+     });
+     });
+     */
+
+  };
+
+  $rootScope.resetEditZoneMode = function () {
+    //$rootScope.$broadcast('reloadTags');
+
+    var id = $scope.editZoneMode;
+
+    $scope.writeCommentMode = false;
+    $scope.replyRawText = [];
+    $scope.replyMode = -1;
     $scope.editZoneMode = -1;
-    $scope.editZoneValues = [];
+    $rootScope.$broadcast('editZoneModeChanged', $scope.editZoneMode);
 
 
-    $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
-    $scope.divCounter = 0;
+    /*var ele = $('select[name="colorpicker-change-background-color2"]');
+     ele.parent().find(".simplecolorpicker").remove();
+     ele.parent().css({"margin-left":"0px"});
+     ele.remove();
+     */
+    if (id != -1) {
+      $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
+      $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
 
+      $timeout(function () {
+        $scope.$apply();
+      });
+    }
+  };
+
+  $scope.updateAnnZone = function (id) {
+
+    $scope.annotationZoneList[id].tagName = $scope.annotationZoneList[id].editTagNameTemp;
+
+    var config = {
+      params: {
+        updateId: $scope.annotationZoneList[id].annZoneId,
+        author: $scope.currentUser.username,
+        authorId: $scope.currentUser._id,
+        updatedAnnZone: {
+          annotationZoneName: "#" + $scope.annotationZoneList[id].tagName,
+          color: $scope.annotationZoneList[id].color,
+          pageNumber: $scope.currentPageNumber
+
+        },
+        pdfId: $scope.pdfFile._id,
+      }
+    };
+
+    //console.log(config);
+
+
+    $http.post("/slide-viewer/updateAnnZone/", null, config)
+      .success(function (data, status, headers, config) {
+        $scope.updateScope($scope.commentGetUrl);
+        //$scope.savedZones = data.annotationZones;
+
+        if (data.result == false) {
+          $rootScope.displayCommentSubmissionResponse(data.error);
+        }
+        else {
+          $rootScope.displayCommentSubmissionResponse("Annotation zone update successful!");
+
+          //TODO: reset everything
+        }
+
+        //console.log("updateAnnZoneEv");
+
+        $rootScope.resetEditZoneMode();
+        $scope.$emit('reloadTags');
+
+      })
+      .error(function (data, status, headers, config) {
+        $rootScope.displayCommentSubmissionResponse("Error: Unexpected Server Response!");
+      });
+  };
+
+  /*$rootScope.removeAllActiveAnnotationZones = function () {
+   for(var inputId in $scope.tagNamesList) {
+   var element = $("#annotationZone #"+inputId);
+
+   delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
+   angular.element($("#annZoneList")).scope().timeout();
+
+   element.remove();
+
+   delete $rootScope.tagNameErrors[inputId];
+   delete $scope.tagNamesList[inputId];
+
+   }
+   };*/
+
+  $rootScope.removeAllActiveAnnotationZones = function () {
+    for (var inputId in $scope.annotationZoneList)
+      if ($scope.annotationZoneList[inputId].isBeingCreated == true)
+        delete $scope.annotationZoneList[inputId];
+
+
+    for (var inputId in $scope.tagNamesList) {
+
+      delete $scope.tagNameErrors[inputId];
+      delete $scope.tagNamesList[inputId];
+
+    }
+    var ret = $rootScope.annotationSubmitPage;
     $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
     $rootScope.annotationSubmitPage = -1;
 
-    $scope.previousPageNumber = -1;
+    $timeout(function () {
+      $scope.$apply();
+    });
+    return ret;
+
+  };
+
+  /*$rootScope.removeAnnotationZone = function (id) {
+   var element = $("#annotationZone #"+id);
+
+   //var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
+
+   var inputId = element.attr("id");
+
+   //delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
+   delete $scope.tagNamesList[inputId];
+   $scope.timeout();
+
+   //annotationInList.parent().remove();
+   element.remove();
+
+   delete $scope.tagNameErrors[id];
+   delete $scope.tagNamesList[id];
+
+   };
+   */
+  $rootScope.removeAnnotationZone = function (id) {
+
+    delete $scope.annotationZoneList[id];
+
+    delete $scope.tagNamesList[id];
 
 
+    delete $rootScope.tagNameErrors[id];
 
-    //$rootScope.annZoneBoxSizeX = 0;
-    //$rootScope.annZoneBoxSizeY = 0;
+    $scope.timeout();
 
-    $rootScope.currCanWidth = 0;
+  };
 
-    $rootScope.currCanHeight = 0;
+  $scope.refreshTags = function () {
+    $scope.refreshTagsWithCallbacks(function () {
+    });
+  };
 
+  $scope.refreshTagsWithCallbacks = function (callback) {
+    $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/' + $scope.currentPageNumber).success(function (data) {
+      $scope.annZones = data.annZones;
 
-    $scope.updateAnnZonePos = function(posObj) {
-      //console.log(posObj);
-    };
+      //tagListLoaded($scope.annZones);
 
+      $scope.tagListLoaded();
 
-
-    $rootScope.createMovableAnnZone = function() {
-      var element = $scope.addAnnotationZone(0, 0, 0.3, 0.3, "#ac725e", "", true, false, "");
-      //addAnnotationZoneElement(element);
-      var annZoneId = element.id;
-
-      $scope.tagNamesList[annZoneId] = "";
-    };
-
-    $rootScope.getTagNamesList = function(){
-      return $scope.tagNamesList;
-    };
-
-    $rootScope.getAnnotationZoneList = function(){
-      return $scope.annotationZoneList;
-    };
-
-
-    $scope.addAnnotationZone = function(relLeft,relTop, relWidth, relHeight, color, tagName, isBeingCreated, canBeEdited, annZoneId) {
-
-
-
-
-      var newAnnZone = {
-        relativePosition: {
-          x: relLeft,
-          y: relTop
-        },
-        relativeSize: {
-          x: relWidth,
-          y: relHeight
-        },
-        color: color,
-        colorBeforeEdit: color,
-        tagName: tagName,
-        editTagNameTemp: tagName.slice(1),
-        dragable: isBeingCreated,
-        isBeingCreated: isBeingCreated,
-        canBeEdited: canBeEdited,
-        annZoneId: annZoneId,
-        divCounter: $scope.divCounter,
-        id: 'rect-'+$scope.divCounter,
-        tagNameIsValidated: false,
-      };
-      $scope.annotationZoneList[newAnnZone.id] = newAnnZone;
-      $scope.divCounter += 1;
-      //console.log("ADDED ZONE");
-      //console.log("DivC after: "+ $scope.divCounter);
+      $timeout(function () {
+        $scope.$apply();
+      });
       //console.log($scope.annotationZoneList);
+      callback();
+    });
+  };
 
-      $timeout(function(){
+  $scope.tagListLoaded = function () {
+    for (var i = 0; i < $scope.annZones.length; i++) {
+      var ele = $scope.annZones[i];
+      var isAuthor = (ele.author == angular.element($("#annZoneList")).scope().currentUser.username);
+      var isAdmin = angular.element($("#annZoneList")).scope().$root.user.role == "admin";
+      var allowedToEdit = (isAdmin || isAuthor);
 
-        $scope.$apply();
+      if (ele.color[0] != '#')
+        ele.color = '#' + ele.color;
 
-      });
-      return newAnnZone;
-    };
+      $scope.addAnnotationZone(ele.relPosX, ele.relPosY, ele.relWidth, ele.relHeight, ele.color, ele.name, false, allowedToEdit, ele.id)
+    }
+  };
 
 
-    //$scope.annZoneMov = [];
-    /*$scope.$watchCollection("storedAnnZones",function(newValue,oldValue){
-      console.log($scope.storedAnnZones);
-    });*/
+  var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function (e, params) {
+    //Find relevant AnnZones
+    var nextPageNumber = params[0];
 
-    /*$scope.annZoneMov.reposition = function(params) {
-        if (params.position) {
-            annZoneMov.position = params.position;
+    if ($scope.previousPageNumber != -1) {
+      var unfinishedAnnZonesList = [];
+      for (var key in $scope.annotationZoneList) {
+        if ($scope.annotationZoneList[key].isBeingCreated == true) {
+          if ($scope.annotationZoneList[key].tagName[0] != '#')
+            $scope.annotationZoneList[key].tagName = '#' + $scope.annotationZoneList[key].tagName;
+          unfinishedAnnZonesList.push($scope.annotationZoneList[key]);
         }
-        if (params.size) {
-            annZoneMov.size = params.size;
-        }
-    };*/
-
-    $scope.setEditZoneMode = function(id) {
-      $rootScope.resetEditAndReplyMode();
-
-      $scope.editZoneMode = id;
-      //console.log("setEditZoneMode");
-      //console.log(id);
-
-      $scope.annotationZoneList[id].colorBeforeEdit = $scope.annotationZoneList[id].color;
-      $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
-
-
-/*      var ele = $('select[name="colorpicker-change-background-color2"]');
-      ele.parent().find(".simplecolorpicker").remove();
-      ele.parent().css({"margin-left":"0px"});
-      ele.remove();
-
-
-      var nColorPickerEditInput = $('<select/>');
-      nColorPickerEditInput.attr("name","colorpicker-change-background-color2");
-      nColorPickerEditInput.append('<option value="#ac725e">#ac725e</option>  <option value="#d06b64">#d06b64</option>  <option value="#f83a22">#f83a22</option>  <option value="#fa573c">#fa573c</option>  <option value="#ff7537">#ff7537</option>  <option value="#ffad46">#ffad46</option>  <option value="#42d692">#42d692</option>  <option value="#16a765">#16a765</option>  <option value="#7bd148">#7bd148</option>  <option value="#b3dc6c">#b3dc6c</option>  <option value="#fbe983">#fbe983</option>  <option value="#fad165">#fad165</option>  <option value="#92e1c0">#92e1c0</option>  <option value="#9fe1e7">#9fe1e7</option>  <option value="#9fc6e7">#9fc6e7</option>  <option value="#4986e7">#4986e7</option>  <option value="#9a9cff">#9a9cff</option>  <option value="#b99aff">#b99aff</option>  <option value="#c2c2c2">#c2c2c2</option>  <option value="#cabdbf">#cabdbf</option>  <option value="#cca6ac">#cca6ac</option>  <option value="#f691b2">#f691b2</option><option value="#cd74e6">#cd74e6</option><option value="#a47ae2">#a47ae2</option>');
-      nColorPickerEditInput.attr("id", "colorPickerEditInput-" + divCounter);
-      nColorPickerEditInput.addClass("slideRectColorPickerEdit");
-      nColorPickerEditInput = angular.element($("#annZoneList")).scope().compileMovableAnnotationZone(nColorPickerEditInput);
-
-
-      $scope.editZoneValues[id].color = color;
-
-      var wrapperElement = $("#slideRectWrapper-"+divCounter);
-      wrapperElement.prepend(nColorPickerEditInput);
-      wrapperElement.css({"margin-left":"-20px"});
-
-      $("#rect-"+divCounter).hover(function () {
-          $(this).stop().fadeTo("fast", "0.75");
-      }, function () {
-          $(this).stop().fadeTo("fast", "0.75");
-      });
-      $("#rect-"+divCounter).css('border', ' 1px dashed white');
-
-      $('select[name="colorpicker-change-background-color2"]').simplecolorpicker({picker: true, theme: 'glyphicons'});
-      $('select[name="colorpicker-change-background-color2"]').simplecolorpicker("selectColor",color);
-
-
-
-
-      nColorPickerEditInput.on('change', function() {
-          $(this).parent().parent().parent().css('background-color', $(this).val());
-          $(this).attr("value",$(this).val());
-          $scope.editZoneValues[id].color = $(this).val();
-          $timeout(function(){
-            $scope.$apply();
-          });
-        });
-*/
-
-    };
-
-    $rootScope.resetEditZoneMode = function() {
-      //$rootScope.$broadcast('reloadTags');
-
-      var id = $scope.editZoneMode;
-
-      $scope.writeCommentMode = false;
-      $scope.replyRawText = [];
-      $scope.replyMode = -1;
-      $scope.editZoneMode = -1;
-      $rootScope.$broadcast('editZoneModeChanged',$scope.editZoneMode);
-
-
-      /*var ele = $('select[name="colorpicker-change-background-color2"]');
-      ele.parent().find(".simplecolorpicker").remove();
-      ele.parent().css({"margin-left":"0px"});
-      ele.remove();
-      */
-      if(id != -1){
-        $scope.annotationZoneList[id].editTagNameTemp = $scope.annotationZoneList[id].tagName;
-        $scope.annotationZoneList[id].color = $scope.annotationZoneList[id].colorBeforeEdit;
-
-        $timeout(function(){
+      }
+      //console.log("PDF PAGE CHANGE");
+      //console.log(unfinishedAnnZonesList.length);
+      //console.log($scope.previousPageNumber);
+      //Store them
+      if (unfinishedAnnZonesList.length != 0) {
+        $rootScope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
+        $timeout(function () {
           $scope.$apply();
         });
       }
-    };
-
-    $scope.updateAnnZone = function (id) {
-
-      $scope.annotationZoneList[id].tagName = $scope.annotationZoneList[id].editTagNameTemp;
-
-      var config = {
-        params: {
-          updateId: $scope.annotationZoneList[id].annZoneId,
-          author: $scope.currentUser.username,
-          authorId: $scope.currentUser._id,
-          updatedAnnZone:
-          {
-            annotationZoneName: "#"+$scope.annotationZoneList[id].tagName,
-            color: $scope.annotationZoneList[id].color,
-            pageNumber: $scope.currentPageNumber
-
-          },
-          pdfId: $scope.pdfFile._id,
-        }
-      };
-
-      //console.log(config);
-
-
-
-      $http.post("/slide-viewer/updateAnnZone/", null, config)
-          .success(function (data, status, headers, config) {
-              $scope.updateScope($scope.commentGetUrl);
-              //$scope.savedZones = data.annotationZones;
-
-              if(data.result == false){
-                $rootScope.displayCommentSubmissionResponse(data.error);
-              }
-              else {
-                $rootScope.displayCommentSubmissionResponse("Annotation zone update successful!");
-
-                //TODO: reset everything
-              }
-
-              //console.log("updateAnnZoneEv");
-
-              $rootScope.resetEditZoneMode();
-              $scope.$emit('reloadTags');
-
-          })
-          .error(function (data, status, headers, config) {
-              $rootScope.displayCommentSubmissionResponse("Error: Unexpected Server Response!");
-          });
-      };
-
-      /*$rootScope.removeAllActiveAnnotationZones = function () {
-        for(var inputId in $scope.tagNamesList) {
-          var element = $("#annotationZone #"+inputId);
-
-          delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
-          angular.element($("#annZoneList")).scope().timeout();
-
-          element.remove();
-
-          delete $rootScope.tagNameErrors[inputId];
-          delete $scope.tagNamesList[inputId];
-
-        }
-      };*/
-
-      $rootScope.removeAllActiveAnnotationZones = function () {
-        for(var inputId in $scope.annotationZoneList)
-          if($scope.annotationZoneList[inputId].isBeingCreated == true)
-            delete $scope.annotationZoneList[inputId];
-
-
-        for(var inputId in $scope.tagNamesList) {
-
-          delete $scope.tagNameErrors[inputId];
-          delete $scope.tagNamesList[inputId];
-
-        }
-        var ret = $rootScope.annotationSubmitPage;
-        $rootScope.annotationZonesOnOtherSlides = JSON.parse(JSON.stringify({}));
-        $rootScope.annotationSubmitPage = -1;
-
-        $timeout(function(){
-          $scope.$apply();
-        });
-        return ret;
-
-      };
-
-    /*$rootScope.removeAnnotationZone = function (id) {
-      var element = $("#annotationZone #"+id);
-
-      //var annotationInList = $("#annotationZoneSubmitList div").find("[value='"+id+"']");
-
-      var inputId = element.attr("id");
-
-      //delete angular.element($("#annZoneList")).scope().tagNamesList[inputId];
-      delete $scope.tagNamesList[inputId];
-      $scope.timeout();
-
-      //annotationInList.parent().remove();
-      element.remove();
-
-      delete $scope.tagNameErrors[id];
-      delete $scope.tagNamesList[id];
-
-    };
-    */
-    $rootScope.removeAnnotationZone = function (id) {
-
-      delete $scope.annotationZoneList[id];
-
-      delete $scope.tagNamesList[id];
-
-
-      delete $rootScope.tagNameErrors[id];
-
-      $scope.timeout();
-
-    };
-
-    $scope.refreshTags = function() {
-      $scope.refreshTagsWithCallbacks(function(){});
-    };
-
-    $scope.refreshTagsWithCallbacks = function(callback) {
-      $http.get('/slide-viewer/disAnnZones/' + $scope.pdfId + '/'+$scope.currentPageNumber).success(function (data) {
-        $scope.annZones = data.annZones;
-
-        //tagListLoaded($scope.annZones);
-
-        $scope.tagListLoaded();
-
-        $timeout(function(){
-          $scope.$apply();
-        });
-        //console.log($scope.annotationZoneList);
-        callback();
-      });
-    };
-
-    $scope.tagListLoaded = function() {
-      for(var i = 0; i < $scope.annZones.length; i++) {
-        var ele = $scope.annZones[i];
-        var isAuthor = (ele.author == angular.element($("#annZoneList")).scope().currentUser.username);
-        var isAdmin =  angular.element($("#annZoneList")).scope().$root.user.role == "admin";
-        var allowedToEdit = (isAdmin || isAuthor);
-
-        if(ele.color[0] != '#')
-          ele.color = '#'+ele.color;
-
-        $scope.addAnnotationZone(ele.relPosX, ele.relPosY, ele.relWidth, ele.relHeight, ele.color, ele.name, false, allowedToEdit, ele.id)
-      }
-    };
-
-
-
-
-
-
-    var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function(e, params){
-      //Find relevant AnnZones
-      var nextPageNumber = params[0];
-
-      if($scope.previousPageNumber != -1){
-        var unfinishedAnnZonesList = [];
-        for(var key in $scope.annotationZoneList){
-          if($scope.annotationZoneList[key].isBeingCreated == true){
-            if($scope.annotationZoneList[key].tagName[0] != '#')
-              $scope.annotationZoneList[key].tagName = '#' + $scope.annotationZoneList[key].tagName;
-            unfinishedAnnZonesList.push($scope.annotationZoneList[key]);
-          }
-        }
-        //console.log("PDF PAGE CHANGE");
-        //console.log(unfinishedAnnZonesList.length);
-        //console.log($scope.previousPageNumber);
-        //Store them
-        if(unfinishedAnnZonesList.length != 0){
-          $rootScope.annotationZonesOnOtherSlides[$scope.previousPageNumber] = unfinishedAnnZonesList;
-          $timeout(function(){
-            $scope.$apply();
-          });
-        }
-      }
-      $scope.$emit('reloadTagsWCallback', function(){
-        //Add previous ones
-        if($scope.previousPageNumber != -1){
-          if(nextPageNumber in $rootScope.annotationZonesOnOtherSlides){
-            //console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
-            for(var key  in $rootScope.annotationZonesOnOtherSlides[nextPageNumber]){
-              var elem = $rootScope.annotationZonesOnOtherSlides[nextPageNumber][key];
-              elem.id= 'rect-'+$scope.divCounter;
-              if(elem.id in $scope.annotationZoneList){
-                console.log("ERROR: Annzone overwritten, should not occur");
-              }
-              $scope.annotationZoneList[elem.id] = elem;
-              $scope.divCounter += 1;
-
-
+    }
+    $scope.$emit('reloadTagsWCallback', function () {
+      //Add previous ones
+      if ($scope.previousPageNumber != -1) {
+        if (nextPageNumber in $rootScope.annotationZonesOnOtherSlides) {
+          //console.log($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+          for (var key  in $rootScope.annotationZonesOnOtherSlides[nextPageNumber]) {
+            var elem = $rootScope.annotationZonesOnOtherSlides[nextPageNumber][key];
+            elem.id = 'rect-' + $scope.divCounter;
+            if (elem.id in $scope.annotationZoneList) {
+              console.log("ERROR: Annzone overwritten, should not occur");
             }
+            $scope.annotationZoneList[elem.id] = elem;
+            $scope.divCounter += 1;
 
-            //$scope.annotationZoneList.concat($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
-            delete $rootScope.annotationZonesOnOtherSlides[nextPageNumber];
+
           }
+
+          //$scope.annotationZoneList.concat($rootScope.annotationZonesOnOtherSlides[nextPageNumber]);
+          delete $rootScope.annotationZonesOnOtherSlides[nextPageNumber];
         }
-        $scope.previousPageNumber = nextPageNumber;
-      });
+      }
+      $scope.previousPageNumber = nextPageNumber;
+    });
+  });
+
+  $scope.$on('$destroy', pdfPageChangeListener);
+
+
+  var reloadTagsEventListener = $scope.$on('reloadTags', function (event) {
+    $scope.$emit('reloadTagsWCallback', function () {
+    });
+  });
+
+  var reloadTagsEventListenerWithCallback = $scope.$on('reloadTagsWCallback', function (event, callback) {
+    //$(".slideRect").remove();
+    //$scope.annotationZoneList = new Array();
+    $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
+    $scope.divCounter = 0;
+
+    annotationZonesAreLoaded = false;
+
+    toDrawAnnotationZoneData = [];
+
+    $timeout(function () {
+      $scope.$apply();
     });
 
-    $scope.$on('$destroy',pdfPageChangeListener);
+    $scope.refreshTagsWithCallbacks(callback);
+  });
+
+  /*TODO:ANGANNZONE
+   var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
+   $scope.annotationZoneList = new Array();
+   $scope.divCounter = 0;
+
+   annotationZonesAreLoaded = false;
+
+   toDrawAnnotationZoneData = [];
+   $scope.refreshTags();
+   });
+   */
 
 
-    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
-      $scope.$emit('reloadTagsWCallback', function(){});
-    });
-
-    var reloadTagsEventListenerWithCallback = $scope.$on('reloadTagsWCallback', function(event, callback) {
-      //$(".slideRect").remove();
-      //$scope.annotationZoneList = new Array();
-      $scope.annotationZoneList = JSON.parse(JSON.stringify({}));
-      $scope.divCounter = 0;
-
-      annotationZonesAreLoaded = false;
-
-      toDrawAnnotationZoneData = [];
-
-      $timeout(function(){
-        $scope.$apply();
-      });
-
-      $scope.refreshTagsWithCallbacks(callback);
-    });
-
-    /*TODO:ANGANNZONE
-    var reloadTagsEventListener = $scope.$on('reloadTags', function(event) {
-      $scope.annotationZoneList = new Array();
-      $scope.divCounter = 0;
-
-      annotationZonesAreLoaded = false;
-
-      toDrawAnnotationZoneData = [];
-      $scope.refreshTags();
-    });
-    */
+  $scope.$on('$destroy', reloadTagsEventListener);
 
 
-    $scope.$on('$destroy',reloadTagsEventListener);
+  $scope.compileMovableAnnotationZone = function (element) {
+    return angular.element(
+      $injector.get('$compile')(element)($scope)
+    );
+  };
 
+  //Check if names of new annZones are correct
+  $scope.$watch("annotationZoneList", function (newValue, oldValue) {
+    if (newValue != oldValue) {
+      if (typeof $scope.annotationZoneList != "undefined") {
+        for (var key in newValue) {
+          var annZone = newValue[key];
+          if (annZone.isBeingCreated) {
 
-
-
-    $scope.compileMovableAnnotationZone = function(element) {
-      return angular.element(
-        $injector.get('$compile')(element)($scope)
-      );
-    };
-
-    //Check if names of new annZones are correct
-    $scope.$watch("annotationZoneList", function (newValue, oldValue) {
-      if(newValue != oldValue) {
-        if(typeof $scope.annotationZoneList != "undefined") {
-          for(var key in newValue) {
-            var annZone = newValue[key];
-            if(annZone.isBeingCreated){
-
-              var tName = newValue[key].tagName;
-              //console.log(newValue[key]);
-              var response = $rootScope.checkTagName(tName);
-              if(response.length != 0) {
-                changeValidationDisplay(key, tName, false, response);
-                $scope.annotationZoneList[key].hasErrors = true;
-              }
-              else {
-                changeValidationDisplay(key, tName, true, response);
-                $scope.annotationZoneList[key].hasErrors = false;
-              }
+            var tName = newValue[key].tagName;
+            //console.log(newValue[key]);
+            var response = $rootScope.checkTagName(tName);
+            if (response.length != 0) {
+              changeValidationDisplay(key, tName, false, response);
+              $scope.annotationZoneList[key].hasErrors = true;
+            }
+            else {
+              changeValidationDisplay(key, tName, true, response);
+              $scope.annotationZoneList[key].hasErrors = false;
             }
           }
         }
       }
-    },true);
+    }
+  }, true);
 
-    $rootScope.checkTagName = function (tagName) {
-      if(!(/^[a-zA-Z0-9]*$/.test(tagName))) {
-        return "Annotation zone contains illegal characters (only alphanumeric allowed)";
-      }
-      if(!(tagName.length >= 3)) {
-        return "Annotation zone name is too short (>=3 characters)";
-      }
-      if(!(tagName.length < 10)) {
-        return "Annotation zone name is too long (<10 characters)";
-      }
-      if(inOldTagList(tagName)) {
-        return "Annotation zone name is already taken (unique over entire document)";
-      }
-
-      return "";
+  $rootScope.checkTagName = function (tagName) {
+    if (!(/^[a-zA-Z0-9]*$/.test(tagName))) {
+      return "Annotation zone contains illegal characters (only alphanumeric allowed)";
+    }
+    if (!(tagName.length >= 3)) {
+      return "Annotation zone name is too short (>=3 characters)";
+    }
+    if (!(tagName.length < 10)) {
+      return "Annotation zone name is too long (<10 characters)";
+    }
+    if (inOldTagList(tagName)) {
+      return "Annotation zone name is already taken (unique over entire document)";
     }
 
-    function inOldTagList(tagName) {
-      //console.log($scope.annZones);
-      for(var key in $scope.annZones) {
-        if($scope.annZones[key].name == "#"+tagName) {
+    return "";
+  }
+
+  function inOldTagList(tagName) {
+    //console.log($scope.annZones);
+    for (var key in $scope.annZones) {
+      if ($scope.annZones[key].name == "#" + tagName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function changeValidationDisplay(key, name, success, text) {
+    $scope.annotationZoneList[key].tagNameIsValidated = success;
+
+    if (success) {
+      /*$("#"+key).find(".validationIcon").addClass("glyphicon");
+       $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
+       $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
+       */
+      delete $rootScope.tagNameErrors[key];
+      $timeout(function () {
+        $scope.$apply($rootScope.tagNameErrors);
+      });
+    }
+    else {
+      $rootScope.tagNameErrors[key] = {name: name, text: text};
+
+      $timeout(function () {
+        $scope.$apply($rootScope.tagNameErrors);
+      });
+    }
+  }
+
+  $rootScope.nameHasNoError = function (name) {
+
+    for (var key in $rootScope.tagNameErrors) {
+      if ($rootScope.tagNameErrors[key].name == name.substring(1)) {
+        if ($rootScope.tagNameErrors[key].text == "") {
           return true;
         }
-      }
-      return false;
-    }
-
-    function changeValidationDisplay (key, name, success, text) {
-      $scope.annotationZoneList[key].tagNameIsValidated = success;
-
-      if(success){
-        /*$("#"+key).find(".validationIcon").addClass("glyphicon");
-        $("#"+key).find(".validationIcon").removeClass("glyphicon-remove-sign");
-        $("#"+key).find(".validationIcon").addClass("glyphicon-ok-sign");
-        */
-        delete $rootScope.tagNameErrors[key];
-        $timeout(function(){
-          $scope.$apply($rootScope.tagNameErrors);
-        });
-      }
-      else {
-        $rootScope.tagNameErrors[key] = {name : name, text : text};
-
-        $timeout(function(){
-          $scope.$apply($rootScope.tagNameErrors);
-        });
-      }
-    }
-
-    $rootScope.nameHasNoError = function (name) {
-
-      for(var key in $rootScope.tagNameErrors) {
-        if($rootScope.tagNameErrors[key].name == name.substring(1)) {
-          if($rootScope.tagNameErrors[key].text == "") {
-            return true;
-          }
-          else {
-            return false;
-          }
+        else {
+          return false;
         }
       }
-      return true;
-    };
+    }
+    return true;
+  };
 
-    $rootScope.deleteCurrentAnnotationZones = function(page,key) {
-       $rootScope.annotationZonesOnOtherSlides[page].splice(key,1);
-       if($rootScope.annotationZonesOnOtherSlides[page].length==0){
-         //$rootScope.annotationZonesOnOtherSlides.splice(page,1);
-       }
-    };
+  $rootScope.deleteCurrentAnnotationZones = function (page, key) {
+    $rootScope.annotationZonesOnOtherSlides[page].splice(key, 1);
+    if ($rootScope.annotationZonesOnOtherSlides[page].length == 0) {
+      //$rootScope.annotationZonesOnOtherSlides.splice(page,1);
+    }
+  };
 
-    $rootScope.clearTagNameErrors = function () {
-      /*for(var key in $scope.tagNameErrors) {
-        delete $scope.tagNameErrors[key];
-        //console.log($scope.tagNameErrors[key]);
-      }*/
-      $rootScope.tagNameErrors = JSON.parse(JSON.stringify({}));
-      $scope.tagNamesList = JSON.parse(JSON.stringify({}));
+  $rootScope.clearTagNameErrors = function () {
+    /*for(var key in $scope.tagNameErrors) {
+     delete $scope.tagNameErrors[key];
+     //console.log($scope.tagNameErrors[key]);
+     }*/
+    $rootScope.tagNameErrors = JSON.parse(JSON.stringify({}));
+    $scope.tagNamesList = JSON.parse(JSON.stringify({}));
 
-      $timeout(function(){
-        $scope.$apply($rootScope.tagNameErrors);
-      });
-    };
+    $timeout(function () {
+      $scope.$apply($rootScope.tagNameErrors);
+    });
+  };
 
-    $scope.timeout = function () {
-      $timeout(function(){
-        $scope.$apply($rootScope.tagNameErrors);
-      });
-    };
+  $scope.timeout = function () {
+    $timeout(function () {
+      $scope.$apply($rootScope.tagNameErrors);
+    });
+  };
 
 
 });
 ;app.controller('CommentListController', function ($scope, $http, $rootScope, $sce, $timeout, ActionBarService) {
 
   $scope.recentSubmitOnAnnotation = "";
-
   $scope.comment = {};
-
   $scope.editRawText = [];
   $scope.editMode = -1;
-
   $scope.replyRawText = [];
   $scope.replyMode = -1;
-
   $scope.comments = [];
   $scope.replies = [];
-
   $scope.orderType = false;
   $scope.orderBy = false;
   $scope.ascending = "true";
@@ -6586,26 +6927,20 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   $scope.filtersRaw = {};
   $scope.currentPageNumber = 1;
   $scope.annotationZones = [];
-
   $scope.rawSearchTerm = "";
   var baseFilterString = "Currently no filters are active";
   $scope.activeFilterString = baseFilterString;
-
   /*var visibleString = "visibility: visible;";
    var invisibleString = "visibility: hidden;";
    $scope.removeFiltersVisible = visibleString;
    */
-
   // zones
   $scope.tagNames = [];
   $scope.tagRelPos = [];
   $scope.tagRelCoord = [];
   $scope.tagColor = [];
-
   $scope.writeCommentMode = false;
-
   $scope.decouplePDFAndComments = false;
-
 
   var pdfPageChangeListener = $rootScope.$on('onPdfPageChange', function (e, params) {
     $scope.currentPageNumber = params[0];
@@ -6677,7 +7012,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   $scope.populateAnnotationZone = function () {
     $scope.annotationZones = [];
 
-
     var tagNamesList = $rootScope.getTagNamesList();
     var annotationZoneList = $rootScope.getAnnotationZoneList();
     for (var inputId in annotationZoneList) {
@@ -6686,13 +7020,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         var relPosY = annotationZoneList[inputId].relativePosition.y;
         var relWidth = annotationZoneList[inputId].relativeSize.x;
         var relHeight = annotationZoneList[inputId].relativeSize.y;
-
         var name = annotationZoneList[inputId].tagName;
         var color = annotationZoneList[inputId].color;
-
         var errorText = $rootScope.checkTagName(name);
-
-
         if (annotationZoneList[inputId].hasErrors) {
           return "The annotation zone with name " + name + " has errors and could not be submitted.";
         }
@@ -6709,12 +7039,9 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         var relPosY = annZone.relativePosition.y;
         var relWidth = annZone.relativeSize.x;
         var relHeight = annZone.relativeSize.y;
-
         var name = annZone.tagName;
         var color = annZone.color;
-
         //var errorText = $rootScope.checkTagName(name);
-
         if (annZone.hasErrors == true) {
           return "An annotation zone on page " + page + " and name " + name + " has errors and prevents submission";
         }
@@ -6725,10 +7052,10 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     }
 
     /*$scope.comment.tagNames = $scope.tagNames.join(',');
-    $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
-    $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
-    $scope.comment.tagColor = $scope.tagColor.join(',');
-*/
+     $scope.comment.tagRelPos = $scope.tagRelPos.join(',');
+     $scope.comment.tagRelCoord = $scope.tagRelCoord.join(',');
+     $scope.comment.tagColor = $scope.tagColor.join(',');
+     */
     return "";
   };
 
@@ -6741,14 +7068,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
     var zone = {
       annotationZoneName: name,
-      relativeCoordinates: {
-        X: relPosX,
-        Y: relPosY
-      },
-      relativeDimensions: {
-        X: relWidth,
-        Y: relHeight
-      },
+      relativeCoordinates: {X: relPosX, Y: relPosY},
+      relativeDimensions: {X: relWidth, Y: relHeight},
       color: color,
       pdfId: pdfId,
       pdfPageNumber: pdfPageNumber,
@@ -6785,8 +7106,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   };
 
   $scope.submitReply = function (id) {
-
-
     var config = {
       params: {
         rawText: $scope.replyRawText[id],
@@ -6800,32 +7119,24 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       }
     };
 
-
     $http.post("/slide-viewer/submitComment/", null, config)
       .success(function (data, status, headers, config) {
         $scope.updateScope($scope.commentGetUrl);
         //$scope.savedZones = data.annotationZones;
-
         if (data.result == false) {
           displayCommentSubmissionResponse(data.error);
         }
         else {
           displayCommentSubmissionResponse("Comment submission successful!");
-
           //TODO: reset everything
         }
         //console.log("commReplyEv");
-
         $scope.recentSubmitOnAnnotation = id;
-
         //console.log("Recent: "+ $scope.recentSubmitOnAnnotation);
-
         $rootScope.$broadcast('reloadTags');
-
         $scope.writeCommentMode = false;
         $scope.replyRawText = [];
         $scope.replyMode = -1;
-
       })
       .error(function (data, status, headers, config) {
         displayCommentSubmissionResponse("Error: Unexpected Server Response!");
@@ -6846,7 +7157,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       .success(function (data, status, headers, config) {
         $scope.updateScope($scope.commentGetUrl);
         //$scope.savedZones = data.annotationZones;
-
         if (data.result == false) {
           displayCommentSubmissionResponse(data.error);
         }
@@ -6854,7 +7164,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
           displayCommentSubmissionResponse("Comment deletion successful!");
         }
         //console.log("commDeleteEv");
-
         $rootScope.$broadcast('reloadTags');
       })
       .error(function (data, status, headers, config) {
@@ -6868,17 +7177,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
       displayCommentSubmissionResponse("Client Error: Some annotation zones are invalid: " + annZoneCheckResult);
       return false;
     }
-
     $rootScope.clearTagNameErrors();
-
     var submitPage = ($rootScope.annotationSubmitPage != -1) ? $rootScope.annotationSubmitPage : $scope.currentPageNumber;
-
-    var annTextWOWhitespace = $scope.comment.rawText.replace(/&nbsp;/gi,'');
-    annTextWOWhitespace = annTextWOWhitespace.replace(/<[a-zA-Z]+>/gi,'');
-    annTextWOWhitespace = annTextWOWhitespace.replace(/<\/[a-zA-Z]+>/gi,'');
+    var annTextWOWhitespace = $scope.comment.rawText.replace(/&nbsp;/gi, '');
+    annTextWOWhitespace = annTextWOWhitespace.replace(/<[a-zA-Z]+>/gi, '');
+    annTextWOWhitespace = annTextWOWhitespace.replace(/<\/[a-zA-Z]+>/gi, '');
     annTextWOWhitespace = $.trim(annTextWOWhitespace);
 
-    if(annTextWOWhitespace == ""){
+    if (annTextWOWhitespace == "") {
       displayCommentSubmissionResponse("Client Error: Your annotation was not submitted, since it does not contain any text yet.");
       return false;
     }
@@ -6933,7 +7239,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
   $scope.submitEdit = function (comment) {
 
-
     var config = {
       params: {
         updateId: comment._id,
@@ -6941,8 +7246,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         authorId: $scope.currentUser._id,
         rawText: $scope.editRawText[$scope.editMode],
         pageNumber: $scope.currentPageNumber,
-        pdfId: $scope.pdfFile._id
-
+        pdfId: $scope.pdfFile._id,
+        isPrivate: comment.isPrivate
       }
     };
 
@@ -7001,18 +7306,14 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     displayCommentSubmissionResponse(text);
   };
 
-
   //$scope.pageFilter;
-
   $scope.commentGetUrl = '/slide-viewer/disComm/{"type":"' + $scope.orderBy + '","ascending":"' + $scope.ascending + '"}/' + $scope.filters;
-
   $scope.setRegexFilter = function (value) {
     if (typeof $scope.filtersRaw['rawText'] == 'undefined') {
       $scope.filtersRaw['rawText'] = {'regex': value};
     }
     else
       $scope.filtersRaw['rawText'].regex = value;
-
     $scope.$broadcast('onFiltersRawChange');
   };
 
@@ -7138,19 +7439,20 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     }
   };
 
+  $scope.showPersonal = false;
+
+  $scope.$on('showPersonalPdfAnnotations', function (event, value) {
+    $scope.showPersonal = value;
+  });
+
   $scope.updateScope = function (url) {
     $http.get(url).success(function (data) {
       //console.log('COMMENTS UPDATED');
       //console.log("url: " + url);
-
-
       $scope.editMode = -1;
       /*for (var i in $scope.comments) {
        var cmnt = $scope.comments[i];
        //cmnt.html = $sce.trustAsHtml(cmnt.html);
-
-
-
        }*/
       $scope.comments = [];
       $scope.replies = [];
@@ -7478,7 +7780,6 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   };
 
   $scope.setReplyRawText = function (id, newText) {
-
     $scope.replyRawText[id] = newText;
     $timeout(function () {
       $scope.$apply();
@@ -7510,8 +7811,2077 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     delete $scope.filtersRaw[id];
     $scope.$broadcast('onFiltersRawChange');
   };
+});;app.controller('PeerAssessmentController', function($scope, $http, courseService, toastr, $window, Upload, $location, ActionBarService) {
+    $scope.course = null;
+    $scope.peerreviews = null;
+    $scope.vName = null;
+
+    $scope.extraActionsMenu = [];
+
+    $scope.$watch(function(){
+            return ActionBarService.extraActionsMenu;
+        },
+        function (newValue) {
+            $scope.extraActionsMenu = ActionBarService.extraActionsMenu;
+        });
+
+    $scope.tabOpened = function() {
+        if (courseService.course) {
+            $scope.course = courseService.course;
+
+            $scope.initTab(courseService.course._id);
+        } else {
+            $scope.$on('onAfterInitCourse', function (e, course) {
+                $scope.course = course;
+                $scope.initTab(course._id);
+            });
+        }
+    }
+
+    $scope.initTab = function (courseId) {
+
+        var url = '/api/peerassessment/' + courseId + '/peerreviews';
+        $http.get(url).then( function(response) {
+            _.each(response.data.peerreviews, function(review) {
+                review.publicationDate = new Date(review.publicationDate);
+                review.dueDate = new Date(review.dueDate);
+                // check if they are needed
+                //review.solutionPublicationDate = new Date(review.solutionPublicationDate);
+                //review.ssPublicationDate = review.solutionPublicationDate;
+                //delete review.solutionPublicationDate;
+                //review.reviewDescription = review.description;
+                //delete review.description;
+            });
+            $scope.peerreviews = response.data.peerreviews;
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        });
+
+        $scope.initiateView();
+    }
+
+    // Reviews Assignment
+    $scope.reviewAssignment = function(peerReviewId) {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewAssignment&vId=' + peerReviewId;
+    }
+
+    // Peer Reviews
+    $scope.openDeleteConfirmationModal = function(reviewDocId, event) {
+        if(event) {
+            event.stopPropagation();
+        }
+        $scope.deleteReviewId = reviewDocId;
+        $('#confirmDeleteAssignmentModal').modal('show');
+    }
+
+    $scope.deletePeerReview = function(reviewId) {
+        var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + reviewId;
+
+        $http.delete(url).then( function(response) {
+            for( var i=0; i<$scope.peerreviews.length; i++) {
+                if($scope.peerreviews[i]._id == reviewId) {
+                    break;
+                }
+            }
+            $scope.peerreviews.splice(i,1);
+            if($scope.vName || $scope.vId) {
+                $scope.redirectPRHome();
+            }
+        }, function(err) {
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        });
+
+        $('#confirmDeleteAssignmentModal').modal('hide');
+    }
+
+    $scope.goBack = function() {
+        window.history.back();
+    }
+
+    $scope.editPeerReview = function(review, event) {
+        if(event) {
+            event.stopPropagation();
+        }
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=editPeerReview&vId=' + review._id;
+    }
+
+    $scope.viewPeerReview = function(peerReviewId) {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewPeerReview&vId=' + peerReviewId;
+    }
+
+    $scope.newPeerReview = function() {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=newPeerReview';
+    }
+
+    // Solutions
+    $scope.openAddEditSolutionModal = function(paramsObj) {
+        console.log('review', paramsObj);
+        var config = {};
+        // Check if we are coming from solution List
+        if(paramsObj.path == 'solutionList') {
+            config.method = 'GET'
+            config.url = '/api/peerassessment/' + $scope.course._id + '/solutions/' + paramsObj._id;
+        } else {
+            config.method = 'POST';
+            config.url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + paramsObj._id + '/solutions';
+            // Check whether this is needed ?
+            config.params = {
+                reviewTitle: paramsObj.title
+            }
+        }
+
+        $http(config).then(function(response) {
+            console.log('response', response);
+            if (response.data.result) {
+                $scope.solutionObj = response.data.solution;
+                if (paramsObj.path !== 'solutionList') {
+                    $scope.solutionObj.peerReviewTitle = response.data.title;
+                }
+
+                if ($scope.solutionObj && $scope.solutionObj.solutionDocuments && $scope.solutionObj.solutionDocuments.length > 0) {
+                    $scope.solutionObj.displayDocumentsList = [];
+                    _.each($scope.solutionObj.solutionDocuments, function (docName) {
+                        var temp = {};
+                        temp.link = window.location.origin + docName;
+                        var tempArr = docName.split('/');
+                        temp.name = tempArr[tempArr.length - 1];
+                        $scope.solutionObj.displayDocumentsList.push(temp);
+                    })
+                }
+
+                $('#addEditSolutionModal').modal('show');
+            } else {
+                toastr.warning('Deadline has been passed. Unable to upload the solution');
+            }
+        }, function(err) {
+            console.log('err', err);
+        })
+    }
+
+    $scope.giveFeedback = function(solutionId) {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=giveFeedback&vId=' + solutionId;
+    }
+
+    // Was used in adminfeeback which has now been changed so its not needed any more but still verify
+    $scope.viewSolution = function(solutionId) {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolution&vId=' + solutionId;
+    }
+
+    $scope.viewAllSolutions = function() {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolutionsList';
+    }
+
+    $scope.viewReviewsList = function() {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewReviewsList';
+    }
+
+    $scope.openDeleteSolutionConfirmationModal = function(solutionId, event) {
+        if(event) {
+            event.stopPropagation();
+        }
+        $scope.deleteSolutionId = solutionId;
+        $('#confirmDeleteSolutionModal').modal('show');
+    }
+
+    $scope.manageRubrics = function() {
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=manageRubrics';
+    }
+
+    $scope.openRubric = function() {
+        $('#addEditRubricModal').modal('show');
+    }
+
+    // Home
+    $scope.redirectPRHome = function() {
+        $scope.vName = false;
+        $scope.vId = false;
+        $location.search('vName', '');
+        $location.search('vId', '');
+        // window.location.reload();
+    }
+
+    $scope.$on('$routeUpdate', function () {
+        $scope.initiateView();
+
+        if (!$scope.vName) {
+            $('li.peerAssessmentTitle').remove();
+            $scope.tabOpened();
+            //var te = $('a.discussionTabLink').text();
+            //$('.action-header .breadcrumb li.tab').html(te);
+        }
+    });
+
+    $scope.initiateView = function() {
+        $scope.vName = $location.search().vName;
+        if($scope.vName) {
+            if($scope.vName == 'viewPeerReview') {
+                $scope.currentView = 'viewAssignment.tpl';
+                $scope.manageBreadCrumb('View Peer Review');
+            } else if($scope.vName == 'viewSolutionsList') {
+                $scope.currentView = 'seeAllSolutions.tpl';
+                $scope.manageBreadCrumb('See All Solutions');
+            } else if($scope.vName == 'viewSolution') {
+                $scope.currentView = 'viewSolution.tpl';
+                $scope.manageBreadCrumb('View Solution');
+            } else if($scope.vName == 'newPeerReview') {
+                $scope.currentView = 'addNewAssignment.tpl'
+                $scope.manageBreadCrumb('New Peer Review');
+            } else if($scope.vName == 'editPeerReview') {
+                $scope.currentView = 'editAssignment.tpl'
+                $scope.manageBreadCrumb('Edit Peer Review');
+            } else if($scope.vName == 'reviewAssignment') {
+                $scope.currentView = 'reviewAssignment.tpl'
+                $scope.manageBreadCrumb('Assign Reviews');
+            } else if($scope.vName == 'viewReviewsList') {
+                $scope.currentView = 'reviewList.tpl'
+                $scope.manageBreadCrumb('See All Reviews');
+            } else if($scope.vName == 'manageRubrics') {
+                $scope.currentView = 'manageRubrics.tpl'
+                $scope.manageBreadCrumb('Manage Rubrics');
+            } else if($scope.vName == 'reviewSubmission') {
+                $scope.currentView = 'reviewSubmission.tpl'
+                $scope.manageBreadCrumb('Submit Review');
+            } else if($scope.vName == 'giveFeedback') {
+                $scope.currentView = 'adminFeedback.tpl'
+                $scope.manageBreadCrumb('Feedback')
+            }  else if($scope.vName == 'viewFeedback') {
+                $scope.currentView = 'viewFeedback.tpl'
+                $scope.manageBreadCrumb('View Feedback')
+            }
+        } else {
+            $scope.currentView = 'main.tpl';
+            ActionBarService.extraActionsMenu = [];
+            if($scope.isAdmin || $scope.isManager || $scope.isOwner) {
+                ActionBarService.extraActionsMenu.push(
+                    //{
+                    //    'html': '<a style="cursor: pointer;"' +
+                    //    ' data-toggle="modal" data-target="#addNewAssignmentModal"' +
+                    //    ' title="New Peer Review">' +
+                    //    '&nbsp;&nbsp; <i class="ionicons ion-android-add"></i> &nbsp; NEW PEER REVIEW</a>'
+                    //},
+                    {
+                        clickAction: $scope.newPeerReview,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-android-add"></i> &nbsp; NEW PEER REVIEW',
+                        aTitle: 'New Peer Review'
+                    },
+                    {
+                        separator: true
+                    },
+                    {
+                        clickAction: $scope.viewAllSolutions,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-ios-paper"></i> &nbsp; SEE ALL SOLUTIONS',
+                        aTitle: 'See All Solutions'
+                    }
+                );
+            }
+
+            ActionBarService.extraActionsMenu.push(
+                {
+                    clickAction: $scope.viewReviewsList,
+                    title: '&nbsp;&nbsp; <i class="ionicons ion-android-done-all"></i> &nbsp; ASSIGNED REVIEWS',
+                    aTitle: 'Assigned Reviews'
+                }
+            )
+
+            if($scope.isAdmin || $scope.isManager || $scope.isOwner) {
+                ActionBarService.extraActionsMenu.push(
+                    {
+                        separator: true
+                    },
+                    {
+                        clickAction: $scope.manageRubrics,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-settings"></i> &nbsp; MANAGE RUBRICS',
+                        aTitle: 'Manage Rubrics'
+                    }
+                )
+            }
+        }
+
+    }
+
+    $scope.manageBreadCrumb = function (crumb) {
+        var dt = $('.action-header .breadcrumb').find('li.peerAssessmentTitle');
+        $('.action-header .breadcrumb li').removeClass('active');
+        // var u = '#/cid/' + $scope.course._id + '?tab=discussion';
+        if (dt.length > 0) {
+            dt.html(crumb);
+        } else {
+            if ($scope.vName) {
+                // $('.action-header .breadcrumb').find('li.tab').wrapInner('<a class="discussionTabLink" href="' + u + '"></a>');
+                var newEl = '<li class="peerAssessmentTitle active">' + crumb + '</li>';
+                $('.action-header .breadcrumb').append(newEl);
+            }
+        }
+    };
+
+    $scope.tabOpened();
 });
-;app.controller('HomePageController', function ($scope, $http, $rootScope,
+;app.controller('BlindController', function($scope) {
+    console.log('Debug: BlindController')
+    // Setup default values for the view to be populated correctly
+    if($scope.newAssignObj && $scope.newAssignObj.reviewSettings && !$scope.newAssignObj.reviewSettings.blind) {
+        $scope.newAssignObj.reviewSettings.blind = 'double'
+    }
+
+    //$scope.toottip = "<b>Single: </b> The reviewer knows the student identity <br/>" +
+    //                 "<b>Double: </b> Both reviewer and student identity is confidential <br/>" +
+    //                 "<b>None: </b> Both reviewer and student knows each other's identity <br/>"
+
+    $scope.tooltip = "States who can see the identity during the process"
+});app.controller('LoopController', function($scope) {
+    console.log('Debug: LoopController')
+    // Setup default values for the view to be populated correctly
+    $scope.$watch(function(){
+        return $scope.newAssignObj;
+    }, function(newAssignObj) {
+        if(newAssignObj && newAssignObj.reviewSettings && $scope.newAssignObj.reviewSettings.loop == 'multiple'){
+            $scope.multipleView = true
+        } else {
+            $scope.multipleView = false
+        }
+    })
+
+    if($scope.newAssignObj && $scope.newAssignObj.reviewSettings && !$scope.newAssignObj.reviewSettings.loop) {
+        $scope.newAssignObj.reviewSettings.loop = 'single'
+        $scope.multipleView = false
+    } else if($scope.newAssignObj) {
+        if($scope.newAssignObj.reviewSettings.loop == 'single'){
+            $scope.multipleView = false
+        } else {
+            $scope.multipleView = true;
+        }
+    }
+    $scope.toggleView = function(val) {
+        console.log('Checking object', $scope.newAssignObj)
+        if(val == 'multiple') {
+            $scope.multipleView = true
+        } else {
+            $scope.multipleView = false
+        }
+    }
+
+    $scope.tooltip = "States the number of time the review process will happen"
+});app.controller('ReviewAssignmentTypeController', function($scope) {
+    console.log('Debug: ReviewAssignmentController')
+    // Setup default values for the view to be populated correctly
+    if($scope.newAssignObj && $scope.newAssignObj.reviewSettings && !$scope.newAssignObj.reviewSettings.reviewAssignment) {
+        $scope.newAssignObj.reviewSettings.reviewAssignment = 'single'
+    }
+
+    $scope.tooltip = "States if the solution will be reviewed by 1 or multiple"
+});app.controller('ReviewPercentageController', function($scope) {
+    console.log('Debug: ReviewPercentageController')
+    // Setup default values for the view to be populated correctly
+    if($scope.newAssignObj && $scope.newAssignObj.reviewSettings && !$scope.newAssignObj.reviewSettings.studentPercentage) {
+        $scope.newAssignObj.reviewSettings.studentPercentage = 0
+    }
+});app.controller('AddEditRubricModalController', function($scope, $http, toastr) {
+    $scope.saveRubric = function() {
+        // Check for client side validation here
+
+        var url = '/api/peerassessment/' + $scope.course._id + '/rubrics'
+        if($scope.rubric._id) {
+            url = url + '/' + $scope.rubric._id
+        }
+
+        $http.post(url, {title: $scope.rubric.title, description: $scope.rubric.description}).then(function(response) {
+            toastr.success('Rubric saved');
+            window.location.reload();
+        }, function(err) {
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+});app.controller('ManageRubricsController', function($scope, ActionBarService, $http, toastr) {
+    console.log('Debug: ManageRubricsController')
+
+    fetchRubrics = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/rubrics'
+        $http.get(url).then(function(response) {
+            if(response && response.data) {
+                $scope.rubrics = response.data.rubrics;
+            }
+        }, function(err) {
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+
+    if($scope.vName) {
+        ActionBarService.extraActionsMenu = [];
+        ActionBarService.extraActionsMenu.push(
+            {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
+            {
+                clickAction: $scope.redirectPRHome,
+                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+                aTitle: 'Peer Review Home'
+            },
+            {
+                separator: true
+            },
+            {
+                clickAction: $scope.openRubric,
+                title: '<i class="ionicons ion-android-add"></i> &nbsp; NEW RUBRIC',
+                aTitle: 'New Rubric'
+            }
+        );
+
+        fetchRubrics()
+    }
+
+    //$scope.saveRubric = function() {
+    //    // Check for client side validation here
+    //
+    //    var url = '/api/peerassessment/' + $scope.course._id + '/rubrics'
+    //    if($scope.rubric._id) {
+    //        url = url + '/' + $scope.rubric._id
+    //    }
+    //
+    //    $http.post(url, {title: $scope.rubric.title, description: $scope.rubric.description}).then(function(response) {
+    //        toastr.success('Rubric saved');
+    //        window.location.reload();
+    //    }, function(err) {
+    //        toastr.error('Internal Server Error. Please try again later.');
+    //    })
+    //}
+
+    $scope.viewRubric = function(rubric) {
+        console.log('Rubric: ', rubric)
+        $scope.rubric = rubric
+        $('#viewRubricModal').modal('show');
+    }
+
+    $scope.editRubric = function(rubric, event) {
+        if(event)
+            event.stopPropagation();
+        if(rubric)
+            $scope.rubric = rubric
+        $('#addEditRubricModal').modal('show');
+    }
+
+    $scope.deleteRubric = function(rubricId, event) {
+        if(event)
+            event.stopPropagation();
+        var url = '/api/peerassessment/' + $scope.course._id + '/rubrics/' + rubricId
+        $http.delete(url).then(function(response) {
+            toastr.success('Rubric successfully deleted');
+            window.location.reload();
+        }, function(err) {
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+
+    // Setting rubric object to null for the reusability of the modal
+    $("#addEditRubricModal").on('hidden.bs.modal', function () {
+        $(this).data('bs.modal', null);
+        $scope.rubric = null;
+    });
+
+    $("#viewRubricModal").on('hidden.bs.modal', function () {
+        $scope.rubric = null;
+    });
+
+});app.controller('RubricController', function($scope, ActionBarService, $http, toastr) {
+    fetchRubrics = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/rubrics'
+        $http.get(url).then(function(response) {
+            if(response && response.data) {
+                $scope.rubrics = response.data.rubrics;
+            }
+        }, function(err) {
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+
+    fetchRubrics()
+
+    $scope.toggleSelection = function(rId) {
+        var idx = $scope.newAssignObj.reviewSettings.rubrics.indexOf(rId);
+        if(idx > -1) {
+            $scope.newAssignObj.reviewSettings.rubrics.splice(idx, 1);
+        } else {
+            $scope.newAssignObj.reviewSettings.rubrics.push(rId);
+        }
+        console.log($scope.newAssignObj.reviewSettings.rubrics);
+    }
+
+    if($scope.newAssignObj && $scope.newAssignObj.reviewSettings && !$scope.newAssignObj.reviewSettings.rubrics) {
+        $scope.newAssignObj.reviewSettings.rubrics = []
+    }
+});app.controller('EditPeerReviewController', function($scope, $http, toastr, $window, Upload, ActionBarService, $location) {
+    console.log('Debug: EditPeerReviewController')
+    ActionBarService.extraActionsMenu = [];
+
+    ActionBarService.extraActionsMenu.push(
+        {
+            clickAction: $scope.goBack,
+            title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+            aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
+        }
+    );
+
+    $scope.reviewDocuments = false;
+    $scope.sampleSolutions = false;
+    $scope.progress = 0;
+    //$scope.newAssignObj.deletedUploadedFiles = [];
+    //$scope.newAssignObj.deletedUploadedSolutions = [];
+
+    $scope.deleteUploadedFiles = function(fileName) {
+        for(var i=0; i<$scope.newAssignObj.displayDocumentsList.length; i++) {
+            if ($scope.newAssignObj.displayDocumentsList[i].link == fileName) {
+                if(!$scope.newAssignObj.deletedUploadedFiles) {
+                    $scope.newAssignObj.deletedUploadedFiles = [];
+                }
+                $scope.newAssignObj.deletedUploadedFiles.push($scope.newAssignObj.documents[i]);
+                $scope.newAssignObj.documents.splice(i,1);
+                $scope.newAssignObj.displayDocumentsList.splice(i,1);
+                break;
+            }
+        }
+        console.log('Check deleted Objects', $scope.newAssignObj.deletedUploadedFiles, $scope.newAssignObj.documents, $scope.newAssignObj.displayDocumentsList);
+    }
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.reviewDocuments, fileName);
+        for(var i=0; i<$scope.reviewDocuments.length; i++) {
+            if($scope.reviewDocuments[i].name == fileName) {
+                $scope.reviewDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.deleteUploadedSolutions = function(fileName) {
+        for(var i=0; i<$scope.newAssignObj.displaySolutionsList.length; i++) {
+            if ($scope.newAssignObj.displaySolutionsList[i].link == fileName) {
+                if(!$scope.newAssignObj.deletedUploadedSolutions) {
+                    $scope.newAssignObj.deletedUploadedSolutions = [];
+                }
+                $scope.newAssignObj.deletedUploadedSolutions.push($scope.newAssignObj.solutions[i]);
+                $scope.newAssignObj.solutions.splice(i,1);
+                $scope.newAssignObj.displaySolutionsList.splice(i,1);
+                break;
+            }
+        }
+        console.log('Check deleted Objects', $scope.newAssignObj.deletedUploadedSolutions, $scope.newAssignObj.solutions, $scope.newAssignObj.displaySolutionsList);
+    }
+
+    $scope.deleteSelectedSolutions = function(fileName) {
+        console.log('Review Docs Selected', $scope.sampleSolutions, fileName);
+        for(var i=0; i<$scope.sampleSolutions.length; i++) {
+            if($scope.sampleSolutions[i].name == fileName) {
+                $scope.sampleSolutions.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.initiateController = function() {
+        var vId = $location.search().vId;
+        if($scope.vName && vId) {
+            $scope.newAssignObj = null;
+
+            var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + vId;
+            $http.get(url).then(function (response) {
+                console.log('Resp', response);
+                var review = response.data.peerReview;
+                if (review.publicationDate) {
+                    review.publicationDate = new Date(review.publicationDate);
+                }
+                if (review.dueDate) {
+                    review.dueDate = new Date(review.dueDate);
+                }
+                if (review.solutionPublicationDate) {
+                    review.solutionPublicationDate = new Date(review.solutionPublicationDate);
+                    review.ssPublicationDate = review.solutionPublicationDate;
+                    delete review.solutionPublicationDate;
+                }
+                review.reviewDescription = review.description;
+                delete review.description;
+
+                if (review.documents && review.documents.length > 0) {
+                    review.displayDocumentsList = [];
+                    _.each(review.documents, function (docName) {
+                        var temp = {};
+                        temp.link = window.location.origin + docName;
+                        var tempArr = docName.split('/');
+                        temp.name = tempArr[tempArr.length - 1];
+                        review.displayDocumentsList.push(temp);
+                    })
+                }
+
+                if (review.solutions && review.solutions.length > 0) {
+                    review.displaySolutionsList = [];
+                    _.each(review.solutions, function (docName) {
+                        var temp = {};
+                        temp.link = window.location.origin + docName;
+                        var tempArr = docName.split('/');
+                        temp.name = tempArr[tempArr.length - 1];
+                        review.displaySolutionsList.push(temp);
+                    })
+                }
+
+                // Processing review settings
+                if (review.reviewSettings && review.reviewSettings.reviewStartDate) {
+                    review.reviewSettings.reviewStartDate = new Date(review.reviewSettings.reviewStartDate)
+                }
+                if (review.reviewSettings && review.reviewSettings.reviewEndDate) {
+                    review.reviewSettings.reviewEndDate = new Date(review.reviewSettings.reviewEndDate)
+                }
+                if (review.reviewSettings && review.reviewSettings.secondDueDate) {
+                    review.reviewSettings.secondDueDate = new Date(review.reviewSettings.secondDueDate)
+                }
+                if (review.reviewSettings && review.reviewSettings.secondReviewStartDate) {
+                    review.reviewSettings.secondReviewStartDate = new Date(review.reviewSettings.secondReviewStartDate)
+                }
+                if (review.reviewSettings && review.reviewSettings.secondReviewEndDate) {
+                    review.reviewSettings.secondReviewEndDate = new Date(review.reviewSettings.secondReviewEndDate)
+                }
+
+                $scope.newAssignObj = review;
+
+            }, function (err) {
+                // Check for proper error message later
+                toastr.error('Internal Server Error. Please try again later.');
+            });
+        }
+    }
+
+    $scope.dateValidationObject = {
+        publicationDate : { valid: true, message: '' },
+        dueDate : { valid: true, message: '' },
+        solutionDate : { valid: true, message: '' },
+        reviewStartDate : { valid: true, message: '' },
+        reviewEndDate : { valid: true, message: '' },
+        secondDueDate : { valid: true, message: '' },
+        secondReviewStartDate : { valid: true, message: '' },
+        secondReviewEndDate : { valid: true, message: '' },
+    }
+
+    var clearValidation = function() {
+        $scope.dateValidationObject.publicationDate.valid = true
+        $scope.dateValidationObject.dueDate.valid = true
+        $scope.dateValidationObject.solutionDate.valid = true
+        $scope.dateValidationObject.reviewStartDate.valid = true
+        $scope.dateValidationObject.reviewEndDate.valid = true
+        $scope.dateValidationObject.secondDueDate.valid = true
+        $scope.dateValidationObject.secondReviewStartDate.valid = true
+        $scope.dateValidationObject.secondReviewEndDate.valid = true
+    }
+
+    $scope.formValidation = function() {
+        clearValidation()
+        if($scope.newAssignObj.dueDate) {
+            if(!$scope.newAssignObj.publicationDate) {
+                $scope.dateValidationObject.publicationDate.valid = false;
+                $scope.dateValidationObject.publicationDate.message = 'Publication date is required for due date';
+            } else if ($scope.newAssignObj.publicationDate >= $scope.newAssignObj.dueDate) {
+                $scope.dateValidationObject.dueDate.valid = false;
+                $scope.dateValidationObject.dueDate.message = 'Due date should be greater than publication date';
+            }
+        }
+        if($scope.newAssignObj.ssPublicationDate) {
+            if(!$scope.newAssignObj.dueDate) {
+                $scope.dateValidationObject.dueDate.valid = false;
+                $scope.dateValidationObject.dueDate.message = 'Due date is required for solution publication date';
+            } else if ($scope.newAssignObj.dueDate >= $scope.newAssignObj.ssPublicationDate) {
+                $scope.dateValidationObject.solutionDate.valid = false;
+                $scope.dateValidationObject.solutionDate.message = 'Solution publication date should be greater than due date';
+            }
+        }
+
+        if($scope.newAssignObj.reviewSettings.reviewStartDate) {
+            if(!$scope.newAssignObj.dueDate) {
+                $scope.dateValidationObject.dueDate.valid = false;
+                $scope.dateValidationObject.dueDate.message = 'Due date is required for review process';
+            } else if ($scope.newAssignObj.dueDate >= $scope.newAssignObj.reviewSettings.reviewStartDate) {
+                $scope.dateValidationObject.reviewStartDate.valid = false;
+                $scope.dateValidationObject.reviewStartDate.message = 'Review start date should be greater than than due date';
+            }
+        }
+
+        if($scope.newAssignObj.reviewSettings.reviewEndDate) {
+            if(!$scope.newAssignObj.reviewSettings.reviewStartDate) {
+                $scope.dateValidationObject.reviewStartDate.valid = false;
+                $scope.dateValidationObject.reviewStartDate.message = 'Review start date is required';
+            } else if ($scope.newAssignObj.reviewSettings.reviewStartDate >= $scope.newAssignObj.reviewSettings.reviewEndDate) {
+                $scope.dateValidationObject.reviewEndDate.valid = false;
+                $scope.dateValidationObject.reviewEndDate.message = 'Review end date should be greater than review start date';
+            }
+        }
+        if($scope.newAssignObj.reviewSettings.loop == 'multiple') {
+            if($scope.newAssignObj.reviewSettings.secondDueDate) {
+                if(!$scope.newAssignObj.reviewSettings.reviewEndDate) {
+                    $scope.dateValidationObject.reviewEndDate.valid = false;
+                    $scope.dateValidationObject.reviewEndDate.message = 'Review end date is required';
+                } else if ($scope.newAssignObj.reviewSettings.reviewEndDate >= $scope.newAssignObj.reviewSettings.secondDueDate) {
+                    $scope.dateValidationObject.secondDueDate.valid = false;
+                    $scope.dateValidationObject.secondDueDate.message = 'Second due date should be greater than review end date';
+                }
+            }
+
+            if($scope.newAssignObj.reviewSettings.secondReviewStartDate) {
+                if(!$scope.newAssignObj.reviewSettings.secondDueDate) {
+                    $scope.dateValidationObject.secondDueDate.valid = false;
+                    $scope.dateValidationObject.secondDueDate.message = 'Second due date is required';
+                } else if ($scope.newAssignObj.reviewSettings.secondDueDate >= $scope.newAssignObj.reviewSettings.secondReviewStartDate) {
+                    $scope.dateValidationObject.secondReviewStartDate.valid = false;
+                    $scope.dateValidationObject.secondReviewStartDate.message = 'Second review start date should be greater than second due date';
+                }
+            }
+
+            if($scope.newAssignObj.reviewSettings.secondReviewEndDate) {
+                if(!$scope.newAssignObj.reviewSettings.secondReviewStartDate) {
+                    $scope.dateValidationObject.secondReviewStartDate.valid = false;
+                    $scope.dateValidationObject.secondReviewStartDate.message = 'Second review start date is required';
+                } else if ($scope.newAssignObj.reviewSettings.secondReviewStartDate >= $scope.newAssignObj.reviewSettings.secondReviewEndDate) {
+                    $scope.dateValidationObject.secondReviewEndDate.valid = false;
+                    $scope.dateValidationObject.secondReviewEndDate.message = 'Second review end date should be greater than second review start date';
+                }
+            }
+        }
+    }
+
+    $scope.isFormValid = function() {
+        if ($scope.form.$error.min && $scope.form.$error.min.length) {
+            return false
+        } else if ($scope.form.$error.number && $scope.form.$error.number.length) {
+            return false
+        } else if ($scope.form.$error.required && $scope.form.$error.required.length) {
+            return false
+        } else {
+            for (var key in $scope.dateValidationObject) {
+                if ($scope.dateValidationObject[key].valid == false) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    $scope.editPeerReview = function() {
+        console.log('Form Object', $scope.form)
+        $scope.isLoading = true;
+        var uploadParams = {
+            method: 'PUT',
+            url: '/api/peerassessment/' + $scope.$parent.course._id + '/peerreviews/' + $scope.newAssignObj._id,
+            fields: $scope.newAssignObj
+        };
+        uploadParams.file = [];
+        if($scope.reviewDocuments) {
+            uploadParams.file.push({'reviewDocuments':$scope.reviewDocuments});
+        }
+        if($scope.sampleSolutions) {
+            uploadParams.file.push({'sampleSolutions':$scope.sampleSolutions});
+        }
+
+        $scope.upload = Upload.upload(
+            uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
+
+                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log("Progress", $scope.progress);
+            })
+            .success(function (data) {
+
+                $scope.progress = 0;
+                if (data.result) {
+                    toastr.success('Successfully Saved');
+                } else {
+                    toastr.error('Updating Peer Review Failed');
+                }
+                $scope.isLoading = false;
+                window.location.reload();
+            })
+            .error(function (data) {
+                toastr.error('Updating Peer Review Failed');
+                $scope.errors = data.errors;
+                $scope.progress = 0;
+                $scope.isLoading = false;
+            });
+    }
+
+    $scope.initiateController();
+});;app.controller('NewPeerReviewController', function($scope, $http, toastr, $window, Upload, ActionBarService) {
+    console.log('Debug: NewPeerReviewController')
+    ActionBarService.extraActionsMenu = [];
+
+    ActionBarService.extraActionsMenu.push(
+        {
+            clickAction: $scope.goBack,
+            title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+            aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
+        }
+    );
+
+    $scope.newAssignObj = {
+        title: "",
+        reviewDescription: "",
+        groupSubmission: false,
+        totalMarks: 0,
+        publicationDate: null,
+        dueDate: null,
+        ssPublicationDate: null,
+        reviewSettings: {}
+    }
+    $scope.reviewDocuments = false;
+    $scope.sampleSolutions = false;
+    $scope.progress = 0;
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.reviewDocuments, fileName);
+        for(var i=0; i<$scope.reviewDocuments.length; i++) {
+            if($scope.reviewDocuments[i].name == fileName) {
+                $scope.reviewDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.deleteSelectedSolutions = function(fileName) {
+        console.log('Review Docs Selected', $scope.sampleSolutions, fileName);
+        for(var i=0; i<$scope.sampleSolutions.length; i++) {
+            if($scope.sampleSolutions[i].name == fileName) {
+                $scope.sampleSolutions.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.dateValidationObject = {
+        publicationDate : { valid: true, message: '' },
+        dueDate : { valid: true, message: '' },
+        solutionDate : { valid: true, message: '' },
+        reviewStartDate : { valid: true, message: '' },
+        reviewEndDate : { valid: true, message: '' },
+        secondDueDate : { valid: true, message: '' },
+        secondReviewStartDate : { valid: true, message: '' },
+        secondReviewEndDate : { valid: true, message: '' },
+    }
+
+    var clearValidation = function() {
+        $scope.dateValidationObject.publicationDate.valid = true
+        $scope.dateValidationObject.dueDate.valid = true
+        $scope.dateValidationObject.solutionDate.valid = true
+        $scope.dateValidationObject.reviewStartDate.valid = true
+        $scope.dateValidationObject.reviewEndDate.valid = true
+        $scope.dateValidationObject.secondDueDate.valid = true
+        $scope.dateValidationObject.secondReviewStartDate.valid = true
+        $scope.dateValidationObject.secondReviewEndDate.valid = true
+    }
+
+    $scope.formValidation = function() {
+        clearValidation()
+        if($scope.newAssignObj.dueDate) {
+            if(!$scope.newAssignObj.publicationDate) {
+                $scope.dateValidationObject.publicationDate.valid = false;
+                $scope.dateValidationObject.publicationDate.message = 'Publication date is required for due date';
+            } else if ($scope.newAssignObj.publicationDate >= $scope.newAssignObj.dueDate) {
+                $scope.dateValidationObject.dueDate.valid = false;
+                $scope.dateValidationObject.dueDate.message = 'Due date should be greater than publication date';
+            }
+        }
+        if($scope.newAssignObj.ssPublicationDate) {
+            if(!$scope.newAssignObj.dueDate) {
+                $scope.dateValidationObject.dueDate.valid = false;
+                $scope.dateValidationObject.dueDate.message = 'Due date is required for solution publication date';
+            } else if ($scope.newAssignObj.dueDate >= $scope.newAssignObj.ssPublicationDate) {
+                $scope.dateValidationObject.solutionDate.valid = false;
+                $scope.dateValidationObject.solutionDate.message = 'Solution publication date should be greater than due date';
+            }
+        }
+
+        if($scope.newAssignObj.reviewSettings.reviewStartDate) {
+            if(!$scope.newAssignObj.dueDate) {
+                $scope.dateValidationObject.dueDate.valid = false;
+                $scope.dateValidationObject.dueDate.message = 'Due date is required for review process';
+            } else if ($scope.newAssignObj.dueDate >= $scope.newAssignObj.reviewSettings.reviewStartDate) {
+                $scope.dateValidationObject.reviewStartDate.valid = false;
+                $scope.dateValidationObject.reviewStartDate.message = 'Review start date should be greater than than due date';
+            }
+        }
+
+        if($scope.newAssignObj.reviewSettings.reviewEndDate) {
+            if(!$scope.newAssignObj.reviewSettings.reviewStartDate) {
+                $scope.dateValidationObject.reviewStartDate.valid = false;
+                $scope.dateValidationObject.reviewStartDate.message = 'Review start date is required';
+            } else if ($scope.newAssignObj.reviewSettings.reviewStartDate >= $scope.newAssignObj.reviewSettings.reviewEndDate) {
+                $scope.dateValidationObject.reviewEndDate.valid = false;
+                $scope.dateValidationObject.reviewEndDate.message = 'Review end date should be greater than review start date';
+            }
+        }
+        if($scope.newAssignObj.reviewSettings.loop == 'multiple') {
+            if($scope.newAssignObj.reviewSettings.secondDueDate) {
+                if(!$scope.newAssignObj.reviewSettings.reviewEndDate) {
+                    $scope.dateValidationObject.reviewEndDate.valid = false;
+                    $scope.dateValidationObject.reviewEndDate.message = 'Review end date is required';
+                } else if ($scope.newAssignObj.reviewSettings.reviewEndDate >= $scope.newAssignObj.reviewSettings.secondDueDate) {
+                    $scope.dateValidationObject.secondDueDate.valid = false;
+                    $scope.dateValidationObject.secondDueDate.message = 'Second due date should be greater than review end date';
+                }
+            }
+
+            if($scope.newAssignObj.reviewSettings.secondReviewStartDate) {
+                if(!$scope.newAssignObj.reviewSettings.secondDueDate) {
+                    $scope.dateValidationObject.secondDueDate.valid = false;
+                    $scope.dateValidationObject.secondDueDate.message = 'Second due date is required';
+                } else if ($scope.newAssignObj.reviewSettings.secondDueDate >= $scope.newAssignObj.reviewSettings.secondReviewStartDate) {
+                    $scope.dateValidationObject.secondReviewStartDate.valid = false;
+                    $scope.dateValidationObject.secondReviewStartDate.message = 'Second review start date should be greater than second due date';
+                }
+            }
+
+            if($scope.newAssignObj.reviewSettings.secondReviewEndDate) {
+                if(!$scope.newAssignObj.reviewSettings.secondReviewStartDate) {
+                    $scope.dateValidationObject.secondReviewStartDate.valid = false;
+                    $scope.dateValidationObject.secondReviewStartDate.message = 'Second review start date is required';
+                } else if ($scope.newAssignObj.reviewSettings.secondReviewStartDate >= $scope.newAssignObj.reviewSettings.secondReviewEndDate) {
+                    $scope.dateValidationObject.secondReviewEndDate.valid = false;
+                    $scope.dateValidationObject.secondReviewEndDate.message = 'Second review end date should be greater than second review start date';
+                }
+            }
+        }
+    }
+
+    $scope.isFormValid = function() {
+        if ($scope.form.$error.min && $scope.form.$error.min.length) {
+            return false
+        } else if ($scope.form.$error.number && $scope.form.$error.number.length) {
+            return false
+        } else if ($scope.form.$error.required && $scope.form.$error.required.length) {
+            return false
+        } else {
+            for (var key in $scope.dateValidationObject) {
+                if ($scope.dateValidationObject[key].valid == false) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    $scope.createPeerReview = function() {
+        console.log('Form object', $scope.form)
+        console.log('Date validation object', $scope.dateValidationObject)
+        $scope.isLoading = true;
+        var uploadParams = {
+            url: '/api/peerassessment/' + $scope.$parent.course._id + '/peerreviews',
+            fields: $scope.newAssignObj
+        };
+        uploadParams.file = [];
+        if($scope.reviewDocuments) {
+            uploadParams.file.push({'reviewDocuments':$scope.reviewDocuments});
+        }
+        if($scope.sampleSolutions) {
+            uploadParams.file.push({'sampleSolutions':$scope.sampleSolutions});
+        }
+
+        $scope.upload = Upload.upload(
+            uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
+
+                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log("Progress", $scope.progress);
+            })
+            .success(function (data) {
+
+                $scope.progress = 0;
+                if (data.result) {
+                    toastr.success('Successfully Saved');
+                } else {
+                    toastr.error('Error Creating Peer Review');
+                }
+                $scope.isLoading = false;
+
+                window.history.back();
+            })
+            .error(function (data) {
+                $scope.errors = data.errors;
+                $scope.progress = 0;
+                $scope.isLoading = false;
+            });
+    }
+});;app.controller('ViewPeerReviewController', function($scope, $location, $http, toastr, ActionBarService) {
+    console.log('Debug: ViewPeerReviewController')
+    $scope.vId = $location.search().vId;
+    if($scope.vName && $scope.vId) {
+        $scope.viewReview = null;
+        ActionBarService.extraActionsMenu = [];
+
+        ActionBarService.extraActionsMenu.push(
+            {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
+            {
+                clickAction: $scope.redirectPRHome,
+                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+                aTitle: 'Peer Review Home'
+            }
+        );
+
+        ActionBarService.extraActionsMenu.push({
+            separator: true
+        });
+
+        var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + $scope.vId;
+        $http.get(url).then( function(response) {
+            var review = response.data.peerReview;
+            review.publicationDate = new Date(review.publicationDate);
+            review.dueDate = new Date(review.dueDate);
+            review.solutionPublicationDate = new Date(review.solutionPublicationDate);
+            review.ssPublicationDate = review.solutionPublicationDate;
+            delete review.solutionPublicationDate;
+            review.reviewDescription = review.description;
+            delete review.description;
+
+            if(review.reviewSettings.reviewStartDate) {
+                review.reviewSettings.reviewStartDate = new Date(review.reviewSettings.reviewStartDate)
+            }
+            if(review.reviewSettings.reviewEndDate) {
+                review.reviewSettings.reviewEndDate = new Date(review.reviewSettings.reviewEndDate)
+            }
+            if(review.reviewSettings.secondDueDate) {
+                review.reviewSettings.secondDueDate = new Date(review.reviewSettings.secondDueDate)
+            }
+            if(review.reviewSettings.secondReviewStartDate) {
+                review.reviewSettings.secondReviewStartDate = new Date(review.reviewSettings.secondReviewStartDate)
+            }
+            if(review.reviewSettings.secondReviewEndDate) {
+                review.reviewSettings.secondReviewEndDate = new Date(review.reviewSettings.secondReviewEndDate)
+            }
+
+            if(review.documents && review.documents.length>0) {
+                review.displayDocumentsList = [];
+                _.each(review.documents, function(docName) {
+                    var temp = {};
+                    temp.link = window.location.origin + docName;
+                    var tempArr = docName.split('/');
+                    temp.name = tempArr[tempArr.length-1];
+                    review.displayDocumentsList.push(temp);
+                })
+            }
+
+            if(review.solutions && review.solutions.length>0) {
+                review.displaySolutionsList = [];
+                _.each(review.solutions, function(docName) {
+                    var temp = {};
+                    temp.link = window.location.origin + docName;
+                    var tempArr = docName.split('/');
+                    temp.name = tempArr[tempArr.length-1];
+                    review.displaySolutionsList.push(temp);
+                })
+            }
+
+            $scope.viewReview = review;
+            console.log('ViewPeerReview: ', review)
+            if($scope.isAdmin || $scope.isManager || $scope.isOwner) {
+                ActionBarService.extraActionsMenu.push(
+                    {
+                        clickAction: $scope.editPeerReview,
+                        clickParams: $scope.viewReview,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT',
+                        aTitle: 'Edit Peer Review'
+                    },
+                    {
+                        clickAction: $scope.openDeleteConfirmationModal,
+                        clickParams: $scope.viewReview._id,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-ios-trash"></i> &nbsp; DELETE',
+                        aTitle: 'Delete Peer Review'
+                    },
+                    {
+                        separator: true
+                    },
+                    {
+                        clickAction: $scope.reviewAssignment,
+                        clickParams: $scope.viewReview._id,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-android-done-all"></i> &nbsp; ASSIGN REVIEWS',
+                        aTitle: 'Assign Reviews'
+                    }
+                );
+            }
+
+            if($scope.isEnrolled) {
+                ActionBarService.extraActionsMenu.push(
+                    {
+                        clickAction: $scope.openAddEditSolutionModal,
+                        clickParams: $scope.viewReview,
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-ios-paper"></i> &nbsp; ADD/EDIT SOLUTION',
+                        aTitle: 'Add/Edit Solution'
+                    },
+                    {
+                        separator: true
+                    },
+                    {
+                        clickAction: function() { window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewFeedback&vId=' + $scope.viewReview._id; },
+                        title: '&nbsp;&nbsp; <i class="ionicons ion-checkmark-circled"></i> &nbsp; VIEW FEEDBACK',
+                        aTitle: 'View Feedback'
+                    }
+                );
+            }
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        });
+    }
+});app.controller('AdminFeedbackController', function($scope, $http, toastr, $window, $location, ActionBarService, Upload) {
+    vId = $location.search().vId;
+    if(!vId) {
+        return
+    }
+
+    ActionBarService.extraActionsMenu = [];
+
+    ActionBarService.extraActionsMenu.push(
+        {
+            clickAction: $scope.goBack,
+            title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+            aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
+        }
+    );
+
+    var fetchSolution = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/solutions/' + vId;
+        $http.get(url).then( function(response) {
+            if(response.data.solution) {
+                var solution = response.data.solution;
+                if(solution.solutionDocuments && solution.solutionDocuments.length>0) {
+                    solution.displayDocumentsList = [];
+                    _.each(solution.solutionDocuments, function(docName) {
+                        var temp = {};
+                        temp.link = window.location.origin + docName;
+                        var tempArr = docName.split('/');
+                        temp.name = tempArr[tempArr.length-1];
+                        solution.displayDocumentsList.push(temp);
+                    })
+                }
+                $scope.solution = solution;
+                console.log('Solution', solution)
+            }
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+
+    var reviews;
+    var fetchPeerReviews = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/reviews?rName=AFCFetchPeerReviews&solutionId=' + vId + '&isAdminReview=false&isSubmitted=true';
+        $http.get(url).then( function(response) {
+            console.log('Students', response)
+            if(response.data.reviews) {
+                reviews = response.data.reviews
+                var oldReviewsID = []
+                _.each(reviews, function(review) {
+                    // handling removal of old reviews if there is a second loop review
+                    if(review.oldReviewId) {
+                        oldReviewsID.push(review.oldReviewId)
+                    }
+                });
+                $scope.reviews = _.filter(reviews, function(review) {
+                    if (_.indexOf(oldReviewsID, review._id) == -1 || review.isSecondLoop) {
+                        return review
+                    }
+                })
+                //$scope.reviews = response.data.reviews
+            }
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+
+    var fetchAdminReview = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/reviews?rName=AFCFetchPeerReviews&solutionId=' + vId + '&isAdminReview=true';
+        $http.get(url).then( function(response) {
+            console.log('Admin', response)
+            $scope.existingReview = false
+            if(response.data.reviews && response.data.reviews.length) {
+                var review = response.data.reviews[0]
+                if (review.documents && review.documents.length > 0) {
+                    review.displayDocumentsList = [];
+                    _.each(review.documents, function (docName) {
+                        console.log(docName)
+                        var temp = {};
+                        temp.link = window.location.origin + docName;
+                        var tempArr = docName.split('/');
+                        temp.name = tempArr[tempArr.length - 1];
+                        review.displayDocumentsList.push(temp);
+                    })
+                }
+                $scope.review = review
+                $scope.existingReview = true
+            }
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+
+    fetchSolution()
+    fetchPeerReviews()
+    fetchAdminReview()
+
+    $scope.reviewDocuments = false;
+    $scope.deleteUploadedFiles = function(fileName) {
+        for(var i=0; i<$scope.review.displayDocumentsList.length; i++) {
+            if ($scope.review.displayDocumentsList[i].link == fileName) {
+                if(!$scope.review.deletedUploadedFiles) {
+                    $scope.review.deletedUploadedFiles = [];
+                }
+                $scope.review.deletedUploadedFiles.push($scope.review.documents[i]);
+                $scope.review.documents.splice(i,1);
+                $scope.review.displayDocumentsList.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.reviewDocuments, fileName);
+        for(var i=0; i<$scope.reviewDocuments.length; i++) {
+            if($scope.reviewDocuments[i].name == fileName) {
+                $scope.reviewDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.isFormValid = function() {
+        if ($scope.form.$error.min && $scope.form.$error.min.length) {
+            return false
+        } else if ($scope.form.$error.number && $scope.form.$error.number.length) {
+            return false
+        } else if ($scope.form.$error.required && $scope.form.$error.required.length) {
+            return false
+        } else if ($scope.form.$error.max && $scope.form.$error.max.length) {
+            return false
+        }
+        return true
+    }
+
+    $scope.submitReview = function() {
+        console.log($scope.review)
+        $scope.isLoading = true;
+        var uploadParams;
+        if($scope.existingReview) {
+             uploadParams = {
+                method: 'PUT',
+                url: '/api/peerassessment/' + $scope.course._id + '/reviews/' + $scope.review._id,
+                fields: $scope.review
+            };
+        } else {
+            console.log(_.extend($scope.review, {solutionId: $scope.solution._id}))
+            uploadParams = {
+                method: 'POST',
+                url: '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + $scope.solution.peerReviewId._id +'/reviews/add',
+                fields: _.extend($scope.review, {solutionId: $scope.solution._id})
+            };
+        }
+        uploadParams.file = [];
+        if($scope.reviewDocuments) {
+            uploadParams.file.push({'reviewDocuments':$scope.reviewDocuments});
+        }
+
+        $scope.upload = Upload.upload(
+            uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
+
+                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log("Progress", $scope.progress);
+            })
+            .success(function (data) {
+                $scope.progress = 0;
+                if (data.result) {
+                    toastr.success('Successfully Saved');
+                } else {
+                    toastr.error(data.errors[0] || 'Failed');
+                }
+                $scope.isLoading = false;
+                window.location.reload();
+            })
+            .error(function (data) {
+                toastr.error('Internal Server Error');
+                $scope.errors = data.errors;
+                $scope.progress = 0;
+                $scope.isLoading = false;
+            });
+    }
+
+    $scope.openReview = function(review) {
+        populateRubrics(review)
+        populateDisplayDocumentList(review)
+        $scope.peerReview = review
+
+        if(review.isSecondLoop && review.oldReviewId) {
+            reviews.every(function(r) {
+                if(review.oldReviewId == r._id) {
+                    populateRubrics(r)
+                    populateDisplayDocumentList(r)
+                    $scope.firstReview = r
+                    return false
+                }
+                return true
+            })
+        }
+        console.log(review);
+        $('#viewReviewModal').modal('show');
+    }
+
+    populateRubrics = function(review) {
+        if(review.peerReviewId.reviewSettings.rubrics && review.peerReviewId.reviewSettings.rubrics.length) {
+            review.rubrics = review.peerReviewId.reviewSettings.rubrics
+        }
+    }
+
+    populateDisplayDocumentList = function(review) {
+        if(review.documents && review.documents.length>0) {
+            review.displayDocumentsList = [];
+            _.each(review.documents, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displayDocumentsList.push(temp);
+            })
+        }
+    }
+});app.controller('ReviewController', function($scope, $http, ActionBarService, toastr) {
+    if($scope.vName) {
+        ActionBarService.extraActionsMenu = [];
+        ActionBarService.extraActionsMenu.push(
+            {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
+            {
+                clickAction: $scope.redirectPRHome,
+                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+                aTitle: 'Peer Review Home'
+            }
+        );
+    }
+
+    var requestData = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/reviews?rName=RCRequestData';
+        $http.get(url).then( function(response) {
+            var oldReviewsID = [];
+            console.log('Reviews', response.data.reviews);
+            _.each(response.data.reviews, function(review) {
+                // handling removal of old reviews if there is a second loop review
+                if(review.oldReviewId) {
+                    oldReviewsID.push(review.oldReviewId)
+                }
+            });
+            $scope.reviews = _.filter(response.data.reviews, function(review) {
+                if (_.indexOf(oldReviewsID, review._id) == -1 || review.isSecondLoop) {
+                    return review
+                }
+            })
+            console.log('Reviews', $scope.reviews);
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        });
+    }
+
+    requestData();
+
+    $scope.openReview = function(review, event) {
+        if(event) {
+            event.stopPropagation();
+        }
+        console.log('Opening Review: ', review);
+        window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + review._id;
+    }
+});app.controller('ReviewAssignmentController', function($scope, $http, toastr, $window, $location, ActionBarService) {
+    console.log('Debug: ReviewAssignmentController')
+    vId = $location.search().vId;
+    if(!vId) {
+        return
+    }
+    $scope.user = null;
+    $scope.solution = null;
+    ActionBarService.extraActionsMenu = [];
+
+    ActionBarService.extraActionsMenu.push(
+        {
+            clickAction: $scope.goBack,
+            title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+            aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
+        }
+    );
+
+    console.log('Peer Review Id: ', vId)
+    var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + vId + '/reviews/new';
+    $http.get(url).then(function (response) {
+        console.log(response.data);
+        if(response && response.data) {
+            $scope.assignedReviews = response.data.assignedReviews;
+            $scope.users = response.data.users;
+            $scope.solutions = response.data.solutions;
+            if($scope.users.length)
+                $scope.user = $scope.users[0]._id;
+            if($scope.solutions.length)
+                $scope.solution = $scope.solutions[0]._id;
+        }
+    }, function(err) {
+        toastr.error('Internal Server error. Please try again later');
+    });
+
+    $scope.assignReview = function() {
+        if(!$scope.user || !$scope.solution) {
+            toastr.error('Please select a valid student and solution before assigning');
+            return;
+        }
+        console.log($scope.user, $scope.solution)
+
+        var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + vId + '/reviews/assign';
+        $http.post(url, {assignedTo: $scope.user, solutionId: $scope.solution}).then(function(response) {
+            console.log($scope.solution)
+            if(response && response.data && response.data.result) {
+                toastr.success('Review successfully created');
+                window.location.reload();
+            } else {
+                toastr.error('Internal Server error. Please try again later');
+            }
+        }, function(err) {
+            toastr.error('Internal Server error. Please try again later');
+        });
+    }
+
+    $scope.deleteReview = function(id, e) {
+        var url = '/api/peerassessment/' + $scope.course._id + '/peerreviews/' + vId + '/reviews/' + id;
+        $http.delete(url).then(function(response) {
+            if(response && response.data && response.data.result) {
+                toastr.success('Review successfully deleted');
+                window.location.reload();
+            } else {
+                toastr.error('Internal Server error. Please try again later');
+            }
+        }, function(err) {
+            toastr.error('Internal Server error. Please try again later');
+        })
+    }
+});app.controller('ReviewSubmissionController', function($scope, $http, toastr, $window, $location, ActionBarService, Upload) {
+    vId = $location.search().vId;
+    if(!vId) {
+        return
+    }
+
+    ActionBarService.extraActionsMenu = [];
+
+    ActionBarService.extraActionsMenu.push(
+        {
+            clickAction: $scope.goBack,
+            title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+            aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
+        }
+        //{
+        //    clickAction: $scope.viewReviewsList,
+        //    title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+        //    aTitle: 'Back'
+        //}
+    );
+
+    var requestData = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/reviews/'+ vId;
+        $http.get(url).then( function(response) {
+            var review = response.data.review;
+            if(review.solutionId.solutionDocuments && review.solutionId.solutionDocuments.length) {
+                var solutionDocumentsList = [];
+                _.each(review.solutionId.solutionDocuments, function(docName) {
+                    var temp = {};
+                    temp.link = window.location.origin + docName;
+                    var tempArr = docName.split('/');
+                    temp.name = tempArr[tempArr.length-1];
+                    solutionDocumentsList.push(temp);
+                })
+                $scope.solutionDocumentsList = solutionDocumentsList
+            }
+            if(review.peerReviewId.reviewSettings.rubrics && review.peerReviewId.reviewSettings.rubrics.length) {
+                $scope.rubrics = review.peerReviewId.reviewSettings.rubrics
+            }
+            if (review.documents && review.documents.length > 0) {
+                review.displayDocumentsList = [];
+                _.each(review.documents, function (docName) {
+                    console.log(docName)
+                    var temp = {};
+                    temp.link = window.location.origin + docName;
+                    var tempArr = docName.split('/');
+                    temp.name = tempArr[tempArr.length - 1];
+                    review.displayDocumentsList.push(temp);
+                })
+            }
+            $scope.review = review
+            console.log('Review', $scope.review);
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        });
+    }
+    requestData()
+
+    $scope.reviewDocuments = false;
+    $scope.deleteUploadedFiles = function(fileName) {
+        for(var i=0; i<$scope.review.displayDocumentsList.length; i++) {
+            if ($scope.review.displayDocumentsList[i].link == fileName) {
+                if(!$scope.review.deletedUploadedFiles) {
+                    $scope.review.deletedUploadedFiles = [];
+                }
+                $scope.review.deletedUploadedFiles.push($scope.review.documents[i]);
+                $scope.review.documents.splice(i,1);
+                $scope.review.displayDocumentsList.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.reviewDocuments, fileName);
+        for(var i=0; i<$scope.reviewDocuments.length; i++) {
+            if($scope.reviewDocuments[i].name == fileName) {
+                $scope.reviewDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.isFormValid = function() {
+        if ($scope.form.$error.min && $scope.form.$error.min.length) {
+            return false
+        } else if ($scope.form.$error.number && $scope.form.$error.number.length) {
+            return false
+        } else if ($scope.form.$error.required && $scope.form.$error.required.length) {
+            return false
+        } else if ($scope.form.$error.max && $scope.form.$error.max.length) {
+            return false
+        }
+        return true
+    }
+
+    $scope.submitReview = function() {
+        console.log($scope.review)
+        $scope.isLoading = true;
+        var uploadParams = {
+            method: 'PUT',
+            url: '/api/peerassessment/' + $scope.course._id + '/reviews/' + $scope.review._id,
+            fields: $scope.review
+        };
+        uploadParams.file = [];
+        if($scope.reviewDocuments) {
+            uploadParams.file.push({'reviewDocuments':$scope.reviewDocuments});
+        }
+
+        $scope.upload = Upload.upload(
+            uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
+
+                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log("Progress", $scope.progress);
+            })
+            .success(function (data) {
+                $scope.progress = 0;
+                if (data.result) {
+                    toastr.success('Successfully Saved');
+                } else {
+                    toastr.error(data.errors[0] || 'Failed');
+                }
+                $scope.isLoading = false;
+                if(data.reviewId == vId) {
+                    window.location.reload();
+                } else {
+                    window.history.replaceState({},"", '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + data.reviewId)
+                    //window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=reviewSubmission&vId=' + data.reviewId;
+                    window.location.reload();
+                }
+            })
+            .error(function (data) {
+                toastr.error('Internal Server Error');
+                $scope.errors = data.errors;
+                $scope.progress = 0;
+                $scope.isLoading = false;
+            });
+    }
+});app.controller('ViewFeedbackController', function($scope, $http, toastr, $window, $location, ActionBarService, Upload) {
+    vId = $location.search().vId;
+    if(!vId) {
+        return
+    }
+
+    ActionBarService.extraActionsMenu = [];
+
+    ActionBarService.extraActionsMenu.push(
+        {
+            clickAction: $scope.goBack,
+            title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+            aTitle: 'Back'
+        },
+        {
+            separator: true
+        },
+        {
+            clickAction: $scope.redirectPRHome,
+            title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+            aTitle: 'Peer Review Home'
+        }
+    );
+
+    var reviews
+    var fetchReviews = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/reviews?rName=VFCFetchReviews&peerReviewId=' + vId;
+        $http.get(url).then( function(response) {
+            console.log('All Reviews', response)
+            if(response.data.reviews) {
+                reviews = response.data.reviews
+                var oldReviewsID = []
+                _.each(reviews, function(review) {
+                    // handling removal of old reviews if there is a second loop review
+                    if(review.oldReviewId) {
+                        oldReviewsID.push(review.oldReviewId)
+                    }
+                });
+                $scope.reviews = _.filter(reviews, function(review) {
+                    if ((_.indexOf(oldReviewsID, review._id) == -1 || review.isSecondLoop) && !review.isAdminReview) {
+                        return review
+                    }
+                    //return !review.isAdminReview
+                })
+                var adminReview = _.reject(reviews, function(review) {
+                    return !review.isAdminReview
+                })
+                if(adminReview.length) {
+                    var review = adminReview[0]
+                    if (review.documents && review.documents.length > 0) {
+                        review.displayDocumentsList = [];
+                        _.each(review.documents, function (docName) {
+                            console.log(docName)
+                            var temp = {};
+                            temp.link = window.location.origin + docName;
+                            var tempArr = docName.split('/');
+                            temp.name = tempArr[tempArr.length - 1];
+                            review.displayDocumentsList.push(temp);
+                        })
+                    }
+                    calculateMarks(review, $scope.reviews)
+                    $scope.review = review
+                }
+                console.log('AdminReview', $scope.review)
+            }
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+
+    var calculateMarks = function(adminReview, peerreviews) {
+        studentReviewPercentage = adminReview.peerReviewId.reviewSettings.studentPercentage;
+        var totalMarks = 0
+        _.each(peerreviews, function(review) {
+            totalMarks = totalMarks + review.marksObtained
+        })
+        var average = totalMarks/peerreviews.length
+        var studentMarks = average * studentReviewPercentage/100
+        var adminMarks = adminReview.marksObtained * ((100-studentReviewPercentage)/100)
+        var finalMarks = adminMarks + studentMarks
+        console.log(finalMarks)
+        adminReview.marksObtained = finalMarks
+    }
+
+    fetchReviews()
+
+    $scope.openReview = function(review) {
+        populateRubrics(review)
+        populateDisplayDocumentList(review)
+        $scope.peerReview = review
+
+        if(review.isSecondLoop && review.oldReviewId) {
+            console.log('All reviews', reviews)
+            reviews.every(function(r) {
+                console.log(review.oldReviewId, r._id)
+                if(review.oldReviewId == r._id) {
+                    console.log('Old review matched', r)
+                    populateRubrics(r)
+                    populateDisplayDocumentList(r)
+                    $scope.firstReview = r
+                    return false
+                }
+                return true
+            })
+        }
+        console.log(review);
+        $('#viewReviewModal').modal('show');
+    }
+
+    populateRubrics = function(review) {
+        if(review.peerReviewId.reviewSettings.rubrics && review.peerReviewId.reviewSettings.rubrics.length) {
+            review.rubrics = review.peerReviewId.reviewSettings.rubrics
+        }
+    }
+
+    populateDisplayDocumentList = function(review) {
+        if(review.documents && review.documents.length>0) {
+            review.displayDocumentsList = [];
+            _.each(review.documents, function(docName) {
+                var temp = {};
+                temp.link = window.location.origin + docName;
+                var tempArr = docName.split('/');
+                temp.name = tempArr[tempArr.length-1];
+                review.displayDocumentsList.push(temp);
+            })
+        }
+    }
+});app.service('SolutionFilterService', function() {
+    console.log('SolutionFilterService')
+    var peerReview = ''
+
+    return {
+        getPeerReview: function() {
+            return peerReview
+        },
+
+        setPeerReview: function(pR) {
+            peerReview = pR
+        }
+    }
+});app.controller('AddEditSolutionController', function($scope, $http, toastr, $window, Upload) {
+    $scope.selSolutionDocuments = false;
+    $scope.progress = 0;
+
+    $scope.deleteUploadedFiles = function(fileName) {
+        for(var i=0; i<$scope.solutionObj.displayDocumentsList.length; i++) {
+            if ($scope.solutionObj.displayDocumentsList[i].link == fileName) {
+                if(!$scope.solutionObj.deletedUploadedFiles) {
+                    $scope.solutionObj.deletedUploadedFiles = [];
+                }
+                $scope.solutionObj.deletedUploadedFiles.push($scope.solutionObj.solutionDocuments[i]);
+                $scope.solutionObj.solutionDocuments.splice(i,1);
+                $scope.solutionObj.displayDocumentsList.splice(i,1);
+                break;
+            }
+        }
+        console.log('Check deleted Objects', $scope.solutionObj.deletedUploadedFiles, $scope.solutionObj.solutionDocuments, $scope.solutionObj.displayDocumentsList);
+    }
+
+    $scope.deleteSelectedFiles = function(fileName) {
+        console.log('Review Docs Selected', $scope.selSolutionDocuments, fileName);
+        for(var i=0; i<$scope.selSolutionDocuments.length; i++) {
+            if($scope.selSolutionDocuments[i].name == fileName) {
+                $scope.selSolutionDocuments.splice(i,1);
+                break;
+            }
+        }
+    }
+
+    $scope.updateSolution = function(solutionObj) {
+        console.log(solutionObj);
+        console.log('dsadasdas',$scope.solutionObj)
+        var params = {
+            //isSubmitted: true,
+            studentComments: solutionObj.studentComments,
+            solutionDocuments: solutionObj.solutionDocuments,
+            deletedUploadedFiles: solutionObj.deletedUploadedFiles
+        }
+        $scope.isLoading = true;
+        var uploadParams = {
+            method: 'PUT',
+            url: '/api/peerassessment/' + $scope.$parent.course._id + '/peerreviews/' + solutionObj.peerReviewId + '/solutions/' + solutionObj._id,
+            fields: params
+        };
+        uploadParams.file = [];
+        if($scope.selSolutionDocuments) {
+            uploadParams.file.push({'selSolutionDocuments':$scope.selSolutionDocuments});
+        }
+
+        $scope.upload = Upload.upload(
+            uploadParams
+            )
+            .progress(function (evt) {
+                if (!evt.config.file)
+                    return;
+
+                $scope.progress = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log("Progress", $scope.progress);
+            })
+            .success(function (data) {
+
+                $scope.progress = 0;
+                if (data.result) {
+                    toastr.success('Successfully Saved');
+                } else {
+                    toastr.error('Updating Solution Failed');
+                }
+                $scope.isLoading = false;
+                $('#addEditSolutionModal').modal('hide');
+
+                window.location.reload();
+            })
+            .error(function (data) {
+                toastr.error('Updating Solution Failed');
+                $scope.errors = data.errors;
+                $scope.progress = 0;
+                $scope.isLoading = false;
+            });
+    }
+});app.controller('SolutionsController', function($scope, $location, $http, toastr, ActionBarService, SolutionFilterService) {
+    var solutions = null;
+    $scope.filteredSolutions = null;
+    $scope.peerReviewList = null;
+    $scope.filterCondition = '';
+    $scope.filterCondition = SolutionFilterService.getPeerReview()
+    console.log('FilterCondition: ', $scope.filterCondition)
+    if($scope.vName) {
+        ActionBarService.extraActionsMenu = [];
+        ActionBarService.extraActionsMenu.push(
+            {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
+            {
+                clickAction: $scope.redirectPRHome,
+                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+                aTitle: 'Peer Review Home'
+            }
+        );
+    }
+
+    $scope.requestData = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/solutions';
+        $http.get(url).then( function(response) {
+            if(response.data.solutions && response.data.solutions.length) {
+                $scope.peerReviewList = _.pluck(response.data.solutions, 'peerReviewId')
+                $scope.peerReviewList = _.without($scope.peerReviewList, null, undefined)
+                console.log('PeerReviewList', $scope.peerReviewList)
+                $scope.peerReviewList = _.uniq($scope.peerReviewList, function(p) {return p._id})
+                $scope.peerReviewList.push({_id: '', title: 'No Filter'})
+                solutions = response.data.solutions;
+                console.log('Solutions', solutions);
+                if($scope.filterCondition != '') {
+                    var matched = false;
+                    _.each($scope.peerReviewList, function(pr) {
+                        if(pr._id == $scope.filterCondition) {
+                            matched = true
+                        }
+                    })
+                    if(!matched) {
+                        SolutionFilterService.setPeerReview('')
+                        $scope.filterCondition = SolutionFilterService.getPeerReview()
+                    }
+                }
+                $scope.filter()
+            }
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        });
+    }
+
+    $scope.filter = function() {
+        console.log('FilteredSolutions: ', $scope.filterCondition)
+        if($scope.filterCondition == '') {
+            console.log('Null')
+            SolutionFilterService.setPeerReview('')
+            $scope.filteredSolutions = solutions
+        } else {
+            console.log('Not null')
+            SolutionFilterService.setPeerReview($scope.filterCondition)
+            $scope.filteredSolutions = _.filter(solutions, function(solution) {
+                return solution.peerReviewId._id == $scope.filterCondition
+            })
+        }
+    }
+
+    $scope.deleteSolution = function() {
+        var url = '/api/peerassessment/' + $scope.course._id + '/solutions/' + $scope.deleteSolutionId;
+        $http.delete(url).then( function(response) {
+            if(response && response.data.result) {
+                if ($location.search().vId) {
+                    window.document.location = '#/cid/' + $scope.course._id + '?tab=peerAssessment&vName=viewSolutionsList';
+                    window.location.reload();
+                    //$location.search('vName', 'viewSolutionsList');
+                    //$location.search('vId', '');
+                } else {
+                    window.location.reload();
+                }
+            }
+            // if you want to do it with ajax check the logic of deleting peer reviews in Peer Review controller
+        }, function(err) {
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        });
+
+        $('#confirmDeleteAssignmentModal').modal('hide');
+    }
+
+    if($scope.course && $scope.course._id) {
+        $scope.requestData();
+    } else {
+        console.log('Course not initialized');
+    }
+});app.controller('ViewSolutionController', function($scope, $location, $http, toastr, ActionBarService) {
+    $scope.vId = $location.search().vId;
+    if($scope.vName && $scope.vId) {
+        ActionBarService.extraActionsMenu = [];
+        ActionBarService.extraActionsMenu.push(
+            {
+                clickAction: $scope.goBack,
+                title: '<i class="ionicons ion-arrow-return-left"></i> &nbsp; BACK',
+                aTitle: 'Back'
+            },
+            {
+                separator: true
+            },
+            {
+                clickAction: $scope.redirectPRHome,
+                title: '<i class="ionicons ion-home"></i> &nbsp; PEER REVIEWS HOME',
+                aTitle: 'Peer Review Home'
+            }
+        );
+        var url = '/api/peerassessment/' + $scope.course._id + '/solutions/' + $scope.vId;
+        $http.get(url).then( function(response) {
+            console.log('response', response);
+            if(response.data.solution) {
+                var solution = response.data.solution;
+                if(solution.solutionDocuments && solution.solutionDocuments.length>0) {
+                    solution.displayDocumentsList = [];
+                    _.each(solution.solutionDocuments, function(docName) {
+                        var temp = {};
+                        temp.link = window.location.origin + docName;
+                        var tempArr = docName.split('/');
+                        temp.name = tempArr[tempArr.length-1];
+                        solution.displayDocumentsList.push(temp);
+                    })
+                }
+                $scope.solution = solution;
+                if($scope.isAdmin || $scope.isManager || $scope.isOwner) {
+                    // for openAddEditSolutionModal to know that it has been called from this path
+                    $scope.solution.path = 'solutionList';
+                    ActionBarService.extraActionsMenu.push(
+                        {
+                            separator: true
+                        },
+                        {
+                            clickAction: $scope.openAddEditSolutionModal,
+                            clickParams: $scope.solution,
+                            title: '&nbsp;&nbsp; <i class="ionicons ion-edit"></i> &nbsp; EDIT',
+                            aTitle: 'Edit Solution'
+                        },
+                        {
+                            clickAction: $scope.openDeleteSolutionConfirmationModal,
+                            clickParams: $scope.solution._id,
+                            title: '&nbsp;&nbsp; <i class="ionicons ion-ios-trash"></i> &nbsp; DELETE',
+                            aTitle: 'Delete Solution'
+                        },
+                        {
+                            separator: true
+                        },
+                        {
+                            clickAction: $scope.giveFeedback,
+                            clickParams: $scope.solution._id,
+                            title: '&nbsp;&nbsp; <i class="ionicons ion-checkmark-circled"></i> &nbsp; FEEDBACK',
+                            aTitle: 'Feedback'
+                        }
+                    );
+                }
+            }
+        }, function(err){
+            // Check for proper error message later
+            toastr.error('Internal Server Error. Please try again later.');
+        })
+    }
+});app.controller('FavoritesController', function ($rootScope, $scope, $http) {
+
+  $scope.favorites = null;
+
+  var loadFavorites = function () {
+    $http.get('/api/favorites').then(
+      function (result) {
+        $scope.favorites = result.data;
+      },
+      function () {
+        $scope.favorites = null;
+      });
+  };
+
+  var favListener = $rootScope.$on('favorites.update', function () {
+    loadFavorites();
+  });
+
+  loadFavorites();
+
+  $scope.$on('$destroy', favListener);
+});;app.controller('HomePageController', function ($scope, $http, $rootScope,
                                                $sce, Page, collapseService, $timeout) {
     $scope.hideSlider = false;
     $scope.isRequesting = false;
@@ -7623,6 +9993,16 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
 
                 $('.open').not($(this).parents('ul')).removeClass('open');
                 $(this).find('ul').addClass('open');
+
+                if (event.type == 'touchstart') {
+                    $http.get('/api/server-widgets/category-homepage/?slug=' + slug).success(
+                        function (res) {
+                            if (res.result) {
+                                $scope.widgets[slug] = $sce.trustAsHtml(res.widgets);
+                            }
+                        }
+                    );
+                }
 
                 return false;
             })
@@ -7837,6 +10217,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
     $scope.login = function (isValid) {
         if (isValid) {
             $scope.isLoading = true;
+            console.log("Login Data");
+            console.log($scope.loginData);
             authService.login($scope.loginData,
                 function (user) {
                     $scope.user = user;
@@ -7856,7 +10238,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         }
     }
 
-});;app.controller('MainController', function($scope, Page) {
+});
+;app.controller('MainController', function($scope, Page) {
     $scope.Page = Page;
 });
 ;app.controller('MainMenuController', function ($scope, $http, $rootScope, $cookies, authService, toastr) {
@@ -7913,6 +10296,37 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         });
 });;app.service('ActionBarService', function() {
     this.extraActionsMenu = [];
+});;app.controller('SearchBoxController', function ($scope, $http) {
+
+  $scope.isEmpty = function () {
+    var str = $scope.queryText;
+    return (!str || /^\s*$/.test(str));
+  };
+
+  $scope.hasResults = function () {
+    var r = $scope.result;
+    return r != null && (
+        r.categories.length > 0 ||
+        r.courses.length > 0 ||
+        r.videoAnnotations.length > 0 ||
+        r.pdfAnnotations.length > 0 ||
+        r.contentNodes.length > 0
+      );
+  };
+
+  $scope.$watch('queryText', function (searchTerm) {
+    if (!searchTerm || searchTerm.length == 0) {
+      $scope.result = null;
+      return;
+    }
+
+    if (searchTerm === $scope.queryText) {
+      $http.get('/api/search?term=' + searchTerm)
+        .success(function (data) {
+          $scope.result = data;
+        });
+    }
+  });
 });;app.controller('SignUpController', function($scope, $http, $rootScope, $cookies, authService) {
 
     $scope.loginData = {};
@@ -8010,200 +10424,6 @@ app.controller('aboutController', function($scope, $http, $rootScope, Page) {
     }
 
 });
-;app.controller('widgetController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout) {
-    $scope.location = "";
-    $scope.widgets = [];
-    $scope.widgetsTemp = [];
-
-    $scope.initWidgetButton = function (id) {
-        $.AdminLTE.boxWidget.activate();
-        $scope.addWidget(id);
-
-        var h = $('#w' + id + ' .grid-stack-item-content');
-        $('#w' + id + ' .grid-stack-item-content .box-body').css('height', (h.innerHeight() - 40) + 'px');
-    };
-
-    $scope.$on('onAfterInitUser', function (event, user) {
-        $scope.$watch('location', function (newVal, oldVal) {
-            if ($scope.location == 'user-profile') {
-                $scope.getWidgets();
-            }
-        });
-    });
-
-    $scope.$on('onAfterInitCourse', function (event, course) {
-        $scope.course = course;
-        $scope.getWidgets();
-    });
-
-    $scope.$watch('location', function (newVal, oldVal) {
-        if ($scope.location == '')
-            return;
-
-        var onafter = 'onAfterInstall' + $scope.location;
-        $scope.$on(onafter, function (event, newWidget) {
-            // remove all widget in the page
-            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.removeAll();
-
-            $scope.getWidgets();
-        });
-
-        var onafter2 = 'onAfterUninstall' + $scope.location;
-        $scope.$on(onafter2, function (event, newWidget) {
-            // remove all widget in the page
-            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
-            grid.removeAll();
-
-            $scope.getWidgets();
-        });
-
-    });
-
-    $scope.lazyLoad = function (wdg, currentIndex, widgetJsArray, fileToLoad) {
-        (function (wdg) {
-            var jsfn = '/' + wdg.application + '/' + fileToLoad;
-
-            $ocLazyLoad.load(jsfn).then(function () {
-                // the last one has been loaded
-                var l = wdg.widgetId.widgetJavascript.length - 1;
-                if (fileToLoad == wdg.widgetId.widgetJavascript[l]) {
-                    // only push to main widgets array when it is the last js to load
-                    $scope.widgets.push(wdg);
-                } else {
-                    var nextFile = widgetJsArray[currentIndex++];
-                    $scope.lazyLoad(wdg, currentIndex, widgetJsArray, nextFile);
-                }
-            });
-        })(wdg);
-    };
-
-    $scope.getWidgets = function () {
-        var id = "";
-
-        if ($scope.location == 'user-profile')
-            id = $rootScope.user._id;
-
-        else if ($scope.location == 'course-preview' || $scope.location == 'course-analytics')
-            id = $scope.course._id;
-
-        $http.get('/api/widgets/' + $scope.location + '/' + id).success(function (data) {
-            $scope.widgetsTemp = data.widgets;
-            $scope.widgets = [];
-
-            $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, $scope.widgetsTemp);
-
-            for (var i in $scope.widgetsTemp) {
-                var wdg = $scope.widgetsTemp[i];
-
-                // loop to load the js (if exist)
-                if (wdg.widgetId.widgetJavascript) {
-                    //if(wdg.widgetId.widgetJavascript.type() == 'Array'){
-                    //for(var j = 0; j < wdg.widgetId.widgetJavascript.length; j++)
-                    //var loading = true;
-
-
-                    $scope.lazyLoad(wdg, 0, wdg.widgetId.widgetJavascript, wdg.widgetId.widgetJavascript[0]);
-                    //}
-
-                } else {
-                    $scope.widgets.push(wdg);
-                }
-            }
-        });
-    };
-
-    $scope.addWidget = function (id) {
-        var loc = '#' + $scope.location + '-widgets';
-        var grid = $(loc).data('gridstack');
-
-        var el = '#w' + id;
-
-        // get width and height
-        var i = _.findIndex($scope.widgets, {'_id': id});
-        var wdg = $scope.widgets[i];
-
-        //add_widget(el, x, y, width, height, auto_position)
-        var x = 0;
-        var y = 0;
-        if (wdg.position) {
-            x = wdg.position.x;
-            y = wdg.position.y;
-        }
-        grid.addWidget(el, x, y, wdg.width, wdg.height, false);
-    };
-
-    $scope.closeWidget = function (id) {
-        var i = _.findIndex($scope.widgets, {'_id': id});
-        var wdg = $scope.widgets[i];
-
-        $rootScope.$broadcast('onAfterCloseButtonClicked' + $scope.location, wdg);
-    };
-
-    $scope.initiateDraggableGrid = function (locs) {
-        $scope.location = locs;
-        var loc = '#' + locs + '-widgets';
-
-        var options = {
-            cellHeight: 340,
-            verticalMargin: 10,
-            resizable: false,
-            onchange: function (ab, cd) {
-                console.log(ab);
-            }
-        };
-
-        var $gs = $(loc);
-        $gs.gridstack(options);
-        $gs.on('change', function (evt, node) {
-            //console.log(evt);
-            //console.log(node);
-            if (node && node[0]) {
-                var c = $(node[0].el);
-
-                var wId = c.attr('id').substr(1);
-                if (node[0]._updating) {
-                    var x = node[0].x;
-                    var y = node[0].y;
-
-                    $scope.setPosition(wId, x, y);
-                }
-            }
-        });
-    };
-
-    /*$scope.$on('initDragEvent', function () {
-
-     var gItems = $('.grid-stack-item');
-     gItems.on("dragstop",
-     function (e, node) {
-     var c = $(node.helper[0]);
-
-     var wId = c.attr('id').substr(1);
-     var x = parseInt(c.attr('data-gs-x'));
-     var y = parseInt(c.attr('data-gs-y'));
-
-     $scope.setPosition(wId, x, y);
-     }
-     );
-     });*/
-
-    $scope.setPosition = function (wId, x, y) {
-        $http.put('/api/widget/' + wId + '/setPosition', {
-            x: x, y: y
-        }).success(function (res) {
-            /*if(res.result)
-             {
-             console.log('set position success');
-             }*/
-        });
-    };
-
-});
-;/*
-app.controller('HtmlSidebarController2', function($scope){
-    console.log('abcef');
-});*/
 ;app.controller('widgetCourseAnalyticsController', function ($scope, $http, $rootScope,
                                                             $timeout, toastr,
                                                             widgetService, courseService, authService) {
@@ -8295,6 +10515,10 @@ app.controller('HtmlSidebarController2', function($scope){
     };
 
     $scope.initWidgets();
+
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
 });
 ;app.controller('widgetCoursePreviewController', function ($scope, $http, $rootScope,
                                                           $timeout, toastr,
@@ -8385,6 +10609,10 @@ app.controller('HtmlSidebarController2', function($scope){
 
         return false;
     };
+ 
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
 
     $scope.initWidgets();
 });
@@ -8465,8 +10693,8 @@ app.controller('HtmlSidebarController2', function($scope){
 
 });
 ;app.controller('widgetNodeAnalyticsController', function ($scope, $http, $rootScope,
-                                                            $timeout, toastr,
-                                                            widgetService, courseService, authService) {
+                                                          $timeout, toastr,
+                                                          widgetService, courseService, authService) {
     $scope.location = "node-analytics";
     $scope.widgets = [];
 
@@ -8555,4 +10783,91 @@ app.controller('HtmlSidebarController2', function($scope){
     };
 
     $scope.initWidgets();
+
+    $scope.$on('afterAllWidgetsRendered', function () {
+        widgetService.initiateDragStop($scope.location);
+    });
+});
+;app.controller('profileWidgetController', function ($scope, $http, $rootScope, $ocLazyLoad, $timeout, widgetService, toastr) {
+    $scope.location = "user-profile";
+    $scope.widgets = [];
+    $scope.widgetsTemp = [];
+    $scope.dragInitiated = false;
+
+    $scope.initWidgetButton = function (id) {
+        widgetService.initWidgetButton($scope.location, id)
+    };
+
+    $scope.initWidgets = function () {
+        $scope.getWidgets();
+        widgetService.initiateDraggableGrid($scope.location, true);
+        $scope.setupInstallmentWatch();
+    };
+
+    $scope.$on('onAfterInitUser', function (event, user) {
+        $scope.initWidgets(true);
+    });
+
+    $scope.setupInstallmentWatch = function () {
+        var onafter = 'onAfterInstall' + $scope.location;
+        $scope.$on(onafter, function (event, newWidget) {
+            // remove all widget in the page
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
+            grid.removeAll();
+
+            $scope.getWidgets(true);
+        });
+
+        var onafter2 = 'onAfterUninstall' + $scope.location;
+        $scope.$on(onafter2, function (event, newWidget) {
+            // remove all widget in the page
+            var grid = $('#' + $scope.location + '-widgets').data('gridstack');
+            grid.removeAll();
+
+            $scope.getWidgets(true);
+        });
+    };
+
+    $scope.getWidgets = function (force) {
+        widgetService.getWidgetsOnLocation($scope.location, $rootScope.user._id,
+
+            function (widgets) {
+                $scope.widgets = widgets;
+                $rootScope.$broadcast('onAfterGetWidgets' + $scope.location, widgets);
+            },
+
+            function (errors) {
+                toastr.error(errors);
+            },
+
+            force
+        );
+    };
+
+    $scope.closeWidget = function (id) {
+
+        widgetService.uninstall(id, {},
+            function (uninstalled) {
+                $scope.uninstalledWidget = uninstalled;
+
+                // hide the widget gallery
+                $('#widgetGallery').modal('hide');
+                $('#widgetGalleryAnalytics').modal('hide');
+                toastr.success('Widget is uninstalled');
+
+                $rootScope.$broadcast('onAfterUninstall' + uninstalled.location, $scope.uninstalledWidget);
+            },
+            function (errors) {
+                toastr.error('Uninstallation failed');
+            }
+        );
+    };
+
+    $scope.$on('afterAllWidgetsRendered', function () {
+        if(!$scope.dragInitiated)
+            widgetService.initiateDragStop($scope.location);
+
+        $scope.dragInitiated = true;
+    });
+
 });
