@@ -1,7 +1,7 @@
 window.onresize = function(){
     window.parent.postMessage(
-    Math.max(600, 600,
-        600, 600)
+    Math.max(document.documentElement.scrollHeight, document.documentElement.offsetHeight,
+              document.body.scrollHeight, 600)
       ,"*");
       console.log("window resized");
  };
@@ -11,16 +11,16 @@ window.onresize = function(){
 
 window.onload = function() {
     window.parent.postMessage(
-        Math.max(600, 600,
-            600, 600)
+        Math.max(document.documentElement.scrollHeight, document.documentElement.offsetHeight,
+                document.body.scrollHeight, 600)
         ,"*");
         console.log("window onload resized");
 };
 
 document.addEventListener('DOMContentLoaded', function() {
    window.parent.postMessage(
-       Math.max(600, 600,
-           600, 600)
+   Math.max(document.documentElement.scrollHeight, document.documentElement.offsetHeight,
+             document.body.scrollHeight, 600)
      ,"*");
      console.log("document ready resized");
 });
