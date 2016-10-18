@@ -78,7 +78,7 @@ app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload
             });
           }
           $scope.formData.name = "";
-          $scope.formData.isPrivate = true;
+          $scope.formData.isPrivate = false;
 
           $scope.isLoading = false;
           $scope.addSubTopicForm.$setPristine();
@@ -222,7 +222,7 @@ app.controller('NodeEditController', function ($scope, $http, $rootScope, Upload
 
         // cleaning up formData
         $scope.formData.name = "";
-        $scope.formData.isPrivate = true;
+        $scope.formData.isPrivate = false;
 
         $scope.filespdf = false;
         $scope.filesvideo = false;

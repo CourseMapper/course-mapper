@@ -2137,7 +2137,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
             });
           }
           $scope.formData.name = "";
-          $scope.formData.isPrivate = true;
+          $scope.formData.isPrivate = false;
 
           $scope.isLoading = false;
           $scope.addSubTopicForm.$setPristine();
@@ -2281,7 +2281,7 @@ app.controller('NewCourseController', function($scope, $filter, $http, $location
 
         // cleaning up formData
         $scope.formData.name = "";
-        $scope.formData.isPrivate = true;
+        $scope.formData.isPrivate = false;
 
         $scope.filespdf = false;
         $scope.filesvideo = false;
