@@ -4,17 +4,15 @@
 	<div class="container">
 
 		<div class="row">
-			<!--<h3 style="margin:0; padding:0;">Search everywhere...</h3>-->
-		</div>
-
-		<div class="row">
 
 			<!--Filters panel-->
 			<div class="col-md-3">
 				<div>
 
+					<!--Sory by-->
 					<fieldset style="margin-bottom:20px">
 						<legend style="padding:0; margin-bottom:5px">Sort order</legend>
+
 						<select class="form-control" ng-model="sortBy" ng-init="sortBy='-score'">
 						<option selected value="-score">Best match</option>
 						<option value="-date">Newest first</option>
@@ -22,14 +20,27 @@
                	 	</select>
 					</fieldset>
 
+					<!--Search in-->
 					<fieldset style="margin-bottom:20px">
 						<legend style="padding:0; margin-bottom:5px">Search in</legend>
+
 						<label><input disabled checked type="checkbox" value="subTopic"> Topic</label><br/>
 						<label><input disabled checked type="checkbox" value="contentNode"> Content</label><br/>
 						<label><input disabled checked type="checkbox" value="course"> Course</label><br/>
 						<label><input disabled checked type="checkbox" value="videoAnnotation"> Video annotation</label><br/>
-						<label><input disabled checked type="checkbox" value="pdfAnnotation"> PDF annotation</label><br/>
+						<label><input disabled checked type="checkbox" value="pdfAnnotation"> PDF annotation</label>
+					</fieldset>
 
+					<!--Network-->
+					<fieldset style="margin-bottom:20px">
+						<legend style="padding:0; margin-bottom:5px">Network</legend>
+
+						<label title="The query lookup will be performed globally">
+							<input type="radio" ng-model="network" name="network" value="global" checked> Global</label><br/>
+						<label title="The query lookup will be performed only on content which you are engaged in">
+							<input type="radio" ng-model="network" name="netwrok" value="personal"> Personal</label><br/>
+						<label title="The query lookup will be performed on content which you and the people around you are engaged in">
+							<input disabled type="radio" ng-model="network" name="network" value="group"> Group</label>
 					</fieldset>
 				</div>
 			</div>
@@ -41,7 +52,7 @@
 				<h3 style="text-align: center; padding-top:50px" ng-show="result != null && result.length === 0">No results found. Please, try a different search term.</h3>
 
 				<!--  Found matches -->
-				<legend ng-show="result != null && result.length > 0">{{result.length}} matches found.</legend>
+				<legend ng-show="result != null && result.length > 0">{{result.length}} matches found for '{{searchTerm}}'.</legend>
 
 				<!-- results -->
 				<ul class="products-list product-list-in-box">

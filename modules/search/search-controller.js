@@ -49,7 +49,7 @@ var parseObject = function (collection, match) {
 
 var parseCourse = function (course) {
   var title = course.name;
-  var desc = course.description;
+  var desc = course.smallDescription;
   var type = 'course';
   var link = '/course/' + course.slug + '/#/cid/' + course._id + '?tab=preview';
 
@@ -163,7 +163,42 @@ var advancedSearch = function (req, res, next) {
     });
 };
 
+var relevantSearch = function (req, res, next) {
+  // Require a search term
+  var term = req.query.term;
+  if (!term) {
+    return res.status(400).json();
+  }
+
+  var query = new SearchBuilder(term)
+    .searchByResource(req.query.resources)
+    .searchByOwnership(req.query.owner)
+    .build();
+
+  Promise.props(query)
+    .then(function (data) {
+
+      // Flatten items to a single dimensional array
+      var matches = []
+      for (var collectionType in data) {
+        var items = data[collectionType];
+        _.each(items, function (o) {
+          matches.push(parseObject(collectionType, o));
+        })
+      }
+
+      // Sort by score
+      var sorted = _.sortByOrder(matches, 'score', 'desc');
+      res.json(sorted);
+    })
+    .catch(function (err) {
+      console.log(err)
+      res.status(500).send(err);
+    });
+}
+
 module.exports = {
   search: search,
-  advancedSearch: advancedSearch
+  advancedSearch: advancedSearch,
+  relevantSearch: relevantSearch
 };
