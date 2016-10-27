@@ -36,7 +36,12 @@ var SearchBuilder = function (term) {
   };
 
   this.searchByResource = function (resources) {
-    searchableResources = resources.split(',');
+    if (resources) {
+      searchableResources = resources.split(',');
+    }
+    else {
+      searchableResources = null;
+    }
     return this;
   };
 
