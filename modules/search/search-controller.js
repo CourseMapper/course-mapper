@@ -2,6 +2,7 @@
 
 var Promise = require('bluebird');
 var SearchBuilder = require('./search-builder');
+var _ = require('lodash');
 
 var search = function (req, res, next) {
   // Require a search term
@@ -24,6 +25,48 @@ var search = function (req, res, next) {
     });
 };
 
+
+var advancedSearch = function (req, res, next) {
+  // Require a search term
+  var term = req.query.term;
+  if (!term) {
+    return res.status(400).json();
+  }
+
+  var query = new SearchBuilder(term)
+    .searchByResource(req.query.resources)
+    .searchByOwnership(req.query.owner)
+    .build();
+
+  Promise.props(query)
+    .then(function (data) {
+
+      // Flatten items to a single dimensional array
+      var matches = []
+      for (var x in data) {
+        var items = data[x];
+        _.each(items, function (o) {
+          if (!o) {
+            return;
+          }
+          var item = o;
+          item.objectType = x;
+          matches.push(item);
+        })
+      }
+
+      // Sort by score
+      var sorted = _.sortByOrder(matches, 'score', 'desc');
+
+      res.json(sorted);
+    })
+    .catch(function (err) {
+      console.log(err)
+      res.status(500).send(err);
+    });
+};
+
 module.exports = {
-  search: search
+  search: search,
+  advancedSearch: advancedSearch
 };

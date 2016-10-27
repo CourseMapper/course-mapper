@@ -13,11 +13,14 @@ var Resources = require('../../modules/trees/resources');
 var TreeNodes = require('../../modules/trees/treeNodes');
 
 var SearchBuilder = function (term) {
-  var courseArgs = {$text: {$search: term}};
-  var contentNodeArgs = {$text: {$search: term}, isDeleted: false};
-  var categoryArgs = {$text: {$search: term}};
-  var videoAnnotationArgs = {$text: {$search: term}};
-  var pdfAnnotationArgs = {$text: {$search: term}};
+
+  var sortByScore = { score: { $meta: "textScore" } };
+
+  var courseArgs = { $text: { $search: term } };
+  var contentNodeArgs = { $text: { $search: term }, isDeleted: false };
+  var categoryArgs = { $text: { $search: term } };
+  var videoAnnotationArgs = { $text: { $search: term } };
+  var pdfAnnotationArgs = { $text: { $search: term } };
 
   var searchableResources = [];
 
@@ -39,7 +42,7 @@ var SearchBuilder = function (term) {
 
   this.build = function () {
 
-    var findVideoAnnotations = VideoAnnotation.findAsync(videoAnnotationArgs)
+    var findVideoAnnotations = VideoAnnotation.findAsync(videoAnnotationArgs, sortByScore)
       .then(function (videoAnnotations) {
         var promises = [];
         _.each(videoAnnotations, function (videoAnnotation) {
@@ -54,7 +57,7 @@ var SearchBuilder = function (term) {
         return Promise.all(promises);
       });
 
-    var findPdfAnnotations = PdfAnnotation.findAsync(pdfAnnotationArgs)
+    var findPdfAnnotations = PdfAnnotation.findAsync(pdfAnnotationArgs, sortByScore)
       .then(function (pdfAnnotations) {
         var promises = [];
         _.each(pdfAnnotations, function (pdfAnnotation) {
@@ -70,11 +73,11 @@ var SearchBuilder = function (term) {
       });
 
     var engines = {
-      contentNodes: TreeNodes.find(contentNodeArgs).populate('courseId').execAsync(),
-      courses: Courses.find(courseArgs).execAsync(),
+      contentNodes: TreeNodes.find(contentNodeArgs, sortByScore).populate('courseId').lean().execAsync(),
+      courses: Courses.find(courseArgs, sortByScore).lean().execAsync(),
       videoAnnotations: findVideoAnnotations,
       pdfAnnotations: findPdfAnnotations,
-      categories: Categories.find(categoryArgs).execAsync()
+      categories: Categories.find(categoryArgs, sortByScore).lean().execAsync()
     };
 
     if (!searchableResources) {
@@ -91,4 +94,3 @@ var SearchBuilder = function (term) {
 };
 
 module.exports = SearchBuilder;
-

@@ -46,11 +46,11 @@ catalog.prototype.saveResourceFile = function (filetype, file, contentNode, crea
     });
 
     Res.save(function () {
-      TreeNodes.update({_id: contentNode._id}, {
-          $addToSet: {
-            resources: Res._id
-          }
-        },
+      TreeNodes.update({ _id: contentNode._id }, {
+        $addToSet: {
+          resources: Res._id
+        }
+      },
         function () {
         });
     });
@@ -75,8 +75,8 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
   }
 
   if (!helper.checkRequiredParams(params, ['userId', 'createdBy'], function (errs) {
-      error(errs)
-    })) {
+    error(errs)
+  })) {
     return;
   }
 
@@ -94,7 +94,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
 
   var insertNodeToParentAsync = async(function (tn) {
     if (tn.parent) {
-      var parentNode = await(TreeNodes.findOne({_id: tn.parent}).exec());
+      var parentNode = await(TreeNodes.findOne({ _id: tn.parent }).exec());
       if (parentNode) {
         parentNode.childrens.push(tn._id);
         await(parentNode.save());
@@ -126,7 +126,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     await(Res.save());
 
     var upd = await(
-      TreeNodes.update({_id: contentNode._id}, {
+      TreeNodes.update({ _id: contentNode._id }, {
         $addToSet: {
           resources: Res._id
         }
@@ -159,7 +159,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
   if (params._id) {
     node._id = params._id;
     var op = async(function () {
-      var tn = await(TreeNodes.findOne({_id: node._id}).populate('parent').exec()
+      var tn = await(TreeNodes.findOne({ _id: node._id }).populate('parent').exec()
       );
 
       // // Don't allow publishing nodes, which parent is private.
@@ -183,7 +183,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
 
         await(tn.save());
 
-        var newNode = await(TreeNodes.findOne({_id: node._id})
+        var newNode = await(TreeNodes.findOne({ _id: node._id })
           .populate('resources')
           .exec());
 
@@ -211,7 +211,7 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
     ///
     // saving new node
     ///
-    node.positionFromRoot = {x: generateRandomPos(), y: generateRandomPos()};
+    node.positionFromRoot = { x: generateRandomPos(), y: generateRandomPos() };
 
     var op = async(function () {
       var tn = new TreeNodes(node);
@@ -294,12 +294,12 @@ catalog.prototype.getNodeAsync = function () {
 };
 
 catalog.prototype.toggleNodeVisibilityAsync = function (userId, nodeId, isHidden) {
-  return NodeVisibility.update({user: userId, node: nodeId}, {
-      user: userId,
-      node: nodeId,
-      isHidden: isHidden
-    },
-    {upsert: true})
+  return NodeVisibility.update({ user: userId, node: nodeId }, {
+    user: userId,
+    node: nodeId,
+    isHidden: isHidden
+  },
+    { upsert: true })
     .execAsync();
 };
 
@@ -326,7 +326,7 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
       return c._id;
     });
 
-    var nodeVisibilities = await(NodeVisibility.find({user: user._id}).where('node').in(allIds).exec());
+    var nodeVisibilities = await(NodeVisibility.find({ user: user._id }).where('node').in(allIds).exec());
 
     return nodeVisibilities
       .filter(function (vis) {
@@ -341,52 +341,52 @@ catalog.prototype.getTreeNodes = function (error, params, success) {
     .populate('resources')
     .populate('createdBy', 'displayName _id')
     .exec(async(function (err, docs) {
-        if (err) {
-          return error(err);
-        }
-        var cats = helper.convertToDictionary(docs);
+      if (err) {
+        return error(err);
+      }
+      var cats = helper.convertToDictionary(docs);
 
-        // keys for the ref ids of parent and childrens
-        var parent = 'parent';
-        var children = 'childrens';
-        var tree = [];
+      // keys for the ref ids of parent and childrens
+      var parent = 'parent';
+      var children = 'childrens';
+      var tree = [];
 
-        function again(cat) {
-          if (cat[children]) {
-            var childrens = [];
-            for (var e in cat[children]) {
-              var catId = cat[children][e];
-              var childCat = cats[catId];
+      function again(cat) {
+        if (cat[children]) {
+          var childrens = [];
+          for (var e in cat[children]) {
+            var catId = cat[children][e];
+            var childCat = cats[catId];
 
-              // Filter private nodes
-              if (checkAccess(childCat)) {
-                childrens.push(childCat);
-                again(childCat);
-              }
+            // Filter private nodes
+            if (checkAccess(childCat)) {
+              childrens.push(childCat);
+              again(childCat);
             }
-            cat[children] = childrens;
           }
+          cat[children] = childrens;
         }
+      }
 
-        var userHiddenNodeIds = await(getUserHiddenNodeIdsAsync(cats));
+      var userHiddenNodeIds = await(getUserHiddenNodeIdsAsync(cats));
 
-        for (var i in cats) {
-          // get the root
-          var doc = cats[i];
+      for (var i in cats) {
+        // get the root
+        var doc = cats[i];
 
-          // Check if the node is hidden by the user
-          doc.isHidden = userHiddenNodeIds.indexOf(doc._id.toString()) > -1;
+        // Check if the node is hidden by the user
+        doc.isHidden = userHiddenNodeIds.indexOf(doc._id.toString()) > -1;
 
-          if (doc.isDeleted) {
-            doc.name = "[DELETED]";
-          }
-          if (!doc[parent]) {
-            again(doc);
-            tree.push(doc);
-          }
+        if (doc.isDeleted) {
+          doc.name = "[DELETED]";
         }
-        success(tree);
-      })
+        if (!doc[parent]) {
+          again(doc);
+          tree.push(doc);
+        }
+      }
+      success(tree);
+    })
     );
 };
 
@@ -476,7 +476,7 @@ catalog.prototype.deleteNode = function (error, params, user, success) {
         if (tn.childrens.length == 0) {
           // find parent,
           // remove this tn from parent's children subdocs
-          TreeNodes.findOneAndUpdate({_id: tn.parent}, {$pull: {childrens: tn._id}},
+          TreeNodes.findOneAndUpdate({ _id: tn.parent }, { $pull: { childrens: tn._id } },
             function (err, data) {
             });
 
@@ -492,10 +492,10 @@ catalog.prototype.deleteNode = function (error, params, user, success) {
         }
 
         Resources.update({
-            treeNodeId: tn._id
-          },
+          treeNodeId: tn._id
+        },
           {
-            $set: {isDeleted: true}
+            $set: { isDeleted: true }
           },
           {
             multi: true
@@ -512,10 +512,10 @@ catalog.prototype.deleteNode = function (error, params, user, success) {
             }
             else {
               Resources.update({
-                  treeNodeId: tn._id
-                },
+                treeNodeId: tn._id
+              },
                 {
-                  $set: {isDeleted: true}
+                  $set: { isDeleted: true }
                 },
                 {
                   multi: true

@@ -1,0 +1,34 @@
+<div style="padding-top: 20px" ng-controller="AdvancedSearchController">
+
+	<!--  Search input  -->
+	<div class="row">
+		<form>
+			<div class="input-group">
+				<span class="input-group-btn">
+                    <input type="text" class="form-control" ng-model="searchTerm" ng-disabled="isBusy">
+                    <button type="submit" class="btn btn-info btn-flat" ng-click="search(searchTerm)" ng-disabled="isBusy">Search</button>
+                </span>
+			</div>
+		</form>
+	</div>
+
+	<!--  Search Results  -->
+	<div class="row">
+		<div class="container">
+			<!-- No matches -->
+			<span ng-show="result.length > 0">
+            No results found.<br/>
+            Please, try a different search term.
+            </span>
+
+			<!--  matches  -->
+			<div class="col-md-4">
+				<div class="box" ng-repeat="item in result">
+                    [{{item.name}}]
+					<br/>
+					[{{item.score}}] 
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
