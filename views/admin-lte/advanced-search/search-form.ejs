@@ -3,23 +3,35 @@
 	<!--  Search Results  -->
 	<div class="container">
 
-		<!-- No matches -->
-		<span ng-show="result != null && result.length === 0">
-            No results found.<br/>
-            Please, try a different search term.
-            </span>
+		<!--Filters panel-->
+		<div class="col-md-3 no-float">
+			<div class="box" style="padding: 20px;" >
+				<select class="form-control" ng-model="sortBy">
+					<option value="" selected disabled>-- Sort by --</option>
+					<option selected value="score">Match score</option>
+					<option value="date">Creation date</option>
+                </select>
+			</div>
+		</div>
 
 		<!--  matches  -->
 		<div class="col-md-4">
 
+			<!-- No matches -->
+			<h3 ng-show="result != null && result.length === 0">No results found. Please, try a different search term.</h3>
+
+			<!--  Found matches -->
 			<ul class="products-list product-list-in-box">
-				<li class="item box" ng-repeat="item in result" style="margin: 5px">
+				<li class="item box" ng-repeat="item in result | orderBy:sortBy" style="margin: 5px">
 					<div class="product-img">
 						<img src="/img/search/{{item.type}}.png" alt="Image">
 					</div>
 					<div class="product-info">
 						<a href="{{item.link}}" class="product-title">{{item.title}}
-                      		<span class="label label-warning pull-right">{{item.score | number : 2}}</span></a>
+                      		<span class="label pull-right"
+							  title="Match score. &#013;The higer the value, the better score. &#013;Label is also color coded, where 'Green' represents a good match, &#013;while 'Orange' and 'Red' are progressively worse."
+							  ng-class="{'label-success': (item.score >= 0.95), 'label-warning': (item.score < 0.95), 'label-danger': (item.score < 0.7)}"
+							  >{{item.score | number : 2}}</span></a>
 						<span class="product-description">{{item.description}}</span>
 						<span class="product-description">{{item.date | date : "dd-MM-yyyy 'at' h:mma"}}</span>
 					</div>

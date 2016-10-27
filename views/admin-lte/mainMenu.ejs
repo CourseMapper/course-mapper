@@ -15,7 +15,7 @@
 
     <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController">
 
-        <form class="navbar-form navbar-left search-box hidden-xs" role="search" ng-controller="SearchBoxController">
+        <form ng-submit="openAdvancedSearch()" class="navbar-form navbar-left search-box hidden-xs" role="search" ng-controller="SearchBoxController" >
             <div class="input-group search">
                 <input class="form-control" id="navbar-search-input" type="text" placeholder="Search" autocomplete="off"
                        ng-model="queryText" ng-model-options="{debounce: 200}">

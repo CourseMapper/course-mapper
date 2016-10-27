@@ -1,4 +1,4 @@
-app.controller('SearchBoxController', function ($scope, $http, $location, $rootScope) {
+app.controller('SearchBoxController', function ($scope, $http, $location, $rootScope, $routeParams) {
 
   var isAdvancedSearch = function () {
     var containsSearchPath = $location.absUrl().includes('/search');
@@ -22,6 +22,10 @@ app.controller('SearchBoxController', function ($scope, $http, $location, $rootS
     );
   };
 
+  $scope.openAdvancedSearch = function () {
+    window.location.href = '/search?term=' + $scope.queryText;;
+  };
+
   $scope.$watch('queryText', function (searchTerm) {
 
     $rootScope.$broadcast('searchQueryChanged', {
@@ -42,4 +46,10 @@ app.controller('SearchBoxController', function ($scope, $http, $location, $rootS
         });
     }
   });
+
+  var init = function () {
+    //TODO - Load query into search box
+  }
+
+  init();
 });
