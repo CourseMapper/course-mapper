@@ -1,32 +1,30 @@
 <div style="padding-top: 20px" ng-controller="AdvancedSearchController">
 
-	<!--  Search input  -->
-	<div class="row">
-		<form>
-			<div class="input-group">
-				<span class="input-group-btn">
-                    <input type="text" class="form-control" ng-model="searchTerm" ng-disabled="isBusy">
-                    <button type="submit" class="btn btn-info btn-flat" ng-click="search(searchTerm)" ng-disabled="isBusy">Search</button>
-                </span>
-			</div>
-		</form>
-	</div>
-
 	<!--  Search Results  -->
-	<div class="row">
-		<div class="container">
-			<!-- No matches -->
-			<span ng-show="result.length == 0">
+	<div class="container">
+
+		<!-- No matches -->
+		<span ng-show="result != null && result.length === 0">
             No results found.<br/>
             Please, try a different search term.
             </span>
 
-			<!--  matches  -->
-			<div class="col-md-4">
-				<div class="box" ng-repeat="item in result">
-                    {{item.title}} - [{{item.score}}] 
-				</div>
-			</div>
+		<!--  matches  -->
+		<div class="col-md-4">
+
+			<ul class="products-list product-list-in-box">
+				<li class="item box" ng-repeat="item in result" style="margin: 5px">
+					<div class="product-img">
+						<img src="/img/search/{{item.type}}.png" alt="Image">
+					</div>
+					<div class="product-info">
+						<a href="{{item.link}}" class="product-title">{{item.title}}
+                      		<span class="label label-warning pull-right">{{item.score | number : 2}}</span></a>
+						<span class="product-description">{{item.description}}</span>
+						<span class="product-description">{{item.date | date : "dd-MM-yyyy 'at' h:mma"}}</span>
+					</div>
+				</li>
+			</ul>
 		</div>
 	</div>
 </div>

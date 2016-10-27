@@ -1,10 +1,12 @@
 app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) {
 
   var search = function (term) {
-    
+
+    // Clear previous result
+    $scope.result = null;
+
     // Check if search is empty
     if (!term || term.length == 0) {
-      $scope.result = null;
       return;
     }
 
@@ -22,10 +24,17 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
   }
 
   function init() {
+
     setBusy(false);
     $scope.searchTerm = '';
-    $scope.result = [];
+    $scope.result = null;
     $scope.search = search;
+
+    // Subscribe to menu query text changes
+    $scope.$on('searchQueryChanged', function (event, args) {
+      var query = args.state;
+      search(query);
+    })
   }
 
   // Initialize controller

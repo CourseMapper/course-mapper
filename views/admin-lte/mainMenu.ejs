@@ -20,7 +20,7 @@
                 <input class="form-control" id="navbar-search-input" type="text" placeholder="Search" autocomplete="off"
                        ng-model="queryText" ng-model-options="{debounce: 200}">
 
-                <div class="results dropdown-menu" ng-show="isEmpty()==false">
+                <div class="results dropdown-menu" ng-show="showQuickSearchResults()">
                     <div class="results-box">
 
                         <span ng-show="hasResults() === false">

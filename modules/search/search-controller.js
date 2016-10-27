@@ -10,6 +10,7 @@ var matchResult = function (title, description, type, link) {
   this.type = type;
   this.description = description;
   this.score = 0.0;
+  this.date = '';
 }
 
 // parse the object to a search result
@@ -46,50 +47,65 @@ var parseObject = function (collection, match) {
   return result;
 }
 
-
 var parseCourse = function (course) {
   var title = course.name;
   var desc = course.description;
   var type = 'course';
-  var link = '';
+  var link = '/course/' + course.slug + '/#/cid/' + course._id + '?tab=preview';
 
-  return new matchResult(title, desc, type, link);
+  var match = new matchResult(title, desc, type, link);
+  match.date = course.dateAdded;
+  return match;
 }
 
 var parseContentNode = function (content) {
   var title = content.name;
   var desc = content.description;
   var type = 'contentNode';
-  var link = '';
 
-  return new matchResult(title, desc, type, link);
+  var link = '';
+  if (content.type == 'contentNode') {
+    link = '/treeNode/' + content._id + '/#/cid/' + content.courseId._id + '/nid/' + content._id;
+  } else if (content.type == 'subTopic') {
+    link = '/course/' + content.courseId.slug + '/#/cid/' + content.courseId._id + '?tab=map&markedNode=' + content._id;
+  }
+
+  var match = new matchResult(title, desc, type, link);
+  match.date = content.dateAdded;
+  return match;
 }
 
 var parseVideoAnnotation = function (va) {
-  var title = va.text;
-  var desc = '[' + va.start + '] - [' + va.end + ']';
+  var title = 'Video Annotation [' + va.start / 1000 + '-' + va.end / 1000 + '] sec.';
+  var desc = va.text;
   var type = 'videoAnnotation';
-  var link = '';
+  var link = '/treeNode/' + va.nodeId + '/#/cid/' + va.courseId + '/nid/' + va.nodeId + '?tab=video#' + va._id;
 
-  return new matchResult(title, desc, type, link);
+  var match = new matchResult(title, desc, type, link);
+  match.date = va.date_created;
+  return match;
 }
 
-var parsePdfAnnotation = function (pdf) {
-  var title = pdf.renderedText;
-  var desc = '[' + pdf.pdfPageNumber + ']';
+var parsePdfAnnotation = function (pa) {
+  var title = 'PDF Annotation on page ' + pa.pdfPageNumber;
+  var desc = pa.renderedText;
   var type = 'pdfAnnotation';
-  var link = '';
+  var link = '/treeNode/' + pa.nodeId + '/#/cid/' + pa.courseId + '/nid/' + pa.nodeId + '?tab=pdf&slidePage=' + pa.pdfPageNumber;
 
-  return new matchResult(title, desc, type, link);
+  var match = new matchResult(title, desc, type, link);
+
+  return match;
 }
 
 var parseCategory = function (cat) {
   var title = cat.name;
   var desc = '';
   var type = 'category';
-  var link = '';
+  var link = '/courses/#/category/' + cat.slug;
 
-  return new matchResult(title, desc, type, link);
+  var match = new matchResult(title, desc, type, link);
+  match.date = cat.dateAdded;
+  return match;
 }
 
 var search = function (req, res, next) {
@@ -136,6 +152,7 @@ var advancedSearch = function (req, res, next) {
           matches.push(parseObject(collectionType, o));
         })
       }
+
       // Sort by score
       var sorted = _.sortByOrder(matches, 'score', 'desc');
       res.json(sorted);
