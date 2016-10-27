@@ -15,7 +15,7 @@
 
 						<select class="form-control" ng-model="sortBy" ng-init="sortBy='-score'">
 						<option selected value="-score">Best match</option>
-						<option value="-date">Newest first</option>
+						<option value="-date">Most recent</option>
 						<option value="date">Oldest first</option>
                	 	</select>
 					</fieldset>
@@ -24,11 +24,11 @@
 					<fieldset style="margin-bottom:20px">
 						<legend style="padding:0; margin-bottom:5px">Search in</legend>
 
-						<label><input disabled checked type="checkbox" value="subTopic"> Topic</label><br/>
-						<label><input disabled checked type="checkbox" value="contentNode"> Content</label><br/>
-						<label><input disabled checked type="checkbox" value="course"> Course</label><br/>
-						<label><input disabled checked type="checkbox" value="videoAnnotation"> Video annotation</label><br/>
-						<label><input disabled checked type="checkbox" value="pdfAnnotation"> PDF annotation</label>
+						<label><input type="checkbox" ng-model="resources.categories.selected"> Categories</label><br/>
+						<label><input type="checkbox" ng-model="resources.contentNodes.selected"> Content nodes</label><br/>
+						<label><input type="checkbox" ng-model="resources.courses.selected"> Courses</label><br/>
+						<label><input type="checkbox" ng-model="resources.videoAnnotations.selected"> Video annotations</label><br/>
+						<label><input type="checkbox" ng-model="resources.pdfAnnotations.selected"> PDF annotations</label>
 					</fieldset>
 
 					<!--Network-->
@@ -67,7 +67,7 @@
 							  ng-class="{'label-success': (item.score >= 0.95), 'label-warning': (item.score < 0.95), 'label-danger': (item.score < 0.7)}"
 							  >{{item.score | number : 2}}</span></a>
 							<span class="product-description">{{item.description}}</span>
-							<span style="margin-top:5px" class="product-description  pull-right">{{item.date | date : "dd-MM-yyyy 'at' h:mma"}}</span>
+							<span style="margin-top:5px;font-size: 0.75em" class="product-description pull-right">{{item.date | date : "dd-MM-yyyy 'at' h:mma"}}</span>
 						</div>
 					</li>
 				</ul>
@@ -86,12 +86,7 @@
 						</div>
 						<div class="product-info">
 							<a href="{{item.link}}" class="product-title">{{item.title}}
-                      		<span class="label pull-right"
-							  title="Match score. &#013;The higer the value, the better score. &#013;Label is also color coded, where 'Green' represents a good match, &#013;while 'Orange' and 'Red' are progressively worse."
-							  ng-class="{'label-success': (item.score >= 0.95), 'label-warning': (item.score < 0.95), 'label-danger': (item.score < 0.7)}"
-							  >{{item.score | number : 2}}</span></a>
-							<span class="product-description">{{item.description}}</span>
-							<span style="margin-top:5px" class="product-description  pull-right">{{item.date | date : "dd-MM-yyyy 'at' h:mma"}}</span>
+                      		<span class="product-description">{{item.description}}</span>
 						</div>
 					</li>
 				</ul>

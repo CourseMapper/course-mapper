@@ -36,7 +36,7 @@ var SearchBuilder = function (term) {
   };
 
   this.searchByResource = function (resources) {
-    searchableResources = resources;
+    searchableResources = resources.split(',');
     return this;
   };
 
