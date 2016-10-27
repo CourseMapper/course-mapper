@@ -44,8 +44,6 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
         break;
     }
 
-    console.log(query);
-    
     // Find matching results
     $http.get('/api/advanced-search' + query)
       .success(function (data) {
@@ -79,6 +77,7 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
 
     // Monitor changes of filters
     $scope.$watch('network', search);
+    $scope.$watch('resources', search, true);
 
     // Subscribe to menu query text changes
     $scope.$on('searchQueryChanged', function (event, args) {
