@@ -22,9 +22,9 @@
 
 			<!--  Found matches -->
 			<ul class="products-list product-list-in-box">
-				<li class="item box" ng-repeat="item in result | orderBy:sortBy" style="margin: 5px">
+				<li class="item box" ng-repeat="item in result | orderBy:sortBy" style="margin: 5px; padding: 20px;">
 					<div class="product-img">
-						<img src="/img/search/{{item.type}}.png" alt="Image">
+						<!--<img src="/img/search/{{item.type}}.png" alt="Image">-->
 					</div>
 					<div class="product-info">
 						<a href="{{item.link}}" class="product-title">{{item.title}}
