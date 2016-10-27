@@ -16,7 +16,7 @@
 	<div class="row">
 		<div class="container">
 			<!-- No matches -->
-			<span ng-show="result.length > 0">
+			<span ng-show="result.length == 0">
             No results found.<br/>
             Please, try a different search term.
             </span>
@@ -24,9 +24,7 @@
 			<!--  matches  -->
 			<div class="col-md-4">
 				<div class="box" ng-repeat="item in result">
-                    [{{item.name}}]
-					<br/>
-					[{{item.score}}] 
+                    {{item.title}} - [{{item.score}}] 
 				</div>
 			</div>
 		</div>

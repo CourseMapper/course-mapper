@@ -51,9 +51,9 @@ var VideoAnnotationSchema = new mongoose.Schema({
 
 // Define indexes
 VideoAnnotationSchema.index(
-  { text: 'text' }, {
-    text: 'best_match_name',
-    weights: { text: 1 }
+  { 'text': 'text' }, {
+    'text': 'best_match_name',
+    'weights': { 'text': 1 }
   });
 
 VideoAnnotationSchema.pre('save', function (next) {

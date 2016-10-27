@@ -42,13 +42,13 @@ var SearchBuilder = function (term) {
 
   this.build = function () {
 
-    var findVideoAnnotations = VideoAnnotation.findAsync(videoAnnotationArgs, sortByScore)
+    var findVideoAnnotations = VideoAnnotation.find(videoAnnotationArgs, sortByScore).lean().execAsync()
       .then(function (videoAnnotations) {
         var promises = [];
         _.each(videoAnnotations, function (videoAnnotation) {
           promises.push(Resources.findByIdAsync(videoAnnotation.video_id)
             .then(function (content) {
-              var va = videoAnnotation.toJSON();
+              var va = videoAnnotation;
               va.courseId = content.courseId;
               va.nodeId = content.treeNodeId;
               return va;
@@ -57,13 +57,13 @@ var SearchBuilder = function (term) {
         return Promise.all(promises);
       });
 
-    var findPdfAnnotations = PdfAnnotation.findAsync(pdfAnnotationArgs, sortByScore)
+    var findPdfAnnotations = PdfAnnotation.find(pdfAnnotationArgs, sortByScore).lean().execAsync()
       .then(function (pdfAnnotations) {
         var promises = [];
         _.each(pdfAnnotations, function (pdfAnnotation) {
           promises.push(Resources.findByIdAsync(pdfAnnotation.pdfId)
             .then(function (content) {
-              var pa = pdfAnnotation.toJSON();
+              var pa = pdfAnnotation;
               pa.courseId = content.courseId;
               pa.nodeId = content.treeNodeId;
               return pa;
