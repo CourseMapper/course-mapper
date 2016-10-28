@@ -45,12 +45,16 @@
 							<input disabled type="radio" ng-model="network" name="network" value="group"> Group</label>
 					</fieldset>
 
-					<div class="input-group">
-						<div class="input-group-addon">
-							<i class="fa fa-clock-o"></i>
+					<fieldset style="margin-bottom:20px">
+						<legend style="padding:0; margin-bottom:5px">Period</legend>
+
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="fa fa-clock-o"></i>
+							</div>
+							<input date-range-picker class="form-control date-picker" type="text" ng-model="filterDate" />
 						</div>
-						<input date-range-picker class="form-control date-picker" type="text" ng-model="filterDate" />
-					</div>
+					</fieldset>
 				</div>
 			</div>
 
