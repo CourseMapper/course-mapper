@@ -1,58 +1,63 @@
 <!DOCTYPE html>
 <html ng-app="courseMapper" ng-controller="MainController">
+
 <head>
-    <meta charset="UTF-8">
-    <title></title>
-    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
-    <!-- Bootstrap 3.3.2-->
-    <link href="/bower/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/bower/bootstrap-timepicker/css/bootstrap-timepicker.min.css" type="text/css"/>
-    <link href="/bower/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/bower/Ionicons/css/ionicons.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/bower/gridstack/dist/gridstack.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/bower/quill/dist/quill.base.css" rel="stylesheet" type="text/css"/>
-    <link href="/bower/quill/dist/quill.snow.css" rel="stylesheet" type="text/css"/>
-    <link rel="icon" href="/favicon.png" type="image/png"/>
+	<meta charset="UTF-8">
+	<title></title>
+	<meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+	<!-- Bootstrap 3.3.2-->
+	<link href="/bower/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+	<link href="/bower/bootstrap-timepicker/css/bootstrap-timepicker.min.css" type="text/css" />
+	<link href="/bower/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+	<link href="/bower/Ionicons/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+	<link href="/bower/gridstack/dist/gridstack.min.css" rel="stylesheet" type="text/css" />
+	<link href="/bower/quill/dist/quill.base.css" rel="stylesheet" type="text/css" />
+	<link href="/bower/quill/dist/quill.snow.css" rel="stylesheet" type="text/css" />
+	<link rel="icon" href="/favicon.png" type="image/png" />
 
-    <!-- Themes -->
-    <link href="/css/AdminLTE.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/bower/AdminLTE/dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/global.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/app.css" rel="stylesheet" type="text/css"/>
-    <link href="/css/posts.css" rel="stylesheet" type="text/css"/>
-    <link href="/bower/jquery-ui/themes/black-tie/jquery-ui.css" rel="stylesheet" type="text/css">
+	<!-- Themes -->
+	<link href="/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+	<link href="/bower/AdminLTE/dist/css/skins/skin-blue.min.css" rel="stylesheet" type="text/css" />
+	<link href="/css/global.css" rel="stylesheet" type="text/css" />
+	<link href="/css/app.css" rel="stylesheet" type="text/css" />
+	<link href="/css/posts.css" rel="stylesheet" type="text/css" />
+	<link href="/bower/jquery-ui/themes/black-tie/jquery-ui.css" rel="stylesheet" type="text/css">
 
-    <link rel="stylesheet" type="text/css" href="/bower/ng-tags-input/ng-tags-input.min.css">
-    <link rel="stylesheet" type="text/css" href="/bower/angular-toastr/dist/angular-toastr.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/bower/ng-tags-input/ng-tags-input.min.css">
+	<link rel="stylesheet" type="text/css" href="/bower/angular-toastr/dist/angular-toastr.min.css" />
 
-    <!-- Chart and related widget -->
-    <link rel="stylesheet" type="text/css" href="/chartjs/angular-chart.min.css"/>
+	<!-- Chart and related widget -->
+	<link rel="stylesheet" type="text/css" href="/chartjs/angular-chart.min.css" />
 
-    <!-- Slide viewer css -->
-    <link href="/slide-viewer/css/slideviewer.css" rel="stylesheet" type="text/css"/>
-    <!--<link rel="stylesheet" href="/slide-viewer/css/pick-a-color-1.2.3.min.css" type="text/css" />-->
-    <link href="/slide-viewer/css/text_layer_builder.css" rel="stylesheet" type="text/css"/>
-    <link href="/slide-viewer/css/jquery.simplecolorpicker.css" rel="stylesheet" type="text/css"/>
-    <link href="/slide-viewer/css/jquery.simplecolorpicker-regularfont.css" rel="stylesheet" type="text/css"/>
-    <link href="/slide-viewer/css/jquery.simplecolorpicker-glyphicons.css" rel="stylesheet" type="text/css"/>
-    <link href="/slide-viewer/css/jquery.simplecolorpicker-fontawesome.css" rel="stylesheet" type="text/css"/>
-    <link href="/pdfjs/build/components/pdf_viewer.css" rel="stylesheet" type="text/css">
+	<!-- Slide viewer css -->
+	<link href="/slide-viewer/css/slideviewer.css" rel="stylesheet" type="text/css" />
+	<!--<link rel="stylesheet" href="/slide-viewer/css/pick-a-color-1.2.3.min.css" type="text/css" />-->
+	<link href="/slide-viewer/css/text_layer_builder.css" rel="stylesheet" type="text/css" />
+	<link href="/slide-viewer/css/jquery.simplecolorpicker.css" rel="stylesheet" type="text/css" />
+	<link href="/slide-viewer/css/jquery.simplecolorpicker-regularfont.css" rel="stylesheet" type="text/css" />
+	<link href="/slide-viewer/css/jquery.simplecolorpicker-glyphicons.css" rel="stylesheet" type="text/css" />
+	<link href="/slide-viewer/css/jquery.simplecolorpicker-fontawesome.css" rel="stylesheet" type="text/css" />
+	<link href="/pdfjs/build/components/pdf_viewer.css" rel="stylesheet" type="text/css">
 
-    <link href="/bower/videogular-themes-default/videogular.min.css" type="text/css" rel="stylesheet">
-    <link href="/js/video-annotations/styles.css" rel="stylesheet" type="text/css"/>
-    <link href="/js/countmap/countmap.css" rel="stylesheet" type="text/css">
+	<link href="/bower/videogular-themes-default/videogular.min.css" type="text/css" rel="stylesheet">
+	<link href="/js/video-annotations/styles.css" rel="stylesheet" type="text/css" />
+	<link href="/js/countmap/countmap.css" rel="stylesheet" type="text/css">
 
-    <!-- Peer Assessment Css -->
-    <link href="/angular-peerassessment/peerAssessment.css"  rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="/bower/bootstrap/dist/css/bootstrap.css" />
+	<link rel="stylesheet" href="/bower/bootstrap-daterangepicker/daterangepicker.css" />
 
-    <!--[if lt IE 9]>
+	<!-- Peer Assessment Css -->
+	<link href="/angular-peerassessment/peerAssessment.css" rel="stylesheet" type="text/css" />
+
+	<!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
-    <script src="/js/footprint/footprint.js"></script>
+	<script src="/js/footprint/footprint.js"></script>
 </head>
 <!--
 skin-black
 layout-top-nav | fixed | sidebar-collapse
 -->
+
 <body class="skin-blue sidebar-collapse">

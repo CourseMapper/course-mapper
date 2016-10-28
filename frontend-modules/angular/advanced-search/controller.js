@@ -1,3 +1,4 @@
+
 app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) {
 
   var loadRelevant = function (term, data) {
@@ -75,9 +76,12 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
       pdfAnnotations: { selected: false }
     };
 
+    $scope.filterDate = { startDate: null, endDate: null };
+
     // Monitor changes of filters
     $scope.$watch('network', search);
     $scope.$watch('resources', search, true);
+    $scope.$watch('filterDate', search, true);
 
     // Subscribe to menu query text changes
     $scope.$on('searchQueryChanged', function (event, args) {

@@ -14,12 +14,12 @@
 						<legend style="padding:0; margin-bottom:5px">Sort order</legend>
 
 						<select class="form-control" ng-model="sortBy" ng-init="sortBy='-score'">
-						<option selected value="-score">Best match</option>
-						<option value="-created">Recently added</option>
-						<option value="created">Oldest first</option>
-						<option value="-updated">Recently updated</option>
-						<option value="updated">Recently not updated</option>
-               	 	</select>
+							<option selected value="-score">Best match</option>
+							<option value="-created">Recently added</option>
+							<option value="created">Oldest first</option>
+							<option value="-updated">Recently updated</option>
+							<option value="updated">Recently not updated</option>
+               	 		</select>
 					</fieldset>
 
 					<!--Search in-->
@@ -39,11 +39,18 @@
 
 						<label title="The query lookup will be performed globally">
 							<input type="radio" ng-model="network" name="network" value="global" checked> Global</label><br/>
-						<label title="The query lookup will be performed only on content which you are owner of">
+						<label title="The query lookup will be performed only on content, where you have full or partial ownership">
 							<input type="radio" ng-model="network" name="network" value="owned"> Owned</label><br/>
 						<label title="The query lookup will be performed on content which you and the people around you are engaged in">
 							<input disabled type="radio" ng-model="network" name="network" value="group"> Group</label>
 					</fieldset>
+
+					<div class="input-group">
+						<div class="input-group-addon">
+							<i class="fa fa-clock-o"></i>
+						</div>
+						<input date-range-picker class="form-control date-picker" type="text" ng-model="filterDate" />
+					</div>
 				</div>
 			</div>
 
@@ -54,7 +61,7 @@
 				<h3 style="text-align: center; padding-top:50px" ng-show="result != null && result.length === 0">No results found. Please, try a different search term.</h3>
 
 				<!--  Found matches -->
-				<legend ng-show="result != null && result.length > 0">{{result.length}} matches found for '{{searchTerm}}'.</legend>
+				<legend ng-show="result != null && result.length > 0">{{result.length}} matches found for '{{searchTerm}} TODODODODO</legend>
 
 				<!-- results -->
 				<ul class="products-list product-list-in-box">
