@@ -10,7 +10,8 @@ var matchResult = function (title, description, type, link) {
   this.type = type;
   this.description = description;
   this.score = 0.0;
-  this.date = '';
+  this.created = '';
+  this.updated = '';
 }
 
 // parse the object to a search result
@@ -54,7 +55,8 @@ var parseCourse = function (course) {
   var link = '/course/' + course.slug + '/#/cid/' + course._id + '?tab=preview';
 
   var match = new matchResult(title, desc, type, link);
-  match.date = course.dateAdded;
+  match.created = course.dateAdded;
+  match.updated = course.dateUpdated;
   return match;
 }
 
@@ -71,7 +73,8 @@ var parseContentNode = function (content) {
   }
 
   var match = new matchResult(title, desc, type, link);
-  match.date = content.dateAdded;
+  match.created = content.dateAdded;
+  match.updated = content.dateUpdated;
   return match;
 }
 
@@ -82,7 +85,8 @@ var parseVideoAnnotation = function (va) {
   var link = '/treeNode/' + va.nodeId + '/#/cid/' + va.courseId + '/nid/' + va.nodeId + '?tab=video#' + va._id;
 
   var match = new matchResult(title, desc, type, link);
-  match.date = va.date_created;
+  match.created = va.date_created;
+  match.updated = va.date_modified;
   return match;
 }
 
@@ -93,7 +97,7 @@ var parsePdfAnnotation = function (pa) {
   var link = '/treeNode/' + pa.nodeId + '/#/cid/' + pa.courseId + '/nid/' + pa.nodeId + '?tab=pdf&slidePage=' + pa.pdfPageNumber;
 
   var match = new matchResult(title, desc, type, link);
-
+  // TODO - Add dates
   return match;
 }
 
@@ -104,7 +108,8 @@ var parseCategory = function (cat) {
   var link = '/courses/#/category/' + cat.slug;
 
   var match = new matchResult(title, desc, type, link);
-  match.date = cat.dateAdded;
+  match.created = cat.dateAdded;
+  match.updated = cat.dateUpdated;
   return match;
 }
 

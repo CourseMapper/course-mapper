@@ -39,7 +39,7 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
 
     // Configure network queyr
     switch ($scope.network) {
-      case "personal":
+      case "owned":
         query += '&owner=' + user._id;
         break;
     }
@@ -71,8 +71,8 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
       categories: { selected: true },
       contentNodes: { selected: true },
       courses: { selected: true },
-      videoAnnotations: { selected: true },
-      pdfAnnotations: { selected: true }
+      videoAnnotations: { selected: false },
+      pdfAnnotations: { selected: false }
     };
 
     // Monitor changes of filters
