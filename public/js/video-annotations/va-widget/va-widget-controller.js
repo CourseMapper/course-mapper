@@ -5,7 +5,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     $scope.user = rootScope.user;
 
     var videoPulse;
-    var videoPulseHost = 'http://lanzarote.informatik.rwth-aachen.de:3005/';
+    var videoPulseHost = 'http://lanzarote.informatik.rwth-aachen.de:3005';
     var startTime = 0;
     var cuePointsFilter;
 
