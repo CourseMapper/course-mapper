@@ -1,11 +1,12 @@
 'use strict';
+var config= require('config');
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http', '$location',
   function ($scope, socket, rootScope, $http, $location) {
     $scope.user = rootScope.user;
 
     var videoPulse;
-    var videoPulseHost = 'http://localhost:3005';
+    var videoPulseHost = 'http://lanzarote.informatik.rwth-aachen.de:3005/';
     var startTime = 0;
     var cuePointsFilter;
 
