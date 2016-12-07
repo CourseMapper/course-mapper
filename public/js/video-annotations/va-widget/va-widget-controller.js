@@ -1,5 +1,4 @@
 'use strict';
-var config= require('config');
 
 videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$rootScope', '$http', '$location',
   function ($scope, socket, rootScope, $http, $location) {
