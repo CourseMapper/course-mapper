@@ -5,7 +5,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
     $scope.user = rootScope.user;
 
     var videoPulse;
-    var videoPulseHost = 'https://gomera.informatik.rwth-aachen.de:8447';
+    var videoPulseHost = 'http://localhost:3005';
     var startTime = 0;
     var cuePointsFilter;
 
@@ -217,11 +217,16 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
       // Trigger initial annotations update.
       socket.emit('annotations:get', {video_id: videoId});
 
-      var pulseUrl = videoPulseHost + '/beats/' + videoId + '/' + rootScope.user._id;
+      var pulseUrl = videoPulseHost + '/beats?key=' + videoId + '&user=' + rootScope.user._id;
       $http.get(pulseUrl)
         .success(function (data) {
-          var position = (data.pointer / 1000);
-          $scope.lastPos = data.pointer;
+          if (data.length <= 0) {
+            return;
+          }
+
+          var beat=data[0];
+          var position = (beat.value / 1000);
+          $scope.lastPos = beat.value;
 
           if (position >>> 0) {
             $scope.onClickedResume = function () {
