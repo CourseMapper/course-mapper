@@ -5,7 +5,11 @@ function VideoPulse(params) {
   var host = params.host;
   var videoId = params.videoId;
   var video = params.mediaElement;
-  var data = {key: params.userId};
+  
+  var data = {
+    user: params.userId,
+    key: videoId
+  };
 
   var signaller = null;
 
@@ -25,10 +29,10 @@ function VideoPulse(params) {
 
   var beat = function () {
 
-    data.pointer = video.currentTime; // update pointer
+    data.value = video.currentTime; // update pointer
 
     var request = new XMLHttpRequest();
-    var url = host + '/beats/' + videoId;
+    var url = host + '/beats';
     request.open('POST', url, true);
     request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     request.send(JSON.stringify(data));
