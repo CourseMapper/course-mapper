@@ -6,11 +6,11 @@ var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
 var router = express.Router();
 
-/*router.get('/accounts/createAdmin/:username/:email', function (req, res, next) {
+router.get('/accounts/createAdmin/:username/:email', function (req, res, next) {
     var account = new Account();
     account.createAdmin(req.params.username, req.params.email);
     res.status(200).json({status: true});
-});*/
+});
 
 router.get('/accounts', function (req, res, next) {
     if (req.user)
