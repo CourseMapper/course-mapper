@@ -38,9 +38,9 @@ courseSchema.index({
   {
     name: 'best_match_name',
     weights: {
-      name: 10,
-      description: 6,
-      smallDescription: 4
+      name: 1,
+      description: 0.6,
+      smallDescription: 0.4
     }
   });
 

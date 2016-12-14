@@ -1,0 +1,127 @@
+<div style="padding-top: 20px" ng-controller="AdvancedSearchController">
+	<div class="container">
+		<div class="row">
+
+			<!--Filters panel-->
+			<div class="col-md-3">
+				<div>
+
+					<!--Sory by-->
+					<fieldset style="margin-bottom:20px">
+						<legend style="padding:0; margin-bottom:5px">Sort order</legend>
+
+						<select class="form-control" ng-model="sortBy" ng-init="sortBy='-score'">
+							<option selected value="-score">Best match</option>
+							<option value="-created">Recently added</option>
+							<option value="created">Oldest first</option>
+							<option value="-updated">Recently updated</option>
+							<option value="updated">Recently not updated</option>
+               	 		</select>
+					</fieldset>
+
+					<!--Search in-->
+					<fieldset style="margin-bottom:20px">
+						<legend title="Defines which resources should the query look into" style="padding:0; margin-bottom:5px">Search in</legend>
+
+						<label><input type="checkbox" ng-model="resources.categories.selected"> Categories</label><br/>
+						<label><input type="checkbox" ng-model="resources.contentNodes.selected"> Content nodes</label><br/>
+						<label><input type="checkbox" ng-model="resources.courses.selected"> Courses</label><br/>
+						<label><input type="checkbox" ng-model="resources.videoAnnotations.selected"> Video annotations</label><br/>
+						<label><input type="checkbox" ng-model="resources.pdfAnnotations.selected"> PDF annotations</label>
+					</fieldset>
+
+					<!--Network-->
+					<fieldset style="margin-bottom:20px">
+						<legend title="Defines in which network the query lookup will be performed" style="padding:0; margin-bottom:5px">Network</legend>
+
+						<label title="The query lookup will be performed globally">
+							<input type="radio" ng-model="network" name="network" value="global" checked> Global</label><br/>
+						<label title="The query lookup will be performed only on content, where you have full or partial ownership">
+							<input type="radio" ng-model="network" name="network" value="owned"> Owned</label><br/>
+						<label title="The query lookup will be performed on content which you and the people around you are engaged in">
+							<input disabled type="radio" ng-model="network" name="network" value="group"> Group</label>
+					</fieldset>
+
+					<!--Period-->
+					<fieldset style="margin-bottom:20px">
+						<legend title="Set the period from which results will be considered" style="padding:0; margin-bottom:5px">Period</legend>
+
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="fa fa-clock-o"></i>
+							</div>
+							<input date-range-picker class="form-control date-picker" type="text" ng-model="filterDate" />
+						</div>
+					</fieldset>
+				</div>
+			</div>
+
+			<!--  matches  -->
+			<div class="col-md-6">
+
+				<!-- No matches -->
+				<h3 style="text-align: center; padding-top:50px" ng-show="result != null && result.length === 0">No results found. Please, try a different search term.</h3>
+
+				<!--  Found matches -->
+				<legend ng-show="result != null && result.length > 0">{{result.length}} matches found for '{{searchTerm}}'</legend>
+
+				<!-- results -->
+				<ul class="products-list product-list-in-box">
+					<li class="item box" ng-repeat="item in result | orderBy: sortBy" style="margin: 0 0 5px 0; padding: 10px">
+						<div class="product-img">
+							<img style="width:35px;height:35px" src="/img/search/{{item.type}}.png" alt="Image">
+						</div>
+						<div class="product-info">
+							<a href="{{item.link}}" class="product-title">{{item.title}}
+                      		<span class="label pull-right"
+							  title="Match score. &#013;The higer the value, the better score. &#013;Label is also color coded, where 'Green' represents a good match, &#013;while 'Orange' and 'Red' are progressively worse."
+							  ng-class="{'label-success': (item.score >= 0.95), 'label-warning': (item.score < 0.95), 'label-danger': (item.score < 0.7)}"
+							  >{{item.score | number : 2}}</span></a>
+							<span class="product-description">{{item.description}}</span>
+							<span style="margin-top:5px;font-size: 0.75em" class="product-description pull-right">{{item.created | date : "dd-MM-yyyy 'at' h:mma"}}</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+
+			<!--  relevant matches -->
+			<div class="col-md-3">
+				<legend title="This content is not a direct match, &#013;but rather a relevant result, found by matching &#013;your search query with your personal network."
+					ng-show="relevant != null && relevant.length > 0">Relevant</legend>
+
+				<!-- results -->
+				<ul class="products-list product-list-in-box">
+					<li class="item box" ng-repeat="item in relevant | orderBy: -score" style="margin: 0 0 5px 0; padding: 10px">
+						<div class="product-img">
+							<img style="width:35px;height:35px" src="/img/search/{{item.type}}.png" alt="Image">
+						</div>
+						<div class="product-info">
+							<a href="{{item.link}}" class="product-title">{{item.title}}
+                      		<span class="product-description">{{item.description}}</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<legend title="Here you'll find the most popular content in CourseMapper"
+					ng-show="relevant != null && relevant.length > 0">Most popular</legend>
+
+				<!-- results -->
+				<ul class="products-list product-list-in-box">
+					<li class="item box" ng-repeat="item in relevant | orderBy: -score" style="margin: 0 0 5px 0; padding: 10px">
+						<div class="product-img">
+							<img style="width:35px;height:35px" src="/img/search/{{item.type}}.png" alt="Image">
+						</div>
+						<div class="product-info">
+							<a href="{{item.link}}" class="product-title">{{item.title}}
+                      		<span class="product-description">{{item.description}}</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>

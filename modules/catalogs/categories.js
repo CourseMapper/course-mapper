@@ -15,15 +15,19 @@ categorySchema.add({
     required: true
   },
   parentCategory: mongoose.Schema.Types.ObjectId,
-  subCategories: [{type: mongoose.Schema.Types.ObjectId, ref: 'categories'}],
+  subCategories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'categories' }],
   positionFromRoot: mongoose.Schema.Types.Mixed,
-  courseTags: [{type: mongoose.Schema.Types.ObjectId, ref: 'courseTags'}],
-  dateAdded: {type: Date},
-  dateUpdated: {type: Date}
+  courseTags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'courseTags' }],
+  dateAdded: { type: Date },
+  dateUpdated: { type: Date }
 });
 
 // Define indexes
-categorySchema.index({name: 'text'});
+categorySchema.index(
+  { name: 'text' }, {
+    name: 'best_match_name',
+    weights: { name: 1 }
+  });
 
 categorySchema.methods.setSlug = function (catString) {
   this.slug = slug(catString);

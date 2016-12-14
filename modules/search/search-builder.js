@@ -13,11 +13,14 @@ var Resources = require('../../modules/trees/resources');
 var TreeNodes = require('../../modules/trees/treeNodes');
 
 var SearchBuilder = function (term) {
-  var courseArgs = {$text: {$search: term}};
-  var contentNodeArgs = {$text: {$search: term}, isDeleted: false};
-  var categoryArgs = {$text: {$search: term}};
-  var videoAnnotationArgs = {$text: {$search: term}};
-  var pdfAnnotationArgs = {$text: {$search: term}};
+
+  var sortByScore = { score: { $meta: "textScore" } };
+
+  var courseArgs = { $text: { $search: term } };
+  var contentNodeArgs = { $text: { $search: term }, isDeleted: false };
+  var categoryArgs = { $text: { $search: term } };
+  var videoAnnotationArgs = { $text: { $search: term } };
+  var pdfAnnotationArgs = { $text: { $search: term } };
 
   var searchableResources = [];
 
@@ -33,19 +36,24 @@ var SearchBuilder = function (term) {
   };
 
   this.searchByResource = function (resources) {
-    searchableResources = resources;
+    if (resources) {
+      searchableResources = resources.split(',');
+    }
+    else {
+      searchableResources = null;
+    }
     return this;
   };
 
   this.build = function () {
 
-    var findVideoAnnotations = VideoAnnotation.findAsync(videoAnnotationArgs)
+    var findVideoAnnotations = VideoAnnotation.find(videoAnnotationArgs, sortByScore).lean().execAsync()
       .then(function (videoAnnotations) {
         var promises = [];
         _.each(videoAnnotations, function (videoAnnotation) {
           promises.push(Resources.findByIdAsync(videoAnnotation.video_id)
             .then(function (content) {
-              var va = videoAnnotation.toJSON();
+              var va = videoAnnotation;
               va.courseId = content.courseId;
               va.nodeId = content.treeNodeId;
               return va;
@@ -54,13 +62,13 @@ var SearchBuilder = function (term) {
         return Promise.all(promises);
       });
 
-    var findPdfAnnotations = PdfAnnotation.findAsync(pdfAnnotationArgs)
+    var findPdfAnnotations = PdfAnnotation.find(pdfAnnotationArgs, sortByScore).lean().execAsync()
       .then(function (pdfAnnotations) {
         var promises = [];
         _.each(pdfAnnotations, function (pdfAnnotation) {
           promises.push(Resources.findByIdAsync(pdfAnnotation.pdfId)
             .then(function (content) {
-              var pa = pdfAnnotation.toJSON();
+              var pa = pdfAnnotation;
               pa.courseId = content.courseId;
               pa.nodeId = content.treeNodeId;
               return pa;
@@ -70,11 +78,11 @@ var SearchBuilder = function (term) {
       });
 
     var engines = {
-      contentNodes: TreeNodes.find(contentNodeArgs).populate('courseId').execAsync(),
-      courses: Courses.find(courseArgs).execAsync(),
+      contentNodes: TreeNodes.find(contentNodeArgs, sortByScore).populate('courseId').lean().execAsync(),
+      courses: Courses.find(courseArgs, sortByScore).lean().execAsync(),
       videoAnnotations: findVideoAnnotations,
       pdfAnnotations: findPdfAnnotations,
-      categories: Categories.find(categoryArgs).execAsync()
+      categories: Categories.find(categoryArgs, sortByScore).lean().execAsync()
     };
 
     if (!searchableResources) {
@@ -91,4 +99,3 @@ var SearchBuilder = function (term) {
 };
 
 module.exports = SearchBuilder;
-

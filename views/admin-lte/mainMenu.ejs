@@ -15,12 +15,12 @@
 
     <nav class="navbar navbar-static-top" role="navigation" ng-controller="MainMenuController">
 
-        <form class="navbar-form navbar-left search-box hidden-xs" role="search" ng-controller="SearchBoxController">
+        <form ng-submit="openAdvancedSearch()" class="navbar-form navbar-left search-box hidden-xs" role="search" ng-controller="SearchBoxController" >
             <div class="input-group search">
                 <input class="form-control" id="navbar-search-input" type="text" placeholder="Search" autocomplete="off"
                        ng-model="queryText" ng-model-options="{debounce: 200}">
 
-                <div class="results dropdown-menu" ng-show="isEmpty()==false">
+                <div class="results dropdown-menu" ng-show="showQuickSearchResults()">
                     <div class="results-box">
 
                         <span ng-show="hasResults() === false">
@@ -97,8 +97,8 @@
                         </div>
                     </div>
 
-                    <!--<br/>-->
-                    <!--<button class="btn btn-primary btn-sm pull-right"> Advanced Search</button>-->
+                    <br/>
+                    <a class="btn btn-primary btn-sm pull-right" ng-href="/search"> Advanced Search</a>
                 </div>
             </div>
         </form>
