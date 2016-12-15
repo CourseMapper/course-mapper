@@ -1,0 +1,10 @@
+{
+  "orderNo": 7,
+  "displayName": "Hub",
+  "location": "treeNode",
+  "description": "to collaboratively aggregate and filter",
+  "isDefaultActivated": true,
+  "icon": "ionicons ion-link",
+  "ngShow": "isEnrolled || isOwner || isManager",
+  "hasJsFiles": true
+}

@@ -1,7 +1,7 @@
 {
   "theme": "admin-lte",
   "session": {
-    "secret": "CHANGETHISSECRETKEY",
+    "secret": "A78NC1gc8e",
     "maxAge": 2419200000
   },
   "signUp": {
