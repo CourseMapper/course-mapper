@@ -1,7 +1,7 @@
 {
-  "orderNo": 7,
+  "orderNo": 6,
   "displayName": "Hub",
-  "location": "treeNode",
+  "location": "contentNode",
   "description": "to collaboratively aggregate and filter",
   "isDefaultActivated": true,
   "icon": "ionicons ion-link",
