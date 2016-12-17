@@ -1,5 +1,5 @@
 <!-- Add link model-->
-<div id="Addlink" role="dialog" aria-labelledby="addlinktitle" tabindex="-1" data-backdrop="false"   class="modal fade" ng-controller="addLinkController">
+<div id="Hubaddlink" role="dialog" aria-labelledby="addlinktitle" tabindex="-1" data-backdrop="false"   class="modal fade" ng-controller="hubaddLinkController">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -21,7 +21,7 @@
                         <span data-ng-hide="loading">Scrape</span>
                     </button>
                     <span>
-                    <button ng-click="closeForm()" class="btn btn-default">Close</button>
+                    <button ng-click="closeForm()"  ng-show="scraped" class="btn btn-default">Close</button>
                 </span>
                 </form>
                 <!-- form for submitting the data-->
@@ -46,7 +46,7 @@
                         <span class="help-block"></span>
                     </div>
                     <!-- Aggregate Data submit-->
-                    <button type="submit" class="btn btn-primary" ng-disabled="aggregateData.$invalid">Add
+                    <button ng-click="add()" class="btn btn-primary" ng-disabled="aggregateData.$invalid">Add
                     </button>
                             <span>
                                 <button class="btn btn-default" ng-click="reset(aggregateUrl,aggregateData)">Reset
@@ -57,7 +57,6 @@
                 </span>
 
                 </form>
-
             </div>
             <!-- End of modal body-->
 

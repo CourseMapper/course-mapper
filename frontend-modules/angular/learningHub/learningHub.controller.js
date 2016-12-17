@@ -10,10 +10,11 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
 
     $scope.init=function(){
         $scope.loadlink();
+        console.log("controller added");
     };
 
     $scope.loadlink=function(){
-        $http.get('/api/posts',{
+        $http.get('/api/learningHub/posts',{
             params:{
                 courseId:002,
                 type: $scope.postType,
@@ -28,7 +29,7 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
 
     $scope.search = function() {
         console.log('search');
-        $http.post('/api/search',{
+        $http.post('/api/learningHub/search',{
             query: $scope.query
         }).success( function(data){
             $scope.posts = data;

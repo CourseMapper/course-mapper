@@ -1,4 +1,6 @@
 
+var ogp=require('./ogp.js');
+var meta=require('./meta.JS');
 var URL=require ('url-parse');
 var favicon = require('favicon');
 var validUrl = require('valid-url');

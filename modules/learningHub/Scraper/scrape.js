@@ -1,9 +1,17 @@
 
 var URL=require ('url-parse');
 var isImageUrl = require('is-image-url');
-
+var video=require('./video.js');
+var slide=require('./slide.js');
+var image=require('./image.js');
+var link1=require('./link.js');
+var audio=require('./audio.js');
 var domain=require('domain');
 var request=require('request');
+var sb=require('./safeBrowsing.js');
+var story=require('./story.js');
+var pdf=require('./pdf.js');
+var doc=require('./doc.js');
 require('follow-redirects').maxRedirects = 10;
 var https=require("follow-redirects").https;
 var http=require("follow-redirects").http;

@@ -190,3 +190,8 @@ i {
     /* bug fix - no overlay */
     display: none; !important;
 }
+
+.tag{
+    margin-right: 5px;
+    padding: 2px 2px 2px 2px;
+}

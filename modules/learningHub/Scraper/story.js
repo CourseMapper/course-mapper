@@ -4,6 +4,9 @@
 
 var https=require("follow-redirects").https;
 var http=require("follow-redirects").http;
+var embedHtml=require('./embedHtml.js');
+var ahelper=require("./aggHelper.js");
+var ogp=require("./ogp.js");
 
 //init story variable
 function Story(){}

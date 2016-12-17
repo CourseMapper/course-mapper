@@ -3,7 +3,11 @@
  */
 var https=require("follow-redirects").https;
 var http=require("follow-redirects").http;
+var video=require("./video.js");
+var link=require("./link.js")
 var h2js=require('html-to-json');
+var embed=require('./embedHtml.js');
+var ahelper=require("./aggHelper.js");
 
 
 var oembed_list={

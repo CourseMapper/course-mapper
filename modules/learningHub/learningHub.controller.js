@@ -3,14 +3,14 @@ var mongoose=require('mongoose');
 var agg=require('./models/hub.js');
 var personalspace  = agg.personal;
 var posts = agg.posts;
-var scrape=require(rootpath+'/public/build/learningHub.js');
+var scrape=require(rootpath+'/modules/learningHub/scraper/scrape.js');
 
 function hubcontroller(){
 
 }
 //scrape the content
 hubcontroller.prototype.scrape=function(url,callback){
-
+    console.log("controller called");
     scrape.getInfo(url,function(error,res){
         if(error){
             callback(error,null);

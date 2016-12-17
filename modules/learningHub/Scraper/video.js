@@ -1,6 +1,9 @@
 
 var https=require("follow-redirects").https;
 var http=require("follow-redirects").http;
+var ogp=require('./ogp.js');
+var link=require("./link.js");
+var ahelper=require("./aggHelper.js");
 var h2js=require('html-to-json');
 var ytCreditials={
     'API_URL':"https://www.googleapis.com/youtube/v3/videos?",

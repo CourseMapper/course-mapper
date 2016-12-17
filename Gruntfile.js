@@ -44,13 +44,6 @@ module.exports = function (grunt) {
           'public/js/video-annotations/**/*.js'
         ],
         dest: 'public/build/video-annotations.js'
-      },
-      vhub: {
-        src: [
-          'public/js/learningHub/*.js',
-          'public/js/learningHub/**/*.js'
-        ],
-        dest: 'public/build/learningHub.js'
       }
     },
 
@@ -64,9 +57,7 @@ module.exports = function (grunt) {
           'frontend-modules/angular-admin/*.js',
           'frontend-modules/libs/*.js',
           'public/js/video-annotations/*.js',
-          'public/js/video-annotations/**/*.js',
-          'public/js/learningHub/*.js',
-          'public/js/learningHub/**/*.js'
+          'public/js/video-annotations/**/*.js'
         ],
         tasks: [
           'concat:dist',
@@ -120,11 +111,11 @@ module.exports = function (grunt) {
 
   // the default task (running "grunt" in console)
   grunt.registerTask('default', [
-    'bowercopy:views', 'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va', 'concat:vhub']
+    'bowercopy:views', 'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va']
   );
 
   grunt.registerTask('production', [
-    'bowercopy:views', 'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va', 'concat:vhub',
+    'bowercopy:views', 'concat:dist', 'concat:js', 'concat:libsJS', 'concat:va',
     'ngAnnotate:cmscripts',
     'uglify:courseMapper', 'uglify:courseMapperAdmin', 'cssmin'
   ]);

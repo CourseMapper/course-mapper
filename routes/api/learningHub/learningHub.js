@@ -5,6 +5,7 @@ var controller = require(appRoot + '/modules/learningHub/learningHub.controller.
 
 router.get('/scrape',function(req,res){
     controller.scrape(req.query.url,function(error,details){
+        console.log("called");
         if(error){
             res.send("invalid link")
         }else{

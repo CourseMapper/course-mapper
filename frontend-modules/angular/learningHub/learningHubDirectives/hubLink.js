@@ -3,25 +3,25 @@ learningHubModule.directive('hubLink', function () {
         var setTemplate = function (post) {
             var postType = post.type;
             console.log(post);
-            var templateUrl = 'js/learningHub/learningHubDirectives/hubvideo.html';
+            var templateUrl = '/partials/learningHubTemplates/hubvideo.html';
             switch (postType) {
                 case 'video':
-                    templateUrl = 'js/learningHub/learningHubDirectives/hubvideo.html';
+                    templateUrl = '/partials/learningHubTemplates/hubvideo.html';
                     break;
                 case 'pdf':
-                    templateUrl = 'js/learningHub/learningHubDirectives/hubpdf.html';
+                    templateUrl = '/partials/learningHubTemplates/hubpdf.html';
                     break;
                 case 'slide':
-                    templateUrl = 'js/learningHub/learningHubDirectives/hubslide.html';
+                    templateUrl = '/partials/learningHubTemplates/hubslide.html';
                     break;
                 case 'image':
-                    templateUrl = 'js/learningHub/learningHubDirectives/hubimage.html';
+                    templateUrl = '/partials/learningHubTemplates/hubimage.html';
                     break;
                 case 'link':{
                     if(post.image){
-                        templateUrl = 'js/learningHub/learningHubDirectives/hublinkthumb.html';
+                        templateUrl = '/partials/learningHubTemplates/hublinkthumb.html';
                     }else{
-                        templateUrl = 'js/learningHub/learningHubDirectives/hublinknothumb.html';
+                        templateUrl = '/partials/learningHubTemplates/hublinknothumb.html';
                     }
                     break;
                 }
@@ -58,7 +58,7 @@ learningHubModule.directive('hubLink', function () {
         vm.edit = function(){
             dupVm = angular.copy($scope.vm.post);
             editInstance = $uibModal.open({
-                templateUrl: 'js/learningHub/learningHubDirectives/hubPostEdit.html',
+                templateUrl: '/partials/learningHubTemplates/hubPostEdit.html',
                 scope: $scope, //passed current scope to the modal
                 size: 'lg'
             });
@@ -67,7 +67,7 @@ learningHubModule.directive('hubLink', function () {
         vm.confirmEdit = function(post){
             post.tags = vm.validTags(post.tags);
             console.log(post.tags);
-            $http.post('/api/edit',
+            $http.post('/api/learningHub/edit',
                 post)
                 .success( function(data){
                     console.log('edited');
@@ -99,7 +99,7 @@ learningHubModule.directive('hubLink', function () {
         var deleteInstance;
         vm.delete = function(post){
             deleteInstance = $uibModal.open({
-                templateUrl: 'js/learningHub/learningHubDirectives/hubPostDelete.html',
+                templateUrl: '/partials/learningHubTemplates/hubPostDelete.html',
                 scope: $scope, //passed current scope to the modal
                 size: 'lg'
             });
@@ -107,7 +107,7 @@ learningHubModule.directive('hubLink', function () {
 
         vm.confirmDelete = function(postId){
             console.log(vm.post.postId);
-            $http.delete('/api/delete',
+            $http.delete('/api/learningHub/delete',
                 {
                     params:{
                         'postId' : postId
@@ -115,7 +115,7 @@ learningHubModule.directive('hubLink', function () {
                 })
                 .success( function(data){
                     console.log('deleted');
-                    toaster.success("Successfully Deleted", vm.post.title);
+                    toastr.success("Successfully Deleted", vm.post.title);
                     //window.location.reload();
                     $scope.$emit('LinkEditDelete', {
                         linkAction : "linkDelete"

@@ -1,6 +1,9 @@
 
 var https=require("follow-redirects").https;
 var http=require("follow-redirects").http;
+var ogp=require("./ogp.js");
+var ahelper=require("./aggHelper.js");
+var embed=require("./embedHtml.js");
 
 function Audio(){}
 var oembed_list={
