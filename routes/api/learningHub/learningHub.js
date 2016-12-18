@@ -2,13 +2,18 @@ var express = require('express');
 var router = express.Router();
 var appRoot = require('app-root-path');
 var controller = require(appRoot + '/modules/learningHub/learningHub.controller.js');
+var NodeController = require(appRoot + '/modules/trees/index.js');
+var helper = require(appRoot + '/libs/core/generalLibs.js');
+var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
+var mongoose = require('mongoose');
+var debug = require('debug')('cm:route');
 
-router.get('/scrape',function(req,res){
-    controller.scrape(req.query.url,function(error,details){
+router.get('/scrape', function (req, res) {
+    controller.scrape(req.query.url, function (error, details) {
         console.log("called");
-        if(error){
+        if (error) {
             res.send("invalid link")
-        }else{
+        } else {
             res.json(details);
         }
     });
@@ -16,33 +21,65 @@ router.get('/scrape',function(req,res){
 
 });
 
-router.post('/add',function(req,res){
-    controller.add(function(err){
-            console.log(err);
+router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
             return;
-        },req.body
-        ,function (post) {
-            res.status(200).json({
-                result: true, post: post
-            });
+        }
+
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        req.body.nodeId = nodeId;
+        req.body.userId = userId;
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        req.body.courseId = mongoose.Types.ObjectId(tn.courseId._id);
+                        controller.add(function (err) {
+                                console.log(err);
+                                return;
+                            }, req.body
+                            , function (post) {
+                                res.status(200).json({
+                                    result: true, post: post
+                                });
+                            });
+
+                    });
+            }
         });
 
-});
 
-router.post('/personaladd', function(req, res){
-    controller.personalAdd(function(err){
-            console.log(err);
+    });
+
+router.post('/personaladd', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
             return;
-        },req.body
-        ,function (post) {
-            res.status(200).json({
-                result: true, post: post
+        }
+        controller.personalAdd(function (err) {
+                console.log(err);
+                return;
+            }, req.body
+            , function (post) {
+                res.status(200).json({
+                    result: true, post: post
+                });
             });
-        });
 
-});
+    });
 
-router.delete('/delete', function(req,res){
+router.delete('/delete', function (req, res) {
 
     controller.delete(req.query,
         function (data) {
@@ -50,58 +87,57 @@ router.delete('/delete', function(req,res){
                 result: true
             })
         },
-        function(err){
+        function (err) {
             res.status(400).json({
-                result:false
+                result: false
             })
         })
 });
 
-router.post('/edit', function(req,res){
-    console.log("body"+req.body);
+router.post('/edit', function (req, res) {
+    console.log("body" + req.body);
     controller.edit(req.body,
         function (data) {
             res.status(200).json({
                 result: true
             })
         },
-        function (err){
+        function (err) {
             res.status(400).json({
-                result:false
+                result: false
             })
         });
 });
 
-router.post('/search', function(req,res){
-    console.log("body"+ req.body);
+router.post('/search', function (req, res) {
+    console.log("body" + req.body);
     controller.search(req.body.query,
-        function(data) {
+        function (data) {
             res.status(200).send(data);
-        },function(data){
+        }, function (data) {
             res.status(400).json({
-                result:false
+                result: false
             })
         });
 });
 
-router.put('/comment',function(req,res){
+router.put('/comment', function (req, res) {
 
 
-
-    controller.comment(function(err){
+    controller.comment(function (err) {
             console.log(err);
             return;
         },
         {
-            content:req.body.content,
-            userId:req.body.userId,
-            postId:req.body.postId,
-            userName:req.body.userName
+            content: req.body.content,
+            userId: req.body.userId,
+            postId: req.body.postId,
+            userName: req.body.userName
         },
-        function(put){
+        function (put) {
             res.status(200).json(
                 {
-                    result:true,
+                    result: true,
                     put: put
                 }
             )
@@ -109,18 +145,18 @@ router.put('/comment',function(req,res){
 
 });
 
-router.get('/posts',function(req,res){
+router.get('/posts', function (req, res) {
 
-    controller.getlinks(function(err){
+    controller.getlinks(function (err) {
             console.log(err);
             return;
         },
         {
-            courseId:req.query.courseId,
-            type:req.query.type,
-            sortBy:req.query.sortBy
+            courseId: req.query.courseId,
+            type: req.query.type,
+            sortBy: req.query.sortBy
         },
-        function(posts){
+        function (posts) {
             res.json(posts);
         });
 
@@ -130,7 +166,7 @@ router.get('/posts',function(req,res){
 //    res.sendFile(rootPath+"/public/index.html");
 //});
 
-module.exports=router;
+module.exports = router;
 
 
 

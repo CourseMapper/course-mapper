@@ -1,7 +1,9 @@
 /**
  * Created by Bharath on 24/10/2016.
  */
-learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$http', function ($rootScope, $scope, $http){
+learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$http', function ($rootScope, $scope, $http,
+                                                                                                treeNodeService,
+                                                                                                authService, courseService){
     $scope.loading=false;
     $scope.scraped=true;
     $scope.courseId=001;
@@ -123,7 +125,7 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
             $scope.formData.description=$scope.descriptionValid($scope.formData.description);
         }
         console.log($scope.formData);
-        $http.post('/api/learningHub/add',$scope.formData).success(function (data){
+        $http.post('/api/learningHub/add/'+ $scope.treeNode._id,$scope.formData).success(function (data){
             $scope.unformattedtags="";
             $scope.des_hide=false;
             $scope.scraped=true;
