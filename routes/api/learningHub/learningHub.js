@@ -27,10 +27,9 @@ router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
             res.status(401).send('Unauthorized');
             return;
         }
-
         var userId = mongoose.Types.ObjectId(req.user._id);
         var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-        req.body.nodeId = nodeId;
+        req.body.contentId = nodeId;
         req.body.userId = userId;
         var nod = new NodeController();
 
@@ -61,56 +60,168 @@ router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
     });
 
-router.post('/personaladd', helper.l2pAuth, helper.ensureAuthenticated,
+router.post('/addPersonal/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res) {
         if (!req.user) {
             res.status(401).send('Unauthorized');
             return;
         }
-        controller.personalAdd(function (err) {
-                console.log(err);
-                return;
-            }, req.body
-            , function (post) {
-                res.status(200).json({
-                    result: true, post: post
-                });
-            });
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        req.body.contentId = nodeId;
+        req.body.currentUser = userId;
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.addPersonal(function (err) {
+                                console.log(err);
+                                return;
+                            }, req.body
+                            , function (post) {
+                                res.status(200).json({
+                                    result: true, post: post
+                                });
+                            });
+                    });
+            }
+        });
+    });
+
+router.delete('/deletePersonal/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+
+        var query = {
+            postId : req.query.postId,
+            userId : userId
+        }
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.deletePersonal(query,
+                            function (data) {
+                                res.status(200).json({
+                                    result: true
+                                })
+                            },
+                            function (err) {
+                                res.status(400).json({
+                                    result: false
+                                })
+                            })
+                    });
+            }
+        });
+
 
     });
 
-router.delete('/delete', function (req, res) {
+router.delete('/delete/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
-    controller.delete(req.query,
-        function (data) {
-            res.status(200).json({
-                result: true
-            })
-        },
-        function (err) {
-            res.status(400).json({
-                result: false
-            })
-        })
-});
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        req.body.contentId = nodeId;
+        req.body.userId = userId;
+        var nod = new NodeController();
 
-router.post('/edit', function (req, res) {
-    console.log("body" + req.body);
-    controller.edit(req.body,
-        function (data) {
-            res.status(200).json({
-                result: true
-            })
-        },
-        function (err) {
-            res.status(400).json({
-                result: false
-            })
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.delete(req.query,
+                            function (data) {
+                                res.status(200).json({
+                                    result: true
+                                })
+                            },
+                            function (err) {
+                                res.status(400).json({
+                                    result: false
+                                })
+                            })
+                    });
+            }
         });
-});
 
-router.post('/search', function (req, res) {
+
+    });
+
+router.post('/edit/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        req.body.contentId = nodeId;
+        req.body.userId = userId;
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.edit(req.body,
+                            function (data) {
+                                res.status(200).json({
+                                    result: true
+                                })
+                            },
+                            function (err) {
+                                res.status(400).json({
+                                    result: false
+                                })
+                            });
+
+                    });
+            }
+        });
+
+
+    });
+
+
+router.post('/search/:nodeId', function (req, res) {
     console.log("body" + req.body);
+    console.log(req.body);
     controller.search(req.body.query,
         function (data) {
             res.status(200).send(data);
@@ -145,26 +256,94 @@ router.put('/comment', function (req, res) {
 
 });
 
-router.get('/posts', function (req, res) {
+router.get('/posts', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
 
-    controller.getlinks(function (err) {
-            console.log(err);
-            return;
-        },
-        {
-            courseId: req.query.courseId,
-            type: req.query.type,
-            sortBy: req.query.sortBy
-        },
-        function (posts) {
-            res.json(posts);
-        });
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.query.nodeId);
 
-});
 
-//router.get('/',function(req,res){
-//    res.sendFile(rootPath+"/public/index.html");
-//});
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+                _id: nodeId
+            })
+            .then(function (tn) {
+                if (tn.courseId._id) {
+                    userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                        .then(function (isAllwd) {
+                            if (!isAllwd)
+                                return helper.resReturn(helper.createError401(), res);
+                            controller.getlinks(function (err) {
+                                    console.log(err);
+                                    return;
+                                },
+                                {
+                                    contentId: nodeId,
+                                    type: req.query.type,
+                                    sortBy: req.query.sortBy
+                                },
+                                function (posts) {
+                                    res.json(posts);
+                                });
+                        })
+                        .catch(function (err) {
+                            helper.resReturn(err, res);
+                        });
+                }
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+
+
+    });
+
+router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
+
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+
+
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+                _id: nodeId
+            })
+            .then(function (tn) {
+                if (tn.courseId._id) {
+                    userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                        .then(function (isAllwd) {
+                            if (!isAllwd)
+                                return helper.resReturn(helper.createError401(), res);
+                            controller.getPersonallinks(function (err) {
+                                    console.log(err);
+                                    return;
+                                },
+                                {
+                                    contentId: nodeId,
+                                    userId: userId,
+                                    type: req.query.type,
+                                    sortBy: req.query.sortBy
+                                },
+                                function (posts) {
+                                    res.json(posts);
+                                });
+                        })
+                        .catch(function (err) {
+                            helper.resReturn(err, res);
+                        });
+                }
+            })
+            .catch(function (err) {
+                helper.resReturn(err, res);
+            });
+
+
+    });
+
+
 
 module.exports = router;
 

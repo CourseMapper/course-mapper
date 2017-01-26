@@ -7,21 +7,42 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
     $scope.sortTimes = ['newest', 'oldest'];
     $scope.postType = $scope.postTypes[0];
     $scope.sortTime = $scope.sortTimes[0];
+    $scope.enabled = false;
+
 
     $scope.init=function(){
-        $scope.loadlink();
-        console.log("controller added");
+        if($scope.enabled){
+            $scope.loadPersonal();
+        }else{
+            $scope.loadlink();
+        }
     };
 
     $scope.loadlink=function(){
-        $http.get('/api/learningHub/posts',{
+        $http.get('/api/learningHub/posts/',{
             params:{
-                courseId:002,
+                nodeId: $scope.treeNode._id,
                 type: $scope.postType,
                 sortBy : $scope.sortTime
             }
         }).success(function(data){
             $scope.posts=data;
+            console.log(data);
+        }).error(function(data){
+            console.log(data);
+        })
+    };
+
+    $scope.loadPersonal = function() {
+        $http.get('/api/learningHub/personalPosts/'+ $scope.treeNode._id,{
+            params:{
+                type: $scope.postType,
+                sortBy : $scope.sortTime
+            }
+        }).success(function(data){
+            console.log("load Personal");
+            $scope.posts=data[0].posts;
+            console.log(data[0].posts);
         }).error(function(data){
             console.log(data);
         })
@@ -29,7 +50,7 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
 
     $scope.search = function() {
         console.log('search');
-        $http.post('/api/learningHub/search',{
+        $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
             query: $scope.query
         }).success( function(data){
             $scope.posts = data;
@@ -42,21 +63,21 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         $scope.init();
     };
 
-    $scope.spaceChange = function() {
-        if($scope.currentSpace == 'Public'){
-            $scope.currentSpace = 'Personal';
-
-        }else{
-            $scope.currentSpace = 'Public';
-        }
-    };
-
     $scope.$on('LinkForm', function(event, data){
         $scope.loadlink();
+
     });
 
     $scope.$on('LinkEditDelete', function(event, data){
-        $scope.loadlink();
+        if($scope.enabled){
+            $scope.loadPersonal();
+        }else{
+            $scope.loadlink();
+        }
     });
+
+    $scope.$watch('enabled', function(){
+        $scope.init();
+    })
 
 }]);

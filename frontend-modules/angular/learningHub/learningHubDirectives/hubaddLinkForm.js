@@ -161,6 +161,8 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
         $('#Hubaddlink').modal('hide');
     }
 
+
+
 }]);
 
 

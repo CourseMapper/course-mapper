@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 
 videoAnnotationsModule.controller('VaController', ['$scope', 'socket', '$rootScope',
   function ($scope, socket, rootScope) {

@@ -4,7 +4,7 @@ var app = angular.module('courseMapper', [
     'relativeDate', 'angular-quill',
     'VideoAnnotations', 'SlideViewerAnnotationZones',
     'LearningHub',
-    'ngAnimate', 'toastr', 'externalApp', 'daterangepicker']);
+    'ngAnimate', 'toastr', 'externalApp', 'daterangepicker', 'uiSwitch']);
 
 app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {
