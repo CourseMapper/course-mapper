@@ -55,7 +55,7 @@ learningHubModule.directive('hubLink', function () {
         var vm = this;
         vm.pu = false;
         var dupVm = angular.copy($scope.vm.post);
-        vm.hideComments = true;
+        vm.toggle = false;
         vm.commentText = '';
         vm.commentSliderId = "c" + vm.post.postId;
         if(vm.space){
