@@ -230,3 +230,10 @@ i {
     padding: 2px 2px 2px 2px;
 }
 
+.switch .off{
+    color: #555555;
+}
+
+.search-form-group{
+    margin-left: 15px;
+}

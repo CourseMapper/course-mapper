@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-xs-11 container fluid">
             <div class="container-fluid controls">
-                <div class=" col-xs-offset-1 col-xs-11">
+                <div class="col-xs-12">
                     <form class="form-inline">
                         <div class="form-group">
                             <select ng-model="postType" class="form-control"
@@ -15,14 +15,14 @@
                                     ng-options="time as time for time in sortTimes" ng-change="typeChange()"></select>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="search" class="form-control" placeholder="Search by tags or text"
+                            <input type="text" name="search" class="form-control search-form-group" placeholder="Search by tags or text"
                                    ng-model="query" ng-keypress="($event.charCode==13) ? search() : null">
                         </div>
                         <div class="form-group pull-right" >
-                            <switch id="enabled"  name="enabled" ng-model="enabled" on="On" off="Off" class="blue" ></switch>
+                            <switch id="enabled"  name="enabled" ng-model="enabled" on="On" off="Off" class="green" ></switch>
                         </div>
                         <div class="form-group pull-right" style="margin-right: 15px">
-                            <label class="text-center">Private Space</label>
+                            <label class="text-center">Personal Space</label>
                         </div>
                         <div class="form-group pull-right" style="margin-right: 10px">
                             <button class="btn btn-primary pull-right" class="form-control" type="button" data-toggle="modal"

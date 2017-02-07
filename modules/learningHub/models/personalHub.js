@@ -19,7 +19,6 @@ personalSchema.add({
         embedHtml: {type: String},
         description: {type: String},
         dateAdded: {type: Date},
-        dateUpdated: {type: Date},
         tags: [{type: String}]
     }]
 

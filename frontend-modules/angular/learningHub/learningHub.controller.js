@@ -40,23 +40,28 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
                 sortBy : $scope.sortTime
             }
         }).success(function(data){
-            console.log("load Personal");
-            $scope.posts=data[0].posts;
-            console.log(data[0].posts);
+            if(data[0]){
+                $scope.posts=data[0].posts;
+            }else{
+                console.log("seting empty");
+                $scope.posts = [];
+            }
+
         }).error(function(data){
             console.log(data);
         })
     };
 
     $scope.search = function() {
-        console.log('search');
-        $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
-            query: $scope.query
-        }).success( function(data){
-            $scope.posts = data;
-        }).error( function (data){
-            console.log(data);
-        });
+        if($scope.query!="" && !$scope.enabled){
+            $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
+                query: $scope.query
+            }).success( function(data){
+                $scope.posts = data;
+            }).error( function (data){
+                console.log(data);
+            });
+        }
     };
 
     $scope.typeChange = function() {

@@ -183,7 +183,7 @@ learningHubModule.directive('hubLink', function () {
                 $http.post('/api/learningHub/addPersonal/' + treeNodeService.treeNode._id,
                     dupVm)
                     .success( function(data){
-                        toastr.success("Successfully added to persoal space", vm.post.title);
+                        toastr.success("Successfully added to personal space", vm.post.title);
                     })
                     .error( function(data){
                         toastr.error("Error in adding to personal space", vm.post.title);
@@ -199,7 +199,7 @@ learningHubModule.directive('hubLink', function () {
                         }
                     })
                     .success( function(data){
-                        toastr.success("Successfully Deleted", vm.post.title);
+                        toastr.success("Successfully deleted from personal space ", vm.post.title);
                         console.log("delete before emit");
                         $scope.$emit('LinkEditDelete', {
                             linkAction : "linkDelete"
@@ -207,7 +207,7 @@ learningHubModule.directive('hubLink', function () {
                     })
                     .error( function(data){
 
-                        toastr.error("Error in deleting", vm.post.title);
+                        toastr.error("Error in deleting from personal space", vm.post.title);
                         window.location.reload();
 
                     });

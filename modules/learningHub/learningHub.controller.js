@@ -23,7 +23,7 @@ var checkHasRightToModify = function (model, user) {
 };
 //scrape the content
 hubcontroller.prototype.scrape = function (url, callback) {
-    console.log("controller called");
+
     scrape.getInfo(url, function (error, res) {
         if (error) {
             callback(error, null);
@@ -35,7 +35,7 @@ hubcontroller.prototype.scrape = function (url, callback) {
 
 //create a new post
 hubcontroller.prototype.add = function (error, params, success) {
-    console.log(params);
+
     var newPost = new posts({
         courseId: params.courseId,
         contentId: params.contentId,
@@ -89,8 +89,7 @@ hubcontroller.prototype.search = function (query, success, error) {
 };
 // add it to the persoalSpace
 hubcontroller.prototype.addPersonal = function (error, params, success) {
-    console.log("create post");
-    console.log(params);
+
     var tempPost = {
         courseId: mongoose.Types.ObjectId(params.courseId),
         contentId: mongoose.Types.ObjectId(params.contentId),
@@ -104,6 +103,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
         image: params.image ? params.image : null,
         embedHtml: params.html ? params.html : null,
         description: params.description ? params.description : null,
+        dateAdded: new Date,
         tags: params.tags
     };
     posts.findOneAndUpdate(
@@ -128,7 +128,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
                         }
                     }, function (err, doc) {
                         if (err) {
-                            console.log("first error");
+                            error(err);
 
                         } else {
                             if(doc == null){
@@ -137,10 +137,8 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
                                 newPost.posts.push(tempPost);
                                 newPost.save(function (err) {
                                     if (err) {
-                                        console.log("second error");
                                         error(err);
                                     } else {
-                                        console.log("added");
                                         success("added to personal space");
                                     }
                                 });
@@ -157,8 +155,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
 };
 
 hubcontroller.prototype.deletePersonal = function (query, success, error) {
-    console.log("here");
-    console.log(query);
+
     personalSpace.update(
         {
             userId: query.userId
@@ -264,7 +261,6 @@ hubcontroller.prototype.comment = function (error, params, success) {
 // get all the links
 hubcontroller.prototype.getlinks = function (err, params, success) {
     var dateSort = params.sortBy == "newest" ? -1 : 1;
-    console.log(params.sortBy + "" + dateSort);
     if (params.type == 'all') {
         posts.find({
             contentId: params.contentId,
@@ -274,7 +270,6 @@ hubcontroller.prototype.getlinks = function (err, params, success) {
                 err(error);
                 return;
             } else {
-                console.log(posts);
                 success(posts);
                 return;
             }
@@ -296,50 +291,89 @@ hubcontroller.prototype.getlinks = function (err, params, success) {
     }
 };
 
+//db.personalhubs.aggregate([{
+//    $match:{userId:ObjectId("5851fdebaba43c0675c0f32d")}},
+//    {$project:{'_id':0,'posts':1}},
+//    {$unwind:"$posts"},
+//    {$match:{'posts.type':'video'}},
+//    {$match: {'posts.contentId':ObjectId("581fc4196725d57540b52b2b")}},
+//    {$group:{_id:"$posts.contentId",posts:{$push:"$posts"}}}
+//]).pretty();
+
 hubcontroller.prototype.getPersonallinks = function (err, params, success) {
     var dateSort = params.sortBy == "newest" ? -1 : 1;
     console.log(params);
-    console.log(params.sortBy + "" + dateSort);
     if (params.type == 'all') {
-        personalSpace.find({
-            userId: params.userId,
-            posts:{
-                $elemMatch:{
-                    contentId:params.contentId
+        personalSpace.aggregate([{
+            $match:{
+                userId:params.userId
+            }},
+            {
+                $project:{
+                    '_id':0, 'posts':1
                 }
-            }
-
-        },{
-            '_id': 0,
-            'posts':1
-        }).sort({'posts.dateAdded': dateSort}).exec(function (error, posts) {
+            },
+            {
+                $unwind:"$posts"
+            },{
+                $match:{
+                    'posts.contentId':params.contentId
+                }
+            },{
+                $sort:{
+                    'posts.dateAdded':dateSort
+                }
+            },{
+                $group:{
+                    _id:"$posts.contentId",posts:{
+                        $push:"$posts"
+                    }
+                }
+            }],function (error, posts) {
             if (error) {
                 err(error);
                 return;
             } else {
-                console.log(posts);
                 success(posts);
                 return;
             }
-        })
+        });
     } else {
-        personalSpace.find({
-            userId: params.userId,
-            posts:{
-                $elemMatch:{
-                    contentId:params.contentId,
-                    type: params.type
+        personalSpace.aggregate([{
+            $match:{
+                userId:params.userId
+            }},
+            {
+                $project:{
+                    '_id':0, 'posts':1
                 }
-            }
-        },{
-            '_id': 0,
-            'posts':1
-        }).sort({'dateAdded': dateSort}).exec(function (error, posts) {
+            },
+            {
+                $unwind:"$posts"
+            },{
+                $match:{
+                    'posts.type':params.type
+                }
+            },
+            {
+                $match:{
+                    'posts.contentId':params.contentId
+                }
+            }, {
+                $sort: {
+                    'posts.dateAdded': dateSort
+                }
+            },{
+                $group:{
+                    _id:"$posts.contentId",posts:{
+                        $push:"$posts"
+                    }
+                }
+            }], function (error, posts) {
             if (error) {
                 error(error);
                 return;
             } else {
-                console.log(posts);
                 success(posts);
                 return;
             }
@@ -352,13 +386,11 @@ var findByIdAsync = async(function (id) {
 });
 
 hubcontroller.prototype.addCommentAsync = async(function (params, user) {
-    console.log("inside mon");
-    console.log(params);
-    console.log(user);
+
     var postId = params.postId;
     var commentText = params.text;
     var post = await(findByIdAsync(postId));
-    console.log(post);
+
     if (!post) {
         return;
     }
@@ -369,7 +401,7 @@ hubcontroller.prototype.addCommentAsync = async(function (params, user) {
         authorDisplayName: user.displayName || user.username || 'Unknown'
     };
     post.comments.push(comment);
-    console.log('pushed');
+
     await(post.save());
     return post;
 });
@@ -378,7 +410,7 @@ hubcontroller.prototype.removeCommentAsync = async(function (params, user) {
     var postId = params.postId;
     var commentId = params.commentId;
     var post = await(findByIdAsync(postId));
-    console.log(post);
+
     if (!post) {
         return;
     }
@@ -387,7 +419,7 @@ hubcontroller.prototype.removeCommentAsync = async(function (params, user) {
             var comment = post.comments[i];
             if (checkHasRightToModify(comment, user)) {
                 post.comments[i].remove();
-                console.log("rem");
+
             }
             break;
         }
@@ -395,5 +427,6 @@ hubcontroller.prototype.removeCommentAsync = async(function (params, user) {
     await(post.save());
     return post;
 });
+
 
 module.exports = new hubcontroller();

@@ -10,7 +10,7 @@ var debug = require('debug')('cm:route');
 
 router.get('/scrape', function (req, res) {
     controller.scrape(req.query.url, function (error, details) {
-        console.log("called");
+
         if (error) {
             res.send("invalid link")
         } else {
@@ -220,8 +220,6 @@ router.post('/edit/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
 
 router.post('/search/:nodeId', function (req, res) {
-    console.log("body" + req.body);
-    console.log(req.body);
     controller.search(req.body.query,
         function (data) {
             res.status(200).send(data);
@@ -304,8 +302,6 @@ router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
         var userId = mongoose.Types.ObjectId(req.user._id);
         var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-
-
         var nod = new NodeController();
 
         nod.getNodeAsync()({
@@ -317,7 +313,7 @@ router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                         .then(function (isAllwd) {
                             if (!isAllwd)
                                 return helper.resReturn(helper.createError401(), res);
-                            controller.getPersonallinks(function (err) {
+                                controller.getPersonallinks(function (err) {
                                     console.log(err);
                                     return;
                                 },
@@ -328,6 +324,8 @@ router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                                     sortBy: req.query.sortBy
                                 },
                                 function (posts) {
+                                    console.log("inside router");
+                                    console.log(posts);
                                     res.json(posts);
                                 });
                         })
