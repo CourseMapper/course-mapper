@@ -1,5 +1,7 @@
 app.controller('aggregationController',['$scope','$sce','$http', function($scope,$sce,$http){
-
+    /**
+     * Declare and initialise the posts[], postType(s), sortTime(s),enabled(personal space)
+     */
     $scope.posts=[];
     $scope.currentSpace= 'Public';
     $scope.query='';
@@ -10,6 +12,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
     $scope.enabled = false;
 
 
+    /**
+     * initialize the environment i.e either public or personal
+     */
     $scope.init=function(){
         if($scope.enabled){
             $scope.loadPersonal();
@@ -18,6 +23,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         }
     };
 
+    /**
+     * get all the posts for public space
+     */
     $scope.loadlink=function(){
         $http.get('/api/learningHub/posts/',{
             params:{
@@ -33,6 +41,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         })
     };
 
+    /**
+     * get all the posts for persoanl space
+     */
     $scope.loadPersonal = function() {
         $http.get('/api/learningHub/personalPosts/'+ $scope.treeNode._id,{
             params:{
@@ -52,6 +63,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         })
     };
 
+    /**
+     * search for the posts based on search query
+     */
     $scope.search = function() {
         if($scope.query!="" && !$scope.enabled){
             $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
@@ -64,6 +78,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         }
     };
 
+    /**
+     * select types of posts
+     */
     $scope.typeChange = function() {
         $scope.init();
     };
@@ -73,6 +90,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
 
     });
 
+    /**
+     * handle the post edit and delete event emitted in hublink.js
+     */
     $scope.$on('LinkEditDelete', function(event, data){
         if($scope.enabled){
             $scope.loadPersonal();
@@ -81,6 +101,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         }
     });
 
+    /**
+     * handle the toggle between the personal and private space
+     */
     $scope.$watch('enabled', function(){
         $scope.init();
     })

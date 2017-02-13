@@ -1,9 +1,7 @@
 /**
- * Created by Bharath on 24/10/2016.
+ * troller to handle the form for scraping and adding posts
  */
-learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$http', function ($rootScope, $scope, $http,
-                                                                                                treeNodeService,
-                                                                                                authService, courseService){
+learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$http', function ($rootScope, $scope, $http, treeNodeService, authService, courseService){
     $scope.loading=false;
     $scope.scraped=true;
     $scope.courseId=001;
@@ -20,6 +18,7 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
         "hostName":""
     };
     $scope.unformattedtags = [];
+
     /**
      * funciton to scrape the link
      * @param isValid
@@ -81,19 +80,18 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
 
     };
 
-        //util methods
-        $scope.descriptionValid=function(description){
-            if(description.length>700){
-                return description.slice(0,600)+"...";
-            }else{
-                return description;
-            }
-        };
+    //util methods
+    $scope.descriptionValid=function(description){
+        if(description.length>700){
+            return description.slice(0,600)+"...";
+        }else{
+            return description;
+        }
+    };
 
     /**
      * function to reset the form
      */
-
     $scope.reset=function(form1,form2){
         $scope.formData={
             'url':"",
@@ -111,10 +109,9 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
     };
 
     /**
-     *function to add tje scraped link to the database
+     *function to add the scraped link to the database
      * @param isValid
      */
-
     $scope.add= function (isValid) {
 
         if($scope.unformattedtags) {
@@ -160,8 +157,6 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
     $scope.closeForm = function(){
         $('#Hubaddlink').modal('hide');
     }
-
-
 
 }]);
 

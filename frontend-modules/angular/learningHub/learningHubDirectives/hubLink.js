@@ -1,4 +1,4 @@
-
+// select the template to use based on the type of post
 learningHubModule.directive('hubLink', function () {
         var setTemplate = function (post) {
             var postType = post.type;
@@ -30,7 +30,6 @@ learningHubModule.directive('hubLink', function () {
                     }
                     break;
                 }
-
             }
             return templateUrl;
         };
@@ -48,16 +47,24 @@ learningHubModule.directive('hubLink', function () {
             template: "<div ng-include='templateUrl'></div>"
         };
     })
-    .controller( 'HubLinkController', [ '$rootScope', '$scope', '$sce','$http','socket','toastr', '$uibModal', 'treeNodeService', 'authService',function ($rootScope,$scope, $sce, $http, socket, toastr, $uibModal, treeNodeService,
-                                                                                                                 authService) {
-
+    .controller( 'HubLinkController', [ '$rootScope', '$scope', '$sce','$http','socket','toastr', '$uibModal', 'treeNodeService', 'authService',function ($rootScope,$scope, $sce, $http, socket, toastr, $uibModal, treeNodeService, authService) {
         // view data preparation
         var vm = this;
+
+        // set whether the post is added to the persnal space of te user
         vm.pu = false;
+        // local copy of the contents of the post
         var dupVm = angular.copy($scope.vm.post);
+        // verifing external links to embed
+        vm.post.url = $sce.trustAsResourceUrl(vm.post.url);
+        if(vm.post.embedHtml){
+            vm.post.embedHtml = $sce.trustAsHtml(vm.post.embedHtml);
+        }
+        // comment related initialisation
         vm.toggle = false;
         vm.commentText = '';
         vm.commentSliderId = "c" + vm.post.postId;
+        // check owner and space to show the edit delete
         if(vm.space){
             vm.owner = false;
             vm.pa = true;
@@ -71,37 +78,10 @@ learningHubModule.directive('hubLink', function () {
                 }
             }
         }
-        markAuthoredComments(vm.post.comments);
-        function markAuthoredComments(comments) {
-            var user = authService.user;
-            var isAdmin = user.role === 'admin';
 
-            _.forEach(comments, function (comment) {
-                if (isAdmin) {
-                    comment.canEdit = true;
-                } else {
-                    var isAuthor = comment.author === user.username;
-                    comment.canEdit = isAuthor;
-                }
-            });
-        }
-
-        vm.post.url = $sce.trustAsResourceUrl(vm.post.url);
-
-
-        if(vm.post.embedHtml){
-            vm.post.embedHtml = $sce.trustAsHtml(vm.post.embedHtml);
-        }
-
-        socket.on(vm.post._id + ':comments:updated', function (params) {
-            markAuthoredComments(params.comments);
-            vm.post.comments = params.comments;
-        });
-
-        //edit methods
+        // post edit methods
         var editInstance;
         vm.edit = function(){
-            dupVm = angular.copy($scope.vm.post);
             editInstance = $uibModal.open({
                 templateUrl: '/partials/learningHubTemplates/hubPostEdit.html',
                 scope: $scope, //passed current scope to the modal
@@ -114,10 +94,11 @@ learningHubModule.directive('hubLink', function () {
             $http.post('/api/learningHub/edit/' + treeNodeService.treeNode._id,
                 post)
                 .success( function(data){
+                    //update the copy if it is edited in the edit dialog
                     dupVm = angular.copy($scope.vm.post);
                     $('#editPost').modal('hide');
                     toastr.success("Successfully Edited", vm.post.title);
-                    //window.location.reload();
+                    // emit the edit success event
                     $scope.$emit('LinkEditDelete', {
                         linkAction : "linkEdit"
                     });
@@ -130,15 +111,12 @@ learningHubModule.directive('hubLink', function () {
 
         };
 
-        vm.validTags=function(unformattedTags){
-            var formattedTags = [];
-            Object.keys(unformattedTags).forEach(function(tag){
-                formattedTags.push(unformattedTags[tag].text)
-            });
-            return formattedTags;
+        vm.cancelEdit = function(){
+            $scope.vm.post = dupVm;
+            editInstance.close();
         };
 
-        //delete methods
+        //post delete methods
         var deleteInstance;
         vm.delete = function(post){
             deleteInstance = $uibModal.open({
@@ -171,12 +149,15 @@ learningHubModule.directive('hubLink', function () {
             deleteInstance.close();
             $('#postDelete').modal('hide');
         };
-
-        vm.cancelEdit = function(){
-            $scope.vm.post = dupVm;
-            editInstance.close();
+        // validate and formatt the tags
+        vm.validTags=function(unformattedTags){
+            var formattedTags = [];
+            Object.keys(unformattedTags).forEach(function(tag){
+                formattedTags.push(unformattedTags[tag].text)
+            });
+            return formattedTags;
         };
-
+        // toggle between personal and public space
         vm.togglePersonal = function(post) {
             vm.pa = !vm.pa;
             if(vm.pa){
@@ -213,9 +194,22 @@ learningHubModule.directive('hubLink', function () {
                     });
             }
         };
+        // comments related methods
+        markAuthoredComments(vm.post.comments);
+        function markAuthoredComments(comments) {
+            var user = authService.user;
+            var isAdmin = user.role === 'admin';
 
-
-
+            _.forEach(comments, function (comment) {
+                if (isAdmin) {
+                    comment.canEdit = true;
+                } else {
+                    var isAuthor = comment.author === user.username;
+                    comment.canEdit = isAuthor;
+                }
+            });
+        }
+        // add comment emit event
         vm.postComment = function(post){
             var postId = vm.post._id;
             var commentText = vm.commentText;
@@ -231,7 +225,7 @@ learningHubModule.directive('hubLink', function () {
             socket.emit('comments:post', params);
             vm.commentText = '';
         };
-
+        // remove comment emit event
         vm.removeComment = function (commentId) {
             var params = {
                 postId: vm.post._id,
@@ -240,6 +234,11 @@ learningHubModule.directive('hubLink', function () {
             socket.emit('comments:remove', params);
             vm.commentText = '';
         };
+        // recieve the comment list updated event
+        socket.on(vm.post._id + ':comments:updated', function (params) {
+            markAuthoredComments(params.comments);
+            vm.post.comments = params.comments;
+        });
 
     }] );
 
