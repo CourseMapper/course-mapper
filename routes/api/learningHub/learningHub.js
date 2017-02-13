@@ -8,6 +8,7 @@ var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:route');
 
+// scrape the submitted link
 router.get('/scrape', function (req, res) {
     controller.scrape(req.query.url, function (error, details) {
 
@@ -17,10 +18,11 @@ router.get('/scrape', function (req, res) {
             res.json(details);
         }
     });
-
-
 });
-
+/**
+ * Handling CRUD in public space for content
+ */
+// add a post for the content
 router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res) {
         if (!req.user) {
@@ -59,201 +61,7 @@ router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
 
     });
-
-router.post('/addPersonal/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
-    function (req, res) {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-            return;
-        }
-        var userId = mongoose.Types.ObjectId(req.user._id);
-        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-        req.body.contentId = nodeId;
-        req.body.currentUser = userId;
-        var nod = new NodeController();
-
-        nod.getNodeAsync()({
-            _id: nodeId
-        }).then(function (tn) {
-            if (tn.courseId._id) {
-                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
-                    .then(function (isAllwd) {
-                        if (!isAllwd) {
-                            return helper.resReturn(helper.createError401(), res);
-                        }
-                        controller.addPersonal(function (err) {
-                                console.log(err);
-                                return;
-                            }, req.body
-                            , function (post) {
-                                res.status(200).json({
-                                    result: true, post: post
-                                });
-                            });
-                    });
-            }
-        });
-    });
-
-router.delete('/deletePersonal/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
-
-    function (req, res) {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-            return;
-        }
-        var userId = mongoose.Types.ObjectId(req.user._id);
-        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-
-        var query = {
-            postId : req.query.postId,
-            userId : userId
-        }
-        var nod = new NodeController();
-
-        nod.getNodeAsync()({
-            _id: nodeId
-        }).then(function (tn) {
-            if (tn.courseId._id) {
-                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
-                    .then(function (isAllwd) {
-                        if (!isAllwd) {
-                            return helper.resReturn(helper.createError401(), res);
-                        }
-                        controller.deletePersonal(query,
-                            function (data) {
-                                res.status(200).json({
-                                    result: true
-                                })
-                            },
-                            function (err) {
-                                res.status(400).json({
-                                    result: false
-                                })
-                            })
-                    });
-            }
-        });
-
-
-    });
-
-router.delete('/delete/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
-
-    function (req, res) {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-            return;
-        }
-        var userId = mongoose.Types.ObjectId(req.user._id);
-        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-        req.body.contentId = nodeId;
-        req.body.userId = userId;
-        var nod = new NodeController();
-
-        nod.getNodeAsync()({
-            _id: nodeId
-        }).then(function (tn) {
-            if (tn.courseId._id) {
-                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
-                    .then(function (isAllwd) {
-                        if (!isAllwd) {
-                            return helper.resReturn(helper.createError401(), res);
-                        }
-                        controller.delete(req.query,
-                            function (data) {
-                                res.status(200).json({
-                                    result: true
-                                })
-                            },
-                            function (err) {
-                                res.status(400).json({
-                                    result: false
-                                })
-                            })
-                    });
-            }
-        });
-
-
-    });
-
-router.post('/edit/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
-    function (req, res) {
-        if (!req.user) {
-            res.status(401).send('Unauthorized');
-            return;
-        }
-        var userId = mongoose.Types.ObjectId(req.user._id);
-        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
-        req.body.contentId = nodeId;
-        req.body.userId = userId;
-        var nod = new NodeController();
-
-        nod.getNodeAsync()({
-            _id: nodeId
-        }).then(function (tn) {
-            if (tn.courseId._id) {
-                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
-                    .then(function (isAllwd) {
-                        if (!isAllwd) {
-                            return helper.resReturn(helper.createError401(), res);
-                        }
-                        controller.edit(req.body,
-                            function (data) {
-                                res.status(200).json({
-                                    result: true
-                                })
-                            },
-                            function (err) {
-                                res.status(400).json({
-                                    result: false
-                                })
-                            });
-
-                    });
-            }
-        });
-
-
-    });
-
-
-router.post('/search/:nodeId', function (req, res) {
-    controller.search(req.body.query,
-        function (data) {
-            res.status(200).send(data);
-        }, function (data) {
-            res.status(400).json({
-                result: false
-            })
-        });
-});
-
-router.put('/comment', function (req, res) {
-
-
-    controller.comment(function (err) {
-            console.log(err);
-            return;
-        },
-        {
-            content: req.body.content,
-            userId: req.body.userId,
-            postId: req.body.postId,
-            userName: req.body.userName
-        },
-        function (put) {
-            res.status(200).json(
-                {
-                    result: true,
-                    put: put
-                }
-            )
-        });
-
-});
-
+// get all the posts for the public space for the content
 router.get('/posts', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res) {
 
@@ -297,6 +105,135 @@ router.get('/posts', helper.l2pAuth, helper.ensureAuthenticated,
 
     });
 
+// delete a post for the content
+router.delete('/delete/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        req.body.contentId = nodeId;
+        req.body.userId = userId;
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.delete(req.query,
+                            function (data) {
+                                res.status(200).json({
+                                    result: true
+                                })
+                            },
+                            function (err) {
+                                res.status(400).json({
+                                    result: false
+                                })
+                            })
+                    });
+            }
+        });
+
+    });
+// edit a already added post to the content
+router.post('/edit/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        req.body.contentId = nodeId;
+        req.body.userId = userId;
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.edit(req.body,
+                            function (data) {
+                                res.status(200).json({
+                                    result: true
+                                })
+                            },
+                            function (err) {
+                                res.status(400).json({
+                                    result: false
+                                })
+                            });
+
+                    });
+            }
+        });
+
+
+    });
+// search from the posts for that content
+router.post('/search/:nodeId', function (req, res) {
+    controller.search(req.body.query,
+        function (data) {
+            res.status(200).send(data);
+        }, function (data) {
+            res.status(400).json({
+                result: false
+            })
+        });
+});
+/**
+ * Handling CRUD in personal space for content for user
+ */
+// add a post to the personal space for the user and content
+router.post('/addPersonal/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+        req.body.contentId = nodeId;
+        req.body.currentUser = userId;
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.addPersonal(function (err) {
+                                console.log(err);
+                                return;
+                            }, req.body
+                            , function (post) {
+                                res.status(200).json({
+                                    result: true, post: post
+                                });
+                            });
+                    });
+            }
+        });
+    });
+// get all posts for the user for the content
 router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res) {
 
@@ -313,7 +250,7 @@ router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                         .then(function (isAllwd) {
                             if (!isAllwd)
                                 return helper.resReturn(helper.createError401(), res);
-                                controller.getPersonallinks(function (err) {
+                            controller.getPersonallinks(function (err) {
                                     console.log(err);
                                     return;
                                 },
@@ -340,6 +277,77 @@ router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
 
     });
+// delete a post from personal space for the user for the content
+router.delete('/deletePersonal/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+
+    function (req, res) {
+        if (!req.user) {
+            res.status(401).send('Unauthorized');
+            return;
+        }
+        var userId = mongoose.Types.ObjectId(req.user._id);
+        var nodeId = mongoose.Types.ObjectId(req.params.nodeId);
+
+        var query = {
+            postId : req.query.postId,
+            userId : userId
+        };
+        var nod = new NodeController();
+
+        nod.getNodeAsync()({
+            _id: nodeId
+        }).then(function (tn) {
+            if (tn.courseId._id) {
+                userHelper.isEnrolledAsync({userId: userId, courseId: tn.courseId._id})
+                    .then(function (isAllwd) {
+                        if (!isAllwd) {
+                            return helper.resReturn(helper.createError401(), res);
+                        }
+                        controller.deletePersonal(query,
+                            function (data) {
+                                res.status(200).json({
+                                    result: true
+                                })
+                            },
+                            function (err) {
+                                res.status(400).json({
+                                    result: false
+                                })
+                            })
+                    });
+            }
+        });
+
+
+    });
+/**
+ * Comment related routes - deprecated
+ */
+// handle the comments - the non socket way :(
+router.put('/comment', function (req, res) {
+
+
+    controller.comment(function (err) {
+            console.log(err);
+            return;
+        },
+        {
+            content: req.body.content,
+            userId: req.body.userId,
+            postId: req.body.postId,
+            userName: req.body.userName
+        },
+        function (put) {
+            res.status(200).json(
+                {
+                    result: true,
+                    put: put
+                }
+            )
+        });
+
+});
+
 
 
 

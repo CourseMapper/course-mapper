@@ -2,21 +2,17 @@ var async = require('asyncawait/async');
 var await = require('asyncawait/await');
 var Controller = require('../modules/learningHub/learningHub.controller');
 
-
 module.exports = function (io) {
+    // emit a event when the comments of a post is updated
     var emitCommentsUpdatedAsync = async(function (post) {
-        console.log(post);
-        console.log('emitted');
         if (!post) {
             return;
         }
         var eventName = post._id + ':comments:updated';
         io.sockets.emit(eventName, {comments: post.comments});
     });
-
-
+    // establish a connection
     io.sockets.on('connection', function (socket) {
-
         var getUser = function () {
             var hasSession = socket && socket.request && socket.request.session && socket.request.session.passport;
             if (!hasSession) {
@@ -24,10 +20,8 @@ module.exports = function (io) {
             }
             return socket.request.session.passport.user;
         };
-
+        //post a comment
         socket.on('comments:post', async(function (params) {
-            console.log('listened');
-            console.log(params);
             try {
                 var post = await(Controller.addCommentAsync(params, getUser()));
                 console.log("waiting to emit");
@@ -36,7 +30,7 @@ module.exports = function (io) {
                 console.log('Error posting comment: ' + e);
             }
         }));
-
+        // remove a comment
         socket.on('comments:remove', async(function (params) {
             try {
                 var post = await(Controller.removeCommentAsync(params, getUser()));
@@ -47,9 +41,7 @@ module.exports = function (io) {
         }));
 
     });
-
-
-}
+};
 
 
 

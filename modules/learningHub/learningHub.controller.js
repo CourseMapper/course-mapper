@@ -23,7 +23,6 @@ var checkHasRightToModify = function (model, user) {
 };
 //scrape the content
 hubcontroller.prototype.scrape = function (url, callback) {
-
     scrape.getInfo(url, function (error, res) {
         if (error) {
             callback(error, null);
@@ -33,7 +32,10 @@ hubcontroller.prototype.scrape = function (url, callback) {
     });
 };
 
-//create a new post
+/**
+ * Methods for handling CRUD in public space
+ */
+//add a new post
 hubcontroller.prototype.add = function (error, params, success) {
 
     var newPost = new posts({
@@ -67,7 +69,79 @@ hubcontroller.prototype.add = function (error, params, success) {
     })
 
 };
-// search in the posts
+// get all the links
+hubcontroller.prototype.getlinks = function (err, params, success) {
+    var dateSort = params.sortBy == "newest" ? -1 : 1;
+    if (params.type == 'all') {
+        posts.find({
+            contentId: params.contentId,
+            isDeleted: false
+        }).sort({'dateAdded': dateSort}).exec(function (error, posts) {
+            if (error) {
+                err(error);
+                return;
+            } else {
+                success(posts);
+                return;
+            }
+        })
+    } else {
+        posts.find({
+            contentId: params.contentId,
+            isDeleted: false,
+            type: params.type
+        }).sort({'dateAdded': dateSort}).exec(function (error, posts) {
+            if (error) {
+                error(error);
+                return;
+            } else {
+                success(posts);
+                return;
+            }
+        })
+    }
+};
+// delete a post
+hubcontroller.prototype.delete = function (query, success, error) {
+
+    posts.update(
+        {
+            postId: query.postId
+        }, {
+            $set: {
+                "isDeleted": true
+            }
+        }, function (err) {
+            if (err) {
+                error(err);
+            } else {
+                success("deleted");
+            }
+        }
+    )
+};
+
+// edit a post
+hubcontroller.prototype.edit = function (body, success, error) {
+    posts.update(
+        {
+            postId: body.postId
+        }, {
+            $set: {
+                "title": body.title,
+                "description": body.description,
+                "tags": body.tags
+            }
+        }, function (err) {
+            if (err) {
+                error(err);
+            } else {
+                success("edited");
+            }
+        }
+    )
+};
+// search in the posts in public space
 hubcontroller.prototype.search = function (query, success, error) {
     var searchQuery = '/^' + query + '/i';
     posts.find({
@@ -87,7 +161,11 @@ hubcontroller.prototype.search = function (query, success, error) {
         }
     })
 };
-// add it to the persoalSpace
+
+/**
+ * Methods for handling CRUD in personal space
+ */
+// add a post to  personalSpace
 hubcontroller.prototype.addPersonal = function (error, params, success) {
 
     var tempPost = {
@@ -154,152 +232,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
     );
 };
 
-hubcontroller.prototype.deletePersonal = function (query, success, error) {
-
-    personalSpace.update(
-        {
-            userId: query.userId
-        }, {
-            $pull: {
-                posts: {
-                    postId: query.postId
-                }
-            }
-        }, function (err) {
-            if (err) {
-                error(err);
-            } else {
-                posts.update({
-                    postId : query.postId
-                },{
-                    $pull:{
-                        personalUsers:{
-                            userId: query.userId
-                        }
-                    }
-                }, function(err){
-                    if (err){
-                        error(err)
-                    } else{
-                        success("Removed from personal space");
-                    }
-                })
-
-            }
-        }
-    )
-}
-
-// delete a post
-hubcontroller.prototype.delete = function (query, success, error) {
-
-    posts.update(
-        {
-            postId: query.postId
-        }, {
-            $set: {
-                "isDeleted": true
-            }
-        }, function (err) {
-            if (err) {
-                error(err);
-            } else {
-                success("deleted");
-            }
-        }
-    )
-};
-// edit a post
-hubcontroller.prototype.edit = function (body, success, error) {
-    posts.update(
-        {
-            postId: body.postId
-        }, {
-            $set: {
-                "title": body.title,
-                "description": body.description,
-                "tags": body.tags
-            }
-        }, function (err) {
-            if (err) {
-                error(err);
-            } else {
-                success("edited");
-            }
-        }
-    )
-};
-// comment on a post
-hubcontroller.prototype.comment = function (error, params, success) {
-    agg.update(
-        {
-            postId: params.postId
-        },
-        {
-            $push: {
-                "comments": {
-                    "commentId": new mongoose.Types.ObjectId,
-                    "userId": params.userId,
-                    "isDeleted": false,
-                    "comment": params.content,
-                    "userName": params.userName
-                }
-
-
-            }
-        },
-        function (err) {
-            if (err) {
-                error(err);
-            } else {
-                success();
-            }
-        }
-    )
-
-};
-// get all the links
-hubcontroller.prototype.getlinks = function (err, params, success) {
-    var dateSort = params.sortBy == "newest" ? -1 : 1;
-    if (params.type == 'all') {
-        posts.find({
-            contentId: params.contentId,
-            isDeleted: false
-        }).sort({'dateAdded': dateSort}).exec(function (error, posts) {
-            if (error) {
-                err(error);
-                return;
-            } else {
-                success(posts);
-                return;
-            }
-        })
-    } else {
-        posts.find({
-            contentId: params.contentId,
-            isDeleted: false,
-            type: params.type
-        }).sort({'dateAdded': dateSort}).exec(function (error, posts) {
-            if (error) {
-                error(error);
-                return;
-            } else {
-                success(posts);
-                return;
-            }
-        })
-    }
-};
-
-//db.personalhubs.aggregate([{
-//    $match:{userId:ObjectId("5851fdebaba43c0675c0f32d")}},
-//    {$project:{'_id':0,'posts':1}},
-//    {$unwind:"$posts"},
-//    {$match:{'posts.type':'video'}},
-//    {$match: {'posts.contentId':ObjectId("581fc4196725d57540b52b2b")}},
-//    {$group:{_id:"$posts.contentId",posts:{$push:"$posts"}}}
-//]).pretty();
-
+// get all posts in personalSpace for the user and content
 hubcontroller.prototype.getPersonallinks = function (err, params, success) {
     var dateSort = params.sortBy == "newest" ? -1 : 1;
     console.log(params);
@@ -380,6 +313,75 @@ hubcontroller.prototype.getPersonallinks = function (err, params, success) {
         })
     }
 };
+
+//remove a post from personalSpace
+hubcontroller.prototype.deletePersonal = function (query, success, error) {
+
+    personalSpace.update(
+        {
+            userId: query.userId
+        }, {
+            $pull: {
+                posts: {
+                    postId: query.postId
+                }
+            }
+        }, function (err) {
+            if (err) {
+                error(err);
+            } else {
+                posts.update({
+                    postId : query.postId
+                },{
+                    $pull:{
+                        personalUsers:{
+                            userId: query.userId
+                        }
+                    }
+                }, function(err){
+                    if (err){
+                        error(err)
+                    } else{
+                        success("Removed from personal space");
+                    }
+                })
+
+            }
+        }
+    )
+};
+
+// comment on a post
+hubcontroller.prototype.comment = function (error, params, success) {
+    agg.update(
+        {
+            postId: params.postId
+        },
+        {
+            $push: {
+                "comments": {
+                    "commentId": new mongoose.Types.ObjectId,
+                    "userId": params.userId,
+                    "isDeleted": false,
+                    "comment": params.content,
+                    "userName": params.userName
+                }
+
+
+            }
+        },
+        function (err) {
+            if (err) {
+                error(err);
+            } else {
+                success();
+            }
+        }
+    )
+
+};
+
+
 
 var findByIdAsync = async(function (id) {
     return await(posts.findById(id).exec());

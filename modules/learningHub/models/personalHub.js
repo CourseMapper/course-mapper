@@ -2,7 +2,9 @@ var mongoose = require('mongoose');
 var slug = require('slug');
 
 var personalSchema = new mongoose.Schema();
-
+/**
+ * Schema for maintaining users list of posts in their personal space
+ */
 personalSchema.add({
     userId: {type: mongoose.Schema.Types.ObjectId, required: true},
     posts : [{
@@ -21,11 +23,11 @@ personalSchema.add({
         dateAdded: {type: Date},
         tags: [{type: String}]
     }]
-
 });
 
-var per = mongoose.model('personalHub', personalSchema);
+personalSchema.index({ 'posts.title': 'text', 'posts.description': 'text', 'posts.tags': 'text', 'posts.url': 'text' });
 
+var per = mongoose.model('personalHub', personalSchema);
 
 module.exports = per;
 

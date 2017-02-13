@@ -1,16 +1,14 @@
 var mongoose = require('mongoose');
 var slug = require('slug');
-
 var hubSchema = new mongoose.Schema();
-
 var commentSchema = new mongoose.Schema();
-
-
+/**
+ * comment Schema
+ */
 commentSchema.add({
     commentId: {type: mongoose.Schema.Types.ObjectId},
-    date_created: { type: Date },
-    date_removed: { type: Date },
-    date_modified: { type: Date },
+    dateAdded: { type: Date },
+    dateRemoved: { type: Date },
     author: { type: String, required: true },
     authorId: { type: String, required: true },
     authorDisplayName: { type: String, required: true },
@@ -19,20 +17,15 @@ commentSchema.add({
 
 commentSchema.pre('save', function (next) {
     var now = new Date();
-    this.date_modified = now;
-    if (!this.date_created) {
-        this.date_created= now;
+    if (!this.dateAdded) {
+        this.dateAdded= now;
     }
     next();
 });
 
-
-commentSchema.pre('update', function (next) {
-    var now = new Date();
-    this.date_modified= now;
-    next();
-});
-
+/**
+ * Hub Schema - schema for the post
+ */
 hubSchema.add({
     courseId: {type: mongoose.Schema.Types.ObjectId, required: true},
     postId: {type: mongoose.Schema.Types.ObjectId},
@@ -57,12 +50,14 @@ hubSchema.add({
     slug: {type: String}
 });
 
+/**
+ * Set index for searching purposes
+ */
 hubSchema.index({ title: 'text', description: 'text', tags: 'text', url: 'text' });
 
 hubSchema.methods.setSlug = function (s) {
     this.slug = slug(s);
 };
-
 
 hubSchema.pre('save', function (next) {
     var now = new Date();
