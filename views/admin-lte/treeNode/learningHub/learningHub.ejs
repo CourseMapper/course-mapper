@@ -1,6 +1,5 @@
 <div ng-controller="aggregationController">
     <!-- Container top-level functions-->
-
     <div class="row">
         <div class="col-xs-11 container fluid">
             <div class="container-fluid controls">
@@ -33,7 +32,6 @@
                 </div>
             </div>
             <!-- Default page when there is no link added-->
-
             <div class="container-fluid" ng-show="posts.length==0 && !enabled ">
                 <div class="col-md-4 col-md-offset-4">
                     <h4>No posts found for this content<br>Press Add link on the top to add posts</h4>
@@ -45,8 +43,6 @@
                     <h4>No posts found in your personal space for this content<br></h4>
                 </div>
             </div>
-
-
             <!-- End of DefaultPage -->
             <!-- presenting  the aggregated links from the DB-->
             <div class="container fluid" ng-show="posts.length>0">
