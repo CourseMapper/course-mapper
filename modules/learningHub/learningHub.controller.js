@@ -235,88 +235,74 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
 // get all posts in personalSpace for the user and content
 hubcontroller.prototype.getPersonallinks = function (err, params, success) {
     var dateSort = params.sortBy == "newest" ? -1 : 1;
-    console.log(params);
-    if (params.type == 'all') {
-        personalSpace.aggregate([{
-            $match:{
-                userId:params.userId
-            }},
-            {
-                $project:{
-                    '_id':0, 'posts':1
-                }
-            },
-            {
-                $unwind:"$posts"
-            },{
-                $match:{
-                    'posts.contentId':params.contentId
-                }
-            },{
-                $sort:{
-                    'posts.dateAdded':dateSort
-                }
-            },{
-                $group:{
-                    _id:"$posts.contentId",posts:{
-                        $push:"$posts"
+    var aggQuery = [];
+
+    if(params.searchQuery != '') {
+        var query = '/^' + params.searchQuery + '/i';
+        aggQuery.push({
+                $match: {
+                    $text: {
+                        $search: params.searchQuery
                     }
                 }
-            }],function (error, posts) {
-            if (error) {
-                err(error);
-                return;
-            } else {
-                success(posts);
-                return;
+            }
+        )
+    }
+
+    aggQuery = aggQuery.concat([{
+        $match:{
+            userId:params.userId
+        }},
+        {
+            $project:{
+                '_id':0, 'posts':1
+            }
+        },
+        {
+            $unwind:"$posts"
+        },{
+            $match:{
+                'posts.contentId':params.contentId
+            }
+        }]);
+
+    if(params.type != 'all'){
+        aggQuery.push({
+            $match:{
+                'posts.type':params.type
             }
         });
-    } else {
-        personalSpace.aggregate([{
-            $match:{
-                userId:params.userId
-            }},
-            {
-                $project:{
-                    '_id':0, 'posts':1
-                }
-            },
-            {
-                $unwind:"$posts"
-            },{
-                $match:{
-                    'posts.type':params.type
-                }
-            },
-            {
-                $match:{
-                    'posts.contentId':params.contentId
-                }
-            }, {
-                $sort: {
-                    'posts.dateAdded': dateSort
-                }
-            },{
-                $group:{
-                    _id:"$posts.contentId",posts:{
-                        $push:"$posts"
-                    }
-                }
-            }], function (error, posts) {
-            if (error) {
-                error(error);
-                return;
-            } else {
-                success(posts);
-                return;
-            }
-        })
     }
+
+
+    aggQuery = aggQuery.concat([{
+        $sort:{
+            'posts.dateAdded':dateSort
+        }
+    },{
+        $group:{
+            _id:"$posts.contentId",posts:{
+                $push:"$posts"
+            }
+        }
+    }]);
+
+    console.log(aggQuery);
+
+    personalSpace.aggregate(aggQuery,function (error, posts) {
+        if (error) {
+            err(error);
+            return;
+        } else {
+            success(posts);
+            return;
+        }
+    });
+
 };
 
 //remove a post from personalSpace
 hubcontroller.prototype.deletePersonal = function (query, success, error) {
-
     personalSpace.update(
         {
             userId: query.userId

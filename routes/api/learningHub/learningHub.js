@@ -258,11 +258,10 @@ router.get('/personalPosts/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                                     contentId: nodeId,
                                     userId: userId,
                                     type: req.query.type,
-                                    sortBy: req.query.sortBy
+                                    sortBy: req.query.sortBy,
+                                    searchQuery: req.query.searchQuery
                                 },
                                 function (posts) {
-                                    console.log("inside router");
-                                    console.log(posts);
                                     res.json(posts);
                                 });
                         })

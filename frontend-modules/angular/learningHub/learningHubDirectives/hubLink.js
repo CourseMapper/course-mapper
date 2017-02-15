@@ -60,6 +60,7 @@ learningHubModule.directive('hubLink', function () {
         if(vm.post.embedHtml){
             vm.post.embedHtml = $sce.trustAsHtml(vm.post.embedHtml);
         }
+        console.log($scope.vm.post);
         // comment related initialisation
         vm.toggle = false;
         vm.commentText = '';

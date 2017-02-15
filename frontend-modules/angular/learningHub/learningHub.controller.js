@@ -48,13 +48,14 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         $http.get('/api/learningHub/personalPosts/'+ $scope.treeNode._id,{
             params:{
                 type: $scope.postType,
-                sortBy : $scope.sortTime
+                sortBy : $scope.sortTime,
+                searchQuery : $scope.query
             }
         }).success(function(data){
             if(data[0]){
                 $scope.posts=data[0].posts;
+                console.log($scope.posts);
             }else{
-                console.log("seting empty");
                 $scope.posts = [];
             }
 
@@ -67,14 +68,18 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
      * search for the posts based on search query
      */
     $scope.search = function() {
-        if($scope.query!="" && !$scope.enabled){
-            $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
-                query: $scope.query
-            }).success( function(data){
-                $scope.posts = data;
-            }).error( function (data){
-                console.log(data);
-            });
+        if($scope.query!=" "){
+            if(!$scope.enabled){
+                $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
+                    query: $scope.query
+                }).success( function(data){
+                    $scope.posts = data;
+                }).error( function (data){
+                    console.log(data);
+                });
+            }else{
+                 $scope.loadPersonal();
+            }
         }
     };
 
