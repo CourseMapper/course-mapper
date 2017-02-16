@@ -51,8 +51,8 @@ learningHubModule.directive('hubLink', function () {
         // view data preparation
         var vm = this;
 
-        // set whether the post is added to the persnal space of te user
-        vm.pu = false;
+        // set whether the post is added to the persnal space of the user
+        vm.pa = false;
         // local copy of the contents of the post
         var dupVm = angular.copy($scope.vm.post);
         // verifing external links to embed
@@ -60,7 +60,6 @@ learningHubModule.directive('hubLink', function () {
         if(vm.post.embedHtml){
             vm.post.embedHtml = $sce.trustAsHtml(vm.post.embedHtml);
         }
-        console.log($scope.vm.post);
         // comment related initialisation
         vm.toggle = false;
         vm.commentText = '';
@@ -74,7 +73,7 @@ learningHubModule.directive('hubLink', function () {
             vm.pa = false;
             for(var i = 0; i < vm.post.personalUsers.length; i++) {
                 if (vm.post.personalUsers[i].userId == authService.user._id) {
-                    vm.pu = true;
+                    vm.pa = true;
                     break;
                 }
             }

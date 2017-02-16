@@ -1,5 +1,6 @@
 <div ng-controller="aggregationController">
     <!-- Container top-level functions-->
+
     <div class="row">
         <div class="col-xs-11 container fluid">
             <div class="container-fluid controls">
@@ -32,21 +33,33 @@
                 </div>
             </div>
             <!-- Default page when there is no link added-->
+
             <div class="container-fluid" ng-show="posts.length==0 && !enabled ">
                 <div class="col-md-4 col-md-offset-4">
                     <h4>No posts found for this content<br>Press Add link on the top to add posts</h4>
                 </div>
             </div>
             <!-- Default page when there is no link in personal space-->
-            <div class="container-fluid" ng-show="posts.length==0 && enabled ">
+            <div class="container-fluid" ng-show="personalPosts.length==0 && enabled ">
                 <div class="col-md-4 col-md-offset-4">
                     <h4>No posts found in your personal space for this content<br></h4>
                 </div>
             </div>
             <!-- End of DefaultPage -->
             <!-- presenting  the aggregated links from the DB-->
-            <div class="container fluid" ng-show="posts.length>0">
-                <hub-link ng-repeat="post in posts" post="post" space="enabled"></hub-link>
+            <div class="container fluid" ng-show="posts.length>0 && !enabled">
+                <hub-link ng-repeat="post in publicView" post="post" space="enabled"></hub-link>
+            </div>
+            <div class="container fluid" ng-show="personalPosts.length>0 && enabled">
+                <hub-link ng-repeat="post in personalView" post="post" space="enabled"></hub-link>
+            </div>
+            <div class="container-fluid">
+                <div class="col-xs-4 col-xs-offset-4" ng-show="posts.length!=0 && !enabled ">
+                    <ul uib-pagination total-items="postsLength" ng-model="currentPagePublic" ng-change="publicPageChanged()"></ul>
+                </div>
+                <div class="col-xs-4 col-xs-offset-4" ng-show="personalPosts.length!=0 && enabled ">
+                    <ul uib-pagination total-items="personalPostsLength" ng-model="currentPagePersonal" ng-change="personalPageChanged()"></ul>
+                </div>
             </div>
         </div>
     </div>

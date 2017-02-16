@@ -172,7 +172,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
         courseId: mongoose.Types.ObjectId(params.courseId),
         contentId: mongoose.Types.ObjectId(params.contentId),
         postId: mongoose.Types.ObjectId(params.postId),
-        userId: mongoose.Types.ObjectId(params.userId),
+        userId: mongoose.Types.ObjectId(params.currentUser),
         title: params.title,
         url: params.url,
         type: params.type,
@@ -197,36 +197,16 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
             if(err){
                 error(err);
             }else{
-                personalSpace.findOneAndUpdate(
-                    {
-                        userId: params.currentUser
-                    }, {
-                        $push: {
-                            posts: tempPost
-                        }
-                    }, function (err, doc) {
-                        if (err) {
-                            error(err);
-
-                        } else {
-                            if(doc == null){
-                                var newPost = new personalSpace();
-                                newPost.userId = params.currentUser;
-                                newPost.posts.push(tempPost);
-                                newPost.save(function (err) {
-                                    if (err) {
-                                        error(err);
-                                    } else {
-                                        success("added to personal space");
-                                    }
-                                });
-                            }else{
-                                success("added to personal space");
-                            }
-
-                        }
+                var personalPost = new personalSpace(tempPost);
+                personalPost.save(function(err){
+                    if(err){
+                        console.log(err);
+                        error(err);
+                    }else{
+                        console.log("New Post added to personalSpace of Current User");
+                        success(personalPost);
                     }
-                );
+                })
             }
         }
     );
@@ -252,24 +232,16 @@ hubcontroller.prototype.getPersonallinks = function (err, params, success) {
     aggQuery = aggQuery.concat([{
         $match:{
             userId:params.userId
-        }},
-        {
-            $project:{
-                '_id':0, 'posts':1
-            }
-        },
-        {
-            $unwind:"$posts"
-        },{
+        }},{
             $match:{
-                'posts.contentId':params.contentId
+                'contentId':params.contentId
             }
         }]);
 
     if(params.type != 'all'){
         aggQuery.push({
             $match:{
-                'posts.type':params.type
+                'type':params.type
             }
         });
     }
@@ -277,17 +249,9 @@ hubcontroller.prototype.getPersonallinks = function (err, params, success) {
 
     aggQuery = aggQuery.concat([{
         $sort:{
-            'posts.dateAdded':dateSort
-        }
-    },{
-        $group:{
-            _id:"$posts.contentId",posts:{
-                $push:"$posts"
-            }
+            'dateAdded':dateSort
         }
     }]);
-
-    console.log(aggQuery);
 
     personalSpace.aggregate(aggQuery,function (error, posts) {
         if (error) {
@@ -303,15 +267,10 @@ hubcontroller.prototype.getPersonallinks = function (err, params, success) {
 
 //remove a post from personalSpace
 hubcontroller.prototype.deletePersonal = function (query, success, error) {
-    personalSpace.update(
+    personalSpace.findOneAndRemove(
         {
-            userId: query.userId
-        }, {
-            $pull: {
-                posts: {
-                    postId: query.postId
-                }
-            }
+            userId: query.userId,
+            postId: query.postId
         }, function (err) {
             if (err) {
                 error(err);

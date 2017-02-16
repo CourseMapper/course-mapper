@@ -2,7 +2,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
     /**
      * Declare and initialise the posts[], postType(s), sortTime(s),enabled(personal space)
      */
-    $scope.posts=[];
+    $scope.posts = [];
+    $scope.personalPosts=[];
+    console.log("here");
     $scope.currentSpace= 'Public';
     $scope.query='';
     $scope.postTypes = ['all', 'video', 'audio', 'slide', 'doc', 'story', 'pdf', 'link'];
@@ -10,8 +12,15 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
     $scope.postType = $scope.postTypes[0];
     $scope.sortTime = $scope.sortTimes[0];
     $scope.enabled = false;
-
-
+    /**
+     * Initialize for pagination
+     */
+    $scope.currentPagePublic = 1;
+    $scope.currentPagePersonal = 1;
+    $scope.postsLength = 0;
+    $scope.personalPostsLength = 0;
+    $scope.publicView = [];
+    $scope.personalView = [];
     /**
      * initialize the environment i.e either public or personal
      */
@@ -34,8 +43,10 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
                 sortBy : $scope.sortTime
             }
         }).success(function(data){
-            $scope.posts=data;
-            console.log(data);
+            $scope.postsLength = data.length;
+            $scope.posts = data;
+            $scope.publicView = [];
+            $scope.publicView = $scope.postsSlice($scope.posts, $scope.currentPagePublic);
         }).error(function(data){
             console.log(data);
         })
@@ -52,12 +63,10 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
                 searchQuery : $scope.query
             }
         }).success(function(data){
-            if(data[0]){
-                $scope.posts=data[0].posts;
-                console.log($scope.posts);
-            }else{
-                $scope.posts = [];
-            }
+                $scope.personalPostsLength = data.length;
+                $scope.personalPosts = data;
+                $scope.personalView = [];
+                $scope.personalView = $scope.postsSlice($scope.personalPosts, $scope.currentPagePersonal);
 
         }).error(function(data){
             console.log(data);
@@ -73,7 +82,10 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
                 $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
                     query: $scope.query
                 }).success( function(data){
-                    $scope.posts = data;
+                    $scope.postsLength = data.length;
+                    $scope.posts=data;
+                    $scope.publicView = [];
+                    $scope.publicView = $scope.postsSlice($scope.posts, $scope.currentPagePublic);
                 }).error( function (data){
                     console.log(data);
                 });
@@ -111,6 +123,26 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
      */
     $scope.$watch('enabled', function(){
         $scope.init();
-    })
+    });
+
+    $scope.publicPageChanged = function(){
+        $scope.publicView = [];
+        $scope.publicView = $scope.postsSlice($scope.posts, $scope.currentPagePublic);
+    };
+
+    $scope.personalPageChanged = function(){
+        $scope.personalView = [];
+        $scope.personalView = $scope.postsSlice($scope.personalPosts, $scope.currentPagePersonal);
+    };
+
+    $scope.postsSlice = function(p,currentPage){
+        var len = p.length;
+        var end = currentPage * 10;
+        var start = end -10;
+        if(end > len){
+            end = start + (len % 10);
+        }
+        return p.slice(start, end);
+    };
 
 }]);
