@@ -63,7 +63,8 @@ module.exports = function (grunt) {
           'concat:dist',
           'concat:js',
           'concat:libsJS',
-          'concat:va'],
+          'concat:va',
+          'concat:vhub'],
         options: {
           spawn: false
         }

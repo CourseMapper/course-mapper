@@ -3,7 +3,8 @@ var app = angular.module('courseMapper', [
     'ngTagsInput', 'ngFileUpload', 'oc.lazyLoad',
     'relativeDate', 'angular-quill',
     'VideoAnnotations', 'SlideViewerAnnotationZones',
-    'ngAnimate', 'toastr', 'externalApp', 'daterangepicker']);
+    'LearningHub',
+    'ngAnimate', 'toastr', 'externalApp', 'daterangepicker', 'uiSwitch']);
 
 app.config(function (toastrConfig) {
     angular.extend(toastrConfig, {

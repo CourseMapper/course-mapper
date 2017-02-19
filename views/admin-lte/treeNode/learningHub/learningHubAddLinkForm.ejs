@@ -1,0 +1,66 @@
+<!-- Add link model-->
+<div id="Hubaddlink" role="dialog" aria-labelledby="addlinktitle" tabindex="-1" data-backdrop="false"   class="modal fade" ng-controller="hubaddLinkController">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="addlinktitle">Add new link</h4>
+            </div>
+            <!-- End of modal header-->
+            <div class="modal-body">
+                <!-- form for submitting the URL -->
+                <form  name="aggregateUrl"  ng-submit="scrapelink(aggregateUrl.$valid,aggregateUrl)" novalidate>
+                    <!-- url -->
+                    <div id="url-group" class="form-group" ng-class="{'has-error' :(aggregateUrl.url.$invalid && !aggregateUrl.url.$pristine)|| linkInvalid}">
+                        <label for="url">Paste url*</label>
+                        <input type="url" name="url" id="url" class="form-control" placeholder="url" onchange="linkInvalid=false" ng-model="formData.url" required>
+                        <span ng-show="(aggregateUrl.url.$invalid && !aggregateUrl.url.$pristine) || linkInvalid" class="help-block"> Valid URL is required!</span>
+                    </div>
+                    <!-- AggregateUrl submit-->
+                    <button type="submit" class="btn btn-primary" ng-show="scraped" ng-disabled="aggregateUrl.$invalid">
+                        <span data-ng-show="loading"><i class="fa fa-spinner fa-spin"></i>&nbsp;&nbsp;Scraping..</span>
+                        <span data-ng-hide="loading">Scrape</span>
+                    </button>
+                    <span>
+                    <button ng-click="closeForm()"  ng-show="scraped" class="btn btn-default">Close</button>
+                </span>
+                </form>
+                <!-- form for submitting the data-->
+                <form name="aggregateData" ng-hide="scraped" ng-submit="addlink(aggregateData.$valid)" novalidate>
+                    <!-- title -->
+                    <div id="title-group" class="form-group" ng-class="{'has-error':(aggregateData.title.$invalid || aggregateData.title.$error.minlength)}">
+                        <label for="url">Title*</label>
+                        <textarea rows="3" name="title" id="title" class="form-control" placeholder="title" ng-model="formData.title" ng-required="true" ng-minlength="10" required></textarea>
+                        <span ng-show="aggregateData.title.$invalid && !aggregateData.title.$pristine" class="help-block">Title is required</span>
+                        <span ng-show="aggregateData.title.$invalid && !aggregateData.title.$pristine && aggregateData.title.$error.minlength" class="help-block">Title too short</span>
+                    </div>
+                    <!-- Description -->
+                    <div id="description-group" class="form-group" ng-hide="des_hide" ng-class="{'has-error': des_hide ? !des_hide :(aggregateData.description.$invalid) || aggregateData.description.$error.minlength}">
+                        <label for="url">Description*</label>
+                        <textarea rows="3" name="description" id="description" class="form-control" placeholder="description" ng-model="formData.description" ng-required="!des_hide" ng-minlength="100"  required></textarea>
+                        <span ng-show="aggregateData.description.$error.minlength" class="help-block">Description is too short</span>
+                    </div>
+                    <!-- Tags -->
+                    <div id="tag-group" class="form-group">
+                        <label for="url">Tags</label>
+                        <tags-input ng-model="unformattedtags" replace-spaces-with-dashes="false" class="ti-input-sm" placeholder="Tags"></tags-input>
+                        <span class="help-block"></span>
+                    </div>
+                    <!-- Aggregate Data submit-->
+                    <button ng-click="add()" class="btn btn-primary" ng-disabled="aggregateData.$invalid">Add
+                    </button>
+                            <span>
+                                <button class="btn btn-default" ng-click="reset(aggregateUrl,aggregateData)">Reset
+                                </button>
+                            </span>
+                    <span>
+                    <button ng-click="closeForm()" class="btn btn-default">Close</button>
+                </span>
+
+                </form>
+            </div>
+            <!-- End of modal body-->
+        </div>
+        <!-- End of modal content -->
+    </div>
+    <!-- End of modal dialog-->
+</div>
