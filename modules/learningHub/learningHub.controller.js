@@ -71,38 +71,94 @@ hubcontroller.prototype.add = function (error, params, success) {
 };
 // get all the links
 hubcontroller.prototype.getlinks = function (err, params, success) {
-    var dateSort = params.sortBy == "newest" ? -1 : 1;
-    if (params.type == 'all') {
-        posts.find({
-            contentId: params.contentId,
-            isDeleted: false
-        }).sort({'dateAdded': dateSort}).exec(function (error, posts) {
-            if (error) {
-                err(error);
-                return;
-            } else {
-                success(posts);
-                return;
+    var dateSort = params.sortBy == "Newest First" ? -1 : 1;
+    console.log(params);
+    var aggQuery = [];
+    if(params.searchQuery != '') {
+        var query = '/^' + params.searchQuery + '/i';
+        aggQuery.push({
+                $match: {
+                    $text: {
+                        $search: params.searchQuery
+                    }
+                }
             }
-        })
-    } else {
-        posts.find({
-            contentId: params.contentId,
-            isDeleted: false,
-            type: params.type
-        }).sort({'dateAdded': dateSort}).exec(function (error, posts) {
-            if (error) {
-                error(error);
-                return;
-            } else {
-                success(posts);
-                return;
-            }
-        })
+        )
     }
+
+    aggQuery = aggQuery.concat([
+       {
+        $match:{
+            'contentId':params.contentId
+        }
+    },{
+        $match:{
+            'isDeleted':false
+        }
+    }]);
+
+    if(params.type != 'all'){
+        aggQuery.push({
+            $match:{
+                'type':params.type
+            }
+        });
+    }
+
+    if(params.sortBy == "Most Commented"){
+        aggQuery = aggQuery.concat([{
+            $project:{
+                "courseId": 1,
+                "postId": 1,
+                "userId": 1,
+                "contentId": 1,
+                "title": 1,
+                "url": 1,
+                "type": 1,
+                "favicon": 1,
+                "hostName": 1,
+                "image": 1,
+                "embedHtml": 1,
+                "description": 1,
+                "isDeleted": 1,
+                "totalVotes": 1,
+                "dateAdded": 1,
+                "dateUpdated": 1,
+                "personalUsers": 1,
+                "comments": 1,
+                "tags": 1,
+                "slug": 1,
+                "commentLength": {
+                    "$size" : "$comments"
+                }
+            }
+        },{
+            $sort:{
+                'commentLength': -1
+            }
+        }])
+    }else{
+        aggQuery = aggQuery.concat([{
+            $sort:{
+                'dateAdded':dateSort
+            }
+        }]);
+    }
+
+    console.log(aggQuery);
+    posts.aggregate(aggQuery,function (error, posts) {
+        if (error) {
+            err(error);
+            return;
+        } else {
+            success(posts);
+            return;
+        }
+    });
+
 };
 // delete a post
-hubcontroller.prototype.delete = function (query, success, error) {
+hubcontroller.prototype.delete = function (query, user, success, error) {
 
     posts.update(
         {
@@ -115,6 +171,7 @@ hubcontroller.prototype.delete = function (query, success, error) {
             if (err) {
                 error(err);
             } else {
+                Plugin.doAction('onAfterLinkDeleted', query, user);
                 success("deleted");
             }
         }
@@ -122,7 +179,7 @@ hubcontroller.prototype.delete = function (query, success, error) {
 };
 
 // edit a post
-hubcontroller.prototype.edit = function (body, success, error) {
+hubcontroller.prototype.edit = function (body, user , success, error) {
     posts.update(
         {
             postId: body.postId
@@ -136,6 +193,7 @@ hubcontroller.prototype.edit = function (body, success, error) {
             if (err) {
                 error(err);
             } else {
+                Plugin.doAction('onAfterLinkEdited', body, user);
                 success("edited");
             }
         }
@@ -214,7 +272,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
 
 // get all posts in personalSpace for the user and content
 hubcontroller.prototype.getPersonallinks = function (err, params, success) {
-    var dateSort = params.sortBy == "newest" ? -1 : 1;
+    var dateSort = params.sortBy == "Newest First" ? -1 : 1;
     var aggQuery = [];
 
     if(params.searchQuery != '') {

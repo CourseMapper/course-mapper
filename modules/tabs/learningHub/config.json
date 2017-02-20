@@ -1,10 +1,11 @@
 {
-  "orderNo": 6,
-  "displayName": "Hub",
+  "orderNo": 3,
+  "name": "hub",
+  "displayName": "External Resources",
   "location": "contentNode",
-  "description": "to collaboratively aggregate and filter",
+  "description": "to collaboratively aggregate and filter external learning resources",
   "isDefaultActivated": true,
-  "icon": "ionicons ion-link",
+  "icon": "ionicons ion-paperclip",
   "ngShow": "isEnrolled || isOwner || isManager",
   "hasJsFiles": true
 }
