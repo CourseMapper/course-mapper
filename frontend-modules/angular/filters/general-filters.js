@@ -22,6 +22,18 @@ app.filter('unsafe', function ($sce) {
   return $sce.trustAsHtml;
 });
 
+app.filter('trustUrl', function ($sce) {
+  return function(url) {
+    return $sce.trustAsResourceUrl(url);
+  };
+});
+
+app.filter('trustHtml', function ($sce) {
+  return function(html) {
+    return $sce.trustAsHtml(html);
+  };
+});
+
 app.filter('cut', function () {
   return function (value, wordwise, max, tail) {
     if (!value) return '';

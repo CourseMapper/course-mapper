@@ -50,16 +50,10 @@ learningHubModule.directive('hubLink', function () {
     .controller( 'HubLinkController', [ '$rootScope', '$scope', '$sce','$http','socket','toastr', '$uibModal', 'treeNodeService', 'authService',function ($rootScope,$scope, $sce, $http, socket, toastr, $uibModal, treeNodeService, authService) {
         // view data preparation
         var vm = this;
-
         // set whether the post is added to the persnal space of the user
         vm.pa = false;
         // local copy of the contents of the post
         var dupVm = angular.copy($scope.vm.post);
-        // verifing external links to embed
-        vm.post.url = $sce.trustAsResourceUrl(vm.post.url);
-        if(vm.post.embedHtml){
-            vm.post.embedHtml = $sce.trustAsHtml(vm.post.embedHtml);
-        }
         // comment related initialisation
         vm.toggle = false;
         vm.commentText = '';
@@ -69,7 +63,9 @@ learningHubModule.directive('hubLink', function () {
             vm.owner = false;
             vm.pa = true;
         }else{
-            vm.owner = (vm.post.userId == authService.user._id);
+            var user = authService.user;
+            var isAdmin = user.role === 'admin';
+            vm.owner = (vm.post.userId == authService.user._id) || isAdmin;
             vm.pa = false;
             for(var i = 0; i < vm.post.personalUsers.length; i++) {
                 if (vm.post.personalUsers[i].userId == authService.user._id) {
@@ -85,7 +81,8 @@ learningHubModule.directive('hubLink', function () {
             editInstance = $uibModal.open({
                 templateUrl: '/partials/learningHubTemplates/hubPostEdit.html',
                 scope: $scope, //passed current scope to the modal
-                size: 'lg'
+                size: 'lg',
+                backdrop: false
             });
         };
 
@@ -122,7 +119,8 @@ learningHubModule.directive('hubLink', function () {
             deleteInstance = $uibModal.open({
                 templateUrl: '/partials/learningHubTemplates/hubPostDelete.html',
                 scope: $scope, //passed current scope to the modal
-                size: 'lg'
+                size: 'lg',
+                backdrop: false
             });
         };
 

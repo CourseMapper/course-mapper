@@ -114,11 +114,11 @@ function getImageUrl(images,url){
         if(parse_image_url.protocol){
             return final_url;
         }else{
-            final_url=protocol+image_url;
+            final_url=protocol+parse_image_url;
             if(validURI(final_url)){
                 return final_url;
             }else{
-                final_url=protocol+hostname+image_url;
+                final_url=protocol+hostname+parse_image_url;
                 return final_url;
             }
         }

@@ -40,6 +40,7 @@ hubSchema.add({
     embedHtml: {type: String},
     description: {type: String},
     isDeleted: {type: Boolean, required: true},
+    totalVotes: {type: Number, default: 0},
     dateAdded: {type: Date},
     dateUpdated: {type: Date},
     personalUsers: [ {

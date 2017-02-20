@@ -60,7 +60,7 @@
     "ngShow": "(isEnrolled || isOwner || isManager || isAdmin) && pdfFile"
   },
   {
-    "orderNo": 3,
+    "orderNo": 6,
     "name": "links",
     "displayName": "Links",
     "location": "contentNode",

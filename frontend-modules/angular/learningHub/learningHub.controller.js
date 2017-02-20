@@ -7,11 +7,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
     console.log("here");
     $scope.currentSpace= 'Public';
     $scope.query='';
-    $scope.postTypes = ['all', 'video', 'audio', 'slide', 'doc', 'story', 'pdf', 'link'];
-    $scope.sortTimes = ['newest', 'oldest'];
-    $scope.postType = $scope.postTypes[0];
-    $scope.sortTime = $scope.sortTimes[0];
     $scope.enabled = false;
+    $scope.sort = "";
+
     /**
      * Initialize for pagination
      */
@@ -40,7 +38,8 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
             params:{
                 nodeId: $scope.treeNode._id,
                 type: $scope.postType,
-                sortBy : $scope.sortTime
+                sortBy : $scope.sortTime,
+                searchQuery : $scope.query
             }
         }).success(function(data){
             $scope.postsLength = data.length;
@@ -77,20 +76,9 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
      * search for the posts based on search query
      */
     $scope.search = function() {
-        if($scope.query!=" "){
+        if($scope.query!=""){
             if(!$scope.enabled){
-                $http.post('/api/learningHub/search/'+$scope.treeNode._id,{
-                    query: $scope.query
-                }).success( function(data){
-                    $scope.postsLength = data.length;
-                    $scope.posts=data;
-                    $scope.publicView = [];
-                    $scope.publicView = $scope.postsSlice($scope.posts, $scope.currentPagePublic);
-                }).error( function (data){
-                    console.log(data);
-                });
-            }else{
-                 $scope.loadPersonal();
+              $scope.init();
             }
         }
     };
@@ -99,7 +87,12 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
      * select types of posts
      */
     $scope.typeChange = function() {
-        $scope.init();
+        if($scope.sortTime === 'votes'){
+            $scope.sort = "voteDisplay";
+        }else{
+            $scope.sort="";
+            $scope.init();
+        }
     };
 
     $scope.$on('LinkForm', function(event, data){
@@ -122,6 +115,10 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
      * handle the toggle between the personal and private space
      */
     $scope.$watch('enabled', function(){
+        $scope.postTypes = ['all', 'video', 'audio', 'slide', 'doc', 'story', 'pdf', 'link'];
+        $scope.sortTimes = $scope.enabled ? ['Newest First', 'Oldest First'] : ['Newest First', 'Oldest First', 'Most Popular', 'Most Commented'];
+        $scope.sortTime = $scope.sortTimes[0];
+        $scope.postType = $scope.postTypes[0];
         $scope.init();
     });
 
@@ -142,6 +139,7 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
         if(end > len){
             end = start + (len % 10);
         }
+       console.log(p.slice(start, end));
         return p.slice(start, end);
     };
 

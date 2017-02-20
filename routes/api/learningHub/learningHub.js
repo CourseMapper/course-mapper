@@ -87,7 +87,8 @@ router.get('/posts', helper.l2pAuth, helper.ensureAuthenticated,
                                 {
                                     contentId: nodeId,
                                     type: req.query.type,
-                                    sortBy: req.query.sortBy
+                                    sortBy: req.query.sortBy,
+                                    searchQuery : req.query.searchQuery
                                 },
                                 function (posts) {
                                     res.json(posts);
@@ -129,6 +130,7 @@ router.delete('/delete/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                             return helper.resReturn(helper.createError401(), res);
                         }
                         controller.delete(req.query,
+                            req.user,
                             function (data) {
                                 res.status(200).json({
                                     result: true
@@ -167,6 +169,7 @@ router.post('/edit/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
                             return helper.resReturn(helper.createError401(), res);
                         }
                         controller.edit(req.body,
+                            req.user,
                             function (data) {
                                 res.status(200).json({
                                     result: true

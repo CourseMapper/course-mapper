@@ -7,8 +7,7 @@ function Pdf(){}
 var pdf_result={
     'type':"pdf",
     'url':"",
-    'title':"",
-    'image':""
+    'title':""
 };
 
 Pdf.prototype.getInfo=function(url,callback){
@@ -18,7 +17,6 @@ Pdf.prototype.getInfo=function(url,callback){
             callback(err,null);
         }else{
             pdf_result.title=data.title;
-            pdf_result.image="https:"+data.otherimages[0].src;
             callback(pdf_result);
         }
     });
