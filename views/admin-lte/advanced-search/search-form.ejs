@@ -85,9 +85,10 @@
 			</div>
 
 			<!--  relevant matches -->
-			<div class="col-md-3">
-				<legend title="This content is not a direct match, &#013;but a recommended result, found by matching &#013;your search query with your personal network."
-					ng-show="relevant != null && relevant.length > 0">Recommendations</legend>
+			<div class="col-md-3" ng-show="relevant != null && relevant.length > 0">
+				<legend title="This content is not a direct match, &#013;but a recommended result, found by matching &#013;your search query with your personal network.">
+                    Recommendations
+                </legend>
 
 				<!-- results -->
 				<ul class="products-list product-list-in-box">
@@ -104,14 +105,21 @@
 			</div>
 		</div>
 
-		<div class="row">
+        <!--  popular matches -->
+		<div class="row" ng-show="popular != null && popular.length > 0">
 			<div class="col-md-6 col-md-offset-3">
-				<legend title="Here you'll find the most popular content in CourseMapper"
-					ng-show="relevant != null && relevant.length > 0">Most popular</legend>
+                <legend title="Here you'll find the most popular content in CourseMapper">
+                    <span>Popular by</span>
+                    <select class="form-control" ng-model="popularBy" ng-init="popularBy='-activity'">
+                        <option selected value="-activity">highest activity</option>
+                        <option value="-users">number of users</option>
+                        <option value="-favorited">times added in favorites</option>
+                    </select>
+                </legend>
 
 				<!-- results -->
 				<ul class="products-list product-list-in-box">
-					<li class="item box" ng-repeat="item in relevant | orderBy: -score" style="margin: 0 0 5px 0; padding: 10px">
+					<li class="item box" ng-repeat="item in popular | orderBy: -score" style="margin: 0 0 5px 0; padding: 10px">
 						<div class="product-img">
 							<img style="width:35px;height:35px" src="/img/search/{{item.type}}.png" alt="Image">
 						</div>
