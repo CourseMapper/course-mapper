@@ -5,10 +5,10 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
     //TODO Find relevant results
     $http.get('/api/relevant-search?term=' + term)
       .success(function (data) {
-        $scope.relevant = data;
+        $scope.relevant = _.shuffle(data);
         setBusy(false);
       });
-  }
+  };
 
   var search = function () {
 
@@ -25,7 +25,7 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
     setBusy(true);
 
     // Build query
-    var user = $rootScope.user
+    var user = $rootScope.user;
     var query = '?term=' + term;
 
     // Configure resource query
@@ -38,7 +38,7 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
     }
     query += '&resources=' + allowedResources.join();
 
-    // Configure network queyr
+    // Configure network query
     switch ($scope.network) {
       case "owned":
         query += '&owner=' + user._id;
@@ -54,11 +54,11 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
         // Load extra relevant resources
         loadRelevant(term, data);
       });
-  }
+  };
 
   var setBusy = function (isBusy) {
     $scope.isBusy = isBusy;
-  }
+  };
 
   function init() {
 

@@ -58,7 +58,7 @@ var parseCourse = function (course) {
   match.created = course.dateAdded;
   match.updated = course.dateUpdated;
   return match;
-}
+};
 
 var parseContentNode = function (content) {
   var title = content.name;
@@ -76,7 +76,7 @@ var parseContentNode = function (content) {
   match.created = content.dateAdded;
   match.updated = content.dateUpdated;
   return match;
-}
+};
 
 var parseVideoAnnotation = function (va) {
   var title = 'Video Annotation [' + va.start / 1000 + '-' + va.end / 1000 + '] sec.';
@@ -88,7 +88,7 @@ var parseVideoAnnotation = function (va) {
   match.created = va.date_created;
   match.updated = va.date_modified;
   return match;
-}
+};
 
 var parsePdfAnnotation = function (pa) {
   var title = 'PDF Annotation on page ' + pa.pdfPageNumber;
