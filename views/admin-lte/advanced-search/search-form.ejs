@@ -109,12 +109,14 @@
 		<div class="row" ng-show="popular != null && popular.length > 0">
 			<div class="col-md-6 col-md-offset-3">
                 <legend title="Here you'll find the most popular content in CourseMapper">
-                    <span>Popular by</span>
-                    <select class="form-control" ng-model="popularBy" ng-init="popularBy='-activity'">
-                        <option selected value="-activity">highest activity</option>
-                        <option value="-users">number of users</option>
-                        <option value="-favorited">times added in favorites</option>
-                    </select>
+                    <div style="display: inline-block">
+                        <span>Popular by</span>
+                        <select class="form-control" ng-model="popularBy" ng-init="popularBy='-activity'">
+                            <option selected value="-activity">highest activity</option>
+                            <option value="-users">number of users</option>
+                            <option value="-favorited">times added in favorites</option>
+                        </select>
+                    </div>
                 </legend>
 
 				<!-- results -->
