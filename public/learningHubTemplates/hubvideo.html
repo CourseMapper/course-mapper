@@ -1,0 +1,67 @@
+
+<div class="box box-default video-box">
+    <div class="box-header video-header">
+        <div class="row">
+            <div class="col-xs-1 text-center icon video-icon"><i class="fa fa-file-video-o fa-2x"></i></div>
+            <div class="col-xs-8 title-text">
+                <span>{{vm.post.title}}</span>
+            </div>
+            <div class="col-xs-3">
+                    <span class="card-action pull-right">
+                        <i class="fa"  ng-class="{ 'fa-star-o' : !vm.pa, 'fa-star' : vm.pa }" ng-click="vm.togglePersonal(vm.post)" style="color:gold"></i>&nbsp;
+                        <i class="fa fa-pencil-square-o" ng-show="vm.owner" ng-click="vm.edit(vm.post)"></i>&nbsp;
+                        <i class="fa fa-times" ng-show="vm.owner" ng-click="vm.delete(vm.post)"></i>
+                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="box-body video-body">
+        <div class="row">
+            <div class="col-xs-1" ng-show="!vm.space">
+                <voting vote-type="link" vote-type-id={{vm.post.postId}} vote-value="" ng-show="!pa"></voting>
+            </div>
+            <div class="video col-md-7 col-xs-10">
+                <span class="voting"></span>
+                <iframe src= "{{vm.post.url | trustUrl}}" width="100%" height=300px allowfullscreen></iframe>
+            </div>
+            <div class="col-md-4">
+                <h4><b>Description</b></h4>
+                <p class="description text-justify">
+                    {{vm.post.description}}
+                </p>
+            </div>
+            <div class="col-xs-11">
+               <span ng-repeat="tag in vm.post.tags" class=" tag label-primary">{{tag["text"] || tag }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="box-footer" ng-show="!vm.space">
+        <a ng-click="toggle = !toggle">{{vm.commentHeadingText}}</a>
+        <div  id="{{'c'+vm.post.postId}}" ng-show="toggle">
+            <article>
+                <br/>
+                <div id="comment-box" class="input-group input-group-sm">
+                    <input class="form-control" placeholder="Write a comment..." type="text" ng-model="vm.commentText">
+                    <span class="input-group-btn">
+                      <button class="btn btn-primary btn-flat" type="submit" ng-click="vm.postComment(vm.post)">Comment</button>
+                    </span>
+                </div>
+                <br/>
+                <section ng-repeat="comment in vm.post.comments.slice().reverse()">
+                    <div class="box box-solid" style="background: rgba(0, 0, 255, 0.05)">
+                        <div class="box-body">
+                            <span class="posted-at">
+                              Posted <strong>{{comment.dateAdded | relativeDate}}</strong>
+                              By <strong><span>{{comment.authorDisplayName||comment.author}}</span></strong>
+                            </span>
+                            <a class="pull-right" style="cursor: pointer;" ng-show="comment.canEdit"
+                               ng-click="vm.removeComment(comment._id)">X</a>
+                            <p class="reply">{{comment.text}}</p>
+                        </div>
+                    </div>
+                </section>
+            </article>
+        </div>
+    </div>
+</div>
+
