@@ -79,7 +79,7 @@ learningHubModule.directive('hubLink', function () {
         var editInstance;
         vm.edit = function(){
             editInstance = $uibModal.open({
-                templateUrl: '/partials/learningHubTemplates/hubPostEdit.html',
+                templateUrl: '/learningHubTemplates/hubPostEdit.html',
                 scope: $scope, //passed current scope to the modal
                 size: 'lg',
                 backdrop: false
@@ -117,7 +117,7 @@ learningHubModule.directive('hubLink', function () {
         var deleteInstance;
         vm.delete = function(post){
             deleteInstance = $uibModal.open({
-                templateUrl: '/partials/learningHubTemplates/hubPostDelete.html',
+                templateUrl: '/learningHubTemplates/hubPostDelete.html',
                 scope: $scope, //passed current scope to the modal
                 size: 'lg',
                 backdrop: false
