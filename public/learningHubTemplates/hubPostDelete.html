@@ -1,0 +1,21 @@
+<div id="postDelete">
+    <div class="modal-header">
+        <h3 class="modal-title">Are you sure that you want to delete?</h3>
+    </div>
+    <!-- dialog body -->
+    <div class="modal-body">
+        <form>
+            <div style="padding-bottom: 15px">{{vm.post.title}}</div>
+            <div>
+                <button type="button" class="btn btn-danger" ng-click="vm.confirmDelete(vm.post.postId)">Delete</button>
+                <button type="button" class="btn btn-default" ng-click="vm.deleteClose()">Cancel</button>
+            </div>
+        </form>
+    </div>
+    <!-- dialog buttons -->
+    <!--<div class="modal-footer">-->
+        <!---->
+    <!--</div>-->
+
+</div>
+

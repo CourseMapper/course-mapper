@@ -2,31 +2,31 @@
 learningHubModule.directive('hubLink', function () {
         var setTemplate = function (post) {
             var postType = post.type;
-            var templateUrl = '/partials/learningHubTemplates/hubvideo.html';
+            var templateUrl = '/learningHubTemplates/hubvideo.html';
             switch (postType) {
                 case 'video':
-                    templateUrl = '/partials/learningHubTemplates/hubvideo.html';
+                    templateUrl = '/learningHubTemplates/hubvideo.html';
                     break;
                 case 'pdf':
-                    templateUrl = '/partials/learningHubTemplates/hubpdf.html';
+                    templateUrl = '/learningHubTemplates/hubpdf.html';
                     break;
                 case 'audio':
-                    templateUrl = '/partials/learningHubTemplates/hubaudio.html';
+                    templateUrl = '/learningHubTemplates/hubaudio.html';
                     break;
                 case 'slide':
-                    templateUrl = '/partials/learningHubTemplates/hubslide.html';
+                    templateUrl = '/learningHubTemplates/hubslide.html';
                     break;
                 case 'image':
-                    templateUrl = '/partials/learningHubTemplates/hubimage.html';
+                    templateUrl = '/learningHubTemplates/hubimage.html';
                     break;
                 case 'doc':
-                    templateUrl = '/partials/learningHubTemplates/hubdoc.html';
+                    templateUrl = '/learningHubTemplates/hubdoc.html';
                     break;
                 case 'link':{
                     if(post.image){
-                        templateUrl = '/partials/learningHubTemplates/hublinkthumb.html';
+                        templateUrl = '/learningHubTemplates/hublinkthumb.html';
                     }else{
-                        templateUrl = '/partials/learningHubTemplates/hublinknothumb.html';
+                        templateUrl = '/learningHubTemplates/hublinknothumb.html';
                     }
                     break;
                 }
@@ -79,7 +79,7 @@ learningHubModule.directive('hubLink', function () {
         var editInstance;
         vm.edit = function(){
             editInstance = $uibModal.open({
-                templateUrl: '/partials/learningHubTemplates/hubPostEdit.html',
+                templateUrl: '/learningHubTemplates/hubPostEdit.html',
                 scope: $scope, //passed current scope to the modal
                 size: 'lg',
                 backdrop: false
@@ -117,7 +117,7 @@ learningHubModule.directive('hubLink', function () {
         var deleteInstance;
         vm.delete = function(post){
             deleteInstance = $uibModal.open({
-                templateUrl: '/partials/learningHubTemplates/hubPostDelete.html',
+                templateUrl: '/learningHubTemplates/hubPostDelete.html',
                 scope: $scope, //passed current scope to the modal
                 size: 'lg',
                 backdrop: false
