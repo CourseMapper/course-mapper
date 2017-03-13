@@ -237,3 +237,8 @@ i {
 .search-form-group{
     margin-left: 15px;
 }
+
+.hub-image {
+    max-width: 300px;
+    max-height: 300px;
+}

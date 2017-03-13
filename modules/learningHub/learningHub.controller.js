@@ -72,7 +72,6 @@ hubcontroller.prototype.add = function (error, params, success) {
 // get all the links
 hubcontroller.prototype.getlinks = function (err, params, success) {
     var dateSort = params.sortBy == "Newest First" ? -1 : 1;
-    console.log(params);
     var aggQuery = [];
     if(params.searchQuery != '') {
         var query = '/^' + params.searchQuery + '/i';
@@ -105,7 +104,7 @@ hubcontroller.prototype.getlinks = function (err, params, success) {
         });
     }
 
-    if(params.sortBy == "Most Commented"){
+    if(params.sortBy === "Most Commented"){
         aggQuery = aggQuery.concat([{
             $project:{
                 "courseId": 1,
@@ -137,7 +136,21 @@ hubcontroller.prototype.getlinks = function (err, params, success) {
                 'commentLength': -1
             }
         }])
-    }else{
+    }else if(params.sortBy === "Most Popular"){
+        aggQuery = aggQuery.concat([{
+            $lookup: {
+                from: "votes",
+                localField: "postId",
+                foreignField: "voteTypeId",
+                as: "votes"
+            }
+        },
+            {
+                $sort:{
+                    'votes.voteValue':-1
+                }
+            }]);
+    } else{
         aggQuery = aggQuery.concat([{
             $sort:{
                 'dateAdded':dateSort
@@ -145,7 +158,6 @@ hubcontroller.prototype.getlinks = function (err, params, success) {
         }]);
     }
 
-    console.log(aggQuery);
     posts.aggregate(aggQuery,function (error, posts) {
         if (error) {
             err(error);
@@ -261,7 +273,6 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
                         console.log(err);
                         error(err);
                     }else{
-                        console.log("New Post added to personalSpace of Current User");
                         success(personalPost);
                     }
                 })

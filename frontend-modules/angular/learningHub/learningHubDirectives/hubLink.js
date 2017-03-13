@@ -238,5 +238,16 @@ learningHubModule.directive('hubLink', function () {
             vm.post.comments = params.comments;
         });
 
+        vm.commentDisplayText = function(commentLength) {
+            if(commentLength == 0){
+                return "No Comments"
+            }else{
+                return commentLength + (commentLength > 1 ? " Comments" : " Comment");
+            }
+        };
+
+        if(!vm.space){
+            vm.commentHeadingText = vm.commentDisplayText(vm.post.comments.length);
+        }
     }] );
 
