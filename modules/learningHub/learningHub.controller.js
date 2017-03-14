@@ -1,7 +1,7 @@
 var rootpath = require('app-root-path');
 var mongoose = require('mongoose');
 var agg = require('./models/hub.js');
-var personalSpace = require('./models/PersonalHub.js');
+var personalSpace = require('./models/personalHub.js');
 var posts = agg.posts;
 var scrape = require(rootpath + '/modules/learningHub/scraper/scrape.js');
 var Plugin = require(rootpath + '/modules/apps-gallery/backgroundPlugins.js');
