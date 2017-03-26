@@ -222,6 +222,7 @@ learningHubModule.directive('hubLink', function () {
 
             socket.emit('comments:post', params);
             vm.commentText = '';
+            vm.commentDisplayText(vm.post.comments.length);
         };
         // remove comment emit event
         vm.removeComment = function (commentId) {

@@ -7,9 +7,22 @@
             </div>
             <div class="col-xs-3">
                     <span class="card-action pull-right">
-                           <i class="fa"  ng-class="{ 'fa-star-o' : !vm.pa, 'fa-star' : vm.pa }" ng-click="vm.togglePersonal(vm.post)" style="color:gold"></i>&nbsp;
-                        <i class="fa fa-pencil-square-o" ng-show="vm.owner" ng-click="vm.edit(vm.post)"></i>&nbsp;
-                        <i class="fa fa-times" ng-show="vm.owner" ng-click="vm.delete(vm.post)"></i>
+                         <i class="fa fav-icon fa-star-o"
+                            ng-click="vm.togglePersonal(vm.post)"
+                            ng-show="!vm.pa"
+                            uib-tooltip="Add this to personal space"
+                            style="color:gold"></i>
+                        <i class="fa fav-icon fa-star"
+                           ng-click="vm.togglePersonal(vm.post)"
+                           ng-show="vm.pa"
+                           uib-tooltip="Remove this from personal space"
+                           style="color:gold"></i>
+                        <i class="fa fa-pencil-square-o edit-icon"
+                           uib-tooltip="Edit this"
+                           ng-show="vm.owner" ng-click="vm.edit(vm.post)"></i>
+                        <i class="fa fa-times delete-icon" ng-show="vm.owner"
+                           uib-tooltip="Delete this"
+                           ng-click="vm.delete(vm.post)"></i>
                     </span>
             </div>
         </div>
@@ -29,7 +42,11 @@
     </div>
 </div>
 <div class="box-footer" ng-show="!vm.space">
-    <a ng-click="toggle = !toggle">{{vm.commentHeadingText}}</a>
+    <a ng-click="toggle = !toggle">
+        <span ng-if="vm.post.comments.length == 0">No Comments</span>
+            <span ng-if="vm.post.comments.length > 0">{{vm.post.comments.length == 1 ? vm.post.comments.length + " Comment" :
+                vm.post.comments.length + " Comments"}}</span>
+    </a>
     <div  id="{{'c'+vm.post.postId}}" class="toggle">
         <article>
             <br/>

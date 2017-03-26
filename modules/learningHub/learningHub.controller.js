@@ -147,7 +147,7 @@ hubcontroller.prototype.getlinks = function (err, params, success) {
         },
             {
                 $sort:{
-                    'votes.voteValue':-1
+                    'votes.voteValue': -1
                 }
             }]);
     } else{
