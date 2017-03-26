@@ -2,7 +2,7 @@
 learningHubModule.directive('hubLink', function () {
         var setTemplate = function (post) {
             var postType = post.type;
-            var templateUrl = '/learningHubTemplates/hubvideo.html';
+            var templateUrl = '/learningHubTemplates/hublinknothumb.html';
             switch (postType) {
                 case 'video':
                     templateUrl = '/learningHubTemplates/hubvideo.html';
