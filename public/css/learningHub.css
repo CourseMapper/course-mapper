@@ -242,3 +242,15 @@ i {
     max-width: 300px;
     max-height: 300px;
 }
+
+.edit-icon:hover {
+    color: black;;
+}
+
+.delete-icon:hover {
+    color: black;;
+}
+
+.fav-icon:hover {
+    color: darkgoldenrod;
+}

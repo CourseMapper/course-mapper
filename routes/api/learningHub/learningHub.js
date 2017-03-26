@@ -6,6 +6,7 @@ var NodeController = require(appRoot + '/modules/trees/index.js');
 var helper = require(appRoot + '/libs/core/generalLibs.js');
 var userHelper = require(appRoot + '/modules/accounts/user.helper.js');
 var mongoose = require('mongoose');
+var cors = require('cors');
 var debug = require('debug')('cm:route');
 
 // scrape the submitted link
@@ -62,7 +63,7 @@ router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
     });
 // get all the posts for the public space for the content
-router.get('/posts', helper.l2pAuth, helper.ensureAuthenticated,
+router.get('/posts', cors(), helper.l2pAuth, helper.ensureAuthenticated,
     function (req, res) {
 
         var userId = mongoose.Types.ObjectId(req.user._id);
