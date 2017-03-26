@@ -1,7 +1,7 @@
 /**
  * troller to handle the form for scraping and adding posts
  */
-learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$http', function ($rootScope, $scope, $http, treeNodeService, authService, courseService){
+learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$http', '$window', function ($rootScope, $scope, $http, $window){
     $scope.loading=false;
     $scope.scraped=true;
     $scope.courseId=001;
@@ -126,12 +126,10 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
             $scope.unformattedtags="";
             $scope.des_hide=false;
             $scope.scraped=true;
-
-            $scope.$emit('LinkForm', {
-                formAction : "newPost"
-            });
-
+            console.log($window);
             $('#Hubaddlink').modal('hide');
+            console.log($window);
+            $window.location.reload();
         }).error( function(err){
             console.log(err);
             $scope.reset();
