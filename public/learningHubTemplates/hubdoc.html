@@ -46,7 +46,7 @@
             <span ng-if="vm.post.comments.length > 0">{{vm.post.comments.length == 1 ? vm.post.comments.length + " Comment" :
                 vm.post.comments.length + " Comments"}}</span>
         </a>
-        <div  id="{{'c'+vm.post.postId}}" class="toggle">
+        <div  id="{{'c'+vm.post.postId}}" ng-show="toggle">
             <article>
                 <br/>
                 <div id="comment-box" class="input-group input-group-sm">

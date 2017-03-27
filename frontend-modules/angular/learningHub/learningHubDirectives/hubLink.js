@@ -155,7 +155,7 @@ learningHubModule.directive('hubLink', function () {
             });
             return formattedTags;
         };
-        // toggle between personal and public space
+        // add or remove post to personal space
         vm.togglePersonal = function(post) {
             vm.pa = !vm.pa;
             if(vm.pa){

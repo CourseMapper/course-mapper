@@ -10,7 +10,8 @@ var cors = require('cors');
 var debug = require('debug')('cm:route');
 
 // scrape the submitted link
-router.get('/scrape', function (req, res) {
+router.get('/scrape', helper.l2pAuth, helper.ensureAuthenticated,
+    function (req, res) {
     controller.scrape(req.query.url, function (error, details) {
 
         if (error) {
