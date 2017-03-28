@@ -260,3 +260,8 @@ i {
     max-height:768px;
     background: transparent;
 }
+
+.video-wrapper iframe{
+    width : 100%;
+    height: 300px;
+}

@@ -153,6 +153,8 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
     };
 
     $scope.closeForm = function(){
+        $scope.formData.url = '';
+        $scope.loading = false;
         $('#Hubaddlink').modal('hide');
     }
 

@@ -66,10 +66,11 @@ Video.prototype.getDetails=function(url,host_name,callback) {
                     video_result.html = d.html;
                     videoDescription(d, url, function (des) {
                         video_result.description = des;
-                        prepareHtml(video_result.html, video_result.description, function (html) {
-                            video_result.html = html;
-                            callback(null,video_result);
-                        });
+                        callback(null, video_result);
+                        //prepareHtml(video_result.html, video_result.description, function (html) {
+                        //    video_result.html = html;
+                        //    callback(null,video_result);
+                        //});
 
                     });
                 }
