@@ -11,6 +11,7 @@ var https = require('https');
 var fs = require('fs');
 var config = require('config');
 var cookieParser = require('cookie-parser')(config.get('session.secret'));
+var cors = require('cors');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,6 +23,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(cookieParser);
+app.use(cors());
 
 // live reload
 if (app.get('env') === 'development') {

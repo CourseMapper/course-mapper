@@ -25,7 +25,7 @@ router.get('/scrape', helper.l2pAuth, helper.ensureAuthenticated,
  * Handling CRUD in public space for content
  */
 // add a post for the content
-router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
+router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated, cors(),
     function (req, res) {
         if (!req.user) {
             res.status(401).send('Unauthorized');
@@ -64,7 +64,7 @@ router.post('/add/:nodeId', helper.l2pAuth, helper.ensureAuthenticated,
 
     });
 // get all the posts for the public space for the content
-router.get('/posts', cors(), helper.l2pAuth, helper.ensureAuthenticated,
+router.get('/posts', helper.l2pAuth, helper.ensureAuthenticated,  cors(),
     function (req, res) {
 
         var userId = mongoose.Types.ObjectId(req.user._id);
