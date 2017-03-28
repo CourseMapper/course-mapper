@@ -11,6 +11,7 @@ var Courses = require('../../modules/catalogs/courses');
 var Categories = require('../../modules/catalogs/categories');
 var Resources = require('../../modules/trees/resources');
 var TreeNodes = require('../../modules/trees/treeNodes');
+var Favorites = require('../../modules/favorites/favorite-courses');
 
 var SearchBuilder = function (term) {
 
@@ -84,9 +85,25 @@ var SearchBuilder = function (term) {
                 return Promise.all(promises);
             });
 
+        var findCourses = Courses.find(courseArgs, sortByScore).lean().execAsync()
+            .then(function (courses) {
+                var promises = [];
+                _.each(courses, function (course) {
+                    promises.push(Favorites.count({"course": course._id})
+                        .then(function (count) {
+                            var c = course;
+                            c.favorited = count;
+                            console.log(count);
+                            return c;
+                        }));
+                });
+                return Promise.all(promises);
+            });
+
+
         var engines = {
             contentNodes: TreeNodes.find(contentNodeArgs, sortByScore).populate('courseId').lean().execAsync(),
-            courses: Courses.find(courseArgs, sortByScore).lean().execAsync(),
+            courses: findCourses,
             videoAnnotations: findVideoAnnotations,
             pdfAnnotations: findPdfAnnotations,
             categories: Categories.find(categoryArgs, sortByScore).lean().execAsync()

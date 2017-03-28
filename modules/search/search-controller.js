@@ -46,7 +46,7 @@ var parseObject = function (collection, match) {
     }
 
     return result;
-}
+};
 
 var parseCourse = function (course) {
     var title = course.name;
@@ -57,6 +57,8 @@ var parseCourse = function (course) {
     var match = new matchResult(title, desc, type, link);
     match.created = course.dateAdded;
     match.updated = course.dateUpdated;
+    match.users = course.totalEnrollment;
+    match.favorited = course.favorited;
     return match;
 };
 

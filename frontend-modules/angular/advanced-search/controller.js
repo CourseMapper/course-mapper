@@ -1,26 +1,31 @@
 app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) {
 
-    var loadRelevant = function (term, data) {
-        //TODO Find relevant results
+    var queries = {};
+    var loadRelevant = function (term) {
+        if (queries[term]) {
+            $scope.relevant = queries[term];
+            return;
+        }
         $http.get('/api/relevant-search?term=' + term + '&resources=contentNodes,courses')
             .success(function (data) {
                 $scope.relevant = _.take(_.shuffle(data), 5);
+                queries[term] = $scope.relevant;
                 setBusy(false);
             });
     };
 
-    var loadPopular = function (term, data) {
-        //TODO Find relevant results
-        $http.get('/api/relevant-search?term=' + term + '&resources=contentNodes,courses')
+    var loadPopular = function (term) {
+        $http.get('/api/relevant-search?term=' + term + '&resources=courses')
             .success(function (data) {
-                $scope.popular = _.take(_.shuffle(data), 10);
+                orderPopular(data);
                 setBusy(false);
             });
     };
 
-    var orderPopular = function () {
-        var popular = $scope.popularBy;
-        console.log(popular);
+    var orderPopular = function (data) {
+        $scope.popular = _.take(_.sortByOrder(data, $scope.popularBy, 'desc'), 10);
+        console.log($scope.popular)
+
     };
 
     var search = function () {
@@ -64,8 +69,8 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
                 $scope.result = data;
                 setBusy(false);
 
-                loadRelevant(term, data);
-                loadPopular(term, data);
+                loadRelevant(term);
+                loadPopular(term);
             });
     };
 
@@ -96,8 +101,9 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
         $scope.$watch('network', search);
         $scope.$watch('resources', search, true);
         $scope.$watch('filterDate', search, true);
-
-        $scope.$watch('popularBy', orderPopular, true);
+        $scope.$watch('popularBy', function () {
+            loadPopular($scope.searchTerm);
+        }, true);
 
         // Subscribe to menu query text changes
         $scope.$on('searchQueryChanged', function (event, args) {
