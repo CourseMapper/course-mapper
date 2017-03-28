@@ -11,6 +11,7 @@ var PdfAnnotationZone = require('../../annotationZones/annotationZones.js');
 var VideoAnnotation = require('../../annotations/video-annotation.js');
 var Resources = require('../../trees/resources.js');
 var Links = require('../../links/models/links.js');
+var LearningHub = require('../../learningHub/models/hub.js')
 //var Discussions = require('../../discussion/models/courseDiscussions.js');
 var UserCourses = require('../../catalogs/userCourses.js');
 
@@ -419,12 +420,92 @@ var topContributorListener = {
 
     },
 
+    onAfterLearningHubLinkCreated: function (newLink) {
+        LearningHub.findOne({_id: newLink._id})
+            .exec(function (err, doc) {
+                var userId = doc.userId;
+                if (doc) {
+                    var contentId = doc.contentId;
+                    if (contentId) {
+                        TreeNodes.findOne({_id: contentId})
+                            .exec(function (err, result) {
+                                var courseId = result.courseId;
+                                if (result) {
+                                    var condition = {
+                                        userId: userId,
+                                        courseId: courseId
+                                    }, update = {$inc: {totalCount: 1, countNodeActivity: 1}};
+                                    TopContributorAgg.findOne(condition)
+                                        .exec(function (err, resTC) {
+                                            if (resTC) {
+                                                TopContributorAgg.update(condition, update).exec();
+                                            }
+                                            else {
+                                                var nf = new TopContributorAgg(
+                                                    {
+                                                        userId: userId,
+                                                        courseId: courseId,
+                                                        countCourseActivity: 0,
+                                                        countNodeActivity: 1,
+                                                        totalCount: 1,
+                                                        isEnrolled: true
+                                                    }
+                                                );
+                                                nf.save(
+                                                    function (err, docs) {
+                                                        if (!err) debug('');
+                                                        else
+                                                            debug(err);
+                                                    }
+                                                );
+                                            }
+                                        });
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
     onAfterLinkDeleted: function (deleteLink, user) {
         var userId = user._id;
         Links.findOne({_id: deleteLink.linkId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentNode;
+                    if (contentId) {
+                        TreeNodes.findOne({_id: contentId})
+                            .exec(function (err, result) {
+                                //var userId = doc.authorId;
+                                if (result) {
+                                    var condition = {
+                                        userId: userId,
+                                        courseId: result.courseId
+                                    }, update = {$inc: {totalCount: 1, countNodeActivity: 1}};
+                                    TopContributorAgg.findOne(condition)
+                                        .exec(function (err, resTC) {
+                                            if (resTC) {
+                                                TopContributorAgg.update(condition, update).exec();
+                                            }
+                                            else {
+                                                console.log('document not found');
+                                            }
+                                        });
+                                }
+                            })
+                    }
+
+                }
+            });
+    },
+
+    onAfterLearningHubLinkDeleted : function (deleteLink, user) {
+        var userId = user._id;
+        LearningHub.findOne({_id: deleteLink.linkId})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentId;
                     if (contentId) {
                         TreeNodes.findOne({_id: contentId})
                             .exec(function (err, result) {

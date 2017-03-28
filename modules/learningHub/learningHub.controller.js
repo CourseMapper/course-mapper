@@ -63,7 +63,7 @@ hubcontroller.prototype.add = function (error, params, success) {
             return;
 
         } else {
-            Plugin.doAction('onAfterLinkCreated', newPost);
+            Plugin.doAction('onAfterLearningHubLinkCreated', newPost);
             success(newPost);
         }
     })
@@ -183,7 +183,7 @@ hubcontroller.prototype.delete = function (query, user, success, error) {
             if (err) {
                 error(err);
             } else {
-                Plugin.doAction('onAfterLinkDeleted', query, user);
+                Plugin.doAction('onAfterLearningHubLinkDeleted', query, user);
                 success("deleted");
             }
         }
