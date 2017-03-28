@@ -99,7 +99,7 @@ var parsePdfAnnotation = function (pa) {
     var match = new matchResult(title, desc, type, link);
     // TODO - Add dates
     return match;
-}
+};
 
 var parseCategory = function (cat) {
     var title = cat.name;
@@ -111,7 +111,7 @@ var parseCategory = function (cat) {
     match.created = cat.dateAdded;
     match.updated = cat.dateUpdated;
     return match;
-}
+};
 
 var search = function (req, res, next) {
     // Require a search term
@@ -184,7 +184,7 @@ var relevantSearch = function (req, res, next) {
         .then(function (data) {
 
             // Flatten items to a single dimensional array
-            var matches = []
+            var matches = [];
             for (var collectionType in data) {
                 var items = data[collectionType];
                 _.each(items, function (o) {
@@ -197,10 +197,9 @@ var relevantSearch = function (req, res, next) {
             res.json(sorted);
         })
         .catch(function (err) {
-            console.log(err)
             res.status(500).send(err);
         });
-}
+};
 
 module.exports = {
     search: search,

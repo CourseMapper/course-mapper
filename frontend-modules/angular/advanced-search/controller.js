@@ -2,20 +2,25 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
 
     var loadRelevant = function (term, data) {
         //TODO Find relevant results
-        $http.get('/api/relevant-search?term=' + term)
+        $http.get('/api/relevant-search?term=' + term + '&resources=contentNodes,courses')
             .success(function (data) {
-                $scope.relevant = _.shuffle(data);
+                $scope.relevant = _.take(_.shuffle(data), 5);
                 setBusy(false);
             });
     };
 
     var loadPopular = function (term, data) {
         //TODO Find relevant results
-        $http.get('/api/relevant-search?term=' + term)
+        $http.get('/api/relevant-search?term=' + term + '&resources=contentNodes,courses')
             .success(function (data) {
-                $scope.popular = _.shuffle(data);
+                $scope.popular = _.take(_.shuffle(data), 10);
                 setBusy(false);
             });
+    };
+
+    var orderPopular = function () {
+        var popular = $scope.popularBy;
+        console.log(popular);
     };
 
     var search = function () {
@@ -72,6 +77,7 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
 
         setBusy(false);
 
+        $scope.popularBy = '-activity';
         $scope.searchTerm = '';
         $scope.result = null;
         $scope.relevant = null;
@@ -90,6 +96,8 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
         $scope.$watch('network', search);
         $scope.$watch('resources', search, true);
         $scope.$watch('filterDate', search, true);
+
+        $scope.$watch('popularBy', orderPopular, true);
 
         // Subscribe to menu query text changes
         $scope.$on('searchQueryChanged', function (event, args) {
