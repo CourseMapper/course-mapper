@@ -126,10 +126,10 @@ learningHubModule.controller("hubaddLinkController",[ '$rootScope','$scope', '$h
             $scope.unformattedtags="";
             $scope.des_hide=false;
             $scope.scraped=true;
-            console.log($window);
+            $scope.$emit('LinkForm', {
+                formAction : "newPost"
+            });
             $('#Hubaddlink').modal('hide');
-            console.log($window);
-            $window.location.reload();
         }).error( function(err){
             console.log(err);
             $scope.reset();
