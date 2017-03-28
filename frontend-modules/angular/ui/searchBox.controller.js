@@ -47,9 +47,22 @@ app.controller('SearchBoxController', function ($scope, $http, $location, $rootS
         }
     });
 
+    var getParameterByName = function (name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    };
+
     var init = function () {
         try {
-            $scope.queryText = $location.absUrl().split('?')[1].split('=')[1];
+
+            $scope.queryText = getParameterByName('term', $location.absUrl());
         }
         catch (e) {
             //ignore
