@@ -1,4 +1,4 @@
-app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) {
+app.controller('AdvancedSearchController', function ($rootScope, $scope, $http, $routeParams, $location) {
 
     var queries = {};
     var loadRelevant = function (term) {
@@ -24,8 +24,6 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
 
     var orderPopular = function (data) {
         $scope.popular = _.take(_.sortByOrder(data, $scope.popularBy, 'desc'), 10);
-        console.log($scope.popular)
-
     };
 
     var search = function () {
@@ -66,7 +64,20 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
         // Find matching results
         $http.get('/api/advanced-search' + query)
             .success(function (data) {
-                $scope.result = data;
+
+                var startAt = $scope.filterDate.startDate;
+                var endAt = $scope.filterDate.endDate;
+
+                if (startAt && endAt) {
+                    $scope.result = _.filter(data, function (o) {
+                        return $scope.filterDate.startDate.isBefore(o.updated) &&
+                            $scope.filterDate.endDate.isAfter(o.updated);
+                    });
+                }
+                else {
+                    $scope.result = data;
+                }
+
                 setBusy(false);
 
                 loadRelevant(term);
@@ -81,9 +92,7 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http) 
     function init() {
 
         setBusy(false);
-
         $scope.popularBy = '-activity';
-        $scope.searchTerm = '';
         $scope.result = null;
         $scope.relevant = null;
         $scope.network = 'global';
