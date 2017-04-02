@@ -35,7 +35,8 @@
             </div>
             <div class="video col-md-7 col-xs-10">
                 <span class="voting"></span>
-                <iframe src= "{{vm.post.url | trustUrl}}" width="100%" height=300px allowfullscreen></iframe>
+                <!--<iframe src= "{{vm.post.url | trustUrl}}" width="100%" height=300px allowfullscreen></iframe>-->
+                <div ng-bind-html="vm.post.embedHtml | trustHtml" class="video-wrapper"></div>
             </div>
             <div class="col-md-4">
                 <h4><b>Description</b></h4>

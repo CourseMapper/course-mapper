@@ -76,11 +76,7 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
      * search for the posts based on search query
      */
     $scope.search = function() {
-        if($scope.query!=""){
-            if(!$scope.enabled){
-              $scope.init();
-            }
-        }
+        $scope.init();
     };
 
     /**

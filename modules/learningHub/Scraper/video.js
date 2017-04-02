@@ -64,12 +64,13 @@ Video.prototype.getDetails=function(url,host_name,callback) {
                 } else {
                     video_result.title = d.title;
                     video_result.html = d.html;
-                    videoDescription(d, function (des) {
+                    videoDescription(d, url, function (des) {
                         video_result.description = des;
-                        prepareHtml(video_result.html, video_result.description, function (html) {
-                            video_result.html = html;
-                            callback(null,video_result);
-                        });
+                        callback(null, video_result);
+                        //prepareHtml(video_result.html, video_result.description, function (html) {
+                        //    video_result.html = html;
+                        //    callback(null,video_result);
+                        //});
 
                     });
                 }
@@ -121,9 +122,9 @@ function prepareHtml(ht,description,callback){
 
 }
 //get description
-function videoDescription(d,callback){
+function videoDescription(d, url, callback){
     if (!d.description) {
-        ogp.getOgDescription(video_result.url, function (des) {
+        ogp.getOgDescription(url, function (des) {
             callback(des.replace(/(\r\n|\n|\r)/gm, ""))
         });
     }else

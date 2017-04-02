@@ -63,7 +63,7 @@ hubcontroller.prototype.add = function (error, params, success) {
             return;
 
         } else {
-            Plugin.doAction('onAfterLinkCreated', newPost);
+            Plugin.doAction('onAfterLearningHubLinkCreated', newPost);
             success(newPost);
         }
     })
@@ -183,7 +183,7 @@ hubcontroller.prototype.delete = function (query, user, success, error) {
             if (err) {
                 error(err);
             } else {
-                Plugin.doAction('onAfterLinkDeleted', query, user);
+                Plugin.doAction('onAfterLearningHubLinkDeleted', query, user);
                 success("deleted");
             }
         }
@@ -237,7 +237,7 @@ hubcontroller.prototype.search = function (query, success, error) {
  */
 // add a post to  personalSpace
 hubcontroller.prototype.addPersonal = function (error, params, success) {
-
+    console.log(params);
     var tempPost = {
         courseId: mongoose.Types.ObjectId(params.courseId),
         contentId: mongoose.Types.ObjectId(params.contentId),
@@ -249,7 +249,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
         favicon: params.favicon ? params.favicon : null,
         hostName: params.hostName ? params.hostName : null,
         image: params.image ? params.image : null,
-        embedHtml: params.html ? params.html : null,
+        embedHtml: params.embedHtml ? params.embedHtml : null,
         description: params.description ? params.description : null,
         dateAdded: new Date,
         tags: params.tags

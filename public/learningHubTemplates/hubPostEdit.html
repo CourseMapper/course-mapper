@@ -7,7 +7,7 @@
     <!-- End of modal header-->
     <div class="modal-body">
         <!-- form for editing the data-->
-        <form name="editPostData" ng-submit="addlink(editPostData.$valid)">
+        <form name="editPostData">
             <!-- title -->
             <div id="title-group" class="form-group"
                  ng-class="{'has-error':(editPostData.title.$invalid || editPostData.title.$error.minlength)}">
@@ -17,12 +17,11 @@
                 <span ng-show="editPostData.title.$invalid && !editPostData.title.$pristine && editPostData.title.$error.minlength"
                       class="help-block">Title too short</span>
             </div>
-            <!-- Description -->
-            <div id="description-group" class="form-group" ng-hide="vm.post.description == null ? true :false"
-                 ng-class="{'has-error': des_hide ? !des_hide :(editPostData.description.$invalid) || editPostData.description.$error.minlength}">
+            <div id="description-group" class="form-group"  ng-hide= "vm.post.description == null ? true : false"
+                 ng-class="{'has-error':vm.post.description == null ? false :(editPostData.description.$invalid) || editPostData.description.$error.minlength}">
                 <label for="description">Description*</label>
                 <textarea name="description" rows="3" name="description" id="description" class="form-control"
-                          placeholder="description" ng-model="vm.post.description" ng-required="!des_hide"
+                          placeholder="description" ng-model="vm.post.description" ng-required="vm.post.description == null ? false : true"
                           ng-minlength="100" required></textarea>
                 <span ng-show="editPostData.description.$error.minlength"
                       class="help-block">Description is too short</span>

@@ -111,10 +111,10 @@
     max-height: 400px;
 }
 
-.image-wrapper img {
-    max-height: 400px;
-    max-width: 100%;
-}
+/*.image-wrapper img {*/
+    /*max-height: 400px;*/
+    /*max-width: 100%;*/
+/*}*/
 
 /*title-styling*/
 .title-text {
@@ -238,7 +238,7 @@ i {
     margin-left: 15px;
 }
 
-.hub-image {
+.hub-thumb-image {
     max-width: 300px;
     max-height: 300px;
 }
@@ -248,9 +248,20 @@ i {
 }
 
 .delete-icon:hover {
-    color: black;;
+    color: black;
 }
 
 .fav-icon:hover {
     color: darkgoldenrod;
+}
+
+.hub-image {
+    max-width:1024px;
+    max-height:768px;
+    background: transparent;
+}
+
+.video-wrapper iframe{
+    width : 100%;
+    height: 300px;
 }

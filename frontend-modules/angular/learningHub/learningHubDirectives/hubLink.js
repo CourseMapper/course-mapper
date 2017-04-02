@@ -2,7 +2,7 @@
 learningHubModule.directive('hubLink', function () {
         var setTemplate = function (post) {
             var postType = post.type;
-            var templateUrl = '/learningHubTemplates/hubvideo.html';
+            var templateUrl = '/learningHubTemplates/hublinknothumb.html';
             switch (postType) {
                 case 'video':
                     templateUrl = '/learningHubTemplates/hubvideo.html';
@@ -155,7 +155,7 @@ learningHubModule.directive('hubLink', function () {
             });
             return formattedTags;
         };
-        // toggle between personal and public space
+        // add or remove post to personal space
         vm.togglePersonal = function(post) {
             vm.pa = !vm.pa;
             if(vm.pa){
