@@ -1,7 +1,0 @@
-{
-  "session": {
-    "secret": "SESSION_SECRET"
-  },
-
-  "database": "DATABASE"
-}
