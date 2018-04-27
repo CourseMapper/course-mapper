@@ -17,23 +17,22 @@ function account() {
 }
 
 /**
- * just a demo code to create an admin user
+ * Create the initial admin user
  */
-account.prototype.createAdmin = function (username, email) {
+account.prototype.createAdmin = function (password) {
     var param = {
-        username: "rpl",
-        role: "admin",
-        email: "r@rpl.im",
-        password: "1"
+      role:     "admin",
+      username: "admin",
+      email:    "admin@example.org",
+      password: "admin"
     };
-    if (username && email) {
-        param.username = username;
-        param.email = email;
+    if (password) {
+      param.password = password;
     }
 
     this.signUp(
         function (e) {
-            console.log(e)
+            console.error(e)
         },
         param,
         function (u) {

@@ -25,28 +25,6 @@ run mongoDB if it is not yet running
 ### Run the application
 `node ./bin/wwww`
 
-### Create Admin
-Once the application running for the first time, you can start adding categories as an admin.
-Because this is your first time running the site, you need to create an admin user by visiting this URL in your browser.
+### Creating an initial admin account
 
-But before that, please remove some comments from lines:  of file /routes/accounts.js
-```
-/*
-router.get('/accounts/createAdmin/:username', function (req, res, next) {
-    var account = new Account();
-    account.createAdmin(req.params.username);
-    res.status(200).json({status: true});
-});
-*/
-```
-
-After that modification, please visit this URL in the browser.
-Please modify the [username] and [email] part to your prefered username & email,
-and please make sure write it without the square bracket.
-
-`http://localhost:3000/accounts/createAdmin/[username]/[email]`
-
-Once you create this admin, please comment back that codes.
-
-And you can login to the system using your new username and password "1".
-Please change your password to a saver one on your profile page.
+Send an HTTP request to `/accounts/createAdmin` to create a user with the name "admin". Please note the randomly generated password which will be printed to `stdout`.

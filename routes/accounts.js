@@ -6,9 +6,14 @@ var appRoot = require('app-root-path');
 var Account = require(appRoot + '/modules/accounts');
 var router = express.Router();
 
-router.get('/accounts/createAdmin/:username/:email', function (req, res, next) {
+/*
+/ Create an initial admin user with a random password
+*/
+router.get('/accounts/createAdmin', function (req, res, next) {
     var account = new Account();
-    account.createAdmin(req.params.username, req.params.email);
+    var password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    account.createAdmin(password);
+    console.log("admin password: " + password);
     res.status(200).json({status: true});
 });
 
