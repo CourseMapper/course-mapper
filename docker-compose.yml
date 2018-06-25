@@ -8,6 +8,10 @@ services:
     - NODE_ENV=production
     - DATABASE=mongodb/course_mapper
     - PORT=3000
+    volumes:
+    - web-resources:/public/resources
+    - web-pa:/public/pa
+    - web-img:/public/img
     ports:
     - 3000:3000
     depends_on:
@@ -30,4 +34,7 @@ services:
   #   - 3001:3001
 
 volumes:
+  web-resources:
+  web-pa:
+  web-img:
   mongodb-data:
