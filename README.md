@@ -1,30 +1,36 @@
 # Course Mapper
 
-### Pre-requisities:
-1. MongoDB
-2. NodeJS
-3. npm
+## Running the app
 
-### Install some command line tools
+To run the default stack using images from Docker Hub:
+
+```sh
+docker-compose up
 ```
-sudo npm install -g bower
-sudo npm install -g gulp
-sudo npm install -g grunt
-sudo npm install -g nodemon
-```
-### This will install the needed modules
-```
+
+Request e.g. `http://localhost:3000/accounts/createAdmin` to create an initial account "admin". For the (randomly generated) password, check `stdout`.
+
+
+## Development setup
+
+### Pre-requisities:
+
+1. MongoDB (running)
+2. NodeJS and npm
+
+### Installation
+
+```sh
+# Install tools globally
+sudo npm install -g bower gulp grunt nodemon
+
+# Install JS modules
 npm install
 bower install
 
-run mongoDB if it is not yet running
+# Run pre-script compiler
+grunt
+
+# Run the app
+./bin/www
 ```
-### Run pre-script compiler
-`grunt`
-
-### Run the application
-`node ./bin/wwww`
-
-### Creating an initial admin account
-
-Send an HTTP request to `/accounts/createAdmin` to create a user with the name "admin". Please note the randomly generated password which will be printed to `stdout`.
