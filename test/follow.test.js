@@ -3,7 +3,7 @@
  */
 var appRoot = require('app-root-path');
 var assert = require('assert');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 
 var request = require('superagent');
 

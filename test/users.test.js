@@ -2,7 +2,7 @@
  * Created by ridho on 27/03/15.
  */
 var appRoot = require('app-root-path');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var assert = require('assert');
 
 var request = require('superagent');
