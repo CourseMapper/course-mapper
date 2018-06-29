@@ -1,4 +1,4 @@
-FROM node:6
+FROM node:8
 WORKDIR /home/node/app
 
 RUN yarn global add nodemon grunt-cli bower gulp npm-run-all
