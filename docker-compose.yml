@@ -1,0 +1,40 @@
+version: "2"
+services:
+
+  web:
+    build: .
+    image: inko/course-mapper
+    environment:
+    - NODE_ENV=production
+    - DATABASE=mongodb/course_mapper
+    - PORT=3000
+    volumes:
+    - web-resources:/public/resources
+    - web-pa:/public/pa
+    - web-img:/public/img
+    ports:
+    - 3000:3000
+    depends_on:
+    - mongodb
+
+  mongodb:
+    image: "mongo"
+    volumes:
+    - mongodb-data:/data/db
+
+  # admin:
+  #   image: mrvautin/adminmongo
+  #   environment:
+  #   - CONN_NAME=course_mapper
+  #   - DB_HOST=mongodb
+  #   - DB_NAME=course_mapper
+  #   - PASSWORD=admin
+  #   - PORT=3001
+  #   ports:
+  #   - 3001:3001
+
+volumes:
+  web-resources:
+  web-pa:
+  web-img:
+  mongodb-data:

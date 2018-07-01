@@ -1,0 +1,9 @@
+before_script:
+- docker-compose up -d --build
+- until $(curl --output /dev/null --silent --head --fail localhost:3000); do sleep 2; done
+
+script:
+- curl -I localhost:3000
+
+after_script:
+- docker-compose down

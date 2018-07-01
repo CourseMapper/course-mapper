@@ -1,0 +1,8 @@
+.dockerignore
+.git
+.gitignore
+/bitbucket-pipelines.yml
+/docker-compose.yml
+/node_modules
+/public/bower/
+/public/partials/

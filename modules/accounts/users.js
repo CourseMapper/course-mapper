@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var crypto = require('crypto');
-var uuid = require('node-uuid');
+var uuid = require('uuid');
 var validator = require('validator');
 var gravatar = require('gravatar');
 
