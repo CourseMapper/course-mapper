@@ -11,6 +11,13 @@ docker-compose up
 Request e.g. `http://localhost:3000/accounts/createAdmin` to create an initial account "admin". For the (randomly generated) password, check `stdout`.
 
 
+## Building the image
+
+```sh
+docker-compose build
+```
+
+
 ## Development setup
 
 ### Pre-requisities:
