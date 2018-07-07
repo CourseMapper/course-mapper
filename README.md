@@ -1,5 +1,7 @@
 # Course Mapper
 
+[![Build Status](https://travis-ci.com/CourseMapper/course-mapper.svg?branch=dev)](https://travis-ci.com/CourseMapper/course-mapper)
+
 ## Running the app
 
 To run the default stack using images from Docker Hub:
