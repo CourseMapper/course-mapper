@@ -1,9 +1,12 @@
-before_script:
+install:
 - docker-compose up -d --build
+
+before_script:
 - until $(curl --output /dev/null --silent --head --fail localhost:3000); do sleep 2; done
 
 script:
 - curl -I localhost:3000
+- docker-compose run web npm test
 
 after_script:
 - docker-compose down

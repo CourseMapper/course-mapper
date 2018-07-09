@@ -6,7 +6,8 @@
     "gulp": "gulp",
     "grunt": "grunt watch",
     "run": "nodemon ./bin/www",
-    "start": "npm-run-all --parallel gulp grunt run"
+    "start": "npm-run-all --parallel gulp grunt run",
+    "test": "mocha"
   },
   "dependencies": {
     "app-root-path": "^2.1.0",

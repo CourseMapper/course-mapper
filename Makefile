@@ -1,6 +1,6 @@
-.PHONY: default build start admin clean shell
+.PHONY: default build start test shell clean
 
-default: build start
+default: build test
 
 build:
 	@docker-compose build
@@ -8,8 +8,11 @@ build:
 start:
 	@docker-compose up
 
-clean:
-	@docker-compose rm -v
+test:
+	@docker-compose run web npm test
 
 shell:
 	@docker-compose run web bash
+
+clean:
+	@docker-compose rm -v

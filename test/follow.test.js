@@ -15,9 +15,9 @@ var Account =  require(appRoot + '/modules/accounts');
 var Category = require(appRoot + '/modules/catalogs/categories.js');
 var Course = require(appRoot + '/modules/catalogs/courses.js');
 var User = require(appRoot + '/modules/accounts/users.js');
-var UserCourse = require(appRoot + '/modules/accounts/userCourses.js');
+var UserCourse = require(appRoot + '/modules/catalogs/userCourses.js');
 
-var catalog =  require(appRoot + '/modules/catalogs');
+var catalog =  require(appRoot + '/modules/catalogs/category.controller.js');
 
 var baseApiUrl = "http://localhost:3000/api/";
 
@@ -94,4 +94,3 @@ describe('follow.test', function(){
     });
 
 });
-

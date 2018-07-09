@@ -13,7 +13,7 @@ require(appRoot + '/libs/core/database.js');
 // model & logic
 var Account =  require(appRoot + '/modules/accounts');
 var Category = require(appRoot + '/modules/catalogs/categories.js');
-var catalog =  require(appRoot + '/modules/catalogs');
+var catalog =  require(appRoot + '/modules/catalogs/category.controller.js');
 var User = require(appRoot + '/modules/accounts/users.js');
 
 var baseApiUrl = "http://localhost:3000/api/";
