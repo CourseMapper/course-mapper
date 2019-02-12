@@ -1,8 +1,11 @@
 .dockerignore
 .git
 .gitignore
+*.log
+/.travis.yml
 /bitbucket-pipelines.yml
 /docker-compose.yml
+/Makefile
 /node_modules
 /public/bower/
 /public/partials/
