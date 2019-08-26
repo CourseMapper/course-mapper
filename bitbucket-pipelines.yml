@@ -7,7 +7,7 @@ pipelines:
   default:
   - step:
       script:
-      - apk add --no-cache py-pip bash
+      - apk add --no-cache bash python-dev py-pip libffi-dev openssl-dev gcc libc-dev make
       - pip install --no-cache-dir docker-compose
       - docker-compose build
       caches:
