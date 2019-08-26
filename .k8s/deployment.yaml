@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    keel.sh/policy: all
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      component: web
+  template:
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+      - name: web
+        image: inko/course-mapper
+        ports:
+        - containerPort: 8000
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+        env:
+        - name: NODE_ENV
+          value: production
+        - name: DATABASE
+          value: $(MONGODB_SERVICE)/course_mapper
+        - name: PORT
+          value: "8000"
+        volumeMounts:
+        - mountPath: /public/resources
+          name: web
+          subPath: resources
+        - mountPath: /public/pa
+          name: web
+          subPath: pa
+        - mountPath: /public/img
+          name: web
+          subPath: img
+        resources:
+          requests:
+            memory: 110Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+            cpu: 1
+      volumes:
+      - name: web
+        persistentVolumeClaim:
+          claimName: web
