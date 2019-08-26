@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace:  sc
+namePrefix: soco-
+
+bases:
+- .k8s
+
+commonLabels:
+  owner: sc
+  stage: prod
+
+commonAnnotations:
+  contact: "Ralf Berger <ralf.berger@uni-due.de>"
