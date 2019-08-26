@@ -2,10 +2,14 @@
 .git
 .gitignore
 *.log
+/.k8s
 /.travis.yml
 /bitbucket-pipelines.yml
 /docker-compose.yml
+/kustomization.yaml
 /Makefile
 /node_modules
 /public/bower/
 /public/partials/
+Dockerfile
+README.md
