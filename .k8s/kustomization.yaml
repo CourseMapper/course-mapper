@@ -14,10 +14,10 @@ vars:
     name: mongodb
 
 resources:
-- deployment.yaml
-- service.yaml
-- ingress.yaml
-- pvc.yaml
+- web/deployment.yaml
+- web/service.yaml
+- web/ingress.yaml
+- web/pvc.yaml
 - mongodb/deployment.yaml
 - mongodb/service.yaml
 - mongodb/pvc.yaml
