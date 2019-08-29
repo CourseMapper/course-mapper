@@ -16,6 +16,15 @@ spec:
       labels:
         component: web
     spec:
+      initContainers:
+      - name: wait-for-mongodb
+        image: mongo
+        command: ['sh', '-c',
+          'until echo "db.runCommand(\"ping\").ok" | mongo $(MONGODB_SERVICE):27017/test --quiet;
+          do echo waiting for database; sleep 2; done;']
+        env:
+        - name: MONGODB_SERVICE
+          value: $(MONGODB_SERVICE)
       containers:
       - name: web
         image: inko/course-mapper
