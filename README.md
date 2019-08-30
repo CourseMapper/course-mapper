@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/CourseMapper/course-mapper.svg?branch=dev)](https://travis-ci.com/CourseMapper/course-mapper)
 
-## Production setup
+## Run via docker-compose
 
 To run the default stack using images from Docker Hub:
 
@@ -11,6 +11,29 @@ docker-compose up
 ```
 
 Request e.g. `http://localhost:3000/accounts/createAdmin` to create an initial account "admin". For the (randomly generated) password, check `stdout`.
+
+
+## Run on Kubernetes
+
+Prepare `./kustomization.yaml` (include `./k8s` as base, configure NS, labels, etc.) and deploy:
+
+```sh
+kubectl apply -k .
+```
+
+Check that all resources are deployed and the deployment are ready:
+
+```sh
+kubectl get -k .
+```
+
+Request `/accounts/createAdmin` to create an initial account "admin". For the (randomly generated) password, check the logs, e.g.:
+
+```sh
+kubectl logs \
+  --selector app=course-mapper,component=web \
+  --namespace default
+```
 
 
 ## Development setup
