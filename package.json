@@ -36,7 +36,7 @@
     "meta-tags": "^1.0.0",
     "metatags": "0.0.8",
     "moment": "^2.10.2",
-    "mongoose": "^4.0.7",
+    "mongoose": "^5.7.5",
     "morgan": "~1.9.0",
     "nodemailer": "^4.0.1",
     "oauth2orize": "^1.2.0",
