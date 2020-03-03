@@ -33,6 +33,11 @@ spec:
         #   httpGet:
         #     path: /
         #     port: 80
+        livenessProbe:
+          exec:
+            command: ['ls', '/data/db']
+          initialDelaySeconds: 5
+          periodSeconds: 15
         resources:
           requests:
             memory: 85Mi

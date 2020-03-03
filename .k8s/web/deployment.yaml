@@ -38,6 +38,10 @@ spec:
           httpGet:
             path: /
             port: 8000
+          exec:
+            command: ['ls', '/public/resources/']
+          initialDelaySeconds: 5
+          periodSeconds: 15
         env:
         - name: NODE_ENV
           value: production
