@@ -1,9 +1,12 @@
-.PHONY: default build start test shell clean
+.PHONY: default build rebuild start test shell clean
 
 default: build test
 
 build:
 	@docker-compose build
+
+rebuild:
+	@docker-compose build --no-cache
 
 start:
 	@docker-compose up
