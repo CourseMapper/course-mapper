@@ -2422,8 +2422,9 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-"less-common-words@github:azer/less-common-words":
+less-common-words@azer/less-common-words:
   version "0.0.0"
+  uid c908514616c834b0d626955ff43ff0b285e83444
   resolved "https://codeload.github.com/azer/less-common-words/tar.gz/c908514616c834b0d626955ff43ff0b285e83444"
   dependencies:
     most-common-words azer/most-common-words
@@ -2618,10 +2619,10 @@ lodash.templatesettings@^3.0.0:
     lodash._reinterpolate "^3.0.0"
     lodash.escape "^3.0.0"
 
-lodash@*, lodash@^4.14.0, lodash@^4.17.10:
-  version "4.17.11"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
-  integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
+lodash@*, lodash@^4.14.0, lodash@^4.17.10, lodash@^4.17.13:
+  version "4.17.13"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.13.tgz#0bdc3a6adc873d2f4e0c4bac285df91b64fc7b93"
+  integrity sha512-vm3/XWXfWtRua0FkUyEHBZy8kCPjErNBT9fJx8Zvs+U6zjqPbTUOpkaoum3O5uiA8sm+yNMHXfYkTUHFoMxFNA==
 
 lodash@2.4.1:
   version "2.4.1"
@@ -2965,7 +2966,7 @@ morgan@~1.9.0:
     on-finished "~2.3.0"
     on-headers "~1.0.1"
 
-most-common-words@azer/most-common-words, "most-common-words@github:azer/most-common-words":
+most-common-words@azer/most-common-words:
   version "0.0.1"
   uid eefe2f9cccccef34fbc6f55369c95fb35caaa3e0
   resolved "https://codeload.github.com/azer/most-common-words/tar.gz/eefe2f9cccccef34fbc6f55369c95fb35caaa3e0"
@@ -4676,8 +4677,9 @@ unique-stream@^1.0.0:
   resolved "https://registry.yarnpkg.com/unique-stream/-/unique-stream-1.0.0.tgz#d59a4a75427447d9aa6c91e70263f8d26a4b104b"
   integrity sha1-1ZpKdUJ0R9mqbJHnAmP40mpLEEs=
 
-"uniques@github:azer/uniques":
+uniques@azer/uniques:
   version "0.0.1"
+  uid a09a66eb6bfce1a3802bda33575893decf5bf545
   resolved "https://codeload.github.com/azer/uniques/tar.gz/a09a66eb6bfce1a3802bda33575893decf5bf545"
 
 universalify@^0.1.0:
