@@ -1,4 +1,4 @@
-.PHONY: default build rebuild start test shell clean
+.PHONY: default build rebuild start admin test shell clean
 
 default: build test
 
@@ -10,6 +10,9 @@ rebuild:
 
 start:
 	@docker-compose up
+
+admin:
+	@docker-compose run web ./bin/create-admin
 
 test:
 	@docker-compose run web npm test

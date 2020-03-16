@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+/* :TODO: This script is currently not working */
+
+var user = process.env.ADMIN_USER || 'admin';
+var mail = process.env.ADMIN_MAIL || 'admin@example.org';
+var pass = process.env.ADMIN_PASS || 'admin';
+
+var appRoot  = require('app-root-path');
+var Account  = require(appRoot + '/modules/accounts');
+var err = function (e) { console.error(e) };
+var log = function (o) { console.log(o) };
+
+var account  = new Account();
+var user_params = {
+  role:     "admin",
+  username: user,
+  email:    mail,
+  password: pass
+};
+
+console.log("Creating account for " + user + " <" + mail + "> ...");
+
+account.signUp(err, user_params, log);
+account.getUser(err, { username: user }, log);
