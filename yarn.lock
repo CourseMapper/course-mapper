@@ -2422,8 +2422,9 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-"less-common-words@github:azer/less-common-words":
+less-common-words@azer/less-common-words:
   version "0.0.0"
+  uid c908514616c834b0d626955ff43ff0b285e83444
   resolved "https://codeload.github.com/azer/less-common-words/tar.gz/c908514616c834b0d626955ff43ff0b285e83444"
   dependencies:
     most-common-words azer/most-common-words
@@ -2862,9 +2863,9 @@ minimist@~0.0.1:
   integrity sha1-3j+YVD2/lggr5IrRoMfNqDYwHc8=
 
 mixin-deep@^1.2.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/mixin-deep/-/mixin-deep-1.3.1.tgz#a49e7268dce1a0d9698e45326c5626df3543d0fe"
-  integrity sha512-8ZItLHeEgaqEvd5lYBXfm4EZSFCX29Jb9K+lAHhDKzReKBQKj3R+7NOF6tjqYi9t4oI8VUfaWITJQm86wnXGNQ==
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/mixin-deep/-/mixin-deep-1.3.2.tgz#1120b43dc359a785dce65b55b82e257ccf479566"
+  integrity sha512-WRoDn//mXBiJ1H40rqa3vH0toePwSsGb45iInWlTySa+Uu4k3tYUSxa2v1KqAiLtvlrSzaExqS1gtk96A9zvEA==
   dependencies:
     for-in "^1.0.2"
     is-extendable "^1.0.1"
@@ -2965,7 +2966,7 @@ morgan@~1.9.0:
     on-finished "~2.3.0"
     on-headers "~1.0.1"
 
-most-common-words@azer/most-common-words, "most-common-words@github:azer/most-common-words":
+most-common-words@azer/most-common-words:
   version "0.0.1"
   uid eefe2f9cccccef34fbc6f55369c95fb35caaa3e0
   resolved "https://codeload.github.com/azer/most-common-words/tar.gz/eefe2f9cccccef34fbc6f55369c95fb35caaa3e0"
@@ -4676,8 +4677,9 @@ unique-stream@^1.0.0:
   resolved "https://registry.yarnpkg.com/unique-stream/-/unique-stream-1.0.0.tgz#d59a4a75427447d9aa6c91e70263f8d26a4b104b"
   integrity sha1-1ZpKdUJ0R9mqbJHnAmP40mpLEEs=
 
-"uniques@github:azer/uniques":
+uniques@azer/uniques:
   version "0.0.1"
+  uid a09a66eb6bfce1a3802bda33575893decf5bf545
   resolved "https://codeload.github.com/azer/uniques/tar.gz/a09a66eb6bfce1a3802bda33575893decf5bf545"
 
 universalify@^0.1.0:
