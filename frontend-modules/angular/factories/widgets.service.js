@@ -112,7 +112,7 @@ app.factory('widgetService', [
             },
 
             initWidgetButton: function (location, id) {
-                $.AdminLTE.boxWidget.activate();
+                //$.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
                 var h = $('#w' + id);

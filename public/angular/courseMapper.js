@@ -5382,7 +5382,7 @@ app.factory('socket', function ($rootScope) {
             },
 
             initWidgetButton: function (location, id) {
-                $.AdminLTE.boxWidget.activate();
+                //$.AdminLTE.boxWidget.activate();
                 this.addWidget(location, id);
 
                 //var h = $('#w' + id + ' .grid-stack-item-content');
@@ -8621,7 +8621,7 @@ app.controller('AddEditSolutionController', function($scope, $http, toastr, $win
     $scope.widgetsTemp = [];
 
     $scope.initWidgetButton = function (id) {
-        $.AdminLTE.boxWidget.activate();
+        //$.AdminLTE.boxWidget.activate();
         $scope.addWidget(id);
 
         var h = $('#w' + id + ' .grid-stack-item-content');
