@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var myActivityStatusSchema = new mongoose.Schema();
+myActivityStatusSchema.set('usePushEach', true);
 
 myActivityStatusSchema.add({
     userId: {
