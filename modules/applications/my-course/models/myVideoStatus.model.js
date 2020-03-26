@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var myVideoStatusSchema = new mongoose.Schema();
+myVideoStatusSchema.set('usePushEach', true);
 
 myVideoStatusSchema.add({
   userId: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},

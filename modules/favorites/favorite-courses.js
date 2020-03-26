@@ -8,6 +8,8 @@ var FavoriteCoursesSchema = new mongoose.Schema({
   isFavorite: Boolean,
   dateAdded: {type: Date},
   dateUpdated: {type: Date}
+}, {
+  usePushEach: true
 });
 
 FavoriteCoursesSchema.index({user: 1, course: 1}, {unique: true});

@@ -9,6 +9,8 @@ var TokenSchema = new mongoose.Schema({
         required: true,
         ref: 'users'
     }
+}, {
+    usePushEach: true
 });
 
 // Export the Mongoose model

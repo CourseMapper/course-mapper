@@ -10,6 +10,8 @@ var CommentSchema = new mongoose.Schema({
   authorId: { type: String, required: true },
   authorDisplayName: { type: String, required: true },
   text: { type: String, required: true }
+}, {
+  usePushEach: true
 });
 
 CommentSchema.pre('save', function (next) {
@@ -47,6 +49,8 @@ var VideoAnnotationSchema = new mongoose.Schema({
   },
   comments: [CommentSchema],
   isPrivate: { type: Boolean }
+}, {
+  usePushEach: true
 });
 
 // Define indexes

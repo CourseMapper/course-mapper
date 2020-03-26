@@ -442,7 +442,7 @@ function submitSingleTagObject(tags,currentIndex,oldTagList,callback) {
 };
 
 function validateTagObject(currentTag,oldTagList,simple) {
-  console.log(currentTag);
+  //console.log(currentTag);
   var ret = true;
   if(!(currentTag.annotationZoneName.length >= 3))
     return false;
@@ -457,20 +457,25 @@ function validateTagObject(currentTag,oldTagList,simple) {
   //ret &= validator.isHexadecimal(currentTag.color);
 
   if(!simple) {
-    ret &= validator.isFloat(currentTag.relativeCoordinates.X);
-    ret &= validator.isFloat(currentTag.relativeCoordinates.Y);
+    //////ret &= validator.isFloat(currentTag.relativeCoordinates.X);
+    ret &= !isNaN(currentTag.relativeCoordinates.X);
+    //////ret &= validator.isFloat(currentTag.relativeCoordinates.Y);
+    ret &= !isNaN(currentTag.relativeCoordinates.Y);
     ret &= (currentTag.relativeCoordinates.X <= 1) && (currentTag.relativeCoordinates.X >= 0)
     ret &= (currentTag.relativeCoordinates.Y <= 1) && (currentTag.relativeCoordinates.Y >= 0)
 
-    ret &= validator.isFloat(currentTag.relativeDimensions.X);
-    ret &= validator.isFloat(currentTag.relativeDimensions.Y);
+    //////ret &= validator.isFloat(currentTag.relativeDimensions.X);
+    ret &= !isNaN(currentTag.relativeDimensions.X);
+    //////ret &= validator.isFloat(currentTag.relativeDimensions.Y);
+    ret &= !isNaN(currentTag.relativeDimensions.Y);
     ret &= (currentTag.relativeDimensions.X <= 1) && (currentTag.relativeDimensions.X >= 0)
     ret &= (currentTag.relativeDimensions.Y <= 1) && (currentTag.relativeDimensions.Y >= 0)
     ret &= (currentTag.relativeDimensions.X + currentTag.relativeCoordinates.X <= 1)
     ret &= (currentTag.relativeDimensions.Y + currentTag.relativeCoordinates.Y <= 1)
 
     ret &= validator.isHexadecimal(currentTag.pdfId);
-    ret &= validator.isDecimal(currentTag.pdfPageNumber);
+    //////ret &= validator.isDecimal(currentTag.pdfPageNumber);
+    ret &= !isNaN(currentTag.pdfPageNumber);
   }
   return ret;
 };

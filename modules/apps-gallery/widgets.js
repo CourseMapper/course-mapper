@@ -21,6 +21,8 @@ var widgetSchema = new mongoose.Schema({
 
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
+}, {
+    usePushEach: true
 });
 
 widgetSchema.index({name: 1, application: 1}, {unique: true});

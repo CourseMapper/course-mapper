@@ -13,6 +13,8 @@ var categoryRecommend = new mongoose.Schema({
     description: {type: String},
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
+}, {
+    usePushEach: true
 });
 
 

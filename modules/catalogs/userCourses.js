@@ -11,6 +11,8 @@ var userCoursesSchema = new mongoose.Schema({
 
   dateAdded: {type: Date},
   dateUpdated: {type: Date}
+}, {
+  usePushEach: true
 });
 
 userCoursesSchema.index({user: 1, course: 1}, {unique: true});

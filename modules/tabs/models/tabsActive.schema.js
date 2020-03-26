@@ -10,6 +10,8 @@ var tabActiveSchema = new mongoose.Schema({
 
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
+}, {
+    usePushEach: true
 });
 
 tabActiveSchema.pre('save', function (next) {

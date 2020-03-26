@@ -122,7 +122,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         $scope.annotations.push(editedAnnotation);
       }
 
-      var sorted = _.sortByAll(annotations, ['start']);
+      var sorted = _.sortBy(annotations, ['start']);
       $scope.cuePoints.points = buildCuePoints(sorted, cuePointsFilter);
       sorted.forEach(function (annotation) {
 

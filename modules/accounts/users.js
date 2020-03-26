@@ -54,6 +54,8 @@ var userSchema = new mongoose.Schema({
 
     resetPasswordToken: String,
     resetPasswordExpires: Date
+}, {
+    usePushEach: true
 });
 
 userSchema.pre('save', function (next) {

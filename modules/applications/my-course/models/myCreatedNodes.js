@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var myCreatedNodesSchema = new mongoose.Schema();
+myCreatedNodesSchema.set('usePushEach', true);
 
 myCreatedNodesSchema.add({
     userId: {

@@ -59,7 +59,6 @@ catalog.prototype.saveResourceFile = function (filetype, file, contentNode, crea
 
 catalog.prototype.addTreeNode = function (error, params, files, success) {
   var self = this;
-
   // check for at least 1 resource either it s a pdf or a video
   if (params.type == 'contentNode' && !params._id) {
     if (!files.file && !params.pdfHostLink && !params.videoHostLink) {
@@ -67,19 +66,16 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
       return;
     }
   }
-
   if (files && files.file && files.file.constructor != Array) {
     // make it an array if it s just 1 object. (we allow multiple upload on some types of node)
     var be = [files.file];
     files.file = be;
   }
-
   if (!helper.checkRequiredParams(params, ['userId', 'createdBy'], function (errs) {
     error(errs)
   })) {
     return;
   }
-
   //options for new node
   var node = {
     type: params.type,
@@ -98,7 +94,6 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
       if (parentNode) {
         parentNode.childrens.push(tn._id);
         await(parentNode.save());
-
         // because we have a parent, lets alter its position, relative to its parent
         tn.positionFromRoot = {
           x: parentNode.positionFromRoot.x + generateRandomPos(),
@@ -106,7 +101,6 @@ catalog.prototype.addTreeNode = function (error, params, files, success) {
         };
 
         await(tn.save());
-
         return true;
       }
     }

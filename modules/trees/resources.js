@@ -19,6 +19,8 @@ var resourcesSchema = new mongoose.Schema({
   createdBy: {type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true},
   dateAdded: {type: Date},
   dateUpdated: {type: Date}
+}, {
+  usePushEach: true
 });
 
 resourcesSchema.pre('save', function (next) {

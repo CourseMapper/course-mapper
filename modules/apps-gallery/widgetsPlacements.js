@@ -21,6 +21,8 @@ var widgetPlacementsSchema = new mongoose.Schema({
 
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
+}, {
+    usePushEach: true
 });
 
 widgetPlacementsSchema.pre('save', function (next) {

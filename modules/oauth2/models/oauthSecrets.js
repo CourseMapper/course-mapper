@@ -6,6 +6,8 @@ var OauthSchema = new mongoose.Schema({
     redirectUri: {type: String, required: true},
     userId: {type: mongoose.Schema.Types.ObjectId, required: true, ref: 'users'},
     clientId: {type: String, required: true}
+}, {
+    usePushEach: true
 });
 
 // Export the Mongoose model

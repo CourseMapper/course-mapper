@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var slug = require('slug');
 
 var personalSchema = new mongoose.Schema();
+personalSchema.set('usePushEach', true);
 /**
  * Schema for maintaining users list of posts in their personal space
  */

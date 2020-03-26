@@ -8,10 +8,10 @@ var mongoose = require('mongoose');
 var config = require('config');
 
 function database() {
-    this.connectionOptions = process.env.DATABASE;
+    this.connectionOptions = process.env.DATABASE || 'mongodb://localhost:27017/course_mapper';
 }
 
-database.prototype.connect = function() {
+database.prototype.connect = function () {
     return mongoose.connect(this.connectionOptions);
 };
 

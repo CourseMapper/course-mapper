@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var topContentSchema = new mongoose.Schema();
+topContentSchema.set('usePushEach', true);
 
 topContentSchema.add({
 

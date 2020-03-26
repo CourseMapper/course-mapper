@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var slug = require('slug');
 
 var categorySchema = new mongoose.Schema();
+categorySchema.set('usePushEach', true);
 
 categorySchema.add({
   name: {

@@ -6,6 +6,8 @@ var nodeVisibilitySchema = new mongoose.Schema({
   isHidden: {type: Boolean, default: false},
   createdAt: {type: Date},
   updatedAt: {type: Date}
+}, {
+  usePushEach: true
 });
 
 nodeVisibilitySchema.pre('save', function (next) {

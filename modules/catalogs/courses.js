@@ -27,6 +27,8 @@ var courseSchema = new mongoose.Schema({
   dateAdded: {type: Date},
   dateUpdated: {type: Date},
   totalEnrollment: {type: Number}
+}, {
+  usePushEach: true
 });
 
 // Define indexes

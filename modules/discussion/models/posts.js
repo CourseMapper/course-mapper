@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var slug = require('slug');
 
 var postSchema = new mongoose.Schema();
+postSchema.set('usePushEach', true);
 
 postSchema.add({
     title: {type: String},

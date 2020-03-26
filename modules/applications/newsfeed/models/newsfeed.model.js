@@ -10,7 +10,9 @@ var newsfeedSchema = new mongoose.Schema({
     actionType: {type: String},
     actionName: {type: String},
     dateAdded: {type: Date}
-  }
+  }, {
+        usePushEach: true
+    }
 );
 
 module.exports = mongoose.model('newsfeed', newsfeedSchema);

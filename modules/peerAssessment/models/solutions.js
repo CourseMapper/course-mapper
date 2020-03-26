@@ -16,6 +16,8 @@ var solutionsSchema = new mongoose.Schema({
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'courses', required: true },
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
+}, {
+    usePushEach: true
 });
 
 solutionsSchema.pre('save', function(next){

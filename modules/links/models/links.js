@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var slug = require('slug');
 
 var courseLinkSchema = new mongoose.Schema();
+courseLinkSchema.set('usePushEach', true);
 
 courseLinkSchema.add({
     contentNode: {

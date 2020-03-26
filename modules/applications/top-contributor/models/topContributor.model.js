@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var topContributorSchema = new mongoose.Schema();
+topContributorSchema.set('usePushEach', true);
 
 topContributorSchema.add({
 

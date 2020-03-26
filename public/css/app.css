@@ -352,7 +352,7 @@ li.disabled i {
 .center-category,
 .center-course,
 .w {
-    padding: 16px;
+    padding: 8px;
     position: absolute;
     border: 1px solid #3C8DBC;
     box-shadow: 2px 2px 19px #e0e0e0;
@@ -418,8 +418,8 @@ li.disabled i {
 }
 
 .center-category {
-    width: 160px !important;
-    height: 200px !important;
+    /*width: 160px !important;
+    height: 200px !important;*/
     display: block;
     background: #3C8DBC;
     color: #fff;
@@ -430,7 +430,8 @@ li.disabled i {
 
 .center-category h4 {
     font-size: 20px;
-    font-weight: 700
+    font-weight: 700;
+    margin-top: 0px;
 }
 
 [data-shape=Rectangle] {

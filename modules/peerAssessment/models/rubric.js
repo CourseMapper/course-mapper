@@ -14,6 +14,8 @@ var rubricSchema = new mongoose.Schema({
     courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'courses', required: true },
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
+}, {
+    usePushEach: true
 });
 
 rubricSchema.pre('save', function(next){

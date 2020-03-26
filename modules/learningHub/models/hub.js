@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var slug = require('slug');
 var hubSchema = new mongoose.Schema();
 var commentSchema = new mongoose.Schema();
-/**
- * comment Schema
- */
+hubSchema.set('usePushEach', true);
+commentSchema.set('usePushEach', true);
+
 commentSchema.add({
     commentId: {type: mongoose.Schema.Types.ObjectId},
     dateAdded: { type: Date },

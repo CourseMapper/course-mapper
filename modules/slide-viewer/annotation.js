@@ -17,6 +17,8 @@ var annotationPDFSchema = new mongoose.Schema({
   },
   pdfPageNumber: { type: Number },
   isPrivate: { type: Boolean }
+}, {
+  usePushEach: true
 });
 
 // Define indexes

@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var slug = require('slug');
 
 var votesSchema = new mongoose.Schema();
+votesSchema.set('usePushEach', true);
 
 votesSchema.add({
     voteType: { type: String },

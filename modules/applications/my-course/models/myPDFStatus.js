@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var myPDFStatusSchema = new mongoose.Schema();
+myPDFStatusSchema.set('usePushEach', true);
 
 myPDFStatusSchema.add({
     userId: {

@@ -27,7 +27,7 @@ module.exports = function (io) {
     var getUser = function () {
       var hasSession = socket && socket.request && socket.request.session && socket.request.session.passport;
       if (!hasSession) {
-        throw 'No user session found.'
+        throw 'No user session found.';
       }
       return socket.request.session.passport.user;
     };

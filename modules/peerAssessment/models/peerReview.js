@@ -44,6 +44,8 @@ var peerReviewSchema = new mongoose.Schema({
     },
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
+}, {
+    usePushEach: true
 });
 
 peerReviewSchema.pre('save', function(next) {

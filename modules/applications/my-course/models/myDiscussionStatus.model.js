@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 
 var myDiscussionStatusSchema = new mongoose.Schema();
+myDiscussionStatusSchema.set('usePushEach', true);
 
 myDiscussionStatusSchema.add({
     userId: {

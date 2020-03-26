@@ -13,6 +13,8 @@ var tabSchema = new mongoose.Schema({
     hasJsFiles: {type: Boolean, required: true, default: false},
     dateAdded: {type: Date},
     dateUpdated: {type: Date}
+}, {
+    usePushEach: true
 });
 
 tabSchema.pre('save', function (next) {

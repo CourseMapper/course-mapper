@@ -17,6 +17,8 @@ var tagSchema = new mongoose.Schema({
     totalRelation: {type: Number, default: 0},
     dateAdded: { type: Date },
     dateUpdated: { type: Date }
+}, {
+    usePushEach: true
 });
 
 tagSchema.methods.setSlug = function(tagString) {
