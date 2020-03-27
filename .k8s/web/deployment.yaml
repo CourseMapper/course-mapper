@@ -39,7 +39,7 @@ spec:
             path: /
             port: 8000
           exec:
-            command: ['ls', '/public/resources/']
+            command: ['ls', '/home/node/app/public/resources/']
           initialDelaySeconds: 5
           periodSeconds: 15
         env:
@@ -50,15 +50,15 @@ spec:
         - name: PORT
           value: "8000"
         volumeMounts:
-        - mountPath: /public/resources
+        - mountPath: /home/node/app/public/resources
           name: web
           subPath: resources
-        - mountPath: /public/pa
+        - mountPath: /home/node/app/public/pa
           name: web
           subPath: pa
-        - mountPath: /public/img
+        - mountPath: /home/node/app/public/img/courses
           name: web
-          subPath: img
+          subPath: img/courses
         resources:
           requests:
             memory: 110Mi

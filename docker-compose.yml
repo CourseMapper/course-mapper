@@ -11,7 +11,7 @@ services:
     volumes:
     - web-resources:/public/resources
     - web-pa:/public/pa
-    - web-img:/public/img
+    - web-img-courses:/public/img/courses
     ports:
     - 3000:3000
     depends_on:
@@ -36,5 +36,5 @@ services:
 volumes:
   web-resources:
   web-pa:
-  web-img:
+  web-img-courses:
   mongodb-data:

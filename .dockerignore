@@ -11,5 +11,7 @@
 /node_modules
 /public/bower/
 /public/partials/
+/public/resources/
+/public/img/courses/
 Dockerfile
 README.md
