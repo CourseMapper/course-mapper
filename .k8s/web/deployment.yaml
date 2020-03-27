@@ -35,9 +35,6 @@ spec:
             path: /
             port: 8000
         livenessProbe:
-          httpGet:
-            path: /
-            port: 8000
           exec:
             command: ['ls', '/home/node/app/public/resources/']
           initialDelaySeconds: 5
