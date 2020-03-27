@@ -3,7 +3,7 @@ services:
 
   web:
     build: .
-    image: inko/course-mapper
+    image: ${IMAGE_NAME_PREFIX:-inko/}course-mapper:${IMAGE_TAG:-latest}
     environment:
     - NODE_ENV=production
     - DATABASE=mongodb/course_mapper
@@ -18,7 +18,7 @@ services:
     - mongodb
 
   mongodb:
-    image: "mongo"
+    image: mongo
     volumes:
     - mongodb-data:/data/db
 

@@ -9,6 +9,7 @@ pipelines:
       script:
       - apk add --no-cache bash python-dev py-pip libffi-dev openssl-dev gcc libc-dev make
       - pip install --no-cache-dir docker-compose
+      - export IMAGE_TAG="${BITBUCKET_COMMIT}"
       - docker-compose build
       caches:
       - docker
