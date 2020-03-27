@@ -9,9 +9,9 @@ services:
     - DATABASE=mongodb/course_mapper
     - PORT=3000
     volumes:
-    - web-resources:/public/resources
-    - web-pa:/public/pa
-    - web-img-courses:/public/img/courses
+    - web-resources:/home/node/app/public/resources
+    - web-pa:/home/node/app/public/pa
+    - web-img-courses:/home/node/app/public/img/courses
     ports:
     - 3000:3000
     depends_on:
