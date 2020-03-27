@@ -16,6 +16,10 @@ spec:
       labels:
         component: web
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       initContainers:
       - name: wait-for-mongodb
         image: mongo
