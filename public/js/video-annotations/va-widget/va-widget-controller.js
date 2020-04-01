@@ -60,7 +60,7 @@ videoAnnotationsModule.controller('VaWidgetController', ['$scope', 'socket', '$r
         "isDefault": true,
         "isAuthor": true,
         "canEdit": true,
-        "isPrivate": true,
+        "isPrivate": false,
         "start": startTime,
         "end": endTime,
         "position": {

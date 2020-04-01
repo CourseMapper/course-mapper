@@ -59,4 +59,11 @@ treeNodesSchema.pre('update', function (next) {
     next();
 });
 
-module.exports = mongoose.model('treeNodes', treeNodesSchema);
+var TreeNodes = mongoose.model('treeNodes', treeNodesSchema);
+
+TreeNodes.ensureIndexes();
+// TreeNodes.on('index', function(err){
+//   console.log("TreeNodes: " + err);
+// });
+
+module.exports = TreeNodes;
