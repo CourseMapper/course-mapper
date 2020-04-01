@@ -103,7 +103,7 @@ router.get('/accounts/login/facebook',
         passport.authenticate('facebook', {
             scope: ['email', 'public_profile'],
             callbackURL: "/api/accounts/facebook/callback"
-        })(req, res, next)
+        })(req, res, next);
     }
 );
 
@@ -115,7 +115,7 @@ router.get('/accounts/login/facebook/course/:slug/:cid/:tab',
         passport.authenticate('facebook', {
             scope: ['email', 'public_profile'],
             callbackURL: "/api/accounts/facebook/callback"
-        })(req, res, next)
+        })(req, res, next);
     }
 );
 
@@ -127,7 +127,7 @@ router.get('/accounts/login/facebook/treeNode/:cid/:nid/:tab',
         passport.authenticate('facebook', {
             scope: ['email', 'public_profile'],
             callbackURL: "/api/accounts/facebook/callback"
-        })(req, res, next)
+        })(req, res, next);
     }
 );
 

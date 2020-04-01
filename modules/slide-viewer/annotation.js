@@ -22,11 +22,13 @@ var annotationPDFSchema = new mongoose.Schema({
 });
 
 // Define indexes
+// annotationPDFSchema.index(
+//     { renderedText: 'text' }, {
+//       renderedText: 'best_match_name',
+//       weights: { renderedText: 1 }
+//     });
 annotationPDFSchema.index(
-  { renderedText: 'text' }, {
-    renderedText: 'best_match_name',
-    weights: { renderedText: 1 }
-  });
+  { renderedText: 'text' });
 
 annotationPDFSchema.pre('save', function (next) {
   this.dateOfCreation = new Date();
@@ -34,5 +36,10 @@ annotationPDFSchema.pre('save', function (next) {
 });
 
 var AnnotationsPDF = mongoose.model('annotationPDF', annotationPDFSchema);
+
+AnnotationsPDF.ensureIndexes();
+// AnnotationsPDF.on('index', function(err){
+//   console.log("AnnotationsPDF: " + err);
+// });
 
 module.exports = AnnotationsPDF;

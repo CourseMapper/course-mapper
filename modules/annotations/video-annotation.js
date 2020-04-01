@@ -54,11 +54,13 @@ var VideoAnnotationSchema = new mongoose.Schema({
 });
 
 // Define indexes
+// VideoAnnotationSchema.index(
+//     { 'text': 'text' }, {
+//       'text': 'best_match_name',
+//       weights: { 'text': 1 }
+//     });
 VideoAnnotationSchema.index(
-  { 'text': 'text' }, {
-    'text': 'best_match_name',
-    'weights': { 'text': 1 }
-  });
+  { 'text': 'text' });
 
 VideoAnnotationSchema.pre('save', function (next) {
   var now = Date.now();
@@ -74,4 +76,11 @@ VideoAnnotationSchema.pre('update', function (next) {
   next();
 });
 
-module.exports = mongoose.model('VideoAnnotation', VideoAnnotationSchema);
+var AnnotationsVideo = mongoose.model('VideoAnnotation', VideoAnnotationSchema);
+
+AnnotationsVideo.ensureIndexes();
+// AnnotationsVideo.on('index', function(err){
+//   console.log("AnnotationsVideo: " + err);
+// });
+
+module.exports = AnnotationsVideo;
