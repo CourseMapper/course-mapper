@@ -23,7 +23,7 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http, 
     };
 
     var orderPopular = function (data) {
-        $scope.popular = _.take(_.sortBy(data, $scope.popularBy, 'desc'), 10);
+        $scope.popular = _.take(_.sortByOrder(data, $scope.popularBy, 'desc'), 10);
     };
 
     var search = function () {

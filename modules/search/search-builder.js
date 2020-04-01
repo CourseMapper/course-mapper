@@ -54,6 +54,7 @@ var SearchBuilder = function (term) {
     };
 
     this.build = function () {
+
         var findVideoAnnotations = VideoAnnotation.find(videoAnnotationArgs, sortByScore).lean().execAsync()
             .then(function (videoAnnotations) {
                 var promises = [];
@@ -92,12 +93,13 @@ var SearchBuilder = function (term) {
                         .then(function (count) {
                             var c = course;
                             c.favorited = count;
-                            //console.log(count);
+                            console.log(count);
                             return c;
                         }));
                 });
                 return Promise.all(promises);
             });
+
 
         var engines = {
             contentNodes: TreeNodes.find(contentNodeArgs, sortByScore).populate('courseId').lean().execAsync(),
@@ -116,7 +118,6 @@ var SearchBuilder = function (term) {
         _.each(searchableResources, function (category) {
             searchQuery[category] = engines[category];
         });
-
         return searchQuery;
     };
 };

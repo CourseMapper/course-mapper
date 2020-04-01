@@ -8,8 +8,8 @@
     "needActivation": false
   },
   "facebookAuth": {
-    "clientID": "2835993843159865",
-    "clientSecret": "bc842f972971b01c98b6e4f64a745a35",
+    "clientID": "random_id",
+    "clientSecret": "random_id",
     "callbackURL": "https://localhost:3000/api/accounts/facebook/callback"
   }
 }

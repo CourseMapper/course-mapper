@@ -37,14 +37,11 @@ var treeNodesSchema = new mongoose.Schema({
 });
 
 // Define indexes
-// treeNodesSchema.index(
-//     {name: 'text'}, {
-//         name: 'best_match_name',
-//         weights: {name: 1}
-//     }
-// );
 treeNodesSchema.index(
-    {name: 'text'}
+    {name: 'text'}, {
+        name: 'best_match_name',
+        weights: {name: 1}
+    }
 );
 
 treeNodesSchema.pre('save', function (next) {
@@ -61,11 +58,4 @@ treeNodesSchema.pre('update', function (next) {
     next();
 });
 
-var TreeNode = mongoose.model('treeNodes', treeNodesSchema);
-
-TreeNode.ensureIndexes();
-// TreeNode.on('index', function(err){
-//     console.log("TreeNode: " + err);
-// });
-
-module.exports = TreeNode;
+module.exports = mongoose.model('treeNodes', treeNodesSchema);
