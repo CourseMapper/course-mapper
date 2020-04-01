@@ -93,7 +93,7 @@ var SearchBuilder = function (term) {
                         .then(function (count) {
                             var c = course;
                             c.favorited = count;
-                            console.log(count);
+                            //console.log(count);
                             return c;
                         }));
                 });

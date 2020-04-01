@@ -14,40 +14,6 @@ var matchResult = function (title, description, type, link) {
     this.updated = '';
 }
 
-// parse the object to a search result
-var parseObject = function (collection, match) {
-
-    var result = null;
-    switch (collection) {
-        case 'contentNodes':
-            result = parseContentNode(match);
-            break;
-
-        case 'courses':
-            result = parseCourse(match);
-            break;
-
-        case 'videoAnnotations':
-            result = parseVideoAnnotation(match);
-            break;
-
-        case 'pdfAnnotations':
-            result = parsePdfAnnotation(match);
-            break;
-
-        case 'categories':
-            result = parseCategory(match);
-            break;
-    }
-
-    // Set the match score
-    if (result) {
-        result.score = match.score;
-    }
-
-    return result;
-};
-
 var parseCourse = function (course) {
     var title = course.name;
     var desc = course.smallDescription;
@@ -115,6 +81,40 @@ var parseCategory = function (cat) {
     return match;
 };
 
+// parse the object to a search result
+var parseObject = function (collection, match) {
+
+    var result = null;
+    switch (collection) {
+        case 'contentNodes':
+            result = parseContentNode(match);
+            break;
+
+        case 'courses':
+            result = parseCourse(match);
+            break;
+
+        case 'videoAnnotations':
+            result = parseVideoAnnotation(match);
+            break;
+
+        case 'pdfAnnotations':
+            result = parsePdfAnnotation(match);
+            break;
+
+        case 'categories':
+            result = parseCategory(match);
+            break;
+    }
+
+    // Set the match score
+    if (result) {
+        result.score = match.score;
+    }
+
+    return result;
+};
+
 var search = function (req, res, next) {
     // Require a search term
     var term = req.query.term;
@@ -158,11 +158,11 @@ var advancedSearch = function (req, res, next) {
                 var items = data[collectionType];
                 _.each(items, function (o) {
                     matches.push(parseObject(collectionType, o));
-                })
+                });
             }
 
             // Sort by score
-            var sorted = _.sortByOrder(matches, 'score', 'desc');
+            var sorted = _.sortBy(matches, 'score', 'desc');
             res.json(sorted);
         })
         .catch(function (err) {
@@ -191,11 +191,11 @@ var relevantSearch = function (req, res, next) {
                 var items = data[collectionType];
                 _.each(items, function (o) {
                     matches.push(parseObject(collectionType, o));
-                })
+                });
             }
 
             // Sort by score
-            var sorted = _.sortByOrder(matches, 'score', 'desc');
+            var sorted = _.sortBy(matches, 'score', 'desc');
             res.json(sorted);
         })
         .catch(function (err) {

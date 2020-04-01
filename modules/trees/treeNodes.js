@@ -37,12 +37,13 @@ var treeNodesSchema = new mongoose.Schema({
 });
 
 // Define indexes
-treeNodesSchema.index(
-    {name: 'text'}, {
-        name: 'best_match_name',
-        weights: {name: 1}
-    }
-);
+// treeNodesSchema.index(
+//     {name: 'text'}, {
+//         name: 'best_match_name',
+//         weights: {name: 1}
+//     }
+// );
+treeNodesSchema.index({name: 'text'});
 
 treeNodesSchema.pre('save', function (next) {
     var now = new Date();

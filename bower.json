@@ -22,7 +22,6 @@
     "tests"
   ],
   "dependencies": {
-    "https://raw.github.com/furf/jquery-ui-touch-punch/master/jquery.ui.touch-punch.min.js": "*",
     "angular": "~1.5.5",
     "angular-cookies": "~1.5.5",
     "angular-resource": "~1.5.5",

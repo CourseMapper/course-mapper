@@ -8,8 +8,8 @@
     "needActivation": false
   },
   "facebookAuth": {
-    "clientID": "random_id",
-    "clientSecret": "random_id",
-    "callbackURL": "https://localhost:3000/api/accounts/facebook/callback"
+    "clientID": "client_id",
+    "clientSecret": "client_secret",
+    "callbackURL": "https://course-mapper.sc.inko.cloud/api/accounts/facebook/callback"
   }
 }

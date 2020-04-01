@@ -24,11 +24,12 @@ categorySchema.add({
 });
 
 // Define indexes
-categorySchema.index(
-  { name: 'text' }, {
-    name: 'best_match_name',
-    weights: { name: 1 }
-  });
+// categorySchema.index(
+//   { name: 'text' }, {
+//     name: 'best_match_name',
+//     weights: { name: 1 }
+//   });
+categorySchema.index({ name: 'text' });
 
 categorySchema.methods.setSlug = function (catString) {
   this.slug = slug(catString);
@@ -49,5 +50,10 @@ categorySchema.pre('update', function (next) {
 });
 
 var Category = mongoose.model('categories', categorySchema);
+
+Category.ensureIndexes();
+// Category.on('index', function(err){
+//   console.log("Category: " + err);
+// });
 
 module.exports = Category;

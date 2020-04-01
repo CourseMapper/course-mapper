@@ -32,19 +32,24 @@ var courseSchema = new mongoose.Schema({
 });
 
 // Define indexes
+// courseSchema.index({
+//     name: 'text',
+//     description: 'text',
+//     smallDescription: 'text'
+//   },
+//   {
+//     name: 'best_match_name',
+//     weights: {
+//       name: 1,
+//       description: 0.6,
+//       smallDescription: 0.4
+//     }
+//   });
 courseSchema.index({
-    name: 'text',
-    description: 'text',
-    smallDescription: 'text'
-  },
-  {
-    name: 'best_match_name',
-    weights: {
-      name: 1,
-      description: 0.6,
-      smallDescription: 0.4
-    }
-  });
+      name: 'text',
+      description: 'text',
+      smallDescription: 'text'
+    });
 
 courseSchema.methods.setSlug = function (cString) {
   this.slug = slug(cString);
@@ -63,5 +68,10 @@ courseSchema.pre('save', function (next) {
 });
 
 var Course = mongoose.model('courses', courseSchema);
+
+Course.ensureIndexes();
+// Course.on('index', function(err){
+//   console.log("Course: " + err);
+// });
 
 module.exports = Course;
