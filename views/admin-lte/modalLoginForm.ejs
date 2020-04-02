@@ -11,18 +11,18 @@
                         <small>You have not logged in, please login to see this content</small>
 
                         <% include formLogin %>
-                        <br>
-                        <strong>OR</strong><br><br>
-                        <p class="help-block">Use your facebook account to login</p>
-                        <% if(typeof (isNode) != 'undefined'){ %>
-                        <facebook-button
-                                login-url="/api/accounts/login/facebook/treeNode/{{courseId}}/{{nodeId}}/{{currentTab}}">
-                        </facebook-button>
-                        <% } else { %>
-                        <facebook-button
-                                login-url="/api/accounts/login/facebook/course/{{course.slug}}/{{course._id}}/{{currentTab}}">
-                        </facebook-button>
-                        <% } %>
+<!--                        <br>-->
+<!--                        <strong>OR</strong><br><br>-->
+<!--                        <p class="help-block">Use your facebook account to login</p>-->
+<!--                        <% if(typeof (isNode) != 'undefined'){ %>-->
+<!--                        <facebook-button-->
+<!--                                login-url="/api/accounts/login/facebook/treeNode/{{courseId}}/{{nodeId}}/{{currentTab}}">-->
+<!--                        </facebook-button>-->
+<!--                        <% } else { %>-->
+<!--                        <facebook-button-->
+<!--                                login-url="/api/accounts/login/facebook/course/{{course.slug}}/{{course._id}}/{{currentTab}}">-->
+<!--                        </facebook-button>-->
+<!--                        <% } %>-->
                     </div>
                 </div>
             </div>

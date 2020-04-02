@@ -1059,3 +1059,7 @@ ul.tree {
 .tree li input:checked + ul > li {
     display: block;
 }
+
+hr.features {
+    border-top: 1px solid #3c8dbc;
+}
