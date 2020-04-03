@@ -52,6 +52,7 @@ app.controller('NewsfeedController', function ($scope, $rootScope, $filter, $htt
             });
         } else {
             $http.get('/api/newsfeed/cid/'+$scope.courseId).success(function (data) {
+                console.log(data);
                 $scope.newsfeedData = data.newsfeeds;
                 $scope.nfLength = data.newsfeeds.length;
             });

@@ -17,33 +17,38 @@
         <p class="reply" ng-bind-html="postContent | unsafe"></p>
     </div>
 
-    <div class="box-footer" ng-show="showControl">
-        <div class="replyControl"
-             ng-show="!isDeleted">
-            <div class="replyButton">
-                <a ng-show="showReplyButton" title="Reply" ng-click="replyAction()"
-                   class="btn btn-primary btn-xs cursor"> REPLY
+    <div class="box-footer" ng-show="showControl" style="display: flow-root;">
+        <div style="display: flow-root">
+            <div class="pull-left" ng-hide="source.isEditMode">
+                <a class="cursor" ng-show="showCommentingArea" ng-click="toggle = !toggle">
+                    {{!toggle ? ((comments === undefined || comments === null) ? 0 : comments.length) + ' comment(s)' : 'hide
+                    comments'}}
                 </a>
             </div>
+            <div class="replyControl pull-right"
+                 ng-show="!isDeleted">
+                <div class="replyButton">
+                    <a ng-show="showReplyButton" title="Reply" ng-click="replyAction()"
+                       class="btn btn-primary btn-xs cursor"> REPLY
+                    </a>
+                </div>
 
-            <div class="editReplyButton">
-                <a ng-show="showEditButton" title="Edit" ng-click="editAction()" class="btn btn-primary btn-xs">
-                    EDIT</a>
-            </div>
+                <div class="editReplyButton">
+                    <a ng-show="showEditButton" title="Edit" ng-click="editAction()" class="btn btn-primary btn-xs">
+                        EDIT</a>
+                </div>
 
-            <div class="deleteReplyButton">
-                <a ng-show="showDeleteButton"
-                   ng-click="deleteAction()"
-                   title="delete"
-                   class="cursor btn btn-danger btn-xs">DELETE</a>
+                <div class="deleteReplyButton">
+                    <a ng-show="showDeleteButton"
+                       ng-click="deleteAction()"
+                       title="delete"
+                       class="cursor btn btn-danger btn-xs">DELETE</a>
+                </div>
             </div>
         </div>
-
-        <a class="cursor" ng-show="showCommentingArea" ng-click="toggle = !toggle">
-            {{!toggle ? ((comments === undefined || comments === null) ? 0 : comments.length) + ' comment(s)' : 'hide
-            comments'}}
-        </a>
+        <div class="clearfix"></div>
         <article ng-show="toggle && showCommentingArea">
+            <br/>
             <div id="comment-box">
                 <div class="input-group input-group-sm">
                     <input placeholder="Write a comment..." type="text" ng-model="commentText" class="form-control">
