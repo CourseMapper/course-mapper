@@ -199,6 +199,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         rawText: $scope.replyRawText[id],
         author: $scope.currentUser.username,
         authorID: $scope.currentUser._id,
+        authorDisplayName: $scope.currentUser.displayName,
         pageNumber: $scope.currentPageNumber,
         numOfAnnotationZones: 0,
         pdfId: $scope.pdfFile._id,
@@ -282,6 +283,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         rawText: $scope.comment.rawText,
         author: $scope.currentUser.username,
         authorID: $scope.currentUser._id,
+        authorDisplayName: $scope.currentUser.displayName,
         pageNumber: $rootScope.annotationSubmitPage,
         tagNames: $scope.comment.tagNames,
         tagRelPos: $scope.comment.tagRelPos,
@@ -290,7 +292,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         annotationZones: $scope.annotationZones,
         numOfAnnotationZones: $scope.annotationZones.length,
         pdfId: $scope.pdfFile._id,
-        hasParent: false
+        hasParent: false,
+        isPrivate: $scope.comment.isPrivate
       }
     };
 
@@ -332,6 +335,7 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
         updateId: comment._id,
         author: $scope.currentUser.username,
         authorId: $scope.currentUser._id,
+        authorDisplayName: $scope.currentUser.displayName,
         rawText: $scope.editRawText[$scope.editMode],
         pageNumber: $scope.currentPageNumber,
         pdfId: $scope.pdfFile._id,
@@ -747,6 +751,8 @@ app.controller('CommentListController', function ($scope, $http, $rootScope, $sc
   };
 
   $scope.switchCommentSubmissionDisplay = function () {
+    $scope.comment.isPrivate = false;
+    $scope.comment.rawText = "";
     $scope.writeCommentMode = true;
   };
 

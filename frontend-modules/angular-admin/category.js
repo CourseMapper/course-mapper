@@ -94,7 +94,7 @@ admin.controller('categoryFormController', function ($scope, $http) {
             }
         })
             .success(function (data) {
-                console.log(data);
+                //console.log(data);
                 if (data.result) {
                     // if successful, bind success message to message
                     $scope.newCategory = data.category;
@@ -126,7 +126,7 @@ admin.controller('tagFormController', function ($scope, $http) {
             }
         })
             .success(function (data) {
-                console.log(data);
+                //console.log(data);
                 if (data.result) {
                     // if successful, bind success message to message
                     $scope.newTag = data.tag;
@@ -157,7 +157,7 @@ admin.controller('courseFormController', function ($scope, $http) {
             }
         })
             .success(function (data) {
-                console.log(data);
+                //console.log(data);
                 if (data.result) {
                     // if successful, bind success message to message
                     $scope.newCourse = data.course;

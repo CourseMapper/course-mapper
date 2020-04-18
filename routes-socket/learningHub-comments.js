@@ -24,7 +24,7 @@ module.exports = function (io) {
         socket.on('comments:post', async(function (params) {
             try {
                 var post = await(Controller.addCommentAsync(params, getUser()));
-                console.log("waiting to emit");
+                //console.log("waiting to emit.");
                 await(emitCommentsUpdatedAsync(post));
             } catch (e) {
                 console.log('Error posting comment: ' + e);

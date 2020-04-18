@@ -85,4 +85,25 @@ topContent.prototype.getTopLinkNode = function (error, params, done) {
 
 };
 
+topContent.prototype.getTopExtResourcesNode = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['courseId'], error)) {
+        return;
+    }
+
+    params.courseId = mongoose.Types.ObjectId(params.courseId);
+    params.contentType = "node";
+    params.countType = "ext-resource";
+    params.isDeleted = false;
+
+    TopContent.findOne(params).populate('nodeId', '_id name').sort('-count').exec(function(err, docs){
+        if (err){
+            error(err);
+        } else {
+            done(docs);
+
+        }
+    });
+
+};
+
 module.exports = topContent;

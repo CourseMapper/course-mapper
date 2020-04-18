@@ -13,7 +13,8 @@ app.controller('NewsfeedNodeController', function ($scope, $rootScope, $filter, 
 
     $scope.nfNodeType = [
         {"name": "content node"},
-        {"name": "link"},
+        // {"name": "link"},
+        {"name": "external resource"},
         {"name": "pdf annotation"},
         {"name": "video annotation"},
         {"name": "vote"}

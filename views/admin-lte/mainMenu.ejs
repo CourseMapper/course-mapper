@@ -29,7 +29,7 @@
                         </span>
 
                         <div ng-show="result.contentNodes.length > 0">
-                            <h4>Content:</h4>
+                            <h5>Content:</h5>
                             <ul class="list-unstyled">
                                 <li ng-repeat="content in result.contentNodes">
                                     <a ng-if="content.type=='contentNode'"
@@ -41,7 +41,7 @@
                         </div>
 
                         <div ng-show="result.contentNodes.length > 0">
-                            <h4>Topics:</h4>
+                            <h5>Topics:</h5>
                             <ul class="list-unstyled">
                                 <li ng-repeat="content in result.contentNodes">
                                     <a ng-if="content.type=='subTopic'"
@@ -53,7 +53,7 @@
                         </div>
 
                         <div ng-show="result.courses.length > 0">
-                            <h4>Courses:</h4>
+                            <h5>Courses:</h5>
                             <ul class="list-unstyled">
                                 <li ng-repeat="course in result.courses">
                                     <a href="/course/{{course.slug}}/#/cid/{{course._id}}?tab=preview">
@@ -64,7 +64,7 @@
                         </div>
 
                         <div ng-show="result.videoAnnotations.length > 0">
-                            <h4>Video Annotations:</h4>
+                            <h5>Video Annotations:</h5>
                             <ul class="list-unstyled">
                                 <li ng-repeat="va in result.videoAnnotations">
                                     <a href="/treeNode/{{va.nodeId}}/#/cid/{{va.courseId}}/nid/{{va.nodeId}}?tab=video#{{va._id}}">
@@ -75,7 +75,7 @@
                         </div>
 
                         <div ng-show="result.pdfAnnotations.length > 0">
-                            <h4>PDF Annotations:</h4>
+                            <h5>PDF Annotations:</h5>
                             <ul class="list-unstyled">
                                 <li ng-repeat="pa in result.pdfAnnotations">
                                     <a href="/treeNode/{{pa.nodeId}}/#/cid/{{pa.courseId}}/nid/{{pa.nodeId}}?tab=pdf&slidePage={{pa.pdfPageNumber}}">
@@ -86,11 +86,22 @@
                         </div>
 
                         <div ng-show="result.categories.length > 0">
-                            <h4>Categories:</h4>
+                            <h5>Categories:</h5>
                             <ul class="list-unstyled">
                                 <li ng-repeat="category in result.categories">
                                     <a href="/courses/#/category/{{category.slug}}">
                                         {{category.name | cut:true:30:' ...'}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div ng-show="result.extResources.length > 0">
+                            <h5>External Resources:</h5>
+                            <ul class="list-unstyled">
+                                <li ng-repeat="extRes in result.extResources">
+                                    <a href="/treeNode/{{extRes.contentId}}/#/cid/{{extRes.courseId}}/nid/{{extRes.contentId}}?tab=learningHub&hid={{extRes._id}}">
+                                        {{extRes.title | cut:true:30:' ...'}}
                                     </a>
                                 </li>
                             </ul>
@@ -146,6 +157,11 @@
                                 About CourseMapper
                             </a>
                         </li>
+                        <li>
+                            <a href="/privacy">
+                                Privacy Policy
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -162,6 +178,11 @@
                         <li>
                             <a href="/about">
                                 About CourseMapper
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/privacy">
+                                Privacy Policy
                             </a>
                         </li>
                         <li ng-show="user">

@@ -4,7 +4,7 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
      */
     $scope.posts = [];
     $scope.personalPosts=[];
-    console.log("here");
+    //console.log("here");
     $scope.currentSpace= 'Public';
     $scope.query='';
     $scope.enabled = false;
@@ -48,7 +48,7 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
             $scope.publicView = $scope.postsSlice($scope.posts, $scope.currentPagePublic);
         }).error(function(data){
             console.log(data);
-        })
+        });
     };
 
     /**
@@ -69,7 +69,7 @@ app.controller('aggregationController',['$scope','$sce','$http', function($scope
 
         }).error(function(data){
             console.log(data);
-        })
+        });
     };
 
     /**

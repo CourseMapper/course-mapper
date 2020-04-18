@@ -106,7 +106,7 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
         }
         var myDataUserEnrolled = {
             id: 1,
-            name: 'Enrolled User',
+            name: 'Enrolled Users',
             type: 'spline',
             data: tempArray
         };
@@ -139,7 +139,7 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
 
         var myDataPdfUpload = {
             id: 2,
-            name: 'Pdf',
+            name: 'PDF Files',
             type: 'spline',
             data: tempArray
         };
@@ -169,7 +169,7 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
         }
         var myDataVideoUpload = {
             id: 3,
-            name: 'Video',
+            name: 'Videos',
             type: 'spline',
             data: tempArray
         };
@@ -199,7 +199,7 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
         }
         var myDataDiscussion = {
             id: 4,
-            name: 'Discussion',
+            name: 'Discussion Topics',
             type: 'spline',
             data: tempArray
         };
@@ -300,7 +300,7 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
 
         var myDataPdfAnno = {
             id: 1,
-            name: 'Pdf Annotation',
+            name: 'PDF Annotations',
             type: 'spline',
             data: tempArray
         };
@@ -329,7 +329,7 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
         }
         var myDataVideoAnno = {
             id: 2,
-            name: 'Video Annotation',
+            name: 'Video Annotations',
             type: 'spline',
             data: tempArray
         };
@@ -338,8 +338,37 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
 
     });
 
-    //get submitted links history for one year range max
-    $http.get('/api/course-analytics/course-history/links/'+$scope.courseId).success(function(result){
+    // //get submitted links history for one year range max
+    // $http.get('/api/course-analytics/course-history/links/'+$scope.courseId).success(function(result){
+    //     var tempArray = [];
+    //     var temp ={};
+    //     $scope.resultLinks = result.links;
+    //     $scope.resultLinks.forEach(function(r){
+    //         var year = new Date(r.dateAdded).getFullYear();
+    //         var mth = new Date(r.dateAdded).getMonth();
+    //         var day = new Date(r.dateAdded).getDate();
+    //         var objectName = Date.UTC(year, mth, day);
+    //         if (typeof temp[objectName] != "undefined")
+    //             temp[objectName].value = temp[objectName].value + 1;
+    //         else
+    //             temp[objectName] = {data: objectName, value: 1};
+    //     });
+    //     for (var index in temp) {
+    //         var val = temp[index];
+    //         tempArray.push([val.data, val.value]);
+    //     }
+    //     var myDataLink = {
+    //         id: 3,
+    //         name: 'Link',
+    //         type: 'spline',
+    //         data: tempArray
+    //     };
+    //
+    //     $scope.chartNodeConfig.series.push(myDataLink);
+    //
+    // });
+
+    $http.get('/api/course-analytics/course-history/external-resources/'+$scope.courseId).success(function(result){
         var tempArray = [];
         var temp ={};
         $scope.resultLinks = result.links;
@@ -359,7 +388,7 @@ angular.module('HistoryAnalytics', ['chart.js', 'highcharts-ng'])
         }
         var myDataLink = {
             id: 3,
-            name: 'Link',
+            name: 'External Resources',
             type: 'spline',
             data: tempArray
         };

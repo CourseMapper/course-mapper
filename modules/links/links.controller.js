@@ -131,7 +131,6 @@ NodeLinks.prototype.addPost = function (error, params, success) {
             return;
         }
 
-        Plugin.doAction('onAfterLinkCreated', newPost);
         success(newPost);
     });
 };

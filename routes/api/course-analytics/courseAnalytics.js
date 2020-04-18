@@ -249,6 +249,24 @@ router.get('/course-history/links/:courseId', function (req, res, next){
     );
 });
 
+router.get('/course-history/external-resources/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new CourseHistory();
+    ch.getHistoryExtResources (
+        function error (err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (links) {
+            res.status(200).json({result:true, links: links})
+        }
+    );
+});
+
 router.get('/top-content/pdf-annotation/:courseId', function (req, res, next){
     if (!req.user) {
         return res.status(401).send('Unauthorized');
@@ -299,6 +317,24 @@ router.get('/top-content/link-node/:courseId', function (req, res, next){
         },
         function success (topLinkNode) {
             res.status(200).json({result:true, topLinkNode:topLinkNode})
+        }
+    );
+});
+
+router.get('/top-content/external-resource-node/:courseId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var tc = new TopContent();
+    tc.getTopExtResourcesNode (
+        function error (err) {
+            res.status(200).json({result:false, message:err})
+        },
+        {
+            courseId:mongoose.Types.ObjectId(req.params.courseId)
+        },
+        function success (data) {
+            res.status(200).json({result:true, topExtResourcesNode:data})
         }
     );
 });

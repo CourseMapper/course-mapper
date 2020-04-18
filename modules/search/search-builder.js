@@ -12,6 +12,7 @@ var Categories = require('../../modules/catalogs/categories');
 var Resources = require('../../modules/trees/resources');
 var TreeNodes = require('../../modules/trees/treeNodes');
 var Favorites = require('../../modules/favorites/favorite-courses');
+var ExtResources = require('../../modules/learningHub/models/hub');
 
 var SearchBuilder = function (term) {
 
@@ -22,6 +23,7 @@ var SearchBuilder = function (term) {
     var categoryArgs = {$text: {$search: term}};
     var videoAnnotationArgs = {$text: {$search: term}};
     var pdfAnnotationArgs = {$text: {$search: term}};
+    var extResourcesArgs = {$text: {$search: term}};
 
     var searchableResources = [];
     var isNetworkEnabled = false;
@@ -34,6 +36,7 @@ var SearchBuilder = function (term) {
         pdfAnnotationArgs.authorID = ownerId;
         courseArgs.createdBy = ownerId;
         contentNodeArgs.createdBy = ownerId;
+        extResourcesArgs.userId = ownerId;
         return this;
     };
 
@@ -100,13 +103,23 @@ var SearchBuilder = function (term) {
                 return Promise.all(promises);
             });
 
+        var findExtResources = ExtResources.posts.find(extResourcesArgs, sortByScore).lean().execAsync()
+            .then(function (extResources) {
+                var promises = [];
+                _.each(extResources, function (extResource) {
+                     promises.push(extResource);
+                });
+                return Promise.all(promises);
+            });
+
 
         var engines = {
             contentNodes: TreeNodes.find(contentNodeArgs, sortByScore).populate('courseId').lean().execAsync(),
             courses: findCourses,
             videoAnnotations: findVideoAnnotations,
             pdfAnnotations: findPdfAnnotations,
-            categories: Categories.find(categoryArgs, sortByScore).lean().execAsync()
+            categories: Categories.find(categoryArgs, sortByScore).lean().execAsync(),
+            extResources: findExtResources
         };
 
         if (!searchableResources) {

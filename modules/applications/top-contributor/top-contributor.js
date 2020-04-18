@@ -420,8 +420,8 @@ var topContributorListener = {
 
     },
 
-    onAfterLearningHubLinkCreated: function (newLink) {
-        LearningHub.findOne({_id: newLink._id})
+    onAfterLearningHubLinkCreated: function (newExtRes) {
+        LearningHub.posts.findOne({_id: newExtRes._id})
             .exec(function (err, doc) {
                 var userId = doc.userId;
                 if (doc) {
@@ -502,7 +502,7 @@ var topContributorListener = {
 
     onAfterLearningHubLinkDeleted : function (deleteLink, user) {
         var userId = user._id;
-        LearningHub.findOne({_id: deleteLink.linkId})
+        LearningHub.posts.findOne({postId: deleteLink.postId})
             .exec(function (err, doc) {
                 if (doc) {
                     var contentId = doc.contentId;

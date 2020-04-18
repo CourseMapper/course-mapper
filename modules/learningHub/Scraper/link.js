@@ -22,7 +22,7 @@ Link.prototype.getInfo=function(url,callback){
     result.url=url;
     ogp.getInfo(url,function(data) {
         if (data.og) {
-            console.log("inside");
+            //console.log("inside");
             if (data.og.title) {
                 result.title = data.og.title;
 

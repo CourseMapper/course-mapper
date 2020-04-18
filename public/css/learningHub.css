@@ -265,3 +265,11 @@ i {
     width : 100%;
     height: 300px;
 }
+
+.box-footer {
+    background-color: transparent;
+}
+
+.ext-res-highlight {
+    background-color: #cfe0ff;
+}

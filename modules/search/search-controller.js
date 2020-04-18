@@ -81,6 +81,15 @@ var parseCategory = function (cat) {
     return match;
 };
 
+var parseExtResources = function (er) {
+    var title = er.title;
+    var desc = er.description;
+    var type = 'extResources';
+    var link = '/treeNode/' + er.contentId + '/#/cid/' + er.courseId + '/nid/' + er.contentId + '?tab=learningHub&hid=' + er._id;
+
+    var match = new matchResult(title, desc, type, link);
+    return match;
+};
 // parse the object to a search result
 var parseObject = function (collection, match) {
 
@@ -104,6 +113,10 @@ var parseObject = function (collection, match) {
 
         case 'categories':
             result = parseCategory(match);
+            break;
+
+        case 'extResources':
+            result = parseExtResources(match);
             break;
     }
 
@@ -151,7 +164,6 @@ var advancedSearch = function (req, res, next) {
 
     Promise.props(query)
         .then(function (data) {
-
             // Flatten items to a single dimensional array
             var matches = [];
             for (var collectionType in data) {
@@ -160,7 +172,6 @@ var advancedSearch = function (req, res, next) {
                     matches.push(parseObject(collectionType, o));
                 });
             }
-
             // Sort by score
             var sorted = _.sortBy(matches, 'score', 'desc');
             res.json(sorted);

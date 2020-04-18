@@ -18,7 +18,8 @@ app.controller('SearchBoxController', function ($scope, $http, $location, $rootS
                 r.courses.length > 0 ||
                 r.videoAnnotations.length > 0 ||
                 r.pdfAnnotations.length > 0 ||
-                r.contentNodes.length > 0
+                r.contentNodes.length > 0 ||
+                r.extResources.length > 0
             );
     };
 

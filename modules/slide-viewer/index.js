@@ -1,4 +1,5 @@
 var AnnotationsPDF = require('./annotation');
+var UserModel = require('../accounts/users');
 var config = require('config');
 var passport = require('passport');
 var mongoose = require('mongoose');
@@ -77,6 +78,7 @@ Comment.prototype.submitReplyAnnotation = function (err, params, done) {
             renderedText: renderedText,
             author: params.author,
             authorID: params.authorID,
+            authorDisplayName: params.authorDisplayName,
             pdfId: params.pdfId,
             pdfPageNumber: params.pageNumber,
             hasParent: params.hasParent,
@@ -117,9 +119,11 @@ Comment.prototype.submitFirstLevelAnnotation = function (err, params, done) {
                     renderedText: renderedText,
                     author: params.author,
                     authorID: params.authorID,
+                    authorDisplayName: params.authorDisplayName,
                     pdfId: params.pdfId,
                     pdfPageNumber: params.pageNumber,
-                    hasParent: params.hasParent
+                    hasParent: params.hasParent,
+                    isPrivate: params.isPrivate
                 });
 
 

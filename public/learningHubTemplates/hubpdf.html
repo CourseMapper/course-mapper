@@ -1,4 +1,4 @@
-<div class="box box-default pdf-box">
+<div class="{{'box box-default pdf-box' + (vm.highlight == vm.post.postId ? ' ext-res-highlight':'')}}">
     <div class="box-header pdf-header">
         <div class="row">
             <div class="col-xs-1 text-center icon pdf-icon"><i class="fa   fa-file-pdf-o fa-2x"></i></div>
@@ -30,7 +30,7 @@
     <div class="box-body pdf-body">
         <div class="row">
             <div class="col-xs-1" ng-show="!vm.space">
-                <voting vote-type="link" vote-type-id={{vm.post.postId}} vote-value="" ng-show="!pa"></voting>
+                <voting vote-type="external resource" vote-type-id={{vm.post.postId}} vote-value="" ng-show="!pa"></voting>
             </div>
             <div class="col-xs-11 text-center pdf-wrapper">
                 <iframe src="{{vm.post.url | trustUrl}}" scrolling="no" frameborder="0" width="100%" height="500" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>

@@ -1063,3 +1063,29 @@ ul.tree {
 hr.features {
     border-top: 1px solid #3c8dbc;
 }
+
+.top-content .info-box-icon,
+.balance-popup .info-box-icon
+{
+    background-color: transparent;
+}
+
+.balance-popup{
+    background-color: #f2fcff;
+    border-radius: 4px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    border: 1px solid rgba(0, 0, 0, .15);
+}
+
+.balance-popup .progress {
+    background: #e4e4e4;
+    height: 3px;
+}
+
+/*.balance-popup .progress .progress-bar {*/
+/*    background: #337ab7;*/
+/*}*/
+
+.top-content .progress-description {
+    color: #999;
+}

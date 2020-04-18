@@ -205,7 +205,7 @@ hubcontroller.prototype.edit = function (body, user , success, error) {
             if (err) {
                 error(err);
             } else {
-                Plugin.doAction('onAfterLinkEdited', body, user);
+                Plugin.doAction('onAfterLearningHubLinkEdited', body, user);
                 success("edited");
             }
         }
@@ -251,7 +251,7 @@ hubcontroller.prototype.addPersonal = function (error, params, success) {
         image: params.image ? params.image : null,
         embedHtml: params.embedHtml ? params.embedHtml : null,
         description: params.description ? params.description : null,
-        dateAdded: new Date,
+        dateAdded: new Date(),
         tags: params.tags
     };
     posts.findOneAndUpdate(
@@ -410,15 +410,23 @@ hubcontroller.prototype.addCommentAsync = async(function (params, user) {
     if (!post) {
         return;
     }
-    var comment = {
+    var comment = new agg.comments({
         text: commentText,
         author: user.username || 'Unknown',
         authorId: user._id,
         authorDisplayName: user.displayName || user.username || 'Unknown'
-    };
+    });
     post.comments.push(comment);
 
-    await(post.save());
+    //await(post.save());
+
+    await(post.save(function (err) {
+        if (err) {
+            return;
+        } else {
+            Plugin.doAction('onAfterLearningHubCommentAdded', post, comment);
+        }
+    }));
     return post;
 });
 
