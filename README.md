@@ -61,4 +61,5 @@ npm test
 
 # Start web app
 ./bin/www
+or nodemon
 ```
