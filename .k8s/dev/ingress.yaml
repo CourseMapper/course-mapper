@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: web
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    description: Course Mapper (dev)
+spec:
+  rules:
+  - host: test-course-mapper.sc.inko.cloud
+    http:
+      paths:
+      - backend:
+          serviceName: web
+          servicePort: 8000
+  tls:
+  - hosts:
+    - test-course-mapper.sc.inko.cloud
+    # Workaround for old Kustomize
+    secretName: course-mapper-tls-crt-dev

@@ -4,6 +4,9 @@ kind: Kustomization
 bases:
 - ../base
 
+resources:
+- ingress.yaml
+
 namespace:  sc
 namePrefix: soco-
 

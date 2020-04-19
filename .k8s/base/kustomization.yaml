@@ -16,7 +16,6 @@ vars:
 resources:
 - web/deployment.yaml
 - web/service.yaml
-- web/ingress.yaml
 - web/pvc.yaml
 - mongodb/deployment.yaml
 - mongodb/service.yaml

@@ -1,9 +1,0 @@
-- op:    replace
-  path:  /metadata/annotations/description
-  value: Course Mapper (dev)
-- op:    replace
-  path:  /spec/rules/0/host
-  value: test-course-mapper.sc.inko.cloud
-- op:    replace
-  path:  /spec/tls/0/hosts/0
-  value: test-course-mapper.sc.inko.cloud

@@ -4,6 +4,9 @@ kind: Kustomization
 bases:
 - ../base
 
+resources:
+- ingress.yaml
+
 namespace:  sc
 namePrefix: soco-
 nameSuffix: -dev
@@ -17,11 +20,3 @@ commonAnnotations:
 images:
 - name: inko/course-mapper
   newTag: dev
-
-patchesJson6902:
-- target:
-    group: networking.k8s.io
-    version: v1beta1
-    kind: Ingress
-    name: web
-  path: ingress.patch.yaml
