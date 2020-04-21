@@ -1,7 +1,5 @@
 # Course Mapper
 
-[![Build Status](https://travis-ci.com/CourseMapper/course-mapper.svg?branch=dev)](https://travis-ci.com/CourseMapper/course-mapper)
-
 ## Run via docker-compose
 
 To run the default stack using images from Docker Hub:
@@ -61,4 +59,5 @@ npm test
 
 # Start web app
 ./bin/www
+or nodemon
 ```

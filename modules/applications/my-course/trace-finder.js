@@ -15,6 +15,7 @@ var VideoAnnotation = require('../../../modules/annotations/video-annotation');
 var PdfAnnotation = require('../../../modules/slide-viewer/annotation');
 var WatchJournal = require('../../../modules/applications/my-course/models/myVideoStatus.model');
 var Links = require('../../../modules/links/models/links');
+var ExtResources = require('../../../modules/learningHub/models/hub');
 
 var TraceFinder = function () {
   this.findAsync = function (user) {
@@ -25,6 +26,14 @@ var TraceFinder = function () {
         query.createdBy = user._id;
       }
       return Links.find(query).count().exec();
+    };
+
+    var countExtResourceAsync = function (node, user) {
+      var query = {contentId: node._id, isDeleted: false};
+      if (user) {
+        query.userId = user._id;
+      }
+      return ExtResources.posts.find(query).count().exec();
     };
 
     var countAnnotationsAsync = function (resource, user) {
@@ -63,7 +72,9 @@ var TraceFinder = function () {
             node.totalAnnotations = totalAnnotations;
             node.userAnnotations = userAnnotations;
             node.totalLinks = await(countLinksAsync(node));
-            node.userLinks = await(countLinksAsync(node, user))
+            node.userLinks = await(countLinksAsync(node, user));
+            node.userExtResources = await(countExtResourceAsync(node, user));
+            node.totalExtResources = await(countExtResourceAsync(node));
           }
         }
 

@@ -7,6 +7,7 @@ var PdfAnnotation = require('../../slide-viewer/annotation.js');
 var VideoAnnotation = require('../../annotations/video-annotation.js');
 var SubTopics = require('../../trees/treeNodes.js');
 var Links = require('../../links/models/links.js');
+var ExtResources = require('../../learningHub/models/hub.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
@@ -74,6 +75,18 @@ nodeHistory.prototype.getHistoryLinks = function (error, params, done) {
     }
 
     Links.find({contentNode: params.treeNodeId, isDeleted: false, dateAdded: {$gte: lastYear}}).sort('dateAdded').exec(function (err, res){
+        if (err) error(err);
+        else {done(res)}
+    });
+
+};
+
+nodeHistory.prototype.getHistoryExtResources = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['treeNodeId'], error)) {
+        return;
+    }
+
+    ExtResources.posts.find({contentId: mongoose.Types.ObjectId(params.treeNodeId), isDeleted: false, dateAdded: {$gte: lastYear}}).sort('dateAdded').exec(function (err, res){
         if (err) error(err);
         else {done(res)}
     });

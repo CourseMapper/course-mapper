@@ -82,7 +82,7 @@
       "icon":"/img/appPlaceholder.png"
     },
     {
-      "name": "Content Node Activity History",
+      "name": "Content Node Activities History",
       "location": "course-analytics",
       "description": "Analytics bar graph to show the history of activity in all of the nodes in this course",
       "entryPoint": "/course-analytics/ca-node-history-analytics",

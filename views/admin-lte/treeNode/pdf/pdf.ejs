@@ -76,16 +76,23 @@
                             <!-- Will be filled when annotation zones are created -->
                             <div id = "annotationZoneSubmitList">
                             </div>
+                            <br>
+                            <div class = "form-control">
+                                <label>
+                                    <input type = "checkbox" ng-model = "comment.isPrivate">
+                                    Private annotation
+                                </label>
+                            </div>
 
-                            <div id = "annZoneListOld"
-                            >
-
+                            <div id = "annZoneListOld">
                                 <div id = "errorResponseAreaforTagIds" class = "errorResponseAreaforTags"
                                      ng-show = "tagNameErrors">
                                     <div id = "tagErrorList" ng-repeat = "(key, item) in tagNameErrors">
                                         The annotation zone with the name "{{item.name}}" is invalid: {{item.text}}
                                     </div>
                                 </div>
+
+
 
                                 <!--<div>
 
@@ -165,7 +172,7 @@
                              ng-repeat = "comment in comments | filter:(showPersonal === true ? {authorId: currentUser._id} : '' )"
                              ng-cloak>
                             <div class = "col-xs-11">
-                                <pdf-comment posted-by = "{{comment.author}}"
+                                <pdf-comment posted-by = "{{comment.authorDisplayName || comment.author}}"
                                              post-id = "{{comment._id}}"
                                              posted-date = "{{comment.date}}"
                                              post-content = "comment.html"
@@ -177,7 +184,7 @@
                                              delete-action = "deleteCommentById(comment.id)"
                                              show-edit-button = "true"
                                              edit-action = "changeEditMode(comment._id, true);setEditRawText(comment._id,comment.html);"
-                                             author-clickable = "true"
+                                             author-clickable = "false"
                                              author-click-action = "authorLabelClick(comment.author)"
                                              ng-hide = "editMode == comment._id"
                                              show-commenting-area = "true"
@@ -208,7 +215,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="box-footer" style="display: flow-root;">
+                                    <div class = "box-footer" style = "display: flow-root;">
                                         <div class = "pull-right">
                                             <button class = "btn btn-primary btn-xs" ng-click = "submitEdit(comment)">
                                                 SAVE

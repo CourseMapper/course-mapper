@@ -9,7 +9,8 @@ var newsfeedSchema = new mongoose.Schema({
     actionSubject: {type: String},
     actionType: {type: String},
     actionName: {type: String},
-    dateAdded: {type: Date}
+    dateAdded: {type: Date},
+    isSubjectDeleted: {type: Boolean, default: false}
   }, {
         usePushEach: true
     }

@@ -1,5 +1,4 @@
-
-<div class="box box-default video-box">
+<div class="{{'box box-default video-box' + (vm.highlight == vm.post.postId ? ' ext-res-highlight':'')}}">
     <div class="box-header video-header">
         <div class="row">
             <div class="col-xs-1 text-center icon video-icon"><i class="fa fa-file-video-o fa-2x"></i></div>
@@ -31,7 +30,7 @@
     <div class="box-body video-body">
         <div class="row">
             <div class="col-xs-1" ng-show="!vm.space">
-                <voting vote-type="link" vote-type-id={{vm.post.postId}} vote-value="" ng-show="!pa"></voting>
+                <voting vote-type="external resource" vote-type-id={{vm.post.postId}} vote-value="" ng-show="!pa"></voting>
             </div>
             <div class="video col-md-7 col-xs-10">
                 <span class="voting"></span>

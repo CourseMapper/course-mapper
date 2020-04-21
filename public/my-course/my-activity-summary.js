@@ -17,7 +17,7 @@ angular.module('MyProgress', ['chart.js'])
             $scope.courseEnrolled = data.courses.enrolled;
         });
 
-        $scope.contentNodeActivityLabels = ["Link Submitted", "Pdf Annotations", "Video Annotations"];
+        // $scope.contentNodeActivityLabels = ["Link Submitted", "PDF Annotations", "Video Annotations"];
         /*$http.get('/api/my-course/newsfeed').success(function (data) {
             var lcAll = $filter('filter')(data.newsfeed, { actionSubject: "link" });
             $scope.linkCount = $filter('filter')(lcAll, {actionType: "added"}).length;
@@ -28,11 +28,15 @@ angular.module('MyProgress', ['chart.js'])
             $scope.contentNodeActivityData = [$scope.linkCount, $scope.pdfAnnoCount, $scope.videoAnnoCount ];
 
         });*/
+        $scope.contentNodeActivityLabels = ["PDF Annotations", "Video Annotations", "External Resources Added"];
         $http.get('/api/my-course/my-node-activity-status').success(function (data) {
             var myNodeActivity  = data.myNodeActivityStatus;
 
             var linkAll = $filter('filter')(myNodeActivity, {type: "link"});
             $scope.linkCount = $filter('filter')(linkAll, {isDeleted: false}).length;
+
+            var extResourcesAll = $filter('filter')(myNodeActivity, {type: "ext-resource"});
+            $scope.extResourcesCount = $filter('filter')(extResourcesAll, {isDeleted: false}).length;
 
             var pdfAnnoAll = $filter('filter')(myNodeActivity, {type: "pdf annotation"});
             $scope.pdfAnnoCount = $filter('filter')(pdfAnnoAll, {isDeleted: false}).length;
@@ -40,10 +44,11 @@ angular.module('MyProgress', ['chart.js'])
             var videoAnnoAll = $filter('filter')(myNodeActivity, {type: "video annotation"});
             $scope.videoAnnoCount = $filter('filter')(videoAnnoAll, {isDeleted: false}).length;
 
-            $scope.contentNodeActivityData = [$scope.linkCount, $scope.pdfAnnoCount, $scope.videoAnnoCount ];
+            //$scope.contentNodeActivityData = [$scope.linkCount, $scope.pdfAnnoCount, $scope.videoAnnoCount];
+            $scope.contentNodeActivityData = [$scope.pdfAnnoCount, $scope.videoAnnoCount, $scope.extResourcesCount];
         });
 
-        $scope.courseActivityLabels = ["Discussion Started", "Pdf Added", "Video Added"];
+        $scope.courseActivityLabels = ["PDF Added", "Video Added", "Discussion Started"];
         $http.get('/api/my-course/resources').success(function (data) {
             var courseResources = data.resources;
             var filtered;
@@ -59,7 +64,7 @@ angular.module('MyProgress', ['chart.js'])
                 var filtered;
                 filtered = $filter('filter')(myDiscussionStatus, {isDeleted: false});
                 $scope.myDiscussionStatus = filtered.length;
-                $scope.courseActivityData = [ $scope.myDiscussionStatus, $scope.pdfCount, $scope.videoCount];
+                $scope.courseActivityData = [ $scope.pdfCount, $scope.videoCount, $scope.myDiscussionStatus];
             });
         });
 

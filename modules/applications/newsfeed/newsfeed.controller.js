@@ -71,7 +71,8 @@ newsfeedSystem.prototype.getNewsfeedNode = function (error, courseId, nodeId, su
       $lte: today,
       $gte: lastThirtyDays
     },
-    actionSubject: {$in: ["content node", "pdf annotation", "pdf annotation in", "video annotation", "link"]},
+    //actionSubject: {$in: ["content node", "pdf annotation", "pdf annotation in", "video annotation", "link"]},
+    actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "external resource", "vote"]},
     nodeId: nodeId
   };
   loadNewsFeedDataAsync(query).then(success).catch(error);
@@ -86,7 +87,8 @@ newsfeedSystem.prototype.getNewsfeedNodeLastWeek = function (error, courseId, no
       $lte: today,
       $gte: lastWeek
     },
-    actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "link"]},
+    //actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "link"]},
+    actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "external resource"]},
     nodeId: nodeId
   };
   loadNewsFeedDataAsync(query).then(success).catch(error);
@@ -101,7 +103,8 @@ newsfeedSystem.prototype.getNewsfeedNodeToday = function (error, courseId, nodeI
       $lte: today,
       $gte: beginDay
     },
-    actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "link"]},
+    //actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "link"]},
+    actionSubject: {$in: ["content node", "pdf annotation", "video annotation", "external resource"]},
     nodeId: nodeId
   };
   loadNewsFeedDataAsync(query).then(success).catch(error);

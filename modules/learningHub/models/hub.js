@@ -78,4 +78,9 @@ hubSchema.pre('update', function (next) {
 
 var agg = {};
 agg.posts = mongoose.model('hub', hubSchema);
+agg.comments = mongoose.model('hub-comment', commentSchema);
+agg.posts.ensureIndexes();
+// agg.posts.on('index', function(err){
+//   console.log("agg.posts: " + err);
+// });
 module.exports = agg;

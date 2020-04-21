@@ -101,7 +101,8 @@ app.controller('AdvancedSearchController', function ($rootScope, $scope, $http, 
             contentNodes: {selected: true},
             courses: {selected: true},
             videoAnnotations: {selected: false},
-            pdfAnnotations: {selected: false}
+            pdfAnnotations: {selected: false},
+            extResources: {selected: false}
         };
 
         $scope.filterDate = {startDate: null, endDate: null};

@@ -151,7 +151,7 @@ enrolledCourses.prototype.getUserMyNodeActivityStatus = function (error, params,
         return;
     }
 
-    var usrId = {userId: params.user};
+    var usrId = {userId: params.user, isDeleted: false};
 
     MyActivityStatus.find(usrId).exec(function (err, res){
         if (err) error (err);

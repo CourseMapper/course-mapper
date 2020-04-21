@@ -1,4 +1,4 @@
-<div class="box box-default link-box">
+<div class="{{'box box-default link-box' + (vm.highlight == vm.post.postId ? ' ext-res-highlight':'')}}">
     <div class="box-header link-header">
         <div class="row">
             <div class="col-xs-1 text-center icon link-icon"><i class="fa   fa-external-link fa-2x"></i></div>
@@ -30,7 +30,7 @@
     <div class="box-body link-body">
         <div class="row">
             <div class="col-xs-1" ng-show="!vm.space">
-                <voting vote-type="link" vote-type-id={{vm.post.postId}} vote-value="" ng-show="!pa"></voting>
+                <voting vote-type="external resource" vote-type-id={{vm.post.postId}} vote-value="" ng-show="!pa"></voting>
             </div>
             <div class="col-xs-11 link-description">
                 <h4><b>Description</b></h4>

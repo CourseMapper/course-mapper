@@ -9,6 +9,12 @@ app.config(['$routeProvider', '$locationProvider',
             reloadOnSearch: false
         }).
 
+        when('/static/privacy', {
+            templateUrl: '/static/privacy',
+            controller: 'staticController',
+            reloadOnSearch: false
+        }).
+
         when('/category/:slug', {
             templateUrl: 'courses_list.html',
             controller: 'CourseListController',

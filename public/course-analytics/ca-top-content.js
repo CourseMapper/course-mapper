@@ -16,8 +16,8 @@ angular.module('TopContent', [''])
 
             });
 
-            $http.get('/api/course-analytics/top-content/link-node/' + parseLoc).success(function (data) {
-                $scope.topLinkNode = data.topLinkNode;
+            $http.get('/api/course-analytics/top-content/external-resource-node/' + parseLoc).success(function (data) {
+                $scope.topLinkNode = data.topExtResourcesNode;
 
             });
 

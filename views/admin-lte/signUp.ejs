@@ -108,16 +108,19 @@
                                                class="help-block">The confirmed password is not matching with your password.</p>
                                         </div>
                                     </div>
+                                    <br>
+
+                                    <div class="control-group">
+                                        <p>We respect your privacy. Please read <a href="/privacy" target="_blank" >here</a> to learn more about our Privacy Policy.</p>
+                                    </div>
 
                                     <div class="control-group">
                                         <!-- Button -->
                                         <div class="controls">
-                                            <br class="clear">
-                                            <error-block ng-show="errors.length > 0" messages="errors"></error-block>
-                                            <br class="clear">
                                             <button class="btn btn-primary" ng-click="signUpForm.$setDirty()">Register
                                                 <spinner show="isLoading"></spinner>
                                             </button>
+                                            <error-block ng-show="errors.length > 0" messages="errors"></error-block>
                                         </div>
                                     </div>
                                 </fieldset>

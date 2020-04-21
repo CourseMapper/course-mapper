@@ -7,6 +7,7 @@ var PdfAnnotation = require('../../slide-viewer/annotation.js');
 var VideoAnnotation = require('../../annotations/video-annotation.js');
 var SubTopics = require('../../trees/treeNodes.js');
 var Links = require('../../links/models/links.js');
+var ExtResources = require('../../learningHub/models/hub.js');
 var mongoose = require('mongoose');
 var debug = require('debug')('cm:db');
 var appRoot = require('app-root-path');
@@ -167,5 +168,21 @@ courseHistory.prototype.getHistoryLinks = function (error, params, done) {
 
 };
 
+courseHistory.prototype.getHistoryExtResources = function (error, params, done) {
+    if (!helper.checkRequiredParams(params, ['courseId'], error)) {
+        return;
+    }
+
+    params.courseId = mongoose.Types.ObjectId(params.courseId);
+    params.isDeleted = false;
+    params.dateAdded = {'$gte': lastYear}
+
+    ExtResources.posts.find(params)
+        .sort('dateAdded')
+        .exec(function (error, docs){
+            if (error) error (error);
+            else {done(docs)}
+        });
+};
 
 module.exports = courseHistory;

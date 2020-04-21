@@ -19,6 +19,7 @@ var Resources = require('../../trees/resources.js');
 var Links = require('../../links/models/links.js');
 var SubTopics = require('../../trees/treeNodes.js');
 var VideoAnnotation = require('../../annotations/video-annotation.js');
+var ExtResources = require('../../learningHub/models/hub.js');
 
 
 
@@ -388,6 +389,83 @@ var MyCourseListener = {
                 }
             });
 
+    },
+
+    //Listener for External Resources
+    onAfterLearningHubLinkCreated: function (newExtRes) {
+        ExtResources.posts.findOne({_id: newExtRes._id})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentId;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var courseId = result.courseId;
+                                    if (courseId) {
+                                        var nf = new MyActivityStatus(
+                                            {
+                                                userId: doc.userId,
+                                                courseId:  courseId,
+                                                nodeId: result.id,
+                                                resourceId: doc._id,
+                                                type: "ext-resource",
+                                                isDeleted: false
+                                            }
+                                        );
+                                        nf.save(
+                                            function (err, doc) {
+                                                if (!err) debug('');
+                                                else
+                                                    debug(err);
+                                            }
+                                        );
+                                    }
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterLearningHubLinkDeleted: function (deleteExtResource, user) {
+        ExtResources.posts.findOne({postId: deleteExtResource.postId})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentId;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var courseId = result.courseId;
+                                    if (courseId) {
+                                        var condition =
+                                            {
+                                                userId: user._id,
+                                                courseId: courseId,
+                                                nodeId: result._id,
+                                                resourceId: doc._id,
+                                                type: "ext-resource",
+                                                isDeleted: false
+                                            };
+                                        var update = {$set: {isDeleted: true}};
+                                        MyActivityStatus.findOne(condition)
+                                            .exec(function (err, resAS){
+                                                if (resAS) {
+                                                    MyActivityStatus.update(condition, update).exec();
+                                                } else {
+                                                    console.log('cannot find documents');
+                                                }
+                                            });
+
+                                    }
+                                }
+                            });
+                    }
+                }
+            });
     },
 
     //Listener for Discussion

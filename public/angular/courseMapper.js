@@ -23,6 +23,12 @@ app.config(function (toastrConfig) {
             reloadOnSearch: false
         }).
 
+        when('/static/privacy', {
+            templateUrl: '/static/privacy',
+            controller: 'staticController',
+            reloadOnSearch: false
+        }).
+
         when('/category/:slug', {
             templateUrl: 'courses_list.html',
             controller: 'CourseListController',
@@ -6617,6 +6623,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         rawText: $scope.replyRawText[id],
         author: $scope.currentUser.username,
         authorID: $scope.currentUser._id,
+          authorDisplayName: $scope.currentUser.displayName,
         pageNumber: $scope.currentPageNumber,
         numOfAnnotationZones: 0,
         pdfId: $scope.pdfFile._id,
@@ -6709,6 +6716,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         rawText: $scope.comment.rawText,
         author: $scope.currentUser.username,
         authorID: $scope.currentUser._id,
+          authorDisplayName: $scope.currentUser.displayName,
         pageNumber: $rootScope.annotationSubmitPage,
         tagNames: $scope.comment.tagNames,
         tagRelPos: $scope.comment.tagRelPos,
@@ -6717,7 +6725,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         annotationZones: $scope.annotationZones,
         numOfAnnotationZones: $scope.annotationZones.length,
         pdfId: $scope.pdfFile._id,
-        hasParent: false
+        hasParent: false,
+          isPrivate: $scope.comment.isPrivate
       }
     };
 
@@ -6760,6 +6769,7 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
         updateId: comment._id,
         author: $scope.currentUser.username,
         authorId: $scope.currentUser._id,
+          authorDisplayName: $scope.currentUser.displayName,
         rawText: $scope.editRawText[$scope.editMode],
         pageNumber: $scope.currentPageNumber,
         pdfId: $scope.pdfFile._id
@@ -7178,6 +7188,8 @@ controller('LinksController', function ($scope, $rootScope, $http, $location,
   };
 
   $scope.switchCommentSubmissionDisplay = function () {
+      $scope.comment.isPrivate = false;
+      $scope.comment.rawText = "";
     $scope.writeCommentMode = true;
   };
 

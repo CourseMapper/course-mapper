@@ -5,7 +5,7 @@
             <div class="box box-solid excerpt">
                 <div style="padding-left:15px;" class="box-title with-border">
                     <h3 class="box-title"> {{course.name}}</h3>
-                    <h4>
+                    <h4 ng-if="user">
                         <a href="" ng-click="toggleFavorite()">
                             <i ng-class="isFavorite ? 'ion-ios-star' : 'ion-ios-star-outline'"></i>
                             <span>{{isFavorite ? 'Remove from favorites' : 'Add to favorites'}}</span>

@@ -26,4 +26,8 @@ router.get('/about', function(req, res, next) {
     res.render(config.get('theme') + '/statics/about');
 });
 
+router.get('/privacy', function(req, res, next) {
+    res.render(config.get('theme') + '/statics/privacy');
+});
+
 module.exports = router;

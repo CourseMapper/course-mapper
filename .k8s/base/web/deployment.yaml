@@ -3,7 +3,8 @@ kind: Deployment
 metadata:
   name: web
   labels:
-    keel.sh/policy: all
+    keel.sh/policy: force
+    keel.sh/match-tag: "true"
 spec:
   replicas: 1
   strategy:
@@ -31,7 +32,7 @@ spec:
           value: $(MONGODB_SERVICE)
       containers:
       - name: web
-        image: inko/course-mapper
+        image: inko/course-mapper:latest
         ports:
         - containerPort: 8000
         readinessProbe:

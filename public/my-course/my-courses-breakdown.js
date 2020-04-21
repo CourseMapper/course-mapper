@@ -44,6 +44,9 @@ angular.module('MyCoursesBreakdown', [])
         $scope.isLink = function (action) {
             return action.type == 'link';
         };
+        $scope.isExtResource = function (action) {
+            return action.type == 'ext-resource';
+        };
         $scope.isAdded = function (action) {
             return action.actionType == 'added';
         };
@@ -53,6 +56,7 @@ angular.module('MyCoursesBreakdown', [])
         $scope.isTrue = function (action) {
             return action.isDeleted == false;
         };
+
 
         //filtering scope resources
         $scope.isPdf = function (action) {

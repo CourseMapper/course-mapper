@@ -48,10 +48,10 @@
             <!-- End of DefaultPage -->
             <!-- presenting  the aggregated links from the DB-->
             <div class="container fluid" ng-show="posts.length>0 && !enabled">
-                <hub-link ng-repeat="post in publicView" post="post" space="enabled"></hub-link>
+                <hub-link ng-repeat="post in publicView" post="post" space="enabled" highlight="highlightPostId"></hub-link>
             </div>
             <div class="container fluid" ng-show="personalPosts.length>0 && enabled">
-                <hub-link ng-repeat="post in personalView | orderBy : sort" post="post" space="enabled"></hub-link>
+                <hub-link ng-repeat="post in personalView | orderBy : sort" post="post" space="enabled" highlight="highlightPostId"></hub-link>
             </div>
             <div class="container-fluid">
                 <div class="col-xs-4 col-xs-offset-4" ng-show="posts.length!=0 && !enabled ">

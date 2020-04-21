@@ -8,6 +8,7 @@ var annotationPDFSchema = new mongoose.Schema({
   renderedText: { type: String, required: false },
   author: { type: String, required: true },
   authorID: { type: String },
+  authorDisplayName: { type: String },
   dateOfCreation: { type: Date },
   //isDeleted: {},
   pdfId: {

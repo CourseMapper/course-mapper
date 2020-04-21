@@ -10,6 +10,7 @@ var PdfAnnotationZone = require('../../annotationZones/annotationZones.js');
 var VideoAnnotation = require('../../annotations/video-annotation.js');
 var Resources = require('../../trees/resources.js');
 var Links = require('../../links/models/links.js');
+var ExtResources = require('../../learningHub/models/hub.js');
 //var Discussions = require('../../discussion/models/courseDiscussions.js');
 var UserCourses = require('../../catalogs/userCourses.js');
 
@@ -271,6 +272,86 @@ var topContentListener = {
                             .exec(function(err, result){
                                 if (result) {
                                     var condition = {contentId: contentId, countType:"link"}, update = {$inc: {count: -1}};
+                                    TopContentAgg.findOne(condition)
+                                        .exec(function(err, resTC){
+                                            if (resTC) {
+                                                TopContentAgg.update(condition, update).exec();
+                                            }
+                                            else {
+                                                console.log('could not find document');
+                                            }
+                                        });
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
+
+    //Listener for External Resources
+    onAfterLearningHubLinkCreated: function (newExtRes) {
+        ExtResources.posts.findOne({_id: newExtRes._id})
+            .exec(function (err, doc) {
+                //var linkId = doc.
+                if (doc) {
+                    var contentId = doc.contentId;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var courseId = result.courseId;
+                                    if (courseId) {
+                                        var condition = {contentId: contentId, countType: "ext-resource"}, update = {$inc: {count: 1}};
+                                        TopContentAgg.findOne(condition)
+                                            .exec(function(err, resTC){
+                                                if (resTC) {
+                                                    TopContentAgg.update(condition, update).exec();
+                                                }
+                                                else {
+                                                    var nf = new TopContentAgg(
+                                                        {
+                                                            courseId: courseId,
+                                                            nodeId: result.id,
+                                                            contentId : contentId,
+                                                            contentName : result.name,
+                                                            contentType : "node",
+                                                            countType : "ext-resource",
+                                                            isDeleted: false,
+                                                            count : 1
+                                                        }
+                                                    );
+                                                    nf.save(
+                                                        function (err, doc) {
+                                                            if (!err) debug('');
+                                                            else
+                                                                debug(err);
+                                                        }
+                                                    );
+                                                }
+                                            });
+
+                                    }
+                                }
+                            })
+                    }
+
+                }
+            });
+
+    },
+
+    onAfterLearningHubLinkDeleted: function (deleteExtResource, user) {
+        ExtResources.posts.findOne({postId: deleteExtResource.postId})
+            .exec(function (err, doc) {
+                if (doc) {
+                    var contentId = doc.contentId;
+                    if (contentId) {
+                        SubTopics.findOne({_id:contentId})
+                            .exec(function(err, result){
+                                if (result) {
+                                    var condition = {contentId: contentId, countType:"ext-resource"}, update = {$inc: {count: -1}};
                                     TopContentAgg.findOne(condition)
                                         .exec(function(err, resTC){
                                             if (resTC) {

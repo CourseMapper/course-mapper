@@ -30,7 +30,7 @@
         <!-- Content node -->
         <li ng-if="field.type == 'contentNode'" class="file" style="margin-bottom: 5px">
             <a href="/treeNode/{{field._id}}/#/cid/{{field.courseId}}/nid/{{field._id}}" ng-mouseover="isVisible=true" ng-mouseleave="isVisible=false">
-                <span style="font-weight: bold; background: #ecf0f5; width: 40px; padding: 0; display: inline-block; text-align: right"
+                <span style="font-weight: bold; width: 40px; padding: 0; display: inline-block; text-align: right"
                       ng-style="{ 'color': percentToHSLColor(getParticipationBalance(field))}">
                       {{getParticipationBalance(field) * 100 | number:0}}%
                 </span>
@@ -38,9 +38,12 @@
             </a>
 
             <!-- Popup -->
-            <div ng-show="isVisible" class="info-box bg-aqua"
-                 style="position: absolute; z-index: 5; width: 50%">
-                <span class="info-box-icon"><i class="fa fa-comments-o"></i></span>
+            <div ng-show="isVisible" class="info-box balance-popup"
+                 style="position: absolute; z-index: 5; width: 55%">
+                <span class="info-box-icon">
+<!--                    <i class="fa fa-comments-o"></i>-->
+                    <img ng-src = "/img/search/progress.png" alt = "Image">
+                </span>
                 <div class="info-box-content">
                     <span class="info-box-text">Overall Participation Balance</span>
                     <span class="info-box-number">
@@ -51,7 +54,7 @@
                     </span>
                     <div class="progress">
                         <div class="progress-bar"
-                             ng-style="{ 'width' : getParticipationBalance(field)*100 + '%'}"></div>
+                             ng-style="{ 'width' : getParticipationBalance(field)*100 + '%', 'background-color': percentToHSLColor(getParticipationBalance(field))}"></div>
                     </div>
                     <span class="progress-description">
                         {{getAnnotationProgress(field) * 100 | number:0}}% annotation ({{field.userAnnotations}} of {{field.totalAnnotations }})
@@ -60,7 +63,7 @@
                         {{getWatchProgress(field) * 100 | number:0}}% video watch progress
                     </span>
                     <span class="progress-description">
-                        {{getLinksProgress(field) * 100 | number:0}}% links ({{field.userLinks}} of {{field.totalLinks }})
+                        {{getExtResourcesProgress(field) * 100 | number:0}}% external resources ({{field.userExtResources}} of {{field.totalExtResources }})
                     </span>
                 </div>
             </div>

@@ -33,6 +33,7 @@
                         <i class="fa fa-file-movie-o bg-yellow" ng-switch-when="video annotation"></i>
                         <i class="fa fa-link bg-light-blue-active" ng-switch-when="link"></i>
                         <i class="fa fa-comments-o bg-green" ng-switch-when="discussion"></i>
+                        <i class="fa fa-link bg-light-blue-active" ng-switch-when="external resource"></i>
                         <i class="fa fa-user bg-maroon" ng-switch-default></i>
                         <div class="timeline-item">
                             <div class="timeline-header bg-gray inactive" style="border-radius: 3px;">
@@ -47,16 +48,40 @@
                                         <div class="product-info">
                                             <!--<b>{{nfData.userId.displayName}}</b> <span ng-show="'{{nfData.actionSubject}}' != 'canceled vote'">{{nfData.actionType}}</span> {{nfData.actionSubject}}<span ng-show="'{{nfData.actionType}}' == 'added'"> </span>
                                             <a><b>{{nfData.actionName}}</b></a>-->
-                                            <b>{{nfData.userId.displayName | capitalize}}</b> {{nfData.actionType}} <span ng-if="nfData.actionType == 'enrolled'">in</span><span ng-if="nfData.actionType == 'replied'">to</span> {{nfData.actionSubject}} <span ng-if="nfData.actionSubject == 'pdf annotation' || nfData.actionSubject == 'video annotation'">in</span>
-                                            <a ng-show="nfData.actionSubject == 'node' || nfData.actionSubject == 'sub topic'" href="#/cid/{{curUrl.courseId}}?tab=map&markedNode={{nfData.actionSubjectIds}}"><b>{{nfData.actionName | capitalize}}</b></a>
+                                            <b>{{nfData.userId.displayName | capitalize}}</b> {{nfData.actionType}} <span ng-if="nfData.actionType == 'enrolled'">in</span><span ng-if="nfData.actionType == 'replied'">to</span><span ng-if = "nfData.actionType == 'commented'">on</span> {{nfData.actionSubject}} <span ng-if="nfData.actionSubject == 'pdf annotation' || nfData.actionSubject == 'video annotation'">in</span>
+                                            <a ng-show="nfData.actionSubject == 'node' || nfData.actionSubject == 'content node' || nfData.actionSubject == 'sub topic'" href="#/cid/{{curUrl.courseId}}?tab=map&markedNode={{nfData.actionSubjectIds}}"><b>{{nfData.actionName | capitalize}}</b></a>
                                             <!-- if type deleted content node, don't show a-href to avoid error url -->
-                                            <span ng-if="nfData.actionType == 'deleted'" ng-show="nfData.actionSubject == 'content node'"><b>{{nfData.actionName | capitalize}}</b></span>
-                                            <a ng-if="nfData.actionType != 'deleted'" ng-show="nfData.actionSubject == 'content node'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{curUrl.courseId}}/nid/{{nfData.nodeId._id}}"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'discussion'" href="#/cid/{{curUrl.courseId}}?tab=discussion"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'course'" href="#/cid/{{curUrl.courseId}}?tab=preview"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'pdf annotation'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=pdf"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'video annotation'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=video"><b>{{nfData.actionName | capitalize}}</b></a>
-                                            <a ng-show="nfData.actionSubject == 'link'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=links"><b>{{nfData.actionName | capitalize}}</b></a>
+<!--                                            <span ng-if="nfData.actionType == 'deleted'" ng-show="nfData.actionSubject == 'content node'"><b>{{nfData.actionName | capitalize}}</b></span>-->
+<!--                                            <a ng-if="nfData.actionType != 'deleted'" ng-show="nfData.actionSubject == 'content node'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{curUrl.courseId}}/nid/{{nfData.nodeId._id}}"><b>{{nfData.actionName | capitalize}}</b></a>-->
+<!--                                            <a ng-show="nfData.actionSubject == 'discussion'" href="#/cid/{{curUrl.courseId}}?tab=discussion"><b>{{nfData.actionName | capitalize}}</b></a>-->
+<!--                                            <a ng-show="nfData.actionSubject == 'course'" href="#/cid/{{curUrl.courseId}}?tab=preview"><b>{{nfData.actionName | capitalize}}</b></a>-->
+<!--                                            <a ng-show="nfData.actionSubject == 'pdf annotation'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=pdf"><b>{{nfData.actionName | capitalize}}</b></a>-->
+<!--                                            <a ng-show="nfData.actionSubject == 'video annotation'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=video"><b>{{nfData.actionName | capitalize}}</b></a>-->
+<!--                                            <a ng-show="nfData.actionSubject == 'link'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=links"><b>{{nfData.actionName | capitalize}}</b></a>-->
+<!--                                            <a ng-show="nfData.actionSubject == 'external resource'" href="/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=learningHub&hid={{nfData.actionSubjectIds}}"><b>{{nfData.actionName | capitalize}}</b></a>-->
+                                            <ng-template ng-if = "nfData.actionType == 'deleted'">
+                                                <b>{{nfData.actionName | capitalize}}</b>
+                                            </ng-template>
+                                            <ng-template ng-if = "nfData.actionType != 'deleted'">
+                                                <ng-template ng-if = "nfData.isSubjectDeleted"><b>{{nfData.actionName | capitalize}}</b> <small
+                                                            class = "text-muted">(item deleted)</small></ng-template>
+
+                                                <ng-template ng-if = "!nfData.isSubjectDeleted">
+                                                    <a ng-if ="nfData.actionSubject == 'discussion'" href="#/cid/{{curUrl.courseId}}?tab=discussion&pid={{nfData.actionSubjectIds}}"><b>{{nfData.actionName | capitalize}}</b></a>
+                                                    <a ng-if ="nfData.actionSubject == 'reply in discussion'" href="#/cid/{{curUrl.courseId}}?tab=discussion&pid={{nfData.actionSubjectIds}}"><b>{{nfData.actionName | capitalize}}</b></a>
+                                                    <a ng-if ="nfData.actionSubject == 'course'" href="#/cid/{{curUrl.courseId}}?tab=preview"><b>{{nfData.actionName | capitalize}}</b></a>
+<!--                                                    <a ng-if = "nfData.actionSubject == 'content node'"-->
+<!--                                                       href = "/treeNode/{{nfData.nodeId._id}}/#/cid/{{curUrl.courseId}}?tab=map"><b>{{nfData.actionName | capitalize}}</b></a>-->
+                                                    <a ng-if = "nfData.actionSubject == 'pdf annotation'"
+                                                       href = "/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=pdf"><b>{{nfData.actionName | capitalize}}</b></a>
+                                                    <a ng-if = "nfData.actionSubject == 'video annotation'"
+                                                       href = "/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=video"><b>{{nfData.actionName | capitalize}}</b></a>
+                                                    <a ng-if = "nfData.actionSubject == 'link'"
+                                                       href = /treeNode/{{nfData.nodeId._id}}/"#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=links"><b>{{nfData.actionName | capitalize}}</b></a>
+                                                    <a ng-if = "nfData.actionSubject == 'external resource'"
+                                                       href = "/treeNode/{{nfData.nodeId._id}}/#/cid/{{nfData.courseId}}/nid/{{nfData.nodeId._id}}?tab=learningHub&hid={{nfData.actionSubjectIds}}"><b>{{nfData.actionName | capitalize}}</b></a>
+                                                </ng-template>
+                                            </ng-template>
                                             <br/>
                                             <small class="text-muted">
                                                 <i class="fa fa-clock-o"> {{nfData.dateAdded | relativeDate}}</i>

@@ -69,4 +69,22 @@ router.get('/node-history/links/:nodeId', function (req, res, next){
     );
 });
 
+router.get('/node-history/external-resources/:nodeId', function (req, res, next){
+    if (!req.user) {
+        return res.status(401).send('Unauthorized');
+    }
+    var ch = new NodeHistory();
+    ch.getHistoryExtResources (
+        function error (err) {
+            res.status(200).json({result:false, message: err})
+        },
+        {
+            treeNodeId:mongoose.Types.ObjectId(req.params.nodeId)
+        },
+        function success (data) {
+            res.status(200).json({result:true, extResources: data})
+        }
+    );
+});
+
 module.exports = router;
