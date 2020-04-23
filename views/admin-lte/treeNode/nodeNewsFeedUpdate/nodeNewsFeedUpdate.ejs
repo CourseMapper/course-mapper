@@ -69,8 +69,8 @@
                                                             class = "text-muted">(item deleted)</small></ng-template>
 
                                                 <ng-template ng-if = "!nfData.isSubjectDeleted">
-                                                    <a ng-if = "nfData.actionSubject == 'content node'"
-                                                       href = "#/cid/{{curUrl.courseId}}?tab=map"><b>{{nfData.actionName | capitalize}}</b></a>
+                                                    <a ng-if = "nfData.actionSubject == 'node' || nfData.actionSubject == 'content node' || nfData.actionSubject == 'sub topic'"
+                                                       href = "#/cid/{{curUrl.courseId}}?tab=map&markedNode={{nfData.actionSubjectIds}}"><b>{{nfData.actionName | capitalize}}</b></a>
                                                     <a ng-if = "nfData.actionSubject == 'pdf annotation'"
                                                        href = "#/cid/{{curUrl.courseId}}/nid/{{curUrl.nodeId}}?tab=pdf"><b>{{nfData.actionName | capitalize}}</b></a>
                                                     <a ng-if = "nfData.actionSubject == 'video annotation'"
