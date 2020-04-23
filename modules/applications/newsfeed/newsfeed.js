@@ -466,7 +466,7 @@ var NewsfeedListener = {
                         );
 
                         NewsfeedAgg.updateMany(
-                            {actionSubjectIds: doc.id},
+                            {nodeId: doc.id},
                             {$set: {"isSubjectDeleted": true}},
                             function (err) {
                                 if (!err) debug('');
