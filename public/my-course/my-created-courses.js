@@ -73,6 +73,9 @@ angular.module('MyCreatedCourses', [''])
         $scope.isLink = function (action) {
             return action.type == 'link';
         };
+        $scope.isExtResource = function (action) {
+            return action.type == 'ext-resource';
+        };
         $scope.isAdded = function (action) {
             return action.actionType == 'added';
         };

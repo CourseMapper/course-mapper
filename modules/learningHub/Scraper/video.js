@@ -7,7 +7,7 @@ var ahelper=require("./aggHelper.js");
 var h2js=require('html-to-json');
 var ytCreditials={
     'API_URL':"https://www.googleapis.com/youtube/v3/videos?",
-    'API_kEY':"AIzaSyAj_omzCHA7TT6YBIJtECHwVQnU8UuzgdU"
+    'API_kEY':"AIzaSyCFIKbKuVsA0tuBdsx10xILXb5iXTakgoI"
 };
 var oembed_list={
     'vimeo':'https://vimeo.com/api/oembed.json',

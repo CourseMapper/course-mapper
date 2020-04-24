@@ -28,7 +28,7 @@ angular.module('MyProgress', ['chart.js'])
             $scope.contentNodeActivityData = [$scope.linkCount, $scope.pdfAnnoCount, $scope.videoAnnoCount ];
 
         });*/
-        $scope.contentNodeActivityLabels = ["PDF Annotations", "Video Annotations", "External Resources Added"];
+        $scope.contentNodeActivityLabels = ["PDF Annotations", "Video Annotations", "External Resources"];
         $http.get('/api/my-course/my-node-activity-status').success(function (data) {
             var myNodeActivity  = data.myNodeActivityStatus;
 
