@@ -6,7 +6,7 @@ services:
     image: ${IMAGE_NAME_PREFIX:-inko/}course-mapper:${IMAGE_TAG:-latest}
     environment:
     - NODE_ENV=production
-    - DATABASE=mongodb/course_mapper
+    - DATABASE=db/course_mapper
     - PORT=3000
     volumes:
     - web-resources:/home/node/app/public/resources
@@ -15,26 +15,15 @@ services:
     ports:
     - 3000:3000
     depends_on:
-    - mongodb
+    - db
 
-  mongodb:
+  db:
     image: mongo
     volumes:
-    - mongodb-data:/data/db
-
-  # admin:
-  #   image: mrvautin/adminmongo
-  #   environment:
-  #   - CONN_NAME=course_mapper
-  #   - DB_HOST=mongodb
-  #   - DB_NAME=course_mapper
-  #   - PASSWORD=admin
-  #   - PORT=3001
-  #   ports:
-  #   - 3001:3001
+    - db-data:/data/db
 
 volumes:
   web-resources:
   web-pa:
   web-img-courses:
-  mongodb-data:
+  db-data:

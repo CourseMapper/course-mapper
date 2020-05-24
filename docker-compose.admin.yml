@@ -1,0 +1,15 @@
+version: "3"
+services:
+
+  admin:
+    image: mrvautin/adminmongo
+    environment:
+    - CONN_NAME=course_mapper
+    - DB_HOST=db
+    - DB_NAME=course_mapper
+    - PASSWORD=admin
+    - PORT=3001
+    ports:
+    - 3001:3001
+    depends_on:
+    - db
