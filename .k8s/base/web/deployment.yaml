@@ -40,9 +40,9 @@ spec:
             path: /
             port: 8000
         livenessProbe:
-          exec:
-            command: ['ls', '/home/node/app/public/resources/']
-          initialDelaySeconds: 5
+          httpGet:
+            path: /
+            port: 8000
           periodSeconds: 15
         env:
         - name: NODE_ENV
