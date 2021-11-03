@@ -57,7 +57,7 @@
     "url-parse": "^1.1.7",
     "uuid": "^3.3.2",
     "valid-url": "^1.0.9",
-    "validator": "^10.4.0",
+    "validator": "^13.7.0",
     "x-frame-options": "^1.0.0"
   },
   "devDependencies": {
